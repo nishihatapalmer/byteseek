@@ -54,32 +54,32 @@ public class ByteSequenceMatcherTest {
         List expResult = new ArrayList();
         CombinedSequenceMatcher sequence;
 
-        List result = ((CombinedSequenceMatcher) MatcherSequenceParser.fromExpression(byteSequenceSpec)).getMatchers();
+        List result = ((CombinedSequenceMatcher) SequenceMatcherParser.fromExpression(byteSequenceSpec)).getMatchers();
         assertEquals("Testing a blank sequence.", expResult, result);
 
         byteSequenceSpec = "0A";
-        result = ((CombinedSequenceMatcher) MatcherSequenceParser.fromExpression(byteSequenceSpec)).getMatchers();
+        result = ((CombinedSequenceMatcher) SequenceMatcherParser.fromExpression(byteSequenceSpec)).getMatchers();
         assertEquals("Parsing a single hex byte produces one element in the matcher list.", 1, result.size());
 
         SequenceMatcher matcher = (SequenceMatcher) result.get(0);
         assertEquals("Parsing a single hex byte produces a ByteStringMatcher.", ByteSequenceMatcher.class, matcher.getClass());
 
         byteSequenceSpec = "[0A]";
-        result = ((CombinedSequenceMatcher) MatcherSequenceParser.fromExpression(byteSequenceSpec)).getMatchers();
+        result = ((CombinedSequenceMatcher) SequenceMatcherParser.fromExpression(byteSequenceSpec)).getMatchers();
         assertEquals("Parsing a single hex byte range produces one element in the matcher list.", 1, result.size());
 
         matcher = (SequenceMatcher) result.get(0);
         assertEquals("Parsing a single hex byte range produces a ByteRangeMatcher.", ByteClassRangeMatcher.class, matcher.getClass());
 
         byteSequenceSpec = "0A1F2B3C";
-        result = ((CombinedSequenceMatcher) MatcherSequenceParser.fromExpression(byteSequenceSpec)).getMatchers();
+        result = ((CombinedSequenceMatcher) SequenceMatcherParser.fromExpression(byteSequenceSpec)).getMatchers();
         assertEquals("Parsing four hex bytes produces one element in the matcher list.", 1, result.size());
 
         matcher = (SequenceMatcher) result.get(0);
         assertEquals("Parsing four hex bytes produces a ByteStringMatcher.", ByteSequenceMatcher.class, matcher.getClass());
 
         byteSequenceSpec = "[0A][1F][2B][3C]";
-        result = ((CombinedSequenceMatcher) MatcherSequenceParser.fromExpression(byteSequenceSpec)).getMatchers();
+        result = ((CombinedSequenceMatcher) SequenceMatcherParser.fromExpression(byteSequenceSpec)).getMatchers();
         assertEquals("Parsing four single hex byte ranges produces four elements in the matcher list.", 4, result.size());
 
         for ( int matchIndex = 0; matchIndex < 4; matchIndex++) {
@@ -88,7 +88,7 @@ public class ByteSequenceMatcherTest {
         }
 
         byteSequenceSpec = "010203[0A][1F][2B]0543[3C]";
-        result = ((CombinedSequenceMatcher) MatcherSequenceParser.fromExpression(byteSequenceSpec)).getMatchers();
+        result = ((CombinedSequenceMatcher) SequenceMatcherParser.fromExpression(byteSequenceSpec)).getMatchers();
         assertEquals("Parsing a mixed sequence of hex bytes and byte ranges has 6 elements.", 6, result.size());
 
         matcher = (SequenceMatcher) result.get(0);

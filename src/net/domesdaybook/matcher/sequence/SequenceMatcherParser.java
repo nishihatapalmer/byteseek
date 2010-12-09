@@ -25,7 +25,7 @@ import net.domesdaybook.matcher.singlebyte.ByteMatcher;
  *
  * @author matt
  */
-public class MatcherSequenceParser {
+public class SequenceMatcherParser {
 
     public static SequenceMatcher fromExpression(final String expression) {
         return new CombinedSequenceMatcher(matchListFromExpression(expression));

@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.matcher.sequence.MatcherSequenceParser;
+import net.domesdaybook.matcher.sequence.SequenceMatcherParser;
 import net.domesdaybook.reader.Bytes;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import org.junit.After;
@@ -61,50 +61,50 @@ public class ByteClassMatcherTest {
 
    @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-        MatcherSequenceParser.byteClassFromExpression(null);
+        SequenceMatcherParser.byteClassFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyParse() {
-        MatcherSequenceParser.byteClassFromExpression("");
+        SequenceMatcherParser.byteClassFromExpression("");
     }
 
 
     @Test
     public void testEmptyClassParse() {
-        SequenceMatcher result = MatcherSequenceParser.byteClassFromExpression("[]");
+        SequenceMatcher result = SequenceMatcherParser.byteClassFromExpression("[]");
         assertEquals("empty byte class returns null matcher", null, result );
     }
 
     @Test
     public void testEmptyNegatedClassParse() {
-        SequenceMatcher result = MatcherSequenceParser.byteClassFromExpression("[!]");
+        SequenceMatcher result = SequenceMatcherParser.byteClassFromExpression("[!]");
         assertEquals("empty negated byte class returns null matcher", null, result );
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNoStartingSquareBracketParse() {
-        MatcherSequenceParser.byteClassFromExpression("00]");
+        SequenceMatcherParser.byteClassFromExpression("00]");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNoEndingSquareBracketParse() {
-         MatcherSequenceParser.byteClassFromExpression("[1F:2B");
+         SequenceMatcherParser.byteClassFromExpression("[1F:2B");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidHexMinByteParse() {
-        MatcherSequenceParser.byteClassFromExpression("[QW]");
+        SequenceMatcherParser.byteClassFromExpression("[QW]");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNoColonForRangeParse() {
-        MatcherSequenceParser.byteClassFromExpression("[1A-1C]");
+        SequenceMatcherParser.byteClassFromExpression("[1A-1C]");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidHexMaxByteParse() {
-        MatcherSequenceParser.byteClassFromExpression("[1A:Y]");
+        SequenceMatcherParser.byteClassFromExpression("[1A:Y]");
     }
 
     /**
@@ -112,10 +112,10 @@ public class ByteClassMatcherTest {
      */
     @Test
     public void testLength() {
-        SequenceMatcher matcher = MatcherSequenceParser.byteClassFromExpression("[00]");
+        SequenceMatcher matcher = SequenceMatcherParser.byteClassFromExpression("[00]");
         assertEquals( "Testing for a length of one with a single byte class", 1, matcher.length());
 
-        matcher = MatcherSequenceParser.byteClassFromExpression("[00010203:88dead]");
+        matcher = SequenceMatcherParser.byteClassFromExpression("[00010203:88dead]");
         assertEquals( "Testing for a length of one with a multiple byte class", 1, matcher.length());
     }
 
@@ -130,36 +130,36 @@ public class ByteClassMatcherTest {
 
         // Test the simplest case of a single byte
         // (don't really need a byte class for this but it is valid)
-        ByteClassMatcher matcher = MatcherSequenceParser.byteClassFromExpression( "[01]" );
+        ByteClassMatcher matcher = SequenceMatcherParser.byteClassFromExpression( "[01]" );
         assertEquals( "Testing parsing one hex byte gives one byte value to match", 1, matcher.getNumBytesInClass());
 
         // Test two different bytes using different case for hex:
-        matcher = MatcherSequenceParser.byteClassFromExpression( "[03e1]" );
+        matcher = SequenceMatcherParser.byteClassFromExpression( "[03e1]" );
         assertEquals( "Testing parsing two hex bytes '03e1' gives two byte values to match", 2, matcher.getNumBytesInClass());
-        matcher = MatcherSequenceParser.byteClassFromExpression( "[dead]" );
+        matcher = SequenceMatcherParser.byteClassFromExpression( "[dead]" );
         assertEquals( "Testing parsing two hex bytes 'dead' gives two byte values to match", 2, matcher.getNumBytesInClass());
-        matcher = MatcherSequenceParser.byteClassFromExpression( "[DeAd]" );
+        matcher = SequenceMatcherParser.byteClassFromExpression( "[DeAd]" );
         assertEquals( "Testing parsing two hex bytes 'DeAd' gives two byte values to match", 2, matcher.getNumBytesInClass());
 
         // Test the same byte specified twice (valid spec but redundant):
-        matcher = MatcherSequenceParser.byteClassFromExpression( "[FFFF]");
+        matcher = SequenceMatcherParser.byteClassFromExpression( "[FFFF]");
         assertEquals( "Testing parsing two equal bytes 'FFFF' gives one byte value to match", 1, matcher.getNumBytesInClass());
         
 
         // Test parsing of negation [! ...] of a byte class:
 
-        matcher = MatcherSequenceParser.byteClassFromExpression( "[!00]" );
+        matcher = SequenceMatcherParser.byteClassFromExpression( "[!00]" );
         assertEquals( "Testing for negation of a single byte class", true, matcher.isNegated() );
         assertEquals( "Testing for number of bytes in negated single byte class", 255, matcher.numBytesInClass);
 
-        matcher = MatcherSequenceParser.byteClassFromExpression( "[02]" );
+        matcher = SequenceMatcherParser.byteClassFromExpression( "[02]" );
         assertEquals( "Testing for no negation of a single byte class", false, matcher.isNegated() );
 
-        matcher = MatcherSequenceParser.byteClassFromExpression( "[!00010203:88dead]" );
+        matcher = SequenceMatcherParser.byteClassFromExpression( "[!00010203:88dead]" );
         assertEquals( "Testing for negation of a multiple byte class", true, matcher.isNegated() );
         assertEquals( "Testing for number of bytes in negated 139 byte class", 117, matcher.numBytesInClass);
 
-        matcher = MatcherSequenceParser.byteClassFromExpression("[02:040709ffee77:78]");
+        matcher = SequenceMatcherParser.byteClassFromExpression("[02:040709ffee77:78]");
         assertEquals( "Testing for no negation of a multiple byte class", false, matcher.isNegated() );
         assertEquals( "Testing for number of bytes in 10 byte class", 10, matcher.numBytesInClass);
     }
@@ -169,7 +169,7 @@ public class ByteClassMatcherTest {
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void testErrorOnMatchesBytesOutsideFile() {
-        final ByteClassMatcher instance = MatcherSequenceParser.byteClassFromExpression("[01]");
+        final ByteClassMatcher instance = SequenceMatcherParser.byteClassFromExpression("[01]");
         instance.matchesBytes(bytes, 100000000L);
     }    
 
