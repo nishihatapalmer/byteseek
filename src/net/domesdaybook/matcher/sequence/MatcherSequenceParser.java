@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.matcher.sequence;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import net.domesdaybook.matcher.singlebyte.ByteMatcher;
  *
  * @author matt
  */
-public class MatcherSequenceCompiler {
+public class MatcherSequenceParser {
 
     public static SequenceMatcher fromExpression(final String expression) {
         return new CombinedSequenceMatcher(matchListFromExpression(expression));

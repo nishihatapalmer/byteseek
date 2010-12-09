@@ -6,7 +6,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.expression.compiler.MatcherSequenceCompiler;
+import net.domesdaybook.matcher.sequence.MatcherSequenceParser;
 import net.domesdaybook.reader.Bytes;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import java.net.URL;
@@ -48,35 +48,35 @@ public class ByteStringMatcherTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-        MatcherSequenceCompiler.byteSequenceFromExpression(null);
+        MatcherSequenceParser.byteSequenceFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyParse() {
-        MatcherSequenceCompiler.byteSequenceFromExpression("");
+        MatcherSequenceParser.byteSequenceFromExpression("");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNonHexParse() {
-        MatcherSequenceCompiler.byteSequenceFromExpression("This should fail");
+        MatcherSequenceParser.byteSequenceFromExpression("This should fail");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testSomeHexParse() {
-         MatcherSequenceCompiler.byteSequenceFromExpression("010203FFEED1This should fail.");
+         MatcherSequenceParser.byteSequenceFromExpression("010203FFEED1This should fail.");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testMissingHexCharParse() {
-        MatcherSequenceCompiler.byteSequenceFromExpression("A1B2C");
+        MatcherSequenceParser.byteSequenceFromExpression("A1B2C");
     }
 
     @Test
     public void testCorrectHexCharParse() {
         // The absence of an exception in the Parse means it has parsed the hex sequence.
         // Therefore we don't have an assertion in this test case.
-        MatcherSequenceCompiler.byteSequenceFromExpression("Fd"); // test a single byte with mixed hex case.
-        MatcherSequenceCompiler.byteSequenceFromExpression("000102A1b3Cde4Fe"); // test a long sequence with mixed hex case.
+        MatcherSequenceParser.byteSequenceFromExpression("Fd"); // test a single byte with mixed hex case.
+        MatcherSequenceParser.byteSequenceFromExpression("000102A1b3Cde4Fe"); // test a long sequence with mixed hex case.
     }
 
     @Test
@@ -84,16 +84,16 @@ public class ByteStringMatcherTest {
         ByteSequenceMatcher instance;
         int expResult;
 
-        instance = MatcherSequenceCompiler.byteSequenceFromExpression("01");
+        instance = MatcherSequenceParser.byteSequenceFromExpression("01");
         assertEquals("Test length one byte.", 1, instance.length());
 
-        instance = MatcherSequenceCompiler.byteSequenceFromExpression("01FF");
+        instance = MatcherSequenceParser.byteSequenceFromExpression("01FF");
         assertEquals("Test length two bytes.", 2, instance.length());
 
-        instance = MatcherSequenceCompiler.byteSequenceFromExpression("01FF3d4f728912");
+        instance = MatcherSequenceParser.byteSequenceFromExpression("01FF3d4f728912");
         assertEquals("Test length seven bytes.", 7, instance.length());
 
-        instance = MatcherSequenceCompiler.byteSequenceFromExpression("01FF3d01FF3d4f7289124f72891201FF3d4f728912");
+        instance = MatcherSequenceParser.byteSequenceFromExpression("01FF3d01FF3d4f7289124f72891201FF3d4f728912");
         assertEquals("Test length twenty one bytes.", 21, instance.length());
     }
 
@@ -109,7 +109,7 @@ public class ByteStringMatcherTest {
 
         // Test that we can identify the beginning of this file:
         String fileStartHexBytes = "2f2a205468697320636f6465"; // "/* This code"
-        instance = MatcherSequenceCompiler.byteSequenceFromExpression(fileStartHexBytes);
+        instance = MatcherSequenceParser.byteSequenceFromExpression(fileStartHexBytes);
         matchFrom = 0L;
         expResult = true; // number of bytes in fileStartHexBytes.
         result = instance.matchesBytes(bytes, matchFrom);
@@ -122,7 +122,7 @@ public class ByteStringMatcherTest {
         assertEquals("Test for a failed match 1 byte from the start of the file.", expResult, result );
 
         fileStartHexBytes = "2f2a205468697320636f646500"; // "/* This code" plus a zero byte
-        instance = MatcherSequenceCompiler.byteSequenceFromExpression(fileStartHexBytes);
+        instance = MatcherSequenceParser.byteSequenceFromExpression(fileStartHexBytes);
         // Test that we don't identify this file when starting from
         matchFrom = 0L;
         expResult = false;
@@ -138,7 +138,7 @@ public class ByteStringMatcherTest {
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void testErrorOnMatchesBytesOutsideFile() {
-        final ByteSequenceMatcher instance = MatcherSequenceCompiler.byteSequenceFromExpression("010203");
+        final ByteSequenceMatcher instance = MatcherSequenceParser.byteSequenceFromExpression("010203");
         instance.matchesBytes(bytes, 100000000L);
     }
 

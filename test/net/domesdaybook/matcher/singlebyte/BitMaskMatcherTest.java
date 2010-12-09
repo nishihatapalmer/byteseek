@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.expression.compiler.MatcherSequenceCompiler;
+import net.domesdaybook.matcher.sequence.MatcherSequenceParser;
 import net.domesdaybook.reader.Bytes;
 import java.net.URL;
 import org.junit.After;
@@ -45,21 +45,21 @@ public class BitMaskMatcherTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-         MatcherSequenceCompiler.bitmaskFromExpression(null);
+         MatcherSequenceParser.bitmaskFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyParse() {
-        MatcherSequenceCompiler.bitmaskFromExpression("");
+        MatcherSequenceParser.bitmaskFromExpression("");
     }
 
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidBitMaskParse() {
-        MatcherSequenceCompiler.bitmaskFromExpression("QW");
-        MatcherSequenceCompiler.bitmaskFromExpression("fG");
-        MatcherSequenceCompiler.bitmaskFromExpression("001");
-        MatcherSequenceCompiler.bitmaskFromExpression("dead");
+        MatcherSequenceParser.bitmaskFromExpression("QW");
+        MatcherSequenceParser.bitmaskFromExpression("fG");
+        MatcherSequenceParser.bitmaskFromExpression("001");
+        MatcherSequenceParser.bitmaskFromExpression("dead");
     }
 
 
@@ -73,7 +73,7 @@ public class BitMaskMatcherTest {
         boolean result;
         boolean expResult;
 
-        instance = MatcherSequenceCompiler.bitmaskFromExpression("&00"); // matches nothing
+        instance = MatcherSequenceParser.bitmaskFromExpression("&00"); // matches nothing
         matchFrom = 2L; // 3 bytes in (first byte is at position zero)
         expResult = true; // should be false - this is intentionally to fail this test
         // to prompt me to write a lot of better tests.
