@@ -20,7 +20,7 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
     private String caseInsensitiveString;
     private SequenceMatcher[] charMatchList;
 
-    CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
+    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
         caseInsensitiveString = caseInsensitiveASCIIString;
         charMatchList = new SequenceMatcher[caseInsensitiveASCIIString.length()];
         stringLength = caseInsensitiveASCIIString.length();

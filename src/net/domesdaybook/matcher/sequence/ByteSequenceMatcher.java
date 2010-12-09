@@ -20,7 +20,7 @@ public class ByteSequenceMatcher implements SequenceMatcher {
     //private final byte[] mBuffer;
     private final int mByteSequenceLength;
 
-    ByteSequenceMatcher( final byte[] byteArray ) {
+    public ByteSequenceMatcher( final byte[] byteArray ) {
         // Preconditions byteArray is not null:
         if ( byteArray == null ) {
             throw new IllegalArgumentException("Null byte array passed in to ByteHexMatcher");
@@ -49,34 +49,6 @@ public class ByteSequenceMatcher implements SequenceMatcher {
         return mByteSequenceLength;
     }
 
-
-   // Utility method to parse a hex byte string into a ByteValueSequenceMatcher.
-    public static ByteSequenceMatcher fromExpression( final String hexByteString ) {
-     // Preconditions: not null, empty and is an even number of chars
-        if ( hexByteString == null || hexByteString.isEmpty() ) {
-            throw new IllegalArgumentException("Null or empty hexByteSequence.");
-        }
-        final int stringLength = hexByteString.length();
-        if ( stringLength % 2 != 0) {
-            throw new IllegalArgumentException("Odd number of chars in hex byte string.");
-        }
-
-        // Build the byte sequence:
-        final int byteSequenceLength = stringLength / 2;
-        byte[] theBytes = new byte[byteSequenceLength];
-        try {
-            for (int byteIndex = 0; byteIndex < byteSequenceLength; byteIndex++) {
-                // Will throw a NumberFormatException if it doesn't find a hex byte.
-                final int byteVal = Integer.parseInt(hexByteString.substring(2 * byteIndex, 2 * (byteIndex + 1)), 16);
-                theBytes[byteIndex] = (byte) (byteVal);
-            }
-        }
-        catch ( NumberFormatException formatEx ) {
-            throw new IllegalArgumentException("Hex bytes not specified properly in hex byte string.");
-        }
-
-        return new ByteSequenceMatcher( theBytes );
-    }
 
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {

@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import net.domesdaybook.expression.compiler.MatcherSequenceCompiler;
 import net.domesdaybook.reader.Bytes;
 import java.net.URL;
 import org.junit.After;
@@ -44,21 +45,21 @@ public class BitMaskMatcherTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-         BitMaskMatcher.fromExpression(null);
+         MatcherSequenceCompiler.bitmaskFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyParse() {
-        BitMaskMatcher.fromExpression("");
+        MatcherSequenceCompiler.bitmaskFromExpression("");
     }
 
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidBitMaskParse() {
-        BitMaskMatcher.fromExpression("QW");
-        BitMaskMatcher.fromExpression("fG");
-        BitMaskMatcher.fromExpression("001");
-        BitMaskMatcher.fromExpression("dead");
+        MatcherSequenceCompiler.bitmaskFromExpression("QW");
+        MatcherSequenceCompiler.bitmaskFromExpression("fG");
+        MatcherSequenceCompiler.bitmaskFromExpression("001");
+        MatcherSequenceCompiler.bitmaskFromExpression("dead");
     }
 
 
@@ -72,7 +73,7 @@ public class BitMaskMatcherTest {
         boolean result;
         boolean expResult;
 
-        instance = BitMaskMatcher.fromExpression("&00"); // matches nothing
+        instance = MatcherSequenceCompiler.bitmaskFromExpression("&00"); // matches nothing
         matchFrom = 2L; // 3 bytes in (first byte is at position zero)
         expResult = true; // should be false - this is intentionally to fail this test
         // to prompt me to write a lot of better tests.

@@ -18,7 +18,7 @@ public class ByteClassSetMatcher extends ByteClassMatcher implements SingleByteM
 
     final BitSet byteValues = new BitSet(256);
 
-    ByteClassSetMatcher(List<Integer> sortedValues, boolean negated) {
+    public ByteClassSetMatcher(List<Integer> sortedValues, boolean negated) {
         this.negated = negated;
         for ( int valueIndex = 0; valueIndex < sortedValues.size(); valueIndex++) {
             final int byteValue = sortedValues.get(valueIndex);

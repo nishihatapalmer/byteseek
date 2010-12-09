@@ -11,7 +11,6 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.Tree;
@@ -48,26 +47,47 @@ public class AstParser {
      * @return Tree an AST with the alternatives optimised.
      */
     public Tree optimiseAST(final Tree treeNode) {
-        
+
+
+        Tree result = treeNode;
+
         // Recursively invoke on children of tree node, to walk the tree:
         for (int childIndex = 0; childIndex < treeNode.getChildCount(); childIndex++) {
-            optimiseAST(treeNode.getChild(childIndex));
+            Tree childNode = treeNode.getChild(childIndex);
+
+            // If a child is exactly equivalent to its parent, then
+            // replace it with its own children.  The only nodes which can have
+            // children the same as themselves are sequences, alternatives,
+            // and sets (and inverted sets - which are different types).
+            if (equivalent(treeNode,childNode)) {
+                treeNode.replaceChildren(childIndex, childIndex, getChildList(childNode));
+                childNode = treeNode.getChild(childIndex);
+            }
+
+            Tree resultNode = optimiseAST(childNode);
+            if (resultNode != childNode) {
+                treeNode.setChild(childIndex, resultNode);
+            }
         }
 
-        // If the current node is an alternative node:
+
+           // If the current node is an alternative node:
         if (treeNode.getType() == regularExpressionParser.ALT) {
-            optimiseSingleByteAlternatives(treeNode);
+            result = optimiseSingleByteAlternatives(treeNode);
         }
 
-        return treeNode;
+        return result;
     }
 
 
-    private void optimiseSingleByteAlternatives(Tree treeNode) {
+    private Tree optimiseSingleByteAlternatives(Tree treeNode) {
+
+        Tree result = treeNode;
 
         // Determine which children can be optimised:
         List<Integer> childrenToMerge = new ArrayList<Integer>();
-        for (int childIndex = treeNode.getChildCount()-1; childIndex >= 0 ; childIndex--) {
+        final int childCount = treeNode.getChildCount();
+        for (int childIndex = childCount-1; childIndex >= 0 ; childIndex--) {
             if (isSingleByteNode(treeNode.getChild(childIndex))) {
                 childrenToMerge.add(childIndex);
             }
@@ -76,20 +96,53 @@ public class AstParser {
         // If there is more than one candidate child node to merge, then merge them
         // into a set-based byte test, rather than different alternatives:
         if (childrenToMerge.size() > 1) {
+            
             CommonTree mergeSet = createNode(regularExpressionParser.SET);
             for (int mergeIndex = 0; mergeIndex < childrenToMerge.size(); mergeIndex++) {
                 final int childIndex = childrenToMerge.get(mergeIndex);
-                final Tree mergeNode = treeNode.getChild(childIndex);
+                Tree mergeNode = treeNode.getChild(childIndex);
+
+                // If any of the children of the alternative we are changing
+                // to a set is also a set, merge its children into the set
+                // instead of adding a set child to a set.
+                if (mergeNode.getType() == regularExpressionParser.SET) {
+                    mergeNode = getChildList(mergeNode);
+                }
                 mergeSet.addChild(mergeNode);
                 treeNode.deleteChild(childIndex);
             }
-            mergeSet.setParent(treeNode);
+
+            // If all the children are merged, the entire alternative
+            // is really a single set - change the type of the node:
+            if (childrenToMerge.size() == childCount) {
+                result = mergeSet;
+            } else { // just add the set to the alternative node:
+                treeNode.addChild(mergeSet);
+            }
         }
+
+        return result;
     }
 
 
     private CommonTree createNode(int type) {
-        return new CommonTree(new CommonToken(type));
+        String text = regularExpressionParser.tokenNames[type];
+        return new CommonTree(new CommonToken(type, text));
+    }
+
+    private boolean equivalent(Tree node1, Tree node2) {
+        return node1.getType() == node2.getType() &&
+               node1.getText().equals(node2.getText());
+    }
+
+    private Tree getChildList(Tree parent) {
+        // nodes with no token are "nil" nodes in antlr,
+        // which act as lists of children.
+        Tree listNode = new CommonTree();
+        for (int childIndex = 0; childIndex < parent.getChildCount(); childIndex++) {
+            listNode.addChild(parent.getChild(childIndex));
+        }
+        return listNode;
     }
 
     

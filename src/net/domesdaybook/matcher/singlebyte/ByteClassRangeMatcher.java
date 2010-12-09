@@ -21,7 +21,7 @@ public class ByteClassRangeMatcher extends ByteClassMatcher implements SingleByt
     final private int mMinByteValue; // use int as a byte is signed, but we need values from 0 to 255
     final private int mMaxByteValue; // use int as a byte is signed, but we need values from 0 to 255
 
-    ByteClassRangeMatcher( final int minValue, final int maxValue, final boolean negated ) {
+    public ByteClassRangeMatcher( final int minValue, final int maxValue, final boolean negated ) {
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
         if (minValue > maxValue || minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
             throw new IllegalArgumentException("minimum or maximum values wrong way round or not between 0 and 255.");

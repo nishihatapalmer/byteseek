@@ -20,7 +20,7 @@ public class CaseSensitiveStringMatcher implements SequenceMatcher {
     private final String caseSensitiveString;
     private final int mByteSequenceLength;
 
-    CaseSensitiveStringMatcher( final String caseSensitiveASCIIString ) {
+    public CaseSensitiveStringMatcher( final String caseSensitiveASCIIString ) {
         // Build the byte sequence:
         caseSensitiveString = caseSensitiveASCIIString;
         final int byteSequenceLength = caseSensitiveASCIIString.length();

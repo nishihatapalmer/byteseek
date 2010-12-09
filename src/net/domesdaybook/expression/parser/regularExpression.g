@@ -51,7 +51,8 @@ tokens { SEQUENCE;
 
 @lexer::members { 
 	boolean inRepeat=false;
-	boolean inSet=false;
+	//boolean inSet=false;
+	int inSet = 0;
 }
 
 
@@ -361,90 +362,90 @@ ESCAPE	:	'\\'
 
 
 OPEN_SQUARE
-	:	'[' 		{ inSet=true; }
+	:	'[' 		{inSet++;} //{ inSet=true; }
 	;
 
 
 CARET
-	:	{inSet}?=>	'^' 
+	:	{inSet>0}?=>	'^' 
 	;
 
 
 RANGE_SEPARATOR
-	:	{inSet}?=>	'-' 
+	:	{inSet>0}?=>	'-' 
 	;
 
 
 SET_ASCII
-	:	{inSet}?=>	'ascii'
+	:	{inSet>0}?=>	'ascii'
 	;
 
 SET_PRINT
-	:	{inSet}?=>	'print'
+	:	{inSet>0}?=>	'print'
 	;
 	
 SET_GRAPH
-	:	{inSet}?=>	'graph'
+	:	{inSet>0}?=>	'graph'
 	;
 	
-SET_WORD:	{inSet}?=>	'word'
+SET_WORD:	{inSet>0}?=>	'word'
 	;
 
 SET_ALPHANUM
-	:	{inSet}?=>	'alnum'
+	:	{inSet>0}?=>	'alnum'
 	;
 
 SET_ALPHA
-	:	{inSet}?=>	'alpha'
+	:	{inSet>0}?=>	'alpha'
 	;
 
 SET_UPPER
-	:	{inSet}?=>	'upper'
+	:	{inSet>0}?=>	'upper'
 	;
 
 SET_LOWER
-	:	{inSet}?=>	'lower'
+	:	{inSet>0}?=>	'lower'
 	;
 	
 SET_PUNCT
-	:	{inSet}?=>	'punct'
+	:	{inSet>0}?=>	'punct'
 	;
 
 SET_HEXDIGIT
-	:	{inSet}?=>	'xdigit'
+	:	{inSet>0}?=>	'xdigit'
 	;
 	
 SET_DIGIT
-	:	{inSet}?=>	'digit'
+	:	{inSet>0}?=>	'digit'
 	;
 	
 SET_WHITESPACE
-	:	{inSet}?=>	'ws'
+	:	{inSet>0}?=>	'ws'
 	;
 	
 SET_BLANK
-	:	{inSet}?=>	'blank'
+	:	{inSet>0}?=>	'blank'
 	;
 
 SET_SPACE
-	:	{inSet}?=>	'space'
+	:	{inSet>0}?=>	'space'
 	;
 	
-SET_TAB	:	{inSet}?=>	'tab'
+SET_TAB	:	{inSet>0}?=>	'tab'
 	;
 	
 SET_NEWLINE
-	:	{inSet}?=>	'newline'
+	:	{inSet>0}?=>	'newline'
 	;
 
 
 SET_RETURN
-	:	{inSet}?=>	'return'
+	:	{inSet>0}?=>	'return'
 	;
 
 
 SET_CONTROL
-	:	{inSet}?=>	'ctrl'
+	:	{inSet>0}?=>	'ctrl'
 	;	
 	
 /*
@@ -473,7 +474,7 @@ MNEMONIC
 */
 
 CLOSE_SQUARE
-	:	']'		{inSet=false;}
+	:	']'		{inSet--;} //{inSet=false;}
 	;
 
 

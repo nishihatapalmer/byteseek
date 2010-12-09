@@ -1,5 +1,3 @@
-package net.domesdaybook.expression.parser;
-
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2010-12-08 22:19:08
 
 import org.antlr.runtime.*;

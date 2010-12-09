@@ -6,8 +6,6 @@
 package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.matcher.singlebyte.BitMaskMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteClassMatcher;
 import net.domesdaybook.reader.Bytes;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +25,12 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
         }
     }
 
-    private List<SequenceMatcher> matchers;
+    private List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
     private List<ByteMatcherIndex> byteMatcherForPosition;
     private int length;
 
-    public CombinedSequenceMatcher(final String expression) {
-        fromExpression(expression);
+    public CombinedSequenceMatcher(List<SequenceMatcher> matchList) {
+        matchers.addAll(matchList);
         calculatePositions();
     }
     
@@ -96,126 +94,6 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
 
     public List<SequenceMatcher> getMatchers() {
         return matchers;
-    }
-
-    private void fromExpression(final String byteSequenceSpec) {
-        matchers = new ArrayList<SequenceMatcher>();
-        int stringPos = 0;
-        final int byteSequenceLength = byteSequenceSpec.length();
-        while ( stringPos < byteSequenceLength ) {
-            final String currentChar = byteSequenceSpec.substring( stringPos, stringPos + 1 );
-            SequenceMatcher matcher = null;
-
-            // byte class?
-            if (currentChar.equals("[")) { // Is it a byte class?
-                final int endSquareBracketPos = getClosingSetPosition(byteSequenceSpec, stringPos + 1);
-                if (endSquareBracketPos > 0) {
-                    final String byteClassSpec = byteSequenceSpec.substring(stringPos, endSquareBracketPos+1);
-                    matcher = ByteClassMatcher.fromExpression(byteClassSpec);
-                    stringPos = endSquareBracketPos + 1;
-                } else {
-                    throw new IllegalArgumentException( "No closing square bracket for byte class.");
-                }
-            }
-
-
-            // ASCII case-sensitive string?
-            else if (currentChar.equals("'")) {
-                final int closingQuote = byteSequenceSpec.indexOf("'", stringPos + 1);
-                if (closingQuote > 0 ) {
-                    final String caseSensitiveASCIIString = byteSequenceSpec.substring(stringPos+1,closingQuote);
-                    matcher = new CaseSensitiveStringMatcher(caseSensitiveASCIIString);
-                    stringPos = closingQuote + 1;
-                } else {
-                    throw new IllegalArgumentException( "No closing quote ' for case-sensitive string.");
-                }
-            }
-
-            // ASCII case-insensitive string?
-            else if (currentChar.equals("`")) {
-                final int closingQuote = byteSequenceSpec.indexOf("`", stringPos + 1);
-                if ( closingQuote > 0 ) {
-                    final String caseInsensitiveASCIIString = byteSequenceSpec.substring(stringPos+1,closingQuote);
-                    matcher = new CaseInsensitiveStringMatcher(caseInsensitiveASCIIString);
-                    stringPos = closingQuote + 1;
-                } else {
-                    throw new IllegalArgumentException( "No closing quote ` for case-insensitive string.");
-                }
-            }
-
-
-            // bitmask?
-            else if (currentChar.equals("&")) {
-                if ( stringPos + 2 < byteSequenceLength ) {
-                    final String hexBitMask = byteSequenceSpec.substring( stringPos, stringPos + 3);
-                    matcher = BitMaskMatcher.fromExpression( hexBitMask );
-                    stringPos += 3;
-                } else {
-                    throw new IllegalArgumentException( "No hex byte specified for & bit mask.");
-                }
-            }
-
-
-            // hex bytes
-            else { // might be a hex byte or sequence of hex bytes:
-                // locate the end of the hex byte sequence:
-                final int lastHexBytePos = getLastHexBytePosition(byteSequenceSpec, stringPos);
-                if (lastHexBytePos > stringPos) {
-                    final String hexBytes = byteSequenceSpec.substring(stringPos, lastHexBytePos + 1);
-                    matcher = ByteSequenceMatcher.fromExpression(hexBytes);
-                    stringPos = lastHexBytePos + 1;
-                } else {
-                    throw new IllegalArgumentException("Hex bytes not specified.");
-                }
-            }
-
-            if ( matcher != null) {
-                matchers.add(matcher);
-            }
-        }
-    }
-
-    private int getLastHexBytePosition(final String sequence, int fromPosition) {
-        int searchPosition = fromPosition;
-        while (searchPosition < sequence.length()) {
-            final Character currentChar = sequence.charAt(searchPosition);
-            if ((currentChar >= '0' && currentChar <= '9') ||
-                (currentChar >= 'a' && currentChar <= 'f') ||
-                (currentChar >= 'A' && currentChar <= 'F')) {
-                searchPosition += 1;
-            } else {
-                break;
-            }
-        }
-        return searchPosition - 1;
-    }
-
-    private int getClosingSetPosition(final String sequence, int fromPosition) {
-        int searchPosition = fromPosition;
-        boolean closingTagFound = false;
-        int openingTags = 1;
-        boolean inCaseSensitiveString = false;
-        boolean inCaseInsensitiveString = false;
-        while (searchPosition < sequence.length()) {
-            final Character currentChar = sequence.charAt(searchPosition);
-            if (inCaseSensitiveString) {
-                inCaseSensitiveString = !currentChar.equals('\'');
-            } else if (inCaseInsensitiveString) {
-                inCaseInsensitiveString = !currentChar.equals('`');
-            } else if (currentChar.equals('\'')) {
-                inCaseSensitiveString = true;
-            } else if (currentChar.equals('`')) {
-                inCaseInsensitiveString = true;
-            } else if (currentChar.equals('[')) {
-                openingTags += 1;
-            } else if (currentChar.equals(']')) {
-                openingTags -= 1;
-                closingTagFound = openingTags == 0;
-                break;
-            }
-            searchPosition += 1;
-        }
-        return closingTagFound ? searchPosition : -1;
     }
 
 }

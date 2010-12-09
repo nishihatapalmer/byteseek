@@ -18,20 +18,6 @@ public class ByteMatcher implements SequenceMatcher, SingleByteMatcher {
 
     byte byteToMatch;
 
-    public static ByteMatcher fromExpression(final String expression) {
-        if (expression.length() !=2 ) {
-            throw new IllegalArgumentException("Byte value must be two hex characters");
-        }
-        try {
-            final int byteVal = Integer.parseInt(expression, 16);
-            return new ByteMatcher((byte) (byteVal));
-        }
-        catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Expression is not a valid 2 character hex byte.");
-        }
-        
-    }
-    
     public ByteMatcher(byte value) {
         byteToMatch = value;
     }

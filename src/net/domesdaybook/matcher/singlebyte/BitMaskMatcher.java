@@ -18,7 +18,7 @@ public class BitMaskMatcher implements SequenceMatcher, SingleByteMatcher {
 
     byte mBitMaskValue;
 
-    BitMaskMatcher( final byte bitMaskValue ) {
+    public BitMaskMatcher( final byte bitMaskValue ) {
         mBitMaskValue = bitMaskValue;
     }
 
@@ -39,24 +39,6 @@ public class BitMaskMatcher implements SequenceMatcher, SingleByteMatcher {
         return 1; // bit masks are always one byte.
     }
 
-    public static BitMaskMatcher fromExpression( final String hexBitMask ) {
-
-        // Preconditions: not null or empty, begins and ends with square brackets:
-        if ( hexBitMask == null || hexBitMask.isEmpty() ||
-             !(hexBitMask.startsWith("&")) && hexBitMask.length() == 3) {
-            throw new IllegalArgumentException("Invalid bitmask.");
-        }
-        
-        BitMaskMatcher matcher = null;
-        try {
-            final byte value  = (byte) ( 0xFF & Integer.parseInt(hexBitMask.substring(1),16));
-            matcher = new BitMaskMatcher( value );
-        }
-        catch ( NumberFormatException num ) {
-            throw new IllegalArgumentException( "Bit mask not specified as & hex byte.");
-        }
-        return matcher;
-    }
 
     @Override
     public String toRegularExpression(boolean prettyPrint) {
