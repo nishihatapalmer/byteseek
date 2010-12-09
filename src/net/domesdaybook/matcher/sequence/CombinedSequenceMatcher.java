@@ -79,7 +79,7 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
         for ( int matcherIndex = 0, lastMatcher = matchers.size();
             matcherIndex < lastMatcher; matcherIndex++ ) {
            final SequenceMatcher matcher = matchers.get(matcherIndex);
-           regularExpression.append( matcher.toRegularExpression( prettyPrint ) );
+           regularExpression.append(matcher.toRegularExpression(prettyPrint));
         }
         return regularExpression.toString();
     }

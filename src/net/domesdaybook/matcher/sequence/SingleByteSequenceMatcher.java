@@ -49,7 +49,11 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
 
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        StringBuilder builder = new StringBuilder();
+        for (SingleByteMatcher matcher : matcherSequence) {
+            builder.append(matcher.toRegularExpression(prettyPrint));
+        }
+        return builder.toString();
     }
 
 }
