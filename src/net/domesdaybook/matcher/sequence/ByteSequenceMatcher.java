@@ -16,49 +16,47 @@ import net.domesdaybook.reader.Bytes;
  */
 public class ByteSequenceMatcher implements SequenceMatcher {
 
-    private final byte[] mByteArray;
-    //private final byte[] mBuffer;
-    private final int mByteSequenceLength;
+    private final byte[] byteArray;
+    private final int length;
+
 
     public ByteSequenceMatcher( final byte[] byteArray ) {
         // Preconditions byteArray is not null:
         if ( byteArray == null ) {
             throw new IllegalArgumentException("Null byte array passed in to ByteHexMatcher");
         }
-        mByteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
-        mByteSequenceLength = mByteArray.length;
+        this.byteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
+        length = byteArray.length;
     }
+
 
     @Override
     public final boolean matchesBytes(final Bytes reader, final long matchFrom) {
         boolean result = true;
-        final byte[] localArray = mByteArray;
-        final int localStop = mByteSequenceLength;
+        final byte[] localArray = byteArray;
+        final int localStop = length;
         for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
             result = ( localArray[byteIndex] == reader.getByte( matchFrom + byteIndex ));
         }
         return result;
-  /*
-        theIDFile.getBytes( matchFrom, mByteSequenceLength, mBuffer);
-        return java.util.Arrays.equals( mByteArray, mBuffer );
-  */
     }
 
+    
     @Override
     public final int length() {
-        return mByteSequenceLength;
+        return length;
     }
 
 
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
-        return Utilities.bytesToString(prettyPrint, mByteArray);
+        return Utilities.bytesToString(prettyPrint, byteArray);
     }
 
 
     @Override
     public SingleByteMatcher getByteMatcherForPosition(int position) {
-        return new ByteMatcher(mByteArray[position]);
+        return new ByteMatcher(byteArray[position]);
     }
 
 }

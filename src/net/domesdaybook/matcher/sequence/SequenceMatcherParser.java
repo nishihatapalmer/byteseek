@@ -10,16 +10,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
-import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
-import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
-import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteClassMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteClassRangeMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteClassSetMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
+import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 /**
  *
@@ -27,33 +23,36 @@ import net.domesdaybook.matcher.singlebyte.ByteMatcher;
  */
 public class SequenceMatcherParser {
 
-    public static SequenceMatcher fromExpression(final String expression) {
-        return new CombinedSequenceMatcher(matchListFromExpression(expression));
+    // static utility class - private constructor to prevent instantiation.
+    private SequenceMatcherParser() {
     }
+
+    
+    public static SequenceMatcher fromExpression(final String expression) {
+        final List<SequenceMatcher> matchers = matchListFromExpression(expression);
+        return matchers.size() == 1 // if we only have a single kind of matcher,
+               ? matchers.get(0)    // just return it
+               : new CombinedSequenceMatcher(matchers); // otherwise, return a combined sequence matcher.
+    }
+
 
     private static List<SequenceMatcher> matchListFromExpression(final String byteSequenceSpec) {
         List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
+        List<SingleByteMatcher> byteMatchers = new ArrayList<SingleByteMatcher>();
         int stringPos = 0;
         final int byteSequenceLength = byteSequenceSpec.length();
         while ( stringPos < byteSequenceLength ) {
             final String currentChar = byteSequenceSpec.substring( stringPos, stringPos + 1 );
             SequenceMatcher matcher = null;
 
-            // byte class?
-            if (currentChar.equals("[")) { // Is it a byte class?
-                final int endSquareBracketPos = getClosingSetPosition(byteSequenceSpec, stringPos + 1);
-                if (endSquareBracketPos > 0) {
-                    final String byteClassSpec = byteSequenceSpec.substring(stringPos, endSquareBracketPos+1);
-                    matcher = byteClassFromExpression(byteClassSpec);
-                    stringPos = endSquareBracketPos + 1;
-                } else {
-                    throw new IllegalArgumentException( "No closing square bracket for byte class.");
-                }
-            }
-
-
             // ASCII case-sensitive string?
-            else if (currentChar.equals("'")) {
+            if (currentChar.equals("'")) {
+
+                if (byteMatchers.size() > 0) {
+                    matchers.add(new SingleByteSequenceMatcher(byteMatchers));
+                    byteMatchers = new ArrayList<SingleByteMatcher>();
+                }
+
                 final int closingQuote = byteSequenceSpec.indexOf("'", stringPos + 1);
                 if (closingQuote > 0 ) {
                     final String caseSensitiveASCIIString = byteSequenceSpec.substring(stringPos+1,closingQuote);
@@ -66,6 +65,12 @@ public class SequenceMatcherParser {
 
             // ASCII case-insensitive string?
             else if (currentChar.equals("`")) {
+
+                if (byteMatchers.size() > 0) {
+                    matchers.add(new SingleByteSequenceMatcher(byteMatchers));
+                    byteMatchers = new ArrayList<SingleByteMatcher>();
+                }
+
                 final int closingQuote = byteSequenceSpec.indexOf("`", stringPos + 1);
                 if ( closingQuote > 0 ) {
                     final String caseInsensitiveASCIIString = byteSequenceSpec.substring(stringPos+1,closingQuote);
@@ -77,11 +82,24 @@ public class SequenceMatcherParser {
             }
 
 
+            // byte class?
+            if (currentChar.equals("[")) { // Is it a byte class?
+                final int endSquareBracketPos = getClosingSetPosition(byteSequenceSpec, stringPos + 1);
+                if (endSquareBracketPos > 0) {
+                    final String byteClassSpec = byteSequenceSpec.substring(stringPos, endSquareBracketPos+1);
+                    byteMatchers.add(byteClassFromExpression(byteClassSpec));
+                    stringPos = endSquareBracketPos + 1;
+                } else {
+                    throw new IllegalArgumentException( "No closing square bracket for byte class.");
+                }
+            }
+
+
             // bitmask?
             else if (currentChar.equals("&")) {
                 if ( stringPos + 2 < byteSequenceLength ) {
                     final String hexBitMask = byteSequenceSpec.substring( stringPos, stringPos + 3);
-                    matcher = bitmaskFromExpression(hexBitMask);
+                    byteMatchers.add(bitmaskFromExpression(hexBitMask));
                     stringPos += 3;
                 } else {
                     throw new IllegalArgumentException( "No hex byte specified for & bit mask.");
@@ -90,7 +108,13 @@ public class SequenceMatcherParser {
 
 
             // hex bytes
-            else { // might be a hex byte or sequence of hex bytes:
+            else { // must be a hex byte or sequence of hex bytes:
+
+                if (byteMatchers.size() > 0) {
+                    matchers.add(new SingleByteSequenceMatcher(byteMatchers));
+                    byteMatchers = new ArrayList<SingleByteMatcher>();
+                }
+
                 // locate the end of the hex byte sequence:
                 final int lastHexBytePos = getLastHexBytePosition(byteSequenceSpec, stringPos);
                 if (lastHexBytePos > stringPos) {
@@ -106,8 +130,14 @@ public class SequenceMatcherParser {
                 matchers.add(matcher);
             }
         }
+
+        if (byteMatchers.size() > 0) {
+            matchers.add(new SingleByteSequenceMatcher(byteMatchers));
+        }
+
         return matchers;
     }
+
 
     private static int getLastHexBytePosition(final String sequence, int fromPosition) {
         int searchPosition = fromPosition;
@@ -123,6 +153,7 @@ public class SequenceMatcherParser {
         }
         return searchPosition - 1;
     }
+
 
     private static int getClosingSetPosition(final String sequence, int fromPosition) {
         int searchPosition = fromPosition;
@@ -152,9 +183,10 @@ public class SequenceMatcherParser {
         return closingTagFound ? searchPosition : -1;
     }
 
+
     // Utility method to parse a hex byte string into a ByteValueSequenceMatcher.
     public static ByteSequenceMatcher byteSequenceFromExpression(final String hexByteString) {
-     // Preconditions: not null, empty and is an even number of chars
+        // Preconditions: not null, empty and is an even number of chars
         if ( hexByteString == null || hexByteString.isEmpty() ) {
             throw new IllegalArgumentException("Null or empty hexByteSequence.");
         }
@@ -180,6 +212,7 @@ public class SequenceMatcherParser {
         return new ByteSequenceMatcher(theBytes);
     }
 
+
     private static int parseHexByte( final String hexByte ) {
         final int result;
         final String errorMessage = "Value specified is not a hex byte.";
@@ -195,8 +228,8 @@ public class SequenceMatcherParser {
         return result;
     }
 
+    
     public static ByteClassMatcher byteClassFromExpression(final String byteClassSpec) {
-
         // Preconditions: not null or empty, begins and ends with square brackets:
         if ( byteClassSpec == null || byteClassSpec.isEmpty() ||
              !(byteClassSpec.startsWith("[") && byteClassSpec.endsWith("]")) ) {
@@ -283,6 +316,7 @@ public class SequenceMatcherParser {
 
 
     public static ByteMatcher byteFromExpression(final String expression) {
+        // Preconditions: expression is 2 hex chars.
         if (expression.length() !=2 ) {
             throw new IllegalArgumentException("Byte value must be two hex characters");
         }
@@ -297,8 +331,7 @@ public class SequenceMatcherParser {
     }
 
 
-    public static BitMaskMatcher bitmaskFromExpression( final String hexBitMask ) {
-
+    public static BitMaskMatcher bitmaskFromExpression(final String hexBitMask) {
         // Preconditions: not null or empty, begins and ends with square brackets:
         if ( hexBitMask == null || hexBitMask.isEmpty() ||
              !(hexBitMask.startsWith("&")) && hexBitMask.length() == 3) {

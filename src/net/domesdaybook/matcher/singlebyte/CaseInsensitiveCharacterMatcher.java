@@ -12,11 +12,12 @@ import net.domesdaybook.reader.Bytes;
  *
  * @author matt
  */
-public class CaseInsensitiveCharacterMatcher implements SequenceMatcher, SingleByteMatcher {
+public final class CaseInsensitiveCharacterMatcher implements SingleByteMatcher {
 
-    Character value;
-    byte[] caseValues;
-    
+    private final Character value;
+    private final byte[] caseValues;
+
+
     public CaseInsensitiveCharacterMatcher(Character value) {
         this.value = value;
         caseValues = new byte[2];
@@ -24,14 +25,9 @@ public class CaseInsensitiveCharacterMatcher implements SequenceMatcher, SingleB
         caseValues[1] = (byte) Character.toUpperCase(value);
     }
     
-    @Override
-    public boolean matchesBytes(Bytes reader, long matchFrom) {
-        final byte theByte = reader.getByte(matchFrom);
-        return (theByte == caseValues[0] || theByte == caseValues[1]);
-    }
 
     @Override
-    public boolean matchesByte(byte theByte) {
+    public boolean matchesByte(final byte theByte) {
         return (theByte == caseValues[0] || theByte == caseValues[1]);
     }
 
@@ -41,18 +37,10 @@ public class CaseInsensitiveCharacterMatcher implements SequenceMatcher, SingleB
         return caseValues;
     }
 
-    @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
-        return this;
-    }
+
 
     @Override
-    public int length() {
-        return 1;
-    }
-
-    @Override
-    public String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         return prettyPrint? " `" + value.toString() + "` " : '`' + value.toString() + '`';
     }
 

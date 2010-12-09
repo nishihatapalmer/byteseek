@@ -72,13 +72,13 @@ public class ByteClassMatcherTest {
 
     @Test
     public void testEmptyClassParse() {
-        SequenceMatcher result = SequenceMatcherParser.byteClassFromExpression("[]");
+        SingleByteMatcher result = SequenceMatcherParser.byteClassFromExpression("[]");
         assertEquals("empty byte class returns null matcher", null, result );
     }
 
     @Test
     public void testEmptyNegatedClassParse() {
-        SequenceMatcher result = SequenceMatcherParser.byteClassFromExpression("[!]");
+        SingleByteMatcher result = SequenceMatcherParser.byteClassFromExpression("[!]");
         assertEquals("empty negated byte class returns null matcher", null, result );
     }
 
@@ -107,17 +107,6 @@ public class ByteClassMatcherTest {
         SequenceMatcherParser.byteClassFromExpression("[1A:Y]");
     }
 
-    /**
-     * Test of length method, of class ByteClassMatcher.
-     */
-    @Test
-    public void testLength() {
-        SequenceMatcher matcher = SequenceMatcherParser.byteClassFromExpression("[00]");
-        assertEquals( "Testing for a length of one with a single byte class", 1, matcher.length());
-
-        matcher = SequenceMatcherParser.byteClassFromExpression("[00010203:88dead]");
-        assertEquals( "Testing for a length of one with a multiple byte class", 1, matcher.length());
-    }
 
 
     /**
@@ -164,14 +153,6 @@ public class ByteClassMatcherTest {
         assertEquals( "Testing for number of bytes in 10 byte class", 10, matcher.numBytesInClass);
     }
 
-
-    // Test use outside of file bounds:
-
-    @Test(expected=IndexOutOfBoundsException.class)
-    public void testErrorOnMatchesBytesOutsideFile() {
-        final ByteClassMatcher instance = SequenceMatcherParser.byteClassFromExpression("[01]");
-        instance.matchesBytes(bytes, 100000000L);
-    }    
 
     /**
      * Test of toRegularExpression method, of class ByteClassMatcher.

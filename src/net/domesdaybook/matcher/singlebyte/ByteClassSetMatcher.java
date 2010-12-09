@@ -5,7 +5,6 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.Bytes;
 import java.util.BitSet;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.Utilities;
@@ -14,13 +13,13 @@ import net.domesdaybook.matcher.sequence.Utilities;
  *
  * @author matt
  */
-public class ByteClassSetMatcher extends ByteClassMatcher implements SingleByteMatcher {
+public final class ByteClassSetMatcher extends ByteClassMatcher implements SingleByteMatcher {
 
-    final BitSet byteValues = new BitSet(256);
+    private final BitSet byteValues = new BitSet(256);
 
     public ByteClassSetMatcher(List<Integer> sortedValues, boolean negated) {
-        this.negated = negated;
-        for ( int valueIndex = 0; valueIndex < sortedValues.size(); valueIndex++) {
+        super(negated);
+        for (int valueIndex = 0; valueIndex < sortedValues.size(); valueIndex++) {
             final int byteValue = sortedValues.get(valueIndex);
             byteValues.set(byteValue);
         }
@@ -32,19 +31,13 @@ public class ByteClassSetMatcher extends ByteClassMatcher implements SingleByteM
     }
 
     @Override
-    public boolean matchesBytes(Bytes reader, long matchFrom) {
-        final int theByte = (int) (reader.getByte(matchFrom) & 0xFF);
-        return byteValues.get(theByte) ^ negated;
-    }
-
-    @Override
     public boolean matchesByte(byte theByte) {
         return byteValues.get(theByte) ^ negated;
     }
 
     @Override
     public String toRegularExpression(boolean prettyPrint) {
-        StringBuffer regularExpression = new StringBuffer();
+        StringBuilder regularExpression = new StringBuilder();
         if ( prettyPrint ) {
             regularExpression.append(' ');
         }
@@ -90,12 +83,5 @@ public class ByteClassSetMatcher extends ByteClassMatcher implements SingleByteM
         }
         return values;
     }
-
-    @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
-        return this;
-    }
-
-
 
 }

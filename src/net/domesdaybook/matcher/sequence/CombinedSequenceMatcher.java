@@ -16,24 +16,39 @@ import java.util.List;
  */
 public class CombinedSequenceMatcher implements SequenceMatcher {
 
-    private class ByteMatcherIndex {
-        public SequenceMatcher matcher;
-        public int offset;
-        public ByteMatcherIndex(final SequenceMatcher matcher, final int offset) {
+    private final List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
+    private final List<ByteMatcherIndex> byteMatcherForPosition = new ArrayList<ByteMatcherIndex>();
+    private final int length;
+
+    private final class ByteMatcherIndex {
+        public final SequenceMatcher matcher;
+        public final int offset;
+        ByteMatcherIndex(final SequenceMatcher matcher, final int offset) {
             this.matcher = matcher;
             this.offset= offset;
         }
     }
-
-    private List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
-    private List<ByteMatcherIndex> byteMatcherForPosition;
-    private int length;
-
-    public CombinedSequenceMatcher(List<SequenceMatcher> matchList) {
-        matchers.addAll(matchList);
-        calculatePositions();
-    }
     
+    public CombinedSequenceMatcher(final List<SequenceMatcher> matchList) {
+        matchers.addAll(matchList);
+        length = calculatePositions();
+    }
+
+    private int calculatePositions() {
+        int len = 0;
+        for ( int seqIndex = 0, stop=matchers.size(); seqIndex < stop; seqIndex++ ) {
+            final SequenceMatcher matcher = matchers.get(seqIndex);
+            final int numberOfBytes = matcher.length();
+            for (int matcherPos = 0; matcherPos < numberOfBytes; matcherPos++) {
+                ByteMatcherIndex index = new ByteMatcherIndex(matcher,matcherPos);
+                byteMatcherForPosition.add(index);
+            }
+            len += numberOfBytes;
+        }
+        return len;
+    }
+
+
     @Override
     public boolean matchesBytes(Bytes reader, long matchFrom) {
        boolean result = true;
@@ -57,6 +72,7 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
         return length;
     }
 
+    
     @Override
     public String toRegularExpression(boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
@@ -68,21 +84,6 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
         return regularExpression.toString();
     }
 
-    private void calculatePositions() {
-        length = 0;
-        byteMatcherForPosition = new ArrayList<ByteMatcherIndex>();
-        for ( int seqIndex = 0, stop=matchers.size(); seqIndex < stop; seqIndex++ ) {
-            final SequenceMatcher matcher = matchers.get(seqIndex);
-            final int numberOfBytes = matcher.length();
-            for (int matcherPos = 0; matcherPos < numberOfBytes; matcherPos++) {
-                ByteMatcherIndex index = new ByteMatcherIndex(matcher,matcherPos);
-                byteMatcherForPosition.add(index);
-            }
-            length += numberOfBytes;
-        }
-    }
-
-
 
     @Override
     public final SingleByteMatcher getByteMatcherForPosition(int position) {
@@ -92,7 +93,8 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
-    public List<SequenceMatcher> getMatchers() {
+    // package private getter for unit testing only.
+    List<SequenceMatcher> getMatchers() {
         return matchers;
     }
 

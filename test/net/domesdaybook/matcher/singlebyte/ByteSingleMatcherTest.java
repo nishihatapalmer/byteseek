@@ -93,24 +93,6 @@ public class ByteSingleMatcherTest {
 //        assertEquals("bytes matching at has one value", 1, matcher.getBytesMatchingAt(0).length);
     }
 
-    /**
-     * Test of getByteMatcherForPosition method, of class ByteSingleMatcher.
-     */
-    @Test
-    public void testGetByteMatcherForPosition() {
-        ByteMatcher matcher = new ByteMatcher((byte) -40);
-        SingleByteMatcher newMatcher = matcher.getByteMatcherForPosition(0);
-        assertEquals("single matcher returns single matcher for position 0", ByteMatcher.class, newMatcher.getClass());
-    }
-
-    /**
-     * Test of length method, of class ByteSingleMatcher.
-     */
-    @Test
-    public void testLength() {
-        ByteMatcher matcher = new ByteMatcher((byte) 27);
-        assertEquals("single matcher has length of one", 1, matcher.length());
-    }
 
     /**
      * Test of toRegularExpression method, of class ByteSingleMatcher.

@@ -14,7 +14,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  *
  * @author matt
  */
-public class BitMaskMatcher implements SequenceMatcher, SingleByteMatcher {
+public class BitMaskMatcher implements SingleByteMatcher {
 
     byte mBitMaskValue;
 
@@ -22,22 +22,12 @@ public class BitMaskMatcher implements SequenceMatcher, SingleByteMatcher {
         mBitMaskValue = bitMaskValue;
     }
 
-    @Override
-    public boolean matchesBytes(Bytes reader, long matchFrom) {
-        final byte theByte = reader.getByte(matchFrom);
-        return (theByte & mBitMaskValue ) == mBitMaskValue;
-    }
 
     @Override
     public boolean matchesByte(byte theByte) {
         return (theByte & mBitMaskValue ) == mBitMaskValue;
     }
     
-
-    @Override
-    public int length() {
-        return 1; // bit masks are always one byte.
-    }
 
 
     @Override
@@ -65,12 +55,5 @@ public class BitMaskMatcher implements SequenceMatcher, SingleByteMatcher {
         }
         return values;
     }
-
-    @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
-        return this;
-    }
-
-
 
 }

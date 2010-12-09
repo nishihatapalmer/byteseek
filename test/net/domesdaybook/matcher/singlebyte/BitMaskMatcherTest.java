@@ -77,20 +77,9 @@ public class BitMaskMatcherTest {
         matchFrom = 2L; // 3 bytes in (first byte is at position zero)
         expResult = true; // should be false - this is intentionally to fail this test
         // to prompt me to write a lot of better tests.
-        result = instance.matchesBytes(bytes, matchFrom);
+        result = instance.matchesByte((byte)0x00);
         assertEquals("Test matching nothing.", expResult, result);
 
-    }
-
-    /**
-     * Test of length method, of class BitMaskMatcher.
-     */
-    @Test
-    public void testLength() {
-        final BitMaskMatcher matcher = new BitMaskMatcher( (byte) 1 );
-        final int expResult = 1;
-        final int result = matcher.length();
-        assertEquals("Testing length on bit mask matcher.", expResult, result);
     }
 
 

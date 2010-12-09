@@ -15,36 +15,36 @@ import net.domesdaybook.reader.Bytes;
  */
 public class CaseSensitiveStringMatcher implements SequenceMatcher {
 
-
-    private final byte[] mByteArray;
+    private final byte[] byteArray;
     private final String caseSensitiveString;
-    private final int mByteSequenceLength;
+    private final int length;
 
     public CaseSensitiveStringMatcher( final String caseSensitiveASCIIString ) {
-        // Build the byte sequence:
         caseSensitiveString = caseSensitiveASCIIString;
         final int byteSequenceLength = caseSensitiveASCIIString.length();
-        mByteArray = new byte[byteSequenceLength];
+        byteArray = new byte[byteSequenceLength];
         for (int byteIndex = 0; byteIndex < byteSequenceLength; byteIndex++) {
-            mByteArray[byteIndex] = (byte) (caseSensitiveASCIIString.charAt(byteIndex));
+            byteArray[byteIndex] = (byte) (caseSensitiveASCIIString.charAt(byteIndex));
         }
-        mByteSequenceLength = mByteArray.length;
+        length = byteArray.length;
     }
+
 
     @Override
     public final boolean matchesBytes(final Bytes reader, final long matchFrom) {
         boolean result = true;
-        final byte[] localArray = mByteArray;
-        final int localStop = mByteSequenceLength;
-        for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
-            result = ( localArray[byteIndex] == reader.getByte( matchFrom + byteIndex ));
+        final byte[] localArray = byteArray;
+        final int localStop = length;
+        for (int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
+            result = localArray[byteIndex] == reader.getByte( matchFrom + byteIndex);
         }
         return result;
     }
 
+
     @Override
     public final int length() {
-        return mByteSequenceLength;
+        return length;
     }
 
 
@@ -59,7 +59,7 @@ public class CaseSensitiveStringMatcher implements SequenceMatcher {
 
     @Override
     public SingleByteMatcher getByteMatcherForPosition(int position) {
-        return new ByteMatcher(mByteArray[position]);
+        return new ByteMatcher(byteArray[position]);
     }
 
 

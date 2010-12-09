@@ -16,15 +16,16 @@ import net.domesdaybook.reader.Bytes;
  */
 public class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
-    private int stringLength;
-    private String caseInsensitiveString;
-    private SequenceMatcher[] charMatchList;
+    private final int length;
+    private final String caseInsensitiveString;
+    private final SingleByteMatcher[] charMatchList;
 
+    
     public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
         caseInsensitiveString = caseInsensitiveASCIIString;
-        charMatchList = new SequenceMatcher[caseInsensitiveASCIIString.length()];
-        stringLength = caseInsensitiveASCIIString.length();
-        for ( int charIndex = 0; charIndex < stringLength; charIndex++) {
+        length = caseInsensitiveASCIIString.length();
+        charMatchList = new SingleByteMatcher[length];
+        for (int charIndex = 0; charIndex < length; charIndex++) {
             charMatchList[charIndex] = getByteMatcherForChar(caseInsensitiveASCIIString.charAt(charIndex));
         }
     }
@@ -32,12 +33,12 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     @Override
     public final int length() {
-        return stringLength;
+        return length;
     }
 
     
-    private SequenceMatcher getByteMatcherForChar(char theChar) {
-        SequenceMatcher result;
+    private SingleByteMatcher getByteMatcherForChar(char theChar) {
+        SingleByteMatcher result;
         if ((theChar >= 'a' && theChar <= 'z') ||
             (theChar >= 'A' && theChar <= 'Z')) {
             result = new CaseInsensitiveCharacterMatcher(theChar);
@@ -56,14 +57,16 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
         return "`" + caseInsensitiveString + "`";
     }
 
+    
     @Override
     public boolean matchesBytes(Bytes reader, long matchFrom) {
         boolean result = true;
-        final SequenceMatcher[] matchList = charMatchList;
-        final int localStop = stringLength;
+        final SingleByteMatcher[] matchList = charMatchList;
+        final int localStop = length;
         for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
-            final SequenceMatcher charMatcher = matchList[byteIndex];
-            result = charMatcher.matchesBytes(reader, matchFrom + byteIndex);
+            final SingleByteMatcher charMatcher = matchList[byteIndex];
+            final byte theByte = reader.getByte(matchFrom + byteIndex);
+            result = charMatcher.matchesByte(theByte);
         }
         return result;
     }

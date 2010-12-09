@@ -21,4 +21,11 @@ public interface SingleByteMatcher {
      */
     public byte[] getMatchingBytes();
 
+
+    /**
+     *
+     * @return a string representation of a regular expression for this matcher.
+     */
+    public String toRegularExpression(final boolean prettyPrint);
+
 }

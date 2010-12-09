@@ -16,16 +16,16 @@ import net.domesdaybook.reader.Bytes;
  */
 public class SingleByteSequenceMatcher implements SequenceMatcher {
 
-    private List<SingleByteMatcher> matcherSequence = new ArrayList<SingleByteMatcher>();
-    private int length;
+    private final List<SingleByteMatcher> matcherSequence = new ArrayList<SingleByteMatcher>();
+    private final int length;
 
-    public SingleByteSequenceMatcher(List<SingleByteMatcher> sequence) {
+    public SingleByteSequenceMatcher(final List<SingleByteMatcher> sequence) {
         this.matcherSequence.addAll(sequence);
         this.length = this.matcherSequence.size();
     }
 
     @Override
-    public boolean matchesBytes(Bytes reader, long matchFrom) {
+    public boolean matchesBytes(final Bytes reader, final long matchFrom) {
         boolean result = true;
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;
@@ -38,7 +38,7 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
+    public SingleByteMatcher getByteMatcherForPosition(final int position) {
         return matcherSequence.get(position);
     }
 
@@ -48,7 +48,7 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
