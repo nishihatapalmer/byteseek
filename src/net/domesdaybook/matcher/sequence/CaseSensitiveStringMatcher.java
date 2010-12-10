@@ -58,7 +58,7 @@ public class CaseSensitiveStringMatcher implements SequenceMatcher {
 
 
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
+    public final SingleByteMatcher getByteMatcherForPosition(int position) {
         return new ByteMatcher(byteArray[position]);
     }
 

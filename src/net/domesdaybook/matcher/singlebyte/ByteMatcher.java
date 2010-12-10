@@ -23,19 +23,19 @@ public final class ByteMatcher implements SingleByteMatcher {
 
 
     @Override
-    public boolean matchesByte(final byte theByte) {
+    public final boolean matchesByte(final byte theByte) {
         return theByte == byteToMatch;
     }
 
     
     @Override
-    public byte[] getMatchingBytes() {
+    public final byte[] getMatchingBytes() {
         return new byte[] {byteToMatch};
     }
 
 
     @Override
-    public String toRegularExpression(boolean prettyPrint) {
+    public final String toRegularExpression(boolean prettyPrint) {
         final String regex = Utilities.bytesToString(prettyPrint, getMatchingBytes());
         return prettyPrint? regex + " " : regex;
     }

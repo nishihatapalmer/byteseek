@@ -37,7 +37,7 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
     
-    private SingleByteMatcher getByteMatcherForChar(char theChar) {
+    private final SingleByteMatcher getByteMatcherForChar(char theChar) {
         SingleByteMatcher result;
         if ((theChar >= 'a' && theChar <= 'z') ||
             (theChar >= 'A' && theChar <= 'Z')) {
@@ -59,7 +59,7 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     
     @Override
-    public boolean matchesBytes(Bytes reader, long matchFrom) {
+    public final boolean matchesBytes(Bytes reader, long matchFrom) {
         boolean result = true;
         final SingleByteMatcher[] matchList = charMatchList;
         final int localStop = length;
@@ -73,7 +73,7 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
 
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
+    public final SingleByteMatcher getByteMatcherForPosition(int position) {
         return (SingleByteMatcher) charMatchList[position];
     }
 

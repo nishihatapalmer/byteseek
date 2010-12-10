@@ -27,20 +27,20 @@ public final class CaseInsensitiveCharacterMatcher implements SingleByteMatcher 
     
 
     @Override
-    public boolean matchesByte(final byte theByte) {
+    public final boolean matchesByte(final byte theByte) {
         return (theByte == caseValues[0] || theByte == caseValues[1]);
     }
 
 
     @Override
-    public byte[] getMatchingBytes() {
+    public final byte[] getMatchingBytes() {
         return caseValues;
     }
 
 
 
     @Override
-    public String toRegularExpression(final boolean prettyPrint) {
+    public final String toRegularExpression(final boolean prettyPrint) {
         return prettyPrint? " `" + value.toString() + "` " : '`' + value.toString() + '`';
     }
 

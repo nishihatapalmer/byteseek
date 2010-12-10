@@ -5,10 +5,8 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.Bytes;
 import java.util.ArrayList;
 import java.util.List;
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
  *
@@ -16,7 +14,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  */
 public class BitMaskMatcher implements SingleByteMatcher {
 
-    byte mBitMaskValue;
+    final byte mBitMaskValue;
 
     public BitMaskMatcher( final byte bitMaskValue ) {
         mBitMaskValue = bitMaskValue;
@@ -24,15 +22,15 @@ public class BitMaskMatcher implements SingleByteMatcher {
 
 
     @Override
-    public boolean matchesByte(byte theByte) {
+    public final boolean matchesByte(byte theByte) {
         return (theByte & mBitMaskValue ) == mBitMaskValue;
     }
     
 
 
     @Override
-    public String toRegularExpression(boolean prettyPrint) {
-        String regEx = String.format("&%02x", (int) 0xFF & mBitMaskValue);;
+    public final String toRegularExpression(boolean prettyPrint) {
+        String regEx = String.format("&%02x", (int) 0xFF & mBitMaskValue);
         if ( prettyPrint ) {
             regEx = " " + regEx + " ";
         }
@@ -40,7 +38,7 @@ public class BitMaskMatcher implements SingleByteMatcher {
     }
 
     @Override
-    public byte[] getMatchingBytes() {
+    public final byte[] getMatchingBytes() {
         List<Integer> bytes = new ArrayList<Integer>();
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;

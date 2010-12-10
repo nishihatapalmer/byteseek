@@ -31,12 +31,12 @@ public final class ByteClassSetMatcher extends ByteClassMatcher implements Singl
     }
 
     @Override
-    public boolean matchesByte(byte theByte) {
+    public final boolean matchesByte(byte theByte) {
         return byteValues.get(theByte) ^ negated;
     }
 
     @Override
-    public String toRegularExpression(boolean prettyPrint) {
+    public final String toRegularExpression(boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
         if ( prettyPrint ) {
             regularExpression.append(' ');
@@ -73,7 +73,7 @@ public final class ByteClassSetMatcher extends ByteClassMatcher implements Singl
     }
 
     @Override
-    public byte[] getMatchingBytes() {
+    public final byte[] getMatchingBytes() {
         byte[] values = new byte[numBytesInClass];
         int byteIndex = 0;
         for (int value = 0; value < 256; value++) {

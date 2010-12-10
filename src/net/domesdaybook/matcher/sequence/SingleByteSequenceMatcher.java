@@ -25,7 +25,7 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public boolean matchesBytes(final Bytes reader, final long matchFrom) {
+    public final boolean matchesBytes(final Bytes reader, final long matchFrom) {
         boolean result = true;
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;
@@ -38,17 +38,17 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(final int position) {
+    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
         return matcherSequence.get(position);
     }
 
     @Override
-    public int length() {
+    public final int length() {
         return length;
     }
 
     @Override
-    public String toRegularExpression(final boolean prettyPrint) {
+    public final String toRegularExpression(final boolean prettyPrint) {
         StringBuilder builder = new StringBuilder();
         for (SingleByteMatcher matcher : matcherSequence) {
             builder.append(matcher.toRegularExpression(prettyPrint));

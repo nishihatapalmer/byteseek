@@ -18,11 +18,11 @@ public abstract class ByteClassMatcher implements SingleByteMatcher {
         this.negated = negated;
     }
 
-    public boolean isNegated() {
+    public final boolean isNegated() {
         return negated;
     }
 
-    public int getNumBytesInClass() {
+    public final int getNumBytesInClass() {
         return numBytesInClass;
     }
 

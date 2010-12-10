@@ -50,8 +50,8 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
 
 
     @Override
-    public boolean matchesBytes(Bytes reader, long matchFrom) {
-       boolean result = true;
+    public final boolean matchesBytes(Bytes reader, long matchFrom) {
+        boolean result = true;
         long matchAt = matchFrom;
         final List<SequenceMatcher> localList=matchers;
         for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
@@ -68,13 +68,13 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
 
 
     @Override
-    public int length() {
+    public final int length() {
         return length;
     }
 
     
     @Override
-    public String toRegularExpression(boolean prettyPrint) {
+    public final String toRegularExpression(boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
         for ( int matcherIndex = 0, lastMatcher = matchers.size();
             matcherIndex < lastMatcher; matcherIndex++ ) {
