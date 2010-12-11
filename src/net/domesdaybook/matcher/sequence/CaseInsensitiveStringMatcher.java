@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
-import net.domesdaybook.matcher.singlebyte.CaseInsensitiveCharacterMatcher;
+import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.reader.Bytes;
@@ -41,7 +41,7 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
         SingleByteMatcher result;
         if ((theChar >= 'a' && theChar <= 'z') ||
             (theChar >= 'A' && theChar <= 'Z')) {
-            result = new CaseInsensitiveCharacterMatcher(theChar);
+            result = new CaseInsensitiveByteMatcher(theChar);
         } else {
             result = new ByteMatcher((byte) theChar);
         }

@@ -22,7 +22,7 @@ public abstract class ByteClassMatcher implements SingleByteMatcher {
         return negated;
     }
 
-    public final int getNumBytesInClass() {
+    public final int getNumberOfMatchingBytes() {
         return numBytesInClass;
     }
 

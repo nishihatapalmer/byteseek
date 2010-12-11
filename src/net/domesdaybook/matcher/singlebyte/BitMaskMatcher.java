@@ -45,11 +45,11 @@ public class BitMaskMatcher implements SingleByteMatcher {
 
     @Override
     public final byte[] getMatchingBytes() {
-        List<Integer> bytes = new ArrayList<Integer>();
+        List<Byte> bytes = new ArrayList<Byte>();
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & mBitMaskValue) == mBitMaskValue) {
-                bytes.add(byteIndex);
+                bytes.add((byte) byteIndex);
             }
         }
         byte[] values = new byte[bytes.size()];
@@ -59,5 +59,15 @@ public class BitMaskMatcher implements SingleByteMatcher {
         }
         return values;
     }
+
+
+    @Override
+    public final int getNumberOfMatchingBytes() {
+        return 1 << (8-Utilities.countSetBits(mBitMaskValue));
+    }
+
+
+
+
 
 }

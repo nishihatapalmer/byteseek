@@ -120,19 +120,19 @@ public class ByteClassMatcherTest {
         // Test the simplest case of a single byte
         // (don't really need a byte class for this but it is valid)
         ByteClassMatcher matcher = SequenceMatcherParser.byteClassFromExpression( "[01]" );
-        assertEquals( "Testing parsing one hex byte gives one byte value to match", 1, matcher.getNumBytesInClass());
+        assertEquals( "Testing parsing one hex byte gives one byte value to match", 1, matcher.getNumberOfMatchingBytes());
 
         // Test two different bytes using different case for hex:
         matcher = SequenceMatcherParser.byteClassFromExpression( "[03e1]" );
-        assertEquals( "Testing parsing two hex bytes '03e1' gives two byte values to match", 2, matcher.getNumBytesInClass());
+        assertEquals( "Testing parsing two hex bytes '03e1' gives two byte values to match", 2, matcher.getNumberOfMatchingBytes());
         matcher = SequenceMatcherParser.byteClassFromExpression( "[dead]" );
-        assertEquals( "Testing parsing two hex bytes 'dead' gives two byte values to match", 2, matcher.getNumBytesInClass());
+        assertEquals( "Testing parsing two hex bytes 'dead' gives two byte values to match", 2, matcher.getNumberOfMatchingBytes());
         matcher = SequenceMatcherParser.byteClassFromExpression( "[DeAd]" );
-        assertEquals( "Testing parsing two hex bytes 'DeAd' gives two byte values to match", 2, matcher.getNumBytesInClass());
+        assertEquals( "Testing parsing two hex bytes 'DeAd' gives two byte values to match", 2, matcher.getNumberOfMatchingBytes());
 
         // Test the same byte specified twice (valid spec but redundant):
         matcher = SequenceMatcherParser.byteClassFromExpression( "[FFFF]");
-        assertEquals( "Testing parsing two equal bytes 'FFFF' gives one byte value to match", 1, matcher.getNumBytesInClass());
+        assertEquals( "Testing parsing two equal bytes 'FFFF' gives one byte value to match", 1, matcher.getNumberOfMatchingBytes());
         
 
         // Test parsing of negation [! ...] of a byte class:

@@ -27,6 +27,13 @@ public interface SingleByteMatcher extends Matcher {
 
     /**
      *
+     * @return the number of bytes this byte matcher will match.
+     */
+    public int getNumberOfMatchingBytes();
+    
+
+    /**
+     *
      * @return a string representation of a regular expression for this matcher.
      */
     public String toRegularExpression(final boolean prettyPrint);

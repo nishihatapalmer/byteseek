@@ -23,7 +23,7 @@ public final class ByteMatcher implements SingleByteMatcher {
     }
 
     @Override
-    public boolean matches(Bytes reader, long matchFrom) {
+    public final boolean matches(Bytes reader, long matchFrom) {
         return matches(reader.getByte(matchFrom));
     }
 
@@ -43,6 +43,11 @@ public final class ByteMatcher implements SingleByteMatcher {
     public final String toRegularExpression(boolean prettyPrint) {
         final String regex = Utilities.bytesToString(prettyPrint, getMatchingBytes());
         return prettyPrint? regex + " " : regex;
+    }
+
+    @Override
+    public final int getNumberOfMatchingBytes() {
+        return 1;
     }
 
 }

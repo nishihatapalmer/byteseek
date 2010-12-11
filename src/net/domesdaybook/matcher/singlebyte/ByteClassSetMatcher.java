@@ -32,7 +32,7 @@ public final class ByteClassSetMatcher extends ByteClassMatcher implements Singl
     }
 
     @Override
-    public boolean matches(Bytes reader, long matchFrom) {
+    public final boolean matches(Bytes reader, long matchFrom) {
         return matches(reader.getByte(matchFrom));
     }  
 

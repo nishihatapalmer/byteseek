@@ -67,7 +67,7 @@ public class BitMaskMatcherTest {
      * Test of matchess method, of class BitMaskMatcher.
      */
     @Test
-    public void testmatchess() {
+    public void testmatches() {
         BitMaskMatcher instance;
         long matchFrom;
         boolean result;
@@ -105,5 +105,37 @@ public class BitMaskMatcherTest {
         assertEquals("Testing byte value 255 to pretty print regular expression", " &ff ", result);
 
     }
+
+
+    /**
+     * Test of matchess method, of class BitMaskMatcher.
+     */
+    @Test
+    public void testNumberOfMatchingBytes() {
+        BitMaskMatcher instance;
+        long matchFrom;
+        boolean result;
+        boolean expResult;
+
+        instance = new BitMaskMatcher((byte) 0x00);
+        assertEquals("00000000", 256, instance.getNumberOfMatchingBytes());
+
+        instance = new BitMaskMatcher((byte) 0xFF); 
+        assertEquals("11111111", 1, instance.getNumberOfMatchingBytes());
+
+        instance = new BitMaskMatcher((byte) 0x7F);
+        assertEquals("01111111", 2, instance.getNumberOfMatchingBytes());
+
+        instance = new BitMaskMatcher((byte) 0xFE);
+        assertEquals("11111110", 2, instance.getNumberOfMatchingBytes());
+
+        instance = new BitMaskMatcher((byte) 0x55);
+        assertEquals("01010101", 16, instance.getNumberOfMatchingBytes());
+
+        instance = new BitMaskMatcher((byte) 0xAA);
+        assertEquals("10101010", 16, instance.getNumberOfMatchingBytes());
+
+    }
+
 
 }
