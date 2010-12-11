@@ -38,33 +38,33 @@ public class ByteSingleMatcherTest {
     }
 
     /**
-     * Test of matchesBytes method, of class ByteSingleMatcher.
+     * Test of matchess method, of class ByteSingleMatcher.
      */
     @Test
-    public void testMatchesBytes() {
+    public void testmatchess() {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of matchesByte method, of class ByteSingleMatcher.
+     * Test of matches method, of class ByteSingleMatcher.
      */
     @Test
-    public void testMatchesByte() {
+    public void testmatches() {
         ByteMatcher matcher = new ByteMatcher((byte)00);
-        assertEquals("zero byte matches zero byte", true, matcher.matchesByte((byte) 0));
-        assertEquals("zero byte does not match minimum byte", false, matcher.matchesByte(Byte.MIN_VALUE));
-        assertEquals("zero byte does not match maximum byte", false, matcher.matchesByte(Byte.MAX_VALUE));
+        assertEquals("zero byte matches zero byte", true, matcher.matches((byte) 0));
+        assertEquals("zero byte does not match minimum byte", false, matcher.matches(Byte.MIN_VALUE));
+        assertEquals("zero byte does not match maximum byte", false, matcher.matches(Byte.MAX_VALUE));
 
         matcher = new ByteMatcher(Byte.MIN_VALUE);
-        assertEquals("min byte does not matche zero byte", false, matcher.matchesByte((byte) 0));
-        assertEquals("min byte does match minimum byte", true, matcher.matchesByte(Byte.MIN_VALUE));
-        assertEquals("min byte does not match maximum byte", false, matcher.matchesByte(Byte.MAX_VALUE));
+        assertEquals("min byte does not matche zero byte", false, matcher.matches((byte) 0));
+        assertEquals("min byte does match minimum byte", true, matcher.matches(Byte.MIN_VALUE));
+        assertEquals("min byte does not match maximum byte", false, matcher.matches(Byte.MAX_VALUE));
 
         matcher = new ByteMatcher(Byte.MAX_VALUE);
-        assertEquals("max byte does not matche zero byte", false, matcher.matchesByte((byte) 0));
-        assertEquals("max byte does match minimum byte", false, matcher.matchesByte(Byte.MIN_VALUE));
-        assertEquals("max byte does not match maximum byte", true, matcher.matchesByte(Byte.MAX_VALUE));
+        assertEquals("max byte does not matche zero byte", false, matcher.matches((byte) 0));
+        assertEquals("max byte does match minimum byte", false, matcher.matches(Byte.MIN_VALUE));
+        assertEquals("max byte does not match maximum byte", true, matcher.matches(Byte.MAX_VALUE));
     }
 
     /**

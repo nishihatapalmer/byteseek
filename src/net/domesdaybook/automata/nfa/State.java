@@ -11,9 +11,9 @@ import java.util.Set;
  *
  * @author matt
  */
-public class NfaState {
+public class State {
 
-    public Set<NfaState> nextStates(byte b) {
+    public Set<State> nextStates(byte b) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -25,11 +25,11 @@ public class NfaState {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void addTransition(byte aByte, NfaState nextState) {
+    public void addTransition(byte aByte, State nextState) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void addTransition(byte[] bytes, NfaState nextState) {
+    public void addTransition(byte[] bytes, State nextState) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

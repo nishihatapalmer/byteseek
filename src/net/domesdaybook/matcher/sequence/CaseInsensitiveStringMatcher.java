@@ -59,14 +59,14 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     
     @Override
-    public final boolean matchesBytes(Bytes reader, long matchFrom) {
+    public final boolean matches(Bytes reader, long matchFrom) {
         boolean result = true;
         final SingleByteMatcher[] matchList = charMatchList;
         final int localStop = length;
         for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
             final SingleByteMatcher charMatcher = matchList[byteIndex];
             final byte theByte = reader.getByte(matchFrom + byteIndex);
-            result = charMatcher.matchesByte(theByte);
+            result = charMatcher.matches(theByte);
         }
         return result;
     }

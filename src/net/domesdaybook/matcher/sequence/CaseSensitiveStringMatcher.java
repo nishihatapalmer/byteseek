@@ -31,7 +31,7 @@ public class CaseSensitiveStringMatcher implements SequenceMatcher {
 
 
     @Override
-    public final boolean matchesBytes(final Bytes reader, final long matchFrom) {
+    public final boolean matches(final Bytes reader, final long matchFrom) {
         boolean result = true;
         final byte[] localArray = byteArray;
         final int localStop = length;

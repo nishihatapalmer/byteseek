@@ -30,7 +30,7 @@ public class StateBytes extends State {
     public MatchResult findForwards(Bytes reader, long fromPosition, final long toPosition) {
         MatchResult result = null;
         if (fromPosition == toPosition) {
-            if (matcher.matchesBytes(reader, fromPosition)){
+            if (matcher.matches(reader, fromPosition)){
                 result = new MatchResult(fromPosition, matcher.length());
             }
         } else {
@@ -48,7 +48,7 @@ public class StateBytes extends State {
         MatchResult result = null;
         if (fromPosition == toPosition) {
             final long matchPosition = fromPosition - matcher.length() + 1;
-            if (matcher.matchesBytes(reader, matchPosition)){
+            if (matcher.matches(reader, matchPosition)){
                 result = new MatchResult(matchPosition, matcher.length());
             }
         } else {

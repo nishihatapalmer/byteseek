@@ -7,6 +7,7 @@ package net.domesdaybook.matcher.singlebyte;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.domesdaybook.reader.Bytes;
 
 /**
  *
@@ -20,9 +21,14 @@ public class BitMaskMatcher implements SingleByteMatcher {
         mBitMaskValue = bitMaskValue;
     }
 
+    @Override
+    public boolean matches(Bytes reader, long matchFrom) {
+        return matches(reader.getByte(matchFrom));
+    }
+
 
     @Override
-    public final boolean matchesByte(byte theByte) {
+    public final boolean matches(byte theByte) {
         return (theByte & mBitMaskValue ) == mBitMaskValue;
     }
     

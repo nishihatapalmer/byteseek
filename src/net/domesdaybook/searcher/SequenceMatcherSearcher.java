@@ -11,11 +11,11 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  *
  * @author matt
  */
-public abstract class MatcherSearcher implements Searcher {
+public abstract class SequenceMatcherSearcher implements Searcher {
 
     protected SequenceMatcher matcher;
 
-    public MatcherSearcher(final SequenceMatcher matcher) {
+    public SequenceMatcherSearcher(final SequenceMatcher matcher) {
         this.matcher = matcher;
     }
 

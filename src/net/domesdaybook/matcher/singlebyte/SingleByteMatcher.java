@@ -5,17 +5,20 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import net.domesdaybook.matcher.Matcher;
+
 /**
  *
  * @author matt
  */
-public interface SingleByteMatcher {
+public interface SingleByteMatcher extends Matcher {
 
     /*
      * @return whether a single byte matches the byte matcher.
      */
-    public boolean matchesByte(byte theByte);
+    public boolean matches(byte theByte);
 
+    
     /**
      * @return an array of all the bytes that this byte matcher could match.
      */

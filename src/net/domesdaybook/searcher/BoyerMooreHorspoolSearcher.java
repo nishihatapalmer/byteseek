@@ -14,7 +14,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  *
  * @author matt
  */
-public class BoyerMooreHorspoolSearcher extends MatcherSearcher {
+public class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
     private long[] shiftForwardFunction;
     private long[] shiftBackwardFunction;
@@ -37,7 +37,7 @@ public class BoyerMooreHorspoolSearcher extends MatcherSearcher {
 
             // Scan forwards to find a match to the last byte in the sequence:
             byte lastByte = reader.getByte(matchPosition);
-            while (!lastMatcher.matchesByte(lastByte)) {
+            while (!lastMatcher.matches(lastByte)) {
                 matchPosition += safeShifts[(int) lastByte & 0xFF];
                 if ( matchPosition <= toPosition ) {
                     lastByte = reader.getByte(matchPosition);
@@ -49,7 +49,7 @@ public class BoyerMooreHorspoolSearcher extends MatcherSearcher {
             // If we're still inside the search window, we have a matching last byte.
             // Verify whether the rest of the sequence matches at this position:
             if (matchPosition <= toPosition ) {
-                matchFound = matcher.matchesBytes(reader, matchPosition - lastBytePositionInSequence);
+                matchFound = matcher.matches(reader, matchPosition - lastBytePositionInSequence);
                 if (matchFound) {
                      break;
                 }
@@ -79,7 +79,6 @@ public class BoyerMooreHorspoolSearcher extends MatcherSearcher {
     public long searchBackwards(Bytes reader, long fromPosition, long toPosition ) {
         
         final long[] safeShifts = getBackwardShifts();
-        //final MatcherSequenceMatcher sequence = getSequence();
         final SingleByteMatcher firstMatcher = firstSingleMatcher;
         long matchPosition = fromPosition;
         boolean matchFound = false;
@@ -87,7 +86,7 @@ public class BoyerMooreHorspoolSearcher extends MatcherSearcher {
 
             // Scan for a match to the first byte in the sequence, scanning backwards from the starting position:
             byte firstByte = reader.getByte(matchPosition);
-            while (!firstMatcher.matchesByte(firstByte)) {
+            while (!firstMatcher.matches(firstByte)) {
                 matchPosition += safeShifts[(int) firstByte & 0xFF]; // shifts always add - if the search is backwards, the shift values are already negative.
                 if ( matchPosition >= toPosition ) {
                     firstByte = reader.getByte(matchPosition);
@@ -100,7 +99,7 @@ public class BoyerMooreHorspoolSearcher extends MatcherSearcher {
             // (greater than the last position we can scan backwards to)
             // we have a matching first byte - verify that the rest of the sequence matches too.
             if (matchPosition >= toPosition) {
-                matchFound = matcher.matchesBytes(reader, matchPosition);
+                matchFound = matcher.matches(reader, matchPosition);
                 if (matchFound) {
                     break;
                 }

@@ -1,6 +1,6 @@
 /* This code tests the byte value sequence matcher class.
  * DO NOT MODIFY THE FIRST LINE OF THIS FILE without also modifying
- * the test byte sequence in testMatchesBytes(), as it uses this source code
+ * the test byte sequence in testmatchess(), as it uses this source code
  * file to run its byte-matching tests against.
   */
 
@@ -98,10 +98,10 @@ public class ByteStringMatcherTest {
     }
 
     /**
-     * Test of matchesBytes method, of class ByteValueSequenceMatcher.
+     * Test of matchess method, of class ByteValueSequenceMatcher.
      */
     @Test
-    public void testMatchesBytes() {
+    public void testmatchess() {
         ByteSequenceMatcher instance;
         long matchFrom;
         boolean result;
@@ -112,13 +112,13 @@ public class ByteStringMatcherTest {
         instance = SequenceMatcherParser.byteSequenceFromExpression(fileStartHexBytes);
         matchFrom = 0L;
         expResult = true; // number of bytes in fileStartHexBytes.
-        result = instance.matchesBytes(bytes, matchFrom);
+        result = instance.matches(bytes, matchFrom);
         assertEquals("Test for a match at the start of the file.", expResult, result);
 
         // Test that we don't identify this file when starting from 1 byte in:
         matchFrom = 1L;
         expResult = false;
-        result = instance.matchesBytes(bytes, matchFrom);
+        result = instance.matches(bytes, matchFrom);
         assertEquals("Test for a failed match 1 byte from the start of the file.", expResult, result );
 
         fileStartHexBytes = "2f2a205468697320636f646500"; // "/* This code" plus a zero byte
@@ -126,7 +126,7 @@ public class ByteStringMatcherTest {
         // Test that we don't identify this file when starting from
         matchFrom = 0L;
         expResult = false;
-        result = instance.matchesBytes(bytes, matchFrom);
+        result = instance.matches(bytes, matchFrom);
         assertEquals("Test for a failed match with a zero byte on the end.", expResult, result );
 
         //TODO: need to test for bytes in the 128-255 range, as bytes are actually
@@ -137,9 +137,9 @@ public class ByteStringMatcherTest {
     }
 
     @Test(expected=IndexOutOfBoundsException.class)
-    public void testErrorOnMatchesBytesOutsideFile() {
+    public void testErrorOnmatchessOutsideFile() {
         final ByteSequenceMatcher instance = SequenceMatcherParser.byteSequenceFromExpression("010203");
-        instance.matchesBytes(bytes, 100000000L);
+        instance.matches(bytes, 100000000L);
     }
 
 }

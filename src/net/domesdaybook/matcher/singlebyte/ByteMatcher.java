@@ -6,6 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.matcher.sequence.Utilities;
+import net.domesdaybook.reader.Bytes;
 
 
 /**
@@ -21,9 +22,13 @@ public final class ByteMatcher implements SingleByteMatcher {
         byteToMatch = value;
     }
 
+    @Override
+    public boolean matches(Bytes reader, long matchFrom) {
+        return matches(reader.getByte(matchFrom));
+    }
 
     @Override
-    public final boolean matchesByte(final byte theByte) {
+    public final boolean matches(final byte theByte) {
         return theByte == byteToMatch;
     }
 

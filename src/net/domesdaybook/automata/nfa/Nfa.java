@@ -7,27 +7,28 @@ package net.domesdaybook.automata.nfa;
 
 import java.util.HashSet;
 import java.util.Set;
+import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Bytes;
 
 /**
  *
  * @author matt
  */
-public class Nfa {
+public class Nfa implements Matcher {
 
-    private NfaState firstState;
+    private State firstState;
 
 
-    public Nfa(NfaState firstState) {
+    public Nfa(State firstState) {
         this.firstState = firstState;
     }
     
-
+    @Override
     public boolean matches(final Bytes reader, final long fromPosition) {
         boolean matched = firstState.isFinal();
 
         long currentPosition = fromPosition;
-        Set<NfaState> activeStates = new HashSet<NfaState>();
+        Set<State> activeStates = new HashSet<State>();
         activeStates.add(firstState);
 
         // While we haven't matched and there are still states to process:
@@ -36,8 +37,8 @@ public class Nfa {
 
             // for each active state, check if it is a final state,
             // and get its next states given the current byte:
-            Set<NfaState> nextStates = new HashSet<NfaState>();
-            for (NfaState state : activeStates ) {
+            Set<State> nextStates = new HashSet<State>();
+            for (State state : activeStates ) {
                 matched = matched | state.isFinal();
                 nextStates.addAll(state.nextStates(currentByte));
             }

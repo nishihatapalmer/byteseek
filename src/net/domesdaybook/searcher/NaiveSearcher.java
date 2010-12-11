@@ -12,7 +12,7 @@ import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
  *
  * @author matt
  */
-public class NaiveSearcher extends MatcherSearcher {
+public class NaiveSearcher extends SequenceMatcherSearcher {
 
     public NaiveSearcher(CombinedSequenceMatcher sequence) {
         super(sequence);

@@ -25,14 +25,14 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public final boolean matchesBytes(final Bytes reader, final long matchFrom) {
+    public final boolean matches(final Bytes reader, final long matchFrom) {
         boolean result = true;
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;
         for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
             final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
             final byte byteRead = reader.getByte(matchFrom + byteIndex);
-            result = byteMatcher.matchesByte(byteRead);
+            result = byteMatcher.matches(byteRead);
         }
         return result;
     }

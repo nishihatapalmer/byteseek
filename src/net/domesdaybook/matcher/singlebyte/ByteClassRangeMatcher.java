@@ -39,7 +39,13 @@ public final class ByteClassRangeMatcher extends ByteClassMatcher implements Sin
 
 
     @Override
-    public final boolean matchesByte(byte theByte) {
+    public boolean matches(Bytes reader, long matchFrom) {
+        return matches(reader.getByte(matchFrom));
+    }
+    
+
+    @Override
+    public final boolean matches(byte theByte) {
         final boolean insideRange = (theByte >= minByteValue & theByte <= maxByteValue);
         return insideRange ^ negated;
     }

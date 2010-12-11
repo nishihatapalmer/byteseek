@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Bytes;
 
@@ -12,13 +13,7 @@ import net.domesdaybook.reader.Bytes;
  *
  * @author matt
  */
- public interface SequenceMatcher {
-
-
-    /* matches an entire sequence of bytes or not.
-     * @returns whether the byte matcher matched a sequence of bytes or not.
-    */
-    public boolean matchesBytes(final Bytes reader, final long matchFrom);
+ public interface SequenceMatcher extends Matcher {
 
     /**
      *

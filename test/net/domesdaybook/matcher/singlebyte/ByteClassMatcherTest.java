@@ -44,16 +44,16 @@ public class ByteClassMatcherTest {
     }
 
     /**
-     * Test of matchesBytes method, of class ByteClassMatcher.
+     * Test of matchess method, of class ByteClassMatcher.
      */
     @Test
-    public void testMatchesBytes() {
+    public void testmatchess() {
 
         fail("The test case is a prototype.");
     }
 
     @Test
-    public void testMatchesByte() {
+    public void testmatches() {
         fail("The test case is a prototype.");
     }
 

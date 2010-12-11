@@ -50,13 +50,13 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
 
 
     @Override
-    public final boolean matchesBytes(Bytes reader, long matchFrom) {
+    public final boolean matches(Bytes reader, long matchFrom) {
         boolean result = true;
         long matchAt = matchFrom;
         final List<SequenceMatcher> localList=matchers;
         for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
             final SequenceMatcher matcher = localList.get( matchIndex );
-            if (matcher.matchesBytes(reader, matchAt)) {
+            if (matcher.matches(reader, matchAt)) {
                 matchAt += matcher.length();
             } else {
                 result = false;

@@ -64,10 +64,10 @@ public class BitMaskMatcherTest {
 
 
     /**
-     * Test of matchesBytes method, of class BitMaskMatcher.
+     * Test of matchess method, of class BitMaskMatcher.
      */
     @Test
-    public void testMatchesBytes() {
+    public void testmatchess() {
         BitMaskMatcher instance;
         long matchFrom;
         boolean result;
@@ -77,7 +77,7 @@ public class BitMaskMatcherTest {
         matchFrom = 2L; // 3 bytes in (first byte is at position zero)
         expResult = true; // should be false - this is intentionally to fail this test
         // to prompt me to write a lot of better tests.
-        result = instance.matchesByte((byte)0x00);
+        result = instance.matches((byte)0x00);
         assertEquals("Test matching nothing.", expResult, result);
 
     }
