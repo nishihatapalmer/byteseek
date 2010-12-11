@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.nfa;
 import java.util.HashSet;
 import java.util.Set;
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -24,7 +24,7 @@ public class Nfa implements Matcher {
     }
     
     @Override
-    public boolean matches(final Bytes reader, final long fromPosition) {
+    public boolean matches(final ByteReader reader, final long fromPosition) {
         boolean matched = firstState.isFinal();
 
         long currentPosition = fromPosition;

@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.singlebyte;
 import java.util.BitSet;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.Utilities;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -32,7 +32,7 @@ public final class ByteClassSetMatcher extends ByteClassMatcher implements Singl
     }
 
     @Override
-    public final boolean matches(Bytes reader, long matchFrom) {
+    public final boolean matches(ByteReader reader, long matchFrom) {
         return matches(reader.getByte(matchFrom));
     }  
 

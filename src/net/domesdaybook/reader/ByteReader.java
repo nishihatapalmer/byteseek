@@ -9,7 +9,7 @@ package net.domesdaybook.reader;
  *
  * @author matt
  */
-public interface Bytes {
+public interface ByteReader {
 
     /**
      * Get a byte from a position

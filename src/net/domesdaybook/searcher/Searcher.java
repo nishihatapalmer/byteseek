@@ -5,7 +5,7 @@
 
 package net.domesdaybook.searcher;
 
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -13,8 +13,8 @@ import net.domesdaybook.reader.Bytes;
  */
 public interface Searcher {
 
-    public long searchForwards(final Bytes reader, final long fromPosition, final long toPosition);
+    public long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition);
 
-    public long searchBackwards(final Bytes reader, final long fromPosition, final long toPosition);
+    public long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition);
 
 }

@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.sequence;
 import java.util.ArrayList;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -25,7 +25,7 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public final boolean matches(final Bytes reader, final long matchFrom) {
+    public final boolean matches(final ByteReader reader, final long matchFrom) {
         boolean result = true;
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;

@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -25,7 +25,7 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
     }
     
     @Override
-    public final boolean matches(final Bytes reader, long matchPosition) {
+    public final boolean matches(final ByteReader reader, long matchPosition) {
         return matches(reader.getByte(matchPosition));
     }
 

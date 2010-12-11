@@ -6,7 +6,7 @@
 package net.domesdaybook.temp;
 
 import net.domesdaybook.expression.MatchResult;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.searcher.BoyerMooreHorspoolSearcher;
 import net.domesdaybook.searcher.Searcher;
@@ -27,7 +27,7 @@ public class StateBytes extends State {
     }
 
     @Override
-    public MatchResult findForwards(Bytes reader, long fromPosition, final long toPosition) {
+    public MatchResult findForwards(ByteReader reader, long fromPosition, final long toPosition) {
         MatchResult result = null;
         if (fromPosition == toPosition) {
             if (matcher.matches(reader, fromPosition)){
@@ -44,7 +44,7 @@ public class StateBytes extends State {
 
 
     @Override
-    public MatchResult findBackwards(Bytes reader, long fromPosition, final long toPosition ) {
+    public MatchResult findBackwards(ByteReader reader, long fromPosition, final long toPosition ) {
         MatchResult result = null;
         if (fromPosition == toPosition) {
             final long matchPosition = fromPosition - matcher.length() + 1;

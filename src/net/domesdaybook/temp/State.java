@@ -7,7 +7,7 @@ package net.domesdaybook.temp;
 
 import java.util.List;
 import net.domesdaybook.expression.MatchResult;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -31,8 +31,8 @@ public abstract class State  {
         nextState.previousStates.add(this);
     }
     
-    public abstract MatchResult findForwards(final Bytes reader, final long fromPosition, final long toPosition);
+    public abstract MatchResult findForwards(final ByteReader reader, final long fromPosition, final long toPosition);
 
-    public abstract MatchResult findBackwards(final Bytes reader, final long fromPosition,final long toPosition);
+    public abstract MatchResult findBackwards(final ByteReader reader, final long fromPosition,final long toPosition);
 
 }

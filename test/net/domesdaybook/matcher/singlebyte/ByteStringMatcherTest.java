@@ -7,7 +7,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcherParser;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import java.net.URL;
 import org.junit.After;
@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class ByteStringMatcherTest {
 
-    Bytes bytes;
+    ByteReader bytes;
    
 
     public ByteStringMatcherTest() {

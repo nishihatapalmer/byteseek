@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.sequence;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -59,7 +59,7 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     
     @Override
-    public final boolean matches(Bytes reader, long matchFrom) {
+    public final boolean matches(ByteReader reader, long matchFrom) {
         boolean result = true;
         final SingleByteMatcher[] matchList = charMatchList;
         final int localStop = length;

@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -29,7 +29,7 @@ public class AnyByteMatcher implements SingleByteMatcher {
         return prettyPrint ? " . " : ".";
     }
 
-    public final boolean matches(Bytes reader, long matchFrom) {
+    public final boolean matches(ByteReader reader, long matchFrom) {
         return matches(reader.getByte(matchFrom));
     }
 

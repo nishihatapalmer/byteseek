@@ -6,7 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcherParser;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
  */
 public class ByteClassMatcherTest {
 
-    Bytes bytes;
+    ByteReader bytes;
 
     public ByteClassMatcherTest() {
     }

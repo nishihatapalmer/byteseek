@@ -6,7 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.matcher.sequence.Utilities;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -39,7 +39,7 @@ public final class ByteClassRangeMatcher extends ByteClassMatcher implements Sin
 
 
     @Override
-    public boolean matches(Bytes reader, long matchFrom) {
+    public boolean matches(ByteReader reader, long matchFrom) {
         return matches(reader.getByte(matchFrom));
     }
     

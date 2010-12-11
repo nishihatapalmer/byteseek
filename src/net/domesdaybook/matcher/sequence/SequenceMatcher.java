@@ -7,7 +7,7 @@ package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *

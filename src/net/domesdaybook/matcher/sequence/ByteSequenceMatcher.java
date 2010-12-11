@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -31,7 +31,7 @@ public class ByteSequenceMatcher implements SequenceMatcher {
 
 
     @Override
-    public final boolean matches(final Bytes reader, final long matchFrom) {
+    public final boolean matches(final ByteReader reader, final long matchFrom) {
         boolean result = true;
         final byte[] localArray = byteArray;
         final int localStop = length;

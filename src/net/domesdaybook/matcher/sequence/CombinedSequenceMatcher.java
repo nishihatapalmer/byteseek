@@ -6,7 +6,7 @@
 package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
 
 
     @Override
-    public final boolean matches(Bytes reader, long matchFrom) {
+    public final boolean matches(ByteReader reader, long matchFrom) {
         boolean result = true;
         long matchAt = matchFrom;
         final List<SequenceMatcher> localList=matchers;

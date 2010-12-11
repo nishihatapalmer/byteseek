@@ -5,7 +5,7 @@
 
 package net.domesdaybook.searcher;
 
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
@@ -26,7 +26,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
     @Override
-    public final long searchForwards(final Bytes reader, final long fromPosition, final long toPosition ) {
+    public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
 
         final long[] safeShifts = getForwardShifts();
         final SingleByteMatcher lastMatcher = lastSingleMatcher;
@@ -76,7 +76,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
 
     @Override
-    public final long searchBackwards(final Bytes reader, final long fromPosition, final long toPosition ) {
+    public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
         
         final long[] safeShifts = getBackwardShifts();
         final SingleByteMatcher firstMatcher = firstSingleMatcher;

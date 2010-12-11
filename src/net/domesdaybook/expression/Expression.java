@@ -5,7 +5,7 @@
 
 package net.domesdaybook.expression;
 
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  *
@@ -13,7 +13,7 @@ import net.domesdaybook.reader.Bytes;
  */
 public interface Expression {
 
-    public MatchResults matchForwards(final Bytes reader, final long fromPosition );
+    public MatchResults matchForwards(final ByteReader reader, final long fromPosition );
 
-    public MatchResults matchBackwards(final Bytes reader, final long fromPosition);
+    public MatchResults matchBackwards(final ByteReader reader, final long fromPosition);
 }

@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
-import net.domesdaybook.reader.Bytes;
+import net.domesdaybook.reader.ByteReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class ByteSequenceMatcherTest {
 
-    private Bytes mByteReader;
+    private ByteReader mByteReader;
 
     public ByteSequenceMatcherTest() {
     }
