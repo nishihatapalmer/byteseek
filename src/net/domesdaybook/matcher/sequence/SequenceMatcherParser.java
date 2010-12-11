@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteClassMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteClassRangeMatcher;
@@ -83,7 +84,7 @@ public class SequenceMatcherParser {
 
 
             // byte class?
-            if (currentChar.equals("[")) { // Is it a byte class?
+            else if(currentChar.equals("[")) { // Is it a byte class?
                 final int endSquareBracketPos = getClosingSetPosition(byteSequenceSpec, stringPos + 1);
                 if (endSquareBracketPos > 0) {
                     final String byteClassSpec = byteSequenceSpec.substring(stringPos, endSquareBracketPos+1);
@@ -94,6 +95,11 @@ public class SequenceMatcherParser {
                 }
             }
 
+            
+            // any byte?
+            else if (currentChar.equals(".")) { // it is an "any" byte.
+                byteMatchers.add(new AnyByteMatcher());
+            }
 
             // bitmask?
             else if (currentChar.equals("&")) {
