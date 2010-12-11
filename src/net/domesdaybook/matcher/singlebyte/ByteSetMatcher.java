@@ -14,20 +14,15 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author matt
  */
-public final class ByteClassSetMatcher extends ByteClassMatcher implements SingleByteMatcher {
+public final class ByteSetMatcher extends NegatableMatcher implements SingleByteMatcher {
 
     private final BitSet byteValues = new BitSet(256);
 
-    public ByteClassSetMatcher(List<Integer> sortedValues, boolean negated) {
+    public ByteSetMatcher(List<Integer> sortedValues, boolean negated) {
         super(negated);
         for (int valueIndex = 0; valueIndex < sortedValues.size(); valueIndex++) {
             final int byteValue = sortedValues.get(valueIndex);
             byteValues.set(byteValue);
-        }
-        if (negated) {
-            this.numBytesInClass = 256 - sortedValues.size();
-        } else {
-            this.numBytesInClass = sortedValues.size();
         }
     }
 
@@ -80,7 +75,7 @@ public final class ByteClassSetMatcher extends ByteClassMatcher implements Singl
 
     @Override
     public final byte[] getMatchingBytes() {
-        byte[] values = new byte[numBytesInClass];
+        byte[] values = new byte[getNumberOfMatchingBytes()];
         int byteIndex = 0;
         for (int value = 0; value < 256; value++) {
             if (byteValues.get(value) ^ negated) {
@@ -88,6 +83,13 @@ public final class ByteClassSetMatcher extends ByteClassMatcher implements Singl
             }
         }
         return values;
+    }
+
+
+
+    @Override
+    public final int getNumberOfMatchingBytes() {
+        return negated ? 256 - byteValues.cardinality() : byteValues.cardinality();
     }
 
 }

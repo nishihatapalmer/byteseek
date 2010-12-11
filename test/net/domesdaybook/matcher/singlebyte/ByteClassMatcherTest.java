@@ -44,7 +44,7 @@ public class ByteClassMatcherTest {
     }
 
     /**
-     * Test of matchess method, of class ByteClassMatcher.
+     * Test of matchess method, of class NegatableMatcher.
      */
     @Test
     public void testmatchess() {
@@ -110,7 +110,7 @@ public class ByteClassMatcherTest {
 
 
     /**
-     * Test of parseByteClass method, of class ByteClassMatcher.
+     * Test of parseByteClass method, of class NegatableMatcher.
      */
     @Test
     public void testParseByteClass() {
@@ -119,7 +119,7 @@ public class ByteClassMatcherTest {
 
         // Test the simplest case of a single byte
         // (don't really need a byte class for this but it is valid)
-        ByteClassMatcher matcher = SequenceMatcherParser.byteClassFromExpression( "[01]" );
+        NegatableMatcher matcher = SequenceMatcherParser.byteClassFromExpression( "[01]" );
         assertEquals( "Testing parsing one hex byte gives one byte value to match", 1, matcher.getNumberOfMatchingBytes());
 
         // Test two different bytes using different case for hex:
@@ -155,7 +155,7 @@ public class ByteClassMatcherTest {
 
 
     /**
-     * Test of toRegularExpression method, of class ByteClassMatcher.
+     * Test of toRegularExpression method, of class NegatableMatcher.
      */
     @Test
     public void testToRegularExpression() {

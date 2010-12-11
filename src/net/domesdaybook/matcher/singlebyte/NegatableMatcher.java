@@ -9,21 +9,16 @@ package net.domesdaybook.matcher.singlebyte;
  *
  * @author matt
  */
-public abstract class ByteClassMatcher implements SingleByteMatcher {
+public abstract class NegatableMatcher implements SingleByteMatcher {
     
     protected boolean negated = false;
-    protected int numBytesInClass = 0;
 
-    public ByteClassMatcher(final boolean negated) {
+    public NegatableMatcher(final boolean negated) {
         this.negated = negated;
     }
 
     public final boolean isNegated() {
         return negated;
-    }
-
-    public final int getNumberOfMatchingBytes() {
-        return numBytesInClass;
     }
 
 }

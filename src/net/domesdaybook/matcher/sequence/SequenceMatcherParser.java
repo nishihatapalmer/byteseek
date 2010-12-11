@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Set;
 import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteClassMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteClassRangeMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteClassSetMatcher;
+import net.domesdaybook.matcher.singlebyte.NegatableMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteRangeMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteSetMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
@@ -101,6 +101,7 @@ public class SequenceMatcherParser {
                 byteMatchers.add(new AnyByteMatcher());
             }
 
+            
             // bitmask?
             else if (currentChar.equals("&")) {
                 if ( stringPos + 2 < byteSequenceLength ) {
@@ -235,7 +236,7 @@ public class SequenceMatcherParser {
     }
 
     
-    public static ByteClassMatcher byteClassFromExpression(final String byteClassSpec) {
+    public static NegatableMatcher byteClassFromExpression(final String byteClassSpec) {
         // Preconditions: not null or empty, begins and ends with square brackets:
         if ( byteClassSpec == null || byteClassSpec.isEmpty() ||
              !(byteClassSpec.startsWith("[") && byteClassSpec.endsWith("]")) ) {
@@ -300,7 +301,7 @@ public class SequenceMatcherParser {
         }
 
         // Now create a sorted list of the possible byte values:
-        ByteClassMatcher result = null;
+        NegatableMatcher result = null;
         List<Integer> sortedValues = new ArrayList<Integer>(classValues);
         if (sortedValues.size() > 0) {
             Collections.sort(sortedValues);
@@ -312,9 +313,9 @@ public class SequenceMatcherParser {
             if (lastValue - firstValue == lastValuePosition) {
                 // values lie in a contiguous range - the biggest minus the smallest is equal to
                 // the length of the (zero-indexed) list.
-                result = new ByteClassRangeMatcher(firstValue, lastValue, negated);
+                result = new ByteRangeMatcher(firstValue, lastValue, negated);
             } else { // values do not lie in a contiguous range.  Need a byte class matcher:
-                result = new ByteClassSetMatcher(sortedValues, negated);
+                result = new ByteSetMatcher(sortedValues, negated);
             }
         }
         return result;

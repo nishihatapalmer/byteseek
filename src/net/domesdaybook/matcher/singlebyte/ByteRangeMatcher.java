@@ -16,13 +16,13 @@ import net.domesdaybook.reader.ByteReader;
  * In practice, this isn't a major problem - we don't even have a single signature
  * that even uses them at present - provided for completeness, not optimisation.
  */
-public final class ByteClassRangeMatcher extends ByteClassMatcher implements SingleByteMatcher {
+public final class ByteRangeMatcher extends NegatableMatcher implements SingleByteMatcher {
 
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
 
 
-    public ByteClassRangeMatcher(final int minValue, final int maxValue, final boolean negated ) {
+    public ByteRangeMatcher(final int minValue, final int maxValue, final boolean negated ) {
         super(negated);
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
         if (minValue > maxValue || minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
@@ -30,16 +30,11 @@ public final class ByteClassRangeMatcher extends ByteClassMatcher implements Sin
         }
         minByteValue = minValue;
         maxByteValue = maxValue;
-        if (negated) {
-            this.numBytesInClass = 255 - maxByteValue + minByteValue;
-        } else {
-            this.numBytesInClass = maxByteValue - minByteValue + 1;
-        }
     }
 
 
     @Override
-    public boolean matches(ByteReader reader, long matchFrom) {
+    public final boolean matches(ByteReader reader, long matchFrom) {
         return matches(reader.getByte(matchFrom));
     }
     
@@ -72,7 +67,7 @@ public final class ByteClassRangeMatcher extends ByteClassMatcher implements Sin
 
     @Override
     public final byte[] getMatchingBytes() {
-        byte[] values = new byte[numBytesInClass];
+        byte[] values = new byte[getNumberOfMatchingBytes()];
         if (negated) {
             int byteIndex = 0;
             for (int value = 0; value < minByteValue; value++) {
@@ -90,5 +85,11 @@ public final class ByteClassRangeMatcher extends ByteClassMatcher implements Sin
         return values;
     }
 
+    
+    @Override
+    public final int getNumberOfMatchingBytes() {
+        return negated ? 255 - maxByteValue + minByteValue
+                       : maxByteValue - minByteValue + 1;
+    }
   
 }
