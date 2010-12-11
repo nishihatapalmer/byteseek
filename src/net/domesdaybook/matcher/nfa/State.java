@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.automata.nfa;
+package net.domesdaybook.matcher.nfa;
 
 import java.util.Set;
 

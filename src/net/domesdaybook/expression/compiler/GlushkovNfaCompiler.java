@@ -5,8 +5,8 @@
 
 package net.domesdaybook.expression.compiler;
 
-import net.domesdaybook.automata.nfa.Nfa;
-import net.domesdaybook.automata.nfa.State;
+import net.domesdaybook.matcher.nfa.Nfa;
+import net.domesdaybook.matcher.nfa.State;
 import net.domesdaybook.expression.parser.regularExpressionParser;
 import org.antlr.runtime.tree.CommonTree;
 
