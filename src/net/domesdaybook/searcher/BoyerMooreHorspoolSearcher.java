@@ -14,7 +14,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  *
  * @author matt
  */
-public class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
+public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
     private long[] shiftForwardFunction;
     private long[] shiftBackwardFunction;
@@ -26,7 +26,7 @@ public class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
     @Override
-    public long searchForwards(Bytes reader, long fromPosition, long toPosition ) {
+    public final long searchForwards(final Bytes reader, final long fromPosition, final long toPosition ) {
 
         final long[] safeShifts = getForwardShifts();
         final SingleByteMatcher lastMatcher = lastSingleMatcher;
@@ -76,7 +76,7 @@ public class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
 
     @Override
-    public long searchBackwards(Bytes reader, long fromPosition, long toPosition ) {
+    public final long searchBackwards(final Bytes reader, final long fromPosition, final long toPosition ) {
         
         final long[] safeShifts = getBackwardShifts();
         final SingleByteMatcher firstMatcher = firstSingleMatcher;

@@ -12,19 +12,19 @@ import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
  *
  * @author matt
  */
-public class NaiveSearcher extends SequenceMatcherSearcher {
+public final class NaiveSearcher extends SequenceMatcherSearcher {
 
     public NaiveSearcher(CombinedSequenceMatcher sequence) {
         super(sequence);
     }
 
     @Override
-    public long searchForwards(Bytes reader, long fromPosition, long toPosition ) {
+    public final long searchForwards(final Bytes reader, final long fromPosition, final long toPosition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public long searchBackwards(Bytes reader, long fromPosition, long toPosition ) {
+    public final long searchBackwards(final Bytes reader, final long fromPosition, final long toPosition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

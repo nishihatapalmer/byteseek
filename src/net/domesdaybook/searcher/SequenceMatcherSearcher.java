@@ -13,13 +13,13 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  */
 public abstract class SequenceMatcherSearcher implements Searcher {
 
-    protected SequenceMatcher matcher;
+    protected final SequenceMatcher matcher;
 
     public SequenceMatcherSearcher(final SequenceMatcher matcher) {
         this.matcher = matcher;
     }
 
-    public SequenceMatcher getMatcher() {
+    public final SequenceMatcher getMatcher() {
         return matcher;
     }
 
