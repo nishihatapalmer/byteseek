@@ -36,26 +36,26 @@ public class BitMaskMatcher implements SingleByteMatcher {
 
     @Override
     public final String toRegularExpression(boolean prettyPrint) {
-        String regEx = String.format("&%02x", (int) 0xFF & mBitMaskValue);
-        if ( prettyPrint ) {
-            regEx = " " + regEx + " ";
-        }
-        return regEx;
+        final String regEx = String.format("&%02x", (int) 0xFF & mBitMaskValue);
+        return prettyPrint ? " " + regEx + " " : regEx;
     }
 
+    
     @Override
     public final byte[] getMatchingBytes() {
-        List<Byte> bytes = new ArrayList<Byte>();
+        final List<Byte> bytes = new ArrayList<Byte>();
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & mBitMaskValue) == mBitMaskValue) {
                 bytes.add((byte) byteIndex);
             }
         }
-        byte[] values = new byte[bytes.size()];
-        for (int index = 0; index < bytes.size(); index++) {
-            int val = bytes.get(index);
-            values[index] = (byte) val;
+        final int numBytes = bytes.size();
+        final byte[] values = new byte[numBytes];
+        for (int index = 0; index < numBytes; index++) {
+            //int val = bytes.get(index);
+            //values[index] = (byte) val;
+            values[index] = bytes.get(index);
         }
         return values;
     }
@@ -65,9 +65,6 @@ public class BitMaskMatcher implements SingleByteMatcher {
     public final int getNumberOfMatchingBytes() {
         return 1 << (8-Utilities.countSetBits(mBitMaskValue));
     }
-
-
-
 
 
 }

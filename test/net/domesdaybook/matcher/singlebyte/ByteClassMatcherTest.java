@@ -7,7 +7,6 @@ package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcherParser;
 import net.domesdaybook.reader.ByteReader;
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -72,13 +71,13 @@ public class ByteClassMatcherTest {
 
     @Test
     public void testEmptyClassParse() {
-        SingleByteMatcher result = SequenceMatcherParser.byteClassFromExpression("[]");
+        NegatableMatcher result = SequenceMatcherParser.byteClassFromExpression("[]");
         assertEquals("empty byte class returns null matcher", null, result );
     }
 
     @Test
     public void testEmptyNegatedClassParse() {
-        SingleByteMatcher result = SequenceMatcherParser.byteClassFromExpression("[!]");
+        NegatableMatcher result = SequenceMatcherParser.byteClassFromExpression("[!]");
         assertEquals("empty negated byte class returns null matcher", null, result );
     }
 
@@ -138,19 +137,20 @@ public class ByteClassMatcherTest {
         // Test parsing of negation [! ...] of a byte class:
 
         matcher = SequenceMatcherParser.byteClassFromExpression( "[!00]" );
+
         assertEquals( "Testing for negation of a single byte class", true, matcher.isNegated() );
-        assertEquals( "Testing for number of bytes in negated single byte class", 255, matcher.numBytesInClass);
+        assertEquals( "Testing for number of bytes in negated single byte class", 255, matcher.getNumberOfMatchingBytes());
 
         matcher = SequenceMatcherParser.byteClassFromExpression( "[02]" );
         assertEquals( "Testing for no negation of a single byte class", false, matcher.isNegated() );
 
         matcher = SequenceMatcherParser.byteClassFromExpression( "[!00010203:88dead]" );
         assertEquals( "Testing for negation of a multiple byte class", true, matcher.isNegated() );
-        assertEquals( "Testing for number of bytes in negated 139 byte class", 117, matcher.numBytesInClass);
+        assertEquals( "Testing for number of bytes in negated 139 byte class", 117, matcher.getNumberOfMatchingBytes());
 
         matcher = SequenceMatcherParser.byteClassFromExpression("[02:040709ffee77:78]");
         assertEquals( "Testing for no negation of a multiple byte class", false, matcher.isNegated() );
-        assertEquals( "Testing for number of bytes in 10 byte class", 10, matcher.numBytesInClass);
+        assertEquals( "Testing for number of bytes in 10 byte class", 10, matcher.getNumberOfMatchingBytes());
     }
 
 

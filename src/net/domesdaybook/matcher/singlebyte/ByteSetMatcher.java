@@ -18,10 +18,10 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
 
     private final BitSet byteValues = new BitSet(256);
 
-    public ByteSetMatcher(List<Integer> sortedValues, boolean negated) {
+    public ByteSetMatcher(List<Integer> values, boolean negated) {
         super(negated);
-        for (int valueIndex = 0; valueIndex < sortedValues.size(); valueIndex++) {
-            final int byteValue = sortedValues.get(valueIndex);
+        for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
+            final int byteValue = values.get(valueIndex);
             byteValues.set(byteValue);
         }
     }

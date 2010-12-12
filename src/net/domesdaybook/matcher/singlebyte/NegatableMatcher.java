@@ -11,7 +11,7 @@ package net.domesdaybook.matcher.singlebyte;
  */
 public abstract class NegatableMatcher implements SingleByteMatcher {
     
-    protected boolean negated = false;
+    protected final boolean negated;
 
     public NegatableMatcher(final boolean negated) {
         this.negated = negated;
