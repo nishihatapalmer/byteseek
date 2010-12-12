@@ -45,35 +45,35 @@ public class BitMaskMatcherTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-         SequenceMatcherParser.bitmaskFromExpression(null);
+         SequenceMatcherParser.AllBitmaskFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyParse() {
-        SequenceMatcherParser.bitmaskFromExpression("");
+        SequenceMatcherParser.AllBitmaskFromExpression("");
     }
 
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidBitMaskParse() {
-        SequenceMatcherParser.bitmaskFromExpression("QW");
-        SequenceMatcherParser.bitmaskFromExpression("fG");
-        SequenceMatcherParser.bitmaskFromExpression("001");
-        SequenceMatcherParser.bitmaskFromExpression("dead");
+        SequenceMatcherParser.AllBitmaskFromExpression("QW");
+        SequenceMatcherParser.AllBitmaskFromExpression("fG");
+        SequenceMatcherParser.AllBitmaskFromExpression("001");
+        SequenceMatcherParser.AllBitmaskFromExpression("dead");
     }
 
 
     /**
-     * Test of matchess method, of class BitMaskMatcher.
+     * Test of matchess method, of class AllBitMaskMatcher.
      */
     @Test
     public void testmatches() {
-        BitMaskMatcher instance;
+        AllBitMaskMatcher instance;
         long matchFrom;
         boolean result;
         boolean expResult;
 
-        instance = SequenceMatcherParser.bitmaskFromExpression("&00"); // matches nothing
+        instance = SequenceMatcherParser.AllBitmaskFromExpression("&00"); // matches nothing
         matchFrom = 2L; // 3 bytes in (first byte is at position zero)
         expResult = true; // should be false - this is intentionally to fail this test
         // to prompt me to write a lot of better tests.
@@ -84,11 +84,11 @@ public class BitMaskMatcherTest {
 
 
     /**
-     * Test of toDroid4RegularExpression method, of class BitMaskMatcher.
+     * Test of toDroid4RegularExpression method, of class AllBitMaskMatcher.
      */
     @Test
     public void testtoRegularExpression() {
-        BitMaskMatcher matcher = new BitMaskMatcher( (byte) 1 );
+        AllBitMaskMatcher matcher = new AllBitMaskMatcher( (byte) 1 );
 
         String result = matcher.toRegularExpression(false);
         assertEquals("Testing byte value 1 to regular expression", "&01", result);
@@ -96,7 +96,7 @@ public class BitMaskMatcherTest {
         result = matcher.toRegularExpression(true);
         assertEquals("Testing byte value 1 to pretty print regular expression", " &01 ", result);
 
-        matcher = new BitMaskMatcher( (byte) 255 );
+        matcher = new AllBitMaskMatcher( (byte) 255 );
 
         result = matcher.toRegularExpression(false);
         assertEquals("Testing byte value 255 to regular expression", "&ff", result);
@@ -108,31 +108,31 @@ public class BitMaskMatcherTest {
 
 
     /**
-     * Test of matchess method, of class BitMaskMatcher.
+     * Test of matchess method, of class AllBitMaskMatcher.
      */
     @Test
     public void testNumberOfMatchingBytes() {
-        BitMaskMatcher instance;
+        AllBitMaskMatcher instance;
         long matchFrom;
         boolean result;
         boolean expResult;
 
-        instance = new BitMaskMatcher((byte) 0x00);
+        instance = new AllBitMaskMatcher((byte) 0x00);
         assertEquals("00000000", 256, instance.getNumberOfMatchingBytes());
 
-        instance = new BitMaskMatcher((byte) 0xFF); 
+        instance = new AllBitMaskMatcher((byte) 0xFF);
         assertEquals("11111111", 1, instance.getNumberOfMatchingBytes());
 
-        instance = new BitMaskMatcher((byte) 0x7F);
+        instance = new AllBitMaskMatcher((byte) 0x7F);
         assertEquals("01111111", 2, instance.getNumberOfMatchingBytes());
 
-        instance = new BitMaskMatcher((byte) 0xFE);
+        instance = new AllBitMaskMatcher((byte) 0xFE);
         assertEquals("11111110", 2, instance.getNumberOfMatchingBytes());
 
-        instance = new BitMaskMatcher((byte) 0x55);
+        instance = new AllBitMaskMatcher((byte) 0x55);
         assertEquals("01010101", 16, instance.getNumberOfMatchingBytes());
 
-        instance = new BitMaskMatcher((byte) 0xAA);
+        instance = new AllBitMaskMatcher((byte) 0xAA);
         assertEquals("10101010", 16, instance.getNumberOfMatchingBytes());
 
     }

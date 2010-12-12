@@ -11,7 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
-import net.domesdaybook.matcher.singlebyte.BitMaskMatcher;
+import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
+import net.domesdaybook.matcher.singlebyte.AnyBitMaskMatcher;
 import net.domesdaybook.matcher.singlebyte.NegatableMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteRangeMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteSetMatcher;
@@ -102,17 +103,27 @@ public class SequenceMatcherParser {
             }
 
             
-            // bitmask?
+            // all bitmask?
             else if (currentChar.equals("&")) {
                 if ( stringPos + 2 < byteSequenceLength ) {
                     final String hexBitMask = byteSequenceSpec.substring( stringPos, stringPos + 3);
-                    byteMatchers.add(bitmaskFromExpression(hexBitMask));
+                    byteMatchers.add(AllBitmaskFromExpression(hexBitMask));
                     stringPos += 3;
                 } else {
                     throw new IllegalArgumentException( "No hex byte specified for & bit mask.");
                 }
             }
 
+            // any bitmask?
+            else if (currentChar.equals("~")) {
+                if ( stringPos + 2 < byteSequenceLength ) {
+                    final String hexBitMask = byteSequenceSpec.substring( stringPos, stringPos + 3);
+                    byteMatchers.add(AnyBitmaskFromExpression(hexBitMask));
+                    stringPos += 3;
+                } else {
+                    throw new IllegalArgumentException( "No hex byte specified for ~ bit mask.");
+                }
+            }
 
             // hex bytes
             else { // must be a hex byte or sequence of hex bytes:
@@ -338,17 +349,36 @@ public class SequenceMatcherParser {
     }
 
 
-    public static BitMaskMatcher bitmaskFromExpression(final String hexBitMask) {
+    public static AllBitMaskMatcher AllBitmaskFromExpression(final String hexBitMask) {
         // Preconditions: not null or empty, begins and ends with square brackets:
         if ( hexBitMask == null || hexBitMask.isEmpty() ||
              !(hexBitMask.startsWith("&")) && hexBitMask.length() == 3) {
             throw new IllegalArgumentException("Invalid bitmask.");
         }
 
-        BitMaskMatcher matcher = null;
+        AllBitMaskMatcher matcher = null;
         try {
             final byte value  = (byte) ( 0xFF & Integer.parseInt(hexBitMask.substring(1),16));
-            matcher = new BitMaskMatcher( value );
+            matcher = new AllBitMaskMatcher( value );
+        }
+        catch ( NumberFormatException num ) {
+            throw new IllegalArgumentException( "Bit mask not specified as & hex byte.");
+        }
+        return matcher;
+    }
+
+
+    public static AnyBitMaskMatcher AnyBitmaskFromExpression(final String hexBitMask) {
+        // Preconditions: not null or empty, begins and ends with square brackets:
+        if ( hexBitMask == null || hexBitMask.isEmpty() ||
+             !(hexBitMask.startsWith("&")) && hexBitMask.length() == 3) {
+            throw new IllegalArgumentException("Invalid bitmask.");
+        }
+
+        AnyBitMaskMatcher matcher = null;
+        try {
+            final byte value  = (byte) ( 0xFF & Integer.parseInt(hexBitMask.substring(1),16));
+            matcher = new AnyBitMaskMatcher( value );
         }
         catch ( NumberFormatException num ) {
             throw new IllegalArgumentException( "Bit mask not specified as & hex byte.");

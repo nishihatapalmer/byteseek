@@ -13,11 +13,11 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author matt
  */
-public class BitMaskMatcher implements SingleByteMatcher {
+public class AllBitMaskMatcher implements SingleByteMatcher {
 
     final byte mBitMaskValue;
 
-    public BitMaskMatcher( final byte bitMaskValue ) {
+    public AllBitMaskMatcher( final byte bitMaskValue ) {
         mBitMaskValue = bitMaskValue;
     }
 
@@ -63,7 +63,7 @@ public class BitMaskMatcher implements SingleByteMatcher {
 
     @Override
     public final int getNumberOfMatchingBytes() {
-        return 1 << (8-Utilities.countSetBits(mBitMaskValue));
+        return BitUtilities.countBytesMatchingAllBits(mBitMaskValue);
     }
 
 
