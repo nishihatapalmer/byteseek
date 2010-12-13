@@ -25,7 +25,7 @@ public class TransitionList implements TransitionCollection {
     }
 
     @Override
-    public final void addTransition(final Transition transition) {
+    public void addTransition(final Transition transition) {
         transitions.add(transition);
     }
 

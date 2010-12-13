@@ -11,11 +11,11 @@ package net.domesdaybook.automata;
  */
 public interface State {
 
+    public int getId();
+
     public void addTransition(final Transition transition);
 
     public boolean isFinal();
-
-    public int getId();
 
 }
 
