@@ -14,5 +14,7 @@ public interface Transition {
     public State getStateForByte(final byte theByte);
 
     public State getToState();
-    
+
+    public byte[] getBytes();
+
 }

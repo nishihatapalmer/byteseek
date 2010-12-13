@@ -39,4 +39,8 @@ public class TransitionSingleByteMatcher implements Transition {
         return matcher;
     }
 
+    public byte[] getBytes() {
+        return matcher.getMatchingBytes();
+    }
+
 }
