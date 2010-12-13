@@ -5,8 +5,8 @@
 
 package net.domesdaybook.expression.compiler;
 
-import net.domesdaybook.matcher.nfa.Nfa;
-import net.domesdaybook.matcher.nfa.State;
+import net.domesdaybook.automata.nfa.NfaMatcher;
+import net.domesdaybook.automata.nfa.NfaState;
 import net.domesdaybook.expression.parser.regularExpressionParser;
 import org.antlr.runtime.tree.CommonTree;
 
@@ -16,14 +16,14 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public class GlushkovNfaCompiler {
 
-    public Nfa buildFromAbstractSyntaxTree(final CommonTree ast) {
+    public NfaMatcher buildFromAbstractSyntaxTree(final CommonTree ast) {
 
-       State firstState = buildRecursiveGlushkov(ast);
+       NfaState firstState = buildRecursiveGlushkov(ast);
 
        return null;
     }
 
-    private State buildRecursiveGlushkov(final CommonTree ast) {
+    private NfaState buildRecursiveGlushkov(final CommonTree ast) {
          
         switch (ast.getToken().getType()) {
             case (regularExpressionParser.REPEAT): {

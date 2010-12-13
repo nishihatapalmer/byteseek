@@ -24,6 +24,7 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
         this.length = this.matcherSequence.size();
     }
 
+
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
         boolean result = true;
@@ -37,16 +38,19 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
         return result;
     }
 
+
     @Override
     public final SingleByteMatcher getByteMatcherForPosition(final int position) {
         return matcherSequence.get(position);
     }
+
 
     @Override
     public final int length() {
         return length;
     }
 
+    
     @Override
     public final String toRegularExpression(final boolean prettyPrint) {
         StringBuilder builder = new StringBuilder();
