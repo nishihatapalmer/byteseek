@@ -12,15 +12,15 @@ import java.util.List;
  *
  * @author matt
  */
-public class TransitionList implements TransitionCollection {
+public class TransitionsList implements TransitionsCollection {
 
     protected final List<Transition> transitions;
 
-    public TransitionList() {
+    public TransitionsList() {
         this.transitions = new ArrayList<Transition>();
     }
     
-    public TransitionList(final List<Transition> transitions) {
+    public TransitionsList(final List<Transition> transitions) {
         this.transitions = new ArrayList<Transition>(transitions);
     }
 

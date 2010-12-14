@@ -9,19 +9,19 @@ import java.util.HashSet;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.TransitionList;
+import net.domesdaybook.automata.TransitionsList;
 
 /**
  *
  * @author matt
  */
-public class NfaTransitionList extends TransitionList implements NfaTransitionCollection {
+public class NfaTransitionsList extends TransitionsList implements NfaTransitionsCollection {
     
     @Override
-    public final Set<State> getStatesForByte(final byte theByte) {
-        final Set<State> states = new HashSet<State>();
+    public final Set<NfaState> getStatesForByte(final byte theByte) {
+        final Set<NfaState> states = new HashSet<NfaState>();
         for (Transition transition : transitions) {
-            final State stateForByte = transition.getStateForByte(theByte);
+            final NfaState stateForByte = (NfaState) transition.getStateForByte(theByte);
             if (stateForByte != null) {
                 states.add(stateForByte);
             }

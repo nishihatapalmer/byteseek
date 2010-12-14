@@ -14,6 +14,6 @@ import net.domesdaybook.automata.State;
  */
 public interface NfaState extends State {
 
-    public Set<State> nextStates(final byte theByte);
+    public Set<NfaState> nextStates(final byte theByte);
 
 }

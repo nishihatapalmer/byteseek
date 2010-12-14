@@ -7,13 +7,13 @@ package net.domesdaybook.automata.dfa;
 
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.TransitionList;
+import net.domesdaybook.automata.TransitionsList;
 
 /**
  *
  * @author matt
  */
-public class DfaTransitionList extends TransitionList implements DfaTransitionCollection {
+public class DfaTransitionsList extends TransitionsList implements DfaTransitionsCollection {
 
     @Override
     public State getStateForByte(byte b) {

@@ -5,15 +5,14 @@
 
 package net.domesdaybook.automata;
 
+import java.util.HashSet;
 import java.util.Set;
-import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.Transition;
 
 /**
  *
  * @author matt
  */
-public interface TransitionCollection {
+public interface TransitionsCollection {
 
     public void addTransition(final Transition transition);
 

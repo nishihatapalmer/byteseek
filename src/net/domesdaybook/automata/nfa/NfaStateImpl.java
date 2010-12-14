@@ -5,10 +5,7 @@
 
 package net.domesdaybook.automata.nfa;
 
-import net.domesdaybook.automata.TransitionList;
-import net.domesdaybook.automata.TransitionCollection;
 import java.util.Set;
-import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 
 /**
@@ -17,7 +14,7 @@ import net.domesdaybook.automata.Transition;
  */
 public class NfaStateImpl implements NfaState {
 
-    private final NfaTransitionCollection transitions;
+    private final NfaTransitionsCollection transitions;
     private final boolean isFinal;
     private final int stateId;
 
@@ -25,7 +22,7 @@ public class NfaStateImpl implements NfaState {
     public NfaStateImpl(final int stateId, final boolean isFinal) {
         this.stateId = stateId;
         this.isFinal = isFinal;
-        this.transitions = new NfaTransitionList();
+        this.transitions = new NfaTransitionsList();
     }
 
 
@@ -36,7 +33,7 @@ public class NfaStateImpl implements NfaState {
 
     
     @Override
-    public final Set<State> nextStates(final byte theByte) {
+    public final Set<NfaState> nextStates(final byte theByte) {
         return transitions.getStatesForByte(theByte);
     }
 
