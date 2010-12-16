@@ -22,20 +22,19 @@ public class NfaTransitionsSingle implements NfaTransitionsCollection {
     private Transition transition;
     private Set<NfaState> stateSet;
 
+    
     public NfaTransitionsSingle(final Transition transition) {
         setTransition(transition);
     }
 
+
+    @Override
     public void addTransition(final Transition transition) {
         setTransition(transition);
     }
 
-    private void setTransition(final Transition transition) {
-        this.transition = transition;
-        stateSet = new HashSet<NfaState>();
-        stateSet.add((NfaState) transition.getToState());
-    }
 
+    @Override
     public final Set<NfaState> getStatesForByte(final byte theByte) {
         final State state = transition.getStateForByte(theByte);
         if (state != null) {
@@ -44,14 +43,25 @@ public class NfaTransitionsSingle implements NfaTransitionsCollection {
         return NO_STATES;
     }
 
+
+    @Override
     public final int size() {
         return 1;
     }
 
+
+    @Override
     public Collection<Transition> getTransitions() {
         final List<Transition> result = new ArrayList<Transition>();
         result.add(transition);
         return result;
+    }
+
+
+    private void setTransition(final Transition transition) {
+        this.transition = transition;
+        stateSet = new HashSet<NfaState>();
+        stateSet.add((NfaState) transition.getToState());
     }
 
 }

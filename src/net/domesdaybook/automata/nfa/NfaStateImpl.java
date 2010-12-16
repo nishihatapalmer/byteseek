@@ -16,16 +16,17 @@ public class NfaStateImpl implements NfaState {
 
     private NfaTransitionsCollection transitions;
     private final boolean isFinal;
-    private final int stateId;
+    private final String stateId;
 
 
-    public NfaStateImpl(final int stateId, final boolean isFinal) {
+    public NfaStateImpl(final String stateId, final boolean isFinal) {
         this.stateId = stateId;
         this.isFinal = isFinal;
         this.transitions = new NfaTransitionsList();
     }
 
 
+    @Override
     public final void addTransition(final Transition transition) {
         if (transitions == null) {
             transitions = new NfaTransitionsSingle(transition);
@@ -36,18 +37,21 @@ public class NfaStateImpl implements NfaState {
         }
     }
 
-    
+
+    @Override
     public final Set<NfaState> nextStates(final byte theByte) {
         return transitions.getStatesForByte(theByte);
     }
 
 
+    @Override
     public final boolean isFinal() {
         return isFinal;
     }
 
-    
-    public final int getId() {
+
+    @Override
+    public final String getId() {
         return stateId;
     }
 

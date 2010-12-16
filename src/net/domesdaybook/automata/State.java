@@ -11,7 +11,7 @@ package net.domesdaybook.automata;
  */
 public interface State {
 
-    public int getId();
+    public String getId();
 
     public void addTransition(final Transition transition);
 

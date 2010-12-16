@@ -23,6 +23,7 @@ public class NfaMatcher implements Matcher {
         this.firstState = firstState;
     }
     
+    
     @Override
     public final boolean matches(final ByteReader reader, final long fromPosition) {
         long currentPosition = fromPosition;

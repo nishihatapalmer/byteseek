@@ -31,11 +31,13 @@ public class NfaTransitionsList implements NfaTransitionsCollection {
     }
 
 
+    @Override
     public void addTransition(final Transition transition) {
         transitions.add(transition);
     }
 
 
+    @Override
     public final Set<NfaState> getStatesForByte(final byte theByte) {
         final Set<NfaState> states = new HashSet<NfaState>();
         for (Transition transition : transitions) {
@@ -48,11 +50,13 @@ public class NfaTransitionsList implements NfaTransitionsCollection {
     }
 
 
+    @Override
     public final int size() {
         return transitions.size();
     }
 
 
+    @Override
     public Collection<Transition> getTransitions() {
         return transitions;
     }
