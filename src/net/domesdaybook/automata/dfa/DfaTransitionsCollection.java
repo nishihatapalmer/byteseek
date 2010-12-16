@@ -6,13 +6,15 @@
 package net.domesdaybook.automata.dfa;
 
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.TransitionsCollection;
+import net.domesdaybook.automata.Transition;
 
 /**
  *
  * @author matt
  */
-public interface DfaTransitionsCollection extends TransitionsCollection {
+public interface DfaTransitionsCollection {
+
+    public void addTransition(final Transition transition);
 
     public State getStateForByte(final byte b);
 

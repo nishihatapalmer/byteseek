@@ -14,7 +14,7 @@ import net.domesdaybook.automata.Transition;
  */
 public class NfaStateImpl implements NfaState {
 
-    private final NfaTransitionsCollection transitions;
+    private NfaTransitionsCollection transitions;
     private final boolean isFinal;
     private final int stateId;
 
@@ -26,25 +26,27 @@ public class NfaStateImpl implements NfaState {
     }
 
 
-    @Override
     public final void addTransition(final Transition transition) {
-        transitions.addTransition(transition);
+        if (transitions == null) {
+            transitions = new NfaTransitionsSingle(transition);
+        } else if (transitions.size() == 1) {
+            transitions = new NfaTransitionsList(transitions.getTransitions());
+        } else {
+            transitions.addTransition(transition);
+        }
     }
 
     
-    @Override
     public final Set<NfaState> nextStates(final byte theByte) {
         return transitions.getStatesForByte(theByte);
     }
 
 
-    @Override
     public final boolean isFinal() {
         return isFinal;
     }
 
     
-    @Override
     public final int getId() {
         return stateId;
     }
