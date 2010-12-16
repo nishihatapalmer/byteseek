@@ -23,24 +23,23 @@ public class TransitionSingleByteMatcher implements Transition {
     }
 
 
-    @Override
     public final State getStateForByte(byte theByte) {
         return matcher.matches(theByte) ? toState : null;
     }
 
 
-    @Override
     public final State getToState() {
         return toState;
     }
 
     
-    public final SingleByteMatcher getMatcher() {
-        return matcher;
-    }
-
     public byte[] getBytes() {
         return matcher.getMatchingBytes();
+    }
+
+
+    public final SingleByteMatcher getMatcher() {
+        return matcher;
     }
 
 }
