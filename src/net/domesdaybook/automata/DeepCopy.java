@@ -15,5 +15,5 @@ public interface DeepCopy {
 
     DeepCopy deepCopy();
 
-    DeepCopy deepCopy(Map<Object,Object> oldToNewObjects);
+    DeepCopy deepCopy(Map<DeepCopy,DeepCopy> oldToNewObjects);
 }

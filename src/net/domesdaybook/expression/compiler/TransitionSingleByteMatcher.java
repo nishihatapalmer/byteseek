@@ -5,17 +5,19 @@
 
 package net.domesdaybook.expression.compiler;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import net.domesdaybook.automata.DeepCopy;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
+import net.domesdaybook.automata.nfa.NfaState;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 /**
  *
  * @author matt
  */
-public class TransitionSingleByteMatcher implements Transition, Cloneable {
+public class TransitionSingleByteMatcher implements Transition {
 
     private final SingleByteMatcher matcher;
     private State toState;
@@ -52,15 +54,24 @@ public class TransitionSingleByteMatcher implements Transition, Cloneable {
 
 
     @Override
-    public Object clone() {
-        Object clone = null;
-        try {
-            clone = super.clone();
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(TransitionSingleByteMatcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return clone;
+    public TransitionSingleByteMatcher deepCopy() {
+        Map<DeepCopy, DeepCopy> oldToNewObjects = new HashMap<DeepCopy,DeepCopy>();
+        return deepCopy(oldToNewObjects);
     }
+
+    
+    @Override
+    public TransitionSingleByteMatcher deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        TransitionSingleByteMatcher copy = (TransitionSingleByteMatcher) oldToNewObjects.get(this);
+        if (copy == null) {
+            copy = new TransitionSingleByteMatcher(matcher, toState);
+            oldToNewObjects.put(this, copy);
+            final State copyState = toState.deepCopy(oldToNewObjects);
+            copy.setToState(copyState);
+        }
+        return copy;
+    }
+    
 
     public final SingleByteMatcher getMatcher() {
         return matcher;

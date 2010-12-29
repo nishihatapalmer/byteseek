@@ -9,7 +9,7 @@ package net.domesdaybook.automata;
  *
  * @author matt
  */
-public interface Transition {
+public interface Transition extends DeepCopy {
 
     public State getStateForByte(final byte theByte);
 

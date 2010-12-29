@@ -6,12 +6,13 @@
 package net.domesdaybook.automata;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author matt
  */
-public interface State {
+public interface State extends DeepCopy {
 
     public static boolean FINAL = true;
     public static boolean NON_FINAL = false;
@@ -25,6 +26,10 @@ public interface State {
     public List<Transition> getTransitions();
 
     public boolean isFinal();
+
+    public State deepCopy();
+
+    public State deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }
 

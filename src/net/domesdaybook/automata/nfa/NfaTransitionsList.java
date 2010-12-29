@@ -7,9 +7,12 @@ package net.domesdaybook.automata.nfa;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import net.domesdaybook.automata.DeepCopy;
 import net.domesdaybook.automata.Transition;
 
 /**
@@ -28,6 +31,11 @@ public class NfaTransitionsList implements NfaTransitions {
 
     public NfaTransitionsList(final Collection<Transition> transitions) {
         this.transitions = new ArrayList<Transition>(transitions);
+    }
+
+    
+    public NfaTransitionsList(final NfaTransitionsList other) {
+        this.transitions = new ArrayList<Transition>(other.transitions);
     }
 
 
@@ -59,6 +67,26 @@ public class NfaTransitionsList implements NfaTransitions {
     @Override
     public List<Transition> getTransitions() {
         return transitions;
+    }
+
+
+    public NfaTransitionsList deepCopy() {
+        Map<DeepCopy, DeepCopy> oldToNewObjects = new HashMap<DeepCopy, DeepCopy>();
+        return deepCopy(oldToNewObjects);
+    }
+
+
+    public NfaTransitionsList deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        NfaTransitionsList copy = (NfaTransitionsList) oldToNewObjects.get(this);
+        if (copy == null) {
+            copy = new NfaTransitionsList();
+            oldToNewObjects.put(this,copy);
+            for (Transition transition : transitions) {
+                final Transition transitionCopy = (Transition) transition.deepCopy(oldToNewObjects);
+                copy.transitions.add(transitionCopy);
+            }
+        }
+        return copy;
     }
 
 }

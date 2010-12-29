@@ -7,14 +7,16 @@ package net.domesdaybook.automata.nfa;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import net.domesdaybook.automata.DeepCopy;
 import net.domesdaybook.automata.Transition;
 
 /**
  *
  * @author matt
  */
-public interface NfaTransitions {
+public interface NfaTransitions extends DeepCopy {
 
     public final static Set<NfaState> NO_STATES = new HashSet<NfaState>();
 
@@ -25,4 +27,6 @@ public interface NfaTransitions {
     public List<Transition> getTransitions();
 
     public int size();
+
+    public NfaTransitions deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 }

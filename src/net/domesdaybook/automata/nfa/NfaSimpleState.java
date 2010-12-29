@@ -11,13 +11,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.domesdaybook.automata.DeepCopy;
 import net.domesdaybook.automata.Transition;
 
 /**
  *
  * @author matt
  */
-public class NfaSimpleState implements NfaState, Cloneable {
+public class NfaSimpleState implements NfaState {
 
     private NfaTransitions transitions;
     private boolean isFinal;
@@ -30,6 +31,12 @@ public class NfaSimpleState implements NfaState, Cloneable {
         // transition is never added - always initialised to something which
         // will give correct results (i.e. a list with no members):
         this.transitions = new NfaTransitionsList();
+    }
+
+    public NfaSimpleState(final NfaSimpleState other) {
+        this.label = other.label;
+        this.isFinal = other.isFinal;
+        this.transitions = other.transitions; // shared transitions object?
     }
 
     public NfaSimpleState() {
@@ -94,43 +101,23 @@ public class NfaSimpleState implements NfaState, Cloneable {
         return transitions.getTransitions();
     }
 
-    /**
-     *
-     * @return a deep clone copy of the automata:
-     */
+
     @Override
-    public Object clone() {
-        Map<NfaSimpleState,NfaSimpleState> oldToNewStates = new HashMap<NfaSimpleState,NfaSimpleState>();
-        return cloneDeep(oldToNewStates);
+    public NfaSimpleState deepCopy() {
+        final Map<DeepCopy, DeepCopy> oldToNewObjects = new HashMap<DeepCopy,DeepCopy>();
+        return deepCopy(oldToNewObjects);
     }
-    
-    private NfaSimpleState cloneDeep(Map<NfaSimpleState,NfaSimpleState> oldToNewStates) {
-        NfaSimpleState clone = null;
-        
-        // If we've already cloned this state, return it's clone:
-        if (oldToNewStates.containsKey(this)) {
-            clone = oldToNewStates.get(this);
-        } else { // clone this state and
-            try {
-                clone = (NfaSimpleState) super.clone();
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(NfaSimpleState.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            oldToNewStates.put(this, clone);
 
-            // Now make deep copies of all the states we have transitions to
-            // and update the transitions.
-            final List<Transition> cloneTransitions = clone.getTransitions();
-            for (Transition transition : cloneTransitions) {
-                final NfaSimpleState oldState = (NfaSimpleState) transition.getToState();
-                final NfaSimpleState clonedTransitionState = oldState.cloneDeep(oldToNewStates);
-                Transition clonedTransition = transition.clone();
-                transition.setToState(clonedTransitionState);
 
-            }
+    @Override
+    public NfaSimpleState deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        NfaSimpleState copy = (NfaSimpleState) oldToNewObjects.get(this);
+        if (copy == null) {
+            copy = new NfaSimpleState(this);
+            oldToNewObjects.put(this, copy);
+            copy.transitions = copy.transitions.deepCopy(oldToNewObjects);
         }
-
-        return clone;
+        return copy;
     }
 
 }
