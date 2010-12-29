@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.automata.nfa;
@@ -16,7 +16,7 @@ import net.domesdaybook.automata.Transition;
  *
  * @author matt
  */
-public class NfaTransitionsList implements NfaTransitionsCollection {
+public class NfaTransitionsList implements NfaTransitions {
 
     private final List<Transition> transitions;
 
@@ -57,7 +57,7 @@ public class NfaTransitionsList implements NfaTransitionsCollection {
 
 
     @Override
-    public Collection<Transition> getTransitions() {
+    public List<Transition> getTransitions() {
         return transitions;
     }
 

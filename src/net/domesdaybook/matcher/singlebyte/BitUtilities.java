@@ -1,9 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.matcher.singlebyte;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -54,6 +57,32 @@ public class BitUtilities {
         // 11111111 - 256 - 1   = 255  (no match: zero)
         // which particular bits are set or unset does not affect the calculation.
         return 256 - countBytesMatchingAllBits(bitmask);
+    }
+
+
+
+    public static List<Byte> getBytesMatchingAllBitMask(final byte bitMask) {
+        final List<Byte> bytes = new ArrayList<Byte>();
+        for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+            final byte byteValue = (byte) byteIndex;
+            if ((byteValue & bitMask) == bitMask) {
+                bytes.add((byte) byteIndex);
+            }
+        }
+        return bytes;
+    }
+
+    
+    public static List<Byte> getBytesMatchingAnyBitMask(final byte bitMask) {
+        final List<Byte> bytes = new ArrayList<Byte>();
+        // start loop at one - any bitmask matchers can never match the zero byte.
+        for (int byteIndex = 1; byteIndex < 256; byteIndex++) {
+            final byte byteValue = (byte) byteIndex;
+            if ((byteValue & bitMask) > 0) {
+                bytes.add((byte) byteIndex);
+            }
+        }
+        return bytes;
     }
     
 }

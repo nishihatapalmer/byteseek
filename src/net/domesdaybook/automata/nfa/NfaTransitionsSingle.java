@@ -1,12 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.automata.nfa;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +16,7 @@ import net.domesdaybook.automata.Transition;
  *
  * @author matt
  */
-public class NfaTransitionsSingle implements NfaTransitionsCollection {
+public class NfaTransitionsSingle implements NfaTransitions {
 
     private Transition transition;
     private Set<NfaState> stateSet;
@@ -51,7 +50,7 @@ public class NfaTransitionsSingle implements NfaTransitionsCollection {
 
 
     @Override
-    public Collection<Transition> getTransitions() {
+    public List<Transition> getTransitions() {
         final List<Transition> result = new ArrayList<Transition>();
         result.add(transition);
         return result;

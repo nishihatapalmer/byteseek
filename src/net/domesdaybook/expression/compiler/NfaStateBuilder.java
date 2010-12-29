@@ -6,14 +6,13 @@
 package net.domesdaybook.expression.compiler;
 
 import net.domesdaybook.automata.nfa.NfaState;
-import org.antlr.runtime.tree.CommonTree;
 
 /**
  *
  * @author matt
  */
-public interface NfaCompiler {
+public interface NfaStateBuilder {
 
-    public NfaState compile(final CommonTree ast);
+    public NfaState build(final boolean isFinal);
 
 }

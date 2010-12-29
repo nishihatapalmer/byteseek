@@ -45,21 +45,21 @@ public class BitMaskMatcherTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-         SequenceMatcherParser.AllBitmaskFromExpression(null);
+         SequenceMatcherParser.allBitmaskFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyParse() {
-        SequenceMatcherParser.AllBitmaskFromExpression("");
+        SequenceMatcherParser.allBitmaskFromExpression("");
     }
 
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidBitMaskParse() {
-        SequenceMatcherParser.AllBitmaskFromExpression("QW");
-        SequenceMatcherParser.AllBitmaskFromExpression("fG");
-        SequenceMatcherParser.AllBitmaskFromExpression("001");
-        SequenceMatcherParser.AllBitmaskFromExpression("dead");
+        SequenceMatcherParser.allBitmaskFromExpression("QW");
+        SequenceMatcherParser.allBitmaskFromExpression("fG");
+        SequenceMatcherParser.allBitmaskFromExpression("001");
+        SequenceMatcherParser.allBitmaskFromExpression("dead");
     }
 
 
@@ -73,7 +73,7 @@ public class BitMaskMatcherTest {
         boolean result;
         boolean expResult;
 
-        instance = SequenceMatcherParser.AllBitmaskFromExpression("&00"); // matches nothing
+        instance = SequenceMatcherParser.allBitmaskFromExpression("&00"); // matches nothing
         matchFrom = 2L; // 3 bytes in (first byte is at position zero)
         expResult = true; // should be false - this is intentionally to fail this test
         // to prompt me to write a lot of better tests.

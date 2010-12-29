@@ -9,7 +9,7 @@ import net.domesdaybook.reader.ByteReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import net.domesdaybook.matcher.singlebyte.ByteRangeMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteSetRangeMatcher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class ByteSequenceMatcherTest {
         assertEquals("Parsing a single hex byte range produces one element in the matcher list.", 1, result.size());
 
         matcher = (SequenceMatcher) result.get(0);
-        assertEquals("Parsing a single hex byte range produces a ByteRangeMatcher.", ByteRangeMatcher.class, matcher.getClass());
+        assertEquals("Parsing a single hex byte range produces a ByteRangeMatcher.", ByteSetRangeMatcher.class, matcher.getClass());
 
         byteSequenceSpec = "0A1F2B3C";
         result = ((CombinedSequenceMatcher) SequenceMatcherParser.fromExpression(byteSequenceSpec)).getMatchers();
@@ -84,7 +84,7 @@ public class ByteSequenceMatcherTest {
 
         for ( int matchIndex = 0; matchIndex < 4; matchIndex++) {
             matcher = (SequenceMatcher) result.get(matchIndex);
-            assertEquals("Parsing four hex byte ranges produces a ByteRangeMatcher.", ByteRangeMatcher.class, matcher.getClass());
+            assertEquals("Parsing four hex byte ranges produces a ByteRangeMatcher.", ByteSetRangeMatcher.class, matcher.getClass());
         }
 
         byteSequenceSpec = "010203[0A][1F][2B]0543[3C]";
@@ -95,16 +95,16 @@ public class ByteSequenceMatcherTest {
         assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteStringMatcher.", ByteSequenceMatcher.class, matcher.getClass());
         assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteStringMatcher of length 3.", 3, matcher.length());
         matcher = (SequenceMatcher) result.get(1);
-        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteRangeMatcher.class, matcher.getClass());
+        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteSetRangeMatcher.class, matcher.getClass());
         matcher = (SequenceMatcher) result.get(2);
-        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteRangeMatcher.class, matcher.getClass());
+        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteSetRangeMatcher.class, matcher.getClass());
         matcher = (SequenceMatcher) result.get(3);
-        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteRangeMatcher.class, matcher.getClass());
+        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteSetRangeMatcher.class, matcher.getClass());
         matcher = (SequenceMatcher) result.get(4);
         assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteStringMatcher.", ByteSequenceMatcher.class, matcher.getClass());
         assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteStringMatcher of length 2.", 2, matcher.length());
         matcher = (SequenceMatcher) result.get(5);
-        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteRangeMatcher.class, matcher.getClass());
+        assertEquals("Parsing a mixed sequence of hex bytes and byte ranges produces a ByteRangeMatcher.", ByteSetRangeMatcher.class, matcher.getClass());
 
     }
 

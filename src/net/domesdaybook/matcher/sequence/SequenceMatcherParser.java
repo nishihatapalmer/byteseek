@@ -1,20 +1,17 @@
 /*
- * Copyright Matt Palmer 2009-2010, All rights reserved.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  */
 
 package net.domesdaybook.matcher.sequence;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
 import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
 import net.domesdaybook.matcher.singlebyte.AnyBitMaskMatcher;
-import net.domesdaybook.matcher.singlebyte.NegatableMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteRangeMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteSetMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
@@ -89,7 +86,7 @@ public class SequenceMatcherParser {
                 final int endSquareBracketPos = getClosingSetPosition(byteSequenceSpec, stringPos + 1);
                 if (endSquareBracketPos > 0) {
                     final String byteClassSpec = byteSequenceSpec.substring(stringPos, endSquareBracketPos+1);
-                    byteMatchers.add(byteClassFromExpression(byteClassSpec));
+                    byteMatchers.add(byteSetFromExpression(byteClassSpec));
                     stringPos = endSquareBracketPos + 1;
                 } else {
                     throw new IllegalArgumentException( "No closing square bracket for byte class.");
@@ -107,7 +104,7 @@ public class SequenceMatcherParser {
             else if (currentChar.equals("&")) {
                 if ( stringPos + 2 < byteSequenceLength ) {
                     final String hexBitMask = byteSequenceSpec.substring( stringPos, stringPos + 3);
-                    byteMatchers.add(AllBitmaskFromExpression(hexBitMask));
+                    byteMatchers.add(allBitmaskFromExpression(hexBitMask));
                     stringPos += 3;
                 } else {
                     throw new IllegalArgumentException( "No hex byte specified for & bit mask.");
@@ -118,7 +115,7 @@ public class SequenceMatcherParser {
             else if (currentChar.equals("~")) {
                 if ( stringPos + 2 < byteSequenceLength ) {
                     final String hexBitMask = byteSequenceSpec.substring( stringPos, stringPos + 3);
-                    byteMatchers.add(AnyBitmaskFromExpression(hexBitMask));
+                    byteMatchers.add(anyBitmaskFromExpression(hexBitMask));
                     stringPos += 3;
                 } else {
                     throw new IllegalArgumentException( "No hex byte specified for ~ bit mask.");
@@ -247,17 +244,17 @@ public class SequenceMatcherParser {
     }
 
     
-    public static NegatableMatcher byteClassFromExpression(final String byteClassSpec) {
+    public static SingleByteMatcher byteSetFromExpression(final String byteSetSpec) {
         // Preconditions: not null or empty, begins and ends with square brackets:
-        if ( byteClassSpec == null || byteClassSpec.isEmpty() ||
-             !(byteClassSpec.startsWith("[") && byteClassSpec.endsWith("]")) ) {
+        if ( byteSetSpec == null || byteSetSpec.isEmpty() ||
+             !(byteSetSpec.startsWith("[") && byteSetSpec.endsWith("]")) ) {
             throw new IllegalArgumentException("Invalid byte class specification - missing end square bracket.");
         }
 
         // Check for class negation:
         boolean negated;
         int valuePos = 1;
-        if (byteClassSpec.charAt(valuePos) == '!' ) {
+        if (byteSetSpec.charAt(valuePos) == '!' ) {
             negated = true;
             valuePos++;
         } else {
@@ -265,12 +262,12 @@ public class SequenceMatcherParser {
         }
 
         // Build a set of all byte values to match in the class:
-        Set<Integer> classValues = new HashSet(256);
-        final int lastSequencePosition = byteClassSpec.length()-2; // don't go past closing square bracket.
+        Set<Byte> classValues = new HashSet(256);
+        final int lastSequencePosition = byteSetSpec.length()-2; // don't go past closing square bracket.
         while ( valuePos < lastSequencePosition ) {
 
             // Get a hex byte:
-            final String hexbyte = byteClassSpec.substring(valuePos, valuePos+2);
+            final String hexbyte = byteSetSpec.substring(valuePos, valuePos+2);
             int byteValue = parseHexByte( hexbyte );
             valuePos += 2;
 
@@ -278,14 +275,14 @@ public class SequenceMatcherParser {
             if ( valuePos < lastSequencePosition) {
 
                 // See if there is a range specified next:
-                if ( byteClassSpec.substring(valuePos, valuePos+1).equals(":") ) {
+                if ( byteSetSpec.substring(valuePos, valuePos+1).equals(":") ) {
                     valuePos++; // move past the colon
 
                     // If there's at least room for another 2-char hex byte:
                     if ( valuePos < lastSequencePosition ) {
 
                         // Get the other part of the range:
-                        final String maxHexByte = byteClassSpec.substring(valuePos, valuePos+2);
+                        final String maxHexByte = byteSetSpec.substring(valuePos, valuePos+2);
                         valuePos += 2;
                         int maxByteValue = parseHexByte( maxHexByte );
 
@@ -298,38 +295,20 @@ public class SequenceMatcherParser {
 
                         // add all values in the range to the byte class:
                         for ( int value = byteValue; value <= maxByteValue; value++) {
-                            classValues.add( value );
+                            classValues.add((byte) value );
                         }
                     } else {
                         throw new IllegalArgumentException("Invalid byte range specification - missing maximum range.");
                     }
                 } else { // just add the byte class value:
-                    classValues.add(byteValue);
+                    classValues.add((byte) byteValue);
                 } // CAREFUL: can't collapse the above and below adds - the logic will break.
             } else { // just add the byte class value:
-                classValues.add(byteValue);
+                classValues.add((byte) byteValue);
             }
         }
 
-        // Now create a sorted list of the possible byte values:
-        NegatableMatcher result = null;
-        List<Integer> sortedValues = new ArrayList<Integer>(classValues);
-        if (sortedValues.size() > 0) {
-            Collections.sort(sortedValues);
-
-            // Determine if all the values lie in a single range:
-            final int lastValuePosition = sortedValues.size() -1;
-            final int firstValue = sortedValues.get(0);
-            final int lastValue = sortedValues.get(lastValuePosition);
-            if (lastValue - firstValue == lastValuePosition) {
-                // values lie in a contiguous range - the biggest minus the smallest is equal to
-                // the length of the (zero-indexed) list.
-                result = new ByteRangeMatcher(firstValue, lastValue, negated);
-            } else { // values do not lie in a contiguous range.  Need a byte class matcher:
-                result = new ByteSetMatcher(sortedValues, negated);
-            }
-        }
-        return result;
+        return ByteSetMatcher.buildMatcher(classValues, negated);
     }
 
 
@@ -349,7 +328,7 @@ public class SequenceMatcherParser {
     }
 
 
-    public static AllBitMaskMatcher AllBitmaskFromExpression(final String hexBitMask) {
+    public static AllBitMaskMatcher allBitmaskFromExpression(final String hexBitMask) {
         // Preconditions: not null or empty, begins and ends with square brackets:
         if ( hexBitMask == null || hexBitMask.isEmpty() ||
              !(hexBitMask.startsWith("&")) && hexBitMask.length() == 3) {
@@ -368,7 +347,7 @@ public class SequenceMatcherParser {
     }
 
 
-    public static AnyBitMaskMatcher AnyBitmaskFromExpression(final String hexBitMask) {
+    public static AnyBitMaskMatcher anyBitmaskFromExpression(final String hexBitMask) {
         // Preconditions: not null or empty, begins and ends with square brackets:
         if ( hexBitMask == null || hexBitMask.isEmpty() ||
              !(hexBitMask.startsWith("&")) && hexBitMask.length() == 3) {

@@ -18,11 +18,11 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class ByteClassMatcherTest {
+public class ByteSetMatcherTest {
 
     ByteReader bytes;
 
-    public ByteClassMatcherTest() {
+    public ByteSetMatcherTest() {
     }
 
     @BeforeClass
@@ -60,50 +60,50 @@ public class ByteClassMatcherTest {
 
    @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-        SequenceMatcherParser.byteClassFromExpression(null);
+        SequenceMatcherParser.byteSetFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyParse() {
-        SequenceMatcherParser.byteClassFromExpression("");
+        SequenceMatcherParser.byteSetFromExpression("");
     }
 
 
     @Test
     public void testEmptyClassParse() {
-        NegatableMatcher result = SequenceMatcherParser.byteClassFromExpression("[]");
+        SingleByteMatcher result = SequenceMatcherParser.byteSetFromExpression("[]");
         assertEquals("empty byte class returns null matcher", null, result );
     }
 
     @Test
     public void testEmptyNegatedClassParse() {
-        NegatableMatcher result = SequenceMatcherParser.byteClassFromExpression("[!]");
+        SingleByteMatcher result = SequenceMatcherParser.byteSetFromExpression("[!]");
         assertEquals("empty negated byte class returns null matcher", null, result );
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNoStartingSquareBracketParse() {
-        SequenceMatcherParser.byteClassFromExpression("00]");
+        SequenceMatcherParser.byteSetFromExpression("00]");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNoEndingSquareBracketParse() {
-         SequenceMatcherParser.byteClassFromExpression("[1F:2B");
+         SequenceMatcherParser.byteSetFromExpression("[1F:2B");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidHexMinByteParse() {
-        SequenceMatcherParser.byteClassFromExpression("[QW]");
+        SequenceMatcherParser.byteSetFromExpression("[QW]");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNoColonForRangeParse() {
-        SequenceMatcherParser.byteClassFromExpression("[1A-1C]");
+        SequenceMatcherParser.byteSetFromExpression("[1A-1C]");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidHexMaxByteParse() {
-        SequenceMatcherParser.byteClassFromExpression("[1A:Y]");
+        SequenceMatcherParser.byteSetFromExpression("[1A:Y]");
     }
 
 
@@ -118,38 +118,40 @@ public class ByteClassMatcherTest {
 
         // Test the simplest case of a single byte
         // (don't really need a byte class for this but it is valid)
-        NegatableMatcher matcher = SequenceMatcherParser.byteClassFromExpression( "[01]" );
+        SingleByteMatcher matcher = SequenceMatcherParser.byteSetFromExpression( "[01]" );
         assertEquals( "Testing parsing one hex byte gives one byte value to match", 1, matcher.getNumberOfMatchingBytes());
 
         // Test two different bytes using different case for hex:
-        matcher = SequenceMatcherParser.byteClassFromExpression( "[03e1]" );
+        matcher = SequenceMatcherParser.byteSetFromExpression( "[03e1]" );
         assertEquals( "Testing parsing two hex bytes '03e1' gives two byte values to match", 2, matcher.getNumberOfMatchingBytes());
-        matcher = SequenceMatcherParser.byteClassFromExpression( "[dead]" );
+        matcher = SequenceMatcherParser.byteSetFromExpression( "[dead]" );
         assertEquals( "Testing parsing two hex bytes 'dead' gives two byte values to match", 2, matcher.getNumberOfMatchingBytes());
-        matcher = SequenceMatcherParser.byteClassFromExpression( "[DeAd]" );
+        matcher = SequenceMatcherParser.byteSetFromExpression( "[DeAd]" );
         assertEquals( "Testing parsing two hex bytes 'DeAd' gives two byte values to match", 2, matcher.getNumberOfMatchingBytes());
 
         // Test the same byte specified twice (valid spec but redundant):
-        matcher = SequenceMatcherParser.byteClassFromExpression( "[FFFF]");
+        matcher = SequenceMatcherParser.byteSetFromExpression( "[FFFF]");
         assertEquals( "Testing parsing two equal bytes 'FFFF' gives one byte value to match", 1, matcher.getNumberOfMatchingBytes());
         
 
         // Test parsing of negation [! ...] of a byte class:
 
-        matcher = SequenceMatcherParser.byteClassFromExpression( "[!00]" );
+        matcher = SequenceMatcherParser.byteSetFromExpression( "[!00]" );
 
-        assertEquals( "Testing for negation of a single byte class", true, matcher.isNegated() );
-        assertEquals( "Testing for number of bytes in negated single byte class", 255, matcher.getNumberOfMatchingBytes());
+        assertEquals( "Testing for negation of a single byte class", NegatableMatcher.class, matcher.getClass() );
+        assertEquals( "Testing for number of bytes in negated single byte set", 255, matcher.getNumberOfMatchingBytes());
 
-        matcher = SequenceMatcherParser.byteClassFromExpression( "[02]" );
-        assertEquals( "Testing for no negation of a single byte class", false, matcher.isNegated() );
 
-        matcher = SequenceMatcherParser.byteClassFromExpression( "[!00010203:88dead]" );
-        assertEquals( "Testing for negation of a multiple byte class", true, matcher.isNegated() );
+
+        matcher = SequenceMatcherParser.byteSetFromExpression( "[02]" );
+        assertEquals( "Testing for single byte matcher for a single byte set", ByteMatcher.class, matcher.getClass() );
+
+        matcher = SequenceMatcherParser.byteSetFromExpression( "[!00010203:88dead]" );
+        assertEquals( "Testing for negation of a multiple byte class", true, ((NegatableMatcher) matcher).isNegated() );
         assertEquals( "Testing for number of bytes in negated 139 byte class", 117, matcher.getNumberOfMatchingBytes());
 
-        matcher = SequenceMatcherParser.byteClassFromExpression("[02:040709ffee77:78]");
-        assertEquals( "Testing for no negation of a multiple byte class", false, matcher.isNegated() );
+        matcher = SequenceMatcherParser.byteSetFromExpression("[02:040709ffee77:78]");
+        assertEquals( "Testing for no negation of a multiple byte class", false, ((NegatableMatcher) matcher).isNegated() );
         assertEquals( "Testing for number of bytes in 10 byte class", 10, matcher.getNumberOfMatchingBytes());
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2010, All rights reserved.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  */
 
@@ -7,7 +7,6 @@ package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.ByteReader;
 
 /**
  *

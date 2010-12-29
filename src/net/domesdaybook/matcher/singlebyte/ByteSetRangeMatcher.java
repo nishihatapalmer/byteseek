@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2010, All rights reserved.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  */
 
@@ -16,17 +16,17 @@ import net.domesdaybook.reader.ByteReader;
  * In practice, this isn't a major problem - we don't even have a single signature
  * that even uses them at present - provided for completeness, not optimisation.
  */
-public final class ByteRangeMatcher extends NegatableMatcher implements SingleByteMatcher {
+public final class ByteSetRangeMatcher extends NegatableMatcher implements SingleByteMatcher {
 
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
 
 
-    public ByteRangeMatcher(final int minValue, final int maxValue, final boolean negated ) {
+    public ByteSetRangeMatcher(final int minValue, final int maxValue, final boolean negated ) {
         super(negated);
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
         if (minValue > maxValue || minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
-            throw new IllegalArgumentException("minimum or maximum values wrong way round or not between 0 and 255.");
+            throw new IllegalArgumentException("minimum and maximum values wrong way round or not between 0 and 255.");
         }
         minByteValue = minValue;
         maxByteValue = maxValue;
@@ -65,6 +65,7 @@ public final class ByteRangeMatcher extends NegatableMatcher implements SingleBy
         return regularExpression.toString();
     }
 
+    
     @Override
     public final byte[] getMatchingBytes() {
         byte[] values = new byte[getNumberOfMatchingBytes()];

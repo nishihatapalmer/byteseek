@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2010, All rights reserved.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  */
 
@@ -33,7 +33,7 @@ public class AstParser {
         }
     }
 
-
+    
     /**
      * Optimises AST tree structures:
      * 
@@ -77,6 +77,26 @@ public class AstParser {
         }
 
         return result;
+    }
+
+
+
+
+    private CommonTree parseToAbstractSyntaxTree(final String expression) throws RecognitionException {
+        ANTLRStringStream input = new ANTLRStringStream(expression);
+        regularExpressionLexer lexer = new regularExpressionLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        regularExpressionParser parser = new regularExpressionParser(tokens) {
+            @Override
+            public void emitErrorMessage(String msg) {
+                throw new ParseException(msg);
+            }
+        };
+        CommonTreeAdaptor adaptor = new CommonTreeAdaptor();
+        parser.setTreeAdaptor(adaptor);
+        regularExpressionParser.start_return ret = parser.start();
+        final CommonTree tree = (CommonTree) ret.getTree();
+        return tree;
     }
 
 
@@ -157,21 +177,5 @@ public class AstParser {
     }
 
 
-    private CommonTree parseToAbstractSyntaxTree(final String expression) throws RecognitionException {
-        ANTLRStringStream input = new ANTLRStringStream(expression);
-        regularExpressionLexer lexer = new regularExpressionLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        regularExpressionParser parser = new regularExpressionParser(tokens) {
-            @Override
-            public void emitErrorMessage(String msg) {
-                throw new ParseException(msg);
-            }
-        };
-        CommonTreeAdaptor adaptor = new CommonTreeAdaptor();
-        parser.setTreeAdaptor(adaptor);
-        regularExpressionParser.start_return ret = parser.start();
-        final CommonTree tree = (CommonTree) ret.getTree();
-        return tree;
-    }
 
 }

@@ -1,12 +1,15 @@
 /*
- * Copyright Matt Palmer 2009-2010, All rights reserved.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  */
 
 package net.domesdaybook.matcher.singlebyte;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
@@ -18,13 +21,48 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
 
     private final BitSet byteValues = new BitSet(256);
 
-    public ByteSetMatcher(List<Integer> values, boolean negated) {
+    public ByteSetMatcher(Set<Byte> values, boolean negated) {
         super(negated);
-        for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
-            final int byteValue = values.get(valueIndex);
-            byteValues.set(byteValue);
+        for (Byte b : values) {
+            byteValues.set(b);
         }
     }
+
+
+   /**
+     *
+     * @param setValues The set of byte values to match.
+     * @param negated   Whether the set values are negated or not
+     * @return A SingleByteMatcher which is optimal for that set of bytes.
+     */
+    public static SingleByteMatcher buildMatcher(Set<Byte> setValues, boolean negated) {
+        SingleByteMatcher result = null;
+
+        if (setValues.size() == 1 && !negated) {
+            for (Byte byteToMatch : setValues) {
+                result = new ByteMatcher(byteToMatch);
+            }
+        } else if (setValues.size() > 0) {
+
+            // Determine if all the values lie in a single range:
+            final List<Byte> bytes = new ArrayList<Byte>(setValues);
+            Collections.sort(bytes);
+            final int lastValuePosition = bytes.size() -1;
+            final int firstValue = bytes.get(0);
+            final int lastValue = bytes.get(lastValuePosition);
+            if (lastValue - firstValue == lastValuePosition) {  // values lie in a contiguous range
+                result = new ByteSetRangeMatcher(firstValue, lastValue, negated);
+            } else  // values do not lie in a contiguous range.
+            if (bytes.size() < 16) { // small number of bytes in set - use binary searcher:
+                result = new ByteSetBinarySearchMatcher(setValues, negated);
+            } else {
+                result = new ByteSetMatcher(setValues, negated);
+            }
+        }
+
+        return result;
+    }
+
 
     @Override
     public final boolean matches(ByteReader reader, long matchFrom) {

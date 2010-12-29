@@ -1,12 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.automata.nfa;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.Transition;
 
@@ -14,7 +14,7 @@ import net.domesdaybook.automata.Transition;
  *
  * @author matt
  */
-public interface NfaTransitionsCollection {
+public interface NfaTransitions {
 
     public final static Set<NfaState> NO_STATES = new HashSet<NfaState>();
 
@@ -22,7 +22,7 @@ public interface NfaTransitionsCollection {
 
     public Set<NfaState> getStatesForByte(final byte theByte);
 
-    public Collection<Transition> getTransitions();
+    public List<Transition> getTransitions();
 
     public int size();
 }

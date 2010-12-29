@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.automata;
@@ -14,6 +14,8 @@ public interface Transition {
     public State getStateForByte(final byte theByte);
 
     public State getToState();
+
+    public void setToState(final State toState);
 
     public byte[] getBytes();
 

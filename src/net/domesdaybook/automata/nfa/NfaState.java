@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2010, All rights reserved.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  */
 
@@ -16,4 +16,5 @@ public interface NfaState extends State {
 
     public Set<NfaState> nextStates(final byte theByte);
 
+    public void setIsFinal(final boolean isFinal);
 }
