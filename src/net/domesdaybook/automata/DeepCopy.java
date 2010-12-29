@@ -13,7 +13,5 @@ import java.util.Map;
  */
 public interface DeepCopy {
 
-    DeepCopy deepCopy();
-
     DeepCopy deepCopy(Map<DeepCopy,DeepCopy> oldToNewObjects);
 }

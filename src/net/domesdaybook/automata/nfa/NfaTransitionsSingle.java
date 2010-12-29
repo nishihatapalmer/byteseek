@@ -73,13 +73,6 @@ public class NfaTransitionsSingle implements NfaTransitions {
 
 
     @Override
-    public NfaTransitionsSingle deepCopy() {
-        Map<DeepCopy, DeepCopy> oldToNewObjects = new HashMap<DeepCopy, DeepCopy>();
-        return deepCopy(oldToNewObjects);
-    }
-
-
-    @Override
     public NfaTransitionsSingle deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
         NfaTransitionsSingle copy = (NfaTransitionsSingle) oldToNewObjects.get(this);
         if (copy == null) {

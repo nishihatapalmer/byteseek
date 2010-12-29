@@ -54,13 +54,6 @@ public class TransitionSingleByteMatcher implements Transition {
 
 
     @Override
-    public TransitionSingleByteMatcher deepCopy() {
-        Map<DeepCopy, DeepCopy> oldToNewObjects = new HashMap<DeepCopy,DeepCopy>();
-        return deepCopy(oldToNewObjects);
-    }
-
-    
-    @Override
     public TransitionSingleByteMatcher deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
         TransitionSingleByteMatcher copy = (TransitionSingleByteMatcher) oldToNewObjects.get(this);
         if (copy == null) {
