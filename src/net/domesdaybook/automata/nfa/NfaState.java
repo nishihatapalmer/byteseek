@@ -5,7 +5,9 @@
 
 package net.domesdaybook.automata.nfa;
 
+import java.util.Map;
 import java.util.Set;
+import net.domesdaybook.automata.DeepCopy;
 import net.domesdaybook.automata.State;
 
 /**
@@ -17,4 +19,6 @@ public interface NfaState extends State {
     public Set<NfaState> nextStates(final byte theByte);
 
     public void setIsFinal(final boolean isFinal);
+
+    public NfaState deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects);
 }

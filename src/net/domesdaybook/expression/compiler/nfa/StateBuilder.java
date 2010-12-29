@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.expression.compiler.nfa;
 
 import net.domesdaybook.automata.nfa.NfaState;
 
@@ -11,7 +11,7 @@ import net.domesdaybook.automata.nfa.NfaState;
  *
  * @author matt
  */
-public interface NfaStateBuilder {
+public interface StateBuilder {
 
     public NfaState build(final boolean isFinal);
 

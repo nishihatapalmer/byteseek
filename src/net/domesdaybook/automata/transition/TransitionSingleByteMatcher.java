@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.automata.transition;
 
 import java.util.HashMap;
 import java.util.Map;

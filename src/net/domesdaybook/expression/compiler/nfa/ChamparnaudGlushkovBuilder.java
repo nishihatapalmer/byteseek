@@ -26,8 +26,9 @@
  * 
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.expression.compiler.nfa;
 
+import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,13 +40,13 @@ import net.domesdaybook.automata.nfa.NfaState;
  *
  * @author matt
  */
-public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
+public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
      private final TransitionFactory transitionFactory;
-     private final NfaStateBuilder builder;
+     private final StateBuilder builder;
 
      
-     public GlushkovStatesBuilder(final TransitionFactory transitionFactory, NfaStateBuilder builder) {
+     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, StateBuilder builder) {
          this.transitionFactory = transitionFactory;
          this.builder = builder;
      }
@@ -58,8 +59,8 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
       * @param transitionByte
       * @return
       */
-     public final NfaInitialFinalStates buildSingleByteStates(final byte transitionByte) {
-        final NfaInitialFinalStates states = createInitialFinalStates();
+     public final StateWrapper buildSingleByteStates(final byte transitionByte) {
+        final StateWrapper states = createInitialFinalStates();
         final NfaState finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createByteTransition(transitionByte, finalState);
         states.initialState.addTransition(transition);
@@ -69,8 +70,8 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
 
     
     @Override
-    public final NfaInitialFinalStates buildSetStates(final Set<Byte> byteSet, final boolean negated) {
-        final NfaInitialFinalStates states = createInitialFinalStates();
+    public final StateWrapper buildSetStates(final Set<Byte> byteSet, final boolean negated) {
+        final StateWrapper states = createInitialFinalStates();
         final NfaState finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createSetTransition(byteSet, true, finalState);
         states.initialState.addTransition(transition);
@@ -79,8 +80,8 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
 
 
     @Override
-    public NfaInitialFinalStates buildAnyByteStates() {
-        final NfaInitialFinalStates states = createInitialFinalStates();
+    public final StateWrapper buildAnyByteStates() {
+        final StateWrapper states = createInitialFinalStates();
         final NfaState finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAnyByteTransition(finalState);
         states.initialState.addTransition(transition);
@@ -95,8 +96,8 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
      * @param bitMask
      * @return
      */
-    public NfaInitialFinalStates buildAllBitmaskStates(final byte bitMask) {
-        final NfaInitialFinalStates states = createInitialFinalStates();
+    public final StateWrapper buildAllBitmaskStates(final byte bitMask) {
+        final StateWrapper states = createInitialFinalStates();
         final NfaState finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAllBitmaskTransition(bitMask, finalState);
         states.initialState.addTransition(transition);
@@ -119,13 +120,13 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
      * @return An object holding the initial and final states of the sequence automata.
      */
     @Override
-    public NfaInitialFinalStates buildSequenceStates(List<NfaInitialFinalStates> sequenceStates) {
+    public final StateWrapper buildSequenceStates(List<StateWrapper> sequenceStates) {
         // process the sequence of states joining final states to what the next initial
         // states have transitions to.
         final List<NfaState> finalSequenceStates = new ArrayList<NfaState>();
         for (int itemIndex = 1, stop = sequenceStates.size(); itemIndex < stop; itemIndex++) {
-            final NfaInitialFinalStates leftState = sequenceStates.get(itemIndex-1);
-            final NfaInitialFinalStates rightState = sequenceStates.get(itemIndex);
+            final StateWrapper leftState = sequenceStates.get(itemIndex-1);
+            final StateWrapper rightState = sequenceStates.get(itemIndex);
             final NfaState initialStateToReplace = rightState.initialState;
             final List<Transition> transitionList = initialStateToReplace.getTransitions();
             final boolean initialStateIsFinal = initialStateToReplace.isFinal();
@@ -147,13 +148,13 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
         }
 
         // Add the final states of the very last state to the sequence final states:
-        final NfaInitialFinalStates lastState = sequenceStates.get(sequenceStates.size() - 1);
+        final StateWrapper lastState = sequenceStates.get(sequenceStates.size() - 1);
         finalSequenceStates.addAll(lastState.finalStates);
         
         // Wrap it all up in a new states object representing
         // the start and final states of the sequence.
-        final NfaInitialFinalStates states = new NfaInitialFinalStates();
-        final NfaInitialFinalStates firstState = sequenceStates.get(0);
+        final StateWrapper states = new StateWrapper();
+        final StateWrapper firstState = sequenceStates.get(0);
         states.initialState = firstState.initialState;
         states.finalStates = finalSequenceStates;
         return states;
@@ -171,18 +172,18 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
      * @return An object holding the initial and final states of the alternative automata.
      */
     @Override
-    public NfaInitialFinalStates buildAlternativeStates(List<NfaInitialFinalStates> alternateStates) {
+    public final StateWrapper buildAlternativeStates(List<StateWrapper> alternateStates) {
        
         // Merge all the initial states of the alternatives, so we can
         // transition into any of them from a single initial state.  
         // If any of the initial states being merged is final, then the final merged state is final.
         // Also build a list of the sum of all the final states in all the alternatives.
-        final NfaInitialFinalStates firstOption = alternateStates.get(0);
+        final StateWrapper firstOption = alternateStates.get(0);
         final NfaState initialState = firstOption.initialState;
         final List<NfaState> finalStates = new ArrayList<NfaState>(firstOption.finalStates);
         boolean anyMergedStateIsFinal = initialState.isFinal();
         for (int alternateIndex = 1, stop = alternateStates.size(); alternateIndex < stop; alternateIndex++) {
-            final NfaInitialFinalStates altStates = alternateStates.get(alternateIndex);
+            final StateWrapper altStates = alternateStates.get(alternateIndex);
             final NfaState mergeState = altStates.initialState;
             anyMergedStateIsFinal = anyMergedStateIsFinal | mergeState.isFinal();
             initialState.addAllTransitions(mergeState.getTransitions());
@@ -190,7 +191,7 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
         }
 
         // Wrap it all up in a states object and set whether the initial state is final:
-        final NfaInitialFinalStates states = new NfaInitialFinalStates();
+        final StateWrapper states = new StateWrapper();
         states.initialState = initialState;
         states.finalStates = finalStates;
         states.setIsFinal(initialState, anyMergedStateIsFinal);
@@ -210,7 +211,7 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
      * @return
      */
     @Override
-    public NfaInitialFinalStates buildZeroToManyStates(NfaInitialFinalStates zeroToManyStates) {
+    public final StateWrapper buildZeroToManyStates(StateWrapper zeroToManyStates) {
         final NfaState initialState = zeroToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
         final List<NfaState> finalStates = zeroToManyStates.finalStates;
@@ -231,7 +232,7 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
      * @return
      */
     @Override
-    public NfaInitialFinalStates buildOneToManyStates(NfaInitialFinalStates oneToManyStates) {
+    public final StateWrapper buildOneToManyStates(StateWrapper oneToManyStates) {
         final NfaState initialState = oneToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
         final List<NfaState> finalStates = oneToManyStates.finalStates;
@@ -249,37 +250,78 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
      * @return
      */
     @Override
-    public NfaInitialFinalStates buildOptionalStates(NfaInitialFinalStates optionalStates) {
+    public final StateWrapper buildOptionalStates(final StateWrapper optionalStates) {
         optionalStates.setIsFinal(optionalStates.initialState, State.FINAL);
         return optionalStates;
     }
 
 
-
     @Override
-    public NfaInitialFinalStates buildMinToManyStates(int minRepeat, NfaInitialFinalStates repeatedAutomata) {
-
-        // sequence:
-        //   min to max states: 0 to min
-        //   zero to many states
-
-        throw new UnsupportedOperationException("Not supported yet.");
+    public final StateWrapper buildMinToManyStates(final int minRepeat, StateWrapper repeatedAutomata) {
+        StateWrapper states = null;
+        if (minRepeat == 0) {
+            states = buildZeroToManyStates(repeatedAutomata);
+        } else if (minRepeat > 0) {
+            // sequence of:
+            //   min repeated states,
+            //   zero to many states.
+            final StateWrapper repeatStates = buildRepeatedStates(minRepeat, repeatedAutomata);
+            final StateWrapper zeroToManyStates = buildZeroToManyStates(repeatedAutomata.deepCopy());
+            final List<StateWrapper> joinedAutomata = new ArrayList<StateWrapper>();
+            joinedAutomata.add(repeatStates);
+            joinedAutomata.add(zeroToManyStates);
+            states = buildSequenceStates(joinedAutomata);
+        }
+        return states;
     }
 
 
     @Override
-    public NfaInitialFinalStates buildMinToMaxStates(int minRepeat, int maxRepeat, NfaInitialFinalStates repeatedAutomata) {
-        // sequence:
-        //   0 to min states:
-        //   min to max optional states:
+    public final StateWrapper buildMinToMaxStates(final int minRepeat, int maxRepeat, StateWrapper repeatedAutomata) {
+        StateWrapper states = null;
+        // If min repeat is zero, then we have optional (1 - max optional states):
+        if (minRepeat == 0) {
+            states = buildRepeatedOptionalStates(maxRepeat, repeatedAutomata);
+        } else {
+            // sequence:
+            //   min repeated states:
+            //   min to max repeated optional states:
+            final StateWrapper repeatStates = buildRepeatedStates(minRepeat, repeatedAutomata);
+            final StateWrapper optionalStates = buildRepeatedOptionalStates(maxRepeat - minRepeat, repeatedAutomata);
+            final List<StateWrapper> joinedAutomata = new ArrayList<StateWrapper>();
+            joinedAutomata.add(repeatStates);
+            joinedAutomata.add(optionalStates);
+            states = buildSequenceStates(joinedAutomata);
+        }
+        return states;
+    }
 
-        throw new UnsupportedOperationException("Not supported yet.");
+    
+    @Override
+    public final StateWrapper buildRepeatedOptionalStates(final int numberOptional, final StateWrapper optionalState) {
+        final List<StateWrapper> optionalStates = new ArrayList<StateWrapper>();
+        for (int count = 0; count < numberOptional; count++) {
+            final StateWrapper optStates = buildOptionalStates(optionalState.deepCopy());
+            optionalStates.add(optStates);
+        }
+        return buildSequenceStates(optionalStates);
+    }
+
+    
+    @Override
+    public final StateWrapper buildRepeatedStates(final int repeatNumber, final StateWrapper repeatedAutomata) {
+        List<StateWrapper> repeatStates = new ArrayList<StateWrapper>();
+        for (int count = 0; count < repeatNumber; count++) {
+            final StateWrapper newState = repeatedAutomata.deepCopy();
+            repeatStates.add(newState);
+        }
+        return buildSequenceStates(repeatStates);
     }
 
 
     @Override
-    public NfaInitialFinalStates buildCaseSensitiveStringStates(String str) {
-        final NfaInitialFinalStates states = new NfaInitialFinalStates();
+    public final StateWrapper buildCaseSensitiveStringStates(String str) {
+        final StateWrapper states = new StateWrapper();
         final NfaState firstState = builder.build(State.NON_FINAL);
         NfaState lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
@@ -296,8 +338,8 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
 
 
     @Override
-    public NfaInitialFinalStates buildCaseInsensitiveStringStates(String str) {
-        final NfaInitialFinalStates states = new NfaInitialFinalStates();
+    public final StateWrapper buildCaseInsensitiveStringStates(String str) {
+        final StateWrapper states = new StateWrapper();
         final NfaState firstState = builder.build(State.NON_FINAL);
         NfaState lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
@@ -321,8 +363,8 @@ public class GlushkovStatesBuilder implements NfaInitialFinalStatesBuilder {
 
 
 
-    private NfaInitialFinalStates createInitialFinalStates() {
-        final NfaInitialFinalStates states = new NfaInitialFinalStates();
+    private StateWrapper createInitialFinalStates() {
+        final StateWrapper states = new StateWrapper();
         states.initialState = builder.build(State.NON_FINAL);
         states.finalStates = new ArrayList<NfaState>();
         states.finalStates.add(builder.build(State.FINAL));

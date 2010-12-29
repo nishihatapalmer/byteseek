@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.automata.transition;
 
 import java.util.Set;
 import net.domesdaybook.automata.State;

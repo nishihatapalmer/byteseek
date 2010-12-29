@@ -3,9 +3,10 @@
  *
  */
 
-package net.domesdaybook.searcher;
+package net.domesdaybook.matcher.sequence.searcher;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.searcher.Searcher;
 
 /**
  *

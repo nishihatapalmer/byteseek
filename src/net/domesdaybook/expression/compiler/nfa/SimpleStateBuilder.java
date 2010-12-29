@@ -3,19 +3,18 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.expression.compiler.nfa;
 
 import net.domesdaybook.automata.nfa.NfaSimpleState;
-import net.domesdaybook.automata.nfa.NfaState;
 
 /**
  *
  * @author matt
  */
-public class NfaSimpleStateBuilder implements NfaStateBuilder {
+public class SimpleStateBuilder implements StateBuilder {
 
     @Override
-    public NfaState build(final boolean isFinal) {
+    public NfaSimpleState build(final boolean isFinal) {
         return new NfaSimpleState(isFinal);
     }
 

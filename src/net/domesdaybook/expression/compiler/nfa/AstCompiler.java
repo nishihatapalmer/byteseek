@@ -3,8 +3,10 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.expression.compiler.nfa;
 
+import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,12 +21,12 @@ import org.antlr.runtime.tree.CommonTree;
  *
  * @author matt
  */
-public abstract class AstToNfaCompiler implements NfaCompiler {
+public abstract class AstCompiler implements Compiler {
 
     private static final String ANY_STRING = regularExpressionParser.tokenNames[regularExpressionParser.ANY];
     
     private TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
-    private NfaStateBuilder builder = new NfaSimpleStateBuilder();
+    private StateBuilder builder = new SimpleStateBuilder();
     
     @Override
     public NfaState compile(final CommonTree ast) {
@@ -37,25 +39,25 @@ public abstract class AstToNfaCompiler implements NfaCompiler {
     }
 
 
-    public void setNfaStateBuilder(final NfaStateBuilder builder) {
+    public void setNfaStateBuilder(final StateBuilder builder) {
         this.builder = builder;
     }
 
 
-    private NfaInitialFinalStates buildAutomata(final CommonTree ast) {
+    private StateWrapper buildAutomata(final CommonTree ast) {
 
-        NfaInitialFinalStates states = null;
-        final NfaInitialFinalStatesBuilder stateBuilder = new GlushkovStatesBuilder(transitionFactory, builder);
+        StateWrapper states = null;
+        final StateWrapperBuilder stateBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, builder);
 
         switch (ast.getToken().getType()) {
 
             // recursive part of building:
             
             case (regularExpressionParser.SEQUENCE): {
-                List<NfaInitialFinalStates> sequenceStates = new ArrayList<NfaInitialFinalStates>();
+                List<StateWrapper> sequenceStates = new ArrayList<StateWrapper>();
                 for (int childIndex = 0, stop = ast.getChildCount(); childIndex < stop; childIndex++) {
                     final CommonTree child = (CommonTree) ast.getChild(childIndex);
-                    final NfaInitialFinalStates childAutomata = buildAutomata(child);
+                    final StateWrapper childAutomata = buildAutomata(child);
                     sequenceStates.add(childAutomata);
                 }
                 states = stateBuilder.buildSequenceStates(sequenceStates);
@@ -64,10 +66,10 @@ public abstract class AstToNfaCompiler implements NfaCompiler {
 
 
             case (regularExpressionParser.ALT): {
-                List<NfaInitialFinalStates> alternateStates = new ArrayList<NfaInitialFinalStates>();
+                List<StateWrapper> alternateStates = new ArrayList<StateWrapper>();
                 for (int childIndex = 0, stop = ast.getChildCount(); childIndex < stop; childIndex++) {
                     final CommonTree child = (CommonTree) ast.getChild(childIndex);
-                    final NfaInitialFinalStates childAutomata = buildAutomata(child);
+                    final StateWrapper childAutomata = buildAutomata(child);
                     alternateStates.add(childAutomata);
                 }
                 states = stateBuilder.buildAlternativeStates(alternateStates);
@@ -77,7 +79,7 @@ public abstract class AstToNfaCompiler implements NfaCompiler {
 
             case (regularExpressionParser.REPEAT): {
                 final CommonTree nodeToRepeat = (CommonTree) ast.getChild(2);
-                final NfaInitialFinalStates repeatedAutomata = buildAutomata(nodeToRepeat);
+                final StateWrapper repeatedAutomata = buildAutomata(nodeToRepeat);
                 final int minRepeat = ParseUtils.getChildIntValue(ast, 0);
                 if (ANY_STRING.equals(ParseUtils.getChildStringValue(ast,1))) {
                     states = stateBuilder.buildMinToManyStates(minRepeat, repeatedAutomata);
@@ -91,7 +93,7 @@ public abstract class AstToNfaCompiler implements NfaCompiler {
 
             case (regularExpressionParser.MANY): {
                 final CommonTree zeroToManyNode = (CommonTree) ast.getChild(0);
-                final NfaInitialFinalStates zeroToManyStates = buildAutomata(zeroToManyNode);
+                final StateWrapper zeroToManyStates = buildAutomata(zeroToManyNode);
                 states = stateBuilder.buildZeroToManyStates(zeroToManyStates);
                 break;
             }
@@ -99,7 +101,7 @@ public abstract class AstToNfaCompiler implements NfaCompiler {
 
             case (regularExpressionParser.PLUS): {
                 final CommonTree oneToManyNode = (CommonTree) ast.getChild(0);
-                final NfaInitialFinalStates oneToManyStates = buildAutomata(oneToManyNode);
+                final StateWrapper oneToManyStates = buildAutomata(oneToManyNode);
                 states = stateBuilder.buildOneToManyStates(oneToManyStates);
                 break;
             }
@@ -107,7 +109,7 @@ public abstract class AstToNfaCompiler implements NfaCompiler {
 
             case (regularExpressionParser.QUESTION_MARK): {
                 final CommonTree optionalNode = (CommonTree) ast.getChild(0);
-                final NfaInitialFinalStates optionalStates = buildAutomata(optionalNode);
+                final StateWrapper optionalStates = buildAutomata(optionalNode);
                 states = stateBuilder.buildOptionalStates(optionalStates);
                 break;
             }

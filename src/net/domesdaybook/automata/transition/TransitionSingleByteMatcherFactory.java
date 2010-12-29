@@ -3,8 +3,10 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.automata.transition;
 
+import net.domesdaybook.automata.transition.TransitionSingleByteMatcher;
+import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;

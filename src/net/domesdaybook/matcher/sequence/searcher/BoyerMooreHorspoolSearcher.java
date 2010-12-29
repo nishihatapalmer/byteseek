@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.searcher;
+package net.domesdaybook.matcher.sequence.searcher;
 
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;

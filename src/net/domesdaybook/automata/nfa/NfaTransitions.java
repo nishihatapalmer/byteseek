@@ -28,5 +28,5 @@ public interface NfaTransitions extends DeepCopy {
 
     public int size();
 
-    public NfaTransitions deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
+    public NfaTransitions deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects);
 }

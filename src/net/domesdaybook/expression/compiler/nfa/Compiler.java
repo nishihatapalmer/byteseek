@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.expression.compiler.nfa;
 
 import net.domesdaybook.automata.nfa.NfaState;
 import org.antlr.runtime.tree.CommonTree;
@@ -12,7 +12,7 @@ import org.antlr.runtime.tree.CommonTree;
  *
  * @author matt
  */
-public interface NfaCompiler {
+public interface Compiler {
 
     public NfaState compile(final CommonTree ast);
 
