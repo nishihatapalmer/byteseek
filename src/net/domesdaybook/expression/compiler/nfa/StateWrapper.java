@@ -34,8 +34,8 @@ public class StateWrapper implements DeepCopy {
 
         
     public final StateWrapper deepCopy() {
-        final Map<DeepCopy, DeepCopy> oldToNewStates = new HashMap<DeepCopy, DeepCopy>();
-        return deepCopy(oldToNewStates);
+        final Map<DeepCopy, DeepCopy> oldToNewObjects = new HashMap<DeepCopy, DeepCopy>();
+        return deepCopy(oldToNewObjects);
     }    
 
     
