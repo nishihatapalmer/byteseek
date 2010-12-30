@@ -26,28 +26,40 @@ public abstract class AstCompiler implements Compiler {
     private static final String ANY_STRING = regularExpressionParser.tokenNames[regularExpressionParser.ANY];
     
     private TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
-    private StateBuilder builder = new SimpleStateBuilder();
-    
+    private StateBuilder stateBuilder = new SimpleStateBuilder();
+    private StateWrapperBuilder stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateBuilder);
+
     @Override
     public NfaState compile(final CommonTree ast) {
+       initialiseStateWrapperBuilder();
        return buildAutomata(ast).initialState;
     }
 
 
-    public void setTransitionFactory(final TransitionFactory factory) {
-        this.transitionFactory = factory;
+    public void setTransitionFactory(final TransitionFactory transitionFactory) {
+        this.transitionFactory = transitionFactory;
     }
 
 
-    public void setNfaStateBuilder(final StateBuilder builder) {
-        this.builder = builder;
+    public void setStateBuilder(final StateBuilder stateBuilder) {
+        this.stateBuilder = stateBuilder;
+    }
+
+    
+    public void setStateWrapperBuilder(final StateWrapperBuilder stateWrapperBuilder) {
+        this.stateWrapperBuilder = stateWrapperBuilder;
+    }
+
+    
+    private void initialiseStateWrapperBuilder() {
+       stateWrapperBuilder.setTransitionFactory(transitionFactory);
+       stateWrapperBuilder.setStateBuilder(stateBuilder);
     }
 
 
     private StateWrapper buildAutomata(final CommonTree ast) {
 
         StateWrapper states = null;
-        final StateWrapperBuilder stateBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, builder);
 
         switch (ast.getToken().getType()) {
 
@@ -60,7 +72,7 @@ public abstract class AstCompiler implements Compiler {
                     final StateWrapper childAutomata = buildAutomata(child);
                     sequenceStates.add(childAutomata);
                 }
-                states = stateBuilder.buildSequenceStates(sequenceStates);
+                states = stateWrapperBuilder.buildSequenceStates(sequenceStates);
                 break;
             }
 
@@ -72,7 +84,7 @@ public abstract class AstCompiler implements Compiler {
                     final StateWrapper childAutomata = buildAutomata(child);
                     alternateStates.add(childAutomata);
                 }
-                states = stateBuilder.buildAlternativeStates(alternateStates);
+                states = stateWrapperBuilder.buildAlternativeStates(alternateStates);
                 break;
             }
 
@@ -82,10 +94,10 @@ public abstract class AstCompiler implements Compiler {
                 final StateWrapper repeatedAutomata = buildAutomata(nodeToRepeat);
                 final int minRepeat = ParseUtils.getChildIntValue(ast, 0);
                 if (ANY_STRING.equals(ParseUtils.getChildStringValue(ast,1))) {
-                    states = stateBuilder.buildMinToManyStates(minRepeat, repeatedAutomata);
+                    states = stateWrapperBuilder.buildMinToManyStates(minRepeat, repeatedAutomata);
                 } else {
                     final int maxRepeat = ParseUtils.getChildIntValue(ast, 1);
-                    states = stateBuilder.buildMinToMaxStates(minRepeat, maxRepeat, repeatedAutomata);
+                    states = stateWrapperBuilder.buildMinToMaxStates(minRepeat, maxRepeat, repeatedAutomata);
                 }
                 break;
             }
@@ -94,7 +106,7 @@ public abstract class AstCompiler implements Compiler {
             case (regularExpressionParser.MANY): {
                 final CommonTree zeroToManyNode = (CommonTree) ast.getChild(0);
                 final StateWrapper zeroToManyStates = buildAutomata(zeroToManyNode);
-                states = stateBuilder.buildZeroToManyStates(zeroToManyStates);
+                states = stateWrapperBuilder.buildZeroToManyStates(zeroToManyStates);
                 break;
             }
 
@@ -102,7 +114,7 @@ public abstract class AstCompiler implements Compiler {
             case (regularExpressionParser.PLUS): {
                 final CommonTree oneToManyNode = (CommonTree) ast.getChild(0);
                 final StateWrapper oneToManyStates = buildAutomata(oneToManyNode);
-                states = stateBuilder.buildOneToManyStates(oneToManyStates);
+                states = stateWrapperBuilder.buildOneToManyStates(oneToManyStates);
                 break;
             }
 
@@ -110,7 +122,7 @@ public abstract class AstCompiler implements Compiler {
             case (regularExpressionParser.QUESTION_MARK): {
                 final CommonTree optionalNode = (CommonTree) ast.getChild(0);
                 final StateWrapper optionalStates = buildAutomata(optionalNode);
-                states = stateBuilder.buildOptionalStates(optionalStates);
+                states = stateWrapperBuilder.buildOptionalStates(optionalStates);
                 break;
             }
 
@@ -120,46 +132,46 @@ public abstract class AstCompiler implements Compiler {
 
             case (regularExpressionParser.BYTE): {
                 final byte transitionByte = ParseUtils.getHexByteValue(ast);
-                states = stateBuilder.buildSingleByteStates(transitionByte);
+                states = stateWrapperBuilder.buildSingleByteStates(transitionByte);
                 break;
             }
 
 
             case (regularExpressionParser.BITMASK): {
                 final byte transitionByte = ParseUtils.getBitMaskValue(ast);
-                states = stateBuilder.buildAllBitmaskStates(transitionByte);
+                states = stateWrapperBuilder.buildAllBitmaskStates(transitionByte);
                 break;
             }
 
 
             case (regularExpressionParser.SET): {
                 final Set<Byte> byteSet = calculateSetValue(ast);
-                states = stateBuilder.buildSetStates(byteSet,false);
+                states = stateWrapperBuilder.buildSetStates(byteSet,false);
                 break;
             }
 
 
             case (regularExpressionParser.INVERTED_SET): {
                 final Set<Byte> byteSet = calculateSetValue(ast);
-                states = stateBuilder.buildSetStates(byteSet, true);
+                states = stateWrapperBuilder.buildSetStates(byteSet, true);
                 break;
             }
 
             case (regularExpressionParser.ANY): {
-                states = stateBuilder.buildAnyByteStates();
+                states = stateWrapperBuilder.buildAnyByteStates();
             }
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                 final String str = ast.getText();
-                states = stateBuilder.buildCaseSensitiveStringStates(str);
+                states = stateWrapperBuilder.buildCaseSensitiveStringStates(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
                 final String str = ast.getText();
-                states = stateBuilder.buildCaseInsensitiveStringStates(str);
+                states = stateWrapperBuilder.buildCaseInsensitiveStringStates(str);
                 break;
             }
 

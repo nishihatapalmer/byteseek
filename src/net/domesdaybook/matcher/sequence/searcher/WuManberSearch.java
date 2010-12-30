@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.matcher.searcher;
+package net.domesdaybook.matcher.sequence.searcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;

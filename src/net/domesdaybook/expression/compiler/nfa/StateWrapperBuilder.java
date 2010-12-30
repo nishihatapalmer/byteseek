@@ -7,6 +7,7 @@ package net.domesdaybook.expression.compiler.nfa;
 
 import java.util.List;
 import java.util.Set;
+import net.domesdaybook.automata.transition.TransitionFactory;
 
 /**
  *
@@ -14,7 +15,12 @@ import java.util.Set;
  */
 public interface StateWrapperBuilder {
 
+    public void setTransitionFactory(final TransitionFactory transitionFactory);
 
+
+    public void setStateBuilder(final StateBuilder stateBuilder);
+
+    
     public StateWrapper buildSingleByteStates(final byte transitionByte);
 
 

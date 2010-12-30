@@ -23,7 +23,15 @@
  * Having no empty transitions makes the automata smaller, more peformant,
  * and easier to transform it further (e.g. building a DFA from it)
  * but makes constructing it a little more difficult in the first place.
- * 
+ *
+ * This construction of a Glushkov automata is directly from the parse tree,
+ * in the same fashion as the Thompson construction, due to Champarnaud.
+ * Details of the construction can be found in the paper:
+ *
+ *   "A reexamination of the Glushkov and Thompson Constructions"
+ *
+ *    by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
+ *
  */
 
 package net.domesdaybook.expression.compiler.nfa;
@@ -42,15 +50,27 @@ import net.domesdaybook.automata.nfa.NfaState;
  */
 public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
-     private final TransitionFactory transitionFactory;
-     private final StateBuilder builder;
+     private TransitionFactory transitionFactory;
+     private StateBuilder stateBuilder;
 
      
-     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, StateBuilder builder) {
+     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, final StateBuilder builder) {
          this.transitionFactory = transitionFactory;
-         this.builder = builder;
+         this.stateBuilder = builder;
      }
 
+
+     @Override
+     public void setTransitionFactory(final TransitionFactory transitionFactory) {
+         this.transitionFactory = transitionFactory;
+     }
+     
+
+     @Override
+     public void setStateBuilder(final StateBuilder stateBuilder) {
+         this.stateBuilder= stateBuilder;
+     }
+     
 
      /**
       * Build an initial state and a final state,
@@ -120,7 +140,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An object holding the initial and final states of the sequence automata.
      */
     @Override
-    public final StateWrapper buildSequenceStates(List<StateWrapper> sequenceStates) {
+    public final StateWrapper buildSequenceStates(final List<StateWrapper> sequenceStates) {
         // process the sequence of states joining final states to what the next initial
         // states have transitions to.
         final List<NfaState> finalSequenceStates = new ArrayList<NfaState>();
@@ -172,7 +192,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An object holding the initial and final states of the alternative automata.
      */
     @Override
-    public final StateWrapper buildAlternativeStates(List<StateWrapper> alternateStates) {
+    public final StateWrapper buildAlternativeStates(final List<StateWrapper> alternateStates) {
        
         // Merge all the initial states of the alternatives, so we can
         // transition into any of them from a single initial state.  
@@ -211,7 +231,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return
      */
     @Override
-    public final StateWrapper buildZeroToManyStates(StateWrapper zeroToManyStates) {
+    public final StateWrapper buildZeroToManyStates(final StateWrapper zeroToManyStates) {
         final NfaState initialState = zeroToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
         final List<NfaState> finalStates = zeroToManyStates.finalStates;
@@ -232,7 +252,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return
      */
     @Override
-    public final StateWrapper buildOneToManyStates(StateWrapper oneToManyStates) {
+    public final StateWrapper buildOneToManyStates(final StateWrapper oneToManyStates) {
         final NfaState initialState = oneToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
         final List<NfaState> finalStates = oneToManyStates.finalStates;
@@ -257,41 +277,29 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
 
     @Override
-    public final StateWrapper buildMinToManyStates(final int minRepeat, StateWrapper repeatedAutomata) {
+    public final StateWrapper buildMinToManyStates(final int minRepeat, final StateWrapper repeatedAutomata) {
         StateWrapper states = null;
         if (minRepeat == 0) {
             states = buildZeroToManyStates(repeatedAutomata);
         } else if (minRepeat > 0) {
-            // sequence of:
-            //   min repeated states,
-            //   zero to many states.
             final StateWrapper repeatStates = buildRepeatedStates(minRepeat, repeatedAutomata);
             final StateWrapper zeroToManyStates = buildZeroToManyStates(repeatedAutomata.deepCopy());
-            final List<StateWrapper> joinedAutomata = new ArrayList<StateWrapper>();
-            joinedAutomata.add(repeatStates);
-            joinedAutomata.add(zeroToManyStates);
-            states = buildSequenceStates(joinedAutomata);
+            states = joinStates(repeatStates, zeroToManyStates);
         }
         return states;
     }
 
 
     @Override
-    public final StateWrapper buildMinToMaxStates(final int minRepeat, int maxRepeat, StateWrapper repeatedAutomata) {
+    public final StateWrapper buildMinToMaxStates(final int minRepeat, final int maxRepeat, final StateWrapper repeatedAutomata) {
         StateWrapper states = null;
         // If min repeat is zero, then we have optional (1 - max optional states):
         if (minRepeat == 0) {
             states = buildRepeatedOptionalStates(maxRepeat, repeatedAutomata);
         } else {
-            // sequence:
-            //   min repeated states:
-            //   min to max repeated optional states:
             final StateWrapper repeatStates = buildRepeatedStates(minRepeat, repeatedAutomata);
             final StateWrapper optionalStates = buildRepeatedOptionalStates(maxRepeat - minRepeat, repeatedAutomata);
-            final List<StateWrapper> joinedAutomata = new ArrayList<StateWrapper>();
-            joinedAutomata.add(repeatStates);
-            joinedAutomata.add(optionalStates);
-            states = buildSequenceStates(joinedAutomata);
+            states = joinStates(repeatStates, optionalStates);
         }
         return states;
     }
@@ -320,13 +328,13 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
 
     @Override
-    public final StateWrapper buildCaseSensitiveStringStates(String str) {
+    public final StateWrapper buildCaseSensitiveStringStates(final String str) {
         final StateWrapper states = new StateWrapper();
-        final NfaState firstState = builder.build(State.NON_FINAL);
+        final NfaState firstState = stateBuilder.build(State.NON_FINAL);
         NfaState lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
             final byte transitionByte = (byte) str.charAt(index);
-            final NfaState transitionToState = builder.build(State.NON_FINAL);
+            final NfaState transitionToState = stateBuilder.build(State.NON_FINAL);
             final Transition transition = transitionFactory.createByteTransition(transitionByte, transitionToState);
             lastState.addTransition(transition);
             lastState = transitionToState;
@@ -338,14 +346,14 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
 
     @Override
-    public final StateWrapper buildCaseInsensitiveStringStates(String str) {
+    public final StateWrapper buildCaseInsensitiveStringStates(final String str) {
         final StateWrapper states = new StateWrapper();
-        final NfaState firstState = builder.build(State.NON_FINAL);
+        final NfaState firstState = stateBuilder.build(State.NON_FINAL);
         NfaState lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
             final char transitionChar = str.charAt(index);
             Transition transition;
-            final NfaState transitionToState = builder.build(State.NON_FINAL);
+            final NfaState transitionToState = stateBuilder.build(State.NON_FINAL);
             if ((transitionChar >= 'A' && transitionChar <= 'Z') ||
                 (transitionChar >= 'a' && transitionChar <= 'z')) {
                 transition = transitionFactory.createCaseInsensitiveByteTransition(transitionChar, transitionToState);
@@ -365,10 +373,18 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
     private StateWrapper createInitialFinalStates() {
         final StateWrapper states = new StateWrapper();
-        states.initialState = builder.build(State.NON_FINAL);
+        states.initialState = stateBuilder.build(State.NON_FINAL);
         states.finalStates = new ArrayList<NfaState>();
-        states.finalStates.add(builder.build(State.FINAL));
+        states.finalStates.add(stateBuilder.build(State.FINAL));
         return states;
+    }
+
+    
+    private StateWrapper joinStates(final StateWrapper leftState, final StateWrapper rightState) {
+        final List<StateWrapper> joinedAutomata = new ArrayList<StateWrapper>();
+        joinedAutomata.add(leftState);
+        joinedAutomata.add(rightState);
+        return buildSequenceStates(joinedAutomata);
     }
 
 }
