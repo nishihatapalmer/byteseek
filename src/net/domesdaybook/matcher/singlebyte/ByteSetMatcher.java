@@ -24,7 +24,7 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
     public ByteSetMatcher(Set<Byte> values, boolean negated) {
         super(negated);
         for (Byte b : values) {
-            byteValues.set(b);
+            byteValues.set((int) b & 0xFF);
         }
     }
 
@@ -71,7 +71,7 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
 
     @Override
     public final boolean matches(byte theByte) {
-        return byteValues.get(theByte) ^ negated;
+        return byteValues.get((int) theByte & 0xFF) ^ negated;
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
         }
         regularExpression.append("[");
         if ( negated ) {
-            regularExpression.append("!");
+            regularExpression.append("^");
         }
         int firstBitSetPosition = byteValues.nextSetBit(0);
         while ( firstBitSetPosition >= 0 && firstBitSetPosition < 256 ) {
@@ -96,7 +96,7 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
             if ( lastBitSetPosition - firstBitSetPosition > 2 ) {
                 final String minValue = Utilities.byteValueToString(prettyPrint, firstBitSetPosition);
                 final String maxValue = Utilities.byteValueToString(prettyPrint, lastBitSetPosition);
-                regularExpression.append( String.format("%s:%s", minValue, maxValue));
+                regularExpression.append( String.format("%s-%s", minValue, maxValue));
             } else { // less than 2 contiguous set positions - just write out a single byte:
                 final String byteVal = Utilities.byteValueToString(prettyPrint, firstBitSetPosition);
                 regularExpression.append( byteVal );

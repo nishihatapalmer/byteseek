@@ -19,7 +19,7 @@ import net.domesdaybook.automata.nfa.NfaState;
 public class StateWrapper implements DeepCopy {
 
         NfaState initialState;
-        List<NfaState> finalStates;
+        List<NfaState> finalStates = new ArrayList<NfaState>();
 
         public void setIsFinal(final NfaState state, final boolean isFinal) {
             state.setIsFinal(isFinal);

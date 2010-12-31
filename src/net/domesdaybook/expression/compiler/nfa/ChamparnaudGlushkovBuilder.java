@@ -93,7 +93,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     public final StateWrapper buildSetStates(final Set<Byte> byteSet, final boolean negated) {
         final StateWrapper states = createInitialFinalStates();
         final NfaState finalState = states.finalStates.get(0);
-        final Transition transition = transitionFactory.createSetTransition(byteSet, true, finalState);
+        final Transition transition = transitionFactory.createSetTransition(byteSet, negated, finalState);
         states.initialState.addTransition(transition);
         return states;
     }
@@ -143,28 +143,26 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     public final StateWrapper buildSequenceStates(final List<StateWrapper> sequenceStates) {
         // process the sequence of states joining final states to what the next initial
         // states have transitions to.
-        final List<NfaState> finalSequenceStates = new ArrayList<NfaState>();
+        List<NfaState> finalSequenceStates = new ArrayList<NfaState>();
         for (int itemIndex = 1, stop = sequenceStates.size(); itemIndex < stop; itemIndex++) {
             final StateWrapper leftState = sequenceStates.get(itemIndex-1);
             final StateWrapper rightState = sequenceStates.get(itemIndex);
             final NfaState initialStateToReplace = rightState.initialState;
             final List<Transition> transitionList = initialStateToReplace.getTransitions();
             final boolean initialStateIsFinal = initialStateToReplace.isFinal();
-            
-            // for each final state of the left hand side, 
+            finalSequenceStates.addAll(leftState.finalStates);
+            // for each final state of the sequence,
             // add the initial transitions from the right hand side,
             // and set whether it is final or not based on the initial right hand state.
-            for (NfaState state : leftState.finalStates) {
+            //for (NfaState state : leftState.finalStates) {
+            for (NfaState state : finalSequenceStates) {
                 state.addAllTransitions(transitionList);
                 state.setIsFinal(initialStateIsFinal);
-                if (initialStateIsFinal) {
-                    finalSequenceStates.add(state);
-                }
             }
 
-            // Set the initial state of the right hand side to null,
-            // allowing it to be garbage collected.
-            // rightState.initialState = null;
+            if (!initialStateIsFinal) {
+                finalSequenceStates = new ArrayList<NfaState>();
+            }
         }
 
         // Add the final states of the very last state to the sequence final states:
@@ -198,15 +196,19 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         // transition into any of them from a single initial state.  
         // If any of the initial states being merged is final, then the final merged state is final.
         // Also build a list of the sum of all the final states in all the alternatives.
-        final StateWrapper firstOption = alternateStates.get(0);
-        final NfaState initialState = firstOption.initialState;
-        final List<NfaState> finalStates = new ArrayList<NfaState>(firstOption.finalStates);
-        boolean anyMergedStateIsFinal = initialState.isFinal();
-        for (int alternateIndex = 1, stop = alternateStates.size(); alternateIndex < stop; alternateIndex++) {
+        //final StateWrapper firstOption = alternateStates.get(0);
+        //final NfaState initialState = firstOption.initialState;
+        //final List<NfaState> finalStates = new ArrayList<NfaState>(firstOption.finalStates);
+        
+        //boolean anyMergedStateIsFinal = initialState.isFinal();
+        final List<NfaState> finalStates = new ArrayList<NfaState>();
+        NfaState initialState = stateBuilder.build(State.NON_FINAL);
+        boolean anyInitialStateIsFinal = false;
+        for (int alternateIndex = 0, stop = alternateStates.size(); alternateIndex < stop; alternateIndex++) {
             final StateWrapper altStates = alternateStates.get(alternateIndex);
-            final NfaState mergeState = altStates.initialState;
-            anyMergedStateIsFinal = anyMergedStateIsFinal | mergeState.isFinal();
-            initialState.addAllTransitions(mergeState.getTransitions());
+            final NfaState alternateInitialState = altStates.initialState;
+            anyInitialStateIsFinal = anyInitialStateIsFinal | alternateInitialState.isFinal();
+            initialState.addAllTransitions(alternateInitialState.getTransitions());
             finalStates.addAll(altStates.finalStates);
         }
 
@@ -214,7 +216,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         final StateWrapper states = new StateWrapper();
         states.initialState = initialState;
         states.finalStates = finalStates;
-        states.setIsFinal(initialState, anyMergedStateIsFinal);
+        states.setIsFinal(initialState, anyInitialStateIsFinal);
         return states;
     }
 

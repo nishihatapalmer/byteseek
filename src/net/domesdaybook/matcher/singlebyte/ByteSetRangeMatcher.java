@@ -22,7 +22,7 @@ public final class ByteSetRangeMatcher extends NegatableMatcher implements Singl
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
 
 
-    public ByteSetRangeMatcher(final int minValue, final int maxValue, final boolean negated ) {
+    public ByteSetRangeMatcher(final int minValue, final int maxValue, final boolean negated) {
         super(negated);
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
         if (minValue > maxValue || minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
@@ -53,12 +53,12 @@ public final class ByteSetRangeMatcher extends NegatableMatcher implements Singl
             regularExpression.append(" ");
         }
         regularExpression.append( "[" );
-        if ( negated ) {
-            regularExpression.append( "!" );
+        if (negated) {
+            regularExpression.append( "^" );
         }
         final String minValue = Utilities.byteValueToString(prettyPrint, minByteValue);
         final String maxValue = Utilities.byteValueToString(prettyPrint, maxByteValue);
-        regularExpression.append( String.format( "%s:%s]", minValue, maxValue ));
+        regularExpression.append( String.format( "%s-%s]", minValue, maxValue ));
         if (prettyPrint) {
             regularExpression.append(" ");
         }

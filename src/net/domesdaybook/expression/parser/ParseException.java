@@ -9,7 +9,7 @@ package net.domesdaybook.expression.parser;
  *
  * @author matt
  */
-public class ParseException extends RuntimeException {
+public class ParseException extends Exception {
 
 
     private static final long serialVersionUID = -4081239885659052145L;

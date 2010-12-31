@@ -21,10 +21,11 @@ import org.antlr.runtime.tree.CommonTree;
  *
  * @author matt
  */
-public abstract class AstCompiler implements Compiler {
+public class AstCompiler implements Compiler {
 
-    private static final String ANY_STRING = regularExpressionParser.tokenNames[regularExpressionParser.ANY];
-    
+    private static final String MANY_STRING = regularExpressionParser.tokenNames[regularExpressionParser.MANY];
+    private static final String QUOTE = "\'";
+
     private TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
     private StateBuilder stateBuilder = new SimpleStateBuilder();
     private StateWrapperBuilder stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateBuilder);
@@ -93,7 +94,7 @@ public abstract class AstCompiler implements Compiler {
                 final CommonTree nodeToRepeat = (CommonTree) ast.getChild(2);
                 final StateWrapper repeatedAutomata = buildAutomata(nodeToRepeat);
                 final int minRepeat = ParseUtils.getChildIntValue(ast, 0);
-                if (ANY_STRING.equals(ParseUtils.getChildStringValue(ast,1))) {
+                if (MANY_STRING.equals(ParseUtils.getChildStringValue(ast,1))) {
                     states = stateWrapperBuilder.buildMinToManyStates(minRepeat, repeatedAutomata);
                 } else {
                     final int maxRepeat = ParseUtils.getChildIntValue(ast, 1);
@@ -159,18 +160,19 @@ public abstract class AstCompiler implements Compiler {
 
             case (regularExpressionParser.ANY): {
                 states = stateWrapperBuilder.buildAnyByteStates();
+                break;
             }
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = ast.getText();
+                final String str = trimString(ast.getText());
                 states = stateWrapperBuilder.buildCaseSensitiveStringStates(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = ast.getText();
+                final String str = trimString(ast.getText());
                 states = stateWrapperBuilder.buildCaseInsensitiveStringStates(str);
                 break;
             }
@@ -185,6 +187,10 @@ public abstract class AstCompiler implements Compiler {
         return states;
     }
 
+
+    private String trimString(final String str) {
+        return str.substring(1, str.length() - 1);
+    }
 
     /**
      * Calculates a value of a set given the parent set node (or inverted set node)
@@ -228,33 +234,47 @@ public abstract class AstCompiler implements Compiler {
                 }
 
                 case regularExpressionParser.RANGE: {
-                    int minRange = ParseUtils.getChildIntValue(childNode, 0);
-                    int maxRange = ParseUtils.getChildIntValue(childNode, 1);
-                    if (minRange > maxRange) {
-                        int swapTemp = minRange;
-                        minRange = maxRange;
-                        maxRange = swapTemp;
+                    int minRangeValue;
+                    int maxRangeValue;
+                    String minRange = ParseUtils.getChildStringValue(childNode, 0);
+                    String maxRange = ParseUtils.getChildStringValue(childNode, 1);
+                    if (minRange.startsWith(QUOTE)) {
+                        minRangeValue = (int) minRange.charAt(1);
+                    } else {
+                        minRangeValue = Integer.parseInt(minRange);
+                    }
+                    if (maxRange.startsWith(QUOTE)) {
+                        maxRangeValue = (int) maxRange.charAt(1);
+                    } else {
+                        maxRangeValue = Integer.parseInt(maxRange);
+                    }
+                    if (minRangeValue > maxRangeValue) {
+                        int swapTemp = minRangeValue;
+                        minRangeValue = maxRangeValue;
+                        maxRangeValue = swapTemp;
                     }
                     //if (minRange < 0 || maxRange > 255) {
                         //
                     //}
-                    for (int rangeValue = minRange; rangeValue <= maxRange; rangeValue++) {
+                    for (int rangeValue = minRangeValue; rangeValue <= maxRangeValue; rangeValue++) {
                         setValues.add((byte) rangeValue);
                     }
+                    break;
                 }
 
                 
                 case regularExpressionParser.CASE_SENSITIVE_STRING: {
-                    final String stringValue = childNode.getText();
+                    final String stringValue = trimString(childNode.getText());
                     for (int charIndex = 0; charIndex < stringValue.length(); charIndex++ ) {
                         final char charAt = stringValue.charAt(charIndex);
                         setValues.add((byte) charAt);
                     }
+                    break;
                 }
 
 
                 case regularExpressionParser.CASE_INSENSITIVE_STRING: {
-                    final String stringValue = childNode.getText();
+                    final String stringValue = trimString(childNode.getText());
                     for (int charIndex = 0; charIndex < stringValue.length(); charIndex++ ) {
                         final char charAt = stringValue.charAt(charIndex);
                         if (charAt >= 'a' && charAt <= 'z') {
@@ -265,13 +285,10 @@ public abstract class AstCompiler implements Compiler {
                         }
                         setValues.add((byte) charAt);
                     }
+                    break;
                 }
-
             }
-
-
         }
-
         return setValues;
     }
 

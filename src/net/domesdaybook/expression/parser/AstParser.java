@@ -25,7 +25,7 @@ public class AstParser {
      * Returns an (unoptimised) abstract syntax tree from a regular
      * expression string.
      */
-    public Tree parseToAST(final String expression) {
+    public Tree parseToAST(final String expression) throws ParseException {
         try {
             return parseToAbstractSyntaxTree(expression);
         } catch (RecognitionException ex) {
@@ -46,11 +46,8 @@ public class AstParser {
      * @param treeNode The abstract syntax tree root to optimise.
      * @return Tree an AST with the alternatives optimised.
      */
-    public Tree optimiseAST(final Tree treeNode) {
-
-
+    public Tree optimiseAST(final Tree treeNode) throws ParseException {
         Tree result = treeNode;
-
         // Recursively invoke on children of tree node, to walk the tree:
         for (int childIndex = 0; childIndex < treeNode.getChildCount(); childIndex++) {
             Tree childNode = treeNode.getChild(childIndex);
@@ -58,8 +55,8 @@ public class AstParser {
             // If a child is exactly equivalent to its parent, then
             // replace it with its own children.  The only nodes which can have
             // children the same as themselves are sequences, alternatives,
-            // and sets (and inverted sets - which are different types).
-            if (equivalent(treeNode,childNode)) {
+            // and sets (and inverted sets).
+            if (equivalent(treeNode, childNode)) {
                 treeNode.replaceChildren(childIndex, childIndex, getChildList(childNode));
                 childNode = treeNode.getChild(childIndex);
             }
@@ -70,8 +67,7 @@ public class AstParser {
             }
         }
 
-
-           // If the current node is an alternative node:
+        // If the current node is an alternative node:
         if (treeNode.getType() == regularExpressionParser.ALT) {
             result = optimiseSingleByteAlternatives(treeNode);
         }
@@ -82,20 +78,30 @@ public class AstParser {
 
 
 
-    private CommonTree parseToAbstractSyntaxTree(final String expression) throws RecognitionException {
-        ANTLRStringStream input = new ANTLRStringStream(expression);
-        regularExpressionLexer lexer = new regularExpressionLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        regularExpressionParser parser = new regularExpressionParser(tokens) {
-            @Override
-            public void emitErrorMessage(String msg) {
-                throw new ParseException(msg);
+    private CommonTree parseToAbstractSyntaxTree(final String expression) throws ParseException, RecognitionException {
+        CommonTree tree;
+        final ANTLRStringStream input = new ANTLRStringStream(expression);
+        final regularExpressionLexer lexer = new regularExpressionLexer(input);
+        if (lexer.getNumberOfSyntaxErrors() == 0) {
+
+            final CommonTokenStream tokens = new CommonTokenStream(lexer);
+            regularExpressionParser parser = new regularExpressionParser(tokens) {
+                @Override
+                public void emitErrorMessage(String msg) {
+                    throw new ParseErrorException(msg);
+                }
+            };
+            try {
+                final CommonTreeAdaptor adaptor = new CommonTreeAdaptor();
+                parser.setTreeAdaptor(adaptor);
+                regularExpressionParser.start_return ret = parser.start();
+                tree = (CommonTree) ret.getTree();
+            } catch (ParseErrorException e) {
+                throw new ParseException(e.getMessage());
             }
-        };
-        CommonTreeAdaptor adaptor = new CommonTreeAdaptor();
-        parser.setTreeAdaptor(adaptor);
-        regularExpressionParser.start_return ret = parser.start();
-        final CommonTree tree = (CommonTree) ret.getTree();
+        } else {
+            throw new ParseException(String.format("Parse error: %d syntax errors in %s", lexer.getNumberOfSyntaxErrors(), expression));
+        }
         return tree;
     }
 
@@ -174,6 +180,12 @@ public class AstParser {
                || ((   nodeType == regularExpressionParser.CASE_SENSITIVE_STRING
                     || nodeType == regularExpressionParser.CASE_INSENSITIVE_STRING)
                    && node.getText().length() == 1);
+    }
+
+    private class ParseErrorException extends RuntimeException {
+        public ParseErrorException(String message) {
+            super(message);
+        }
     }
 
 

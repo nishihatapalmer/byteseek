@@ -39,13 +39,16 @@ public class NfaSimpleState implements NfaState {
         this.transitions = other.transitions; // shared transitions object?
     }
 
+    
     public NfaSimpleState() {
         this("", false);
     }
 
+
     public NfaSimpleState(final String label) {
         this(label, false);
     }
+
 
     public NfaSimpleState(final boolean isFinal) {
         this("", isFinal);
@@ -56,9 +59,10 @@ public class NfaSimpleState implements NfaState {
     public final void addTransition(final Transition transition) {
         if (transitions.size() == 0) {
             transitions = new NfaTransitionsSingle(transition);
-        } else if (transitions.size() == 1) {
-            transitions = new NfaTransitionsList(transitions.getTransitions());
         } else {
+            if (transitions.size() == 1) {
+                transitions = new NfaTransitionsList(transitions.getTransitions());
+            }
             transitions.addTransition(transition);
         }
     }

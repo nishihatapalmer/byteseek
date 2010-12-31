@@ -70,4 +70,9 @@ public class TransitionSingleByteMatcher implements Transition {
         return matcher;
     }
 
+    @Override
+    public String toString() {
+        return matcher.toRegularExpression(true);
+    }
+
 }
