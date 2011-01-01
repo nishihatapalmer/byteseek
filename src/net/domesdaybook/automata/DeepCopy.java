@@ -27,5 +27,5 @@ public interface DeepCopy {
      * @param oldToNewObjects a map of old objects to their copies.
      * @return DeepCopy a deep copy of the object implementing this interface.
      */
-    DeepCopy deepCopy(Map<DeepCopy,DeepCopy> oldToNewObjects);
+    DeepCopy deepCopy(final Map<DeepCopy,DeepCopy> oldToNewObjects);
 }
