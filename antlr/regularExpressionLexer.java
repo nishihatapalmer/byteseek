@@ -1,4 +1,5 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2010-12-08 22:19:08
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2011-01-01 11:39:32
+ package net.domesdaybook.expression.parser; 
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -6,74 +7,85 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class regularExpressionLexer extends Lexer {
-    public static final int CLOSE_CURLY=58;
-    public static final int SET_NEWLINE=36;
-    public static final int SET_LOWER=28;
-    public static final int SET_GRAPH=23;
-    public static final int SET_ASCII=21;
-    public static final int TAB_SHORTHAND=39;
-    public static final int BITMASK=10;
-    public static final int DIGIT_SHORTHAND=45;
-    public static final int CASE_SENSITIVE_STRING=19;
-    public static final int SET_PUNCT=29;
+    public static final int CLOSE_CURLY=60;
+    public static final int SET_NEWLINE=38;
+    public static final int SET_LOWER=30;
+    public static final int SET_GRAPH=25;
+    public static final int SET_ASCII=23;
+    public static final int TAB_SHORTHAND=41;
+    public static final int DIGIT_SHORTHAND=47;
+    public static final int CASE_SENSITIVE_STRING=20;
+    public static final int SET_PUNCT=31;
     public static final int EOF=-1;
-    public static final int SET_DIGIT=31;
-    public static final int RANGE_SEPARATOR=18;
-    public static final int NEWLINE_SHORTHAND=40;
-    public static final int QUOTE=61;
-    public static final int SET_ALPHANUM=25;
-    public static final int ALT=12;
-    public static final int ESCAPE=63;
-    public static final int ESCAPE_SHORTHAND=44;
-    public static final int SET_WHITESPACE=32;
-    public static final int SET_RETURN=37;
-    public static final int CARET=16;
-    public static final int QUESTION_MARK=59;
-    public static final int OPEN_SQUARE=15;
-    public static final int BACK_TICK=62;
-    public static final int PLUS=60;
-    public static final int SET_UPPER=27;
-    public static final int SET_TAB=35;
-    public static final int RETURN_SHORTHAND=43;
-    public static final int SET_BLANK=33;
-    public static final int COMMENT=65;
-    public static final int REPEAT_SEPARATOR=56;
-    public static final int CLOSE_SQUARE=17;
-    public static final int FORM_FEED_SHORTHAND=42;
-    public static final int BYTE=13;
-    public static final int FULL_STOP=14;
-    public static final int VERTICAL_TAB_SHORTHAND=41;
+    public static final int SET_DIGIT=33;
+    public static final int RANGE_SEPARATOR=19;
+    public static final int NEWLINE_SHORTHAND=42;
+    public static final int QUOTE=63;
+    public static final int SET_ALPHANUM=27;
+    public static final int ALT=13;
+    public static final int ESCAPE=65;
+    public static final int ESCAPE_SHORTHAND=46;
+    public static final int SET_WHITESPACE=34;
+    public static final int SET_RETURN=39;
+    public static final int CARET=17;
+    public static final int QUESTION_MARK=61;
+    public static final int TILDE=22;
+    public static final int OPEN_SQUARE=16;
+    public static final int BACK_TICK=64;
+    public static final int PLUS=62;
+    public static final int ANY_BITMASK=11;
+    public static final int RETURN_SHORTHAND=45;
+    public static final int SET_UPPER=29;
+    public static final int SET_TAB=37;
+    public static final int SET_BLANK=35;
+    public static final int COMMENT=67;
+    public static final int REPEAT_SEPARATOR=58;
+    public static final int CLOSE_SQUARE=18;
+    public static final int ALL_BITMASK=10;
+    public static final int FORM_FEED_SHORTHAND=44;
+    public static final int BYTE=14;
+    public static final int FULL_STOP=15;
+    public static final int VERTICAL_TAB_SHORTHAND=43;
     public static final int INVERTED_SET=8;
-    public static final int NUMBER=55;
-    public static final int AMPERSAND=20;
+    public static final int NUMBER=57;
+    public static final int AMPERSAND=21;
     public static final int RANGE=9;
-    public static final int HEX_DIGIT=64;
+    public static final int HEX_DIGIT=66;
     public static final int SET=7;
-    public static final int SET_SPACE=34;
-    public static final int OPEN_CURLY=54;
-    public static final int SET_HEXDIGIT=30;
-    public static final int MANY=57;
-    public static final int SET_CONTROL=38;
+    public static final int SET_SPACE=36;
+    public static final int OPEN_CURLY=56;
+    public static final int SET_HEXDIGIT=32;
+    public static final int MANY=59;
+    public static final int SET_CONTROL=40;
     public static final int ALTERNATE=5;
-    public static final int OPEN=52;
+    public static final int OPEN=54;
     public static final int SEQUENCE=4;
-    public static final int SET_WORD=24;
-    public static final int ANY=11;
-    public static final int WS=66;
-    public static final int CLOSE=53;
-    public static final int NOT_WORD_SHORTHAND=48;
-    public static final int CASE_INSENSITIVE_STRING=51;
-    public static final int SET_ALPHA=26;
-    public static final int WORD_SHORTHAND=47;
-    public static final int NOT_WHITE_SPACE_SHORTHAND=50;
-    public static final int SET_PRINT=22;
+    public static final int SET_WORD=26;
+    public static final int ANY=12;
+    public static final int WS=68;
+    public static final int CLOSE=55;
+    public static final int NOT_WORD_SHORTHAND=50;
+    public static final int CASE_INSENSITIVE_STRING=53;
+    public static final int SET_ALPHA=28;
+    public static final int WORD_SHORTHAND=49;
+    public static final int NOT_WHITE_SPACE_SHORTHAND=52;
+    public static final int SET_PRINT=24;
     public static final int REPEAT=6;
-    public static final int WHITE_SPACE_SHORTHAND=49;
-    public static final int NOT_DIGIT_SHORTHAND=46;
+    public static final int WHITE_SPACE_SHORTHAND=51;
+    public static final int NOT_DIGIT_SHORTHAND=48;
      
     	boolean inRepeat=false;
-    	//boolean inSet=false;
     	int inSet = 0;
+            boolean throwExceptionOnError = true;
+
+            @Override
+            public void reportError(RecognitionException e) {
+                if (throwExceptionOnError) {
+                    throw new IllegalArgumentException(e);
+                } else {
+                    super.reportError(e);
+                }
+            }
 
 
     // delegates
@@ -94,11 +106,11 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CASE_SENSITIVE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:2: ( QUOTE (~ ( QUOTE ) )* QUOTE )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:4: QUOTE (~ ( QUOTE ) )* QUOTE
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:2: ( QUOTE (~ ( QUOTE ) )* QUOTE )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:4: QUOTE (~ ( QUOTE ) )* QUOTE
             {
             mQUOTE(); 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:10: (~ ( QUOTE ) )*
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:10: (~ ( QUOTE ) )*
             loop1:
             do {
                 int alt1=2;
@@ -111,7 +123,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:10: ~ ( QUOTE )
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:10: ~ ( QUOTE )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -148,11 +160,11 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CASE_INSENSITIVE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:2: ( BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:4: BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:2: ( BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:4: BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK
             {
             mBACK_TICK(); 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:14: (~ ( BACK_TICK ) )*
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:14: (~ ( BACK_TICK ) )*
             loop2:
             do {
                 int alt2=2;
@@ -165,7 +177,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:14: ~ ( BACK_TICK )
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:14: ~ ( BACK_TICK )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='_')||(input.LA(1)>='a' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -200,8 +212,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "QUOTE"
     public final void mQUOTE() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:271:7: ( '\\'' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:271:9: '\\''
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:303:7: ( '\\'' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:303:9: '\\''
             {
             match('\''); 
 
@@ -216,8 +228,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "BACK_TICK"
     public final void mBACK_TICK() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:2: ( '`' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:4: '`'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:309:2: ( '`' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:309:4: '`'
             {
             match('`'); 
 
@@ -234,8 +246,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = FULL_STOP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:281:10: ( '.' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:281:12: '.'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:313:10: ( '.' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:313:12: '.'
             {
             match('.'); 
 
@@ -254,8 +266,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = ALT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:285:5: ( '|' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:285:7: '|'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:317:5: ( '|' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:317:7: '|'
             {
             match('|'); 
 
@@ -274,8 +286,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = OPEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:289:6: ( '(' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:289:8: '('
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:321:6: ( '(' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:321:8: '('
             {
             match('('); 
 
@@ -294,8 +306,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CLOSE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:7: ( ')' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:9: ')'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:325:7: ( ')' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:325:9: ')'
             {
             match(')'); 
 
@@ -314,8 +326,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = TAB_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:2: ( ESCAPE 't' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:4: ESCAPE 't'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:330:2: ( ESCAPE 't' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:330:4: ESCAPE 't'
             {
             mESCAPE(); 
             match('t'); 
@@ -335,8 +347,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NEWLINE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:303:2: ( ESCAPE 'n' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:303:4: ESCAPE 'n'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:335:2: ( ESCAPE 'n' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:335:4: ESCAPE 'n'
             {
             mESCAPE(); 
             match('n'); 
@@ -356,8 +368,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = VERTICAL_TAB_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:308:2: ( ESCAPE 'v' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:308:4: ESCAPE 'v'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:340:2: ( ESCAPE 'v' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:340:4: ESCAPE 'v'
             {
             mESCAPE(); 
             match('v'); 
@@ -377,8 +389,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = FORM_FEED_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:313:2: ( ESCAPE 'f' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:313:4: ESCAPE 'f'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:345:2: ( ESCAPE 'f' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:345:4: ESCAPE 'f'
             {
             mESCAPE(); 
             match('f'); 
@@ -398,8 +410,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = RETURN_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:318:2: ( ESCAPE 'r' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:318:4: ESCAPE 'r'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:350:2: ( ESCAPE 'r' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:350:4: ESCAPE 'r'
             {
             mESCAPE(); 
             match('r'); 
@@ -419,8 +431,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = ESCAPE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:323:2: ( ESCAPE 'e' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:323:4: ESCAPE 'e'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:355:2: ( ESCAPE 'e' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:355:4: ESCAPE 'e'
             {
             mESCAPE(); 
             match('e'); 
@@ -440,8 +452,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = DIGIT_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:328:2: ( ESCAPE 'd' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:328:4: ESCAPE 'd'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:360:2: ( ESCAPE 'd' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:360:4: ESCAPE 'd'
             {
             mESCAPE(); 
             match('d'); 
@@ -461,8 +473,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NOT_DIGIT_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:333:2: ( ESCAPE 'D' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:333:4: ESCAPE 'D'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:365:2: ( ESCAPE 'D' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:365:4: ESCAPE 'D'
             {
             mESCAPE(); 
             match('D'); 
@@ -482,8 +494,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = WORD_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:338:2: ( ESCAPE 'w' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:338:4: ESCAPE 'w'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:370:2: ( ESCAPE 'w' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:370:4: ESCAPE 'w'
             {
             mESCAPE(); 
             match('w'); 
@@ -503,8 +515,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NOT_WORD_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:343:2: ( ESCAPE 'W' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:343:4: ESCAPE 'W'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:2: ( ESCAPE 'W' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:4: ESCAPE 'W'
             {
             mESCAPE(); 
             match('W'); 
@@ -524,8 +536,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = WHITE_SPACE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:348:2: ( ESCAPE 's' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:348:4: ESCAPE 's'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:380:2: ( ESCAPE 's' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:380:4: ESCAPE 's'
             {
             mESCAPE(); 
             match('s'); 
@@ -545,8 +557,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NOT_WHITE_SPACE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:353:2: ( ESCAPE 'S' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:353:4: ESCAPE 'S'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:385:2: ( ESCAPE 'S' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:385:4: ESCAPE 'S'
             {
             mESCAPE(); 
             match('S'); 
@@ -564,8 +576,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "ESCAPE"
     public final void mESCAPE() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:359:8: ( '\\\\' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:359:10: '\\\\'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:8: ( '\\\\' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:10: '\\\\'
             {
             match('\\'); 
 
@@ -582,8 +594,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = OPEN_SQUARE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:365:2: ( '[' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:365:4: '['
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:397:2: ( '[' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:397:4: '['
             {
             match('['); 
             inSet++;
@@ -603,8 +615,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CARET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:370:2: ({...}? => '^' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:370:4: {...}? => '^'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:402:2: ({...}? => '^' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:402:4: {...}? => '^'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "CARET", "inSet>0");
@@ -626,8 +638,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = RANGE_SEPARATOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:2: ({...}? => '-' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:4: {...}? => '-'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:2: ({...}? => '-' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:4: {...}? => '-'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "RANGE_SEPARATOR", "inSet>0");
@@ -649,8 +661,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_ASCII;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:380:2: ({...}? => 'ascii' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:380:4: {...}? => 'ascii'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:412:2: ({...}? => 'ascii' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:412:4: {...}? => 'ascii'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_ASCII", "inSet>0");
@@ -673,8 +685,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_PRINT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:384:2: ({...}? => 'print' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:384:4: {...}? => 'print'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:416:2: ({...}? => 'print' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:416:4: {...}? => 'print'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_PRINT", "inSet>0");
@@ -697,8 +709,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_GRAPH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:388:2: ({...}? => 'graph' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:388:4: {...}? => 'graph'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:420:2: ({...}? => 'graph' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:420:4: {...}? => 'graph'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_GRAPH", "inSet>0");
@@ -721,8 +733,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_WORD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:9: ({...}? => 'word' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:11: {...}? => 'word'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:9: ({...}? => 'word' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:11: {...}? => 'word'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_WORD", "inSet>0");
@@ -745,8 +757,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_ALPHANUM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:395:2: ({...}? => 'alnum' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:395:4: {...}? => 'alnum'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:2: ({...}? => 'alnum' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:4: {...}? => 'alnum'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_ALPHANUM", "inSet>0");
@@ -769,8 +781,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_ALPHA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:399:2: ({...}? => 'alpha' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:399:4: {...}? => 'alpha'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:2: ({...}? => 'alpha' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:4: {...}? => 'alpha'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_ALPHA", "inSet>0");
@@ -793,8 +805,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_UPPER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:403:2: ({...}? => 'upper' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:403:4: {...}? => 'upper'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:435:2: ({...}? => 'upper' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:435:4: {...}? => 'upper'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_UPPER", "inSet>0");
@@ -817,8 +829,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_LOWER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:2: ({...}? => 'lower' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:4: {...}? => 'lower'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:439:2: ({...}? => 'lower' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:439:4: {...}? => 'lower'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_LOWER", "inSet>0");
@@ -841,8 +853,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_PUNCT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:411:2: ({...}? => 'punct' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:411:4: {...}? => 'punct'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:2: ({...}? => 'punct' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:4: {...}? => 'punct'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_PUNCT", "inSet>0");
@@ -865,8 +877,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_HEXDIGIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:415:2: ({...}? => 'xdigit' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:415:4: {...}? => 'xdigit'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:447:2: ({...}? => 'xdigit' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:447:4: {...}? => 'xdigit'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_HEXDIGIT", "inSet>0");
@@ -889,8 +901,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_DIGIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:419:2: ({...}? => 'digit' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:419:4: {...}? => 'digit'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:451:2: ({...}? => 'digit' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:451:4: {...}? => 'digit'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_DIGIT", "inSet>0");
@@ -913,8 +925,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_WHITESPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:2: ({...}? => 'ws' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:4: {...}? => 'ws'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:455:2: ({...}? => 'ws' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:455:4: {...}? => 'ws'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_WHITESPACE", "inSet>0");
@@ -937,8 +949,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_BLANK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:2: ({...}? => 'blank' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:4: {...}? => 'blank'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:459:2: ({...}? => 'blank' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:459:4: {...}? => 'blank'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_BLANK", "inSet>0");
@@ -961,8 +973,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_SPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:2: ({...}? => 'space' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:4: {...}? => 'space'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:463:2: ({...}? => 'space' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:463:4: {...}? => 'space'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_SPACE", "inSet>0");
@@ -985,8 +997,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_TAB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:434:9: ({...}? => 'tab' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:434:11: {...}? => 'tab'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:466:9: ({...}? => 'tab' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:466:11: {...}? => 'tab'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_TAB", "inSet>0");
@@ -1009,8 +1021,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_NEWLINE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:438:2: ({...}? => 'newline' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:438:4: {...}? => 'newline'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:470:2: ({...}? => 'newline' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:470:4: {...}? => 'newline'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_NEWLINE", "inSet>0");
@@ -1033,8 +1045,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_RETURN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:2: ({...}? => 'return' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:4: {...}? => 'return'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:475:2: ({...}? => 'return' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:475:4: {...}? => 'return'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_RETURN", "inSet>0");
@@ -1057,8 +1069,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_CONTROL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:448:2: ({...}? => 'ctrl' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:448:4: {...}? => 'ctrl'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:480:2: ({...}? => 'ctrl' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:480:4: {...}? => 'ctrl'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_CONTROL", "inSet>0");
@@ -1081,8 +1093,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CLOSE_SQUARE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:477:2: ( ']' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:477:4: ']'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:485:2: ( ']' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:485:4: ']'
             {
             match(']'); 
             inSet--;
@@ -1102,8 +1114,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = AMPERSAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:483:2: ( '&' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:483:4: '&'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:491:2: ( '&' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:491:4: '&'
             {
             match('&'); 
 
@@ -1117,13 +1129,33 @@ public class regularExpressionLexer extends Lexer {
     }
     // $ANTLR end "AMPERSAND"
 
+    // $ANTLR start "TILDE"
+    public final void mTILDE() throws RecognitionException {
+        try {
+            int _type = TILDE;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:495:7: ( '~' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:495:9: '~'
+            {
+            match('~'); 
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "TILDE"
+
     // $ANTLR start "MANY"
     public final void mMANY() throws RecognitionException {
         try {
             int _type = MANY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:488:2: ( '*' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:488:4: '*'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:500:2: ( '*' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:500:4: '*'
             {
             match('*'); 
 
@@ -1142,8 +1174,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = QUESTION_MARK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:493:2: ( '?' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:493:4: '?'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:505:2: ( '?' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:505:4: '?'
             {
             match('?'); 
 
@@ -1162,8 +1194,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:498:2: ( '+' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:498:4: '+'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:510:2: ( '+' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:510:4: '+'
             {
             match('+'); 
 
@@ -1182,8 +1214,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = OPEN_CURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:503:2: ( '{' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:503:4: '{'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:515:2: ( '{' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:515:4: '{'
             {
             match('{'); 
              inRepeat=true; 
@@ -1203,13 +1235,13 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NUMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:8: ({...}? => ( '0' .. '9' )+ )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:10: {...}? => ( '0' .. '9' )+
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:519:8: ({...}? => ( '0' .. '9' )+ )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:519:10: {...}? => ( '0' .. '9' )+
             {
             if ( !(( inRepeat )) ) {
                 throw new FailedPredicateException(input, "NUMBER", " inRepeat ");
             }
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:27: ( '0' .. '9' )+
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:519:27: ( '0' .. '9' )+
             int cnt3=0;
             loop3:
             do {
@@ -1223,7 +1255,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:28: '0' .. '9'
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:519:28: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -1255,8 +1287,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = REPEAT_SEPARATOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:512:2: ({...}? => '-' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:512:4: {...}? => '-'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:524:2: ({...}? => '-' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:524:4: {...}? => '-'
             {
             if ( !(( inRepeat )) ) {
                 throw new FailedPredicateException(input, "REPEAT_SEPARATOR", " inRepeat ");
@@ -1278,8 +1310,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CLOSE_CURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:517:2: ( '}' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:517:4: '}'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:529:2: ( '}' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:529:4: '}'
             {
             match('}'); 
              inRepeat=false; 
@@ -1299,8 +1331,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = BYTE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:521:6: ({...}? => HEX_DIGIT HEX_DIGIT )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:521:8: {...}? => HEX_DIGIT HEX_DIGIT
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:533:6: ({...}? => HEX_DIGIT HEX_DIGIT )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:533:8: {...}? => HEX_DIGIT HEX_DIGIT
             {
             if ( !(( !inRepeat )) ) {
                 throw new FailedPredicateException(input, "BYTE", " !inRepeat ");
@@ -1321,8 +1353,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "HEX_DIGIT"
     public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:527:2: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:527:4: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:539:2: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:539:4: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
                 input.consume();
@@ -1347,11 +1379,11 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:2: ( '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:4: '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:544:2: ( '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:544:4: '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             {
             match('#'); 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:8: (~ ( '\\n' | '\\r' ) )*
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:544:8: (~ ( '\\n' | '\\r' ) )*
             loop4:
             do {
                 int alt4=2;
@@ -1364,7 +1396,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt4) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:8: ~ ( '\\n' | '\\r' )
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:544:8: ~ ( '\\n' | '\\r' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -1384,7 +1416,7 @@ public class regularExpressionLexer extends Lexer {
                 }
             } while (true);
 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:22: ( '\\r' )?
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:544:22: ( '\\r' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -1393,7 +1425,7 @@ public class regularExpressionLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:22: '\\r'
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:544:22: '\\r'
                     {
                     match('\r'); 
 
@@ -1420,8 +1452,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:536:4: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:536:6: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:4: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:6: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -1445,8 +1477,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR end "WS"
 
     public void mTokens() throws RecognitionException {
-        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:8: ( CASE_SENSITIVE_STRING | CASE_INSENSITIVE_STRING | FULL_STOP | ALT | OPEN | CLOSE | TAB_SHORTHAND | NEWLINE_SHORTHAND | VERTICAL_TAB_SHORTHAND | FORM_FEED_SHORTHAND | RETURN_SHORTHAND | ESCAPE_SHORTHAND | DIGIT_SHORTHAND | NOT_DIGIT_SHORTHAND | WORD_SHORTHAND | NOT_WORD_SHORTHAND | WHITE_SPACE_SHORTHAND | NOT_WHITE_SPACE_SHORTHAND | OPEN_SQUARE | CARET | RANGE_SEPARATOR | SET_ASCII | SET_PRINT | SET_GRAPH | SET_WORD | SET_ALPHANUM | SET_ALPHA | SET_UPPER | SET_LOWER | SET_PUNCT | SET_HEXDIGIT | SET_DIGIT | SET_WHITESPACE | SET_BLANK | SET_SPACE | SET_TAB | SET_NEWLINE | SET_RETURN | SET_CONTROL | CLOSE_SQUARE | AMPERSAND | MANY | QUESTION_MARK | PLUS | OPEN_CURLY | NUMBER | REPEAT_SEPARATOR | CLOSE_CURLY | BYTE | COMMENT | WS )
-        int alt6=51;
+        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:8: ( CASE_SENSITIVE_STRING | CASE_INSENSITIVE_STRING | FULL_STOP | ALT | OPEN | CLOSE | TAB_SHORTHAND | NEWLINE_SHORTHAND | VERTICAL_TAB_SHORTHAND | FORM_FEED_SHORTHAND | RETURN_SHORTHAND | ESCAPE_SHORTHAND | DIGIT_SHORTHAND | NOT_DIGIT_SHORTHAND | WORD_SHORTHAND | NOT_WORD_SHORTHAND | WHITE_SPACE_SHORTHAND | NOT_WHITE_SPACE_SHORTHAND | OPEN_SQUARE | CARET | RANGE_SEPARATOR | SET_ASCII | SET_PRINT | SET_GRAPH | SET_WORD | SET_ALPHANUM | SET_ALPHA | SET_UPPER | SET_LOWER | SET_PUNCT | SET_HEXDIGIT | SET_DIGIT | SET_WHITESPACE | SET_BLANK | SET_SPACE | SET_TAB | SET_NEWLINE | SET_RETURN | SET_CONTROL | CLOSE_SQUARE | AMPERSAND | TILDE | MANY | QUESTION_MARK | PLUS | OPEN_CURLY | NUMBER | REPEAT_SEPARATOR | CLOSE_CURLY | BYTE | COMMENT | WS )
+        int alt6=52;
         alt6 = dfa6.predict(input);
         switch (alt6) {
             case 1 :
@@ -1737,70 +1769,77 @@ public class regularExpressionLexer extends Lexer {
                 }
                 break;
             case 42 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:558: MANY
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:558: TILDE
+                {
+                mTILDE(); 
+
+                }
+                break;
+            case 43 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:564: MANY
                 {
                 mMANY(); 
 
                 }
                 break;
-            case 43 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:563: QUESTION_MARK
+            case 44 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:569: QUESTION_MARK
                 {
                 mQUESTION_MARK(); 
 
                 }
                 break;
-            case 44 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:577: PLUS
+            case 45 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:583: PLUS
                 {
                 mPLUS(); 
 
                 }
                 break;
-            case 45 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:582: OPEN_CURLY
+            case 46 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:588: OPEN_CURLY
                 {
                 mOPEN_CURLY(); 
 
                 }
                 break;
-            case 46 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:593: NUMBER
+            case 47 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:599: NUMBER
                 {
                 mNUMBER(); 
 
                 }
                 break;
-            case 47 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:600: REPEAT_SEPARATOR
+            case 48 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:606: REPEAT_SEPARATOR
                 {
                 mREPEAT_SEPARATOR(); 
 
                 }
                 break;
-            case 48 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:617: CLOSE_CURLY
+            case 49 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:623: CLOSE_CURLY
                 {
                 mCLOSE_CURLY(); 
 
                 }
                 break;
-            case 49 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:629: BYTE
+            case 50 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:635: BYTE
                 {
                 mBYTE(); 
 
                 }
                 break;
-            case 50 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:634: COMMENT
+            case 51 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:640: COMMENT
                 {
                 mCOMMENT(); 
 
                 }
                 break;
-            case 51 :
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:642: WS
+            case 52 :
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:1:648: WS
                 {
                 mWS(); 
 
@@ -1814,95 +1853,96 @@ public class regularExpressionLexer extends Lexer {
 
     protected DFA6 dfa6 = new DFA6(this);
     static final String DFA6_eotS =
-        "\12\uffff\1\60\24\uffff\1\72\33\uffff\1\100\5\uffff";
+        "\12\uffff\1\61\25\uffff\1\73\33\uffff\1\101\5\uffff";
     static final String DFA6_eofS =
-        "\101\uffff";
+        "\102\uffff";
     static final String DFA6_minS =
         "\1\11\6\uffff\1\104\2\uffff\1\0\1\60\1\162\1\uffff\1\157\3\uffff"+
-        "\2\60\4\uffff\1\60\6\uffff\1\60\20\uffff\1\0\1\uffff\1\156\10\uffff"+
+        "\2\60\4\uffff\1\60\7\uffff\1\60\20\uffff\1\0\1\uffff\1\156\10\uffff"+
         "\1\60\4\uffff\1\0";
     static final String DFA6_maxS =
-        "\1\175\6\uffff\1\167\2\uffff\1\0\1\163\1\165\1\uffff\1\163\3\uffff"+
-        "\1\151\1\154\4\uffff\1\164\6\uffff\1\146\20\uffff\1\0\1\uffff\1"+
+        "\1\176\6\uffff\1\167\2\uffff\1\0\1\163\1\165\1\uffff\1\163\3\uffff"+
+        "\1\151\1\154\4\uffff\1\164\7\uffff\1\146\20\uffff\1\0\1\uffff\1"+
         "\160\10\uffff\1\71\4\uffff\1\0";
     static final String DFA6_acceptS =
         "\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\uffff\1\23\1\24\3\uffff\1\30"+
         "\1\uffff\1\34\1\35\1\37\2\uffff\1\43\1\44\1\45\1\46\1\uffff\1\50"+
-        "\1\51\1\52\1\53\1\54\1\55\1\uffff\1\60\1\61\1\62\1\63\1\21\1\17"+
-        "\1\15\1\10\1\12\1\22\1\20\1\16\1\14\1\11\1\13\1\7\1\uffff\1\26\1"+
-        "\uffff\1\27\1\36\1\31\1\41\1\40\1\42\1\47\1\56\1\uffff\1\25\1\57"+
-        "\1\32\1\33\1\uffff";
+        "\1\51\1\52\1\53\1\54\1\55\1\56\1\uffff\1\61\1\62\1\63\1\64\1\20"+
+        "\1\22\1\14\1\16\1\11\1\7\1\17\1\21\1\13\1\15\1\12\1\10\1\uffff\1"+
+        "\26\1\uffff\1\27\1\36\1\31\1\41\1\40\1\42\1\47\1\57\1\uffff\1\25"+
+        "\1\60\1\32\1\33\1\uffff";
     static final String DFA6_specialS =
-        "\1\1\11\uffff\1\3\1\10\1\14\1\uffff\1\4\3\uffff\1\0\1\13\4\uffff"+
-        "\1\2\6\uffff\1\6\20\uffff\1\7\1\uffff\1\5\10\uffff\1\12\4\uffff"+
-        "\1\11}>";
+        "\1\3\11\uffff\1\10\1\0\1\6\1\uffff\1\5\3\uffff\1\12\1\11\4\uffff"+
+        "\1\1\7\uffff\1\2\20\uffff\1\14\1\uffff\1\7\10\uffff\1\4\4\uffff"+
+        "\1\13}>";
     static final String[] DFA6_transitionS = {
-            "\2\43\2\uffff\1\43\22\uffff\1\43\2\uffff\1\42\2\uffff\1\32\1"+
-            "\1\1\5\1\6\1\33\1\35\1\uffff\1\12\1\3\1\uffff\12\37\5\uffff"+
-            "\1\34\1\uffff\6\41\24\uffff\1\10\1\7\1\31\1\11\1\uffff\1\2\1"+
-            "\13\1\23\1\30\1\22\2\41\1\15\4\uffff\1\20\1\uffff\1\26\1\uffff"+
+            "\2\44\2\uffff\1\44\22\uffff\1\44\2\uffff\1\43\2\uffff\1\32\1"+
+            "\1\1\5\1\6\1\34\1\36\1\uffff\1\12\1\3\1\uffff\12\40\5\uffff"+
+            "\1\35\1\uffff\6\42\24\uffff\1\10\1\7\1\31\1\11\1\uffff\1\2\1"+
+            "\13\1\23\1\30\1\22\2\42\1\15\4\uffff\1\20\1\uffff\1\26\1\uffff"+
             "\1\14\1\uffff\1\27\1\24\1\25\1\17\1\uffff\1\16\1\21\2\uffff"+
-            "\1\36\1\4\1\40",
+            "\1\37\1\4\1\41\1\33",
             "",
             "",
             "",
             "",
             "",
             "",
-            "\1\53\16\uffff\1\51\3\uffff\1\52\14\uffff\1\46\1\54\1\50\7"+
-            "\uffff\1\47\3\uffff\1\56\1\44\1\57\1\uffff\1\55\1\45",
-            "",
-            "",
-            "\1\uffff",
-            "\12\41\7\uffff\6\41\32\uffff\6\41\5\uffff\1\62\6\uffff\1\61",
-            "\1\63\2\uffff\1\64",
-            "",
-            "\1\65\3\uffff\1\66",
-            "",
-            "",
-            "",
-            "\12\41\7\uffff\6\41\32\uffff\6\41\2\uffff\1\67",
-            "\12\41\7\uffff\6\41\32\uffff\6\41\5\uffff\1\70",
-            "",
-            "",
-            "",
-            "",
-            "\12\41\7\uffff\6\41\32\uffff\6\41\15\uffff\1\71",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\12\73\7\uffff\6\41\32\uffff\6\41",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\1\50\16\uffff\1\46\3\uffff\1\45\14\uffff\1\56\1\47\1\57\7"+
+            "\uffff\1\60\3\uffff\1\55\1\54\1\52\1\uffff\1\51\1\53",
             "",
             "",
             "\1\uffff",
+            "\12\42\7\uffff\6\42\32\uffff\6\42\5\uffff\1\63\6\uffff\1\62",
+            "\1\64\2\uffff\1\65",
             "",
-            "\1\76\1\uffff\1\77",
-            "",
-            "",
-            "",
-            "",
+            "\1\66\3\uffff\1\67",
             "",
             "",
             "",
+            "\12\42\7\uffff\6\42\32\uffff\6\42\2\uffff\1\70",
+            "\12\42\7\uffff\6\42\32\uffff\6\42\5\uffff\1\71",
             "",
-            "\12\72",
+            "",
+            "",
+            "",
+            "\12\42\7\uffff\6\42\32\uffff\6\42\15\uffff\1\72",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\12\74\7\uffff\6\42\32\uffff\6\42",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "\1\77\1\uffff\1\100",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\12\73",
             "",
             "",
             "",
@@ -1940,28 +1980,62 @@ public class regularExpressionLexer extends Lexer {
             this.transition = DFA6_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( CASE_SENSITIVE_STRING | CASE_INSENSITIVE_STRING | FULL_STOP | ALT | OPEN | CLOSE | TAB_SHORTHAND | NEWLINE_SHORTHAND | VERTICAL_TAB_SHORTHAND | FORM_FEED_SHORTHAND | RETURN_SHORTHAND | ESCAPE_SHORTHAND | DIGIT_SHORTHAND | NOT_DIGIT_SHORTHAND | WORD_SHORTHAND | NOT_WORD_SHORTHAND | WHITE_SPACE_SHORTHAND | NOT_WHITE_SPACE_SHORTHAND | OPEN_SQUARE | CARET | RANGE_SEPARATOR | SET_ASCII | SET_PRINT | SET_GRAPH | SET_WORD | SET_ALPHANUM | SET_ALPHA | SET_UPPER | SET_LOWER | SET_PUNCT | SET_HEXDIGIT | SET_DIGIT | SET_WHITESPACE | SET_BLANK | SET_SPACE | SET_TAB | SET_NEWLINE | SET_RETURN | SET_CONTROL | CLOSE_SQUARE | AMPERSAND | MANY | QUESTION_MARK | PLUS | OPEN_CURLY | NUMBER | REPEAT_SEPARATOR | CLOSE_CURLY | BYTE | COMMENT | WS );";
+            return "1:1: Tokens : ( CASE_SENSITIVE_STRING | CASE_INSENSITIVE_STRING | FULL_STOP | ALT | OPEN | CLOSE | TAB_SHORTHAND | NEWLINE_SHORTHAND | VERTICAL_TAB_SHORTHAND | FORM_FEED_SHORTHAND | RETURN_SHORTHAND | ESCAPE_SHORTHAND | DIGIT_SHORTHAND | NOT_DIGIT_SHORTHAND | WORD_SHORTHAND | NOT_WORD_SHORTHAND | WHITE_SPACE_SHORTHAND | NOT_WHITE_SPACE_SHORTHAND | OPEN_SQUARE | CARET | RANGE_SEPARATOR | SET_ASCII | SET_PRINT | SET_GRAPH | SET_WORD | SET_ALPHANUM | SET_ALPHA | SET_UPPER | SET_LOWER | SET_PUNCT | SET_HEXDIGIT | SET_DIGIT | SET_WHITESPACE | SET_BLANK | SET_SPACE | SET_TAB | SET_NEWLINE | SET_RETURN | SET_CONTROL | CLOSE_SQUARE | AMPERSAND | TILDE | MANY | QUESTION_MARK | PLUS | OPEN_CURLY | NUMBER | REPEAT_SEPARATOR | CLOSE_CURLY | BYTE | COMMENT | WS );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA6_18 = input.LA(1);
+                        int LA6_11 = input.LA(1);
 
                          
-                        int index6_18 = input.index();
+                        int index6_11 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA6_18=='i') && ((inSet>0))) {s = 55;}
+                        if ( (LA6_11=='s') && ((inSet>0))) {s = 50;}
 
-                        else if ( ((LA6_18>='0' && LA6_18<='9')||(LA6_18>='A' && LA6_18<='F')||(LA6_18>='a' && LA6_18<='f')) && (( !inRepeat ))) {s = 33;}
+                        else if ( (LA6_11=='l') && ((inSet>0))) {s = 51;}
+
+                        else if ( ((LA6_11>='0' && LA6_11<='9')||(LA6_11>='A' && LA6_11<='F')||(LA6_11>='a' && LA6_11<='f')) && (( !inRepeat ))) {s = 34;}
 
                          
-                        input.seek(index6_18);
+                        input.seek(index6_11);
                         if ( s>=0 ) return s;
                         break;
                     case 1 : 
+                        int LA6_24 = input.LA(1);
+
+                         
+                        int index6_24 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (LA6_24=='t') && ((inSet>0))) {s = 58;}
+
+                        else if ( ((LA6_24>='0' && LA6_24<='9')||(LA6_24>='A' && LA6_24<='F')||(LA6_24>='a' && LA6_24<='f')) && (( !inRepeat ))) {s = 34;}
+
+                         
+                        input.seek(index6_24);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 2 : 
+                        int LA6_32 = input.LA(1);
+
+                         
+                        int index6_32 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((LA6_32>='0' && LA6_32<='9')) && ((( inRepeat )||( !inRepeat )))) {s = 60;}
+
+                        else if ( ((LA6_32>='A' && LA6_32<='F')||(LA6_32>='a' && LA6_32<='f')) && (( !inRepeat ))) {s = 34;}
+
+                        else s = 59;
+
+                         
+                        input.seek(index6_32);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 3 : 
                         int LA6_0 = input.LA(1);
 
                          
@@ -2020,193 +2094,161 @@ public class regularExpressionLexer extends Lexer {
 
                         else if ( (LA6_0=='&') ) {s = 26;}
 
-                        else if ( (LA6_0=='*') ) {s = 27;}
+                        else if ( (LA6_0=='~') ) {s = 27;}
 
-                        else if ( (LA6_0=='?') ) {s = 28;}
+                        else if ( (LA6_0=='*') ) {s = 28;}
 
-                        else if ( (LA6_0=='+') ) {s = 29;}
+                        else if ( (LA6_0=='?') ) {s = 29;}
 
-                        else if ( (LA6_0=='{') ) {s = 30;}
+                        else if ( (LA6_0=='+') ) {s = 30;}
 
-                        else if ( ((LA6_0>='0' && LA6_0<='9')) && ((( inRepeat )||( !inRepeat )))) {s = 31;}
+                        else if ( (LA6_0=='{') ) {s = 31;}
 
-                        else if ( (LA6_0=='}') ) {s = 32;}
+                        else if ( ((LA6_0>='0' && LA6_0<='9')) && ((( inRepeat )||( !inRepeat )))) {s = 32;}
 
-                        else if ( ((LA6_0>='A' && LA6_0<='F')||(LA6_0>='e' && LA6_0<='f')) && (( !inRepeat ))) {s = 33;}
+                        else if ( (LA6_0=='}') ) {s = 33;}
 
-                        else if ( (LA6_0=='#') ) {s = 34;}
+                        else if ( ((LA6_0>='A' && LA6_0<='F')||(LA6_0>='e' && LA6_0<='f')) && (( !inRepeat ))) {s = 34;}
 
-                        else if ( ((LA6_0>='\t' && LA6_0<='\n')||LA6_0=='\r'||LA6_0==' ') ) {s = 35;}
+                        else if ( (LA6_0=='#') ) {s = 35;}
+
+                        else if ( ((LA6_0>='\t' && LA6_0<='\n')||LA6_0=='\r'||LA6_0==' ') ) {s = 36;}
 
                          
                         input.seek(index6_0);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
-                        int LA6_24 = input.LA(1);
-
-                         
-                        int index6_24 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( (LA6_24=='t') && ((inSet>0))) {s = 57;}
-
-                        else if ( ((LA6_24>='0' && LA6_24<='9')||(LA6_24>='A' && LA6_24<='F')||(LA6_24>='a' && LA6_24<='f')) && (( !inRepeat ))) {s = 33;}
-
-                         
-                        input.seek(index6_24);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 3 : 
-                        int LA6_10 = input.LA(1);
-
-                         
-                        int index6_10 = input.index();
-                        input.rewind();
-                        s = -1;
-                        s = 48;
-
-                         
-                        input.seek(index6_10);
-                        if ( s>=0 ) return s;
-                        break;
                     case 4 : 
+                        int LA6_60 = input.LA(1);
+
+                         
+                        int index6_60 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((LA6_60>='0' && LA6_60<='9')) && (( inRepeat ))) {s = 59;}
+
+                        else s = 65;
+
+                         
+                        input.seek(index6_60);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 5 : 
                         int LA6_14 = input.LA(1);
 
                          
                         int index6_14 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA6_14=='o') && ((inSet>0))) {s = 53;}
+                        if ( (LA6_14=='o') && ((inSet>0))) {s = 54;}
 
-                        else if ( (LA6_14=='s') && ((inSet>0))) {s = 54;}
+                        else if ( (LA6_14=='s') && ((inSet>0))) {s = 55;}
 
                          
                         input.seek(index6_14);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
-                        int LA6_50 = input.LA(1);
-
-                         
-                        int index6_50 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( (LA6_50=='n') && ((inSet>0))) {s = 62;}
-
-                        else if ( (LA6_50=='p') && ((inSet>0))) {s = 63;}
-
-                         
-                        input.seek(index6_50);
-                        if ( s>=0 ) return s;
-                        break;
                     case 6 : 
-                        int LA6_31 = input.LA(1);
-
-                         
-                        int index6_31 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((LA6_31>='0' && LA6_31<='9')) && ((( inRepeat )||( !inRepeat )))) {s = 59;}
-
-                        else if ( ((LA6_31>='A' && LA6_31<='F')||(LA6_31>='a' && LA6_31<='f')) && (( !inRepeat ))) {s = 33;}
-
-                        else s = 58;
-
-                         
-                        input.seek(index6_31);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 7 : 
-                        int LA6_48 = input.LA(1);
-
-                         
-                        int index6_48 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((inSet>0)) ) {s = 60;}
-
-                        else if ( (( inRepeat )) ) {s = 61;}
-
-                         
-                        input.seek(index6_48);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 8 : 
-                        int LA6_11 = input.LA(1);
-
-                         
-                        int index6_11 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( (LA6_11=='s') && ((inSet>0))) {s = 49;}
-
-                        else if ( (LA6_11=='l') && ((inSet>0))) {s = 50;}
-
-                        else if ( ((LA6_11>='0' && LA6_11<='9')||(LA6_11>='A' && LA6_11<='F')||(LA6_11>='a' && LA6_11<='f')) && (( !inRepeat ))) {s = 33;}
-
-                         
-                        input.seek(index6_11);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 9 : 
-                        int LA6_64 = input.LA(1);
-
-                         
-                        int index6_64 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( (( inRepeat )) ) {s = 58;}
-
-                        else if ( (( !inRepeat )) ) {s = 33;}
-
-                         
-                        input.seek(index6_64);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 10 : 
-                        int LA6_59 = input.LA(1);
-
-                         
-                        int index6_59 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((LA6_59>='0' && LA6_59<='9')) && (( inRepeat ))) {s = 58;}
-
-                        else s = 64;
-
-                         
-                        input.seek(index6_59);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 11 : 
-                        int LA6_19 = input.LA(1);
-
-                         
-                        int index6_19 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( (LA6_19=='l') && ((inSet>0))) {s = 56;}
-
-                        else if ( ((LA6_19>='0' && LA6_19<='9')||(LA6_19>='A' && LA6_19<='F')||(LA6_19>='a' && LA6_19<='f')) && (( !inRepeat ))) {s = 33;}
-
-                         
-                        input.seek(index6_19);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 12 : 
                         int LA6_12 = input.LA(1);
 
                          
                         int index6_12 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA6_12=='r') && ((inSet>0))) {s = 51;}
+                        if ( (LA6_12=='r') && ((inSet>0))) {s = 52;}
 
-                        else if ( (LA6_12=='u') && ((inSet>0))) {s = 52;}
+                        else if ( (LA6_12=='u') && ((inSet>0))) {s = 53;}
 
                          
                         input.seek(index6_12);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 7 : 
+                        int LA6_51 = input.LA(1);
+
+                         
+                        int index6_51 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (LA6_51=='n') && ((inSet>0))) {s = 63;}
+
+                        else if ( (LA6_51=='p') && ((inSet>0))) {s = 64;}
+
+                         
+                        input.seek(index6_51);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 8 : 
+                        int LA6_10 = input.LA(1);
+
+                         
+                        int index6_10 = input.index();
+                        input.rewind();
+                        s = -1;
+                        s = 49;
+
+                         
+                        input.seek(index6_10);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 9 : 
+                        int LA6_19 = input.LA(1);
+
+                         
+                        int index6_19 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (LA6_19=='l') && ((inSet>0))) {s = 57;}
+
+                        else if ( ((LA6_19>='0' && LA6_19<='9')||(LA6_19>='A' && LA6_19<='F')||(LA6_19>='a' && LA6_19<='f')) && (( !inRepeat ))) {s = 34;}
+
+                         
+                        input.seek(index6_19);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 10 : 
+                        int LA6_18 = input.LA(1);
+
+                         
+                        int index6_18 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (LA6_18=='i') && ((inSet>0))) {s = 56;}
+
+                        else if ( ((LA6_18>='0' && LA6_18<='9')||(LA6_18>='A' && LA6_18<='F')||(LA6_18>='a' && LA6_18<='f')) && (( !inRepeat ))) {s = 34;}
+
+                         
+                        input.seek(index6_18);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 11 : 
+                        int LA6_65 = input.LA(1);
+
+                         
+                        int index6_65 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (( inRepeat )) ) {s = 59;}
+
+                        else if ( (( !inRepeat )) ) {s = 34;}
+
+                         
+                        input.seek(index6_65);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 12 : 
+                        int LA6_49 = input.LA(1);
+
+                         
+                        int index6_49 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((inSet>0)) ) {s = 61;}
+
+                        else if ( (( inRepeat )) ) {s = 62;}
+
+                         
+                        input.seek(index6_49);
                         if ( s>=0 ) return s;
                         break;
             }
