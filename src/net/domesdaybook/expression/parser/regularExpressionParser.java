@@ -1,11 +1,8 @@
 package net.domesdaybook.expression.parser;
 
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2010-12-08 22:19:07
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2011-01-01 11:17:47
 
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 
 import org.antlr.runtime.tree.*;
@@ -113,7 +110,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "start"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:59:1: start : regex EOF ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:75:1: start : regex EOF ;
     public final regularExpressionParser.start_return start() throws RecognitionException {
         regularExpressionParser.start_return retval = new regularExpressionParser.start_return();
         retval.start = input.LT(1);
@@ -127,18 +124,18 @@ public class regularExpressionParser extends Parser {
         Object EOF2_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:59:7: ( regex EOF )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:59:9: regex EOF
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:75:7: ( regex EOF )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:75:9: regex EOF
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_regex_in_start143);
+            pushFollow(FOLLOW_regex_in_start124);
             regex1=regex();
 
             state._fsp--;
 
             adaptor.addChild(root_0, regex1.getTree());
-            EOF2=(Token)match(input,EOF,FOLLOW_EOF_in_start145); 
+            EOF2=(Token)match(input,EOF,FOLLOW_EOF_in_start126); 
 
             }
 
@@ -166,7 +163,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "regex"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:63:1: regex : sequence ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) ) ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:79:1: regex : sequence ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) ) ;
     public final regularExpressionParser.regex_return regex() throws RecognitionException {
         regularExpressionParser.regex_return retval = new regularExpressionParser.regex_return();
         retval.start = input.LT(1);
@@ -183,16 +180,16 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_ALT=new RewriteRuleTokenStream(adaptor,"token ALT");
         RewriteRuleSubtreeStream stream_sequence=new RewriteRuleSubtreeStream(adaptor,"rule sequence");
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:63:7: ( sequence ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:64:3: sequence ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:79:7: ( sequence ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:80:3: sequence ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) )
             {
-            pushFollow(FOLLOW_sequence_in_regex164);
+            pushFollow(FOLLOW_sequence_in_regex145);
             sequence3=sequence();
 
             state._fsp--;
 
             stream_sequence.add(sequence3.getTree());
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:65:3: ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:81:3: ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) )
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -210,12 +207,12 @@ public class regularExpressionParser extends Parser {
             }
             switch (alt2) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:66:4: ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:82:4: ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) )
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:66:4: ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:66:6: ( ALT sequence )+
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:82:4: ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:82:6: ( ALT sequence )+
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:66:6: ( ALT sequence )+
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:82:6: ( ALT sequence )+
                     int cnt1=0;
                     loop1:
                     do {
@@ -229,12 +226,12 @@ public class regularExpressionParser extends Parser {
 
                         switch (alt1) {
                     	case 1 :
-                    	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:66:7: ALT sequence
+                    	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:82:7: ALT sequence
                     	    {
-                    	    ALT4=(Token)match(input,ALT,FOLLOW_ALT_in_regex178);  
+                    	    ALT4=(Token)match(input,ALT,FOLLOW_ALT_in_regex159);  
                     	    stream_ALT.add(ALT4);
 
-                    	    pushFollow(FOLLOW_sequence_in_regex180);
+                    	    pushFollow(FOLLOW_sequence_in_regex161);
                     	    sequence5=sequence();
 
                     	    state._fsp--;
@@ -266,9 +263,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 66:22: -> ^( ALT ( sequence )+ )
+                    // 82:22: -> ^( ALT ( sequence )+ )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:66:25: ^( ALT ( sequence )+ )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:82:25: ^( ALT ( sequence )+ )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(stream_ALT.nextNode(), root_1);
@@ -294,10 +291,10 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:68:4: ( -> sequence )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:84:4: ( -> sequence )
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:68:4: ( -> sequence )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:68:9: 
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:84:4: ( -> sequence )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:84:9: 
                     {
 
                     // AST REWRITE
@@ -311,7 +308,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 68:9: -> sequence
+                    // 84:9: -> sequence
                     {
                         adaptor.addChild(root_0, stream_sequence.nextTree());
 
@@ -353,7 +350,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "sequence"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:75:1: sequence : ({...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? ) | {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) ) );
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:91:1: sequence : ({...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? ) | {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) ) );
     public final regularExpressionParser.sequence_return sequence() throws RecognitionException {
         regularExpressionParser.sequence_return retval = new regularExpressionParser.sequence_return();
         retval.start = input.LT(1);
@@ -372,23 +369,23 @@ public class regularExpressionParser extends Parser {
         RewriteRuleSubtreeStream stream_quantified_atom=new RewriteRuleSubtreeStream(adaptor,"rule quantified_atom");
         RewriteRuleSubtreeStream stream_sequence=new RewriteRuleSubtreeStream(adaptor,"rule sequence");
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:76:2: ({...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? ) | {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:92:2: ({...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? ) | {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) ) )
             int alt6=2;
             alt6 = dfa6.predict(input);
             switch (alt6) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:76:4: {...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:92:4: {...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? )
                     {
                     if ( !((sequencesAsTree)) ) {
                         throw new FailedPredicateException(input, "sequence", "sequencesAsTree");
                     }
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:77:2: ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:78:3: ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )?
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:93:2: ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:94:3: ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )?
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:78:3: ( quantified_atom -> quantified_atom )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:78:5: quantified_atom
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:94:3: ( quantified_atom -> quantified_atom )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:94:5: quantified_atom
                     {
-                    pushFollow(FOLLOW_quantified_atom_in_sequence246);
+                    pushFollow(FOLLOW_quantified_atom_in_sequence227);
                     quantified_atom6=quantified_atom();
 
                     state._fsp--;
@@ -407,7 +404,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 78:21: -> quantified_atom
+                    // 94:21: -> quantified_atom
                     {
                         adaptor.addChild(root_0, stream_quantified_atom.nextTree());
 
@@ -416,14 +413,14 @@ public class regularExpressionParser extends Parser {
                     retval.tree = root_0;
                     }
 
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:79:3: ( sequence -> ^( SEQUENCE quantified_atom sequence ) )?
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:95:3: ( sequence -> ^( SEQUENCE quantified_atom sequence ) )?
                     int alt3=2;
                     alt3 = dfa3.predict(input);
                     switch (alt3) {
                         case 1 :
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:79:5: sequence
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:95:5: sequence
                             {
-                            pushFollow(FOLLOW_sequence_in_sequence258);
+                            pushFollow(FOLLOW_sequence_in_sequence239);
                             sequence7=sequence();
 
                             state._fsp--;
@@ -432,7 +429,7 @@ public class regularExpressionParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: quantified_atom, sequence
+                            // elements: sequence, quantified_atom
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -442,9 +439,9 @@ public class regularExpressionParser extends Parser {
                             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                             root_0 = (Object)adaptor.nil();
-                            // 79:16: -> ^( SEQUENCE quantified_atom sequence )
+                            // 95:16: -> ^( SEQUENCE quantified_atom sequence )
                             {
-                                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:79:19: ^( SEQUENCE quantified_atom sequence )
+                                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:95:19: ^( SEQUENCE quantified_atom sequence )
                                 {
                                 Object root_1 = (Object)adaptor.nil();
                                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SEQUENCE, "SEQUENCE"), root_1);
@@ -470,21 +467,21 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:82:3: {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:98:3: {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) )
                     {
                     if ( !((!sequencesAsTree)) ) {
                         throw new FailedPredicateException(input, "sequence", "!sequencesAsTree");
                     }
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:83:2: ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:84:3: quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:99:2: ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:100:3: quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) )
                     {
-                    pushFollow(FOLLOW_quantified_atom_in_sequence292);
+                    pushFollow(FOLLOW_quantified_atom_in_sequence273);
                     quantified_atom8=quantified_atom();
 
                     state._fsp--;
 
                     stream_quantified_atom.add(quantified_atom8.getTree());
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:85:3: ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:101:3: ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) )
                     int alt5=2;
                     int LA5_0 = input.LA(1);
 
@@ -502,12 +499,12 @@ public class regularExpressionParser extends Parser {
                     }
                     switch (alt5) {
                         case 1 :
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:86:4: ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) )
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:102:4: ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) )
                             {
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:86:4: ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) )
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:86:6: ( quantified_atom )+
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:102:4: ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) )
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:102:6: ( quantified_atom )+
                             {
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:86:6: ( quantified_atom )+
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:102:6: ( quantified_atom )+
                             int cnt4=0;
                             loop4:
                             do {
@@ -521,9 +518,9 @@ public class regularExpressionParser extends Parser {
 
                                 switch (alt4) {
                             	case 1 :
-                            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:86:6: quantified_atom
+                            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:102:6: quantified_atom
                             	    {
-                            	    pushFollow(FOLLOW_quantified_atom_in_sequence303);
+                            	    pushFollow(FOLLOW_quantified_atom_in_sequence284);
                             	    quantified_atom9=quantified_atom();
 
                             	    state._fsp--;
@@ -555,9 +552,9 @@ public class regularExpressionParser extends Parser {
                             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                             root_0 = (Object)adaptor.nil();
-                            // 86:23: -> ^( SEQUENCE ( quantified_atom )+ )
+                            // 102:23: -> ^( SEQUENCE ( quantified_atom )+ )
                             {
-                                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:86:26: ^( SEQUENCE ( quantified_atom )+ )
+                                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:102:26: ^( SEQUENCE ( quantified_atom )+ )
                                 {
                                 Object root_1 = (Object)adaptor.nil();
                                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SEQUENCE, "SEQUENCE"), root_1);
@@ -583,10 +580,10 @@ public class regularExpressionParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:88:4: ( -> ^( quantified_atom ) )
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:104:4: ( -> ^( quantified_atom ) )
                             {
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:88:4: ( -> ^( quantified_atom ) )
-                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:88:8: 
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:104:4: ( -> ^( quantified_atom ) )
+                            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:104:8: 
                             {
 
                             // AST REWRITE
@@ -600,9 +597,9 @@ public class regularExpressionParser extends Parser {
                             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                             root_0 = (Object)adaptor.nil();
-                            // 88:8: -> ^( quantified_atom )
+                            // 104:8: -> ^( quantified_atom )
                             {
-                                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:88:11: ^( quantified_atom )
+                                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:104:11: ^( quantified_atom )
                                 {
                                 Object root_1 = (Object)adaptor.nil();
                                 root_1 = (Object)adaptor.becomeRoot(stream_quantified_atom.nextNode(), root_1);
@@ -653,7 +650,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "quantified_atom"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:95:1: quantified_atom : e= atom ( quantifier -> ^( quantifier $e) | -> ^( $e) ) ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:111:1: quantified_atom : e= atom ( quantifier -> ^( quantifier $e) | -> ^( $e) ) ;
     public final regularExpressionParser.quantified_atom_return quantified_atom() throws RecognitionException {
         regularExpressionParser.quantified_atom_return retval = new regularExpressionParser.quantified_atom_return();
         retval.start = input.LT(1);
@@ -668,16 +665,16 @@ public class regularExpressionParser extends Parser {
         RewriteRuleSubtreeStream stream_quantifier=new RewriteRuleSubtreeStream(adaptor,"rule quantifier");
         RewriteRuleSubtreeStream stream_atom=new RewriteRuleSubtreeStream(adaptor,"rule atom");
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:96:2: (e= atom ( quantifier -> ^( quantifier $e) | -> ^( $e) ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:96:4: e= atom ( quantifier -> ^( quantifier $e) | -> ^( $e) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:112:2: (e= atom ( quantifier -> ^( quantifier $e) | -> ^( $e) ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:112:4: e= atom ( quantifier -> ^( quantifier $e) | -> ^( $e) )
             {
-            pushFollow(FOLLOW_atom_in_quantified_atom363);
+            pushFollow(FOLLOW_atom_in_quantified_atom344);
             e=atom();
 
             state._fsp--;
 
             stream_atom.add(e.getTree());
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:97:2: ( quantifier -> ^( quantifier $e) | -> ^( $e) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:113:2: ( quantifier -> ^( quantifier $e) | -> ^( $e) )
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -695,9 +692,9 @@ public class regularExpressionParser extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:97:4: quantifier
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:113:4: quantifier
                     {
-                    pushFollow(FOLLOW_quantifier_in_quantified_atom368);
+                    pushFollow(FOLLOW_quantifier_in_quantified_atom349);
                     quantifier10=quantifier();
 
                     state._fsp--;
@@ -717,9 +714,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_e=new RewriteRuleSubtreeStream(adaptor,"rule e",e!=null?e.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 97:17: -> ^( quantifier $e)
+                    // 113:17: -> ^( quantifier $e)
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:97:20: ^( quantifier $e)
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:113:20: ^( quantifier $e)
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(stream_quantifier.nextNode(), root_1);
@@ -735,7 +732,7 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:98:7: 
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:114:7: 
                     {
 
                     // AST REWRITE
@@ -750,9 +747,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_e=new RewriteRuleSubtreeStream(adaptor,"rule e",e!=null?e.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 98:7: -> ^( $e)
+                    // 114:7: -> ^( $e)
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:98:10: ^( $e)
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:114:10: ^( $e)
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(stream_e.nextNode(), root_1);
@@ -795,7 +792,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "atom"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:103:1: atom : ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group ) ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:119:1: atom : ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group ) ;
     public final regularExpressionParser.atom_return atom() throws RecognitionException {
         regularExpressionParser.atom_return retval = new regularExpressionParser.atom_return();
         retval.start = input.LT(1);
@@ -823,12 +820,12 @@ public class regularExpressionParser extends Parser {
 
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:103:6: ( ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:104:2: ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:119:6: ( ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:120:2: ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group )
             {
             root_0 = (Object)adaptor.nil();
 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:104:2: ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:120:2: ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | bitmask | case_sensitive_string | case_insensitive_string | group )
             int alt8=9;
             switch ( input.LA(1) ) {
             case BYTE:
@@ -895,9 +892,9 @@ public class regularExpressionParser extends Parser {
 
             switch (alt8) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:104:4: hexbyte
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:120:4: hexbyte
                     {
-                    pushFollow(FOLLOW_hexbyte_in_atom410);
+                    pushFollow(FOLLOW_hexbyte_in_atom391);
                     hexbyte11=hexbyte();
 
                     state._fsp--;
@@ -907,9 +904,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:105:4: any_byte
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:121:4: any_byte
                     {
-                    pushFollow(FOLLOW_any_byte_in_atom415);
+                    pushFollow(FOLLOW_any_byte_in_atom396);
                     any_byte12=any_byte();
 
                     state._fsp--;
@@ -919,9 +916,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:106:4: byte_set
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:122:4: byte_set
                     {
-                    pushFollow(FOLLOW_byte_set_in_atom420);
+                    pushFollow(FOLLOW_byte_set_in_atom401);
                     byte_set13=byte_set();
 
                     state._fsp--;
@@ -931,9 +928,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:107:4: byte_shorthand
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:123:4: byte_shorthand
                     {
-                    pushFollow(FOLLOW_byte_shorthand_in_atom425);
+                    pushFollow(FOLLOW_byte_shorthand_in_atom406);
                     byte_shorthand14=byte_shorthand();
 
                     state._fsp--;
@@ -943,9 +940,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:108:4: set_shorthand
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:124:4: set_shorthand
                     {
-                    pushFollow(FOLLOW_set_shorthand_in_atom430);
+                    pushFollow(FOLLOW_set_shorthand_in_atom411);
                     set_shorthand15=set_shorthand();
 
                     state._fsp--;
@@ -955,9 +952,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:109:4: bitmask
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:125:4: bitmask
                     {
-                    pushFollow(FOLLOW_bitmask_in_atom435);
+                    pushFollow(FOLLOW_bitmask_in_atom416);
                     bitmask16=bitmask();
 
                     state._fsp--;
@@ -967,9 +964,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:110:4: case_sensitive_string
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:126:4: case_sensitive_string
                     {
-                    pushFollow(FOLLOW_case_sensitive_string_in_atom440);
+                    pushFollow(FOLLOW_case_sensitive_string_in_atom421);
                     case_sensitive_string17=case_sensitive_string();
 
                     state._fsp--;
@@ -979,9 +976,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:111:4: case_insensitive_string
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:127:4: case_insensitive_string
                     {
-                    pushFollow(FOLLOW_case_insensitive_string_in_atom445);
+                    pushFollow(FOLLOW_case_insensitive_string_in_atom426);
                     case_insensitive_string18=case_insensitive_string();
 
                     state._fsp--;
@@ -991,9 +988,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:112:4: group
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:128:4: group
                     {
-                    pushFollow(FOLLOW_group_in_atom450);
+                    pushFollow(FOLLOW_group_in_atom431);
                     group19=group();
 
                     state._fsp--;
@@ -1032,7 +1029,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "hexbyte"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:117:1: hexbyte : BYTE ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:133:1: hexbyte : BYTE ;
     public final regularExpressionParser.hexbyte_return hexbyte() throws RecognitionException {
         regularExpressionParser.hexbyte_return retval = new regularExpressionParser.hexbyte_return();
         retval.start = input.LT(1);
@@ -1044,12 +1041,12 @@ public class regularExpressionParser extends Parser {
         Object BYTE20_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:117:9: ( BYTE )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:117:11: BYTE
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:133:9: ( BYTE )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:133:11: BYTE
             {
             root_0 = (Object)adaptor.nil();
 
-            BYTE20=(Token)match(input,BYTE,FOLLOW_BYTE_in_hexbyte465); 
+            BYTE20=(Token)match(input,BYTE,FOLLOW_BYTE_in_hexbyte446); 
             BYTE20_tree = (Object)adaptor.create(BYTE20);
             adaptor.addChild(root_0, BYTE20_tree);
 
@@ -1080,7 +1077,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "any_byte"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:121:1: any_byte : FULL_STOP -> ANY ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:137:1: any_byte : FULL_STOP -> ANY ;
     public final regularExpressionParser.any_byte_return any_byte() throws RecognitionException {
         regularExpressionParser.any_byte_return retval = new regularExpressionParser.any_byte_return();
         retval.start = input.LT(1);
@@ -1093,10 +1090,10 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_FULL_STOP=new RewriteRuleTokenStream(adaptor,"token FULL_STOP");
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:121:9: ( FULL_STOP -> ANY )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:121:11: FULL_STOP
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:137:9: ( FULL_STOP -> ANY )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:137:11: FULL_STOP
             {
-            FULL_STOP21=(Token)match(input,FULL_STOP,FOLLOW_FULL_STOP_in_any_byte475);  
+            FULL_STOP21=(Token)match(input,FULL_STOP,FOLLOW_FULL_STOP_in_any_byte456);  
             stream_FULL_STOP.add(FULL_STOP21);
 
 
@@ -1112,7 +1109,7 @@ public class regularExpressionParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 121:22: -> ANY
+            // 137:22: -> ANY
             {
                 adaptor.addChild(root_0, (Object)adaptor.create(ANY, "ANY"));
 
@@ -1145,7 +1142,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "byte_set"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:125:1: byte_set : OPEN_SQUARE ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) ) CLOSE_SQUARE ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:141:1: byte_set : OPEN_SQUARE ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) ) CLOSE_SQUARE ;
     public final regularExpressionParser.byte_set_return byte_set() throws RecognitionException {
         regularExpressionParser.byte_set_return retval = new regularExpressionParser.byte_set_return();
         retval.start = input.LT(1);
@@ -1168,13 +1165,13 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_CARET=new RewriteRuleTokenStream(adaptor,"token CARET");
         RewriteRuleSubtreeStream stream_set_specification=new RewriteRuleSubtreeStream(adaptor,"rule set_specification");
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:126:2: ( OPEN_SQUARE ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) ) CLOSE_SQUARE )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:126:4: OPEN_SQUARE ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) ) CLOSE_SQUARE
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:142:2: ( OPEN_SQUARE ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) ) CLOSE_SQUARE )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:142:4: OPEN_SQUARE ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) ) CLOSE_SQUARE
             {
-            OPEN_SQUARE22=(Token)match(input,OPEN_SQUARE,FOLLOW_OPEN_SQUARE_in_byte_set493);  
+            OPEN_SQUARE22=(Token)match(input,OPEN_SQUARE,FOLLOW_OPEN_SQUARE_in_byte_set474);  
             stream_OPEN_SQUARE.add(OPEN_SQUARE22);
 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:127:2: ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:143:2: ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) )
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -1192,15 +1189,15 @@ public class regularExpressionParser extends Parser {
             }
             switch (alt9) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:128:3: ( CARET set_specification -> ^( INVERTED_SET set_specification ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:144:3: ( CARET set_specification -> ^( INVERTED_SET set_specification ) )
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:128:3: ( CARET set_specification -> ^( INVERTED_SET set_specification ) )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:128:5: CARET set_specification
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:144:3: ( CARET set_specification -> ^( INVERTED_SET set_specification ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:144:5: CARET set_specification
                     {
-                    CARET23=(Token)match(input,CARET,FOLLOW_CARET_in_byte_set504);  
+                    CARET23=(Token)match(input,CARET,FOLLOW_CARET_in_byte_set485);  
                     stream_CARET.add(CARET23);
 
-                    pushFollow(FOLLOW_set_specification_in_byte_set506);
+                    pushFollow(FOLLOW_set_specification_in_byte_set487);
                     set_specification24=set_specification();
 
                     state._fsp--;
@@ -1219,9 +1216,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 128:30: -> ^( INVERTED_SET set_specification )
+                    // 144:30: -> ^( INVERTED_SET set_specification )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:128:33: ^( INVERTED_SET set_specification )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:144:33: ^( INVERTED_SET set_specification )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(INVERTED_SET, "INVERTED_SET"), root_1);
@@ -1240,12 +1237,12 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:130:3: ( set_specification -> ^( SET set_specification ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:146:3: ( set_specification -> ^( SET set_specification ) )
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:130:3: ( set_specification -> ^( SET set_specification ) )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:130:5: set_specification
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:146:3: ( set_specification -> ^( SET set_specification ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:146:5: set_specification
                     {
-                    pushFollow(FOLLOW_set_specification_in_byte_set531);
+                    pushFollow(FOLLOW_set_specification_in_byte_set512);
                     set_specification25=set_specification();
 
                     state._fsp--;
@@ -1264,9 +1261,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 130:25: -> ^( SET set_specification )
+                    // 146:25: -> ^( SET set_specification )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:130:28: ^( SET set_specification )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:146:28: ^( SET set_specification )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
@@ -1287,7 +1284,7 @@ public class regularExpressionParser extends Parser {
 
             }
 
-            CLOSE_SQUARE26=(Token)match(input,CLOSE_SQUARE,FOLLOW_CLOSE_SQUARE_in_byte_set553);  
+            CLOSE_SQUARE26=(Token)match(input,CLOSE_SQUARE,FOLLOW_CLOSE_SQUARE_in_byte_set534);  
             stream_CLOSE_SQUARE.add(CLOSE_SQUARE26);
 
 
@@ -1317,7 +1314,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "set_specification"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:136:1: set_specification : ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+ ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:152:1: set_specification : ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+ ;
     public final regularExpressionParser.set_specification_return set_specification() throws RecognitionException {
         regularExpressionParser.set_specification_return retval = new regularExpressionParser.set_specification_return();
         retval.start = input.LT(1);
@@ -1345,12 +1342,12 @@ public class regularExpressionParser extends Parser {
 
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:137:2: ( ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+ )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:138:2: ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:153:2: ( ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+ )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:154:2: ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+
             {
             root_0 = (Object)adaptor.nil();
 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:138:2: ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:154:2: ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+
             int cnt10=0;
             loop10:
             do {
@@ -1358,9 +1355,9 @@ public class regularExpressionParser extends Parser {
                 alt10 = dfa10.predict(input);
                 switch (alt10) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:138:4: hexbyte
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:154:4: hexbyte
             	    {
-            	    pushFollow(FOLLOW_hexbyte_in_set_specification569);
+            	    pushFollow(FOLLOW_hexbyte_in_set_specification550);
             	    hexbyte27=hexbyte();
 
             	    state._fsp--;
@@ -1370,9 +1367,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:139:4: byte_shorthand
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:155:4: byte_shorthand
             	    {
-            	    pushFollow(FOLLOW_byte_shorthand_in_set_specification574);
+            	    pushFollow(FOLLOW_byte_shorthand_in_set_specification555);
             	    byte_shorthand28=byte_shorthand();
 
             	    state._fsp--;
@@ -1382,9 +1379,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 3 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:140:4: set_shorthand
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:156:4: set_shorthand
             	    {
-            	    pushFollow(FOLLOW_set_shorthand_in_set_specification579);
+            	    pushFollow(FOLLOW_set_shorthand_in_set_specification560);
             	    set_shorthand29=set_shorthand();
 
             	    state._fsp--;
@@ -1394,9 +1391,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 4 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:141:4: mnemonic
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:157:4: mnemonic
             	    {
-            	    pushFollow(FOLLOW_mnemonic_in_set_specification584);
+            	    pushFollow(FOLLOW_mnemonic_in_set_specification565);
             	    mnemonic30=mnemonic();
 
             	    state._fsp--;
@@ -1406,9 +1403,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 5 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:142:4: case_sensitive_string
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:158:4: case_sensitive_string
             	    {
-            	    pushFollow(FOLLOW_case_sensitive_string_in_set_specification590);
+            	    pushFollow(FOLLOW_case_sensitive_string_in_set_specification571);
             	    case_sensitive_string31=case_sensitive_string();
 
             	    state._fsp--;
@@ -1418,9 +1415,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 6 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:143:4: case_insensitive_string
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:159:4: case_insensitive_string
             	    {
-            	    pushFollow(FOLLOW_case_insensitive_string_in_set_specification595);
+            	    pushFollow(FOLLOW_case_insensitive_string_in_set_specification576);
             	    case_insensitive_string32=case_insensitive_string();
 
             	    state._fsp--;
@@ -1430,9 +1427,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 7 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:144:4: byte_range
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:160:4: byte_range
             	    {
-            	    pushFollow(FOLLOW_byte_range_in_set_specification600);
+            	    pushFollow(FOLLOW_byte_range_in_set_specification581);
             	    byte_range33=byte_range();
 
             	    state._fsp--;
@@ -1442,9 +1439,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 8 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:145:4: bitmask
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:161:4: bitmask
             	    {
-            	    pushFollow(FOLLOW_bitmask_in_set_specification605);
+            	    pushFollow(FOLLOW_bitmask_in_set_specification586);
             	    bitmask34=bitmask();
 
             	    state._fsp--;
@@ -1454,9 +1451,9 @@ public class regularExpressionParser extends Parser {
             	    }
             	    break;
             	case 9 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:146:4: byte_set
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:162:4: byte_set
             	    {
-            	    pushFollow(FOLLOW_byte_set_in_set_specification610);
+            	    pushFollow(FOLLOW_byte_set_in_set_specification591);
             	    byte_set35=byte_set();
 
             	    state._fsp--;
@@ -1502,7 +1499,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "byte_range"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:151:1: byte_range : r1= range_values RANGE_SEPARATOR r2= range_values -> ^( RANGE $r1 $r2) ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:167:1: byte_range : r1= range_values RANGE_SEPARATOR r2= range_values -> ^( RANGE $r1 $r2) ;
     public final regularExpressionParser.byte_range_return byte_range() throws RecognitionException {
         regularExpressionParser.byte_range_return retval = new regularExpressionParser.byte_range_return();
         retval.start = input.LT(1);
@@ -1519,19 +1516,19 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_RANGE_SEPARATOR=new RewriteRuleTokenStream(adaptor,"token RANGE_SEPARATOR");
         RewriteRuleSubtreeStream stream_range_values=new RewriteRuleSubtreeStream(adaptor,"rule range_values");
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:152:2: (r1= range_values RANGE_SEPARATOR r2= range_values -> ^( RANGE $r1 $r2) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:152:4: r1= range_values RANGE_SEPARATOR r2= range_values
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:168:2: (r1= range_values RANGE_SEPARATOR r2= range_values -> ^( RANGE $r1 $r2) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:168:4: r1= range_values RANGE_SEPARATOR r2= range_values
             {
-            pushFollow(FOLLOW_range_values_in_byte_range629);
+            pushFollow(FOLLOW_range_values_in_byte_range610);
             r1=range_values();
 
             state._fsp--;
 
             stream_range_values.add(r1.getTree());
-            RANGE_SEPARATOR36=(Token)match(input,RANGE_SEPARATOR,FOLLOW_RANGE_SEPARATOR_in_byte_range633);  
+            RANGE_SEPARATOR36=(Token)match(input,RANGE_SEPARATOR,FOLLOW_RANGE_SEPARATOR_in_byte_range614);  
             stream_RANGE_SEPARATOR.add(RANGE_SEPARATOR36);
 
-            pushFollow(FOLLOW_range_values_in_byte_range640);
+            pushFollow(FOLLOW_range_values_in_byte_range621);
             r2=range_values();
 
             state._fsp--;
@@ -1552,9 +1549,9 @@ public class regularExpressionParser extends Parser {
             RewriteRuleSubtreeStream stream_r2=new RewriteRuleSubtreeStream(adaptor,"rule r2",r2!=null?r2.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 154:21: -> ^( RANGE $r1 $r2)
+            // 170:21: -> ^( RANGE $r1 $r2)
             {
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:154:24: ^( RANGE $r1 $r2)
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:170:24: ^( RANGE $r1 $r2)
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_1);
@@ -1594,7 +1591,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "range_values"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:158:1: range_values : ( BYTE | CASE_SENSITIVE_STRING );
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:174:1: range_values : ( BYTE | CASE_SENSITIVE_STRING );
     public final regularExpressionParser.range_values_return range_values() throws RecognitionException {
         regularExpressionParser.range_values_return retval = new regularExpressionParser.range_values_return();
         retval.start = input.LT(1);
@@ -1606,7 +1603,7 @@ public class regularExpressionParser extends Parser {
         Object set37_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:159:2: ( BYTE | CASE_SENSITIVE_STRING )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:175:2: ( BYTE | CASE_SENSITIVE_STRING )
             // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -1649,7 +1646,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "bitmask"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:164:1: bitmask : AMPERSAND BYTE -> ^( BITMASK BYTE ) ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:180:1: bitmask : AMPERSAND BYTE -> ^( BITMASK BYTE ) ;
     public final regularExpressionParser.bitmask_return bitmask() throws RecognitionException {
         regularExpressionParser.bitmask_return retval = new regularExpressionParser.bitmask_return();
         retval.start = input.LT(1);
@@ -1665,13 +1662,13 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_BYTE=new RewriteRuleTokenStream(adaptor,"token BYTE");
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:164:9: ( AMPERSAND BYTE -> ^( BITMASK BYTE ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:164:11: AMPERSAND BYTE
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:180:9: ( AMPERSAND BYTE -> ^( BITMASK BYTE ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:180:11: AMPERSAND BYTE
             {
-            AMPERSAND38=(Token)match(input,AMPERSAND,FOLLOW_AMPERSAND_in_bitmask682);  
+            AMPERSAND38=(Token)match(input,AMPERSAND,FOLLOW_AMPERSAND_in_bitmask663);  
             stream_AMPERSAND.add(AMPERSAND38);
 
-            BYTE39=(Token)match(input,BYTE,FOLLOW_BYTE_in_bitmask684);  
+            BYTE39=(Token)match(input,BYTE,FOLLOW_BYTE_in_bitmask665);  
             stream_BYTE.add(BYTE39);
 
 
@@ -1687,9 +1684,9 @@ public class regularExpressionParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 164:27: -> ^( BITMASK BYTE )
+            // 180:27: -> ^( BITMASK BYTE )
             {
-                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:164:30: ^( BITMASK BYTE )
+                // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:180:30: ^( BITMASK BYTE )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(BITMASK, "BITMASK"), root_1);
@@ -1728,7 +1725,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "mnemonic"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:168:1: mnemonic : (m= SET_ASCII -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) ) | m= SET_PRINT -> ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) ) | m= SET_GRAPH -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_WORD -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] ) | m= SET_ALPHANUM -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_ALPHA -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_UPPER -> ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_LOWER -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ) | m= SET_PUNCT -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_HEXDIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) ) | m= SET_DIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_WHITESPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_BLANK -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] ) | m= SET_SPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_TAB -> BYTE[$m,\"09\"] | m= SET_NEWLINE -> BYTE[$m,\"0a\"] | m= SET_RETURN -> BYTE[$m,\"0d\"] | m= SET_CONTROL -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] ) );
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:184:1: mnemonic : (m= SET_ASCII -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) ) | m= SET_PRINT -> ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) ) | m= SET_GRAPH -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_WORD -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] ) | m= SET_ALPHANUM -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_ALPHA -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_UPPER -> ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_LOWER -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ) | m= SET_PUNCT -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_HEXDIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) ) | m= SET_DIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_WHITESPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_BLANK -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] ) | m= SET_SPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_TAB -> BYTE[$m,\"09\"] | m= SET_NEWLINE -> BYTE[$m,\"0a\"] | m= SET_RETURN -> BYTE[$m,\"0d\"] | m= SET_CONTROL -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] ) );
     public final regularExpressionParser.mnemonic_return mnemonic() throws RecognitionException {
         regularExpressionParser.mnemonic_return retval = new regularExpressionParser.mnemonic_return();
         retval.start = input.LT(1);
@@ -1758,7 +1755,7 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_SET_DIGIT=new RewriteRuleTokenStream(adaptor,"token SET_DIGIT");
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:169:2: (m= SET_ASCII -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) ) | m= SET_PRINT -> ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) ) | m= SET_GRAPH -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_WORD -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] ) | m= SET_ALPHANUM -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_ALPHA -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_UPPER -> ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_LOWER -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ) | m= SET_PUNCT -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_HEXDIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) ) | m= SET_DIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_WHITESPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_BLANK -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] ) | m= SET_SPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_TAB -> BYTE[$m,\"09\"] | m= SET_NEWLINE -> BYTE[$m,\"0a\"] | m= SET_RETURN -> BYTE[$m,\"0d\"] | m= SET_CONTROL -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:185:2: (m= SET_ASCII -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) ) | m= SET_PRINT -> ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) ) | m= SET_GRAPH -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_WORD -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] ) | m= SET_ALPHANUM -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_ALPHA -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_UPPER -> ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_LOWER -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ) | m= SET_PUNCT -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_HEXDIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) ) | m= SET_DIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_WHITESPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_BLANK -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] ) | m= SET_SPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_TAB -> BYTE[$m,\"09\"] | m= SET_NEWLINE -> BYTE[$m,\"0a\"] | m= SET_RETURN -> BYTE[$m,\"0d\"] | m= SET_CONTROL -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] ) )
             int alt11=18;
             switch ( input.LA(1) ) {
             case SET_ASCII:
@@ -1860,9 +1857,9 @@ public class regularExpressionParser extends Parser {
 
             switch (alt11) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:169:4: m= SET_ASCII
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:185:4: m= SET_ASCII
                     {
-                    m=(Token)match(input,SET_ASCII,FOLLOW_SET_ASCII_in_mnemonic708);  
+                    m=(Token)match(input,SET_ASCII,FOLLOW_SET_ASCII_in_mnemonic689);  
                     stream_SET_ASCII.add(m);
 
 
@@ -1878,14 +1875,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 169:17: -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) )
+                    // 185:17: -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:169:20: ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:185:20: ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:169:26: ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:185:26: ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -1905,9 +1902,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:170:4: m= SET_PRINT
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:186:4: m= SET_PRINT
                     {
-                    m=(Token)match(input,SET_PRINT,FOLLOW_SET_PRINT_in_mnemonic733);  
+                    m=(Token)match(input,SET_PRINT,FOLLOW_SET_PRINT_in_mnemonic714);  
                     stream_SET_PRINT.add(m);
 
 
@@ -1923,14 +1920,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 170:17: -> ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) )
+                    // 186:17: -> ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:170:20: ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:186:20: ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:170:26: ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:186:26: ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -1950,9 +1947,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:171:4: m= SET_GRAPH
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:187:4: m= SET_GRAPH
                     {
-                    m=(Token)match(input,SET_GRAPH,FOLLOW_SET_GRAPH_in_mnemonic758);  
+                    m=(Token)match(input,SET_GRAPH,FOLLOW_SET_GRAPH_in_mnemonic739);  
                     stream_SET_GRAPH.add(m);
 
 
@@ -1968,14 +1965,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 171:17: -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) )
+                    // 187:17: -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:171:20: ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:187:20: ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:171:26: ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:187:26: ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -1995,9 +1992,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:172:4: m= SET_WORD
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:188:4: m= SET_WORD
                     {
-                    m=(Token)match(input,SET_WORD,FOLLOW_SET_WORD_in_mnemonic783);  
+                    m=(Token)match(input,SET_WORD,FOLLOW_SET_WORD_in_mnemonic764);  
                     stream_SET_WORD.add(m);
 
 
@@ -2013,14 +2010,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 172:16: -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] )
+                    // 188:16: -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:172:19: ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:188:19: ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:172:25: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:188:25: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2030,7 +2027,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:172:64: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:188:64: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2040,7 +2037,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:172:103: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:188:103: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2061,9 +2058,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:173:4: m= SET_ALPHANUM
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:189:4: m= SET_ALPHANUM
                     {
-                    m=(Token)match(input,SET_ALPHANUM,FOLLOW_SET_ALPHANUM_in_mnemonic830);  
+                    m=(Token)match(input,SET_ALPHANUM,FOLLOW_SET_ALPHANUM_in_mnemonic811);  
                     stream_SET_ALPHANUM.add(m);
 
 
@@ -2079,14 +2076,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 173:20: -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
+                    // 189:20: -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:173:23: ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:189:23: ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:173:29: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:189:29: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2096,7 +2093,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:173:68: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:189:68: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2106,7 +2103,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:173:107: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:189:107: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2126,9 +2123,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:174:4: m= SET_ALPHA
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:190:4: m= SET_ALPHA
                     {
-                    m=(Token)match(input,SET_ALPHA,FOLLOW_SET_ALPHA_in_mnemonic874);  
+                    m=(Token)match(input,SET_ALPHA,FOLLOW_SET_ALPHA_in_mnemonic855);  
                     stream_SET_ALPHA.add(m);
 
 
@@ -2144,14 +2141,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 174:17: -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
+                    // 190:17: -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:174:20: ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:190:20: ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:174:26: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:190:26: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2161,7 +2158,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:174:65: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:190:65: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2181,9 +2178,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:175:4: m= SET_UPPER
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:191:4: m= SET_UPPER
                     {
-                    m=(Token)match(input,SET_UPPER,FOLLOW_SET_UPPER_in_mnemonic908);  
+                    m=(Token)match(input,SET_UPPER,FOLLOW_SET_UPPER_in_mnemonic889);  
                     stream_SET_UPPER.add(m);
 
 
@@ -2199,14 +2196,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 175:17: -> ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
+                    // 191:17: -> ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:175:20: ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:191:20: ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:175:26: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:191:26: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2226,9 +2223,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:176:4: m= SET_LOWER
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:192:4: m= SET_LOWER
                     {
-                    m=(Token)match(input,SET_LOWER,FOLLOW_SET_LOWER_in_mnemonic932);  
+                    m=(Token)match(input,SET_LOWER,FOLLOW_SET_LOWER_in_mnemonic913);  
                     stream_SET_LOWER.add(m);
 
 
@@ -2244,14 +2241,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 176:17: -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) )
+                    // 192:17: -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:176:20: ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:192:20: ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:176:26: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:192:26: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2271,9 +2268,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:177:4: m= SET_PUNCT
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:193:4: m= SET_PUNCT
                     {
-                    m=(Token)match(input,SET_PUNCT,FOLLOW_SET_PUNCT_in_mnemonic956);  
+                    m=(Token)match(input,SET_PUNCT,FOLLOW_SET_PUNCT_in_mnemonic937);  
                     stream_SET_PUNCT.add(m);
 
 
@@ -2289,14 +2286,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 177:17: -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) )
+                    // 193:17: -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:177:20: ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:193:20: ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:177:26: ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:193:26: ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2306,7 +2303,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:177:65: ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:193:65: ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2316,7 +2313,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:177:104: ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:193:104: ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2326,7 +2323,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:177:143: ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:193:143: ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2346,9 +2343,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:178:4: m= SET_HEXDIGIT
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:194:4: m= SET_HEXDIGIT
                     {
-                    m=(Token)match(input,SET_HEXDIGIT,FOLLOW_SET_HEXDIGIT_in_mnemonic1010);  
+                    m=(Token)match(input,SET_HEXDIGIT,FOLLOW_SET_HEXDIGIT_in_mnemonic991);  
                     stream_SET_HEXDIGIT.add(m);
 
 
@@ -2364,14 +2361,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 178:20: -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) )
+                    // 194:20: -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:178:23: ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:194:23: ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:178:29: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:194:29: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2381,7 +2378,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:178:68: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:194:68: ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2391,7 +2388,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:178:107: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:194:107: ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2411,9 +2408,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 11 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:179:4: m= SET_DIGIT
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:195:4: m= SET_DIGIT
                     {
-                    m=(Token)match(input,SET_DIGIT,FOLLOW_SET_DIGIT_in_mnemonic1054);  
+                    m=(Token)match(input,SET_DIGIT,FOLLOW_SET_DIGIT_in_mnemonic1035);  
                     stream_SET_DIGIT.add(m);
 
 
@@ -2429,14 +2426,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 179:17: -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
+                    // 195:17: -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:179:20: ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:195:20: ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:179:26: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:195:26: ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2456,9 +2453,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 12 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:180:4: m= SET_WHITESPACE
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:196:4: m= SET_WHITESPACE
                     {
-                    m=(Token)match(input,SET_WHITESPACE,FOLLOW_SET_WHITESPACE_in_mnemonic1078);  
+                    m=(Token)match(input,SET_WHITESPACE,FOLLOW_SET_WHITESPACE_in_mnemonic1059);  
                     stream_SET_WHITESPACE.add(m);
 
 
@@ -2474,9 +2471,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 180:21: -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
+                    // 196:21: -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:180:24: ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:196:24: ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
@@ -2495,9 +2492,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 13 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:181:4: m= SET_BLANK
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:197:4: m= SET_BLANK
                     {
-                    m=(Token)match(input,SET_BLANK,FOLLOW_SET_BLANK_in_mnemonic1103);  
+                    m=(Token)match(input,SET_BLANK,FOLLOW_SET_BLANK_in_mnemonic1084);  
                     stream_SET_BLANK.add(m);
 
 
@@ -2513,9 +2510,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 181:17: -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] )
+                    // 197:17: -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:181:20: ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:197:20: ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
@@ -2532,9 +2529,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 14 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:182:4: m= SET_SPACE
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:198:4: m= SET_SPACE
                     {
-                    m=(Token)match(input,SET_SPACE,FOLLOW_SET_SPACE_in_mnemonic1123);  
+                    m=(Token)match(input,SET_SPACE,FOLLOW_SET_SPACE_in_mnemonic1104);  
                     stream_SET_SPACE.add(m);
 
 
@@ -2550,9 +2547,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 182:17: -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
+                    // 198:17: -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:182:20: ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:198:20: ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
@@ -2573,9 +2570,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 15 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:183:4: m= SET_TAB
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:199:4: m= SET_TAB
                     {
-                    m=(Token)match(input,SET_TAB,FOLLOW_SET_TAB_in_mnemonic1155);  
+                    m=(Token)match(input,SET_TAB,FOLLOW_SET_TAB_in_mnemonic1136);  
                     stream_SET_TAB.add(m);
 
 
@@ -2591,7 +2588,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 183:15: -> BYTE[$m,\"09\"]
+                    // 199:15: -> BYTE[$m,\"09\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, m, "09"));
 
@@ -2601,9 +2598,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 16 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:184:4: m= SET_NEWLINE
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:200:4: m= SET_NEWLINE
                     {
-                    m=(Token)match(input,SET_NEWLINE,FOLLOW_SET_NEWLINE_in_mnemonic1168);  
+                    m=(Token)match(input,SET_NEWLINE,FOLLOW_SET_NEWLINE_in_mnemonic1149);  
                     stream_SET_NEWLINE.add(m);
 
 
@@ -2619,7 +2616,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 184:19: -> BYTE[$m,\"0a\"]
+                    // 200:19: -> BYTE[$m,\"0a\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, m, "0a"));
 
@@ -2629,9 +2626,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 17 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:185:4: m= SET_RETURN
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:201:4: m= SET_RETURN
                     {
-                    m=(Token)match(input,SET_RETURN,FOLLOW_SET_RETURN_in_mnemonic1181);  
+                    m=(Token)match(input,SET_RETURN,FOLLOW_SET_RETURN_in_mnemonic1162);  
                     stream_SET_RETURN.add(m);
 
 
@@ -2647,7 +2644,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 185:18: -> BYTE[$m,\"0d\"]
+                    // 201:18: -> BYTE[$m,\"0d\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, m, "0d"));
 
@@ -2657,9 +2654,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 18 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:186:4: m= SET_CONTROL
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:202:4: m= SET_CONTROL
                     {
-                    m=(Token)match(input,SET_CONTROL,FOLLOW_SET_CONTROL_in_mnemonic1194);  
+                    m=(Token)match(input,SET_CONTROL,FOLLOW_SET_CONTROL_in_mnemonic1175);  
                     stream_SET_CONTROL.add(m);
 
 
@@ -2675,14 +2672,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 186:19: -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] )
+                    // 202:19: -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:186:22: ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:202:22: ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:186:28: ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:202:28: ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -2728,7 +2725,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "byte_shorthand"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:190:1: byte_shorthand : (sh= TAB_SHORTHAND -> BYTE[$sh,\"09\"] | sh= NEWLINE_SHORTHAND -> BYTE[$sh,\"0a\"] | sh= VERTICAL_TAB_SHORTHAND -> BYTE[$sh,\"0b\"] | sh= FORM_FEED_SHORTHAND -> BYTE[$sh,\"0c\"] | sh= RETURN_SHORTHAND -> BYTE[$sh,\"0d\"] | sh= ESCAPE_SHORTHAND -> BYTE[$sh,\"1b\"] );
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:206:1: byte_shorthand : (sh= TAB_SHORTHAND -> BYTE[$sh,\"09\"] | sh= NEWLINE_SHORTHAND -> BYTE[$sh,\"0a\"] | sh= VERTICAL_TAB_SHORTHAND -> BYTE[$sh,\"0b\"] | sh= FORM_FEED_SHORTHAND -> BYTE[$sh,\"0c\"] | sh= RETURN_SHORTHAND -> BYTE[$sh,\"0d\"] | sh= ESCAPE_SHORTHAND -> BYTE[$sh,\"1b\"] );
     public final regularExpressionParser.byte_shorthand_return byte_shorthand() throws RecognitionException {
         regularExpressionParser.byte_shorthand_return retval = new regularExpressionParser.byte_shorthand_return();
         retval.start = input.LT(1);
@@ -2746,7 +2743,7 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_TAB_SHORTHAND=new RewriteRuleTokenStream(adaptor,"token TAB_SHORTHAND");
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:191:2: (sh= TAB_SHORTHAND -> BYTE[$sh,\"09\"] | sh= NEWLINE_SHORTHAND -> BYTE[$sh,\"0a\"] | sh= VERTICAL_TAB_SHORTHAND -> BYTE[$sh,\"0b\"] | sh= FORM_FEED_SHORTHAND -> BYTE[$sh,\"0c\"] | sh= RETURN_SHORTHAND -> BYTE[$sh,\"0d\"] | sh= ESCAPE_SHORTHAND -> BYTE[$sh,\"1b\"] )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:207:2: (sh= TAB_SHORTHAND -> BYTE[$sh,\"09\"] | sh= NEWLINE_SHORTHAND -> BYTE[$sh,\"0a\"] | sh= VERTICAL_TAB_SHORTHAND -> BYTE[$sh,\"0b\"] | sh= FORM_FEED_SHORTHAND -> BYTE[$sh,\"0c\"] | sh= RETURN_SHORTHAND -> BYTE[$sh,\"0d\"] | sh= ESCAPE_SHORTHAND -> BYTE[$sh,\"1b\"] )
             int alt12=6;
             switch ( input.LA(1) ) {
             case TAB_SHORTHAND:
@@ -2788,9 +2785,9 @@ public class regularExpressionParser extends Parser {
 
             switch (alt12) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:191:4: sh= TAB_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:207:4: sh= TAB_SHORTHAND
                     {
-                    sh=(Token)match(input,TAB_SHORTHAND,FOLLOW_TAB_SHORTHAND_in_byte_shorthand1229);  
+                    sh=(Token)match(input,TAB_SHORTHAND,FOLLOW_TAB_SHORTHAND_in_byte_shorthand1210);  
                     stream_TAB_SHORTHAND.add(sh);
 
 
@@ -2806,7 +2803,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 191:22: -> BYTE[$sh,\"09\"]
+                    // 207:22: -> BYTE[$sh,\"09\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, sh, "09"));
 
@@ -2816,9 +2813,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:192:4: sh= NEWLINE_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:208:4: sh= NEWLINE_SHORTHAND
                     {
-                    sh=(Token)match(input,NEWLINE_SHORTHAND,FOLLOW_NEWLINE_SHORTHAND_in_byte_shorthand1242);  
+                    sh=(Token)match(input,NEWLINE_SHORTHAND,FOLLOW_NEWLINE_SHORTHAND_in_byte_shorthand1223);  
                     stream_NEWLINE_SHORTHAND.add(sh);
 
 
@@ -2834,7 +2831,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 192:26: -> BYTE[$sh,\"0a\"]
+                    // 208:26: -> BYTE[$sh,\"0a\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, sh, "0a"));
 
@@ -2844,9 +2841,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:193:4: sh= VERTICAL_TAB_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:209:4: sh= VERTICAL_TAB_SHORTHAND
                     {
-                    sh=(Token)match(input,VERTICAL_TAB_SHORTHAND,FOLLOW_VERTICAL_TAB_SHORTHAND_in_byte_shorthand1255);  
+                    sh=(Token)match(input,VERTICAL_TAB_SHORTHAND,FOLLOW_VERTICAL_TAB_SHORTHAND_in_byte_shorthand1236);  
                     stream_VERTICAL_TAB_SHORTHAND.add(sh);
 
 
@@ -2862,7 +2859,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 193:30: -> BYTE[$sh,\"0b\"]
+                    // 209:30: -> BYTE[$sh,\"0b\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, sh, "0b"));
 
@@ -2872,9 +2869,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:194:4: sh= FORM_FEED_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:210:4: sh= FORM_FEED_SHORTHAND
                     {
-                    sh=(Token)match(input,FORM_FEED_SHORTHAND,FOLLOW_FORM_FEED_SHORTHAND_in_byte_shorthand1267);  
+                    sh=(Token)match(input,FORM_FEED_SHORTHAND,FOLLOW_FORM_FEED_SHORTHAND_in_byte_shorthand1248);  
                     stream_FORM_FEED_SHORTHAND.add(sh);
 
 
@@ -2890,7 +2887,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 194:28: -> BYTE[$sh,\"0c\"]
+                    // 210:28: -> BYTE[$sh,\"0c\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, sh, "0c"));
 
@@ -2900,9 +2897,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:195:4: sh= RETURN_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:211:4: sh= RETURN_SHORTHAND
                     {
-                    sh=(Token)match(input,RETURN_SHORTHAND,FOLLOW_RETURN_SHORTHAND_in_byte_shorthand1280);  
+                    sh=(Token)match(input,RETURN_SHORTHAND,FOLLOW_RETURN_SHORTHAND_in_byte_shorthand1261);  
                     stream_RETURN_SHORTHAND.add(sh);
 
 
@@ -2918,7 +2915,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 195:25: -> BYTE[$sh,\"0d\"]
+                    // 211:25: -> BYTE[$sh,\"0d\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, sh, "0d"));
 
@@ -2928,9 +2925,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:196:4: sh= ESCAPE_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:212:4: sh= ESCAPE_SHORTHAND
                     {
-                    sh=(Token)match(input,ESCAPE_SHORTHAND,FOLLOW_ESCAPE_SHORTHAND_in_byte_shorthand1293);  
+                    sh=(Token)match(input,ESCAPE_SHORTHAND,FOLLOW_ESCAPE_SHORTHAND_in_byte_shorthand1274);  
                     stream_ESCAPE_SHORTHAND.add(sh);
 
 
@@ -2946,7 +2943,7 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 196:25: -> BYTE[$sh,\"1b\"]
+                    // 212:25: -> BYTE[$sh,\"1b\"]
                     {
                         adaptor.addChild(root_0, (Object)adaptor.create(BYTE, sh, "1b"));
 
@@ -2981,7 +2978,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "set_shorthand"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:200:1: set_shorthand : (sh= DIGIT_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= NOT_DIGIT_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= WORD_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= NOT_WORD_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= WHITE_SPACE_SHORTHAND -> ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) | sh= NOT_WHITE_SPACE_SHORTHAND -> ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) );
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:216:1: set_shorthand : (sh= DIGIT_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= NOT_DIGIT_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= WORD_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= NOT_WORD_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= WHITE_SPACE_SHORTHAND -> ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) | sh= NOT_WHITE_SPACE_SHORTHAND -> ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) );
     public final regularExpressionParser.set_shorthand_return set_shorthand() throws RecognitionException {
         regularExpressionParser.set_shorthand_return retval = new regularExpressionParser.set_shorthand_return();
         retval.start = input.LT(1);
@@ -2999,7 +2996,7 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_NOT_DIGIT_SHORTHAND=new RewriteRuleTokenStream(adaptor,"token NOT_DIGIT_SHORTHAND");
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:201:2: (sh= DIGIT_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= NOT_DIGIT_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= WORD_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= NOT_WORD_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= WHITE_SPACE_SHORTHAND -> ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) | sh= NOT_WHITE_SPACE_SHORTHAND -> ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:217:2: (sh= DIGIT_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= NOT_DIGIT_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= WORD_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= NOT_WORD_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= WHITE_SPACE_SHORTHAND -> ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) | sh= NOT_WHITE_SPACE_SHORTHAND -> ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) )
             int alt13=6;
             switch ( input.LA(1) ) {
             case DIGIT_SHORTHAND:
@@ -3041,9 +3038,9 @@ public class regularExpressionParser extends Parser {
 
             switch (alt13) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:201:4: sh= DIGIT_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:217:4: sh= DIGIT_SHORTHAND
                     {
-                    sh=(Token)match(input,DIGIT_SHORTHAND,FOLLOW_DIGIT_SHORTHAND_in_set_shorthand1315);  
+                    sh=(Token)match(input,DIGIT_SHORTHAND,FOLLOW_DIGIT_SHORTHAND_in_set_shorthand1296);  
                     stream_DIGIT_SHORTHAND.add(sh);
 
 
@@ -3059,14 +3056,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 201:24: -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
+                    // 217:24: -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:201:27: ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:217:27: ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:201:33: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:217:33: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3086,9 +3083,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:202:4: sh= NOT_DIGIT_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:218:4: sh= NOT_DIGIT_SHORTHAND
                     {
-                    sh=(Token)match(input,NOT_DIGIT_SHORTHAND,FOLLOW_NOT_DIGIT_SHORTHAND_in_set_shorthand1339);  
+                    sh=(Token)match(input,NOT_DIGIT_SHORTHAND,FOLLOW_NOT_DIGIT_SHORTHAND_in_set_shorthand1320);  
                     stream_NOT_DIGIT_SHORTHAND.add(sh);
 
 
@@ -3104,14 +3101,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 202:28: -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
+                    // 218:28: -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:202:31: ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:218:31: ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(INVERTED_SET, "INVERTED_SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:202:46: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:218:46: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3131,9 +3128,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:203:4: sh= WORD_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:4: sh= WORD_SHORTHAND
                     {
-                    sh=(Token)match(input,WORD_SHORTHAND,FOLLOW_WORD_SHORTHAND_in_set_shorthand1363);  
+                    sh=(Token)match(input,WORD_SHORTHAND,FOLLOW_WORD_SHORTHAND_in_set_shorthand1344);  
                     stream_WORD_SHORTHAND.add(sh);
 
 
@@ -3149,14 +3146,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 203:23: -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
+                    // 219:23: -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:203:26: ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:26: ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:203:32: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:32: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3166,7 +3163,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:203:73: ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:73: ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3176,7 +3173,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:203:114: ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:114: ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3197,9 +3194,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:204:4: sh= NOT_WORD_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:220:4: sh= NOT_WORD_SHORTHAND
                     {
-                    sh=(Token)match(input,NOT_WORD_SHORTHAND,FOLLOW_NOT_WORD_SHORTHAND_in_set_shorthand1410);  
+                    sh=(Token)match(input,NOT_WORD_SHORTHAND,FOLLOW_NOT_WORD_SHORTHAND_in_set_shorthand1391);  
                     stream_NOT_WORD_SHORTHAND.add(sh);
 
 
@@ -3215,14 +3212,14 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 204:27: -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
+                    // 220:27: -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:204:30: ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:220:30: ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(INVERTED_SET, "INVERTED_SET"), root_1);
 
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:204:45: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:220:45: ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3232,7 +3229,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:204:86: ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:220:86: ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3242,7 +3239,7 @@ public class regularExpressionParser extends Parser {
 
                         adaptor.addChild(root_1, root_2);
                         }
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:204:127: ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:220:127: ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] )
                         {
                         Object root_2 = (Object)adaptor.nil();
                         root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(RANGE, "RANGE"), root_2);
@@ -3263,9 +3260,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:205:4: sh= WHITE_SPACE_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:221:4: sh= WHITE_SPACE_SHORTHAND
                     {
-                    sh=(Token)match(input,WHITE_SPACE_SHORTHAND,FOLLOW_WHITE_SPACE_SHORTHAND_in_set_shorthand1457);  
+                    sh=(Token)match(input,WHITE_SPACE_SHORTHAND,FOLLOW_WHITE_SPACE_SHORTHAND_in_set_shorthand1438);  
                     stream_WHITE_SPACE_SHORTHAND.add(sh);
 
 
@@ -3281,9 +3278,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 205:29: -> ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
+                    // 221:29: -> ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:205:32: ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:221:32: ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(SET, "SET"), root_1);
@@ -3302,9 +3299,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:206:4: sh= NOT_WHITE_SPACE_SHORTHAND
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:222:4: sh= NOT_WHITE_SPACE_SHORTHAND
                     {
-                    sh=(Token)match(input,NOT_WHITE_SPACE_SHORTHAND,FOLLOW_NOT_WHITE_SPACE_SHORTHAND_in_set_shorthand1482);  
+                    sh=(Token)match(input,NOT_WHITE_SPACE_SHORTHAND,FOLLOW_NOT_WHITE_SPACE_SHORTHAND_in_set_shorthand1463);  
                     stream_NOT_WHITE_SPACE_SHORTHAND.add(sh);
 
 
@@ -3320,9 +3317,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 206:33: -> ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
+                    // 222:33: -> ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:206:36: ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:222:36: ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(INVERTED_SET, "INVERTED_SET"), root_1);
@@ -3366,7 +3363,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "case_insensitive_string"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:209:1: case_insensitive_string : CASE_INSENSITIVE_STRING ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:225:1: case_insensitive_string : CASE_INSENSITIVE_STRING ;
     public final regularExpressionParser.case_insensitive_string_return case_insensitive_string() throws RecognitionException {
         regularExpressionParser.case_insensitive_string_return retval = new regularExpressionParser.case_insensitive_string_return();
         retval.start = input.LT(1);
@@ -3378,12 +3375,12 @@ public class regularExpressionParser extends Parser {
         Object CASE_INSENSITIVE_STRING40_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:210:2: ( CASE_INSENSITIVE_STRING )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:210:4: CASE_INSENSITIVE_STRING
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:226:2: ( CASE_INSENSITIVE_STRING )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:226:4: CASE_INSENSITIVE_STRING
             {
             root_0 = (Object)adaptor.nil();
 
-            CASE_INSENSITIVE_STRING40=(Token)match(input,CASE_INSENSITIVE_STRING,FOLLOW_CASE_INSENSITIVE_STRING_in_case_insensitive_string1512); 
+            CASE_INSENSITIVE_STRING40=(Token)match(input,CASE_INSENSITIVE_STRING,FOLLOW_CASE_INSENSITIVE_STRING_in_case_insensitive_string1493); 
             CASE_INSENSITIVE_STRING40_tree = (Object)adaptor.create(CASE_INSENSITIVE_STRING40);
             adaptor.addChild(root_0, CASE_INSENSITIVE_STRING40_tree);
 
@@ -3414,7 +3411,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "case_sensitive_string"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:214:1: case_sensitive_string : CASE_SENSITIVE_STRING ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:230:1: case_sensitive_string : CASE_SENSITIVE_STRING ;
     public final regularExpressionParser.case_sensitive_string_return case_sensitive_string() throws RecognitionException {
         regularExpressionParser.case_sensitive_string_return retval = new regularExpressionParser.case_sensitive_string_return();
         retval.start = input.LT(1);
@@ -3426,12 +3423,12 @@ public class regularExpressionParser extends Parser {
         Object CASE_SENSITIVE_STRING41_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:215:2: ( CASE_SENSITIVE_STRING )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:215:4: CASE_SENSITIVE_STRING
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:231:2: ( CASE_SENSITIVE_STRING )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:231:4: CASE_SENSITIVE_STRING
             {
             root_0 = (Object)adaptor.nil();
 
-            CASE_SENSITIVE_STRING41=(Token)match(input,CASE_SENSITIVE_STRING,FOLLOW_CASE_SENSITIVE_STRING_in_case_sensitive_string1526); 
+            CASE_SENSITIVE_STRING41=(Token)match(input,CASE_SENSITIVE_STRING,FOLLOW_CASE_SENSITIVE_STRING_in_case_sensitive_string1507); 
             CASE_SENSITIVE_STRING41_tree = (Object)adaptor.create(CASE_SENSITIVE_STRING41);
             adaptor.addChild(root_0, CASE_SENSITIVE_STRING41_tree);
 
@@ -3462,7 +3459,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "group"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:1: group : OPEN regex CLOSE -> regex ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:235:1: group : OPEN regex CLOSE -> regex ;
     public final regularExpressionParser.group_return group() throws RecognitionException {
         regularExpressionParser.group_return retval = new regularExpressionParser.group_return();
         retval.start = input.LT(1);
@@ -3480,19 +3477,19 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_CLOSE=new RewriteRuleTokenStream(adaptor,"token CLOSE");
         RewriteRuleSubtreeStream stream_regex=new RewriteRuleSubtreeStream(adaptor,"rule regex");
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:7: ( OPEN regex CLOSE -> regex )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:219:9: OPEN regex CLOSE
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:235:7: ( OPEN regex CLOSE -> regex )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:235:9: OPEN regex CLOSE
             {
-            OPEN42=(Token)match(input,OPEN,FOLLOW_OPEN_in_group1539);  
+            OPEN42=(Token)match(input,OPEN,FOLLOW_OPEN_in_group1520);  
             stream_OPEN.add(OPEN42);
 
-            pushFollow(FOLLOW_regex_in_group1541);
+            pushFollow(FOLLOW_regex_in_group1522);
             regex43=regex();
 
             state._fsp--;
 
             stream_regex.add(regex43.getTree());
-            CLOSE44=(Token)match(input,CLOSE,FOLLOW_CLOSE_in_group1543);  
+            CLOSE44=(Token)match(input,CLOSE,FOLLOW_CLOSE_in_group1524);  
             stream_CLOSE.add(CLOSE44);
 
 
@@ -3508,7 +3505,7 @@ public class regularExpressionParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 219:26: -> regex
+            // 235:26: -> regex
             {
                 adaptor.addChild(root_0, stream_regex.nextTree());
 
@@ -3541,7 +3538,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "quantifier"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:223:1: quantifier : ( optional | zero_to_many | one_to_many | repeat ) ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:239:1: quantifier : ( optional | zero_to_many | one_to_many | repeat ) ;
     public final regularExpressionParser.quantifier_return quantifier() throws RecognitionException {
         regularExpressionParser.quantifier_return retval = new regularExpressionParser.quantifier_return();
         retval.start = input.LT(1);
@@ -3559,12 +3556,12 @@ public class regularExpressionParser extends Parser {
 
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:224:2: ( ( optional | zero_to_many | one_to_many | repeat ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:225:2: ( optional | zero_to_many | one_to_many | repeat )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:240:2: ( ( optional | zero_to_many | one_to_many | repeat ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:241:2: ( optional | zero_to_many | one_to_many | repeat )
             {
             root_0 = (Object)adaptor.nil();
 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:225:2: ( optional | zero_to_many | one_to_many | repeat )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:241:2: ( optional | zero_to_many | one_to_many | repeat )
             int alt14=4;
             switch ( input.LA(1) ) {
             case QUESTION_MARK:
@@ -3596,9 +3593,9 @@ public class regularExpressionParser extends Parser {
 
             switch (alt14) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:225:4: optional
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:241:4: optional
                     {
-                    pushFollow(FOLLOW_optional_in_quantifier1564);
+                    pushFollow(FOLLOW_optional_in_quantifier1545);
                     optional45=optional();
 
                     state._fsp--;
@@ -3608,9 +3605,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:226:5: zero_to_many
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:242:5: zero_to_many
                     {
-                    pushFollow(FOLLOW_zero_to_many_in_quantifier1573);
+                    pushFollow(FOLLOW_zero_to_many_in_quantifier1554);
                     zero_to_many46=zero_to_many();
 
                     state._fsp--;
@@ -3620,9 +3617,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:227:5: one_to_many
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:243:5: one_to_many
                     {
-                    pushFollow(FOLLOW_one_to_many_in_quantifier1583);
+                    pushFollow(FOLLOW_one_to_many_in_quantifier1564);
                     one_to_many47=one_to_many();
 
                     state._fsp--;
@@ -3632,9 +3629,9 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:228:5: repeat
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:244:5: repeat
                     {
-                    pushFollow(FOLLOW_repeat_in_quantifier1589);
+                    pushFollow(FOLLOW_repeat_in_quantifier1570);
                     repeat48=repeat();
 
                     state._fsp--;
@@ -3673,7 +3670,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "repeat"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:233:1: repeat : OPEN_CURLY n1= NUMBER ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) ) CLOSE_CURLY ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:249:1: repeat : OPEN_CURLY n1= NUMBER ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) ) CLOSE_CURLY ;
     public final regularExpressionParser.repeat_return repeat() throws RecognitionException {
         regularExpressionParser.repeat_return retval = new regularExpressionParser.repeat_return();
         retval.start = input.LT(1);
@@ -3702,16 +3699,16 @@ public class regularExpressionParser extends Parser {
         RewriteRuleTokenStream stream_NUMBER=new RewriteRuleTokenStream(adaptor,"token NUMBER");
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:233:8: ( OPEN_CURLY n1= NUMBER ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) ) CLOSE_CURLY )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:233:10: OPEN_CURLY n1= NUMBER ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) ) CLOSE_CURLY
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:249:8: ( OPEN_CURLY n1= NUMBER ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) ) CLOSE_CURLY )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:249:10: OPEN_CURLY n1= NUMBER ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) ) CLOSE_CURLY
             {
-            OPEN_CURLY49=(Token)match(input,OPEN_CURLY,FOLLOW_OPEN_CURLY_in_repeat1605);  
+            OPEN_CURLY49=(Token)match(input,OPEN_CURLY,FOLLOW_OPEN_CURLY_in_repeat1586);  
             stream_OPEN_CURLY.add(OPEN_CURLY49);
 
-            n1=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_repeat1609);  
+            n1=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_repeat1590);  
             stream_NUMBER.add(n1);
 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:234:2: ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:250:2: ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) )
             int alt15=3;
             int LA15_0 = input.LA(1);
 
@@ -3742,15 +3739,15 @@ public class regularExpressionParser extends Parser {
             }
             switch (alt15) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:235:3: ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:251:3: ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) )
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:235:3: ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:235:5: REPEAT_SEPARATOR n2= NUMBER
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:251:3: ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:251:5: REPEAT_SEPARATOR n2= NUMBER
                     {
-                    REPEAT_SEPARATOR50=(Token)match(input,REPEAT_SEPARATOR,FOLLOW_REPEAT_SEPARATOR_in_repeat1620);  
+                    REPEAT_SEPARATOR50=(Token)match(input,REPEAT_SEPARATOR,FOLLOW_REPEAT_SEPARATOR_in_repeat1601);  
                     stream_REPEAT_SEPARATOR.add(REPEAT_SEPARATOR50);
 
-                    n2=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_repeat1624);  
+                    n2=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_repeat1605);  
                     stream_NUMBER.add(n2);
 
 
@@ -3768,9 +3765,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 235:33: -> ^( REPEAT $n1 $n2)
+                    // 251:33: -> ^( REPEAT $n1 $n2)
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:235:36: ^( REPEAT $n1 $n2)
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:251:36: ^( REPEAT $n1 $n2)
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(REPEAT, "REPEAT"), root_1);
@@ -3790,15 +3787,15 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:237:3: ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:253:3: ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) )
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:237:3: ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:237:5: REPEAT_SEPARATOR MANY
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:253:3: ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:253:5: REPEAT_SEPARATOR MANY
                     {
-                    REPEAT_SEPARATOR51=(Token)match(input,REPEAT_SEPARATOR,FOLLOW_REPEAT_SEPARATOR_in_repeat1650);  
+                    REPEAT_SEPARATOR51=(Token)match(input,REPEAT_SEPARATOR,FOLLOW_REPEAT_SEPARATOR_in_repeat1631);  
                     stream_REPEAT_SEPARATOR.add(REPEAT_SEPARATOR51);
 
-                    MANY52=(Token)match(input,MANY,FOLLOW_MANY_in_repeat1652);  
+                    MANY52=(Token)match(input,MANY,FOLLOW_MANY_in_repeat1633);  
                     stream_MANY.add(MANY52);
 
 
@@ -3815,9 +3812,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 237:28: -> ^( REPEAT $n1 MANY )
+                    // 253:28: -> ^( REPEAT $n1 MANY )
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:237:31: ^( REPEAT $n1 MANY )
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:253:31: ^( REPEAT $n1 MANY )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(REPEAT, "REPEAT"), root_1);
@@ -3837,10 +3834,10 @@ public class regularExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:239:3: ( -> ^( REPEAT $n1 $n1) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:255:3: ( -> ^( REPEAT $n1 $n1) )
                     {
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:239:3: ( -> ^( REPEAT $n1 $n1) )
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:239:8: 
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:255:3: ( -> ^( REPEAT $n1 $n1) )
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:255:8: 
                     {
 
                     // AST REWRITE
@@ -3855,9 +3852,9 @@ public class regularExpressionParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 239:8: -> ^( REPEAT $n1 $n1)
+                    // 255:8: -> ^( REPEAT $n1 $n1)
                     {
-                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:239:11: ^( REPEAT $n1 $n1)
+                        // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:255:11: ^( REPEAT $n1 $n1)
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(REPEAT, "REPEAT"), root_1);
@@ -3879,7 +3876,7 @@ public class regularExpressionParser extends Parser {
 
             }
 
-            CLOSE_CURLY53=(Token)match(input,CLOSE_CURLY,FOLLOW_CLOSE_CURLY_in_repeat1701);  
+            CLOSE_CURLY53=(Token)match(input,CLOSE_CURLY,FOLLOW_CLOSE_CURLY_in_repeat1682);  
             stream_CLOSE_CURLY.add(CLOSE_CURLY53);
 
 
@@ -3909,7 +3906,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "optional"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:245:1: optional : QUESTION_MARK ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:1: optional : QUESTION_MARK ;
     public final regularExpressionParser.optional_return optional() throws RecognitionException {
         regularExpressionParser.optional_return retval = new regularExpressionParser.optional_return();
         retval.start = input.LT(1);
@@ -3921,12 +3918,12 @@ public class regularExpressionParser extends Parser {
         Object QUESTION_MARK54_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:245:9: ( QUESTION_MARK )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:245:11: QUESTION_MARK
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:9: ( QUESTION_MARK )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:11: QUESTION_MARK
             {
             root_0 = (Object)adaptor.nil();
 
-            QUESTION_MARK54=(Token)match(input,QUESTION_MARK,FOLLOW_QUESTION_MARK_in_optional1712); 
+            QUESTION_MARK54=(Token)match(input,QUESTION_MARK,FOLLOW_QUESTION_MARK_in_optional1693); 
             QUESTION_MARK54_tree = (Object)adaptor.create(QUESTION_MARK54);
             adaptor.addChild(root_0, QUESTION_MARK54_tree);
 
@@ -3957,7 +3954,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "zero_to_many"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:249:1: zero_to_many : MANY ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:265:1: zero_to_many : MANY ;
     public final regularExpressionParser.zero_to_many_return zero_to_many() throws RecognitionException {
         regularExpressionParser.zero_to_many_return retval = new regularExpressionParser.zero_to_many_return();
         retval.start = input.LT(1);
@@ -3969,12 +3966,12 @@ public class regularExpressionParser extends Parser {
         Object MANY55_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:250:2: ( MANY )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:250:4: MANY
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:2: ( MANY )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:4: MANY
             {
             root_0 = (Object)adaptor.nil();
 
-            MANY55=(Token)match(input,MANY,FOLLOW_MANY_in_zero_to_many1724); 
+            MANY55=(Token)match(input,MANY,FOLLOW_MANY_in_zero_to_many1705); 
             MANY55_tree = (Object)adaptor.create(MANY55);
             adaptor.addChild(root_0, MANY55_tree);
 
@@ -4005,7 +4002,7 @@ public class regularExpressionParser extends Parser {
     };
 
     // $ANTLR start "one_to_many"
-    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:254:1: one_to_many : PLUS ;
+    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:270:1: one_to_many : PLUS ;
     public final regularExpressionParser.one_to_many_return one_to_many() throws RecognitionException {
         regularExpressionParser.one_to_many_return retval = new regularExpressionParser.one_to_many_return();
         retval.start = input.LT(1);
@@ -4017,12 +4014,12 @@ public class regularExpressionParser extends Parser {
         Object PLUS56_tree=null;
 
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:255:2: ( PLUS )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:255:4: PLUS
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:271:2: ( PLUS )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:271:4: PLUS
             {
             root_0 = (Object)adaptor.nil();
 
-            PLUS56=(Token)match(input,PLUS,FOLLOW_PLUS_in_one_to_many1737); 
+            PLUS56=(Token)match(input,PLUS,FOLLOW_PLUS_in_one_to_many1718); 
             PLUS56_tree = (Object)adaptor.create(PLUS56);
             adaptor.addChild(root_0, PLUS56_tree);
 
@@ -4122,7 +4119,7 @@ public class regularExpressionParser extends Parser {
             this.transition = DFA6_transition;
         }
         public String getDescription() {
-            return "75:1: sequence : ({...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? ) | {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) ) );";
+            return "91:1: sequence : ({...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? ) | {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) ) );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -4536,7 +4533,7 @@ public class regularExpressionParser extends Parser {
             this.transition = DFA3_transition;
         }
         public String getDescription() {
-            return "79:3: ( sequence -> ^( SEQUENCE quantified_atom sequence ) )?";
+            return "95:3: ( sequence -> ^( SEQUENCE quantified_atom sequence ) )?";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -4660,101 +4657,101 @@ public class regularExpressionParser extends Parser {
             this.transition = DFA10_transition;
         }
         public String getDescription() {
-            return "()+ loopback of 138:2: ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+";
+            return "()+ loopback of 154:2: ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | bitmask | byte_set )+";
         }
     }
  
 
-    public static final BitSet FOLLOW_regex_in_start143 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_start145 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_sequence_in_regex164 = new BitSet(new long[]{0x0000000000001002L});
-    public static final BitSet FOLLOW_ALT_in_regex178 = new BitSet(new long[]{0x001FFF800018E000L});
-    public static final BitSet FOLLOW_sequence_in_regex180 = new BitSet(new long[]{0x0000000000001002L});
-    public static final BitSet FOLLOW_quantified_atom_in_sequence246 = new BitSet(new long[]{0x001FFF800018E002L});
-    public static final BitSet FOLLOW_sequence_in_sequence258 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_quantified_atom_in_sequence292 = new BitSet(new long[]{0x001FFF800018E002L});
-    public static final BitSet FOLLOW_quantified_atom_in_sequence303 = new BitSet(new long[]{0x001FFF800018E002L});
-    public static final BitSet FOLLOW_atom_in_quantified_atom363 = new BitSet(new long[]{0x1A40000000000002L});
-    public static final BitSet FOLLOW_quantifier_in_quantified_atom368 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_hexbyte_in_atom410 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_any_byte_in_atom415 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_byte_set_in_atom420 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_byte_shorthand_in_atom425 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_shorthand_in_atom430 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_bitmask_in_atom435 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_case_sensitive_string_in_atom440 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_case_insensitive_string_in_atom445 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_group_in_atom450 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BYTE_in_hexbyte465 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FULL_STOP_in_any_byte475 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OPEN_SQUARE_in_byte_set493 = new BitSet(new long[]{0x000FFFFFFFF9A000L});
-    public static final BitSet FOLLOW_CARET_in_byte_set504 = new BitSet(new long[]{0x000FFFFFFFF9A000L});
-    public static final BitSet FOLLOW_set_specification_in_byte_set506 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_set_specification_in_byte_set531 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_CLOSE_SQUARE_in_byte_set553 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_hexbyte_in_set_specification569 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_byte_shorthand_in_set_specification574 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_set_shorthand_in_set_specification579 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_mnemonic_in_set_specification584 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_case_sensitive_string_in_set_specification590 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_case_insensitive_string_in_set_specification595 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_byte_range_in_set_specification600 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_bitmask_in_set_specification605 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_byte_set_in_set_specification610 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
-    public static final BitSet FOLLOW_range_values_in_byte_range629 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_RANGE_SEPARATOR_in_byte_range633 = new BitSet(new long[]{0x0000000000082000L});
-    public static final BitSet FOLLOW_range_values_in_byte_range640 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_regex_in_start124 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_start126 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_sequence_in_regex145 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_ALT_in_regex159 = new BitSet(new long[]{0x001FFF800018E000L});
+    public static final BitSet FOLLOW_sequence_in_regex161 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_quantified_atom_in_sequence227 = new BitSet(new long[]{0x001FFF800018E002L});
+    public static final BitSet FOLLOW_sequence_in_sequence239 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_quantified_atom_in_sequence273 = new BitSet(new long[]{0x001FFF800018E002L});
+    public static final BitSet FOLLOW_quantified_atom_in_sequence284 = new BitSet(new long[]{0x001FFF800018E002L});
+    public static final BitSet FOLLOW_atom_in_quantified_atom344 = new BitSet(new long[]{0x1A40000000000002L});
+    public static final BitSet FOLLOW_quantifier_in_quantified_atom349 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_hexbyte_in_atom391 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_any_byte_in_atom396 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_byte_set_in_atom401 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_byte_shorthand_in_atom406 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_shorthand_in_atom411 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_bitmask_in_atom416 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_case_sensitive_string_in_atom421 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_case_insensitive_string_in_atom426 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_group_in_atom431 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BYTE_in_hexbyte446 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FULL_STOP_in_any_byte456 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OPEN_SQUARE_in_byte_set474 = new BitSet(new long[]{0x000FFFFFFFF9A000L});
+    public static final BitSet FOLLOW_CARET_in_byte_set485 = new BitSet(new long[]{0x000FFFFFFFF9A000L});
+    public static final BitSet FOLLOW_set_specification_in_byte_set487 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_set_specification_in_byte_set512 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_CLOSE_SQUARE_in_byte_set534 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_hexbyte_in_set_specification550 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_byte_shorthand_in_set_specification555 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_set_shorthand_in_set_specification560 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_mnemonic_in_set_specification565 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_case_sensitive_string_in_set_specification571 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_case_insensitive_string_in_set_specification576 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_byte_range_in_set_specification581 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_bitmask_in_set_specification586 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_byte_set_in_set_specification591 = new BitSet(new long[]{0x000FFFFFFFF8A002L});
+    public static final BitSet FOLLOW_range_values_in_byte_range610 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_RANGE_SEPARATOR_in_byte_range614 = new BitSet(new long[]{0x0000000000082000L});
+    public static final BitSet FOLLOW_range_values_in_byte_range621 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_range_values0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AMPERSAND_in_bitmask682 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_BYTE_in_bitmask684 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_ASCII_in_mnemonic708 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_PRINT_in_mnemonic733 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_GRAPH_in_mnemonic758 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_WORD_in_mnemonic783 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_ALPHANUM_in_mnemonic830 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_ALPHA_in_mnemonic874 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_UPPER_in_mnemonic908 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_LOWER_in_mnemonic932 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_PUNCT_in_mnemonic956 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_HEXDIGIT_in_mnemonic1010 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_DIGIT_in_mnemonic1054 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_WHITESPACE_in_mnemonic1078 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_BLANK_in_mnemonic1103 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_SPACE_in_mnemonic1123 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_TAB_in_mnemonic1155 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_NEWLINE_in_mnemonic1168 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_RETURN_in_mnemonic1181 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_CONTROL_in_mnemonic1194 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TAB_SHORTHAND_in_byte_shorthand1229 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NEWLINE_SHORTHAND_in_byte_shorthand1242 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VERTICAL_TAB_SHORTHAND_in_byte_shorthand1255 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FORM_FEED_SHORTHAND_in_byte_shorthand1267 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETURN_SHORTHAND_in_byte_shorthand1280 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ESCAPE_SHORTHAND_in_byte_shorthand1293 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DIGIT_SHORTHAND_in_set_shorthand1315 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_DIGIT_SHORTHAND_in_set_shorthand1339 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_SHORTHAND_in_set_shorthand1363 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_WORD_SHORTHAND_in_set_shorthand1410 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHITE_SPACE_SHORTHAND_in_set_shorthand1457 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_WHITE_SPACE_SHORTHAND_in_set_shorthand1482 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CASE_INSENSITIVE_STRING_in_case_insensitive_string1512 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CASE_SENSITIVE_STRING_in_case_sensitive_string1526 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OPEN_in_group1539 = new BitSet(new long[]{0x001FFF800018E000L});
-    public static final BitSet FOLLOW_regex_in_group1541 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_CLOSE_in_group1543 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_optional_in_quantifier1564 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_zero_to_many_in_quantifier1573 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_one_to_many_in_quantifier1583 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_repeat_in_quantifier1589 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OPEN_CURLY_in_repeat1605 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_NUMBER_in_repeat1609 = new BitSet(new long[]{0x0500000000000000L});
-    public static final BitSet FOLLOW_REPEAT_SEPARATOR_in_repeat1620 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_NUMBER_in_repeat1624 = new BitSet(new long[]{0x0400000000000000L});
-    public static final BitSet FOLLOW_REPEAT_SEPARATOR_in_repeat1650 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_MANY_in_repeat1652 = new BitSet(new long[]{0x0400000000000000L});
-    public static final BitSet FOLLOW_CLOSE_CURLY_in_repeat1701 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUESTION_MARK_in_optional1712 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MANY_in_zero_to_many1724 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PLUS_in_one_to_many1737 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AMPERSAND_in_bitmask663 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_BYTE_in_bitmask665 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_ASCII_in_mnemonic689 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_PRINT_in_mnemonic714 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_GRAPH_in_mnemonic739 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_WORD_in_mnemonic764 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_ALPHANUM_in_mnemonic811 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_ALPHA_in_mnemonic855 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_UPPER_in_mnemonic889 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_LOWER_in_mnemonic913 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_PUNCT_in_mnemonic937 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_HEXDIGIT_in_mnemonic991 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_DIGIT_in_mnemonic1035 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_WHITESPACE_in_mnemonic1059 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_BLANK_in_mnemonic1084 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_SPACE_in_mnemonic1104 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_TAB_in_mnemonic1136 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_NEWLINE_in_mnemonic1149 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_RETURN_in_mnemonic1162 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_CONTROL_in_mnemonic1175 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TAB_SHORTHAND_in_byte_shorthand1210 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NEWLINE_SHORTHAND_in_byte_shorthand1223 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VERTICAL_TAB_SHORTHAND_in_byte_shorthand1236 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FORM_FEED_SHORTHAND_in_byte_shorthand1248 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RETURN_SHORTHAND_in_byte_shorthand1261 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ESCAPE_SHORTHAND_in_byte_shorthand1274 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DIGIT_SHORTHAND_in_set_shorthand1296 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_DIGIT_SHORTHAND_in_set_shorthand1320 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_SHORTHAND_in_set_shorthand1344 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_WORD_SHORTHAND_in_set_shorthand1391 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHITE_SPACE_SHORTHAND_in_set_shorthand1438 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_WHITE_SPACE_SHORTHAND_in_set_shorthand1463 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CASE_INSENSITIVE_STRING_in_case_insensitive_string1493 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CASE_SENSITIVE_STRING_in_case_sensitive_string1507 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OPEN_in_group1520 = new BitSet(new long[]{0x001FFF800018E000L});
+    public static final BitSet FOLLOW_regex_in_group1522 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_CLOSE_in_group1524 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_optional_in_quantifier1545 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_zero_to_many_in_quantifier1554 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_one_to_many_in_quantifier1564 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_repeat_in_quantifier1570 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OPEN_CURLY_in_repeat1586 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_NUMBER_in_repeat1590 = new BitSet(new long[]{0x0500000000000000L});
+    public static final BitSet FOLLOW_REPEAT_SEPARATOR_in_repeat1601 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_NUMBER_in_repeat1605 = new BitSet(new long[]{0x0400000000000000L});
+    public static final BitSet FOLLOW_REPEAT_SEPARATOR_in_repeat1631 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_MANY_in_repeat1633 = new BitSet(new long[]{0x0400000000000000L});
+    public static final BitSet FOLLOW_CLOSE_CURLY_in_repeat1682 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUESTION_MARK_in_optional1693 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MANY_in_zero_to_many1705 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PLUS_in_one_to_many1718 = new BitSet(new long[]{0x0000000000000002L});
 
 }

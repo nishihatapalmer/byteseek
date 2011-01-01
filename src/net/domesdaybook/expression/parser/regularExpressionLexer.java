@@ -1,11 +1,9 @@
 package net.domesdaybook.expression.parser;
 
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2010-12-08 22:19:08
+
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2011-01-01 11:17:48
 
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 public class regularExpressionLexer extends Lexer {
     public static final int CLOSE_CURLY=58;
@@ -74,8 +72,17 @@ public class regularExpressionLexer extends Lexer {
     public static final int NOT_DIGIT_SHORTHAND=46;
      
     	boolean inRepeat=false;
-    	//boolean inSet=false;
     	int inSet = 0;
+            boolean throwExceptionOnError = true;
+
+            @Override
+            public void reportError(RecognitionException e) {
+                if (throwExceptionOnError) {
+                    throw new IllegalArgumentException(e);
+                } else {
+                    super.reportError(e);
+                }
+            }
 
 
     // delegates
@@ -96,11 +103,11 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CASE_SENSITIVE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:2: ( QUOTE (~ ( QUOTE ) )* QUOTE )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:4: QUOTE (~ ( QUOTE ) )* QUOTE
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:2: ( QUOTE (~ ( QUOTE ) )* QUOTE )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:4: QUOTE (~ ( QUOTE ) )* QUOTE
             {
             mQUOTE(); 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:10: (~ ( QUOTE ) )*
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:10: (~ ( QUOTE ) )*
             loop1:
             do {
                 int alt1=2;
@@ -113,7 +120,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:261:10: ~ ( QUOTE )
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:10: ~ ( QUOTE )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -150,11 +157,11 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CASE_INSENSITIVE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:2: ( BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:4: BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:282:2: ( BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:282:4: BACK_TICK (~ ( BACK_TICK ) )* BACK_TICK
             {
             mBACK_TICK(); 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:14: (~ ( BACK_TICK ) )*
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:282:14: (~ ( BACK_TICK ) )*
             loop2:
             do {
                 int alt2=2;
@@ -167,7 +174,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:266:14: ~ ( BACK_TICK )
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:282:14: ~ ( BACK_TICK )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='_')||(input.LA(1)>='a' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -202,8 +209,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "QUOTE"
     public final void mQUOTE() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:271:7: ( '\\'' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:271:9: '\\''
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:287:7: ( '\\'' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:287:9: '\\''
             {
             match('\''); 
 
@@ -218,8 +225,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "BACK_TICK"
     public final void mBACK_TICK() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:2: ( '`' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:4: '`'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:2: ( '`' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:4: '`'
             {
             match('`'); 
 
@@ -236,8 +243,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = FULL_STOP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:281:10: ( '.' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:281:12: '.'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:297:10: ( '.' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:297:12: '.'
             {
             match('.'); 
 
@@ -256,8 +263,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = ALT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:285:5: ( '|' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:285:7: '|'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:301:5: ( '|' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:301:7: '|'
             {
             match('|'); 
 
@@ -276,8 +283,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = OPEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:289:6: ( '(' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:289:8: '('
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:305:6: ( '(' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:305:8: '('
             {
             match('('); 
 
@@ -296,8 +303,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CLOSE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:7: ( ')' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:293:9: ')'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:309:7: ( ')' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:309:9: ')'
             {
             match(')'); 
 
@@ -316,8 +323,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = TAB_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:2: ( ESCAPE 't' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:298:4: ESCAPE 't'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:314:2: ( ESCAPE 't' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:314:4: ESCAPE 't'
             {
             mESCAPE(); 
             match('t'); 
@@ -337,8 +344,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NEWLINE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:303:2: ( ESCAPE 'n' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:303:4: ESCAPE 'n'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:319:2: ( ESCAPE 'n' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:319:4: ESCAPE 'n'
             {
             mESCAPE(); 
             match('n'); 
@@ -358,8 +365,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = VERTICAL_TAB_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:308:2: ( ESCAPE 'v' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:308:4: ESCAPE 'v'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:324:2: ( ESCAPE 'v' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:324:4: ESCAPE 'v'
             {
             mESCAPE(); 
             match('v'); 
@@ -379,8 +386,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = FORM_FEED_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:313:2: ( ESCAPE 'f' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:313:4: ESCAPE 'f'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:329:2: ( ESCAPE 'f' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:329:4: ESCAPE 'f'
             {
             mESCAPE(); 
             match('f'); 
@@ -400,8 +407,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = RETURN_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:318:2: ( ESCAPE 'r' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:318:4: ESCAPE 'r'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:334:2: ( ESCAPE 'r' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:334:4: ESCAPE 'r'
             {
             mESCAPE(); 
             match('r'); 
@@ -421,8 +428,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = ESCAPE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:323:2: ( ESCAPE 'e' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:323:4: ESCAPE 'e'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:339:2: ( ESCAPE 'e' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:339:4: ESCAPE 'e'
             {
             mESCAPE(); 
             match('e'); 
@@ -442,8 +449,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = DIGIT_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:328:2: ( ESCAPE 'd' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:328:4: ESCAPE 'd'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:344:2: ( ESCAPE 'd' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:344:4: ESCAPE 'd'
             {
             mESCAPE(); 
             match('d'); 
@@ -463,8 +470,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NOT_DIGIT_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:333:2: ( ESCAPE 'D' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:333:4: ESCAPE 'D'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:349:2: ( ESCAPE 'D' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:349:4: ESCAPE 'D'
             {
             mESCAPE(); 
             match('D'); 
@@ -484,8 +491,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = WORD_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:338:2: ( ESCAPE 'w' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:338:4: ESCAPE 'w'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:354:2: ( ESCAPE 'w' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:354:4: ESCAPE 'w'
             {
             mESCAPE(); 
             match('w'); 
@@ -505,8 +512,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NOT_WORD_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:343:2: ( ESCAPE 'W' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:343:4: ESCAPE 'W'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:359:2: ( ESCAPE 'W' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:359:4: ESCAPE 'W'
             {
             mESCAPE(); 
             match('W'); 
@@ -526,8 +533,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = WHITE_SPACE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:348:2: ( ESCAPE 's' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:348:4: ESCAPE 's'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:364:2: ( ESCAPE 's' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:364:4: ESCAPE 's'
             {
             mESCAPE(); 
             match('s'); 
@@ -547,8 +554,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NOT_WHITE_SPACE_SHORTHAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:353:2: ( ESCAPE 'S' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:353:4: ESCAPE 'S'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:369:2: ( ESCAPE 'S' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:369:4: ESCAPE 'S'
             {
             mESCAPE(); 
             match('S'); 
@@ -566,8 +573,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "ESCAPE"
     public final void mESCAPE() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:359:8: ( '\\\\' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:359:10: '\\\\'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:8: ( '\\\\' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:10: '\\\\'
             {
             match('\\'); 
 
@@ -584,8 +591,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = OPEN_SQUARE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:365:2: ( '[' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:365:4: '['
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:381:2: ( '[' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:381:4: '['
             {
             match('['); 
             inSet++;
@@ -605,8 +612,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CARET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:370:2: ({...}? => '^' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:370:4: {...}? => '^'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:386:2: ({...}? => '^' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:386:4: {...}? => '^'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "CARET", "inSet>0");
@@ -628,8 +635,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = RANGE_SEPARATOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:2: ({...}? => '-' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:375:4: {...}? => '-'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:2: ({...}? => '-' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:4: {...}? => '-'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "RANGE_SEPARATOR", "inSet>0");
@@ -651,8 +658,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_ASCII;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:380:2: ({...}? => 'ascii' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:380:4: {...}? => 'ascii'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:396:2: ({...}? => 'ascii' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:396:4: {...}? => 'ascii'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_ASCII", "inSet>0");
@@ -675,8 +682,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_PRINT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:384:2: ({...}? => 'print' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:384:4: {...}? => 'print'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:400:2: ({...}? => 'print' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:400:4: {...}? => 'print'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_PRINT", "inSet>0");
@@ -699,8 +706,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_GRAPH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:388:2: ({...}? => 'graph' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:388:4: {...}? => 'graph'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:404:2: ({...}? => 'graph' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:404:4: {...}? => 'graph'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_GRAPH", "inSet>0");
@@ -723,8 +730,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_WORD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:9: ({...}? => 'word' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:391:11: {...}? => 'word'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:9: ({...}? => 'word' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:11: {...}? => 'word'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_WORD", "inSet>0");
@@ -747,8 +754,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_ALPHANUM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:395:2: ({...}? => 'alnum' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:395:4: {...}? => 'alnum'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:411:2: ({...}? => 'alnum' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:411:4: {...}? => 'alnum'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_ALPHANUM", "inSet>0");
@@ -771,8 +778,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_ALPHA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:399:2: ({...}? => 'alpha' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:399:4: {...}? => 'alpha'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:415:2: ({...}? => 'alpha' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:415:4: {...}? => 'alpha'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_ALPHA", "inSet>0");
@@ -795,8 +802,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_UPPER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:403:2: ({...}? => 'upper' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:403:4: {...}? => 'upper'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:419:2: ({...}? => 'upper' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:419:4: {...}? => 'upper'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_UPPER", "inSet>0");
@@ -819,8 +826,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_LOWER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:2: ({...}? => 'lower' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:407:4: {...}? => 'lower'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:2: ({...}? => 'lower' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:4: {...}? => 'lower'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_LOWER", "inSet>0");
@@ -843,8 +850,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_PUNCT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:411:2: ({...}? => 'punct' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:411:4: {...}? => 'punct'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:2: ({...}? => 'punct' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:4: {...}? => 'punct'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_PUNCT", "inSet>0");
@@ -867,8 +874,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_HEXDIGIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:415:2: ({...}? => 'xdigit' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:415:4: {...}? => 'xdigit'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:2: ({...}? => 'xdigit' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:4: {...}? => 'xdigit'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_HEXDIGIT", "inSet>0");
@@ -891,8 +898,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_DIGIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:419:2: ({...}? => 'digit' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:419:4: {...}? => 'digit'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:435:2: ({...}? => 'digit' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:435:4: {...}? => 'digit'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_DIGIT", "inSet>0");
@@ -915,8 +922,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_WHITESPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:2: ({...}? => 'ws' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:423:4: {...}? => 'ws'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:439:2: ({...}? => 'ws' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:439:4: {...}? => 'ws'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_WHITESPACE", "inSet>0");
@@ -939,8 +946,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_BLANK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:2: ({...}? => 'blank' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:427:4: {...}? => 'blank'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:2: ({...}? => 'blank' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:4: {...}? => 'blank'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_BLANK", "inSet>0");
@@ -963,8 +970,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_SPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:2: ({...}? => 'space' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:431:4: {...}? => 'space'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:447:2: ({...}? => 'space' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:447:4: {...}? => 'space'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_SPACE", "inSet>0");
@@ -987,8 +994,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_TAB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:434:9: ({...}? => 'tab' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:434:11: {...}? => 'tab'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:450:9: ({...}? => 'tab' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:450:11: {...}? => 'tab'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_TAB", "inSet>0");
@@ -1011,8 +1018,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_NEWLINE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:438:2: ({...}? => 'newline' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:438:4: {...}? => 'newline'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:454:2: ({...}? => 'newline' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:454:4: {...}? => 'newline'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_NEWLINE", "inSet>0");
@@ -1035,8 +1042,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_RETURN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:2: ({...}? => 'return' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:443:4: {...}? => 'return'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:459:2: ({...}? => 'return' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:459:4: {...}? => 'return'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_RETURN", "inSet>0");
@@ -1059,8 +1066,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = SET_CONTROL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:448:2: ({...}? => 'ctrl' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:448:4: {...}? => 'ctrl'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:464:2: ({...}? => 'ctrl' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:464:4: {...}? => 'ctrl'
             {
             if ( !((inSet>0)) ) {
                 throw new FailedPredicateException(input, "SET_CONTROL", "inSet>0");
@@ -1083,8 +1090,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CLOSE_SQUARE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:477:2: ( ']' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:477:4: ']'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:493:2: ( ']' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:493:4: ']'
             {
             match(']'); 
             inSet--;
@@ -1104,8 +1111,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = AMPERSAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:483:2: ( '&' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:483:4: '&'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:499:2: ( '&' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:499:4: '&'
             {
             match('&'); 
 
@@ -1124,8 +1131,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = MANY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:488:2: ( '*' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:488:4: '*'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:504:2: ( '*' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:504:4: '*'
             {
             match('*'); 
 
@@ -1144,8 +1151,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = QUESTION_MARK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:493:2: ( '?' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:493:4: '?'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:509:2: ( '?' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:509:4: '?'
             {
             match('?'); 
 
@@ -1164,8 +1171,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:498:2: ( '+' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:498:4: '+'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:514:2: ( '+' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:514:4: '+'
             {
             match('+'); 
 
@@ -1184,8 +1191,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = OPEN_CURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:503:2: ( '{' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:503:4: '{'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:519:2: ( '{' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:519:4: '{'
             {
             match('{'); 
              inRepeat=true; 
@@ -1205,13 +1212,13 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = NUMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:8: ({...}? => ( '0' .. '9' )+ )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:10: {...}? => ( '0' .. '9' )+
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:523:8: ({...}? => ( '0' .. '9' )+ )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:523:10: {...}? => ( '0' .. '9' )+
             {
             if ( !(( inRepeat )) ) {
                 throw new FailedPredicateException(input, "NUMBER", " inRepeat ");
             }
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:27: ( '0' .. '9' )+
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:523:27: ( '0' .. '9' )+
             int cnt3=0;
             loop3:
             do {
@@ -1225,7 +1232,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:507:28: '0' .. '9'
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:523:28: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -1257,8 +1264,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = REPEAT_SEPARATOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:512:2: ({...}? => '-' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:512:4: {...}? => '-'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:528:2: ({...}? => '-' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:528:4: {...}? => '-'
             {
             if ( !(( inRepeat )) ) {
                 throw new FailedPredicateException(input, "REPEAT_SEPARATOR", " inRepeat ");
@@ -1280,8 +1287,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = CLOSE_CURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:517:2: ( '}' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:517:4: '}'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:533:2: ( '}' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:533:4: '}'
             {
             match('}'); 
              inRepeat=false; 
@@ -1301,8 +1308,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = BYTE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:521:6: ({...}? => HEX_DIGIT HEX_DIGIT )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:521:8: {...}? => HEX_DIGIT HEX_DIGIT
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:537:6: ({...}? => HEX_DIGIT HEX_DIGIT )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:537:8: {...}? => HEX_DIGIT HEX_DIGIT
             {
             if ( !(( !inRepeat )) ) {
                 throw new FailedPredicateException(input, "BYTE", " !inRepeat ");
@@ -1323,8 +1330,8 @@ public class regularExpressionLexer extends Lexer {
     // $ANTLR start "HEX_DIGIT"
     public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:527:2: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:527:4: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:543:2: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:543:4: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
                 input.consume();
@@ -1349,11 +1356,11 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:2: ( '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:4: '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:2: ( '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:4: '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             {
             match('#'); 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:8: (~ ( '\\n' | '\\r' ) )*
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:8: (~ ( '\\n' | '\\r' ) )*
             loop4:
             do {
                 int alt4=2;
@@ -1366,7 +1373,7 @@ public class regularExpressionLexer extends Lexer {
 
                 switch (alt4) {
             	case 1 :
-            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:8: ~ ( '\\n' | '\\r' )
+            	    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:8: ~ ( '\\n' | '\\r' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -1386,7 +1393,7 @@ public class regularExpressionLexer extends Lexer {
                 }
             } while (true);
 
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:22: ( '\\r' )?
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:22: ( '\\r' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -1395,7 +1402,7 @@ public class regularExpressionLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:532:22: '\\r'
+                    // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:548:22: '\\r'
                     {
                     match('\r'); 
 
@@ -1422,8 +1429,8 @@ public class regularExpressionLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:536:4: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:536:6: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:552:4: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:552:6: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
