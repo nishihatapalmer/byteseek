@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * State is an interface representing a state of an automata.
+ * A state can have a label, transitions to other states, and
+ * be a matching or non-matching state.
+ * 
+ * It extends the DeepCopy interface, to ensure that all states can provide
+ * deep copies of themselves.
  *
  * @author matt
  */
@@ -17,6 +23,7 @@ public interface State extends DeepCopy {
     //FIXME: replace these with an enum and wherever they are currently used.
     public static boolean FINAL = true;
     public static boolean NON_FINAL = false;
+
 
     /**
      *
@@ -55,9 +62,10 @@ public interface State extends DeepCopy {
 
     /**
      *
-     * @return true if this state is final (meaning, the automata matches at this state).
+     * @return true if this state is a final state.
      */
     public boolean isFinal();
+
 
 
     /**
