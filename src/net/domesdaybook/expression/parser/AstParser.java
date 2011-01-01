@@ -176,7 +176,8 @@ public class AstParser {
         final int nodeType = node.getType();
         return    nodeType == regularExpressionParser.BYTE
                || nodeType == regularExpressionParser.SET
-               || nodeType == regularExpressionParser.BITMASK
+               || nodeType == regularExpressionParser.ALL_BITMASK
+               || nodeType == regularExpressionParser.ANY_BITMASK
                || ((   nodeType == regularExpressionParser.CASE_SENSITIVE_STRING
                     || nodeType == regularExpressionParser.CASE_INSENSITIVE_STRING)
                    && node.getText().length() == 1);

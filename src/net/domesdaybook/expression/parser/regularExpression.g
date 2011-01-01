@@ -47,13 +47,25 @@ tokens { SEQUENCE;
          SET;
          INVERTED_SET;
          RANGE;
-         BITMASK; 
+         ALL_BITMASK; 
+         ANY_BITMASK;
          ANY; 
 }
+
+
+@parser::header {
+package net.domesdaybook.expression.parser;
+}
+
 
 @parser::members {
 	boolean sequencesAsTree = false;
 }
+
+
+@lexer::header{
+package net.domesdaybook.expression.parser;
+} 
 
 @lexer::members { 
 	boolean inRepeat=false;
@@ -122,7 +134,8 @@ atom	:
 	|	byte_set
 	|	byte_shorthand
 	|	set_shorthand
-	|	bitmask
+	|	all_bitmask
+	|	any_bitmask
 	|	case_sensitive_string
 	|	case_insensitive_string
 	|	group
@@ -158,7 +171,8 @@ set_specification
 	|	case_sensitive_string
 	|	case_insensitive_string
 	|	byte_range
-	|	bitmask
+	|	all_bitmask
+	|	any_bitmask
 	|	byte_set	
 	)+
 	;
@@ -177,9 +191,13 @@ range_values
 	;
 
 
-bitmask	:	AMPERSAND BYTE		-> ^(BITMASK BYTE)
+all_bitmask
+	:	AMPERSAND BYTE		-> ^(ALL_BITMASK BYTE)
 	;
 
+any_bitmask
+	:	TILDE BYTE		-> ^(ANY_BITMASK BYTE)
+	;
 	
 mnemonic
 	:	m=SET_ASCII		-> ^(SET ^(RANGE BYTE[$m,"00"] BYTE[$m,"7f"]))	
@@ -464,30 +482,6 @@ SET_CONTROL
 	:	{inSet>0}?=>	'ctrl'
 	;	
 	
-/*
-MNEMONIC
-	:	{inSet}?=>
-	(	'ascii'					// all ascii chars
-	|	'print'					// all printable chars inc. space
-	|	'graph'					// all visible chars (not inc. space)
-	|	'word'					// all characters, digits & underscore
-	|	'alnum'					// all characters & digits
-	|	'alpha'					// all characters
-	|	'upper'					// upper case characters only
-	|	'lower'					// lower case characters only
-	|	'punct'					// all punctuation
-	|	'xdigit'				// a hexadecimal digit
-	|	'digit'					// a digit
-	|	'ws'					// space, tab newline & return
-	|	'blank'					// space & tab
-	|	'space'					// space
-	|	'tab'					// tab
-	|	'newline'				// newline
-	|	'return'				// carriage return
-	|	'ctrl'					// all control characters
-	)
-	;
-*/
 
 CLOSE_SQUARE
 	:	']'		{inSet--;} //{inSet=false;}
@@ -499,6 +493,10 @@ AMPERSAND
 	:	'&' 
 	;
 
+
+TILDE	:	'~'
+	;
+	
 
 MANY
 	:	'*'
