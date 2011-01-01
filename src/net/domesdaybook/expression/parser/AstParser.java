@@ -53,10 +53,10 @@ public class AstParser {
             Tree childNode = treeNode.getChild(childIndex);
 
             // If a child is exactly equivalent to its parent, then
-            // replace it with its own children.  The only nodes which can have
-            // children the same as themselves are sequences, alternatives,
-            // and sets (and inverted sets).
-            if (equivalent(treeNode, childNode)) {
+            // replace it with its own children, unless it is a repeat node, which can
+            // have repeats of repeats
+            //TODO: optimise repeats of repeats.
+            if (equivalent(treeNode, childNode) && treeNode.getType() != regularExpressionParser.REPEAT) {
                 treeNode.replaceChildren(childIndex, childIndex, getChildList(childNode));
                 childNode = treeNode.getChild(childIndex);
             }

@@ -23,7 +23,7 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public class AstCompiler implements Compiler {
 
-    private static final String MANY_STRING = regularExpressionParser.tokenNames[regularExpressionParser.MANY];
+    private static final String MANY = "*";
     private static final String QUOTE = "\'";
 
     private TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
@@ -89,12 +89,12 @@ public class AstCompiler implements Compiler {
                 break;
             }
 
-
+            //TODO: nested repeats can be optimised.
             case (regularExpressionParser.REPEAT): {
                 final CommonTree nodeToRepeat = (CommonTree) ast.getChild(2);
                 final StateWrapper repeatedAutomata = buildAutomata(nodeToRepeat);
                 final int minRepeat = ParseUtils.getChildIntValue(ast, 0);
-                if (MANY_STRING.equals(ParseUtils.getChildStringValue(ast,1))) {
+                if (MANY.equals(ParseUtils.getChildStringValue(ast,1))) {
                     states = stateWrapperBuilder.buildMinToManyStates(minRepeat, repeatedAutomata);
                 } else {
                     final int maxRepeat = ParseUtils.getChildIntValue(ast, 1);

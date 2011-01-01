@@ -295,13 +295,15 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     @Override
     public final StateWrapper buildMinToMaxStates(final int minRepeat, final int maxRepeat, final StateWrapper repeatedAutomata) {
         StateWrapper states = null;
-        // If min repeat is zero, then we have optional (1 - max optional states):
+        // If min repeat is zero, then we have up to max optional states:
         if (minRepeat == 0) {
             states = buildRepeatedOptionalStates(maxRepeat, repeatedAutomata);
         } else {
-            final StateWrapper repeatStates = buildRepeatedStates(minRepeat, repeatedAutomata);
-            final StateWrapper optionalStates = buildRepeatedOptionalStates(maxRepeat - minRepeat, repeatedAutomata);
-            states = joinStates(repeatStates, optionalStates);
+            states = buildRepeatedStates(minRepeat, repeatedAutomata);
+            if (maxRepeat > minRepeat) {
+                final StateWrapper optionalStates = buildRepeatedOptionalStates(maxRepeat - minRepeat, repeatedAutomata);
+                states = joinStates(states, optionalStates);
+            }
         }
         return states;
     }
