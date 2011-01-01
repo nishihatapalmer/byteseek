@@ -20,9 +20,17 @@ grammar regularExpression;
   
   Differences to other regular expression parsers
   ------------------------------------------------
-   * Sequences of bytes or other fundamental objects (atoms)
+   * Bytes: the language operates over byte sequences rather than text sequences.
+
+   * Trees: Sequences of bytes or other fundamental objects (atoms)
      produce right-associative trees, rather than the more normal left-
      associative form.  This doesn't make any material difference.
+
+   * Lists: In any case, the tree mode is turned off by default.
+     Instead of the deeply nested tree structures produced by traditional parsing,
+     sequences are represented directly as sequences, with an ordered list of children.
+
+     "sequencesAsTree" defines whether to output sequences as nested trees or lists.
      
   To do
   -----
@@ -40,8 +48,6 @@ tokens { SEQUENCE;
          INVERTED_SET;
          RANGE;
          BITMASK; 
-         //CASE_SENSITIVE;
-         //CASE_INSENSITIVE;
          ANY; 
 }
 
@@ -51,9 +57,19 @@ tokens { SEQUENCE;
 
 @lexer::members { 
 	boolean inRepeat=false;
-	//boolean inSet=false;
 	int inSet = 0;
+        boolean throwExceptionOnError = true;
+
+        @Override
+        public void reportError(RecognitionException e) {
+            if (throwExceptionOnError) {
+                throw new IllegalArgumentException(e);
+            } else {
+                super.reportError(e);
+            }
+        }
 }
+
 
 
 start	:	regex EOF!				
