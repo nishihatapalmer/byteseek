@@ -26,6 +26,9 @@ public interface StateWrapperBuilder {
 
     public StateWrapper buildAllBitmaskStates(final byte bitMask);
 
+    
+    public StateWrapper buildAnyBitmaskStates(final byte bitMask);
+
 
     public StateWrapper buildSequenceStates(final List<StateWrapper> sequenceStates);
 

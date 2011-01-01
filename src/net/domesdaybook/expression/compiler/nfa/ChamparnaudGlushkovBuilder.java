@@ -111,7 +111,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
     /**
      * Build an initial state and a final state,
-     * and join them together with a transition on the bitmask byte.
+     * and join them together with a transition on the all bitmask byte.
      *
      * @param bitMask
      * @return
@@ -120,6 +120,22 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         final StateWrapper states = createInitialFinalStates();
         final NfaState finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAllBitmaskTransition(bitMask, finalState);
+        states.initialState.addTransition(transition);
+        return states;
+    }
+
+
+    /**
+     * Build an initial state and a final state,
+     * and join them together with a transition on the any bitmask byte.
+     *
+     * @param bitMask
+     * @return
+     */
+    public final StateWrapper buildAnyBitmaskStates(final byte bitMask) {
+        final StateWrapper states = createInitialFinalStates();
+        final NfaState finalState = states.finalStates.get(0);
+        final Transition transition = transitionFactory.createAnyBitmaskTransition(bitMask, finalState);
         states.initialState.addTransition(transition);
         return states;
     }

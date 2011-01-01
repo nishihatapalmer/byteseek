@@ -138,9 +138,15 @@ public class AstCompiler implements Compiler {
             }
 
 
-            case (regularExpressionParser.BITMASK): {
+            case (regularExpressionParser.ALL_BITMASK): {
                 final byte transitionByte = ParseUtils.getBitMaskValue(ast);
                 states = stateWrapperBuilder.buildAllBitmaskStates(transitionByte);
+                break;
+            }
+
+            case (regularExpressionParser.ANY_BITMASK): {
+                final byte transitionByte = ParseUtils.getBitMaskValue(ast);
+                states = stateWrapperBuilder.buildAnyBitmaskStates(transitionByte);
                 break;
             }
 
@@ -176,12 +182,6 @@ public class AstCompiler implements Compiler {
                 states = stateWrapperBuilder.buildCaseInsensitiveStringStates(str);
                 break;
             }
-
-            //FIXME: need to implement ANY BItMASKS in the parser.
-            //case (regularExpressionParser.BITMASK): {
-            //    states = getAnyBitmaskStates(ast);
-            //    break;
-            //}
 
         }
         return states;
@@ -227,11 +227,17 @@ public class AstCompiler implements Compiler {
                     break;
                 }
 
-                case regularExpressionParser.BITMASK: {
+                case regularExpressionParser.ALL_BITMASK: {
                     final byte allBitMask = ParseUtils.getBitMaskValue(childNode);
                     setValues.addAll(BitUtilities.getBytesMatchingAllBitMask(allBitMask));
                     break;
                 }
+
+                case regularExpressionParser.ANY_BITMASK: {
+                    final byte allBitMask = ParseUtils.getBitMaskValue(childNode);
+                    setValues.addAll(BitUtilities.getBytesMatchingAnyBitMask(allBitMask));
+                    break;
+                }                
 
                 case regularExpressionParser.RANGE: {
                     int minRangeValue;
