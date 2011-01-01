@@ -5,6 +5,7 @@
 
 package net.domesdaybook.automata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.Set;
  * @author matt
  */
 public class Utilities {
-
 
 
     private Utilities() {
@@ -45,6 +45,13 @@ public class Utilities {
         labelAllStates(state, labeler, visitedStates);
     }
 
+    public static List<State> getFinalStates(final State initialState) {
+        Set<State> visitedStates = new HashSet<State>();
+        List<State> finalStates = new ArrayList<State>();
+        getAllFinalStates(initialState, visitedStates, finalStates);
+        return finalStates;
+    }
+
     
     public static String toDot(final State initialState, final String title) {
         final StringBuilder builder = new StringBuilder();
@@ -59,13 +66,26 @@ public class Utilities {
     }
 
 
-    private static void labelAllStates(final State state, final StateLabeler labeler, Set<State> visitedStates) {
+    private static void labelAllStates(final State state, final StateLabeler labeler, final Set<State> visitedStates) {
         if (!visitedStates.contains(state)) {
             visitedStates.add(state);
             labeler.label(state);
             final List<Transition> transitions = state.getTransitions();
             for (Transition transition: transitions) {
                 labelAllStates(transition.getToState(), labeler, visitedStates);
+            }
+        }
+    }
+
+    private static void getAllFinalStates(final State state, final Set<State> visitedStates, final List<State> finalStates) {
+        if (!visitedStates.contains(state)) {
+            visitedStates.add(state);
+            if (state.isFinal()) {
+                finalStates.add(state);
+            }
+            final List<Transition> transitions = state.getTransitions();
+            for (Transition transition: transitions) {
+                getAllFinalStates(transition.getToState(), visitedStates, finalStates);
             }
         }
     }
