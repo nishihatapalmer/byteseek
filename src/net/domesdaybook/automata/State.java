@@ -19,6 +19,8 @@ public interface State extends DeepCopy {
     
     public String getLabel();
 
+    public void setLabel(final String label);
+
     public void addTransition(final Transition transition);
 
     public void addAllTransitions(final List<Transition> transitions);
