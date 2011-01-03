@@ -30,22 +30,11 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
     }
     
     public CombinedSequenceMatcher(final List<SequenceMatcher> matchList) {
+        if (matchList == null || matchList.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
+        }
         matchers.addAll(matchList);
         length = calculatePositions();
-    }
-
-    private int calculatePositions() {
-        int len = 0;
-        for ( int seqIndex = 0, stop=matchers.size(); seqIndex < stop; seqIndex++ ) {
-            final SequenceMatcher matcher = matchers.get(seqIndex);
-            final int numberOfBytes = matcher.length();
-            for (int matcherPos = 0; matcherPos < numberOfBytes; matcherPos++) {
-                ByteMatcherIndex index = new ByteMatcherIndex(matcher,matcherPos);
-                byteMatcherForPosition.add(index);
-            }
-            len += numberOfBytes;
-        }
-        return len;
     }
 
 
@@ -97,5 +86,20 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
     List<SequenceMatcher> getMatchers() {
         return matchers;
     }
+
+    private int calculatePositions() {
+        int len = 0;
+        for ( int seqIndex = 0, stop=matchers.size(); seqIndex < stop; seqIndex++ ) {
+            final SequenceMatcher matcher = matchers.get(seqIndex);
+            final int numberOfBytes = matcher.length();
+            for (int matcherPos = 0; matcherPos < numberOfBytes; matcherPos++) {
+                ByteMatcherIndex index = new ByteMatcherIndex(matcher,matcherPos);
+                byteMatcherForPosition.add(index);
+            }
+            len += numberOfBytes;
+        }
+        return len;
+    }
+
 
 }

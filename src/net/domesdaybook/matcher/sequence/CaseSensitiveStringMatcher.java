@@ -20,6 +20,9 @@ public class CaseSensitiveStringMatcher implements SequenceMatcher {
     private final int length;
 
     public CaseSensitiveStringMatcher( final String caseSensitiveASCIIString ) {
+        if (caseSensitiveASCIIString == null || caseSensitiveASCIIString.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty string passed in to CaseSensitiveStringMatcher.");
+        }
         caseSensitiveString = caseSensitiveASCIIString;
         final int byteSequenceLength = caseSensitiveASCIIString.length();
         byteArray = new byte[byteSequenceLength];

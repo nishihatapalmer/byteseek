@@ -21,12 +21,18 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
 
     
     public SingleByteSequenceMatcher(final List<SingleByteMatcher> sequence) {
+        if (sequence == null || sequence.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
+        }
         this.matcherSequence.addAll(sequence);
         this.length = this.matcherSequence.size();
     }
 
 
     public SingleByteSequenceMatcher(final SingleByteMatcher matcher) {
+        if (matcher == null) {
+            throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
+        }
         this.matcherSequence.add(matcher);
         this.length = 1;
     }

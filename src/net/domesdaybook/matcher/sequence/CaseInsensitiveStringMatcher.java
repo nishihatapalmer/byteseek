@@ -22,6 +22,9 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     
     public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
+        if (caseInsensitiveASCIIString == null || caseInsensitiveASCIIString.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty string passed in to CaseInsensitiveStringMatcher.");
+        }
         caseInsensitiveString = caseInsensitiveASCIIString;
         length = caseInsensitiveASCIIString.length();
         charMatchList = new SingleByteMatcher[length];
@@ -37,18 +40,6 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
     
-    private final SingleByteMatcher getByteMatcherForChar(char theChar) {
-        SingleByteMatcher result;
-        if ((theChar >= 'a' && theChar <= 'z') ||
-            (theChar >= 'A' && theChar <= 'Z')) {
-            result = new CaseInsensitiveByteMatcher(theChar);
-        } else {
-            result = new ByteMatcher((byte) theChar);
-        }
-        return result;
-    }
-    
-
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
         if (prettyPrint) {
@@ -76,5 +67,18 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
     public final SingleByteMatcher getByteMatcherForPosition(int position) {
         return (SingleByteMatcher) charMatchList[position];
     }
+
+    
+    private SingleByteMatcher getByteMatcherForChar(char theChar) {
+        SingleByteMatcher result;
+        if ((theChar >= 'a' && theChar <= 'z') ||
+            (theChar >= 'A' && theChar <= 'Z')) {
+            result = new CaseInsensitiveByteMatcher(theChar);
+        } else {
+            result = new ByteMatcher((byte) theChar);
+        }
+        return result;
+    }
+
 
 }
