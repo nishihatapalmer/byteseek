@@ -18,13 +18,12 @@ public interface Searcher {
     /**
      * A constant indicating whether a search was not successful.
      */
-    public long NOT_FOUND = -1L;
+    public static final long NOT_FOUND = -1L;
 
 
     /**
      * Searches bytes forwards provided by a {@link ByteReader} object,
-     * forwards from the position given by fromPosition up to the position
-     * given by toPosition.
+     * from the position given by fromPosition up to toPosition.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
@@ -36,8 +35,7 @@ public interface Searcher {
 
     /**
      * Searches bytes backwards provided by a {@link ByteReader} object,
-     * backwards from the position given by fromPosition up to the position
-     * given by toPosition.
+     * from the position given by fromPosition up to toPosition.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
