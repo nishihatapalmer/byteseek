@@ -23,7 +23,10 @@ public final class NaiveSearcher extends SequenceMatcherSearcher {
         super(sequence);
     }
 
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         long matchPosition = Searcher.NOT_FOUND;
@@ -39,7 +42,10 @@ public final class NaiveSearcher extends SequenceMatcherSearcher {
         return matchPosition;
     }
 
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         long matchPosition = Searcher.NOT_FOUND;
