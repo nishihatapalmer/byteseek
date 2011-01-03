@@ -21,9 +21,9 @@ public class ParseUtils {
     public static final String QUOTE = "\'";
 
     private ParseUtils() {
-
     }
 
+    
     public static byte parseHexByte(final String hexByte) {
         return (byte) Integer.parseInt(hexByte, 16);
     }
@@ -38,6 +38,7 @@ public class ParseUtils {
         final Tree childNode = treeNode.getChild(0);
         return parseHexByte(childNode.getText());
     }
+
 
     public static int getChildIntValue(final Tree treeNode, final int childIndex) {
         final Tree childNode = treeNode.getChild(childIndex);
