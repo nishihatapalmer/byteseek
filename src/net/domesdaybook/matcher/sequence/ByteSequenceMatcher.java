@@ -24,7 +24,7 @@ public class ByteSequenceMatcher implements SequenceMatcher {
     public ByteSequenceMatcher(final byte[] byteArray ) {
         // Preconditions byteArray is not null:
         if ( byteArray == null ) {
-            throw new IllegalArgumentException("Null byte array passed in to ByteHexMatcher");
+            throw new IllegalArgumentException("Null byte array passed in to ByteSequenceMatcher");
         }
         this.byteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
         length = byteArray.length;
@@ -32,6 +32,10 @@ public class ByteSequenceMatcher implements SequenceMatcher {
 
     
     public ByteSequenceMatcher(final List<Byte> byteList) {
+        // Preconditions: list is not null and has at least one member:
+        if (byteList == null || byteList.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty byte list passed in to ByteSequenceMatcher.");
+        }
         this.byteArray = new byte[byteList.size()];
         int index = 0;
         for (Byte b : byteList) {
