@@ -41,10 +41,8 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
 
     @Override
     public final byte[] getMatchingBytes() {
-        //FIXME: if negated, bytes are inverted.
-        //return bytes;
         if (negated) {
-            byte[] invertedValues = new byte[getNumberOfMatchingBytes()];
+            final byte[] invertedValues = new byte[getNumberOfMatchingBytes()];
             int byteIndex = 0;
             for (int value = 0; value < 256; value++) {
                 if (matches((byte) value)) {
