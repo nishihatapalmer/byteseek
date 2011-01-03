@@ -18,19 +18,19 @@ import net.domesdaybook.automata.nfa.NfaState;
  */
 public class StateWrapper implements DeepCopy {
 
-        NfaState initialState;
-        List<NfaState> finalStates = new ArrayList<NfaState>();
+    NfaState initialState;
+    List<NfaState> finalStates = new ArrayList<NfaState>();
 
-        public void setIsFinal(final NfaState state, final boolean isFinal) {
-            state.setIsFinal(isFinal);
-            if (isFinal) {
-                if (!finalStates.contains(state)) {
-                    finalStates.add(state);
-                }
-            } else {
-                finalStates.remove(state);
+    public void setIsFinal(final NfaState state, final boolean isFinal) {
+        state.setIsFinal(isFinal);
+        if (isFinal) {
+            if (!finalStates.contains(state)) {
+                finalStates.add(state);
             }
+        } else {
+            finalStates.remove(state);
         }
+    }
 
         
     public final StateWrapper deepCopy() {
@@ -43,11 +43,19 @@ public class StateWrapper implements DeepCopy {
     public final StateWrapper deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
         StateWrapper copy = new StateWrapper();
         oldToNewObjects.put(this, copy);
-        copy.initialState = initialState.deepCopy(oldToNewObjects);
-        copy.finalStates = new ArrayList<NfaState>();
-        for (NfaState finalState : finalStates) {
-            final NfaState finalStateCopy = finalState.deepCopy(oldToNewObjects);
-            copy.finalStates.add(finalStateCopy);
+        if (initialState == null) {
+            copy.initialState = null;
+        } else {
+            copy.initialState = initialState.deepCopy(oldToNewObjects);
+        }
+        if (finalStates == null) {
+            copy.finalStates = null;
+        } else {
+            copy.finalStates = new ArrayList<NfaState>();
+            for (NfaState finalState : finalStates) {
+                final NfaState finalStateCopy = finalState.deepCopy(oldToNewObjects);
+                copy.finalStates.add(finalStateCopy);
+            }
         }
         return copy;
     }
