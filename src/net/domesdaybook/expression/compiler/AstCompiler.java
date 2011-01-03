@@ -1,17 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.expression.compiler;
 
-import java.util.HashSet;
-import java.util.Set;
 import net.domesdaybook.expression.parser.AstParser;
 import net.domesdaybook.expression.parser.ParseException;
-import net.domesdaybook.expression.parser.ParseUtils;
-import net.domesdaybook.expression.parser.regularExpressionParser;
-import net.domesdaybook.matcher.singlebyte.BitUtilities;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
