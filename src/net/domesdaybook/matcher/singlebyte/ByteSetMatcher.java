@@ -15,7 +15,7 @@ import net.domesdaybook.reader.ByteReader;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public final class ByteSetMatcher extends NegatableMatcher implements SingleByteMatcher {
 

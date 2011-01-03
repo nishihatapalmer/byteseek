@@ -18,7 +18,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class SequenceMatcherParser {
 

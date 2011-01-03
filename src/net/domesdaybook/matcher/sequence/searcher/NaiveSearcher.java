@@ -15,7 +15,7 @@ import net.domesdaybook.searcher.Searcher;
  * and the bytes being searched are n bytes long, it will take O(n * m) to
  * determine there is no match.
  *
- * @author matt
+ * @author Matt Palmer
  */
 public final class NaiveSearcher extends SequenceMatcherSearcher {
 

@@ -9,7 +9,7 @@ import net.domesdaybook.reader.ByteReader;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
 

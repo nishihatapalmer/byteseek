@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class CombinedSequenceMatcher implements SequenceMatcher {
 

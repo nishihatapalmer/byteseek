@@ -12,7 +12,7 @@ import org.antlr.runtime.tree.Tree;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public abstract class AstCompiler<T> implements Compiler<T> {
 

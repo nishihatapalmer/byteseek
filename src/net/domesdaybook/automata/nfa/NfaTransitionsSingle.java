@@ -16,7 +16,7 @@ import net.domesdaybook.automata.Transition;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class NfaTransitionsSingle implements NfaTransitions {
 

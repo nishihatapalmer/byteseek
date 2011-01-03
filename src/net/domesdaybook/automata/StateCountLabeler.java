@@ -7,7 +7,7 @@ package net.domesdaybook.automata;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class StateCountLabeler implements StateLabeler {
 

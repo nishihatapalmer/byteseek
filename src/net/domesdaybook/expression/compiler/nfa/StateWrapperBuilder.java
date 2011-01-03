@@ -11,7 +11,7 @@ import net.domesdaybook.automata.transition.TransitionFactory;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public interface StateWrapperBuilder {
 

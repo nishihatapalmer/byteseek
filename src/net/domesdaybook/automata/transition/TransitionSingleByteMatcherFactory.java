@@ -20,7 +20,7 @@ import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class TransitionSingleByteMatcherFactory implements TransitionFactory {
 

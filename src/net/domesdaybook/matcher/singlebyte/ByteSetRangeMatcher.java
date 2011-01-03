@@ -10,7 +10,7 @@ import net.domesdaybook.reader.ByteReader;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  *
  * Only matches a single byte value-range at a time - not a sequence of them.
  * In practice, this isn't a major problem - we don't even have a single signature

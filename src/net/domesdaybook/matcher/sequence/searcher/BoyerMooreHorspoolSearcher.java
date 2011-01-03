@@ -38,7 +38,7 @@ import net.domesdaybook.searcher.Searcher;
  * the longer the pattern you are searching for, the better the performance
  * usually is, as the shifts will be correspondingly bigger.
  * 
- * @author matt
+ * @author Matt Palmer
  */
 public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 

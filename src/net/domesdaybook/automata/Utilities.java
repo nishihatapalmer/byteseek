@@ -12,7 +12,7 @@ import java.util.Set;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class Utilities {
 

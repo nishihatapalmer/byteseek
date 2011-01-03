@@ -7,7 +7,7 @@ package net.domesdaybook.expression;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class MatchResult {
 

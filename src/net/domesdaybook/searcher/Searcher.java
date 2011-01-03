@@ -11,7 +11,7 @@ import net.domesdaybook.reader.ByteReader;
  * An interface for classes that search bytes provided by a {@link ByteReader}.
  * Searching can be forwards or backwards.
  *
- * @author matt
+ * @author Matt Palmer
  */
 public interface Searcher {
 

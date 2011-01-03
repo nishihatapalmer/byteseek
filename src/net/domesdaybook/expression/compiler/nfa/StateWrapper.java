@@ -14,7 +14,7 @@ import net.domesdaybook.automata.nfa.NfaState;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class StateWrapper implements DeepCopy {
 

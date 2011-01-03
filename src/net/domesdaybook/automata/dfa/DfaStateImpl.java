@@ -7,7 +7,7 @@ package net.domesdaybook.automata.dfa;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class DfaStateImpl {
 

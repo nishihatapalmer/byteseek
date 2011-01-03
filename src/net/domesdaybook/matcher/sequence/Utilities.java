@@ -6,7 +6,7 @@ package net.domesdaybook.matcher.sequence;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class Utilities {
 

@@ -7,7 +7,7 @@ package net.domesdaybook.matcher.singlebyte;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public abstract class NegatableMatcher implements SingleByteMatcher {
     

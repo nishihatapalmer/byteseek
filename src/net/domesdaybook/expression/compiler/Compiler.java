@@ -9,7 +9,7 @@ import net.domesdaybook.expression.parser.ParseException;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public interface Compiler<T> {
 

@@ -8,7 +8,7 @@ package net.domesdaybook.reader;
 /**
  * An interface for classes which can read bytes at a given position.
  * 
- * @author matt
+ * @author Matt Palmer
  */
 public interface ByteReader {
 

@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class BitUtilities {
 

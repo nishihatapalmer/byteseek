@@ -11,7 +11,7 @@ import net.domesdaybook.reader.ByteReader;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class CaseSensitiveStringMatcher implements SequenceMatcher {
 

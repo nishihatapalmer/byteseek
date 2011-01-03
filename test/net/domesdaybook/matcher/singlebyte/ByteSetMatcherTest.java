@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class ByteSetMatcherTest {
 

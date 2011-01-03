@@ -19,7 +19,7 @@ import org.antlr.runtime.tree.CommonTree;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class NfaCompiler extends AstCompiler<NfaState> {
 

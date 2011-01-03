@@ -9,7 +9,7 @@ import net.domesdaybook.automata.nfa.NfaSimpleState;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class SimpleStateBuilder implements StateBuilder {
 

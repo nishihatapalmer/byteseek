@@ -17,7 +17,7 @@ import java.util.Map;
  * It extends the DeepCopy interface, to ensure that all states can provide
  * deep copies of themselves.
  *
- * @author matt
+ * @author Matt Palmer
  */
 public interface State extends DeepCopy {
 

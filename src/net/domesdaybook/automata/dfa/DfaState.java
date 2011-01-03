@@ -9,7 +9,7 @@ import net.domesdaybook.automata.State;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public interface DfaState extends State {
 

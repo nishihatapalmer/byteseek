@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  *
- * @author matt palmer
+ * @author Matt Palmer palmer
  */
 public final class WuManberSearch {
 

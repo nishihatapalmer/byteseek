@@ -17,7 +17,7 @@ import java.util.Map;
  * This is forwarded to other child objects implementing DeepCopy, in order that
  * only one copy of the same object is ever created.
 
- * @author matt
+ * @author Matt Palmer
  */
 public interface DeepCopy {
 

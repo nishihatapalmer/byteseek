@@ -10,7 +10,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
  public interface SequenceMatcher extends Matcher {
 

@@ -17,7 +17,7 @@ import org.antlr.runtime.tree.Tree;
 
 /**
  *
- * @author matt palmer
+ * @author Matt Palmer palmer
  */
 public class AstParser {
 

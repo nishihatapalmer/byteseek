@@ -7,7 +7,7 @@ package net.domesdaybook.expression.parser;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class ParseException extends Exception {
 

@@ -10,7 +10,7 @@ import net.domesdaybook.searcher.Searcher;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public abstract class SequenceMatcherSearcher implements Searcher {
 
