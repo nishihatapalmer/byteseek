@@ -10,8 +10,9 @@ import java.util.Map;
 
 /**
  * State is an interface representing a state of an automata.
- * A state can have a label, transitions to other states, and
- * be a matching or non-matching state.
+ * A state can have a label, transitions to other states (or to itself),
+ * and be a final or non-final state.  A final state is one which indicates
+ * a match if it is reached processing the automata.
  * 
  * It extends the DeepCopy interface, to ensure that all states can provide
  * deep copies of themselves.
@@ -41,7 +42,7 @@ public interface State extends DeepCopy {
 
     /**
      *
-     * @param transition A transition to some state to add to this state.
+     * @param transition A transition to add to this state.
      */
     public void addTransition(final Transition transition);
 

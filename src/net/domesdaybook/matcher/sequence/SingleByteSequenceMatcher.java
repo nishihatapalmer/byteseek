@@ -19,9 +19,16 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
     private final List<SingleByteMatcher> matcherSequence = new ArrayList<SingleByteMatcher>();
     private final int length;
 
+    
     public SingleByteSequenceMatcher(final List<SingleByteMatcher> sequence) {
         this.matcherSequence.addAll(sequence);
         this.length = this.matcherSequence.size();
+    }
+
+
+    public SingleByteSequenceMatcher(final SingleByteMatcher matcher) {
+        this.matcherSequence.add(matcher);
+        this.length = 1;
     }
 
 

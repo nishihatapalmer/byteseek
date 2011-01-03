@@ -6,6 +6,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.reader.ByteReader;
@@ -20,13 +21,30 @@ public class ByteSequenceMatcher implements SequenceMatcher {
     private final int length;
 
 
-    public ByteSequenceMatcher( final byte[] byteArray ) {
+    public ByteSequenceMatcher(final byte[] byteArray ) {
         // Preconditions byteArray is not null:
         if ( byteArray == null ) {
             throw new IllegalArgumentException("Null byte array passed in to ByteHexMatcher");
         }
         this.byteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
         length = byteArray.length;
+    }
+
+    
+    public ByteSequenceMatcher(final List<Byte> byteList) {
+        this.byteArray = new byte[byteList.size()];
+        int index = 0;
+        for (Byte b : byteList) {
+            this.byteArray[index++] = b;
+        }
+        length = byteArray.length;
+    }
+
+
+    public ByteSequenceMatcher(final byte byteValue) {
+        this.byteArray = new byte[1];
+        this.byteArray[0] = byteValue;
+        length = 1;
     }
 
 
