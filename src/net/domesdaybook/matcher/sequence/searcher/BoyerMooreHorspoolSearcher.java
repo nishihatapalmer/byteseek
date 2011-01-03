@@ -35,6 +35,10 @@ import net.domesdaybook.searcher.Searcher;
  * missing a possible match.  In general, the safe shift is either the length of
  * the pattern, if that byte does not appear in the pattern, or the shortest 
  * distance from the end of the pattern where that byte appears.
+ *
+ * One initially counter-intuitive consequence of this type of search is that
+ * the longer the pattern you are searching for, the better the performance
+ * usually is, as the shifts will be correspondingly bigger.
  * 
  * @author matt
  */
