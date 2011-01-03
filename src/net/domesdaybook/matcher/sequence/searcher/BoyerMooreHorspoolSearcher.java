@@ -8,6 +8,7 @@ package net.domesdaybook.matcher.sequence.searcher;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.searcher.Searcher;
 
 
 /**
@@ -73,7 +74,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
         }
 
-        return matchFound? matchPosition : -1L;
+        return matchFound? matchPosition : Searcher.NOT_FOUND;
     }
 
 
@@ -123,7 +124,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             matchPosition += safeShifts[(int) firstByte & 0xFF];
         }
 
-        return matchFound? matchPosition : -1L;
+        return matchFound? matchPosition : Searcher.NOT_FOUND;
     }
 
 

@@ -7,6 +7,7 @@ package net.domesdaybook.matcher.sequence.searcher;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.searcher.Searcher;
 
 /**
  *
@@ -21,7 +22,7 @@ public final class NaiveSearcher extends SequenceMatcherSearcher {
     
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
-        long matchPosition = -1L;
+        long matchPosition = Searcher.NOT_FOUND;
         long searchPosition = fromPosition;
         final long lastPosition = toPosition - matcher.length() - 1;
         while (searchPosition <= lastPosition) {
@@ -37,7 +38,7 @@ public final class NaiveSearcher extends SequenceMatcherSearcher {
 
     @Override
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
-        long matchPosition = -1L;
+        long matchPosition = Searcher.NOT_FOUND;
         long searchPosition = fromPosition - matcher.length() + 1;
         while (searchPosition >= toPosition) {
             if (matcher.matches(reader, searchPosition)) {
