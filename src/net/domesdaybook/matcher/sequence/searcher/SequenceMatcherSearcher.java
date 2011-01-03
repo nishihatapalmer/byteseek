@@ -16,9 +16,14 @@ public abstract class SequenceMatcherSearcher implements Searcher {
 
     protected final SequenceMatcher matcher;
 
+    
     public SequenceMatcherSearcher(final SequenceMatcher matcher) {
+        if (matcher == null) {
+            throw new IllegalArgumentException("Null matcher passed in to SequenceMatcherSearcher.");
+        }
         this.matcher = matcher;
     }
+
 
     public final SequenceMatcher getMatcher() {
         return matcher;
