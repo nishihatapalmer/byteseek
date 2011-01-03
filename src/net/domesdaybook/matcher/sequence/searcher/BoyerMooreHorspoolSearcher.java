@@ -14,13 +14,11 @@ import net.domesdaybook.searcher.Searcher;
 /**
  * BoyerMooreHorspoolSearcher searches for a sequence using the
  * Boyer-Moore-Horspool algorithm.
- * 
- * http://en.wikipedia.org/wiki/Boyer%E2%80%93Moore%E2%80%93Horspool_algorithm
- * 
+ * <p>
  * This type of search algorithm does not need to examine every byte in 
  * the bytes being searched.  It is sub-linear, in general needing to
  * examine less bytes than actually occur in the bytes being searched.
- * 
+ * <p>
  * It proceeds by searching for the search pattern backwards, from the last byte
  * in the pattern to the first.  It pre-computes a table of minimum safe shifts
  * for the search pattern.  Given a byte in the bytes being searched,
@@ -28,14 +26,14 @@ import net.domesdaybook.searcher.Searcher;
  * missing a possible match.  If the shift is zero, then we must validate that
  * the pattern actually occurs at this position (the last byte of pattern matches
  * the current position in the bytes being searched).
- * 
+ * <p>
  * A simple example is looking for the bytes 'XYZ' in the sequence 'ABCDEFGXYZ'.
  * The first attempt is to match 'Z', and we find the byte 'C'.  Since 'C' does
  * not appear anywhere in 'XYZ', we can safely shift 3 bytes ahead and not risk
  * missing a possible match.  In general, the safe shift is either the length of
  * the pattern, if that byte does not appear in the pattern, or the shortest 
  * distance from the end of the pattern where that byte appears.
- *
+ * <p>
  * One initially counter-intuitive consequence of this type of search is that
  * the longer the pattern you are searching for, the better the performance
  * usually is, as the shifts will be correspondingly bigger.
