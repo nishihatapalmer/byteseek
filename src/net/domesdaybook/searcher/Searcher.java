@@ -16,7 +16,7 @@ import net.domesdaybook.reader.ByteReader;
 public interface Searcher {
 
     /**
-     * A constant indicating whether a search was not successful.
+     * A constant indicating that a search was not successful.
      */
     public static final long NOT_FOUND = -1L;
 
