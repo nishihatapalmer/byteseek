@@ -23,35 +23,32 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public class NfaCompiler extends AstCompiler<NfaState> {
 
-    private TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
-    private StateBuilder stateBuilder = new SimpleStateBuilder();
-    private StateWrapperBuilder stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateBuilder);
-
-    @Override
-    public NfaState compile(final CommonTree ast) throws ParseException {
-       initialiseStateWrapperBuilder();
-       return buildAutomata(ast).initialState;
-    }
-
-
-    public void setTransitionFactory(final TransitionFactory transitionFactory) {
-        this.transitionFactory = transitionFactory;
-    }
-
-
-    public void setStateBuilder(final StateBuilder stateBuilder) {
-        this.stateBuilder = stateBuilder;
-    }
+    private StateWrapperBuilder stateWrapperBuilder;
 
     
-    public void setStateWrapperBuilder(final StateWrapperBuilder stateWrapperBuilder) {
+    public NfaCompiler() {
+        final TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
+        final StateBuilder stateBuilder = new SimpleStateBuilder();
+        stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateBuilder);
+    }
+
+
+    public NfaCompiler(final StateWrapperBuilder stateWrapperBuilder) {
         this.stateWrapperBuilder = stateWrapperBuilder;
     }
 
+
+    public void setStateWrapperBuilder(final StateWrapperBuilder stateWrapperBuilder) {
+        this.stateWrapperBuilder = stateWrapperBuilder;
+    }
     
-    private void initialiseStateWrapperBuilder() {
-       stateWrapperBuilder.setTransitionFactory(transitionFactory);
-       stateWrapperBuilder.setStateBuilder(stateBuilder);
+
+    @Override
+    public NfaState compile(final CommonTree ast) throws ParseException {
+       if (ast == null) {
+           throw new IllegalArgumentException("Null abstract syntax tree passed in to NfaCompiler.");
+       }
+       return buildAutomata(ast).initialState;
     }
 
 
