@@ -75,7 +75,7 @@ package net.domesdaybook.expression.parser;
         @Override
         public void reportError(RecognitionException e) {
             if (throwExceptionOnError) {
-                throw new IllegalArgumentException(e);
+                throw new ParseException(e);
             } else {
                 super.reportError(e);
             }

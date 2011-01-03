@@ -27,6 +27,6 @@ public abstract class AstCompiler<T> implements Compiler<T> {
     }
 
     
-    public abstract T compile(final CommonTree ast);
+    public abstract T compile(final CommonTree ast) throws ParseException;
 
 }

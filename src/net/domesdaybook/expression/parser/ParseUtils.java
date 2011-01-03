@@ -59,7 +59,7 @@ public class ParseUtils {
      * @param node          The set node to calculate a set of byte values for.
      * @param cumulativeSet The set of cumulative bytes so far.
      */
-    public static Set<Byte> calculateSetValue(final CommonTree node) {
+    public static Set<Byte> calculateSetValue(final CommonTree node) throws ParseException {
         final Set<Byte> setValues = new HashSet<Byte>();
         for (int childIndex = 0, stop = node.getChildCount(); childIndex < stop; childIndex++) {
             final CommonTree childNode = (CommonTree) node.getChild(childIndex);
@@ -153,7 +153,7 @@ public class ParseUtils {
 
                 default: {
                     final String message = String.format(TYPE_ERROR, getTokenName(childNode));
-                    throw new IllegalArgumentException(message);
+                    throw new ParseException(message);
                 }
             }
         }

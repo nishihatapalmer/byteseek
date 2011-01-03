@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.expression.compiler.AstCompiler;
+import net.domesdaybook.expression.parser.ParseException;
 import net.domesdaybook.expression.parser.ParseUtils;
 import net.domesdaybook.expression.parser.regularExpressionParser;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
@@ -32,12 +33,12 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
     
     @Override
-    public final SequenceMatcher compile(final CommonTree ast) {
+    public final SequenceMatcher compile(final CommonTree ast) throws ParseException {
         return buildSequence(ast);
     }
 
 
-    private SequenceMatcher buildSequence(final CommonTree ast) {
+    private SequenceMatcher buildSequence(final CommonTree ast) throws ParseException {
 
         SequenceMatcher matcher = null;
 
@@ -137,7 +138,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                         }
 
                         default: {
-                            throw new IllegalArgumentException(ParseUtils.getTypeErrorMessage(ast));
+                            throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
                         }
                     }
 
@@ -211,7 +212,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
             }
 
             default: {
-                throw new IllegalArgumentException(ParseUtils.getTypeErrorMessage(ast));
+                throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
             }
         }
         return matcher;

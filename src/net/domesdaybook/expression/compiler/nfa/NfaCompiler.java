@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.nfa.NfaState;
 import net.domesdaybook.expression.compiler.AstCompiler;
+import net.domesdaybook.expression.parser.ParseException;
 import net.domesdaybook.expression.parser.ParseUtils;
 import net.domesdaybook.expression.parser.regularExpressionParser;
 import org.antlr.runtime.tree.CommonTree;
@@ -27,7 +28,7 @@ public class NfaCompiler extends AstCompiler<NfaState> {
     private StateWrapperBuilder stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateBuilder);
 
     @Override
-    public NfaState compile(final CommonTree ast) {
+    public NfaState compile(final CommonTree ast) throws ParseException {
        initialiseStateWrapperBuilder();
        return buildAutomata(ast).initialState;
     }
@@ -54,7 +55,7 @@ public class NfaCompiler extends AstCompiler<NfaState> {
     }
 
 
-    private StateWrapper buildAutomata(final CommonTree ast) {
+    private StateWrapper buildAutomata(final CommonTree ast) throws ParseException {
 
         StateWrapper states = null;
 
@@ -180,7 +181,7 @@ public class NfaCompiler extends AstCompiler<NfaState> {
             }
 
             default: {
-                throw new IllegalArgumentException(ParseUtils.getTypeErrorMessage(ast));
+                throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
             }
         }
         return states;
