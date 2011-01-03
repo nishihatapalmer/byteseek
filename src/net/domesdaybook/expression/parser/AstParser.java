@@ -21,11 +21,19 @@ import org.antlr.runtime.tree.Tree;
  */
 public class AstParser {
 
+    
+    public AstParser() {
+    }
+
+
     /**
      * Returns an (unoptimised) abstract syntax tree from a regular
      * expression string.
      */
     public Tree parseToAST(final String expression) throws ParseException {
+        if (expression == null || expression.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty expression passed in to AstParser.parseToAST.");
+        }
         try {
             return parseToAbstractSyntaxTree(expression);
         } catch (RecognitionException ex) {
@@ -47,6 +55,9 @@ public class AstParser {
      * @return Tree an AST with the alternatives optimised.
      */
     public Tree optimiseAST(final Tree treeNode) throws ParseException {
+        if (treeNode == null) {
+            throw new IllegalArgumentException("Null node passed in to AstParser.optimiseAST");
+        }
         Tree result = treeNode;
         // Recursively invoke on children of tree node, to walk the tree:
         for (int childIndex = 0; childIndex < treeNode.getChildCount(); childIndex++) {
