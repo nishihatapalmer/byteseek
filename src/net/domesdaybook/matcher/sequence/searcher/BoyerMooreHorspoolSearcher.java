@@ -47,12 +47,20 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private SingleByteMatcher firstSingleMatcher;
     private SingleByteMatcher lastSingleMatcher;
 
-    
+    /**
+     * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
+     * to search for.
+     * 
+     * @param matcher A {@link SequenceMatcher} to search for.
+     */
     public BoyerMooreHorspoolSearcher(final SequenceMatcher matcher) {
         super(matcher);
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
 
@@ -103,6 +111,9 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
         
