@@ -37,7 +37,6 @@ public class Utilities {
     public static String byteValueToString(final boolean prettyPrint, final int byteValue) {
         final byte theByte = (byte) (0xFF & byteValue);
         final byte[] singleByte = new byte[] {theByte};
-        //singleByte[0] = theByte;
         return bytesToString(prettyPrint, singleByte);
     }
 
