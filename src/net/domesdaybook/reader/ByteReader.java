@@ -16,7 +16,7 @@ public interface ByteReader {
      * Get a byte from a position
      *
      * @param position the position of the byte to read.
-     * @return the byte at position <code>fileIndex</code>
+     * @return the byte at the position indicated.
      */
     public byte getByte(final long position);
 
