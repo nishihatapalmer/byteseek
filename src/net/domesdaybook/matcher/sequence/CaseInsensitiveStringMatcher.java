@@ -56,7 +56,7 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
         final int localStop = length;
         for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
             final SingleByteMatcher charMatcher = matchList[byteIndex];
-            final byte theByte = reader.getByte(matchFrom + byteIndex);
+            final byte theByte = reader.readByte(matchFrom + byteIndex);
             result = charMatcher.matches(theByte);
         }
         return result;

@@ -72,11 +72,11 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         while (matchPosition <= toPosition) {
 
             // Scan forwards to find a match to the last byte in the sequence:
-            byte lastByte = reader.getByte(matchPosition);
+            byte lastByte = reader.readByte(matchPosition);
             while (!lastMatcher.matches(lastByte)) {
                 matchPosition += safeShifts[(int) lastByte & 0xFF];
                 if ( matchPosition <= toPosition ) {
-                    lastByte = reader.getByte(matchPosition);
+                    lastByte = reader.readByte(matchPosition);
                 } else {
                     break;
                 }
@@ -100,7 +100,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             // This isn't always faster, as it has less "locality of reference":
             if (matchPosition < toPosition) {
                 matchPosition +=1;
-                lastByte = reader.getByte(matchPosition);
+                lastByte = reader.readByte(matchPosition);
              }
 
             matchPosition += safeShifts[(int) lastByte & 0xFF];
@@ -124,11 +124,11 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         while (matchPosition >= toPosition) {
 
             // Scan for a match to the first byte in the sequence, scanning backwards from the starting position:
-            byte firstByte = reader.getByte(matchPosition);
+            byte firstByte = reader.readByte(matchPosition);
             while (!firstMatcher.matches(firstByte)) {
                 matchPosition += safeShifts[(int) firstByte & 0xFF]; // shifts always add - if the search is backwards, the shift values are already negative.
                 if ( matchPosition >= toPosition ) {
-                    firstByte = reader.getByte(matchPosition);
+                    firstByte = reader.readByte(matchPosition);
                 } else {
                     break;
                 }
@@ -154,7 +154,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             // This isn't always faster, as it has less "locality of reference":
             if ( matchPosition > toPosition ) {
                 matchPosition -=1;
-                firstByte = reader.getByte(matchPosition);
+                firstByte = reader.readByte(matchPosition);
             }
 
             matchPosition += safeShifts[(int) firstByte & 0xFF];

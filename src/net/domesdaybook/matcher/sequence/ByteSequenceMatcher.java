@@ -58,7 +58,7 @@ public class ByteSequenceMatcher implements SequenceMatcher {
         final byte[] localArray = byteArray;
         final int localStop = length;
         for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
-            result = ( localArray[byteIndex] == reader.getByte( matchFrom + byteIndex ));
+            result = ( localArray[byteIndex] == reader.readByte( matchFrom + byteIndex ));
         }
         return result;
     }

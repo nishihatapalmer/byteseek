@@ -13,11 +13,11 @@ package net.domesdaybook.reader;
 public interface ByteReader {
 
     /**
-     * Get a byte from a position
+     * Read a byte from a position
      *
      * @param position the position of the byte to read.
      * @return the byte at the position indicated.
      */
-    public byte getByte(final long position);
+    public byte readByte(final long position);
 
 }

@@ -33,7 +33,7 @@ public class NfaMatcher implements Matcher {
         
         // While we haven't matched and there are still states to process:
         while (!matched && activeStates.size() > 0) {
-            final byte currentByte = reader.getByte(currentPosition++);
+            final byte currentByte = reader.readByte(currentPosition++);
 
             // for each active state, check if it is a final state,
             // and get its next states given the current byte:

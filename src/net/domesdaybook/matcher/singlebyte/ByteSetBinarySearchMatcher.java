@@ -111,7 +111,7 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
 
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
-        return matches(reader.getByte(matchFrom));
+        return matches(reader.readByte(matchFrom));
     }
 
 }

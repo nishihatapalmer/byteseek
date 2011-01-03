@@ -45,7 +45,7 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
         final int localStop = length;
         for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
             final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-            final byte byteRead = reader.getByte(matchFrom + byteIndex);
+            final byte byteRead = reader.readByte(matchFrom + byteIndex);
             result = byteMatcher.matches(byteRead);
         }
         return result;

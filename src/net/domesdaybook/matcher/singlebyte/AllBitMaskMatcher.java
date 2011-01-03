@@ -22,7 +22,7 @@ public class AllBitMaskMatcher implements SingleByteMatcher {
 
     @Override
     public final boolean matches(ByteReader reader, long matchFrom) {
-        return matches(reader.getByte(matchFrom));
+        return matches(reader.readByte(matchFrom));
     }
 
 
