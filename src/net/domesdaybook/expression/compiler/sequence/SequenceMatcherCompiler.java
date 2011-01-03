@@ -75,7 +75,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
                         case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            final String str = trimString(ast.getText());
+                            final String str = ParseUtils.trimString(ast.getText());
                             for (int charIndex = 0, end = str.length(); charIndex < end; charIndex++) {
                                 final byte byteValue = (byte) str.charAt(charIndex);
                                 byteValuesToJoin.add((byte) byteValue);
@@ -130,8 +130,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                         }
 
                         default: {
-                            final String message = String.format(TYPE_ERROR, getTokenName(ast));
-                            throw new IllegalArgumentException(message);
+                            throw new IllegalArgumentException(ParseUtils.getTypeErrorMessage(ast));
                         }
                     }
 
@@ -193,7 +192,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = trimString(ast.getText());
+                final String str = ParseUtils.trimString(ast.getText());
                 matcher = new CaseSensitiveStringMatcher(str);
                 break;
             }
@@ -205,8 +204,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
             }
 
             default: {
-                final String message = String.format(TYPE_ERROR, getTokenName(ast));
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException(ParseUtils.getTypeErrorMessage(ast));
             }
         }
         return matcher;
@@ -230,7 +228,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
     }
 
     private SequenceMatcher getCaseInsensitiveStringMatcher(final CommonTree ast) {
-        final String str = trimString(ast.getText());
+        final String str = ParseUtils.trimString(ast.getText());
         return new CaseInsensitiveStringMatcher(str);
     }
 
@@ -247,7 +245,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
     private SingleByteMatcher getSetMatcher(final CommonTree ast, final boolean negated) {
-        final Set<Byte> byteSet = calculateSetValue(ast);
+        final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
         return ByteSetMatcher.buildMatcher(byteSet, negated);
     }
 

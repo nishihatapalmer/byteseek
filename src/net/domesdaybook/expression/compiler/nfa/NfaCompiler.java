@@ -148,14 +148,14 @@ public class NfaCompiler extends AstCompiler<NfaState> {
 
 
             case (regularExpressionParser.SET): {
-                final Set<Byte> byteSet = calculateSetValue(ast);
+                final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
                 states = stateWrapperBuilder.buildSetStates(byteSet,false);
                 break;
             }
 
 
             case (regularExpressionParser.INVERTED_SET): {
-                final Set<Byte> byteSet = calculateSetValue(ast);
+                final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
                 states = stateWrapperBuilder.buildSetStates(byteSet, true);
                 break;
             }
@@ -167,21 +167,20 @@ public class NfaCompiler extends AstCompiler<NfaState> {
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = trimString(ast.getText());
+                final String str = ParseUtils.trimString(ast.getText());
                 states = stateWrapperBuilder.buildCaseSensitiveStringStates(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = trimString(ast.getText());
+                final String str = ParseUtils.trimString(ast.getText());
                 states = stateWrapperBuilder.buildCaseInsensitiveStringStates(str);
                 break;
             }
 
             default: {
-                final String message = String.format(TYPE_ERROR, getTokenName(ast));
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException(ParseUtils.getTypeErrorMessage(ast));
             }
         }
         return states;
