@@ -21,9 +21,11 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private SingleByteMatcher firstSingleMatcher;
     private SingleByteMatcher lastSingleMatcher;
 
+    
     public BoyerMooreHorspoolSearcher(final SequenceMatcher matcher) {
         super(matcher);
     }
+
 
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
