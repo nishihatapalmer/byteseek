@@ -10,7 +10,7 @@ import net.domesdaybook.reader.ByteReader;
 /**
  * An interface for classes that search bytes provided by a {@link ByteReader}.
  * Searching can be forwards or backwards.
- *
+ * <p>
  * Searching either returns the position at which a match was found,
  * or NOT_FOUND (-1L).
  *
