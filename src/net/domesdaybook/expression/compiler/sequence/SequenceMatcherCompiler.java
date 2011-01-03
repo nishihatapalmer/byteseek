@@ -68,14 +68,14 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                         // or case sensitive strings to process.
                         case (regularExpressionParser.BYTE): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            byteValuesToJoin.add(ParseUtils.getHexByteValue(ast));
+                            byteValuesToJoin.add(ParseUtils.getHexByteValue(child));
                             break;
                         }
 
 
                         case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            final String str = ParseUtils.trimString(ast.getText());
+                            final String str = ParseUtils.trimString(child.getText());
                             for (int charIndex = 0, end = str.length(); charIndex < end; charIndex++) {
                                 final byte byteValue = (byte) str.charAt(charIndex);
                                 byteValuesToJoin.add((byte) byteValue);
@@ -88,28 +88,35 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
                         case (regularExpressionParser.ALL_BITMASK): {
                             addCollectedByteValues(byteValuesToJoin, sequences);
-                            singleByteSequence.add(getAllBitmaskMatcher(ast));
+                            singleByteSequence.add(getAllBitmaskMatcher(child));
                             break;
                         }
 
                         
                         case (regularExpressionParser.ANY_BITMASK): {
                             addCollectedByteValues(byteValuesToJoin, sequences);
-                            singleByteSequence.add(getAnyBitmaskMatcher(ast));
+                            singleByteSequence.add(getAnyBitmaskMatcher(child));
                             break;
                         }
 
 
                         case (regularExpressionParser.SET): {
                             addCollectedByteValues(byteValuesToJoin, sequences);
-                            singleByteSequence.add(getSetMatcher(ast, false));
+                            singleByteSequence.add(getSetMatcher(child, false));
                             break;
                         }
 
 
                         case (regularExpressionParser.INVERTED_SET): {
                             addCollectedByteValues(byteValuesToJoin, sequences);
-                            singleByteSequence.add(getSetMatcher(ast, true));
+                            singleByteSequence.add(getSetMatcher(child, true));
+                            break;
+                        }
+
+
+                        case (regularExpressionParser.ANY): {
+                            addCollectedByteValues(byteValuesToJoin, sequences);
+                            singleByteSequence.add(getAnyByteMatcher(child));
                             break;
                         }
 
@@ -125,7 +132,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                             addCollectedByteValues(byteValuesToJoin, sequences);
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
                             // Add the case insensitive matcher:
-                            sequences.add(getCaseInsensitiveStringMatcher(ast));
+                            sequences.add(getCaseInsensitiveStringMatcher(child));
                             break;
                         }
 
