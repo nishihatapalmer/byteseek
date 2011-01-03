@@ -27,7 +27,7 @@ public class Utilities {
                 inString = false;
             }
         }
-        if ( prettyPrint && inString ) {
+        if (prettyPrint && inString) {
             hexString.append( "' ");
         }
         return hexString.toString();
