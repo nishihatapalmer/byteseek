@@ -13,10 +13,17 @@ import net.domesdaybook.reader.ByteReader;
  */
 public class AnyByteMatcher implements SingleByteMatcher {
 
+    public AnyByteMatcher() {
+    }
+
+
+    @Override
     public final boolean matches(byte theByte) {
         return true;
     }
 
+
+    @Override
     public final byte[] getMatchingBytes() {
         byte[] bytes = new byte[256];
         for (int count = 255; count >= 0; count--) {
@@ -25,14 +32,20 @@ public class AnyByteMatcher implements SingleByteMatcher {
         return bytes;
     }
 
+
+    @Override
     public final String toRegularExpression(boolean prettyPrint) {
         return prettyPrint ? " . " : ".";
     }
 
+
+    @Override
     public final boolean matches(ByteReader reader, long matchFrom) {
         return matches(reader.getByte(matchFrom));
     }
 
+
+    @Override
     public int getNumberOfMatchingBytes() {
         return 256;
     }

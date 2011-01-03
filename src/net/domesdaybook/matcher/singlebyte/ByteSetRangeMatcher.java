@@ -18,6 +18,8 @@ import net.domesdaybook.reader.ByteReader;
  */
 public final class ByteSetRangeMatcher extends NegatableMatcher implements SingleByteMatcher {
 
+    private final static String ILLEGAL_ARGUMENTS = "Values must be between 0 and 255 inclusive: min=%d max=%d";
+
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
 
@@ -25,11 +27,18 @@ public final class ByteSetRangeMatcher extends NegatableMatcher implements Singl
     public ByteSetRangeMatcher(final int minValue, final int maxValue, final boolean negated) {
         super(negated);
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
-        if (minValue > maxValue || minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
-            throw new IllegalArgumentException("minimum and maximum values wrong way round or not between 0 and 255.");
+        if (minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
+            final String error = String.format(ILLEGAL_ARGUMENTS, minValue, maxValue);
+            throw new IllegalArgumentException(error);
         }
-        minByteValue = minValue;
-        maxByteValue = maxValue;
+        if (minValue > maxValue) {
+            final int tempValue = minValue;
+            minByteValue = maxValue;
+            maxByteValue = tempValue;
+        } else {
+            minByteValue = minValue;
+            maxByteValue = maxValue;
+        }
     }
 
 

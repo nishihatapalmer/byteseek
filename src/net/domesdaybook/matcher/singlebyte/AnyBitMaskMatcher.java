@@ -16,7 +16,7 @@ public class AnyBitMaskMatcher implements SingleByteMatcher {
 
     final byte mBitMaskValue;
 
-    public AnyBitMaskMatcher( final byte bitMaskValue ) {
+    public AnyBitMaskMatcher(final byte bitMaskValue ) {
         mBitMaskValue = bitMaskValue;
     }
 

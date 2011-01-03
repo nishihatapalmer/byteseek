@@ -23,7 +23,8 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
         caseValues[0] = (byte) Character.toLowerCase(value);
         caseValues[1] = (byte) Character.toUpperCase(value);
     }
-    
+
+
     @Override
     public final boolean matches(final ByteReader reader, long matchPosition) {
         return matches(reader.getByte(matchPosition));

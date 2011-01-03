@@ -23,6 +23,9 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
 
     public ByteSetMatcher(Set<Byte> values, boolean negated) {
         super(negated);
+        if (values == null || values.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty byte set passed in to ByteSetMatcher.");
+        }
         for (Byte b : values) {
             byteValues.set((int) b & 0xFF);
         }
@@ -69,10 +72,12 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
         return matches(reader.getByte(matchFrom));
     }  
 
+
     @Override
     public final boolean matches(byte theByte) {
         return byteValues.get((int) theByte & 0xFF) ^ negated;
     }
+
 
     @Override
     public final String toRegularExpression(boolean prettyPrint) {
@@ -111,6 +116,7 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
         return regularExpression.toString();
     }
 
+
     @Override
     public final byte[] getMatchingBytes() {
         byte[] values = new byte[getNumberOfMatchingBytes()];
@@ -122,7 +128,6 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
         }
         return values;
     }
-
 
 
     @Override

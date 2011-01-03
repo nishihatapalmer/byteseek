@@ -21,6 +21,9 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
     
     public ByteSetBinarySearchMatcher(final Set<Byte> bytes, final boolean negated) {
         super(negated);
+        if (bytes == null || bytes.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.");
+        }
         this.bytes = new byte[bytes.size()];
         int byteIndex = 0;
         for (Byte b : bytes) {
@@ -29,6 +32,7 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
         Arrays.sort(this.bytes);
     }
 
+    
     @Override
     public final boolean matches(byte theByte) {
         return Arrays.binarySearch(bytes, theByte) >= 0 ^ negated;
@@ -37,13 +41,26 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
 
     @Override
     public final byte[] getMatchingBytes() {
-        return bytes;
+        //FIXME: if negated, bytes are inverted.
+        //return bytes;
+        if (negated) {
+            byte[] invertedValues = new byte[getNumberOfMatchingBytes()];
+            int byteIndex = 0;
+            for (int value = 0; value < 256; value++) {
+                if (matches((byte) value)) {
+                    invertedValues[byteIndex++] = (byte) value;
+                }
+            }
+            return invertedValues;
+        } else {
+            return bytes;
+        }
     }
 
 
     @Override
     public final int getNumberOfMatchingBytes() {
-        return bytes.length;
+        return negated ? 256 - bytes.length : bytes.length;
     }
 
 
