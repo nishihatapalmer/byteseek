@@ -105,12 +105,12 @@ public class ParseUtils {
                     if (minRange.startsWith(QUOTE)) {
                         minRangeValue = (int) minRange.charAt(1);
                     } else {
-                        minRangeValue = Integer.parseInt(minRange);
+                        minRangeValue = Integer.parseInt(minRange, 16);
                     }
                     if (maxRange.startsWith(QUOTE)) {
                         maxRangeValue = (int) maxRange.charAt(1);
                     } else {
-                        maxRangeValue = Integer.parseInt(maxRange);
+                        maxRangeValue = Integer.parseInt(maxRange, 16);
                     }
                     if (minRangeValue > maxRangeValue) {
                         int swapTemp = minRangeValue;
