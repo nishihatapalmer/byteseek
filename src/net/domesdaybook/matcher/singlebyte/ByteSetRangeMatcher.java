@@ -9,23 +9,30 @@ import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
- *
+ * An immutable {@link SingleByteMatcher} which matches a range of bytes, 
+ * or bytes outside the range if inverted.
+ * 
  * @author Matt Palmer
  *
- * Only matches a single byte value-range at a time - not a sequence of them.
- * In practice, this isn't a major problem - we don't even have a single signature
- * that even uses them at present - provided for completeness, not optimisation.
  */
-public final class ByteSetRangeMatcher extends NegatableMatcher implements SingleByteMatcher {
+public final class ByteSetRangeMatcher extends InvertibleMatcher implements SingleByteMatcher {
 
     private final static String ILLEGAL_ARGUMENTS = "Values must be between 0 and 255 inclusive: min=%d max=%d";
 
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
 
-
-    public ByteSetRangeMatcher(final int minValue, final int maxValue, final boolean negated) {
-        super(negated);
+    /**
+     * Constructs an immutable {@link SingleByteMatcher} which matches a range of bytes.
+     * If the minimum value is greater than the maximum value, then the values are reversed.
+     *
+     * @param minValue The minimum value to match.
+     * @param maxValue The maximum value to match.
+     * @param inverted If true, the matcher matches values outside the range given.
+     * @throws {@link IllegalArgumentException} if the values are not between 0-255.
+     */
+    public ByteSetRangeMatcher(final int minValue, final int maxValue, final boolean inverted) {
+        super(inverted);
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
         if (minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
             final String error = String.format(ILLEGAL_ARGUMENTS, minValue, maxValue);
@@ -41,20 +48,29 @@ public final class ByteSetRangeMatcher extends NegatableMatcher implements Singl
         }
     }
 
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(ByteReader reader, long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }
     
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(byte theByte) {
         final boolean insideRange = (theByte >= minByteValue & theByte <= maxByteValue);
-        return insideRange ^ negated;
+        return insideRange ^ inverted;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
         final StringBuffer regularExpression = new StringBuffer();
@@ -62,7 +78,7 @@ public final class ByteSetRangeMatcher extends NegatableMatcher implements Singl
             regularExpression.append(" ");
         }
         regularExpression.append( "[" );
-        if (negated) {
+        if (inverted) {
             regularExpression.append( "^" );
         }
         final String minValue = Utilities.byteValueToString(prettyPrint, minByteValue);
@@ -74,16 +90,19 @@ public final class ByteSetRangeMatcher extends NegatableMatcher implements Singl
         return regularExpression.toString();
     }
 
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final byte[] getMatchingBytes() {
         byte[] values = new byte[getNumberOfMatchingBytes()];
-        if (negated) {
+        if (inverted) {
             int byteIndex = 0;
             for (int value = 0; value < minByteValue; value++) {
                 values[byteIndex++] = (byte) value;
             }
-            for (int value = maxByteValue+1; value < 256; value++) {
+            for (int value = maxByteValue + 1; value < 256; value++) {
                 values[byteIndex++] = (byte) value;
             }
         } else {
@@ -95,10 +114,13 @@ public final class ByteSetRangeMatcher extends NegatableMatcher implements Singl
         return values;
     }
 
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int getNumberOfMatchingBytes() {
-        return negated ? 255 - maxByteValue + minByteValue
+        return inverted ? 255 - maxByteValue + minByteValue
                        : maxByteValue - minByteValue + 1;
     }
   

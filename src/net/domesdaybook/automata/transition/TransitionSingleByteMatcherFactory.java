@@ -41,7 +41,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
     
     @Override
     public final Transition createSetTransition(final Set<Byte> byteSet, final boolean negated, final State toState) {
-        return new TransitionSingleByteMatcher(ByteSetMatcher.buildMatcher(byteSet, negated), toState);
+        return new TransitionSingleByteMatcher(ByteSetMatcher.buildOptimalMatcher(byteSet, negated), toState);
     }
 
     @Override

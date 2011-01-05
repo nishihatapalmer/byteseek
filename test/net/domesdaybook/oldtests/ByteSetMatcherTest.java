@@ -138,7 +138,7 @@ public class ByteSetMatcherTest {
 
         matcher = SequenceMatcherParser.byteSetFromExpression( "[!00]" );
 
-        assertEquals( "Testing for negation of a single byte class", NegatableMatcher.class, matcher.getClass() );
+        assertEquals( "Testing for negation of a single byte class", InvertibleMatcher.class, matcher.getClass() );
         assertEquals( "Testing for number of bytes in negated single byte set", 255, matcher.getNumberOfMatchingBytes());
 
 
@@ -147,11 +147,11 @@ public class ByteSetMatcherTest {
         assertEquals( "Testing for single byte matcher for a single byte set", ByteMatcher.class, matcher.getClass() );
 
         matcher = SequenceMatcherParser.byteSetFromExpression( "[!00010203:88dead]" );
-        assertEquals( "Testing for negation of a multiple byte class", true, ((NegatableMatcher) matcher).isNegated() );
+        assertEquals( "Testing for negation of a multiple byte class", true, ((InvertibleMatcher) matcher).isInverted() );
         assertEquals( "Testing for number of bytes in negated 139 byte class", 117, matcher.getNumberOfMatchingBytes());
 
         matcher = SequenceMatcherParser.byteSetFromExpression("[02:040709ffee77:78]");
-        assertEquals( "Testing for no negation of a multiple byte class", false, ((NegatableMatcher) matcher).isNegated() );
+        assertEquals( "Testing for no negation of a multiple byte class", false, ((InvertibleMatcher) matcher).isInverted() );
         assertEquals( "Testing for number of bytes in 10 byte class", 10, matcher.getNumberOfMatchingBytes());
     }
 

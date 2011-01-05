@@ -14,7 +14,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public class ByteSetBinarySearchMatcher extends NegatableMatcher implements SingleByteMatcher {
+public class ByteSetBinarySearchMatcher extends InvertibleMatcher implements SingleByteMatcher {
 
     private byte[] bytes;
 
@@ -35,13 +35,13 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
     
     @Override
     public final boolean matches(byte theByte) {
-        return Arrays.binarySearch(bytes, theByte) >= 0 ^ negated;
+        return Arrays.binarySearch(bytes, theByte) >= 0 ^ inverted;
     }
 
 
     @Override
     public final byte[] getMatchingBytes() {
-        if (negated) {
+        if (inverted) {
             final byte[] invertedValues = new byte[getNumberOfMatchingBytes()];
             int byteIndex = 0;
             for (int value = 0; value < 256; value++) {
@@ -58,7 +58,7 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
 
     @Override
     public final int getNumberOfMatchingBytes() {
-        return negated ? 256 - bytes.length : bytes.length;
+        return inverted ? 256 - bytes.length : bytes.length;
     }
 
 
@@ -69,7 +69,7 @@ public class ByteSetBinarySearchMatcher extends NegatableMatcher implements Sing
             regularExpression.append(' ');
         }
         regularExpression.append("[");
-        if (negated) {
+        if (inverted) {
             regularExpression.append("^");
         }
         int byteIndex = 0;

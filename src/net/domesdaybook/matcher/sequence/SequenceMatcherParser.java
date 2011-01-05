@@ -308,7 +308,7 @@ public class SequenceMatcherParser {
             }
         }
 
-        return ByteSetMatcher.buildMatcher(classValues, negated);
+        return ByteSetMatcher.buildOptimalMatcher(classValues, negated);
     }
 
 

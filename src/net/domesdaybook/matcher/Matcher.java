@@ -8,13 +8,17 @@ package net.domesdaybook.matcher;
 import net.domesdaybook.reader.ByteReader;
 
 /**
- *
+ * An interface for classes that can match bytes from a given position.
+ * 
  * @author Matt Palmer
  */
 public interface Matcher {
 
-    /* matches an entire sequence of bytes or not.
-     * @returns whether the byte matcher matched a sequence of bytes or not.
-    */
-    public boolean matches(final ByteReader reader, final long matchFrom);
+    /**
+     *
+     * @param reader The {@link ByteReader} to read from.
+     * @param matchPosition The position to try to match at.
+     * @return Whether there is a match at the given position.
+     */
+    public boolean matches(final ByteReader reader, final long matchPosition);
 }

@@ -14,15 +14,80 @@ import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
+ * A ByteSetMatcher matches an arbitrary set of bytes.
+ *
+ * It uses a BitSet as the underlying representation of the set of bytes,
+ * so is not memory efficient for small numbers of sets of bytes.
+ *
+ * <p>Use the static buildOptimalMatcher() factory method to construct
+ * a more memory efficient matcher where possible.
  *
  * @author Matt Palmer
  */
-public final class ByteSetMatcher extends NegatableMatcher implements SingleByteMatcher {
+public final class ByteSetMatcher extends InvertibleMatcher implements SingleByteMatcher {
+
+    private static final int BINARY_SEARCH_THRESHHOLD = 16;
 
     private final BitSet byteValues = new BitSet(256);
 
-    public ByteSetMatcher(Set<Byte> values, boolean negated) {
-        super(negated);
+
+    /**
+     * Builds an optimal matcher from a set of bytes.
+     *
+     * <p>If the set is a single, non-inverted byte, then a {@link ByteMatcher}
+     * is returned. If the values lie in a contiguous range, then a
+     * {@link ByteSetRangeMatcher} is returned.  If the number of bytes in the
+     * set are below a threshold value (16), then a {@link ByteSetBinarySearchMatcher}
+     * is returned, otherwise a {@link ByteSetMatcher} is returned.
+     * 
+     * @param setValues The set of byte values to match.
+     * @param inverted   Whether the set values are inverted or not
+     * @return A SingleByteMatcher which is optimal for that set of bytes.
+     * @throws {@link IllegalArgumentException} if the set is null or empty.
+     */
+    public static SingleByteMatcher buildOptimalMatcher(final Set<Byte> setValues, final boolean inverted) {
+        if (setValues == null) {
+            throw new IllegalArgumentException("Null set passed to ByteSetMatcher.buildOptimalMatcher.");
+        }
+        SingleByteMatcher result = null;
+        final int numberOfValues = setValues.size();
+        if (numberOfValues == 1 && !inverted) {
+            for (Byte byteToMatch : setValues) {
+                result = new ByteMatcher(byteToMatch);
+            }
+        } else if (numberOfValues > 0) {
+
+            // Determine if all the values lie in a single range:
+            final List<Byte> bytes = new ArrayList<Byte>(setValues);
+            Collections.sort(bytes);
+            final int lastValuePosition = numberOfValues - 1;
+            final int firstValue = bytes.get(0);
+            final int lastValue = bytes.get(lastValuePosition);
+
+            // Construct an optimal byte set matcher:
+            if (lastValue - firstValue == lastValuePosition) {  // values lie in a contiguous range
+                result = new ByteSetRangeMatcher(firstValue, lastValue, inverted);
+            } else  // values do not lie in a contiguous range.
+            if (bytes.size() < BINARY_SEARCH_THRESHHOLD) { // small number of bytes in set - use binary searcher:
+                result = new ByteSetBinarySearchMatcher(setValues, inverted);
+            } else {
+                result = new ByteSetMatcher(setValues, inverted);
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Constructs a ByteSetMatcher from a set of bytes.
+     *
+     * @param values A set of bytes
+     * @param inverted Whether matching is on the set of bytes or their inverse.
+     * @throws {@link IllegalArgumentException} if the set is null or empty.
+     */
+    public ByteSetMatcher(final Set<Byte> values, final boolean inverted) {
+        super(inverted);
         if (values == null || values.isEmpty()) {
             throw new IllegalArgumentException("Null or empty byte set passed in to ByteSetMatcher.");
         }
@@ -32,61 +97,35 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
     }
 
 
-   /**
-     *
-     * @param setValues The set of byte values to match.
-     * @param negated   Whether the set values are negated or not
-     * @return A SingleByteMatcher which is optimal for that set of bytes.
+    /**
+     * {@inheritDoc}
      */
-    public static SingleByteMatcher buildMatcher(Set<Byte> setValues, boolean negated) {
-        SingleByteMatcher result = null;
-
-        if (setValues.size() == 1 && !negated) {
-            for (Byte byteToMatch : setValues) {
-                result = new ByteMatcher(byteToMatch);
-            }
-        } else if (setValues.size() > 0) {
-
-            // Determine if all the values lie in a single range:
-            final List<Byte> bytes = new ArrayList<Byte>(setValues);
-            Collections.sort(bytes);
-            final int lastValuePosition = bytes.size() -1;
-            final int firstValue = bytes.get(0);
-            final int lastValue = bytes.get(lastValuePosition);
-            if (lastValue - firstValue == lastValuePosition) {  // values lie in a contiguous range
-                result = new ByteSetRangeMatcher(firstValue, lastValue, negated);
-            } else  // values do not lie in a contiguous range.
-            if (bytes.size() < 16) { // small number of bytes in set - use binary searcher:
-                result = new ByteSetBinarySearchMatcher(setValues, negated);
-            } else {
-                result = new ByteSetMatcher(setValues, negated);
-            }
-        }
-
-        return result;
-    }
-
-
     @Override
-    public final boolean matches(ByteReader reader, long matchFrom) {
+    public final boolean matches(final ByteReader reader, final long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }  
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public final boolean matches(byte theByte) {
-        return byteValues.get((int) theByte & 0xFF) ^ negated;
+    public final boolean matches(final byte theByte) {
+        return byteValues.get((int) theByte & 0xFF) ^ inverted;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public final String toRegularExpression(boolean prettyPrint) {
+    public final String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
         if ( prettyPrint ) {
             regularExpression.append(' ');
         }
         regularExpression.append("[");
-        if ( negated ) {
+        if ( inverted ) {
             regularExpression.append("^");
         }
         int firstBitSetPosition = byteValues.nextSetBit(0);
@@ -117,12 +156,15 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final byte[] getMatchingBytes() {
         byte[] values = new byte[getNumberOfMatchingBytes()];
         int byteIndex = 0;
         for (int value = 0; value < 256; value++) {
-            if (byteValues.get(value) ^ negated) {
+            if (byteValues.get(value) ^ inverted) {
                 values[byteIndex++] = (byte) value;
             }
         }
@@ -130,9 +172,12 @@ public final class ByteSetMatcher extends NegatableMatcher implements SingleByte
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int getNumberOfMatchingBytes() {
-        return negated ? 256 - byteValues.cardinality() : byteValues.cardinality();
+        return inverted ? 256 - byteValues.cardinality() : byteValues.cardinality();
     }
 
 }

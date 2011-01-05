@@ -257,7 +257,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
     private SingleByteMatcher getSetMatcher(final CommonTree ast, final boolean negated) throws ParseException {
         final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-        return ByteSetMatcher.buildMatcher(byteSet, negated);
+        return ByteSetMatcher.buildOptimalMatcher(byteSet, negated);
     }
 
     
