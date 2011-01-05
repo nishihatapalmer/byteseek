@@ -45,7 +45,8 @@ public class BitMaskMatcherTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullParse() {
-         SequenceMatcherParser.allBitmaskFromExpression(null);
+
+        SequenceMatcherParser.allBitmaskFromExpression(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
