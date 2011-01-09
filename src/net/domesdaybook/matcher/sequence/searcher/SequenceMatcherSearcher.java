@@ -9,6 +9,12 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.searcher.Searcher;
 
 /**
+ * A SequenceMatcherSearcher is an abstract class implementing the {@link Searcher}
+ * interface, using {@link SequenceMatcher} objects as the specification for what
+ * to search for.
+ *
+ * SequenceMatcherSearchers should be thread-safe, either by being immutable,
+ * or by some other way of ensuring shared access to the searcher is safe.
  *
  * @author Matt Palmer
  */

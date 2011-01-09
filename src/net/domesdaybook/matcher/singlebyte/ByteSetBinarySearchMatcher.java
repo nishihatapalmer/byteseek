@@ -19,8 +19,8 @@ public class ByteSetBinarySearchMatcher extends InvertibleMatcher implements Sin
     private byte[] bytes;
 
     
-    public ByteSetBinarySearchMatcher(final Set<Byte> bytes, final boolean negated) {
-        super(negated);
+    public ByteSetBinarySearchMatcher(final Set<Byte> bytes, final boolean inverted) {
+        super(inverted);
         if (bytes == null || bytes.isEmpty()) {
             throw new IllegalArgumentException("Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.");
         }
@@ -32,13 +32,19 @@ public class ByteSetBinarySearchMatcher extends InvertibleMatcher implements Sin
         Arrays.sort(this.bytes);
     }
 
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(byte theByte) {
         return Arrays.binarySearch(bytes, theByte) >= 0 ^ inverted;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final byte[] getMatchingBytes() {
         if (inverted) {
@@ -56,12 +62,18 @@ public class ByteSetBinarySearchMatcher extends InvertibleMatcher implements Sin
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int getNumberOfMatchingBytes() {
         return inverted ? 256 - bytes.length : bytes.length;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
@@ -97,7 +109,7 @@ public class ByteSetBinarySearchMatcher extends InvertibleMatcher implements Sin
                 byteIndex = searchIndex + 1;
             } else { // just write out this byte.
                 final String byteVal = Utilities.byteValueToString(prettyPrint, byteValue);
-                regularExpression.append( byteVal );
+                regularExpression.append(byteVal);
                 byteIndex++;
             }
         }
@@ -109,6 +121,9 @@ public class ByteSetBinarySearchMatcher extends InvertibleMatcher implements Sin
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
         return matches(reader.readByte(matchFrom));

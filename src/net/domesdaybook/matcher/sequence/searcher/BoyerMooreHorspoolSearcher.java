@@ -36,14 +36,14 @@ import net.domesdaybook.searcher.Searcher;
  * <p>
  * One initially counter-intuitive consequence of this type of search is that
  * the longer the pattern you are searching for, the better the performance
- * usually is, as the shifts will be correspondingly bigger.
+ * usually is, as the possible shifts will be correspondingly bigger.
  * 
  * @author Matt Palmer
  */
 public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
-    private long[] shiftForwardFunction;
-    private long[] shiftBackwardFunction;
+    private int[] shiftForwardFunction;
+    private int[] shiftBackwardFunction;
     private SingleByteMatcher firstSingleMatcher;
     private SingleByteMatcher lastSingleMatcher;
 
@@ -55,6 +55,19 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
      */
     public BoyerMooreHorspoolSearcher(final SequenceMatcher matcher) {
         super(matcher);
+        // Prepopulate the forward and backward shifts, making the class
+        // effectively immutable once constructed.
+        //
+        // This will increase construction time, and probably build
+        // shifts which aren't used for one direction, but it makes the
+        // class thread-safe.
+        //
+        // Another way would be to synchronise access to the shift and
+        // and last and first matcher objects, which would mean we would
+        // use less memory and construct faster, at the expense of
+        // synchronising access.
+        getForwardShifts();
+        getBackwardShifts();
     }
 
 
@@ -64,9 +77,9 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
 
-        final long[] safeShifts = getForwardShifts();
+        final int[] safeShifts = getForwardShifts();
         final SingleByteMatcher lastMatcher = lastSingleMatcher;
-        final int lastBytePositionInSequence = matcher.length() -1;
+        final int lastBytePositionInSequence = matcher.length() - 1;
         long matchPosition = fromPosition;
         boolean matchFound = false;
         while (matchPosition <= toPosition) {
@@ -117,7 +130,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     @Override
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
         
-        final long[] safeShifts = getBackwardShifts();
+        final int[] safeShifts = getBackwardShifts();
         final SingleByteMatcher firstMatcher = firstSingleMatcher;
         long matchPosition = fromPosition;
         boolean matchFound = false;
@@ -164,7 +177,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
 
-    private long[] getForwardShifts() {
+    private int[] getForwardShifts() {
         if (this.shiftForwardFunction == null) {
             calculateForwardShifts();
             this.lastSingleMatcher = matcher.getByteMatcherForPosition(matcher.length()-1);
@@ -173,7 +186,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
 
-    private long[] getBackwardShifts() {
+    private int[] getBackwardShifts() {
         if (this.shiftBackwardFunction == null) {
             calculateBackwardShifts();
             this.firstSingleMatcher = matcher.getByteMatcherForPosition(0);
@@ -185,8 +198,8 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private void calculateBackwardShifts() {
         // First set the default shift to the length of the sequence
         // (negative if search direction is reversed)
-        this.shiftBackwardFunction = new long[256];
-        final long[] shifts = this.shiftBackwardFunction;
+        this.shiftBackwardFunction = new int[256];
+        final int[] shifts = this.shiftBackwardFunction;
         final int numBytes = matcher.length();
 
         final int defaultShift =  numBytes * -1;
@@ -211,8 +224,8 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
     private void calculateForwardShifts() {
         // First set the default shift to the length of the sequence
-        this.shiftForwardFunction = new long[256];
-        final long[] shifts = this.shiftForwardFunction;
+        this.shiftForwardFunction = new int[256];
+        final int[] shifts = this.shiftForwardFunction;
         final int numBytes = matcher.length();
 
         final int defaultShift =  numBytes;
