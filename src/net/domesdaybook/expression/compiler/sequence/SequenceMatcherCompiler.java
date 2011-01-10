@@ -21,6 +21,7 @@ import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
 import net.domesdaybook.matcher.singlebyte.AnyBitMaskMatcher;
 import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteSetMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import org.antlr.runtime.tree.CommonTree;
@@ -31,7 +32,7 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
-    
+
     @Override
     public final SequenceMatcher compile(final CommonTree ast) throws ParseException {
         if (ast == null) {
@@ -105,8 +106,14 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
                         case (regularExpressionParser.SET): {
-                            addCollectedByteValues(byteValuesToJoin, sequences);
-                            singleByteSequence.add(getSetMatcher(child, false));
+                            final SingleByteMatcher bytematch = getSetMatcher(child, false);
+                            if (bytematch instanceof ByteMatcher) {
+                                addCollectedSingleByteMatchers(singleByteSequence, sequences);
+                                byteValuesToJoin.add(bytematch.getMatchingBytes()[0]);
+                            } else {
+                                addCollectedByteValues(byteValuesToJoin, sequences);
+                                singleByteSequence.add(bytematch);
+                            }
                             break;
                         }
 
@@ -145,20 +152,20 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                         }
                     }
 
-                    // Add any remaining bytes or singlebytematchers to the sequences.
-                    // There cannot be both bytes and singlebytematchers
-                    // outstanding to be collected, as they both ensure this as they are built,
-                    // so the order of adding them here does not matter.
-                    addCollectedByteValues(byteValuesToJoin, sequences);
-                    addCollectedSingleByteMatchers(singleByteSequence, sequences);
-
-                    // If we only have a single sequence matcher, just return that
-                    // otherwise, build a combined sequence matcher from our list
-                    // of different sequence matchers:
-                    matcher = sequences.size() == 1
-                            ? sequences.get(0)
-                            : new CombinedSequenceMatcher(sequences);
                 }
+                // Add any remaining bytes or singlebytematchers to the sequences.
+                // There cannot be both bytes and singlebytematchers
+                // outstanding to be collected, as they both ensure this as they are built,
+                // so the order of adding them here does not matter.
+                addCollectedByteValues(byteValuesToJoin, sequences);
+                addCollectedSingleByteMatchers(singleByteSequence, sequences);
+
+                // If we only have a single sequence matcher, just return that
+                // otherwise, build a combined sequence matcher from our list
+                // of different sequence matchers:
+                matcher = sequences.size() == 1
+                        ? sequences.get(0)
+                        : new CombinedSequenceMatcher(sequences);
                 break;
             }
 
