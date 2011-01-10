@@ -54,6 +54,7 @@ public class SequenceMatcherCompilerTest {
         
         basicTests("'a string'", 8, CaseSensitiveStringMatcher.class);
         basicTests("`a string`", 8, CaseInsensitiveStringMatcher.class);
+        basicTests("01 'a string' 02", 10, ByteSequenceMatcher.class);
 
         basicTests("0102", 2, ByteSequenceMatcher.class);
         basicTests("01 02", 2, ByteSequenceMatcher.class);
