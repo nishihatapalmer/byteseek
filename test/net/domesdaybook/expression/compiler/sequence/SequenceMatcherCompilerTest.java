@@ -5,6 +5,8 @@
 
 package net.domesdaybook.expression.compiler.sequence;
 
+import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
+import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +51,9 @@ public class SequenceMatcherCompilerTest {
         basicTests("fF", 1, ByteSequenceMatcher.class);
 
         basicTests(" [0102]", 1, SingleByteSequenceMatcher.class);
+        
+        basicTests("'a string'", 8, CaseSensitiveStringMatcher.class);
+        basicTests("`a string`", 8, CaseInsensitiveStringMatcher.class);
 
         basicTests("0102", 2, ByteSequenceMatcher.class);
         basicTests("01 02", 2, ByteSequenceMatcher.class);
