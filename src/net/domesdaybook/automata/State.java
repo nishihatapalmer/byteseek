@@ -15,8 +15,8 @@ import java.util.Map;
  * and be a final or non-final state.  A final state is one which indicates
  * a match if it is reached processing the automata.
  * 
- * It extends the DeepCopy interface, to ensure that all states can provide
- * deep copies of themselves.
+ * It extends the {@link DeepCopy} interface, to ensure that all states
+ * can provide deep copies of themselves.
  *
  * @author Matt Palmer
  */
