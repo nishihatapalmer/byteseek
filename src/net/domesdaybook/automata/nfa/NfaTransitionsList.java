@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.domesdaybook.objects.DeepCopy;
+import net.domesdaybook.copy.DeepCopy;
 import net.domesdaybook.automata.Transition;
 
 /**

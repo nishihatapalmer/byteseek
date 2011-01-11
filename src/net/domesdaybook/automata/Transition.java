@@ -5,7 +5,7 @@
 
 package net.domesdaybook.automata;
 
-import net.domesdaybook.objects.DeepCopy;
+import net.domesdaybook.copy.DeepCopy;
 
 /**
  *

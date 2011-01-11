@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.objects;
+package net.domesdaybook.copy;
 
 import java.util.Map;
 
