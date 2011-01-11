@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.domesdaybook.automata.DeepCopy;
+import net.domesdaybook.objects.DeepCopy;
 import net.domesdaybook.automata.nfa.NfaState;
 
 /**

@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.automata;
+package net.domesdaybook.objects;
 
 import java.util.Map;
 

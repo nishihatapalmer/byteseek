@@ -5,6 +5,8 @@
 
 package net.domesdaybook.automata;
 
+import net.domesdaybook.objects.DeepCopy;
+
 /**
  *
  * @author Matt Palmer
