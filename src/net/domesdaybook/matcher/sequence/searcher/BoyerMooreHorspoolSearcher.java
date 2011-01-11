@@ -47,6 +47,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private SingleByteMatcher firstSingleMatcher;
     private SingleByteMatcher lastSingleMatcher;
 
+
     /**
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
      * to search for.
@@ -114,13 +115,12 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             if (matchPosition < toPosition) {
                 matchPosition +=1;
                 lastByte = reader.readByte(matchPosition);
-             }
+            }
 
             matchPosition += safeShifts[(int) lastByte & 0xFF];
-
         }
 
-        return matchFound? matchPosition : Searcher.NOT_FOUND;
+        return matchFound ? matchPosition : Searcher.NOT_FOUND;
     }
 
 
@@ -173,7 +173,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             matchPosition += safeShifts[(int) firstByte & 0xFF];
         }
 
-        return matchFound? matchPosition : Searcher.NOT_FOUND;
+        return matchFound ? matchPosition : Searcher.NOT_FOUND;
     }
 
 
