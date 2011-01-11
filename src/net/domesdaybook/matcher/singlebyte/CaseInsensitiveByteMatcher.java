@@ -18,6 +18,8 @@ import net.domesdaybook.reader.ByteReader;
  */
 public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
 
+    private final static String ILLEGAL_ARGUMENTS = "Non-ASCII char passed in to CaseInsensitiveByteMatcher: %s";
+
     private final Character value;
     private final byte[] caseValues;
 
@@ -33,7 +35,8 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
         // Precondition: must be an ASCII char:
         final long val = (long) asciiChar;
         if (val > 127 || val < 0) {
-            throw new IllegalArgumentException("Non-ASCII char passed in to CaseInsensitiveByteMatcher.");
+            final String message = String.format(ILLEGAL_ARGUMENTS, asciiChar);
+            throw new IllegalArgumentException(message);
         }
         this.value = asciiChar;
         caseValues = new byte[2];

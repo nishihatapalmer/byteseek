@@ -19,6 +19,9 @@ import net.domesdaybook.searcher.Searcher;
  */
 public final class NaiveSearcher extends SequenceMatcherSearcher {
 
+    /**
+     * {@inheritDoc}
+     */
     public NaiveSearcher(SequenceMatcher sequence) {
         super(sequence);
     }

@@ -12,7 +12,7 @@ import net.domesdaybook.reader.ByteReader;
  * Searching can be forwards or backwards.
  * <p>
  * Searching either returns the position at which a match was found,
- * or NOT_FOUND (-1L).
+ * or {@code NOT_FOUND (-1L)}.
  *
  * @author Matt Palmer
  */

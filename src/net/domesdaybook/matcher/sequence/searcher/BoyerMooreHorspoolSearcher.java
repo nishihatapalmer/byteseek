@@ -177,6 +177,11 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
 
+    /**
+     *
+     * @return A 256-element array of integers, giving the safe shift
+     * for a given byte when searching forwards.
+     */
     private int[] getForwardShifts() {
         if (this.shiftForwardFunction == null) {
             calculateForwardShifts();
@@ -186,6 +191,11 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
 
+    /**
+     *
+     * @return A 256-element array of integers, giving the safe shift
+     * for a given byte when searching backwards.
+     */
     private int[] getBackwardShifts() {
         if (this.shiftBackwardFunction == null) {
             calculateBackwardShifts();
@@ -195,6 +205,12 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
 
+    /**
+     * Calculates the safe shifts to use if searching backwards.
+     * A safe shift is either the length of the sequence, if the
+     * byte does not appear in the {@link SequenceMatcher}, or
+     * the shortest distance it appears from the beginning of the matcher.
+     */
     private void calculateBackwardShifts() {
         // First set the default shift to the length of the sequence
         // (negative if search direction is reversed)
@@ -222,6 +238,12 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     }
 
 
+    /**
+     * Calculates the safe shifts to use if searching forwards.
+     * A safe shift is either the length of the sequence, if the
+     * byte does not appear in the {@link SequenceMatcher}, or
+     * the shortest distance it appears from the end of the matcher.
+     */
     private void calculateForwardShifts() {
         // First set the default shift to the length of the sequence
         this.shiftForwardFunction = new int[256];

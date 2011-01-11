@@ -20,9 +20,14 @@ import net.domesdaybook.searcher.Searcher;
  */
 public abstract class SequenceMatcherSearcher implements Searcher {
 
+
     protected final SequenceMatcher matcher;
 
-    
+    /**
+     * Constructs an immutable SequenceMatcherSearcher.
+     *
+     * @param matcher The {@link SequenceMatcher} to search for.
+     */
     public SequenceMatcherSearcher(final SequenceMatcher matcher) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to SequenceMatcherSearcher.");
@@ -31,6 +36,10 @@ public abstract class SequenceMatcherSearcher implements Searcher {
     }
 
 
+    /**
+     * 
+     * @return The underlying {@link SequenceMatcher} to search for.
+     */
     public final SequenceMatcher getMatcher() {
         return matcher;
     }

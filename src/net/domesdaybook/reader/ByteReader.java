@@ -15,10 +15,8 @@ public interface ByteReader {
     /**
      * Read a byte from a given position.
      *
-     * @param position  The position of the byte to read.
-     * @return          The byte at the position given.
-     * @throws          While not mandatory, an {@link IndexOutOfBoundsException} should
-     * be thrown if the position does not exist in the ByteReader.
+     * @param position The position of the byte to read.
+     * @return The byte at the position given.
      */
     public byte readByte(final long position);
 

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Some useful bit-twiddling utilities to count bits in a byte,
+ * and the bytes which match those bits.
  *
  * @author Matt Palmer
  */
@@ -16,11 +18,22 @@ public class BitUtilities {
 
     private static int[] MASK = {0x55, 0x33, 0x0F};
 
+    /**
+     * Private constructor for static utility class.
+     */
     private BitUtilities() {
     }
 
-    // algorithm taken from:
-    // http://www-graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+
+    /**
+     * Returns the number of bits set in a given byte.
+     * 
+     * Algorithm taken from:
+     * http://www-graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+     * 
+     * @param b The byte to count the set bits.
+     * @return The number of bits set in the byte.
+     */
     public static int countSetBits(byte b) {
         int bits = (int) b;
         int result = bits - ((bits >>> 1) & MASK[0]);
@@ -29,10 +42,25 @@ public class BitUtilities {
         return result;
     }
 
+
+    /**
+     * Returns the number of unset bits in a given byte.
+     *
+     * @param b The byte to count the unset bits.
+     * @return The number of bits unset in the byte.
+     */
     public static int countUnsetBits(byte b) {
         return 8 - countSetBits(b);
     }
 
+
+    /**
+     * Returns the number of bytes which would match all the bits
+     * in a given bitmask.
+     *
+     * @param bitmask The bitmask.
+     * @return The number of bytes matching all the bits in the bitmask.
+     */
     public static int countBytesMatchingAllBits(byte bitmask) {
         // 00000001 - 1 << 7 = 128
         // 00000011 - 1 << 6 = 64
@@ -46,6 +74,13 @@ public class BitUtilities {
         return 1 << countUnsetBits(bitmask);
     }
 
+    /**
+     * Returns the number of bytes which would match any of the bits
+     * in a given bitmask.
+     * 
+     * @param bitmask The bitmask.
+     * @return The number of bytes matching any of the bits in the bitmask.
+     */
     public static int countBytesMatchingAnyBit(byte bitmask) {
         // 00000001 - 256 - 128 = 128  (no match: half the bytes where that bit is not set)
         // 00000011 - 256 - 64  = 192  (no match: zero & 63 other possible values)
@@ -61,6 +96,12 @@ public class BitUtilities {
 
 
 
+    /**
+     * Returns a list of bytes which would match all the bits in a given bitmask.
+     *
+     * @param bitMask The bitmask to
+     * @return
+     */
     public static List<Byte> getBytesMatchingAllBitMask(final byte bitMask) {
         final List<Byte> bytes = new ArrayList<Byte>();
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
@@ -72,7 +113,12 @@ public class BitUtilities {
         return bytes;
     }
 
-    
+
+    /**
+     * Returns a list of bytes which would match any of the bits in a given bitmask.
+     * @param bitMask
+     * @return
+     */
     public static List<Byte> getBytesMatchingAnyBitMask(final byte bitMask) {
         final List<Byte> bytes = new ArrayList<Byte>();
         // start loop at one - any bitmask matchers can never match the zero byte.

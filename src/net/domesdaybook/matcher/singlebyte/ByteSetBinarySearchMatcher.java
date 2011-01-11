@@ -11,18 +11,32 @@ import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
+ * A ByteSetBinarySearchMatcher is a {@link SingleByteMatcher which
+ * uses a binary search to determine whether a given byte is in the
+ * set of bytes.  This makes it more memory efficient than the
+ * {@link ByteSetMatcher} class, at the expense of slightly more
+ * time to match.
  *
  * @author Matt Palmer
  */
-public class ByteSetBinarySearchMatcher extends InvertibleMatcher implements SingleByteMatcher {
+public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implements SingleByteMatcher {
+
+    private static final String ILLEGAL_ARGUMENTS = "Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.";
 
     private byte[] bytes;
 
-    
+
+    /**
+     * Constructs an immutable ByteSetBinarySearchMatcher.
+     * 
+     * @param bytes The Set of bytes to match.
+     * @param inverted Whether the set of bytes is inverted or not.
+     * @throws {@link IllegalArgumentException} if the set is null or empty.
+     */
     public ByteSetBinarySearchMatcher(final Set<Byte> bytes, final boolean inverted) {
         super(inverted);
         if (bytes == null || bytes.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.");
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
         this.bytes = new byte[bytes.size()];
         int byteIndex = 0;

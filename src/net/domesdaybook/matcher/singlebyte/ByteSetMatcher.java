@@ -14,19 +14,21 @@ import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
- * A ByteSetMatcher matches an arbitrary set of bytes.
+ * A ByteSetMatcher is a {@link SingleByteMatcher  which
+ * matches an arbitrary set of bytes.
  *
  * It uses a BitSet as the underlying representation of the set of bytes,
  * so is not memory efficient for small numbers of sets of bytes.
  *
- * <p>Use the static buildOptimalMatcher() factory method to construct
- * a more memory efficient matcher where possible.
+ * <p>Use the static {@code buildOptimalMatcher()} factory method to
+ * construct a more memory efficient matcher where possible.
  *
  * @author Matt Palmer
  */
 public final class ByteSetMatcher extends InvertibleMatcher implements SingleByteMatcher {
 
-    private static final int BINARY_SEARCH_THRESHHOLD = 16;
+    private static final String ILLEGAL_ARGUMENTS = "Null or empty Byte set passed in to ByteSetMatcher.";
+    private static final int BINARY_SEARCH_THRESHOLD = 16;
 
     private final BitSet byteValues = new BitSet(256);
 
@@ -46,14 +48,21 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
      * @throws {@link IllegalArgumentException} if the set is null or empty.
      */
     public static SingleByteMatcher buildOptimalMatcher(final Set<Byte> setValues, final boolean inverted) {
-        if (setValues == null) {
-            throw new IllegalArgumentException("Null set passed to ByteSetMatcher.buildOptimalMatcher.");
+        if (setValues == null || setValues.isEmpty()) {
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
         SingleByteMatcher result = null;
         final int numberOfValues = setValues.size();
         if (numberOfValues == 1 && !inverted) {
             for (Byte byteToMatch : setValues) {
                 result = new ByteMatcher(byteToMatch);
+            }
+        } else if (numberOfValues == 255 && inverted) {
+            for (byte byteValue = Byte.MIN_VALUE; byteValue < Byte.MAX_VALUE; byteValue++) {
+                if (!setValues.contains(byteValue)) {
+                    result = new ByteMatcher(byteValue);
+                    break;
+                }
             }
         } else if (numberOfValues > 0) {
 
@@ -68,13 +77,12 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
             if (lastValue - firstValue == lastValuePosition) {  // values lie in a contiguous range
                 result = new ByteSetRangeMatcher(firstValue, lastValue, inverted);
             } else  // values do not lie in a contiguous range.
-            if (bytes.size() < BINARY_SEARCH_THRESHHOLD) { // small number of bytes in set - use binary searcher:
+            if (bytes.size() < BINARY_SEARCH_THRESHOLD) { // small number of bytes in set - use binary searcher:
                 result = new ByteSetBinarySearchMatcher(setValues, inverted);
             } else {
                 result = new ByteSetMatcher(setValues, inverted);
             }
         }
-
         return result;
     }
 
@@ -89,7 +97,7 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
     public ByteSetMatcher(final Set<Byte> values, final boolean inverted) {
         super(inverted);
         if (values == null || values.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty byte set passed in to ByteSetMatcher.");
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
         for (Byte b : values) {
             byteValues.set((int) b & 0xFF);

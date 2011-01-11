@@ -10,6 +10,8 @@ import net.domesdaybook.reader.ByteReader;
 
 
 /**
+ * A ByteMatcher is a {@link SingleByteMatcher} which matches
+ * one byte value only.
  *
  * @author Matt Palmer
  */
@@ -17,34 +19,57 @@ public final class ByteMatcher implements SingleByteMatcher {
 
     private final byte byteToMatch;
 
-    
-    public ByteMatcher(final byte value) {
-        byteToMatch = value;
+
+    /**
+     * Constructs an immutable ByteMatcher.
+     * 
+     * @param byteToMatch The byte to match.
+     */
+    public ByteMatcher(final byte byteToMatch) {
+        this.byteToMatch = byteToMatch;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(ByteReader reader, long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(final byte theByte) {
         return theByte == byteToMatch;
     }
 
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final byte[] getMatchingBytes() {
         return new byte[] {byteToMatch};
     }
 
 
+     /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toRegularExpression(boolean prettyPrint) {
         final String regex = Utilities.bytesToString(prettyPrint, getMatchingBytes());
         return prettyPrint? regex + " " : regex;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int getNumberOfMatchingBytes() {
         return 1;
