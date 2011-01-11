@@ -12,7 +12,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public class AnyByteMatcher implements SingleByteMatcher {
+public final class AnyByteMatcher implements SingleByteMatcher {
 
     /**
      * Constructs an immutable AnyByteMatcher.

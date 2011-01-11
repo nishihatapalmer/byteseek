@@ -14,7 +14,7 @@ import net.domesdaybook.reader.ByteReader;
  * 
  * @author Matt Palmer
  */
-public class AnyBitMaskMatcher implements SingleByteMatcher {
+public final class AnyBitMaskMatcher implements SingleByteMatcher {
 
     final byte mBitMaskValue;
 
