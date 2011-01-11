@@ -6,7 +6,7 @@
 package net.domesdaybook.automata.transition;
 
 import java.util.Map;
-import net.domesdaybook.copy.DeepCopy;
+import net.domesdaybook.object.copy.DeepCopy;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;

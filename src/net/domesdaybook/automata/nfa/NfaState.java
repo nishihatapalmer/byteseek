@@ -7,7 +7,7 @@ package net.domesdaybook.automata.nfa;
 
 import java.util.Map;
 import java.util.Set;
-import net.domesdaybook.copy.DeepCopy;
+import net.domesdaybook.object.copy.DeepCopy;
 import net.domesdaybook.automata.State;
 
 /**

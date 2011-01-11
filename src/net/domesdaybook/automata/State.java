@@ -5,7 +5,7 @@
 
 package net.domesdaybook.automata;
 
-import net.domesdaybook.copy.DeepCopy;
+import net.domesdaybook.object.copy.DeepCopy;
 import java.util.List;
 import java.util.Map;
 
