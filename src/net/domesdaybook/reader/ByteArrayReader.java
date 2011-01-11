@@ -13,7 +13,7 @@ package net.domesdaybook.reader;
  */
 public final class ByteArrayReader implements ByteReader {
 
-    final byte[] bytes;
+    private final byte[] bytes;
 
 
     /**
