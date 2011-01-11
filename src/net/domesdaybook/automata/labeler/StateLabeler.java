@@ -3,7 +3,9 @@
  *
  */
 
-package net.domesdaybook.automata;
+package net.domesdaybook.automata.labeler;
+
+import net.domesdaybook.automata.State;
 
 /**
  *
