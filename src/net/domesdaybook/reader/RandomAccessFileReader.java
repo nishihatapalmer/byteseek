@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author Matt Palmer.
  */
-public class RandomAccessFileReader implements ByteReader {
+public final class RandomAccessFileReader implements ByteReader {
 
     private final static String READ_ONLY = "r";
     private final static String ILLEGAL_ARGUMENTS = "Null file passed to RandomAccessFileReader";
