@@ -51,8 +51,6 @@ public class Utilities {
         builder.append(String.format("label=\"%s\"\n", title));
         Set<State> visitedStates = new HashSet<State>();
         buildDot(initialState, visitedStates, builder);
-        //Map<State, String> stateLabels = new HashMap<State, String>();
-        //int numberOfStates = buildDot(initialState, stateLabels, builder, 0);
         builder.append("\n}");
         return builder.toString();
     }
