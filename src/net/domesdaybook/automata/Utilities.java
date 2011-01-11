@@ -23,28 +23,6 @@ public class Utilities {
     };
 
 
-    public static void labelStates(final State state) {
-        labelStates(state, 0, "");
-    }
-
-    public static void labelStates(final State state, final String name) {
-        labelStates(state, 0, name);
-    }
-
-    public static void labelStates(final State state, final int count) {
-       labelStates(state, count, "");
-    }
-
-    public static void labelStates(final State state, final int count, final String name) {
-        StateLabeler labeler = new StateCountLabeler(count, name);
-        labelStates(state, labeler);
-    }
-
-    public static void labelStates(final State state, final StateLabeler labeler) {
-        Set<State> visitedStates = new HashSet<State>();
-        labelAllStates(state, labeler, visitedStates);
-    }
-
     public static List<State> getFinalStates(final State initialState) {
         Set<State> visitedStates = new HashSet<State>();
         List<State> finalStates = new ArrayList<State>();
@@ -52,30 +30,6 @@ public class Utilities {
         return finalStates;
     }
 
-    
-    public static String toDot(final State initialState, final String title) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("digraph {\n");
-        builder.append(String.format("label=\"%s\"\n", title));
-        Set<State> visitedStates = new HashSet<State>();
-        buildDot(initialState, visitedStates, builder);
-        //Map<State, String> stateLabels = new HashMap<State, String>();
-        //int numberOfStates = buildDot(initialState, stateLabels, builder, 0);
-        builder.append("\n}");
-        return builder.toString();
-    }
-
-
-    private static void labelAllStates(final State state, final StateLabeler labeler, final Set<State> visitedStates) {
-        if (!visitedStates.contains(state)) {
-            visitedStates.add(state);
-            labeler.label(state);
-            final List<Transition> transitions = state.getTransitions();
-            for (Transition transition: transitions) {
-                labelAllStates(transition.getToState(), labeler, visitedStates);
-            }
-        }
-    }
 
     private static void getAllFinalStates(final State state, final Set<State> visitedStates, final List<State> finalStates) {
         if (!visitedStates.contains(state)) {
@@ -88,6 +42,19 @@ public class Utilities {
                 getAllFinalStates(transition.getToState(), visitedStates, finalStates);
             }
         }
+    }
+
+
+    public static String toDot(final State initialState, final String title) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("digraph {\n");
+        builder.append(String.format("label=\"%s\"\n", title));
+        Set<State> visitedStates = new HashSet<State>();
+        buildDot(initialState, visitedStates, builder);
+        //Map<State, String> stateLabels = new HashMap<State, String>();
+        //int numberOfStates = buildDot(initialState, stateLabels, builder, 0);
+        builder.append("\n}");
+        return builder.toString();
     }
 
 
