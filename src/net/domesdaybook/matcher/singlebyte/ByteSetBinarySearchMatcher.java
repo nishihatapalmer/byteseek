@@ -7,14 +7,12 @@ package net.domesdaybook.matcher.singlebyte;
 
 import java.util.Arrays;
 import java.util.Set;
-import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
  * A ByteSetBinarySearchMatcher is a {@link SingleByteMatcher which
  * uses a binary search to determine whether a given byte is in the
- * set of bytes.  This makes it more memory efficient than the
- * {@link ByteSetMatcher} class, at the expense of slightly more
+ * set of bytes.  This makes it more memory efficient than the {@link ByteSetMatcher} class, at the expense of slightly more
  * time to match.
  *
  * @author Matt Palmer
@@ -117,12 +115,12 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
             // If we have a range of more than 2 contiguous positions,
             // represent this as a range of values:
             if (lastValue - byteValue > 2) {
-                final String minValue = Utilities.byteValueToString(prettyPrint, byteValue);
-                final String maxValue = Utilities.byteValueToString(prettyPrint, lastValue);
+                final String minValue = ByteUtilities.byteToString(prettyPrint, byteValue);
+                final String maxValue = ByteUtilities.byteToString(prettyPrint, lastValue);
                 regularExpression.append( String.format("%s-%s", minValue, maxValue));
                 byteIndex = searchIndex + 1;
             } else { // just write out this byte.
-                final String byteVal = Utilities.byteValueToString(prettyPrint, byteValue);
+                final String byteVal = ByteUtilities.byteToString(prettyPrint, byteValue);
                 regularExpression.append(byteVal);
                 byteIndex++;
             }

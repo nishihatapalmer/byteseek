@@ -14,14 +14,17 @@ import java.util.List;
  *
  * @author Matt Palmer
  */
-public class BitUtilities {
+public class ByteUtilities {
 
+    private static final int QUOTE_CHARACTER_VALUE = 39;
+    private static final int START_PRINTABLE_ASCII = 32;
+    private static final int END_PRINTABLE_ASCII = 126;
     private static int[] MASK = {0x55, 0x33, 0x0F};
 
     /**
      * Private constructor for static utility class.
      */
-    private BitUtilities() {
+    private ByteUtilities() {
     }
 
 
@@ -129,6 +132,34 @@ public class BitUtilities {
             }
         }
         return bytes;
+    }
+
+
+    /**
+     * Returns a byte value as either a 2-char hex string, or if
+     * pretty printing, and the byte value is a printable ASCII
+     * character, as a quoted ASCII char, unless it is a single quote
+     * character itself, in which case it will still be represented as
+     * a hex byte.
+     * 
+     * @param prettyPrint Whether to pretty print the byte value.
+     * @param value The byte value to represent as a string.
+     * @return A string containing the byte value as a string.
+     */
+    public static String byteToString(final boolean prettyPrint, int byteValue) {
+        String result = null;
+        if (prettyPrint) {
+            if (byteValue >= START_PRINTABLE_ASCII &&
+                byteValue <= END_PRINTABLE_ASCII &&
+                byteValue != QUOTE_CHARACTER_VALUE) {
+                result = String.format(" '%c' ", byteValue);
+            } else {
+                result = String.format(" %02x ", byteValue);
+            }
+        } else {
+            result = String.format("%02x", byteValue);
+        }
+        return result;
     }
     
 }

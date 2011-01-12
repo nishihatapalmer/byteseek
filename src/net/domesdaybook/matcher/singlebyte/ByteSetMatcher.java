@@ -10,7 +10,6 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
@@ -146,11 +145,11 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
             // If we have a range of more than 2 contiguous set positions,
             // represent this as a range of values:
             if ( lastBitSetPosition - firstBitSetPosition > 2 ) {
-                final String minValue = Utilities.byteValueToString(prettyPrint, firstBitSetPosition);
-                final String maxValue = Utilities.byteValueToString(prettyPrint, lastBitSetPosition);
+                final String minValue = ByteUtilities.byteToString(prettyPrint, firstBitSetPosition);
+                final String maxValue = ByteUtilities.byteToString(prettyPrint, lastBitSetPosition);
                 regularExpression.append( String.format("%s-%s", minValue, maxValue));
             } else { // less than 2 contiguous set positions - just write out a single byte:
-                final String byteVal = Utilities.byteValueToString(prettyPrint, firstBitSetPosition);
+                final String byteVal = ByteUtilities.byteToString(prettyPrint, firstBitSetPosition);
                 regularExpression.append( byteVal );
                 lastBitSetPosition = firstBitSetPosition;
             }

@@ -62,7 +62,7 @@ public final class AllBitMaskMatcher implements SingleByteMatcher {
      */
     @Override
     public final byte[] getMatchingBytes() {
-        final List<Byte> bytes = BitUtilities.getBytesMatchingAllBitMask(mBitMaskValue);
+        final List<Byte> bytes = ByteUtilities.getBytesMatchingAllBitMask(mBitMaskValue);
         final int numBytes = bytes.size();
         final byte[] values = new byte[numBytes];
         for (int index = 0; index < numBytes; index++) {
@@ -77,7 +77,7 @@ public final class AllBitMaskMatcher implements SingleByteMatcher {
      */
     @Override
     public final int getNumberOfMatchingBytes() {
-        return BitUtilities.countBytesMatchingAllBits(mBitMaskValue);
+        return ByteUtilities.countBytesMatchingAllBits(mBitMaskValue);
     }
 
 

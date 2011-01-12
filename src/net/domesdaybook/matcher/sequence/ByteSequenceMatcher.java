@@ -17,6 +17,10 @@ import net.domesdaybook.reader.ByteReader;
  */
 public class ByteSequenceMatcher implements SequenceMatcher {
 
+    public static final int QUOTE_CHARACTER_VALUE = 39;
+    public static final int START_PRINTABLE_ASCII = 32;
+    public static final int END_PRINTABLE_ASCII = 126;
+
     private final byte[] byteArray;
     private final int length;
 
@@ -72,13 +76,38 @@ public class ByteSequenceMatcher implements SequenceMatcher {
 
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
-        return Utilities.bytesToString(prettyPrint, byteArray);
+        return bytesToString(prettyPrint, byteArray);
     }
 
 
     @Override
     public final SingleByteMatcher getByteMatcherForPosition(int position) {
         return new ByteMatcher(byteArray[position]);
+    }
+
+
+    private String bytesToString(final boolean prettyPrint, byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        boolean inString = false;
+        for (int byteIndex=0, byteLength = bytes.length; byteIndex<byteLength; byteIndex++) {
+            int byteValue = 0xFF & bytes[byteIndex];
+            if ( prettyPrint &&
+                    byteValue >= START_PRINTABLE_ASCII &&
+                    byteValue <= END_PRINTABLE_ASCII &&
+                    byteValue != QUOTE_CHARACTER_VALUE) {
+                final String formatString = inString ? "%c" : " '%c";
+                hexString.append( String.format( formatString, (char) byteValue ));
+                inString = true;
+            } else {
+                 final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";
+                hexString.append( String.format(formatString, byteValue ));
+                inString = false;
+            }
+        }
+        if (prettyPrint && inString) {
+            hexString.append( "' ");
+        }
+        return hexString.toString();
     }
 
 }

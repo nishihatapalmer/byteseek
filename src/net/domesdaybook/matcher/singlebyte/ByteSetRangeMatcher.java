@@ -5,7 +5,6 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
@@ -81,8 +80,8 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
         if (inverted) {
             regularExpression.append( "^" );
         }
-        final String minValue = Utilities.byteValueToString(prettyPrint, minByteValue);
-        final String maxValue = Utilities.byteValueToString(prettyPrint, maxByteValue);
+        final String minValue = ByteUtilities.byteToString(prettyPrint, minByteValue);
+        final String maxValue = ByteUtilities.byteToString(prettyPrint, maxByteValue);
         regularExpression.append( String.format( "%s-%s]", minValue, maxValue ));
         if (prettyPrint) {
             regularExpression.append(" ");

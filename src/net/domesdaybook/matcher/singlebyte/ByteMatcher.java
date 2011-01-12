@@ -5,7 +5,6 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.matcher.sequence.Utilities;
 import net.domesdaybook.reader.ByteReader;
 
 
@@ -62,7 +61,7 @@ public final class ByteMatcher implements SingleByteMatcher {
      */
     @Override
     public final String toRegularExpression(boolean prettyPrint) {
-        final String regex = Utilities.bytesToString(prettyPrint, getMatchingBytes());
+        final String regex = ByteUtilities.byteToString(prettyPrint, byteToMatch & 0xFF);
         return prettyPrint? regex + " " : regex;
     }
 
