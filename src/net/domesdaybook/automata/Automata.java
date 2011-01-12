@@ -5,8 +5,6 @@
 
 package net.domesdaybook.automata;
 
-import net.domesdaybook.automata.labeler.StateCountLabeler;
-import net.domesdaybook.automata.labeler.StateLabeler;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,10 +14,10 @@ import java.util.Set;
  *
  * @author Matt Palmer
  */
-public class AutomataUtilities {
+public class Automata {
 
 
-    private AutomataUtilities() {
+    private Automata() {
     };
 
 
