@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
+ * A utility class to do useful things with automata states.
+ * 
  * @author Matt Palmer
  */
-public class Automata {
+public class Utilities {
 
 
-    private Automata() {
+    private Utilities() {
     };
 
 
