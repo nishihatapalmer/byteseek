@@ -7,7 +7,7 @@ package net.domesdaybook.expression.parser;
 
 import java.util.HashSet;
 import java.util.Set;
-import net.domesdaybook.matcher.singlebyte.BitUtilities;
+import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
@@ -87,13 +87,13 @@ public class ParseUtils {
 
                 case regularExpressionParser.ALL_BITMASK: {
                     final byte allBitMask = ParseUtils.getBitMaskValue(childNode);
-                    setValues.addAll(BitUtilities.getBytesMatchingAllBitMask(allBitMask));
+                    setValues.addAll(ByteUtilities.getBytesMatchingAllBitMask(allBitMask));
                     break;
                 }
 
                 case regularExpressionParser.ANY_BITMASK: {
                     final byte allBitMask = ParseUtils.getBitMaskValue(childNode);
-                    setValues.addAll(BitUtilities.getBytesMatchingAnyBitMask(allBitMask));
+                    setValues.addAll(ByteUtilities.getBytesMatchingAnyBitMask(allBitMask));
                     break;
                 }
 
