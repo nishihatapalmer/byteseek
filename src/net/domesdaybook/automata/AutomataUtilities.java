@@ -16,10 +16,10 @@ import java.util.Set;
  *
  * @author Matt Palmer
  */
-public class Utilities {
+public class AutomataUtilities {
 
 
-    private Utilities() {
+    private AutomataUtilities() {
     };
 
 
