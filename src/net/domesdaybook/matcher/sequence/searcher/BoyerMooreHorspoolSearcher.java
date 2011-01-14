@@ -112,10 +112,10 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             // "Sunday" variant of Boyer-Moore-Horspool sometimes gets better average performance
             // by shifting based on the next byte of the file, rather than the last byte checked.
             // This isn't always faster, as it has less "locality of reference":
-            if (matchPosition < toPosition) {
-                matchPosition +=1;
-                lastByte = reader.readByte(matchPosition);
-            }
+            //if (matchPosition < toPosition) {
+            //    matchPosition +=1;
+            //    lastByte = reader.readByte(matchPosition);
+            //}
 
             matchPosition += safeShifts[(int) lastByte & 0xFF];
         }
@@ -165,10 +165,10 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             // "Sunday" variant of Boyer-Moore-Horspool sometimes gets better average performance
             // by shifting based on the next byte of the file, rather than the last byte checked.
             // This isn't always faster, as it has less "locality of reference":
-            if ( matchPosition > toPosition ) {
-                matchPosition -=1;
-                firstByte = reader.readByte(matchPosition);
-            }
+            //if ( matchPosition > toPosition ) {
+            //    matchPosition -=1;
+            //    firstByte = reader.readByte(matchPosition);
+            //}
 
             matchPosition += safeShifts[(int) firstByte & 0xFF];
         }
