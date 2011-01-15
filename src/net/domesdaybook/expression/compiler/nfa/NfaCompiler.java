@@ -46,9 +46,13 @@ public class NfaCompiler extends AstCompiler<NfaState> {
     @Override
     public NfaState compile(final CommonTree ast) throws ParseException {
        if (ast == null) {
-           throw new IllegalArgumentException("Null abstract syntax tree passed in to NfaCompiler.");
+           throw new ParseException("Null abstract syntax tree passed in to NfaCompiler.");
        }
-       return buildAutomata(ast).initialState;
+       try {
+           return buildAutomata(ast).initialState;
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(e);
+        }
     }
 
 

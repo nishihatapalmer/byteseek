@@ -36,9 +36,13 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
     @Override
     public final SequenceMatcher compile(final CommonTree ast) throws ParseException {
         if (ast == null) {
-            throw new IllegalArgumentException("Null abstract syntax tree passed in to SequenceMatcherCompiler.");
+            throw new ParseException("Null abstract syntax tree passed in to SequenceMatcherCompiler.");
         }
-        return buildSequence(ast);
+        try {
+            return buildSequence(ast);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(e);
+        }
     }
 
 

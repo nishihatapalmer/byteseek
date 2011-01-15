@@ -20,10 +20,14 @@ public abstract class AstCompiler<T> implements Compiler<T> {
 
     @Override
     public T compile(String expression) throws ParseException {
-        AstParser parser = new AstParser();
-        Tree tree = parser.parseToAST(expression);
-        CommonTree optimisedAST = (CommonTree) parser.optimiseAST(tree);
-        return compile(optimisedAST);
+        try {
+            AstParser parser = new AstParser();
+            Tree tree = parser.parseToAST(expression);
+            CommonTree optimisedAST = (CommonTree) parser.optimiseAST(tree);
+            return compile(optimisedAST);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(e);
+        }
     }
 
     
