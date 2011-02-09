@@ -1,4 +1,0 @@
-/* 
- * This text file is a resource to test the byte matcher classes against.
- *
- */
