@@ -66,17 +66,20 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
         } else if (numberOfValues > 0) {
 
             // Determine if all the values lie in a single range:
-            final List<Byte> bytes = new ArrayList<Byte>(setValues);
-            Collections.sort(bytes);
+            final List<Integer> byteValues = new ArrayList<Integer>();
+            for (Byte b : setValues) {
+                byteValues.add((int) b.byteValue() & 0xFF);
+            }
+            Collections.sort(byteValues);
             final int lastValuePosition = numberOfValues - 1;
-            final int firstValue = bytes.get(0);
-            final int lastValue = bytes.get(lastValuePosition);
+            final int firstValue = byteValues.get(0);
+            final int lastValue = byteValues.get(lastValuePosition);
 
             // Construct an optimal byte set matcher:
             if (lastValue - firstValue == lastValuePosition) {  // values lie in a contiguous range
                 result = new ByteSetRangeMatcher(firstValue, lastValue, inverted);
             } else  // values do not lie in a contiguous range.
-            if (bytes.size() < BINARY_SEARCH_THRESHOLD) { // small number of bytes in set - use binary searcher:
+            if (byteValues.size() < BINARY_SEARCH_THRESHOLD) { // small number of bytes in set - use binary searcher:
                 result = new ByteSetBinarySearchMatcher(setValues, inverted);
             } else {
                 result = new ByteSetMatcher(setValues, inverted);

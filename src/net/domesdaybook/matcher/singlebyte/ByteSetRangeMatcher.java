@@ -62,7 +62,8 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
      */
     @Override
     public final boolean matches(byte theByte) {
-        final boolean insideRange = (theByte >= minByteValue & theByte <= maxByteValue);
+        final int byteValue = theByte & 0xFF;
+        final boolean insideRange = (byteValue >= minByteValue & byteValue <= maxByteValue);
         return insideRange ^ inverted;
     }
 
