@@ -5,7 +5,6 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.matcher.sequence.SequenceMatcherParser;
 import net.domesdaybook.reader.ByteReader;
 import java.net.URL;
 import org.junit.After;
@@ -19,6 +18,7 @@ import static org.junit.Assert.*;
  *
  * @author Matt Palmer
  */
+
 public class BitMaskMatcherTest {
 
     ByteReader bytes;

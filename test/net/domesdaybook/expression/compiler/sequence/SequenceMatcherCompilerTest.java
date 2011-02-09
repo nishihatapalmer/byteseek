@@ -8,13 +8,10 @@ package net.domesdaybook.expression.compiler.sequence;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.domesdaybook.expression.parser.ParseException;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
-import org.antlr.runtime.tree.CommonTree;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,6 +47,10 @@ public class SequenceMatcherCompilerTest {
         basicTests("01", 1, ByteSequenceMatcher.class);
         basicTests("fF", 1, ByteSequenceMatcher.class);
 
+        basicTests("[00ff]", 1, SingleByteSequenceMatcher.class);
+        basicTests("[ff00]", 1, SingleByteSequenceMatcher.class);
+        basicTests("[7f80]", 1, SingleByteSequenceMatcher.class);
+        basicTests("[807f]", 1, SingleByteSequenceMatcher.class);
         basicTests(" [0102]", 1, SingleByteSequenceMatcher.class);
         
         basicTests("'a string'", 8, CaseSensitiveStringMatcher.class);
@@ -59,15 +60,18 @@ public class SequenceMatcherCompilerTest {
         basicTests("0102", 2, ByteSequenceMatcher.class);
         basicTests("01 02", 2, ByteSequenceMatcher.class);
         basicTests("01fd", 2, ByteSequenceMatcher.class);
-        
+
+
         basicTests(" [0102] &01", 2, SingleByteSequenceMatcher.class);
         basicTests(" [0102] [^ffee]", 2, SingleByteSequenceMatcher.class);
+
 
         basicTests("01fd ef   de", 4, ByteSequenceMatcher.class);
 
         basicTests("01fd [ef]   de", 4, ByteSequenceMatcher.class);
         
         basicTests("01fd [ef fe]   de", 4, CombinedSequenceMatcher.class);
+
     }
 
 
