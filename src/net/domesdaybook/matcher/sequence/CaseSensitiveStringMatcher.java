@@ -84,6 +84,11 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
         return new ByteMatcher(byteArray[position]);
     }
 
+    
+    public String getCaseSensitiveString() {
+        return caseSensitiveString;
+    }
+
 
 }
 

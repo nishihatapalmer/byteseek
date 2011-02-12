@@ -21,7 +21,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      */
     public SingleByteMatcher getByteMatcherForPosition(final int position);
 
-    
+
     /*
      * @returns Returns the length of a matching byte sequence.
      */

@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.util.List;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
@@ -14,18 +15,13 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public class CaseInsensitiveStringMatcher implements SequenceMatcher {
+public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     private final int length;
     private final String caseInsensitiveString;
     private final SingleByteMatcher[] charMatchList;
 
 
-    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
-        this(caseInsensitiveASCIIString, 1);
-    }
-
-    
     public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString, final int numberToRepeat) {
         if (caseInsensitiveASCIIString == null || caseInsensitiveASCIIString.isEmpty()) {
             throw new IllegalArgumentException("Null or empty string passed in to CaseInsensitiveStringMatcher.");
@@ -36,6 +32,11 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
         for (int charIndex = 0; charIndex < length; charIndex++) {
             charMatchList[charIndex] = getByteMatcherForChar(caseInsensitiveString.charAt(charIndex));
         }
+    }
+
+
+    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
+        this(caseInsensitiveASCIIString, 1);
     }
 
 
@@ -85,6 +86,11 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
         return (SingleByteMatcher) charMatchList[position];
     }
 
+
+    public String getCaseInsensitiveString() {
+        return caseInsensitiveString;
+    }
+    
     
     private SingleByteMatcher getByteMatcherForChar(char theChar) {
         SingleByteMatcher result;

@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author Matt Palmer
  */
-public class CombinedSequenceMatcher implements SequenceMatcher {
+public final class CombinedSequenceMatcher implements SequenceMatcher {
 
     private final List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
     private final List<ByteMatcherIndex> byteMatcherForPosition = new ArrayList<ByteMatcherIndex>();
@@ -91,8 +91,7 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
-    // package private getter for unit testing only.
-    List<SequenceMatcher> getMatchers() {
+    public List<SequenceMatcher> getMatchers() {
         return matchers;
     }
 

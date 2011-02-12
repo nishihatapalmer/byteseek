@@ -14,7 +14,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public class SingleByteSequenceMatcher implements SequenceMatcher {
+public final class SingleByteSequenceMatcher implements SequenceMatcher {
 
     private final List<SingleByteMatcher> matcherSequence = new ArrayList<SingleByteMatcher>();
     private final int length;

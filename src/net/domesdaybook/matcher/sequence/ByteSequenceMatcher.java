@@ -6,6 +6,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
@@ -15,7 +16,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public class ByteSequenceMatcher implements SequenceMatcher {
+public final class ByteSequenceMatcher implements SequenceMatcher {
 
     public static final int QUOTE_CHARACTER_VALUE = 39;
     public static final int START_PRINTABLE_ASCII = 32;
@@ -35,7 +36,7 @@ public class ByteSequenceMatcher implements SequenceMatcher {
     }
 
     
-    public ByteSequenceMatcher(final List<Byte> byteList) {
+    public ByteSequenceMatcher(final Collection<Byte> byteList) {
         // Preconditions: list is not null and has at least one member:
         if (byteList == null || byteList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty byte list passed in to ByteSequenceMatcher.");
@@ -46,6 +47,21 @@ public class ByteSequenceMatcher implements SequenceMatcher {
             this.byteArray[index++] = b;
         }
         length = byteArray.length;
+    }
+
+
+    public ByteSequenceMatcher(final List<ByteSequenceMatcher> matchers) {
+        int totalLength = 0;
+        for (ByteSequenceMatcher matcher : matchers) {
+            totalLength += matcher.length;
+        }
+        this.byteArray = new byte[totalLength];
+        int position = 0;
+        for (ByteSequenceMatcher matcher : matchers) {
+            System.arraycopy(matcher.byteArray, 0, this.byteArray, position, matcher.length);
+            position += matcher.length;
+        }
+        length = totalLength;
     }
 
 

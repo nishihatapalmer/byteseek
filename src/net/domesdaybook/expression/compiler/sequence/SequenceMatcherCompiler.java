@@ -285,6 +285,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
         return new AllBitMaskMatcher(bitmask);
     }
 
+    
     private SingleByteMatcher getAnyBitmaskMatcher(final CommonTree ast) {
         final byte bitmask = ParseUtils.getBitMaskValue(ast);
         return new AnyBitMaskMatcher(bitmask);
@@ -299,6 +300,45 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
     
     private SingleByteMatcher getAnyByteMatcher(final CommonTree ast) {
         return new AnyByteMatcher();
+    }
+
+    
+    private SequenceMatcher getRepeatedSequence(SequenceMatcher sequence, final int numberOfRepeats) {
+        
+        if (sequence instanceof ByteSequenceMatcher) {
+            List<ByteSequenceMatcher> byteSequences = new ArrayList<ByteSequenceMatcher>(numberOfRepeats);
+            for (int count = 0; count < numberOfRepeats; count++) {
+                byteSequences.add((ByteSequenceMatcher) sequence);
+            }
+            return new ByteSequenceMatcher(byteSequences);
+        } else if (sequence instanceof CaseInsensitiveStringMatcher) {
+            StringBuilder builder = new StringBuilder();
+            for (int count = 0; count < numberOfRepeats; count++) {
+                builder.append(((CaseInsensitiveStringMatcher) sequence).getCaseInsensitiveString());
+            }
+            return new CaseSensitiveStringMatcher(builder.toString());
+        } else if (sequence instanceof CaseSensitiveStringMatcher) {
+             StringBuilder builder = new StringBuilder();
+            for (int count = 0; count < numberOfRepeats; count++) {
+                builder.append(((CaseSensitiveStringMatcher) sequence).getCaseSensitiveString());
+            }
+            return new CaseSensitiveStringMatcher(builder.toString());
+        } else if (sequence instanceof CombinedSequenceMatcher) {
+            CombinedSequenceMatcher combined = (CombinedSequenceMatcher) sequence;
+            List<SequenceMatcher> internalMatchers = combined.getMatchers();
+            int numberOfMatchers = numberOfRepeats * internalMatchers.size();
+            List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfMatchers);
+            for (int count = 0; count < numberOfRepeats; count++) {
+                repeats.addAll(internalMatchers);
+            }
+            return new CombinedSequenceMatcher(repeats);
+        } else {
+            List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfRepeats);
+            for (int count = 0; count < numberOfRepeats; count++) {
+                repeats.add(sequence);
+            }
+            return new CombinedSequenceMatcher(repeats);
+        }
     }
 
 
@@ -358,6 +398,11 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                     break;
                 }
 
+
+                case (regularExpressionParser.SEQUENCE): {
+                    matcher = getRepeatedSequence(buildSequence(ast), maxRepeat);
+                    break;
+                }
 
                 default: {
                     throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
