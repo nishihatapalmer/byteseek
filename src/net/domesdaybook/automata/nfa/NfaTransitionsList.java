@@ -29,6 +29,11 @@ public class NfaTransitionsList implements NfaTransitions {
     }
 
 
+    public NfaTransitionsList(int listSize) {
+        this.transitions = new ArrayList<Transition>(listSize);
+    }
+
+
     public NfaTransitionsList(final Collection<Transition> transitions) {
         this.transitions = new ArrayList<Transition>(transitions);
     }

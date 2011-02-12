@@ -28,7 +28,7 @@ public class NfaSimpleState implements NfaState {
         // guard against null pointer exception in nextStates if a
         // transition is never added - always initialised to something which
         // will give correct results (i.e. a list with no members):
-        this.transitions = new NfaTransitionsList();
+        this.transitions = new NfaTransitionsList(0);
     }
 
     public NfaSimpleState(final NfaSimpleState other) {
