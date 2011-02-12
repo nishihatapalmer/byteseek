@@ -65,6 +65,17 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
             }
         } else if (numberOfValues > 0) {
 
+            // Determine if the bytes in the set can be matched by a bitmask:
+            Set<Byte> maskValues = inverted ? ByteUtilities.invertedSet(setValues) : setValues;
+            Byte bitmask = ByteUtilities.getAllBitMaskForBytes(maskValues);
+            if (bitmask != null) {
+                return new AllBitMaskMatcher(bitmask);
+            }
+            bitmask = ByteUtilities.getAnyBitMaskForBytes(maskValues);
+            if (bitmask != null) {
+                return new AnyBitMaskMatcher(bitmask);
+            }
+
             // Determine if all the values lie in a single range:
             final List<Integer> byteValues = new ArrayList<Integer>();
             for (Byte b : setValues) {

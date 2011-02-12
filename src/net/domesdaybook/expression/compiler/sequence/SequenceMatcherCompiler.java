@@ -125,8 +125,14 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
                         case (regularExpressionParser.INVERTED_SET): {
-                            addCollectedByteValues(byteValuesToJoin, sequences);
-                            singleByteSequence.add(getSetMatcher(child, true));
+                            final SingleByteMatcher bytematch = getSetMatcher(child, true);
+                            if (bytematch instanceof ByteMatcher) {
+                                addCollectedSingleByteMatchers(singleByteSequence, sequences);
+                                byteValuesToJoin.add(bytematch.getMatchingBytes()[0]);
+                            } else {
+                                addCollectedByteValues(byteValuesToJoin, sequences);
+                                singleByteSequence.add(bytematch);
+                            }
                             break;
                         }
 

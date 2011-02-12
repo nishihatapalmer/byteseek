@@ -6,7 +6,9 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Some useful bit-twiddling utilities to count bits in a byte,
@@ -102,8 +104,8 @@ public class ByteUtilities {
     /**
      * Returns a list of bytes which would match all the bits in a given bitmask.
      *
-     * @param bitMask The bitmask to
-     * @return
+     * @param bitMask The bitmask to match.
+     * @return A list of bytes matching the bitmask.
      */
     public static List<Byte> getBytesMatchingAllBitMask(final byte bitMask) {
         final List<Byte> bytes = new ArrayList<Byte>();
@@ -117,10 +119,100 @@ public class ByteUtilities {
     }
 
 
+    public static Byte getAllBitMaskForBytes(final byte[] bytes) {
+        return getAllBitMaskForBytes(toSet(bytes));
+    }
+
+
+    public static Set<Byte> toSet(final byte[] bytes) {
+        Set<Byte> setOfBytes = new HashSet<Byte>();
+        final int size = bytes.length;
+        for (int count = 0; count < size; count++) {
+            setOfBytes.add(bytes[count]);
+        }
+        return setOfBytes;
+    }
+
+    
+    public static Set<Byte> invertedSet(final Set<Byte> bytes) {
+        Set<Byte> invertedSet = new HashSet<Byte>();
+        for (byte value = Byte.MIN_VALUE; value <= Byte.MAX_VALUE; value++) {
+            if (!bytes.contains(value)) {
+                invertedSet.add(value);
+            }
+        }
+        return invertedSet;
+    }
+
+    
+    /**
+     *
+     * @param bytes A set of bytes to find an all bitmask to match.
+     * @return A bitmask to match the set with, or null if no bitmask exists for that set of bytes.
+     */
+    public static Byte getAllBitMaskForBytes(final Set<Byte> bytes) {
+        Byte allBitMask = null;
+        // Build a candidate bitmask from the bits all the bytes have in common.
+        int bitsInCommon = getBitsInCommon(bytes);
+        if (bitsInCommon > 0) {
+            // If the number of bytes in the set is the same as the number of bytes
+            // which would match the bitmask, then the set of bytes can be matched
+            // by that bitmask.
+            byte mask = (byte) bitsInCommon;
+            if (bytes.size() == countBytesMatchingAllBits(mask)) {
+                allBitMask = new Byte(mask);
+            }
+        }
+        return allBitMask;
+    }
+
+
+
+    /**
+     *
+     * @param bytes A set of bytes to find an any bitmask to match.
+     * @return A bitmask to match the set with, or null if no bitmask exists for that set of bytes.
+     */
+    public static Byte getAnyBitMaskForBytes(final Set<Byte> bytes) {
+        Byte allBitMask = null;
+        // Build a candidate bitmask from the bits all the bytes have in common.
+        int bitsInCommon = getBitsInCommon(bytes);
+        if (bitsInCommon > 0) {
+            // If the number of bytes in the set is the same as the number of bytes
+            // which would match the bitmask, then the set of bytes can be matched
+            // by that bitmask.
+            byte mask = (byte) bitsInCommon;
+            if (bytes.size() == countBytesMatchingAnyBit(mask)) {
+                allBitMask = new Byte(mask);
+            }
+        }
+        return allBitMask;
+    }
+
+
+    public static Byte getAnyBitMaskForBytes(final byte[] bytes) {
+        return getAnyBitMaskForBytes(toSet(bytes));
+    }
+    
+    /**
+     *
+     * @param bytes A set of bytes to find the bits in common.
+     * @return An integer mask containing only the bits in common.
+     */
+    public static int getBitsInCommon(final Set<Byte> bytes) {
+        int bitsinCommon = 0xFF;
+        for (Byte b : bytes) {
+            bitsinCommon = bitsinCommon & b;
+        }
+        return bitsinCommon;
+    }
+
+
+
     /**
      * Returns a list of bytes which would match any of the bits in a given bitmask.
-     * @param bitMask
-     * @return
+     * @param bitMask The bitmask to match.
+     * @return A list of all the bytes matching the any bitmask.
      */
     public static List<Byte> getBytesMatchingAnyBitMask(final byte bitMask) {
         final List<Byte> bytes = new ArrayList<Byte>();
