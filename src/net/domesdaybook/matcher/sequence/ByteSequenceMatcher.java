@@ -49,6 +49,17 @@ public class ByteSequenceMatcher implements SequenceMatcher {
     }
 
 
+    public ByteSequenceMatcher(final byte byteValue, final int numberOfBytes) {
+        if (numberOfBytes < 0) {
+            throw new IllegalArgumentException("ByteSequenceMatcher requires a positive number of bytes.");
+        }
+        length = numberOfBytes;
+        this.byteArray = new byte[numberOfBytes];
+        for (int count = 0; count < numberOfBytes; count++) {
+            this.byteArray[count] = byteValue;
+        }
+    }
+
     public ByteSequenceMatcher(final byte byteValue) {
         this.byteArray = new byte[1];
         this.byteArray[0] = byteValue;

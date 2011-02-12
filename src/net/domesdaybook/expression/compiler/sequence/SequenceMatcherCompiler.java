@@ -5,6 +5,7 @@
 
 package net.domesdaybook.expression.compiler.sequence;
 
+import com.sun.xml.internal.messaging.saaj.util.ParseUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
+import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
 import net.domesdaybook.matcher.singlebyte.AnyBitMaskMatcher;
@@ -146,8 +148,19 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                             // so the order of adding them here does not matter.
                             addCollectedByteValues(byteValuesToJoin, sequences);
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            // Add the case insensitive matcher:
                             sequences.add(getCaseInsensitiveStringMatcher(child));
+                            break;
+                        }
+
+                        // Repeats will normally contain more than one of the repeated items:
+                        // This isn't 100% optimal, as it would be nice to join byte
+                        // sequences or single byte matchers together.  However, it's easier
+                        // to just close any outstanding bytes or single byte matchers and
+                        // add the repeated sequence directly.
+                        case (regularExpressionParser.REPEAT): {
+                            addCollectedByteValues(byteValuesToJoin, sequences);
+                            addCollectedSingleByteMatchers(singleByteSequence, sequences);
+                            sequences.add(getFixedRepeatMatcher(child));
                             break;
                         }
 
@@ -212,6 +225,11 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                 break;
             }
 
+            
+            case (regularExpressionParser.REPEAT): {
+                matcher = getFixedRepeatMatcher(ast);
+            }
+
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                 final String str = ParseUtils.trimString(ast.getText());
@@ -221,7 +239,8 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                matcher = getCaseInsensitiveStringMatcher(ast);
+                final String str = ParseUtils.trimString(ast.getText());
+                matcher = new CaseInsensitiveStringMatcher(str);
                 break;
             }
 
@@ -276,6 +295,74 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
         return new AnyByteMatcher();
     }
 
+
+    private SequenceMatcher getFixedRepeatMatcher(final CommonTree ast) throws ParseException {
+        int minRepeat = ParseUtils.getMinRepeatValue(ast);
+        int maxRepeat = ParseUtils.getMaxRepeatValue(ast);
+        if (minRepeat == maxRepeat) {
+            CommonTree repeatedNode = (CommonTree) ParseUtils.getRepeatNode(ast);
+            SequenceMatcher matcher = null;
+            switch (repeatedNode.getType()) {
+
+                case (regularExpressionParser.ANY): {
+                    matcher = new FixedGapMatcher(maxRepeat);
+                    break;
+                }
+
+
+                case (regularExpressionParser.BYTE): {
+                    matcher = new ByteSequenceMatcher(ParseUtils.getHexByteValue(repeatedNode), maxRepeat);
+                    break;
+                }
+
+
+                case (regularExpressionParser.SET): {
+                    matcher = new SingleByteSequenceMatcher(getSetMatcher(ast, false), maxRepeat);
+                    break;
+                }
+
+
+                case (regularExpressionParser.INVERTED_SET): {
+                    matcher = new SingleByteSequenceMatcher(getSetMatcher(ast, true), maxRepeat);
+                    break;
+                }
+
+
+                case (regularExpressionParser.ANY_BITMASK): {
+                    matcher = new SingleByteSequenceMatcher(getAnyBitmaskMatcher(ast), maxRepeat);
+                    break;
+                }
+
+                
+                case (regularExpressionParser.ALL_BITMASK): {
+                    matcher = new SingleByteSequenceMatcher(getAllBitmaskMatcher(ast), maxRepeat);
+                    break;
+                }
+
+                case (regularExpressionParser.CASE_SENSITIVE_STRING): {
+                    final String str = ParseUtils.trimString(ast.getText());
+                    matcher = new CaseSensitiveStringMatcher(str, maxRepeat);
+                    break;
+                }
+
+
+                case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
+                    final String str = ParseUtils.trimString(ast.getText());
+                    matcher = new CaseInsensitiveStringMatcher(str, maxRepeat);
+                    break;
+                }
+
+
+                default: {
+                    throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
+                }
+
+            }
+            return matcher;
+        } else {
+            throw new ParseException("Sequences can only contain repeats of a fixed length {n}");
+        }
+    }
 
 
 }

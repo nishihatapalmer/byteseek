@@ -14,6 +14,15 @@ import net.domesdaybook.reader.ByteReader;
  */
 public final class AnyByteMatcher implements SingleByteMatcher {
 
+    // A static 256-element array containing all the bytes.
+    private static final byte[] allBytes = new byte[256];
+    static {
+        for (int value = 0; value < 256; value++) {
+            allBytes[value] = (byte) value;
+        }
+    }
+
+
     /**
      * Constructs an immutable AnyByteMatcher.
      */
@@ -35,15 +44,11 @@ public final class AnyByteMatcher implements SingleByteMatcher {
     /**
      * {@inheritDoc}
      *
-     * Always returns a 256-element array of all the possible byte values.
+     * Returns a 256-element array of all the possible byte values.
      */
     @Override
     public final byte[] getMatchingBytes() {
-        byte[] bytes = new byte[256];
-        for (int count = 255; count >= 0; count--) {
-            bytes[count] = (byte) count;
-        }
-        return bytes;
+        return allBytes;
     }
 
 
@@ -61,7 +66,8 @@ public final class AnyByteMatcher implements SingleByteMatcher {
      */
     @Override
     public final boolean matches(ByteReader reader, long matchFrom) {
-        return matches(reader.readByte(matchFrom));
+        //return matches(reader.readByte(matchFrom));
+        return true;
     }
 
 

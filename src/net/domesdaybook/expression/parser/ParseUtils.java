@@ -50,6 +50,21 @@ public class ParseUtils {
         return treeNode.getChild(childIndex).getText();
     }
 
+
+    public static int getMinRepeatValue(final Tree treeNode) {
+        return getChildIntValue(treeNode, 0);
+    }
+
+
+    public static int getMaxRepeatValue(final Tree treeNode) {
+        return getChildIntValue(treeNode, 1);
+    }
+
+
+    public static Tree getRepeatNode(final Tree treeNode) {
+        return treeNode.getChild(2);
+    }
+
     /**
      * Calculates a value of a set given the parent set node (or inverted set node)
      * Sets can contain bytes, strings (case sensitive & insensitive), ranges,

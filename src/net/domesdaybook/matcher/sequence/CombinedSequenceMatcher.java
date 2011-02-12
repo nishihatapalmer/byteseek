@@ -30,10 +30,19 @@ public class CombinedSequenceMatcher implements SequenceMatcher {
     }
     
     public CombinedSequenceMatcher(final List<SequenceMatcher> matchList) {
+        this(matchList, 1);
+    }
+
+    public CombinedSequenceMatcher(final List<SequenceMatcher> matchList, final int numberOfRepeats) {
         if (matchList == null || matchList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
         }
-        matchers.addAll(matchList);
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("CombinedSequenceMatcher requires a positive number of repeats.");
+        }
+        for (int count = 0; count < numberOfRepeats; count++) {
+            matchers.addAll(matchList);
+        }
         length = calculatePositions();
     }
 

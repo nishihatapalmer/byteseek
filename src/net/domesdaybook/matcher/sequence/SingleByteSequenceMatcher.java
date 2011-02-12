@@ -37,6 +37,17 @@ public class SingleByteSequenceMatcher implements SequenceMatcher {
         this.length = 1;
     }
 
+    
+    public SingleByteSequenceMatcher(final SingleByteMatcher matcher, final int numberOfMatchers) {
+        if (numberOfMatchers < 0) {
+            throw new IllegalArgumentException("SingleByteSequenceMatcher requires a positive number of matchers.");
+        }
+        length = numberOfMatchers;
+        for (int count = 0; count < numberOfMatchers; count++) {
+            this.matcherSequence.add(matcher);
+        }
+    }
+
 
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {

@@ -20,17 +20,34 @@ public class CaseInsensitiveStringMatcher implements SequenceMatcher {
     private final String caseInsensitiveString;
     private final SingleByteMatcher[] charMatchList;
 
-    
+
     public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
+        this(caseInsensitiveASCIIString, 1);
+    }
+
+    
+    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString, final int numberToRepeat) {
         if (caseInsensitiveASCIIString == null || caseInsensitiveASCIIString.isEmpty()) {
             throw new IllegalArgumentException("Null or empty string passed in to CaseInsensitiveStringMatcher.");
         }
-        caseInsensitiveString = caseInsensitiveASCIIString;
-        length = caseInsensitiveASCIIString.length();
+        caseInsensitiveString = repeatString(caseInsensitiveASCIIString, numberToRepeat);
+        length = caseInsensitiveString.length();
         charMatchList = new SingleByteMatcher[length];
         for (int charIndex = 0; charIndex < length; charIndex++) {
-            charMatchList[charIndex] = getByteMatcherForChar(caseInsensitiveASCIIString.charAt(charIndex));
+            charMatchList[charIndex] = getByteMatcherForChar(caseInsensitiveString.charAt(charIndex));
         }
+    }
+
+
+    private String repeatString(final String stringToRepeat, final int numberToRepeat) {
+        if (numberToRepeat == 1) {
+            return stringToRepeat;
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int count = 0; count < numberToRepeat; count++) {
+            builder.append(stringToRepeat);
+        }
+        return builder.toString();
     }
 
 
