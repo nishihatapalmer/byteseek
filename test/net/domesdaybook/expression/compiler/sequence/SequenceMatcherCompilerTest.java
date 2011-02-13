@@ -5,6 +5,7 @@
 
 package net.domesdaybook.expression.compiler.sequence;
 
+import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
@@ -12,6 +13,7 @@ import net.domesdaybook.expression.parser.ParseException;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
+import org.antlr.runtime.tree.CommonTree;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,6 +74,20 @@ public class SequenceMatcherCompilerTest {
         
         basicTests("01fd [ef fe]   de", 4, CombinedSequenceMatcher.class);
 
+        basicTests("01{4}", 4, ByteSequenceMatcher.class);
+
+        // Would be better if the compiler realised it was all bytes and
+        // combined them into a single bytesequencematcher class, rather
+        // than wrapping the two different byte sequence matchers into a
+        // combined byte sequence matcher.
+        basicTests("010203{6}", 8, CombinedSequenceMatcher.class);
+
+        basicTests("[fffe]", 1, SingleByteSequenceMatcher.class);
+        basicTests("[fffe]{5}", 5, SingleByteSequenceMatcher.class);
+        
+        //FIXME: This test really dies:
+        //basicTests("(0102){2}", 4, ByteSequenceMatcher.class);
+
     }
 
 
@@ -86,5 +102,6 @@ public class SequenceMatcherCompilerTest {
         }
         return matcher;
     }
+
 
 }

@@ -136,9 +136,9 @@ public class ByteUtilities {
     
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
         Set<Byte> invertedSet = new HashSet<Byte>();
-        for (byte value = Byte.MIN_VALUE; value <= Byte.MAX_VALUE; value++) {
-            if (!bytes.contains(value)) {
-                invertedSet.add(value);
+        for (int value = 0; value < 256; value++) {
+            if (!bytes.contains((byte) value)) {
+                invertedSet.add((byte) value);
             }
         }
         return invertedSet;

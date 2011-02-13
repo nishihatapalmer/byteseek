@@ -233,6 +233,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
             
             case (regularExpressionParser.REPEAT): {
                 matcher = getFixedRepeatMatcher(ast);
+                break;
             }
 
 
@@ -362,49 +363,49 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
                 case (regularExpressionParser.SET): {
-                    matcher = new SingleByteSequenceMatcher(getSetMatcher(ast, false), maxRepeat);
+                    matcher = new SingleByteSequenceMatcher(getSetMatcher(repeatedNode, false), maxRepeat);
                     break;
                 }
 
 
                 case (regularExpressionParser.INVERTED_SET): {
-                    matcher = new SingleByteSequenceMatcher(getSetMatcher(ast, true), maxRepeat);
+                    matcher = new SingleByteSequenceMatcher(getSetMatcher(repeatedNode, true), maxRepeat);
                     break;
                 }
 
 
                 case (regularExpressionParser.ANY_BITMASK): {
-                    matcher = new SingleByteSequenceMatcher(getAnyBitmaskMatcher(ast), maxRepeat);
+                    matcher = new SingleByteSequenceMatcher(getAnyBitmaskMatcher(repeatedNode), maxRepeat);
                     break;
                 }
 
                 
                 case (regularExpressionParser.ALL_BITMASK): {
-                    matcher = new SingleByteSequenceMatcher(getAllBitmaskMatcher(ast), maxRepeat);
+                    matcher = new SingleByteSequenceMatcher(getAllBitmaskMatcher(repeatedNode), maxRepeat);
                     break;
                 }
 
                 case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                    final String str = ParseUtils.trimString(ast.getText());
+                    final String str = ParseUtils.trimString(repeatedNode.getText());
                     matcher = new CaseSensitiveStringMatcher(str, maxRepeat);
                     break;
                 }
 
 
                 case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                    final String str = ParseUtils.trimString(ast.getText());
+                    final String str = ParseUtils.trimString(repeatedNode.getText());
                     matcher = new CaseInsensitiveStringMatcher(str, maxRepeat);
                     break;
                 }
 
 
                 case (regularExpressionParser.SEQUENCE): {
-                    matcher = getRepeatedSequence(buildSequence(ast), maxRepeat);
+                    matcher = getRepeatedSequence(buildSequence(repeatedNode), maxRepeat);
                     break;
                 }
 
                 default: {
-                    throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
+                    throw new ParseException(ParseUtils.getTypeErrorMessage(repeatedNode));
                 }
 
             }
