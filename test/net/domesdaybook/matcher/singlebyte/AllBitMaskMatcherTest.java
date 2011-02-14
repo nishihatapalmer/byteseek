@@ -5,7 +5,6 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.ByteReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,35 +34,59 @@ public class AllBitMaskMatcherTest {
     @Test
     public void testMatches_byte() {
         AllBitMaskMatcher matcher = new AllBitMaskMatcher(b(255));
-        validateMatch(matcher, 255, 255);
-        validateNoMatch(matcher, 0, 254);
+        validateMatchInRange(matcher, 255, 255);
+        validateNoMatchInRange(matcher, 0, 254);
         
         matcher = new AllBitMaskMatcher(b(0));
-        validateMatch(matcher, 0, 256);
+        validateMatchInRange(matcher, 0, 256);
         
         matcher = new AllBitMaskMatcher(b(254));
-        validateMatch(matcher, 254, 255);
-        validateNoMatch(matcher, 0, 253);
+        validateMatchInRange(matcher, 254, 255);
+        validateNoMatchInRange(matcher, 0, 253);
 
         matcher = new AllBitMaskMatcher(b(128));
-        validateMatch(matcher, 128, 255);
-        validateNoMatch(matcher, 0, 127);
+        validateMatchInRange(matcher, 128, 255);
+        validateNoMatchInRange(matcher, 0, 127);
 
+        // test all bit masks using different methods.
+        for (int mask = 0; mask < 256; mask++) {
+            matcher = new AllBitMaskMatcher(b(mask));
+            validateMatchBitsSet(matcher, b(mask));
+            validateNoMatchBitsNotSet(matcher, b(mask));
+        }
     }
 
-    private void validateNoMatch(AllBitMaskMatcher matcher, int from, int to) {
+    private void validateNoMatchInRange(AllBitMaskMatcher matcher, int from, int to) {
         for (int count = from; count <= to; count++) {
             assertEquals(false, matcher.matches(b(count)));
         }
     }
 
-    private void validateMatch(AllBitMaskMatcher matcher, int from, int to) {
+    private void validateMatchInRange(AllBitMaskMatcher matcher, int from, int to) {
         for (int count = from; count <= to; count++) {
             assertEquals(true, matcher.matches(b(count)));
         }
     }
 
-
+    private void validateMatchBitsSet(AllBitMaskMatcher matcher, int bitmask) {
+        String description = String.format("0x%02x", bitmask);
+        for (int count = 0; count < 256; count++) {
+            byte value = (byte) (count | bitmask);
+            assertEquals(description, true, matcher.matches(value));
+        }
+    }
+    
+    private void validateNoMatchBitsNotSet(AllBitMaskMatcher matcher, int bitmask) {
+        if (bitmask > 0) { // This test won't work for a zero bitmask.
+            String description = String.format("0x%02x", bitmask);
+            final int invertedMask = bitmask ^ 0xFF;
+            for (int count = 0; count < 256; count++) { // zero byte matches everything.
+                byte value = (byte) (count & invertedMask);
+                assertEquals(description, false, matcher.matches(value));
+            }
+        }
+    }
+    
 
     /**
      * Test of toRegularExpression method, of class AllBitMaskMatcher.
@@ -96,10 +119,16 @@ public class AllBitMaskMatcherTest {
         byte[] expected = new byte[] {b(254), b(255)};
         assertArrayEquals("0xFE matches 0xFF and 0xFE only", expected, matcher.getMatchingBytes());
 
+        matcher = new AllBitMaskMatcher(b(3));
+        expected = new byte[64];
+        for (int count = 0; count < 64; count++) {
+            expected[count] = (byte)((count << 2) | 3);
+        }
+        assertArrayEquals("0x03 matches 64 bytes with first two bits set", expected, matcher.getMatchingBytes());
+
         matcher = new AllBitMaskMatcher(b(128));
         expected = ByteUtilities.getBytesInRange(128, 255);
         assertArrayEquals("0x80 matches all bytes from 128 to 255", expected, matcher.getMatchingBytes());
-
     }
 
     /**
@@ -116,9 +145,11 @@ public class AllBitMaskMatcherTest {
         matcher = new AllBitMaskMatcher(b(254));
         assertEquals("0xFE matches 2 bytes", 2, matcher.getNumberOfMatchingBytes());
 
+        matcher = new AllBitMaskMatcher(b(3));
+        assertEquals("0x03 matches 64 bytes", 64, matcher.getNumberOfMatchingBytes());
+        
         matcher = new AllBitMaskMatcher(b(128));
         assertEquals("0x80 matches 128 bytes", 128, matcher.getNumberOfMatchingBytes());
-
     }
 
     private byte b(int i) {
