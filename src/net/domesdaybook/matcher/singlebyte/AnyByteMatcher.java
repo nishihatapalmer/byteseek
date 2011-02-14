@@ -15,12 +15,7 @@ import net.domesdaybook.reader.ByteReader;
 public final class AnyByteMatcher implements SingleByteMatcher {
 
     // A static 256-element array containing all the bytes.
-    private static final byte[] allBytes = new byte[256];
-    static {
-        for (int value = 0; value < 256; value++) {
-            allBytes[value] = (byte) value;
-        }
-    }
+    private static final byte[] allBytes =  ByteUtilities.getAllByteValues();
 
 
     /**

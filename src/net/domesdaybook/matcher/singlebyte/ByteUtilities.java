@@ -67,6 +67,7 @@ public class ByteUtilities {
      * @return The number of bytes matching all the bits in the bitmask.
      */
     public static int countBytesMatchingAllBits(byte bitmask) {
+        // 00000000 - 1 << 8 = 256
         // 00000001 - 1 << 7 = 128
         // 00000011 - 1 << 6 = 64
         // 00000111 - 1 << 5 = 32
@@ -87,6 +88,7 @@ public class ByteUtilities {
      * @return The number of bytes matching any of the bits in the bitmask.
      */
     public static int countBytesMatchingAnyBit(byte bitmask) {
+        // 00000000 - 256 - 256 = 0    (no match: zero).
         // 00000001 - 256 - 128 = 128  (no match: half the bytes where that bit is not set)
         // 00000011 - 256 - 64  = 192  (no match: zero & 63 other possible values)
         // 00000111 - 256 - 32  = 224  (no match: zero & 31 other possible values)
@@ -133,6 +135,24 @@ public class ByteUtilities {
         return setOfBytes;
     }
 
+    
+    public static byte[] toArray(final List<Byte> list) {
+        final byte[] result = new byte[list.size()];
+        int position = 0;
+        for (Byte b : list) {
+            result[position++] = b;
+        }
+        return result;
+    }
+
+
+    public static byte[] getAllByteValues() {
+        byte[] allBytes = new byte[256];
+        for (int value = 0; value < 256; value++) {
+            allBytes[value] = (byte) value;
+        }
+        return allBytes;
+    }
     
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
         Set<Byte> invertedSet = new HashSet<Byte>();

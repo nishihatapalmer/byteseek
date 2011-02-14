@@ -40,7 +40,18 @@ public class AllBitMaskMatcherTest {
             final String message = String.format("0xFF does not match %d", count);
             assertEquals(message, false, matcher.matches(b(count)));
         }
+
+        matcher = new AllBitMaskMatcher(b(0));
+        for (int count = 0; count < 256; count++) {
+            final String message = String.format("0x00 matches %d", count);
+            assertEquals(message, true, matcher.matches(b(count)));
+        }
+
+        
+
     }
+
+
 
     /**
      * Test of toRegularExpression method, of class AllBitMaskMatcher.
@@ -48,10 +59,13 @@ public class AllBitMaskMatcherTest {
     @Test
     public void testToRegularExpression() {
         AllBitMaskMatcher matcher = new AllBitMaskMatcher(b(255));
-        assertEquals("0xFF equals &FF", "&ff", matcher.toRegularExpression(false));
+        assertEquals("0xFF equals &ff", "&ff", matcher.toRegularExpression(false));
 
-        
+        matcher = new AllBitMaskMatcher(b(0));
+        assertEquals("0xFF equals &00", "&00", matcher.toRegularExpression(false));
     }
+
+
 
     /**
      * Test of getMatchingBytes method, of class AllBitMaskMatcher.
@@ -62,6 +76,11 @@ public class AllBitMaskMatcherTest {
         assertArrayEquals("0xFF matches [0xFF] only",
                 new byte[] {b(255)},
                 matcher.getMatchingBytes());
+
+        matcher = new AllBitMaskMatcher(b(0));
+        assertArrayEquals("0x00 matches all bytes", ByteUtilities.getAllByteValues(), matcher.getMatchingBytes());
+
+
     }
 
     /**
@@ -72,8 +91,8 @@ public class AllBitMaskMatcherTest {
         AllBitMaskMatcher matcher = new AllBitMaskMatcher(b(255));
         assertEquals("0xFF matches one byte", 1, matcher.getNumberOfMatchingBytes());
 
-
-        
+        matcher = new AllBitMaskMatcher(b(0));
+        assertEquals("0x00 matches 256 bytes", 256, matcher.getNumberOfMatchingBytes());
 
     }
 
