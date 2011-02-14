@@ -42,19 +42,4 @@ public class ByteMatcherTest {
 
     }
 
-
-    /**
-     * Test of matches method, of class ByteMatcher.
-     */
-    /*
-    @Test
-    public void testMatches_ByteReader_long() {
-        byte expected = (byte) 01;
-        ByteMatcher matcher = new ByteMatcher()
-    }
-    */
-
-
- 
-
 }
