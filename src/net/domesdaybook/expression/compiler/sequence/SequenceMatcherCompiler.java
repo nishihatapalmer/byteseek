@@ -157,15 +157,26 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
                             break;
                         }
 
-                        // Repeats will normally contain more than one of the repeated items:
-                        // This isn't 100% optimal, as it would be nice to join byte
-                        // sequences or single byte matchers together.  However, it's easier
-                        // to just close any outstanding bytes or single byte matchers and
-                        // add the repeated sequence directly.
                         case (regularExpressionParser.REPEAT): {
-                            addCollectedByteValues(byteValuesToJoin, sequences);
-                            addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            sequences.add(getFixedRepeatMatcher(child));
+                            SequenceMatcher sequence = getFixedRepeatMatcher(child);
+                            if (sequence instanceof ByteSequenceMatcher ||
+                                sequence instanceof CaseSensitiveStringMatcher) {
+                                addCollectedSingleByteMatchers(singleByteSequence, sequences);
+                                for (int position = 0; position < sequence.length(); position++) {
+                                    final byte value = sequence.getByteMatcherForPosition(position).getMatchingBytes()[0];
+                                    byteValuesToJoin.add(value);
+                                }
+                            } else if (sequence instanceof SingleByteSequenceMatcher) {
+                                addCollectedByteValues(byteValuesToJoin, sequences);
+                                for (int position = 0; position < sequence.length(); position++) {
+                                    final SingleByteMatcher aMatcher = sequence.getByteMatcherForPosition(position);
+                                    singleByteSequence.add(aMatcher);
+                                }
+                            } else {
+                                addCollectedByteValues(byteValuesToJoin, sequences);
+                                addCollectedSingleByteMatchers(singleByteSequence, sequences);
+                                sequences.add(getFixedRepeatMatcher(child));
+                            }
                             break;
                         }
 

@@ -11,6 +11,7 @@ import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
 import net.domesdaybook.expression.parser.ParseException;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
+import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
 import org.antlr.runtime.tree.CommonTree;
@@ -38,6 +39,23 @@ public class SequenceMatcherCompilerTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
+
+
+    @Test(expected=ParseException.class)
+    public void testCompileNullExpression() throws ParseException {
+        compiler.compile((String) null);
+    }
+
+    @Test(expected=ParseException.class)
+    public void testCompileEmptyExpression() throws ParseException {
+        compiler.compile("");
+    }
+    
+    @Test(expected=ParseException.class)
+    public void testCompileNullAST() throws ParseException {
+        compiler.compile((CommonTree) null);
+    }
+
 
     /**
      * Test of compile method, of class SequenceMatcherCompiler.
@@ -76,18 +94,16 @@ public class SequenceMatcherCompilerTest {
 
         basicTests("01{4}", 4, ByteSequenceMatcher.class);
 
-        // Would be better if the compiler realised it was all bytes and
-        // combined them into a single bytesequencematcher class, rather
-        // than wrapping the two different byte sequence matchers into a
-        // combined byte sequence matcher.
-        basicTests("010203{6}", 8, CombinedSequenceMatcher.class);
+        basicTests("010203{6}", 8, ByteSequenceMatcher.class);
 
         basicTests("[fffe]", 1, SingleByteSequenceMatcher.class);
         basicTests("[fffe]{5}", 5, SingleByteSequenceMatcher.class);
         
-        //FIXME: This test really dies:
-        //basicTests("(0102){2}", 4, ByteSequenceMatcher.class);
+        basicTests("(0102){2}", 4, ByteSequenceMatcher.class);
+        basicTests("(dd[ff03]){3}", 6, CombinedSequenceMatcher.class);
+        basicTests("'start'(dd[ff03]){3}", 11, CombinedSequenceMatcher.class);
 
+        basicTests(".{1000}", 1000, FixedGapMatcher.class);
     }
 
 
