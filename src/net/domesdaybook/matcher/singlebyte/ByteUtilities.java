@@ -246,7 +246,7 @@ public class ByteUtilities {
         // start loop at one - any bitmask matchers can never match the zero byte.
         for (int byteIndex = 1; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
-            if ((byteValue & bitMask) > 0) {
+            if ((byteValue & bitMask) != 0) {
                 bytes.add((byte) byteIndex);
             }
         }

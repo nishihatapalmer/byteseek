@@ -42,7 +42,7 @@ public final class AnyBitMaskMatcher implements SingleByteMatcher {
      */
     @Override
     public final boolean matches(byte theByte) {
-        return (theByte & mBitMaskValue) > 0;
+        return (theByte & mBitMaskValue) != 0;
     }
 
 
