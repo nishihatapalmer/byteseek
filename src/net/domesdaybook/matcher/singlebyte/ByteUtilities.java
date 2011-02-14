@@ -6,6 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -136,10 +137,10 @@ public class ByteUtilities {
     }
 
     
-    public static byte[] toArray(final List<Byte> list) {
-        final byte[] result = new byte[list.size()];
+    public static byte[] toArray(final Collection<Byte> collection) {
+        final byte[] result = new byte[collection.size()];
         int position = 0;
-        for (Byte b : list) {
+        for (Byte b : collection) {
             result[position++] = b;
         }
         return result;
