@@ -49,7 +49,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(byte theByte) {
+    public boolean matches(final byte theByte) {
         return Arrays.binarySearch(bytes, theByte) >= 0 ^ inverted;
     }
 
@@ -58,7 +58,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      * {@inheritDoc}
      */
     @Override
-    public final byte[] getMatchingBytes() {
+    public byte[] getMatchingBytes() {
         if (inverted) {
             final byte[] invertedValues = new byte[getNumberOfMatchingBytes()];
             int byteIndex = 0;
@@ -78,7 +78,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      * {@inheritDoc}
      */
     @Override
-    public final int getNumberOfMatchingBytes() {
+    public int getNumberOfMatchingBytes() {
         return inverted ? 256 - bytes.length : bytes.length;
     }
 
@@ -87,7 +87,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(final boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
         if ( prettyPrint ) {
             regularExpression.append(' ');
@@ -137,7 +137,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final ByteReader reader, final long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }
 

@@ -49,7 +49,7 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(final ByteReader reader, long matchPosition) {
+    public boolean matches(final ByteReader reader, final long matchPosition) {
         return matches(reader.readByte(matchPosition));
     }
 
@@ -58,7 +58,7 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(final byte theByte) {
+    public boolean matches(final byte theByte) {
         return (theByte == caseValues[0] || theByte == caseValues[1]);
     }
 
@@ -67,7 +67,7 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final byte[] getMatchingBytes() {
+    public byte[] getMatchingBytes() {
         final byte firstByte = caseValues[0];
         final byte secondByte = caseValues[1];
         if (firstByte == secondByte) {
@@ -84,7 +84,7 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(final boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         return prettyPrint? " `" + value.toString() + "` " : '`' + value.toString() + '`';
     }
 
@@ -93,7 +93,7 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final int getNumberOfMatchingBytes() {
+    public int getNumberOfMatchingBytes() {
         return caseValues[0] == caseValues[1] ? 1 : 2;
     }
 

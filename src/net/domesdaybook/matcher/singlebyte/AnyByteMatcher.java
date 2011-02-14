@@ -31,7 +31,7 @@ public final class AnyByteMatcher implements SingleByteMatcher {
      * Always returns true.
      */
     @Override
-    public final boolean matches(byte theByte) {
+    public boolean matches(final byte theByte) {
         return true;
     }
 
@@ -42,7 +42,7 @@ public final class AnyByteMatcher implements SingleByteMatcher {
      * Returns a 256-element array of all the possible byte values.
      */
     @Override
-    public final byte[] getMatchingBytes() {
+    public byte[] getMatchingBytes() {
         return allBytes;
     }
 
@@ -51,7 +51,7 @@ public final class AnyByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         return prettyPrint ? " . " : ".";
     }
 
@@ -60,7 +60,7 @@ public final class AnyByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(ByteReader reader, long matchFrom) {
+    public boolean matches(final ByteReader reader, final long matchFrom) {
         //return matches(reader.readByte(matchFrom));
         return true;
     }

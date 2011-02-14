@@ -33,7 +33,7 @@ public final class ByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(ByteReader reader, long matchFrom) {
+    public boolean matches(final ByteReader reader, final long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }
 
@@ -42,7 +42,7 @@ public final class ByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(final byte theByte) {
+    public boolean matches(final byte theByte) {
         return theByte == byteToMatch;
     }
 
@@ -51,7 +51,7 @@ public final class ByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final byte[] getMatchingBytes() {
+    public byte[] getMatchingBytes() {
         return new byte[] {byteToMatch};
     }
 
@@ -60,7 +60,7 @@ public final class ByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         final String regex = ByteUtilities.byteToString(prettyPrint, byteToMatch & 0xFF);
         return prettyPrint? regex + " " : regex;
     }
@@ -70,7 +70,7 @@ public final class ByteMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final int getNumberOfMatchingBytes() {
+    public int getNumberOfMatchingBytes() {
         return 1;
     }
 

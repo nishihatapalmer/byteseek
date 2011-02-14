@@ -52,7 +52,7 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(ByteReader reader, long matchFrom) {
+    public boolean matches(final ByteReader reader, final long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }
     
@@ -61,7 +61,7 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(byte theByte) {
+    public boolean matches(final byte theByte) {
         final int byteValue = theByte & 0xFF;
         final boolean insideRange = (byteValue >= minByteValue && byteValue <= maxByteValue);
         return insideRange ^ inverted;
@@ -72,7 +72,7 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression( final boolean prettyPrint ) {
+    public String toRegularExpression(final boolean prettyPrint) {
         final StringBuffer regularExpression = new StringBuffer();
         if (prettyPrint) {
             regularExpression.append(" ");
@@ -95,7 +95,7 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
      * {@inheritDoc}
      */
     @Override
-    public final byte[] getMatchingBytes() {
+    public byte[] getMatchingBytes() {
         byte[] values = new byte[getNumberOfMatchingBytes()];
         if (inverted) {
             int byteIndex = 0;
@@ -119,9 +119,9 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
      * {@inheritDoc}
      */
     @Override
-    public final int getNumberOfMatchingBytes() {
+    public int getNumberOfMatchingBytes() {
         return inverted ? 255 - maxByteValue + minByteValue
-                       : maxByteValue - minByteValue + 1;
+                        : maxByteValue - minByteValue + 1;
     }
   
 }

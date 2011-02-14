@@ -122,7 +122,7 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final ByteReader reader, final long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }  
 
@@ -131,7 +131,7 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(final byte theByte) {
+    public boolean matches(final byte theByte) {
         return byteValues.get((int) theByte & 0xFF) ^ inverted;
     }
 
@@ -140,7 +140,7 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(final boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
         if ( prettyPrint ) {
             regularExpression.append(' ');
@@ -181,7 +181,7 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
      * {@inheritDoc}
      */
     @Override
-    public final byte[] getMatchingBytes() {
+    public byte[] getMatchingBytes() {
         byte[] values = new byte[getNumberOfMatchingBytes()];
         int byteIndex = 0;
         for (int value = 0; value < 256; value++) {
@@ -197,7 +197,7 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
      * {@inheritDoc}
      */
     @Override
-    public final int getNumberOfMatchingBytes() {
+    public int getNumberOfMatchingBytes() {
         return inverted ? 256 - byteValues.cardinality() : byteValues.cardinality();
     }
 

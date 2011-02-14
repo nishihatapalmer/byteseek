@@ -32,7 +32,7 @@ public final class AnyBitMaskMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(ByteReader reader, long matchFrom) {
+    public boolean matches(final ByteReader reader, final long matchFrom) {
         return matches(reader.readByte(matchFrom));
     }
 
@@ -41,7 +41,7 @@ public final class AnyBitMaskMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(byte theByte) {
+    public boolean matches(final byte theByte) {
         return (theByte & mBitMaskValue) != 0;
     }
 
@@ -50,7 +50,7 @@ public final class AnyBitMaskMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         final String regEx = String.format("~%02x", (int) 0xFF & mBitMaskValue);
         return prettyPrint ? " " + regEx + " " : regEx;
     }
@@ -60,7 +60,7 @@ public final class AnyBitMaskMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final byte[] getMatchingBytes() {
+    public byte[] getMatchingBytes() {
         final List<Byte> bytes = ByteUtilities.getBytesMatchingAnyBitMask(mBitMaskValue);
         return ByteUtilities.toArray(bytes);
     }
@@ -70,7 +70,7 @@ public final class AnyBitMaskMatcher implements SingleByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final int getNumberOfMatchingBytes() {
+    public int getNumberOfMatchingBytes() {
         return ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue);
     }
 
