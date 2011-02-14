@@ -147,12 +147,19 @@ public class ByteUtilities {
 
 
     public static byte[] getAllByteValues() {
-        byte[] allBytes = new byte[256];
-        for (int value = 0; value < 256; value++) {
-            allBytes[value] = (byte) value;
-        }
-        return allBytes;
+        return getBytesInRange(0, 255);
     }
+
+
+    public static byte[] getBytesInRange(int from, int to) {
+        byte[] range = new byte[to-from+1];
+        int position = 0;
+        for (int value = from; value <= to; value++) {
+            range[position++] = (byte) value;
+        }
+        return range;
+    }
+    
     
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
         Set<Byte> invertedSet = new HashSet<Byte>();
