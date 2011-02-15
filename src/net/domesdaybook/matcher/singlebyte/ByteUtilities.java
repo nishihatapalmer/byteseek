@@ -180,15 +180,20 @@ public class ByteUtilities {
      */
     public static Byte getAllBitMaskForBytes(final Set<Byte> bytes) {
         Byte allBitMask = null;
-        // Build a candidate bitmask from the bits all the bytes have in common.
-        int bitsInCommon = getBitsInCommon(bytes);
-        if (bitsInCommon > 0) {
-            // If the number of bytes in the set is the same as the number of bytes
-            // which would match the bitmask, then the set of bytes can be matched
-            // by that bitmask.
-            byte mask = (byte) bitsInCommon;
-            if (bytes.size() == countBytesMatchingAllBits(mask)) {
-                allBitMask = new Byte(mask);
+        final int setSize = bytes.size();
+        if (setSize == 256) { // if we have all byte values, then a bitmask of zero matches all of them.
+            allBitMask = new Byte((byte) 0);
+        } else {
+            // Build a candidate bitmask from the bits all the bytes have in common.
+            int bitsInCommon = getBitsInCommon(bytes);
+            if (bitsInCommon > 0) {
+                // If the number of bytes in the set is the same as the number of bytes
+                // which would match the bitmask, then the set of bytes can be matched
+                // by that bitmask.
+                byte mask = (byte) bitsInCommon;
+                if (setSize == countBytesMatchingAllBits(mask)) {
+                    allBitMask = new Byte(mask);
+                }
             }
         }
         return allBitMask;
