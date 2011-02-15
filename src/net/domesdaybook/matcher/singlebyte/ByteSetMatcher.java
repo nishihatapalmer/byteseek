@@ -63,6 +63,10 @@ public final class ByteSetMatcher extends InvertibleMatcher implements SingleByt
                     break;
                 }
             }
+        } else if (numberOfValues == 256 && !inverted) {
+            result = new AnyByteMatcher();
+        } else if (numberOfValues == 0 && inverted) {
+            result = new AnyByteMatcher();
         } else if (numberOfValues > 0) {
 
             // Determine if the bytes in the set can be matched by a bitmask:

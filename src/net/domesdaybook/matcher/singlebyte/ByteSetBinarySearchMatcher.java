@@ -36,11 +36,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
         if (bytes == null || bytes.isEmpty()) {
             throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
-        this.bytes = new byte[bytes.size()];
-        int byteIndex = 0;
-        for (Byte b : bytes) {
-            this.bytes[byteIndex++] = b;
-        }
+        this.bytes = ByteUtilities.toArray(bytes);
         Arrays.sort(this.bytes);
     }
 
@@ -50,7 +46,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      */
     @Override
     public boolean matches(final byte theByte) {
-        return Arrays.binarySearch(bytes, theByte) >= 0 ^ inverted;
+        return (Arrays.binarySearch(bytes, theByte) >= 0) ^ inverted;
     }
 
 
