@@ -256,6 +256,15 @@ public class ByteUtilities {
         int bit1 = 0, bit2 = 0, bit3 = 0, bit4 = 0, bit5 = 0, bit6 = 0, bit7 = 0, bit8 = 0;
         for (Byte b : bytes) {
             final int value = b & 0xFF;
+            bit1 += value & 1;
+            bit2 += (value & 2) >> 1;
+            bit3 += (value & 4) >> 2;
+            bit4 += (value & 8) >> 3;
+            bit5 += (value & 16) >> 4;
+            bit6 += (value & 32) >> 5;
+            bit7 += (value & 64) >> 6;
+            bit8 += (value & 128) >> 7;
+            /*
             if ((value & 1) > 0) bit1 += 1;
             if ((value & 2) > 0) bit2 += 1;
             if ((value & 4) > 0) bit3 += 1;
@@ -264,6 +273,7 @@ public class ByteUtilities {
             if ((value & 32) > 0) bit6 += 1;
             if ((value & 64) > 0) bit7 += 1;
             if ((value & 128) > 0) bit8 += 1;
+             * */
         }
         // produce a mask of the bits which each matched 128 bytes in the set:
         int anyBitMask = 0;
