@@ -6,6 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,9 @@ public class ByteUtilities {
     private static final int START_PRINTABLE_ASCII = 32;
     private static final int END_PRINTABLE_ASCII = 126;
     private static int[] MASK = {0x55, 0x33, 0x0F};
+
+    private static int[] VALID_ALL_BITMASK_SET_SIZES = {1, 2, 4, 8, 16, 32, 64, 128, 256};
+    private static int[] VALID_ANY_BITMASK_SET_SIZES = {0, 128, 192, 224, 240, 248, 252, 254, 255};
 
     /**
      * Private constructor for static utility class.
@@ -183,14 +187,14 @@ public class ByteUtilities {
         final int setSize = bytes.size();
         if (setSize == 256) { // if we have all byte values, then a bitmask of zero matches all of them.
             allBitMask = new Byte((byte) 0);
-        } else {
+        } else if (Arrays.binarySearch(VALID_ALL_BITMASK_SET_SIZES, setSize) >= 0) {
             // Build a candidate bitmask from the bits all the bytes have in common.
             int bitsInCommon = getBitsInCommon(bytes);
             if (bitsInCommon > 0) {
                 // If the number of bytes in the set is the same as the number of bytes
                 // which would match the bitmask, then the set of bytes can be matched
                 // by that bitmask.
-                byte mask = (byte) bitsInCommon;
+                final byte mask = (byte) bitsInCommon;
                 if (setSize == countBytesMatchingAllBits(mask)) {
                     allBitMask = new Byte(mask);
                 }
@@ -207,19 +211,25 @@ public class ByteUtilities {
      * @return A bitmask to match the set with, or null if no bitmask exists for that set of bytes.
      */
     public static Byte getAnyBitMaskForBytes(final Set<Byte> bytes) {
-        Byte allBitMask = null;
-        // Build a candidate bitmask from the bits all the bytes have in common.
-        int bitsInCommon = getBitsInCommon(bytes);
-        if (bitsInCommon > 0) {
-            // If the number of bytes in the set is the same as the number of bytes
-            // which would match the bitmask, then the set of bytes can be matched
-            // by that bitmask.
-            byte mask = (byte) bitsInCommon;
-            if (bytes.size() == countBytesMatchingAnyBit(mask)) {
-                allBitMask = new Byte(mask);
+        Byte anyBitMask = null;
+        final int setSize = bytes.size();
+        if (setSize == 0) {
+            anyBitMask = new Byte((byte) 0);
+        } else if (Arrays.binarySearch(VALID_ANY_BITMASK_SET_SIZES, setSize) >= 0) {
+            // Find which bits in the set are matched by 128 bytes in the set.
+            // These bits might form a valid any bitmask.
+            int possibleAnyMask = getBitsSetFor128Bytes(bytes);
+
+            // Check that the any bitmask produced gives a set of bytes
+            // the same size as the set provided.
+            if (possibleAnyMask > 0) {
+                final byte mask = (byte) possibleAnyMask;
+                if (setSize == countBytesMatchingAnyBit(mask)) {
+                    anyBitMask = new Byte(mask);
+                }
             }
         }
-        return allBitMask;
+        return anyBitMask;
     }
 
 
@@ -238,6 +248,58 @@ public class ByteUtilities {
             bitsinCommon = bitsinCommon & b;
         }
         return bitsinCommon;
+    }
+
+
+    public static int getBitsSetFor128Bytes(final Set<Byte> bytes) {
+        // Count how many bytes match each bit:
+        int bit1 = 0, bit2 = 0, bit3 = 0, bit4 = 0, bit5 = 0, bit6 = 0, bit7 = 0, bit8 = 0;
+        for (Byte b : bytes) {
+            final int value = b & 0xFF;
+            if ((value & 1) > 0) bit1 += 1;
+            if ((value & 2) > 0) bit2 += 1;
+            if ((value & 4) > 0) bit3 += 1;
+            if ((value & 8) > 0) bit4 += 1;
+            if ((value & 16) > 0) bit5 += 1;
+            if ((value & 32) > 0) bit6 += 1;
+            if ((value & 64) > 0) bit7 += 1;
+            if ((value & 128) > 0) bit8 += 1;
+        }
+        // produce a mask of the bits which each matched 128 bytes in the set:
+        int anyBitMask = 0;
+        if (bit1 == 128) anyBitMask = 1;
+        if (bit2 == 128) anyBitMask = anyBitMask | 2;
+        if (bit3 == 128) anyBitMask = anyBitMask | 4;
+        if (bit4 == 128) anyBitMask = anyBitMask | 8;
+        if (bit5 == 128) anyBitMask = anyBitMask | 16;
+        if (bit6 == 128) anyBitMask = anyBitMask | 32;
+        if (bit7 == 128) anyBitMask = anyBitMask | 64;
+        if (bit8 == 128) anyBitMask = anyBitMask | 128;
+        return anyBitMask;
+    }
+
+
+    /**
+     *
+     * @param bytes The set of bytes to find all the bits used in.
+     * @return A bitmask containing all the bits used across the set of bytes.
+     */
+    public static int getAllBitsUsed(final Set<Byte> bytes) {
+        int bitsUsed = 0x00;
+        for (Byte b : bytes) {
+            bitsUsed = bitsUsed | b;
+        }
+        return bitsUsed;
+    }
+
+
+    /**
+     *
+     * @param bytes A set of bytes to test for unused bits.
+     * @return A bitmask containing all the bits which were unused across the set of bytes.
+     */
+    public static int getUnusedBits(final Set<Byte> bytes) {
+        return getAllBitsUsed(bytes) ^ 0xFF;
     }
 
 
