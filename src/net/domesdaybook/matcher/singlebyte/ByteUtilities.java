@@ -218,7 +218,7 @@ public class ByteUtilities {
         } else if (Arrays.binarySearch(VALID_ANY_BITMASK_SET_SIZES, setSize) >= 0) {
             // Find which bits in the set are matched by 128 bytes in the set.
             // These bits might form a valid any bitmask.
-            int possibleAnyMask = getBitsSetFor128Bytes(bytes);
+            int possibleAnyMask = getBitsSetForAllPossibleBytes(bytes);
 
             // Check that the any bitmask produced gives a set of bytes
             // the same size as the set provided.
@@ -251,7 +251,7 @@ public class ByteUtilities {
     }
 
 
-    public static int getBitsSetFor128Bytes(final Set<Byte> bytes) {
+    public static int getBitsSetForAllPossibleBytes(final Set<Byte> bytes) {
         // Count how many bytes match each bit:
         int bit1 = 0, bit2 = 0, bit3 = 0, bit4 = 0, bit5 = 0, bit6 = 0, bit7 = 0, bit8 = 0;
         for (Byte b : bytes) {
@@ -273,7 +273,7 @@ public class ByteUtilities {
             if ((value & 32) > 0) bit6 += 1;
             if ((value & 64) > 0) bit7 += 1;
             if ((value & 128) > 0) bit8 += 1;
-             * */
+            */
         }
         // produce a mask of the bits which each matched 128 bytes in the set:
         int anyBitMask = 0;
