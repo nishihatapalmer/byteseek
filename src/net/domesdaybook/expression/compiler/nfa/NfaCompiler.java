@@ -18,11 +18,19 @@ import net.domesdaybook.expression.parser.regularExpressionParser;
 import org.antlr.runtime.tree.CommonTree;
 
 /**
- *
+ * A compiler which produces Non-deterministic Finite-state Automata (NFA)
+ * from an expression.  This class extends {@link AstCompiler}, which
+ * parses the expression using an ANTLR generated parser, and turns it into
+ * an abstract syntax tree.  The compiler takes the abstract syntax tree
+ * and uses it to direct the construction of an NFA using various builder
+ * and factory helper classes.
+ * 
  * @author Matt Palmer
  */
-public class NfaCompiler extends AstCompiler<NfaState> {
+public final class NfaCompiler extends AstCompiler<NfaState> {
 
+    private static final String MANY = "*";
+    
     private StateWrapperBuilder stateWrapperBuilder;
 
     
