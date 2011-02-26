@@ -33,24 +33,54 @@ public final class NfaCompiler extends AstCompiler<NfaState> {
     
     private StateWrapperBuilder stateWrapperBuilder;
 
-    
+    /**
+     * Constructs an NfaCompiler, using default {@link TransitionFactory},
+     * {@link StateBuilder} and {@link StateWrapperBuilder} objects.
+     *
+     * By default, it uses the {@link TransitionSingleByteMatcherFactory} and
+     * the {@link SimpleStateBuilder} to make a {@link ChamparnaudGlushkovBuilder} to
+     * produce the NFA.
+     */
     public NfaCompiler() {
         final TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
         final StateBuilder stateBuilder = new SimpleStateBuilder();
         stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateBuilder);
     }
 
-
+    
+    /**
+     * Constructs an NfaCompiler, supplying the {@link StateWrapperBuilder} object
+     * to use to construct the NFA from the parse tree.
+     *
+     * @param stateWrapperBuilder
+     */
     public NfaCompiler(final StateWrapperBuilder stateWrapperBuilder) {
         this.stateWrapperBuilder = stateWrapperBuilder;
     }
 
 
+    /**
+     * Sets the {@link StateWrapperBuilder} object to use to construct the NFA.
+     *
+     * @param stateWrapperBuilder The StateWrapperBuilder object to use to construct the NFA.
+     */
     public void setStateWrapperBuilder(final StateWrapperBuilder stateWrapperBuilder) {
         this.stateWrapperBuilder = stateWrapperBuilder;
     }
     
 
+    /**
+     * Compiles a Non-deterministic Finite-state Automata (NFA) from the
+     * abstract syntax tree provided by the {@link AstCompiler} which this
+     * class extends.
+     * <p/>
+     * It uses a {@link StateWrapperBuilder} object to build the actual automata,
+     * returning only the initial state of the final automata.
+     *
+     * @param ast The abstract syntax tree to compile the NfaState automata from.
+     * @return An automata recognising the expression described by the abstract syntax tree.
+     * @throws ParseException If the abstract syntax tree could not be parsed.
+     */
     @Override
     public NfaState compile(final CommonTree ast) throws ParseException {
        if (ast == null) {
