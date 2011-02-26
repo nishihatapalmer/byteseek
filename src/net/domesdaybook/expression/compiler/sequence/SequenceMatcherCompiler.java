@@ -46,7 +46,7 @@ import org.antlr.runtime.tree.CommonTree;
  * 
  * @author Matt Palmer
  */
-public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
+public final class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
     /**
@@ -58,7 +58,7 @@ public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
      * @throws ParseException If the ast could not be parsed.
      */
     @Override
-    public final SequenceMatcher compile(final CommonTree ast) throws ParseException {
+    public SequenceMatcher compile(final CommonTree ast) throws ParseException {
         if (ast == null) {
             throw new ParseException("Null abstract syntax tree passed in to SequenceMatcherCompiler.");
         }
