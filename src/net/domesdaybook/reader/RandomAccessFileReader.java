@@ -9,8 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  * A very simple {@link ByteReader} which accesses bytes from a file,
@@ -20,7 +19,7 @@ import java.util.logging.Logger;
  * will be very slow, so this class is provided only for convenience.
  *
  * Also note, if an IOException occurs reading bytes from the file,
- * then a Runtime exception
+ * then a Runtime exception will be thrown.
  *
  * @author Matt Palmer.
  */
