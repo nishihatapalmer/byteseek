@@ -28,12 +28,35 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import org.antlr.runtime.tree.CommonTree;
 
 /**
+ * A compiler which produces a {@link SequenceMatcher} from an
+ * abstract syntax tree provided by the {@link AstCompiler} class,
+ * which it extends.
  *
+ * It can handle nearly all the syntax in the regular expression parser,
+ * but it cannot handle any syntax which would give variable lengths to
+ * match, as a sequence matcher can only match a single defined sequence.
+ *
+ * In general, this means that it cannot handle alternatives (X|Y|Z),
+ * optionality X?, variable length repeats {n-m}, or wildcard repeats * or +.
+ *
+ * It can handle fixed length repeats {n}.  Also, alternative sequences
+ * (X|Y|Z) where each alternative is one byte long can be handled,
+ * because they are pre-optimised by the AstCompiler class into a [set] of bytes
+ * instead of a list of alternatives, before this compiler even sees them.
+ * 
  * @author Matt Palmer
  */
 public class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
 
+    /**
+     * Compiles an abstract syntax tree provided by the {@link AstCompiler} class
+     * which it extends, to create a {@SequenceMatcher} object.
+     *
+     * @param ast The abstract syntax tree provided by the {@link AstCompiler} class.
+     * @return A {@link SequenceMatcher} which matches the expression defined by the ast passed in.
+     * @throws ParseException If the ast could not be parsed.
+     */
     @Override
     public final SequenceMatcher compile(final CommonTree ast) throws ParseException {
         if (ast == null) {
