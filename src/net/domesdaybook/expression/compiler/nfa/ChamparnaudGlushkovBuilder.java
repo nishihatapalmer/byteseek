@@ -72,13 +72,17 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      }
      
 
-     /**
-      * Build an initial state and a final state,
-      * and join them together with a transition on the transition byte.
-      * 
-      * @param transitionByte
-      * @return
-      */
+    /**
+    * Builds an (initial) state and a [final] state,
+    * and joins them together with a transition on the transition byte.
+    *
+    * <code>
+    *   b      (0) --b--> [1]
+    * </code>
+    *
+    * @param transitionByte The byte to transition on.
+    * @return An automata with a transition on the byte supplied.
+    */
      public final StateWrapper buildSingleByteStates(final byte transitionByte) {
         final StateWrapper states = createInitialFinalStates();
         final NfaState finalState = states.finalStates.get(0);
@@ -88,7 +92,18 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     }
 
 
-    
+     /**
+     * Builds an (initial) state and a [final] state,
+     * and joins them together with a transition on the set of bytes.
+     *
+     * <code>
+     *   [abc]   (0) --[abc]--> [1]
+     * </code>
+     *
+     * @param byteSet A set of bytes to match.
+     * @param negated Whether the set of bytes should be inverted or not when matching.
+     * @return An automata with a transition on the set of bytes supplied.
+     */
     @Override
     public final StateWrapper buildSetStates(final Set<Byte> byteSet, final boolean negated) {
         final StateWrapper states = createInitialFinalStates();
@@ -99,6 +114,16 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     }
 
 
+    /**
+     * Builds an (initial) state and a [final] state
+     * and joins them together with a transition on any byte.
+     *
+     * <code>
+     *   .       (0) --.--> [1]
+     * </code>
+     *
+     * @return An automata with a transition on any byte.
+     */
     @Override
     public final StateWrapper buildAnyByteStates() {
         final StateWrapper states = createInitialFinalStates();
@@ -110,11 +135,15 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     }
 
     /**
-     * Build an initial state and a final state,
+     * Build an (initial) state and a [final] state,
      * and join them together with a transition on the all bitmask byte.
      *
-     * @param bitMask
-     * @return
+     * <code>
+     *   &m     (0) --&m--> [1]
+     * </code>
+     *
+     * @param bitMask The bitmask to transition on if all bits match.
+     * @return An automata using an All bitmask transition.
      */
     public final StateWrapper buildAllBitmaskStates(final byte bitMask) {
         final StateWrapper states = createInitialFinalStates();
@@ -126,11 +155,15 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
 
     /**
-     * Build an initial state and a final state,
+     * Build an (initial) state and a [final] state,
      * and join them together with a transition on the any bitmask byte.
      *
-     * @param bitMask
-     * @return
+     * <code>
+     *    ~m    (0) --~m--> [1]
+     * </code>
+     *
+     * @param bitMask The bitmask to transition on if any bits match.
+     * @return An automata using an Any bitmask transition.
      */
     public final StateWrapper buildAnyBitmaskStates(final byte bitMask) {
         final StateWrapper states = createInitialFinalStates();
@@ -142,18 +175,28 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
     
     /**
+     * Builds a single automata out of a list of automata,
+     * by turning them into a sequence from the start to the end of the list.
+     *
+     * <code>
+     *   XYZ    (0) ----> (1) ----> (2) ----> [3]
+     *                X         Y         Z
+     * </code>
+     * 
      * To create an automata joining a sequence of states together,
      * we must transition each state to its neighbour to the right.
-     * We can achieve this by making each of the final transitions of a state
-     * (with another state to its right to join to) copy all of the transitions
-     * of the right-hand-side initial state.   Each final state effectively
-     * becomes the initial state of the automata to its right.
+     *
+     * We can achieve this by copying all of the transitions of an initial
+     * state back to the final states of the automata that preceded it.
+     * Each final state effectively becomes an initial state of the
+     * automata to its right.
      * Then we can discard the now-redundant initial state of the right hand side.
+     *
      * The left hand side final states all become as final as the initial state
      * they end up replacing.
      *
-     * @param sequenceStates A list of initial / final states of automata to be joined.
-     * @return An object holding the initial and final states of the sequence automata.
+     * @param sequenceStates A list of automata to be joined as a sequence.
+     * @return An automata which is a sequence of the automata in the list.
      */
     @Override
     public final StateWrapper buildSequenceStates(final List<StateWrapper> sequenceStates) {
@@ -170,7 +213,6 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
             // for each final state of the sequence,
             // add the initial transitions from the right hand side,
             // and set whether it is final or not based on the initial right hand state.
-            //for (NfaState state : leftState.finalStates) {
             for (NfaState state : finalSequenceStates) {
                 state.addAllTransitions(transitionList);
                 state.setIsFinal(initialStateIsFinal);
@@ -200,6 +242,15 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * each of the alternatives with each other.  In practice, retain one state and
      * add the transitions of the other initial states to it.
      *
+     * <code>
+     *   X|Y|Z    (0) ----> [1]
+     *             |    X
+     *              ------> [2]
+     *             |    Y
+     *              ------> [3]
+     *                  Z
+     * </code>
+     *
      * The initial state is final if any of the alternate initial states were final.
      *
      * @param alternateStates A list of alternative automata, wrapped in an object giving the initial and final states of the automata.
@@ -212,11 +263,6 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         // transition into any of them from a single initial state.  
         // If any of the initial states being merged is final, then the final merged state is final.
         // Also build a list of the sum of all the final states in all the alternatives.
-        //final StateWrapper firstOption = alternateStates.get(0);
-        //final NfaState initialState = firstOption.initialState;
-        //final List<NfaState> finalStates = new ArrayList<NfaState>(firstOption.finalStates);
-        
-        //boolean anyMergedStateIsFinal = initialState.isFinal();
         final List<NfaState> finalStates = new ArrayList<NfaState>();
         NfaState initialState = stateBuilder.build(State.NON_FINAL);
         boolean anyInitialStateIsFinal = false;
@@ -241,12 +287,21 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * Wires the automaton provided to be repeated zero to many times.
      * This is done by making the initial state final,
      * allowing for an instant match to cover the zero case.
+     *
+     * <code>
+     *   X*     [0] ----> [1] __    (XY)*  [0] ----> (1) ----> [2] __
+     *                X    ^    |                X    ^     Y        |
+     *                     |____|                     |______________|
+     *                        X                             X
+     * </code>
+     *
      * Additionally, all of the final states loop back to the states that
      * the initial state points to, allowing for as many repetitions as needed.
      * It is the same as building one to many states, except the initial state
      * is set to final to cover the zero case.
-     * @param zeroToManyStates
-     * @return
+     * 
+     * @param zeroToManyStates An automata to repeat zero to many times.
+     * @return An automata which will repeat zero to many times.
      */
     @Override
     public final StateWrapper buildZeroToManyStates(final StateWrapper zeroToManyStates) {
@@ -262,10 +317,19 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     
 
     /**
-     * Wires the automaton provided to be repeated zero to many times.
+     * Wires the automaton provided to be repeated one to many times.
      * This is done by making all the final states loop back to the states
      * that the initial state points to, allowing for as many repetitions as needed.
+     *
+     * <code>
+     *   X+     [0) ----> [1] __    (XY)+  (0) ----> (1) ----> [2]__
+     *                X    ^    |                X    ^     Y       |
+     *                     |____|                     |_____________|
+     *                        X                             X
+     * </code>
+     *
      * It is the same as zeroToManyStates, except that the initial state is not made final.
+     *
      * @param oneToManyStates
      * @return
      */
@@ -284,6 +348,12 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     /**
      * Makes the automata passed in optional.
      * It does this by making the initial state final.
+     *
+     * <code>
+     *     X?    [0] ----> [1]
+     *                 X
+     * </code>
+     *
      * @param optionalStates
      * @return
      */
@@ -294,6 +364,12 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     }
 
 
+    /**
+     * Builds
+     * @param minRepeat
+     * @param repeatedAutomata
+     * @return
+     */
     @Override
     public final StateWrapper buildMinToManyStates(final int minRepeat, final StateWrapper repeatedAutomata) {
         StateWrapper states = null;
@@ -311,11 +387,12 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     @Override
     public final StateWrapper buildMinToMaxStates(final int minRepeat, final int maxRepeat, final StateWrapper repeatedAutomata) {
         StateWrapper states = null;
-        // If min repeat is zero, then we have up to max optional states:
+        // If min repeat is zero, then we have up to max optional repeated states:
         if (minRepeat == 0) {
             states = buildRepeatedOptionalStates(maxRepeat, repeatedAutomata);
-        } else {
+        } else { // we have some required repeated states:
             states = buildRepeatedStates(minRepeat, repeatedAutomata);
+            // possibly followed by (max - min) optional repeated states:
             if (maxRepeat > minRepeat) {
                 final StateWrapper optionalStates = buildRepeatedOptionalStates(maxRepeat - minRepeat, repeatedAutomata);
                 states = joinStates(states, optionalStates);
