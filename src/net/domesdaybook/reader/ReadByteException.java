@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.reader;
@@ -14,12 +14,16 @@ package net.domesdaybook.reader;
  */
 public class ReadByteException extends RuntimeException {
 
-    public ReadByteException(Exception ex) {
-        super(ex);
-    }
-
     public ReadByteException(String message) {
         super(message);
+    }
+
+    public ReadByteException(Throwable cause) {
+        super(cause);
+    }
+
+    public ReadByteException(String message, Throwable cause) {
+        super(message, cause);
     }
     
 }
