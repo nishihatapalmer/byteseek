@@ -6,7 +6,8 @@
 package net.domesdaybook.expression.parser;
 
 /**
- *
+ * A checked exception class representing the failure to parse an expression.
+ * 
  * @author Matt Palmer
  */
 public class ParseException extends Exception {
@@ -29,6 +30,16 @@ public class ParseException extends Exception {
      */
     public ParseException(final Throwable cause) {
         super(cause);
+    }
+
+
+    /**
+     *
+     * @param message The error message
+     * @param cause The cause of the parse exception.
+     */
+    public ParseException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
 
