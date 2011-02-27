@@ -16,6 +16,9 @@ Syntax for byte-oriented regular expressions:
    * Bytes are written as 2 digit hexadecimal numbers (any case allowed)
      	00 FF 1a dE
 
+   * Any byte can be matched using the full stop:
+        .
+
    * Text (ASCII only) is delimited using single quotes:
     	'testing testing 123'
 
