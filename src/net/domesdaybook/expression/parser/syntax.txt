@@ -50,7 +50,7 @@ Syntax for byte-oriented regular expressions:
 	[digit]     # a digit                                 ['0'-'9']
 	[ws]        # space, tab newline & return             [' ' 09 0a 0d]
 	[blank]     # space & tab                             [' ' 09]
-	[space]     # space
+	[space]     # space                                   20
 	[tab]       # tab                                     09
 	[newline]   # newline                                 0a
 	[return]    # carriage return                         0d
