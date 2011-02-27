@@ -32,17 +32,23 @@ import org.antlr.runtime.tree.CommonTree;
  * abstract syntax tree provided by the {@link AstCompiler} class,
  * which it extends.
  *
- * It can handle nearly all the syntax in the regular expression parser,
+ * It can handle nearly all the syntax processable by the {@link AstParser},
  * but it cannot handle any syntax which would give variable lengths to
- * match, as a sequence matcher can only match a single defined sequence.
+ * match, or which would have alternative sequences of bytes,
+ * as a sequence matcher can only match a single defined sequence.
  *
- * In general, this means that it cannot handle alternatives (X|Y|Z),
- * optionality X?, variable length repeats {n-m}, or wildcard repeats * or +.
+ * In general, this means that it *cannot* handle alternatives (X|Y|Z),
+ * optionality X?, variable length repeats {n-m}, 
+ * and the wildcard repeats * and +.
  *
  * It can handle fixed length repeats {n}.  Also, alternative sequences
- * (X|Y|Z) where each alternative is one byte long can be handled,
+ * (X|Y|Z) where each alternative is one byte long can be handled, but only
  * because they are pre-optimised by the AstCompiler class into a [set] of bytes
  * instead of a list of alternatives, before this compiler even sees them.
+ * Therefore, this should not be relied upon, as it is an artefact of an earlier
+ * stage of optimisation which may or may not hold true in the future.  This
+ * compiler, in principle, cannot handle alternative sequences if they are
+ * provided to it.
  * 
  * @author Matt Palmer
  */
