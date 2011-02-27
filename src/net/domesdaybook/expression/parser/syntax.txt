@@ -7,18 +7,19 @@ Syntax for byte-oriented regular expressions:
 ============================================
 
    * Put comments on a line using the # symbol.  Everything after a
-     # up to the end of the line is a comment and is ignored.
+     # up to the end of the line is a comment and is ignored,
+     unless they are inside a quoted piece of text.
 
    * All spaces, tabs and new lines are also ignored,
      unless they are inside a quoted piece of text.
 
-   * Bytes are written as 2 digit hexadecimal numbers (any case)
+   * Bytes are written as 2 digit hexadecimal numbers (any case allowed)
      	00 FF 1a dE
 
-   * Text (ASCII only) is quoted using single quotes:
+   * Text (ASCII only) is delimited using single quotes:
     	'testing testing 123'
 
-   * Case-insensitive text can be written quoted with back-ticks:
+   * Case-insensitive text can be written delimited with back-ticks:
     	`HtMl public`
 
    * Alternatives are written separated by a pipe character:
@@ -29,28 +30,28 @@ Syntax for byte-oriented regular expressions:
         ['0':'9']             # the digits 0 to 9
         [09 0A 0D 20 '0':'9'] # whitespace or digits
 
-     Or that none of the specified bytes should match:
+     Or that anything but the specified bytes should match:
      	[^ 'a':'z']           # anything except 'a' to 'z'
 
      Some common groups of bytes have named sets, for convenience:
-	[ascii]     # all ascii chars 0 - 127
-	[print]     # all printable chars including space
-	[graph]     # all visible chars (not including space)
-	[word]      # all characters, digits & underscore
-	[alnum]     # all characters & digits
-	[alpha]     # all alphabetic characters
-	[upper]     # upper case characters only
-	[lower]     # lower case characters only
-	[punct]     # all punctuation
-	[xdigit]    # a hexadecimal digit
-	[digit]     # a digit
-	[ws]        # space, tab newline & return
-	[blank]     # space & tab
+	[ascii]     # all ascii chars                         [0-127]
+	[print]     # all printable chars including space     [32-126]
+	[graph]     # all visible chars (not including space) [33-126]
+	[word]      # all characters, digits & underscore     ['0'-'9' 'a'-'z' 'A'-'Z' '_']
+	[alnum]     # all characters & digits                 ['0'-'9' 'a'-'z' 'A'-'Z']
+	[alpha]     # all alphabetic characters               ['a'-'z' 'A'-'Z']
+	[upper]     # upper case characters only              ['A'-'Z']
+	[lower]     # lower case characters only              ['a'-'z']
+	[punct]     # all punctuation                         [
+	[xdigit]    # a hexadecimal digit                     ['0'-'9' 'a'-'f' 'A'-'F']
+	[digit]     # a digit                                 ['0'-'9']
+	[ws]        # space, tab newline & return             [' ' 09 0a 0d]
+	[blank]     # space & tab                             [' ' 09]
 	[space]     # space
-	[tab]       # tab
-	[newline]   # newline
-	[return]    # carriage return
-	[ctrl]      #
+	[tab]       # tab                                     09
+	[newline]   # newline                                 0a
+	[return]    # carriage return                         0d
+	[ctrl]      # 
 
      Standard shorthands are also defined for common regular expression bytes:
 	\t	# tab			09
@@ -59,12 +60,12 @@ Syntax for byte-oriented regular expressions:
 	\f'	# form feed		0c
 	\r'	# carriage return	0d
 	\e'	# escape		1b
-	\d'	# digit                 [  '0'-'9'  ]
-	\D'	# not digit		[^ '0'-'9'  ]
-	\w'	# word character	[  'a'-'z' 'A'-'Z' '0'-'9' '_'  ]
-	\W'	# not word character	[^ 'a'-'z' 'A'-'Z' '0'-'9' '_'  ]
-	\s'	# white space		[  09 0a 0d 20 ]
-	\S'	# not white space	[^ 09 0a 0d 20 ]
+	\d'	# digit                 [  '0'-'9']
+	\D'	# not digit		[^ '0'-'9']
+	\w'	# word character	[  'a'-'z' 'A'-'Z' '0'-'9' '_']
+	\W'	# not word character	[^ 'a'-'z' 'A'-'Z' '0'-'9' '_']
+	\s'	# white space		[  09 0a 0d 20]
+	\S'	# not white space	[^ 09 0a 0d 20]
 
      All these shorthands can also be used inside or outside of square brackets,
         01 02 \t 03 04 newline space \D 7f 80 [ascii 80 81 82]
@@ -77,7 +78,12 @@ Syntax for byte-oriented regular expressions:
         &0F                   # match all these bits 00001111
         &81                   # match all these bits 10000001
 
-   * Specify how many of the preceding expression must match:
+   * Bitmasks (any of the specified bits can match) are written:
+        ~7F                   # match any of these bits 01111111
+        ~0F                   # match any of these bits 00001111
+        ~81                   # match any of these bits 10000001
+
+   * Quantifiers: specify how many of the preceding expression must match:
      	Optional  	'that'?             0-1
 	None or more  	[09 0a 0d 20]*      0-*
 	One or more   	[09 0a 0d 20]+      1-*
@@ -85,5 +91,5 @@ Syntax for byte-oriented regular expressions:
 	Between   	ff{3-8}             n-m
 	At least  	ff{5-*}             n-*
 
-   * Round brackets are used to group quantified expressions or alternatives:
+   * Grouping: round brackets are used to group expressions:
      	('NUM' [30:39]+ )? ('XYZ' | '123' | 01 02 03 )
