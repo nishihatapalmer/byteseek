@@ -76,6 +76,13 @@ public final class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> 
     }
 
 
+    /**
+     * Performs the actual compilation of a sequence from an abstract syntax tree.
+     *
+     * @param ast The abstract syntax tree to compile.
+     * @return A SequenceMatcher representing the expression.
+     * @throws ParseException If the ast could not be parsed.
+     */
     private SequenceMatcher buildSequence(final CommonTree ast) throws ParseException {
 
         SequenceMatcher matcher = null;
