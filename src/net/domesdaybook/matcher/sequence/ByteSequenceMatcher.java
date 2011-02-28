@@ -187,7 +187,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
             }
         }
         if (prettyPrint && inString) {
-            hexString.append( "' ");
+            hexString.append("' ");
         }
         return hexString.toString();
     }
