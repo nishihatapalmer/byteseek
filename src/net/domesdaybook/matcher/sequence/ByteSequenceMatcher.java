@@ -13,6 +13,8 @@ import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.reader.ByteReader;
 
 /**
+ * An immutable class which matches a sequence of bytes.
+ * Since the class is immutable, it is entirely thread-safe.
  *
  * @author Matt Palmer
  */
@@ -26,16 +28,30 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     private final int length;
 
 
+    /**
+     * Constructs an immutable byte sequence matcher from an array of bytes.
+     * The array of bytes passed in is cloned to avoid mutability
+     * and concurrency issues.
+     * 
+     * @param byteArray The array of bytes to match.
+     * @throws IllegalArgumentException if the array of bytes passed in is null.
+     */
     public ByteSequenceMatcher(final byte[] byteArray ) {
         // Preconditions byteArray is not null:
-        if ( byteArray == null ) {
+        if (byteArray == null) {
             throw new IllegalArgumentException("Null byte array passed in to ByteSequenceMatcher");
         }
         this.byteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
         length = byteArray.length;
     }
 
-    
+
+    /**
+     * Constructs an immutable byte sequence matcher from a collection of Bytes.
+     *
+     * @param byteList The collection of Bytes to match.
+     * @throws IllegalArgumentException if the byteList is empty or null.
+     */
     public ByteSequenceMatcher(final Collection<Byte> byteList) {
         // Preconditions: list is not null and has at least one member:
         if (byteList == null || byteList.isEmpty()) {
@@ -50,7 +66,19 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * Constructs an immutable byte sequence matcher from a list of other
+     * ByteSequenceMatchers.  The final sequence to match is the sequence of
+     * bytes defined by joining all the bytes in the other ByteSequenceMatcher's
+     * together in the order they appear in the list.
+     *
+     * @param matchers The list of ByteSequenceMatchers to join.
+     * @throws IllegalArgumentException if the matcher list is null or empty.
+     */
     public ByteSequenceMatcher(final List<ByteSequenceMatcher> matchers) {
+        if (matchers == null || matchers.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty matcher list passed in to ByteSequenceMatcher.");
+        }
         int totalLength = 0;
         for (ByteSequenceMatcher matcher : matchers) {
             totalLength += matcher.length;
@@ -65,8 +93,15 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * Constructs an immutable byte sequence matcher from a repeated byte.
+     *
+     * @param byteValue The byte value to repeat.
+     * @param numberOfBytes The number of bytes to repeat.
+     * @throws IllegalArgumentException If the number of bytes is less than one.
+     */
     public ByteSequenceMatcher(final byte byteValue, final int numberOfBytes) {
-        if (numberOfBytes < 0) {
+        if (numberOfBytes < 1) {
             throw new IllegalArgumentException("ByteSequenceMatcher requires a positive number of bytes.");
         }
         length = numberOfBytes;
@@ -76,13 +111,23 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
     }
 
+
+    /**
+     * Constructs an immutable byte sequence matcher from a single byte.
+     *
+     * @param byteValue The byte to match.
+     */
     public ByteSequenceMatcher(final byte byteValue) {
-        this.byteArray = new byte[1];
-        this.byteArray[0] = byteValue;
+        //this.byteArray = new byte[1];
+        //this.byteArray[0] = byteValue;
+        this.byteArray = new byte[] {byteValue};
         length = 1;
     }
 
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
         boolean result = true;
@@ -94,19 +139,28 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         return result;
     }
 
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int length() {
         return length;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
         return bytesToString(prettyPrint, byteArray);
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final SingleByteMatcher getByteMatcherForPosition(int position) {
         return new ByteMatcher(byteArray[position]);
