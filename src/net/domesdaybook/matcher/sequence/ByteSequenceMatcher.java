@@ -172,7 +172,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         boolean inString = false;
         for (int byteIndex=0, byteLength = bytes.length; byteIndex<byteLength; byteIndex++) {
             int byteValue = 0xFF & bytes[byteIndex];
-            if ( prettyPrint &&
+            if (prettyPrint &&
                     byteValue >= START_PRINTABLE_ASCII &&
                     byteValue <= END_PRINTABLE_ASCII &&
                     byteValue != QUOTE_CHARACTER_VALUE) {
@@ -180,7 +180,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
                 hexString.append( String.format( formatString, (char) byteValue ));
                 inString = true;
             } else {
-                 final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";
+                final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";
                 hexString.append( String.format(formatString, byteValue ));
                 inString = false;
             }
