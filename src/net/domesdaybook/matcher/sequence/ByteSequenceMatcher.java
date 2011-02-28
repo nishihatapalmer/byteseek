@@ -178,7 +178,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
                     byteValue <= END_PRINTABLE_ASCII &&
                     byteValue != QUOTE_CHARACTER_VALUE) {
                 final String formatString = inString ? "%c" : " '%c";
-                hexString.append(String.format( formatString, (char) byteValue));
+                hexString.append(String.format(formatString, (char) byteValue));
                 inString = true;
             } else {
                 final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";
