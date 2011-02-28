@@ -36,7 +36,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @param byteArray The array of bytes to match.
      * @throws IllegalArgumentException if the array of bytes passed in is null.
      */
-    public ByteSequenceMatcher(final byte[] byteArray ) {
+    public ByteSequenceMatcher(final byte[] byteArray) {
         // Preconditions byteArray is not null:
         if (byteArray == null) {
             throw new IllegalArgumentException("Null byte array passed in to ByteSequenceMatcher");
@@ -153,7 +153,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression( final boolean prettyPrint ) {
+    public final String toRegularExpression(final boolean prettyPrint) {
         return bytesToString(prettyPrint, byteArray);
     }
 
