@@ -5,14 +5,15 @@
 
 package net.domesdaybook.matcher.sequence;
 
-import java.util.List;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.reader.ByteReader;
 
 /**
- *
+ * An immutable class which matches an ASCII string case insensitively.
+ * Since the class is immutable, it is entirely thread-safe.
+ * 
  * @author Matt Palmer
  */
 public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
@@ -22,6 +23,24 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     private final SingleByteMatcher[] charMatchList;
 
 
+    /**
+     * Constructs an immutable CaseSensitiveStringMatcher from an ASCII string.
+     *
+     * @param caseInsensitiveASCIIString The string to match.
+     */
+    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
+        this(caseInsensitiveASCIIString, 1);
+    }
+
+
+
+    /**
+     * Constructs an immutable CaseSensitiveStringMatcher from a repeated
+     * number of ASCII strings.
+     *
+     * @param caseInsensitiveASCIIString The (repeatable) string to match.
+     * @param numberToRepeat The number of repeats.
+     */
     public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString, final int numberToRepeat) {
         if (caseInsensitiveASCIIString == null || caseInsensitiveASCIIString.isEmpty()) {
             throw new IllegalArgumentException("Null or empty string passed in to CaseInsensitiveStringMatcher.");
@@ -32,11 +51,6 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         for (int charIndex = 0; charIndex < length; charIndex++) {
             charMatchList[charIndex] = getByteMatcherForChar(caseInsensitiveString.charAt(charIndex));
         }
-    }
-
-
-    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
-        this(caseInsensitiveASCIIString, 1);
     }
 
 
@@ -52,12 +66,18 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int length() {
         return length;
     }
 
     
+     /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
         if (prettyPrint) {
@@ -67,6 +87,9 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(ByteReader reader, long matchFrom) {
         boolean result = true;
@@ -81,17 +104,31 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final SingleByteMatcher getByteMatcherForPosition(int position) {
         return (SingleByteMatcher) charMatchList[position];
     }
 
 
+    /**
+     *
+     * @return The string which is matched by this class.
+     */
     public String getCaseInsensitiveString() {
         return caseInsensitiveString;
     }
     
-    
+
+    /**
+     * Returns a ByteMatcher for bytes which are not alphabetic characters,
+     * and a CaseInsensitiveByteMatcher for alphabetic characters.
+     * 
+     * @param theChar the character to get a byte matcher for.
+     * @return A SingleByteMatcher optimised for the character.
+     */
     private SingleByteMatcher getByteMatcherForChar(char theChar) {
         SingleByteMatcher result;
         if ((theChar >= 'a' && theChar <= 'z') ||
