@@ -30,11 +30,11 @@ Syntax for byte-oriented regular expressions:
 
    * Match more than one possible byte value with square brackets:
      	[09 0A 0D 20]         # whitespace - tab, newline, carriage return, space
-        ['0':'9']             # the digits 0 to 9
-        [09 0A 0D 20 '0':'9'] # whitespace or digits
+        ['0'-'9']             # the digits 0 to 9
+        [09 0A 0D 20 '0'-'9'] # whitespace or digits
 
      Or that anything but the specified bytes should match:
-     	[^ 'a':'z']           # anything except 'a' to 'z'
+     	[^ 'a'-'z']           # anything except 'a' to 'z'
 
      Some common groups of bytes have named sets, for convenience:
 	[ascii]     # all ascii chars                         [0-127]
@@ -95,4 +95,4 @@ Syntax for byte-oriented regular expressions:
 	At least  	ff{5-*}             n-*
 
    * Grouping: round brackets are used to group expressions:
-     	('NUM' [30:39]+ )? ('XYZ' | '123' | 01 02 03 )
+     	('NUM' [30-39]+ )? ('XYZ' | '123' | 01 02 03 )
