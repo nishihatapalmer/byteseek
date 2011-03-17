@@ -13,8 +13,11 @@ import java.util.Map;
 
 
 /**
+ * Experimental class  implementing Wu-Manber multi-pattern search.
  *
- * @author Matt Palmer palmer
+ * ALPHA - do not rely on this code.
+ *
+ * @author Matt Palmer
  */
 public final class WuManberSearch {
 
