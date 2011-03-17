@@ -69,7 +69,6 @@ public interface State extends DeepCopy {
     public boolean isFinal();
 
 
-
     /**
      * This is a convenience method, providing initial values to:
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
