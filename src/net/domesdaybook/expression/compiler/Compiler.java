@@ -8,14 +8,15 @@ package net.domesdaybook.expression.compiler;
 import net.domesdaybook.expression.parser.ParseException;
 
 /**
+ * An interface for compilers which compile a regular expression
+ * into an object of type T.
  *
  * @author Matt Palmer
  */
 public interface Compiler<T> {
 
     /**
-     * An interface for compilers which compile an
-     * expression into an object of type T.
+     * Compiles an expression into an object of type T.
      *
      * @param expression The expression to compile.
      * @return An compiled object of type T.
