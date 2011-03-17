@@ -14,7 +14,6 @@ import net.domesdaybook.reader.ByteReader;
 
 /**
  * An immutable class which matches a sequence of bytes.
- * Since the class is immutable, it is entirely thread-safe.
  *
  * @author Matt Palmer
  */

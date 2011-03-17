@@ -12,7 +12,6 @@ import net.domesdaybook.reader.ByteReader;
 
 /**
  * An immutable class which matches an ASCII string case insensitively.
- * Since the class is immutable, it is entirely thread-safe.
  * 
  * @author Matt Palmer
  */
@@ -109,7 +108,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      */
     @Override
     public final SingleByteMatcher getByteMatcherForPosition(int position) {
-        return (SingleByteMatcher) charMatchList[position];
+        return charMatchList[position];
     }
 
 

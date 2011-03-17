@@ -10,7 +10,8 @@ import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.reader.ByteReader;
 
 /**
- *
+ * An immutable class which matches ASCII text case sensitively.
+ * 
  * @author Matt Palmer
  */
 public final class CaseSensitiveStringMatcher implements SequenceMatcher {
@@ -19,10 +20,24 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     private final String caseSensitiveString;
     private final int length;
 
+    /**
+     * Constructs a case sensitive matcher for a given ASCII string.
+     *
+     * @param caseSensitiveASCIIString The ASCII string to match case sensitively.
+     */
     public CaseSensitiveStringMatcher(final String caseSensitiveASCIIString) {
         this(caseSensitiveASCIIString, 1);
     }
 
+
+    /**
+     * Constructs a case sensitive matcher for a number of repeated ASCII strings.
+     *
+     * @param caseSensitiveASCIIString The (repeated) ASCII string to match case sensitively.
+     * @param numberToRepeat The number of times to repeat the ASCII string.
+     * @throws IllegalArgumentException if the string is null or empty, or the
+     *         number to repeat is less than one.
+     */
     public CaseSensitiveStringMatcher(final String caseSensitiveASCIIString, final int numberToRepeat) {
         if (caseSensitiveASCIIString == null || caseSensitiveASCIIString.isEmpty()) {
             throw new IllegalArgumentException("Null or empty string passed in to CaseSensitiveStringMatcher.");
@@ -51,7 +66,10 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
         return builder.toString();
     }
 
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
         boolean result = true;
@@ -64,12 +82,18 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int length() {
         return length;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
         if (prettyPrint) {
@@ -79,12 +103,18 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final SingleByteMatcher getByteMatcherForPosition(int position) {
         return new ByteMatcher(byteArray[position]);
     }
 
-    
+    /**
+     *
+     * @return The string this matcher matches case sensitively.
+     */
     public String getCaseSensitiveString() {
         return caseSensitiveString;
     }

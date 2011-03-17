@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * An immutable sequence matcher which matches sequences of other sequence matchers.
+ * For example, we could have a sequence of bytes, followed by a case insensitive
+ * sequence, followed by a fixed gap.
+ * 
  * @author Matt Palmer
  */
 public final class CombinedSequenceMatcher implements SequenceMatcher {
@@ -20,19 +23,23 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     private final List<ByteMatcherIndex> byteMatcherForPosition = new ArrayList<ByteMatcherIndex>();
     private final int length;
 
-    private final class ByteMatcherIndex {
-        public final SequenceMatcher matcher;
-        public final int offset;
-        ByteMatcherIndex(final SequenceMatcher matcher, final int offset) {
-            this.matcher = matcher;
-            this.offset= offset;
-        }
-    }
-    
+
+    /**
+     * Constructs a CombinedSequenceMatcher from a list of {@link SequenceMatcher} objects.
+     *
+     * @param matchList A list of SequenceMatchers from which to construct this CombinedSequenceMatcher.
+     */
     public CombinedSequenceMatcher(final List<SequenceMatcher> matchList) {
         this(matchList, 1);
     }
 
+
+    /**
+     * Constructs a CombinedSequenceMatcher from a repeated list of {@link SequenceMatcher} objects.
+     * @param matchList  A list of (repeated) SequenceMatchers from which to construct this CombinedSequenceMatcher.
+     * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
+     * @throws IllegalArgumentException if the list is null or empty, or the number to repeat is less than one.
+     */
     public CombinedSequenceMatcher(final List<SequenceMatcher> matchList, final int numberOfRepeats) {
         if (matchList == null || matchList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
@@ -47,8 +54,11 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public final boolean matches(ByteReader reader, long matchFrom) {
+    public boolean matches(ByteReader reader, long matchFrom) {
         boolean result = true;
         long matchAt = matchFrom;
         final List<SequenceMatcher> localList=matchers;
@@ -65,14 +75,20 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public final int length() {
+    public int length() {
         return length;
     }
 
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public final String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
         for ( int matcherIndex = 0, lastMatcher = matchers.size();
             matcherIndex < lastMatcher; matcherIndex++ ) {
@@ -83,25 +99,38 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public final SingleByteMatcher getByteMatcherForPosition(int position) {
+    public SingleByteMatcher getByteMatcherForPosition(int position) {
         final ByteMatcherIndex index = byteMatcherForPosition.get(position);
         final SequenceMatcher matcher = index.matcher;
         return matcher.getByteMatcherForPosition(index.offset);
     }
 
 
+    /**
+     *
+     * @return The list of {@link SequenceMatcher} objects this combined matcher matches.
+     */
     public List<SequenceMatcher> getMatchers() {
         return matchers;
     }
 
+    /**
+     * Calculates an index of which {@link SequenceMatcher} to use at which
+     * position in the combined sequence matcher.
+     * 
+     * @return The length of the combined sequence matcher.
+     */
     private int calculatePositions() {
         int len = 0;
         for ( int seqIndex = 0, stop=matchers.size(); seqIndex < stop; seqIndex++ ) {
             final SequenceMatcher matcher = matchers.get(seqIndex);
             final int numberOfBytes = matcher.length();
             for (int matcherPos = 0; matcherPos < numberOfBytes; matcherPos++) {
-                ByteMatcherIndex index = new ByteMatcherIndex(matcher,matcherPos);
+                ByteMatcherIndex index = new ByteMatcherIndex(matcher, matcherPos);
                 byteMatcherForPosition.add(index);
             }
             len += numberOfBytes;
@@ -109,5 +138,18 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
         return len;
     }
 
+
+    /**
+     * A simple class to hold a SequenceMatcher and the offset into it for a
+     * given position in the CombinedSequenceMatcher.
+     */
+    private final class ByteMatcherIndex {
+        public final SequenceMatcher matcher;
+        public final int offset;
+        ByteMatcherIndex(final SequenceMatcher matcher, final int offset) {
+            this.matcher = matcher;
+            this.offset= offset;
+        }
+    }
 
 }
