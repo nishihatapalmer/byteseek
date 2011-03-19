@@ -282,7 +282,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testCountBytesMatchingAllBits() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -291,7 +291,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testCountBytesMatchingAnyBit() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -300,7 +300,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testGetBytesMatchingAllBitMask() {
-       
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -311,7 +311,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testToSet() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -320,7 +320,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testToArray() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -329,7 +329,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testGetAllByteValues() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -338,7 +338,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testGetBytesInRange() {
-       
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -347,7 +347,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testInvertedSet() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -358,7 +358,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testGetBitsInCommon() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -367,7 +367,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testGetBytesMatchingAnyBitMask() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
@@ -376,7 +376,7 @@ public class ByteUtilitiesTest {
      */
     @Test
     public void testByteToString() {
-        
+        //TODO: finish test
         fail("The test case is a prototype.");
     }
 
