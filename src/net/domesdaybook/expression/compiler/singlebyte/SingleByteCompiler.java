@@ -10,13 +10,14 @@ import net.domesdaybook.expression.compiler.AstCompiler;
 import net.domesdaybook.expression.parser.ParseException;
 import net.domesdaybook.expression.parser.ParseUtils;
 import net.domesdaybook.expression.parser.regularExpressionParser;
-import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
-import net.domesdaybook.matcher.singlebyte.AnyBitMaskMatcher;
-import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
+import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
+import net.domesdaybook.matcher.singlebyte.BitMaskAnyBitsMatcher;
+import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteSetMatcher;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
+import net.domesdaybook.matcher.singlebyte.SimpleSingleByteMatcherFactory;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
 import org.antlr.runtime.tree.CommonTree;
 
 /**
@@ -42,6 +43,16 @@ import org.antlr.runtime.tree.CommonTree;
  * @author matt
  */
 public final class SingleByteCompiler extends AstCompiler<SingleByteMatcher> {
+
+    private final SingleByteMatcherFactory matcherFactory;
+
+    public SingleByteCompiler() {
+        matcherFactory = new SimpleSingleByteMatcherFactory();
+    }
+    
+    public SingleByteCompiler(SingleByteMatcherFactory factoryToUse) {
+        matcherFactory = factoryToUse;
+    }
 
     /**
      * Compiles an abstract syntax tree provided by the {@link AstCompiler} class
@@ -85,34 +96,34 @@ public final class SingleByteCompiler extends AstCompiler<SingleByteMatcher> {
 
             case (regularExpressionParser.ALL_BITMASK): {
                 final byte bitmask = ParseUtils.getBitMaskValue(ast);
-                matcher = new AllBitMaskMatcher(bitmask);
+                matcher = new BitMaskAllBitsMatcher(bitmask);
                 break;
             }
 
 
             case (regularExpressionParser.ANY_BITMASK): {
                 final byte bitmask = ParseUtils.getBitMaskValue(ast);
-                matcher = new AnyBitMaskMatcher(bitmask);
+                matcher = new BitMaskAnyBitsMatcher(bitmask);
                 break;
             }
 
 
             case (regularExpressionParser.SET): {
                 final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-                matcher = ByteSetMatcher.buildOptimalMatcher(byteSet, false);
+                matcher = matcherFactory.create(byteSet, false);
                 break;
             }
 
 
             case (regularExpressionParser.INVERTED_SET): {
                 final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-                matcher = ByteSetMatcher.buildOptimalMatcher(byteSet, true);
+                matcher = matcherFactory.create(byteSet, true);
                 break;
             }
 
 
             case (regularExpressionParser.ANY): {
-                matcher = new AnyByteMatcher();
+                matcher = new AnyMatcher();
                 break;
             }
 
