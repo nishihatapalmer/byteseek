@@ -14,7 +14,7 @@ import net.domesdaybook.reader.ByteReader;
  * @author Matt Palmer
  *
  */
-public final class ByteSetRangeMatcher extends InvertibleMatcher implements SingleByteMatcher {
+public final class ByteRangeMatcher extends InvertibleMatcher implements SingleByteMatcher {
 
     private final static String ILLEGAL_ARGUMENTS = "Values must be between 0 and 255 inclusive: min=%d max=%d";
 
@@ -30,7 +30,7 @@ public final class ByteSetRangeMatcher extends InvertibleMatcher implements Sing
      * @param inverted If true, the matcher matches values outside the range given.
      * @throws {@link IllegalArgumentException} if the values are not between 0-255.
      */
-    public ByteSetRangeMatcher(final int minValue, final int maxValue, final boolean inverted) {
+    public ByteRangeMatcher(final int minValue, final int maxValue, final boolean inverted) {
         super(inverted);
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
         if (minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {

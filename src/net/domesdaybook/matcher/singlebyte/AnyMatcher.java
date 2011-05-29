@@ -12,16 +12,16 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public final class AnyByteMatcher implements SingleByteMatcher {
+public final class AnyMatcher implements SingleByteMatcher {
 
     // A static 256-element array containing all the bytes.
     private static final byte[] allBytes =  ByteUtilities.getAllByteValues();
 
 
     /**
-     * Constructs an immutable AnyByteMatcher.
+     * Constructs an immutable AnyMatcher.
      */
-    public AnyByteMatcher() {
+    public AnyMatcher() {
     }
 
 

@@ -14,17 +14,29 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public final class AllBitMaskMatcher implements SingleByteMatcher {
+public final class BitMaskAllBitsMatcher extends InvertibleMatcher implements SingleByteMatcher {
 
     final byte mBitMaskValue;
 
-
+    
     /**
-     * Constructs an immutable AllBitMaskMatcher.
+     * Constructs an immutable BitMaskAllBitsMatcher.
      *
      * @param bitMaskValue The bitmaskValue to match all of its bits against.
      */
-    public AllBitMaskMatcher(final byte bitMaskValue ) {
+    public BitMaskAllBitsMatcher(final byte bitMaskValue) {
+        super(false);
+        mBitMaskValue = bitMaskValue;
+    }
+
+    
+    /**
+     * Constructs an immutable BitMaskAllBitsMatcher.
+     *
+     * @param bitMaskValue The bitmaskValue to match all of its bits against.
+     */
+    public BitMaskAllBitsMatcher(final byte bitMaskValue, final boolean inverted) {
+        super(inverted);
         mBitMaskValue = bitMaskValue;
     }
 
@@ -44,7 +56,7 @@ public final class AllBitMaskMatcher implements SingleByteMatcher {
     @Override
     public boolean matches(final byte theByte) {
         final byte localbitmask = mBitMaskValue;
-        return (theByte & localbitmask ) == localbitmask;
+        return ((theByte & localbitmask ) == localbitmask) ^ inverted;
     }
     
 
@@ -53,7 +65,8 @@ public final class AllBitMaskMatcher implements SingleByteMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final String regEx = String.format("&%02x", (int) 0xFF & mBitMaskValue);
+        final String wrapper = inverted? "[^ &%02x]" : "&%02x";
+        final String regEx = String.format(wrapper, (int) 0xFF & mBitMaskValue);
         return prettyPrint ? " " + regEx + " " : regEx;
     }
 
