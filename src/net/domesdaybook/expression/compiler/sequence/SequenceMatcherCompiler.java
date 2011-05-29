@@ -19,12 +19,13 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
-import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
-import net.domesdaybook.matcher.singlebyte.AnyBitMaskMatcher;
-import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
+import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
+import net.domesdaybook.matcher.singlebyte.BitMaskAnyBitsMatcher;
+import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteSetMatcher;
+import net.domesdaybook.matcher.singlebyte.SimpleSingleByteMatcherFactory;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
 import org.antlr.runtime.tree.CommonTree;
 
 /**
@@ -53,6 +54,16 @@ import org.antlr.runtime.tree.CommonTree;
  * @author Matt Palmer
  */
 public final class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
+
+    private final SingleByteMatcherFactory matcherFactory;
+
+    public SequenceMatcherCompiler() {
+        matcherFactory = new SimpleSingleByteMatcherFactory();
+    }
+
+    public SequenceMatcherCompiler(SingleByteMatcherFactory factoryToUse) {
+        matcherFactory = factoryToUse;
+    }
 
 
     /**
@@ -329,24 +340,24 @@ public final class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> 
 
     private SingleByteMatcher getAllBitmaskMatcher(final CommonTree ast) {
         final byte bitmask = ParseUtils.getBitMaskValue(ast);
-        return new AllBitMaskMatcher(bitmask);
+        return new BitMaskAllBitsMatcher(bitmask);
     }
 
     
     private SingleByteMatcher getAnyBitmaskMatcher(final CommonTree ast) {
         final byte bitmask = ParseUtils.getBitMaskValue(ast);
-        return new AnyBitMaskMatcher(bitmask);
+        return new BitMaskAnyBitsMatcher(bitmask);
     }
 
 
     private SingleByteMatcher getSetMatcher(final CommonTree ast, final boolean negated) throws ParseException {
         final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-        return ByteSetMatcher.buildOptimalMatcher(byteSet, negated);
+        return matcherFactory.create(byteSet, negated);
     }
 
     
     private SingleByteMatcher getAnyByteMatcher(final CommonTree ast) {
-        return new AnyByteMatcher();
+        return new AnyMatcher();
     }
 
     
