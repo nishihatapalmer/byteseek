@@ -13,7 +13,7 @@ import net.domesdaybook.expression.parser.ParseException;
  *
  * @author Matt Palmer
  */
-public interface Compiler<T> {
+public interface Compiler<T,E> {
 
     /**
      * Compiles an expression into an object of type T.
@@ -22,6 +22,6 @@ public interface Compiler<T> {
      * @return An compiled object of type T.
      * @throws ParseException if the expression could not be parsed.
      */
-    public T compile(final String expression) throws ParseException;
+    public T compile(final E expression) throws ParseException;
 
 }
