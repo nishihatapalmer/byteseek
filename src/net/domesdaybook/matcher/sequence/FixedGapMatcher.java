@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
-import net.domesdaybook.matcher.singlebyte.AnyByteMatcher;
+import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.ByteReader;
 
@@ -22,7 +22,7 @@ import net.domesdaybook.reader.ByteReader;
  */
 public final class FixedGapMatcher implements SequenceMatcher {
 
-    private static final SingleByteMatcher ANY_MATCHER = new AnyByteMatcher();
+    private static final SingleByteMatcher ANY_MATCHER = new AnyMatcher();
 
     private final int gapLength;
 
