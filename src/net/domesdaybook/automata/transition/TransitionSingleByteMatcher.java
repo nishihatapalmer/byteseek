@@ -25,6 +25,12 @@ public class TransitionSingleByteMatcher implements Transition {
         this.matcher = matcher;
         this.toState = toState;
     }
+    
+    
+    public TransitionSingleByteMatcher(TransitionSingleByteMatcher other, final State toState) {
+        this.matcher = other.matcher;
+        this.toState = toState;
+    }
 
 
     @Override
@@ -40,12 +46,6 @@ public class TransitionSingleByteMatcher implements Transition {
 
 
     @Override
-    public void setToState(final State toState) {
-        this.toState = toState;
-    }
-
-
-    @Override
     public byte[] getBytes() {
         return matcher.getMatchingBytes();
     }
@@ -53,14 +53,14 @@ public class TransitionSingleByteMatcher implements Transition {
 
     @Override
     public TransitionSingleByteMatcher deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        TransitionSingleByteMatcher copy = (TransitionSingleByteMatcher) oldToNewObjects.get(this);
-        if (copy == null) {
-            copy = new TransitionSingleByteMatcher(matcher, toState);
-            oldToNewObjects.put(this, copy);
-            final State copyState = toState.deepCopy(oldToNewObjects);
-            copy.setToState(copyState);
+        TransitionSingleByteMatcher transitionCopy = (TransitionSingleByteMatcher) oldToNewObjects.get(this);
+        if (transitionCopy == null) {
+            oldToNewObjects.put(this, this); // put in a placeholder mapping to prevent an infinite loop.
+            final State copyState = (State) toState.deepCopy(oldToNewObjects);
+            transitionCopy = new TransitionSingleByteMatcher(this, copyState);
+            oldToNewObjects.put(this, transitionCopy); // now put the real transition in.
         }
-        return copy;
+        return transitionCopy;
     }
     
 

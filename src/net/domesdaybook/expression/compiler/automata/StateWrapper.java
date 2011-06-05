@@ -3,14 +3,14 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.nfa;
+package net.domesdaybook.expression.compiler.automata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.domesdaybook.automata.State;
 import net.domesdaybook.object.copy.DeepCopy;
-import net.domesdaybook.automata.nfa.NfaState;
 
 /**
  * A simple class which wraps the initial and final states of an automata.
@@ -24,8 +24,8 @@ import net.domesdaybook.automata.nfa.NfaState;
  */
 public final class StateWrapper implements DeepCopy {
 
-    NfaState initialState;
-    List<NfaState> finalStates = new ArrayList<NfaState>();
+    State initialState;
+    List<State> finalStates = new ArrayList<State>();
 
     /**
      * A method which makes a state final or not, and ensures that
@@ -34,7 +34,7 @@ public final class StateWrapper implements DeepCopy {
      * @param state the state to make final or not.
      * @param isFinal Whether the state should be final.
      */
-    public void setIsFinal(final NfaState state, final boolean isFinal) {
+    public void setIsFinal(final State state, final boolean isFinal) {
         state.setIsFinal(isFinal);
         if (isFinal) {
             if (!finalStates.contains(state)) {
@@ -73,14 +73,14 @@ public final class StateWrapper implements DeepCopy {
         if (initialState == null) {
             copy.initialState = null;
         } else {
-            copy.initialState = initialState.deepCopy(oldToNewObjects);
+            copy.initialState = (State) initialState.deepCopy(oldToNewObjects);
         }
         if (finalStates == null) {
             copy.finalStates = null;
         } else {
-            copy.finalStates = new ArrayList<NfaState>();
-            for (NfaState finalState : finalStates) {
-                final NfaState finalStateCopy = finalState.deepCopy(oldToNewObjects);
+            copy.finalStates = new ArrayList<State>();
+            for (State finalState : finalStates) {
+                final State finalStateCopy = (State) finalState.deepCopy(oldToNewObjects);
                 copy.finalStates.add(finalStateCopy);
             }
         }

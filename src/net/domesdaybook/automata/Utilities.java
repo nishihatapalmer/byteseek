@@ -6,9 +6,12 @@
 package net.domesdaybook.automata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A utility class to do useful things with automata states.
@@ -43,22 +46,63 @@ public class Utilities {
         }
     }
 
+    
+    public static void buildByteToStates(final State state, Map<Byte, Set<State>> byteToTargetStates) {
+        for (final Transition transition : state.getTransitions()) {
+            final State transitionToState = (State) transition.getToState();
+            final byte[] transitionBytes = transition.getBytes();
+            for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
+                final Byte transitionByte = transitionBytes[index];
+                Set<State> states = byteToTargetStates.get(transitionByte);
+                if (states == null) {
+                    states = new HashSet<State>();
+                    byteToTargetStates.put(transitionByte, states);
+                }
+                states.add(transitionToState);
+            }
+        }
+    }
 
+       
+    public static Map<Set<State>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State>> bytesToTargetStates) {
+        Map<Set<State>, Set<Byte>> statesToBytes = new HashMap<Set<State>, Set<Byte>>();
+
+        // For each byte there is a transition on:
+        for (final Byte transitionByte : bytesToTargetStates.keySet()) {
+
+            // Get the target states for that byte:
+            Set<State> targetStates = bytesToTargetStates.get(transitionByte);
+
+            // Get the set of bytes so far for those target states:
+            Set<Byte> targetStateBytes = statesToBytes.get(targetStates);
+            if (targetStateBytes == null) {
+                targetStateBytes = new TreeSet<Byte>();
+                statesToBytes.put(targetStates, targetStateBytes);
+            }
+            
+            // Add the transition byte to that set of bytes:
+            targetStateBytes.add(transitionByte);
+        }
+
+        return statesToBytes;
+    }
+    
     public static String toDot(final State initialState, final String title) {
         final StringBuilder builder = new StringBuilder();
         builder.append("digraph {\n");
         builder.append(String.format("label=\"%s\"\n", title));
-        Set<State> visitedStates = new HashSet<State>();
-        buildDot(initialState, visitedStates, builder);
+        Map<State,Integer> visitedStates = new HashMap<State,Integer>();
+        buildDot(initialState, visitedStates, 0, builder);
         builder.append("\n}");
         return builder.toString();
     }
 
 
-    private static void buildDot(State state, Set<State> visitedStates, StringBuilder builder) {
-        if (!visitedStates.contains(state)) {
-            visitedStates.add(state);
-            final String label = state.getLabel();
+    private static void buildDot(State state, Map<State,Integer> visitedStates, int lastStateNumber, StringBuilder builder) {
+        if (!visitedStates.containsKey(state)) {
+            int thisStateNumber = lastStateNumber + 1;
+            visitedStates.put(state, thisStateNumber);
+            final String label = Integer.toString(thisStateNumber);
             final String shape = state.isFinal() ? "doublecircle" : "circle";
             builder.append(String.format("%s [label=\"%s\", shape=\"%s\"]\n", label, label, shape));
 
@@ -66,8 +110,8 @@ public class Utilities {
             final List<Transition> transitions = state.getTransitions();
             for (Transition transition : transitions) {
                 final State toState = transition.getToState();
-                buildDot(toState, visitedStates, builder);
-                final String toStateLabel = toState.getLabel();
+                buildDot(toState, visitedStates, thisStateNumber, builder);
+                final String toStateLabel = Integer.toString(visitedStates.get(toState));
                 final String transitionLabel = transition.toString();
                 builder.append(String.format("%s->%s [label=\"%s\"]\n", label, toStateLabel,transitionLabel));
             }

@@ -5,6 +5,10 @@
 
 package net.domesdaybook.automata;
 
+import java.util.Collection;
+import net.domesdaybook.automata.transition.strategy.DFATransitionStrategy;
+import net.domesdaybook.automata.transition.strategy.NFATransitionStrategy;
+import net.domesdaybook.automata.transition.strategy.NoTransitionsStrategy;
 import net.domesdaybook.object.copy.DeepCopy;
 import java.util.List;
 import java.util.Map;
@@ -25,21 +29,51 @@ public interface State extends DeepCopy {
     //FIXME: replace these with an enum and wherever they are currently used.
     public static boolean FINAL = true;
     public static boolean NON_FINAL = false;
+    
+    public static final TransitionStrategy DFA_STATE_STRATEGY = new DFATransitionStrategy();
+    public static final TransitionStrategy NFA_STATE_STRATEGY = new NFATransitionStrategy();
+    public static final TransitionStrategy NO_TRANSITIONS = new NoTransitionsStrategy();
+    
+    /**
+     * 
+     * @param value The byte value to find the next states for.
+     * @param states A collection to which the next states (if any) will be added.
+     */
+    public void getStatesForByte(Collection<State> states, final byte value);
+
+    
+    /**
+     *
+     * @return true if this state is a final state.
+     */
+    public boolean isFinal();
 
 
     /**
      *
-     * @return The label of the state.
+     * @return A list of transitions from this state.
      */
-    public String getLabel();
+    public List<Transition> getTransitions();
 
-
+    
     /**
-     *
-     * @param label The label to give the state.
+     * 
+     * @param strategy Sets a transition strategy to use for this state.
      */
-    public void setLabel(final String label);
-
+    public void setTransitionStrategy(TransitionStrategy strategy);
+    
+    /**
+     * 
+     * @return The transition strategy used by this state.
+     */
+    public TransitionStrategy getTransitionStrategy();
+    
+   
+    /**
+     * 
+     * @param isFinal Whether the state is final or not.
+     */
+    public void setIsFinal(final boolean isFinal);
 
     /**
      *
@@ -54,21 +88,15 @@ public interface State extends DeepCopy {
      */
     public void addAllTransitions(final List<Transition> transitions);
 
-
+    
     /**
-     *
-     * @return A list of transitions from this state.
+     * 
+     * @param transition The transition to remove from this state.
      */
-    public List<Transition> getTransitions();
-
-
-    /**
-     *
-     * @return true if this state is a final state.
-     */
-    public boolean isFinal();
-
-
+    public void removeTransition(final Transition transition);    
+    
+    
+    
     /**
      * This is a convenience method, providing initial values to:
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>

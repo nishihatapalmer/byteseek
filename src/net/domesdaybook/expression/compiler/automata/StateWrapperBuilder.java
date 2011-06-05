@@ -3,10 +3,11 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.nfa;
+package net.domesdaybook.expression.compiler.automata;
 
 import java.util.List;
 import java.util.Set;
+import net.domesdaybook.automata.state.AbstractStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 
 /**
@@ -28,9 +29,9 @@ public interface StateWrapperBuilder {
     /**
      * Sets the {@link StateBuilder} to use when building states.
      *
-     * @param stateBuilder The {@link StateBuilder} to use to build states.
+     * @param stateFactory The {@link StateBuilder} to use to build states.
      */
-    public void setStateBuilder(final StateBuilder stateBuilder);
+    public void setStateFactory(final AbstractStateFactory stateFactory);
 
 
     /**

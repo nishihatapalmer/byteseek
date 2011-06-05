@@ -3,10 +3,11 @@
  *
  */
 
-package net.domesdaybook.automata.nfa;
+package net.domesdaybook.matcher.automata;
 
 import java.util.HashSet;
 import java.util.Set;
+import net.domesdaybook.automata.State;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.ByteReader;
 
@@ -16,10 +17,10 @@ import net.domesdaybook.reader.ByteReader;
  */
 public class NfaMatcher implements Matcher {
 
-    private NfaState firstState;
+    private State firstState;
 
 
-    public NfaMatcher(NfaState firstState) {
+    public NfaMatcher(State firstState) {
         this.firstState = firstState;
     }
     
@@ -27,7 +28,7 @@ public class NfaMatcher implements Matcher {
     @Override
     public final boolean matches(final ByteReader reader, final long fromPosition) {
         long currentPosition = fromPosition;
-        Set<NfaState> activeStates = new HashSet<NfaState>();
+        Set<State> activeStates = new HashSet<State>();
         activeStates.add(firstState);
         boolean matched = firstState.isFinal(); // almost all of them won't be.
         
@@ -37,10 +38,10 @@ public class NfaMatcher implements Matcher {
 
             // for each active state, check if it is a final state,
             // and get its next states given the current byte:
-            final Set<NfaState> nextStates = new HashSet<NfaState>();
-            for (NfaState state : activeStates ) {
+            final Set<State> nextStates = new HashSet<State>();
+            for (State state : activeStates ) {
                 matched = matched | state.isFinal();
-                nextStates.addAll(state.nextStates(currentByte));
+                state.getStatesForByte(nextStates, currentByte);
             }
 
             activeStates = nextStates;

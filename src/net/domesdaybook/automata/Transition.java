@@ -5,6 +5,7 @@
 
 package net.domesdaybook.automata;
 
+import java.util.Map;
 import net.domesdaybook.object.copy.DeepCopy;
 
 /**
@@ -17,9 +18,9 @@ public interface Transition extends DeepCopy {
 
     public State getToState();
 
-    public void setToState(final State toState);
-
     public byte[] getBytes();
+    
+    public Transition deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }
 

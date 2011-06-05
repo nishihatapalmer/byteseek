@@ -34,15 +34,16 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.nfa;
+package net.domesdaybook.expression.compiler.automata;
 
 import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.nfa.NfaState;
+import net.domesdaybook.automata.state.AbstractStateFactory;
 
 /**
  *
@@ -51,12 +52,12 @@ import net.domesdaybook.automata.nfa.NfaState;
 public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
      private TransitionFactory transitionFactory;
-     private StateBuilder stateBuilder;
+     private AbstractStateFactory stateFactory;
 
      
-     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, final StateBuilder builder) {
+     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, final AbstractStateFactory stateFactory) {
          this.transitionFactory = transitionFactory;
-         this.stateBuilder = builder;
+         this.stateFactory = stateFactory;
      }
 
 
@@ -67,8 +68,8 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      
 
      @Override
-     public void setStateBuilder(final StateBuilder stateBuilder) {
-         this.stateBuilder= stateBuilder;
+     public void setStateFactory(final AbstractStateFactory stateFactory) {
+         this.stateFactory= stateFactory;
      }
      
 
@@ -85,7 +86,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     */
      public StateWrapper buildSingleByteStates(final byte transitionByte) {
         final StateWrapper states = createInitialFinalStates();
-        final NfaState finalState = states.finalStates.get(0);
+        final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createByteTransition(transitionByte, finalState);
         states.initialState.addTransition(transition);
         return states;
@@ -107,7 +108,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     @Override
     public StateWrapper buildSetStates(final Set<Byte> byteSet, final boolean negated) {
         final StateWrapper states = createInitialFinalStates();
-        final NfaState finalState = states.finalStates.get(0);
+        final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createSetTransition(byteSet, negated, finalState);
         states.initialState.addTransition(transition);
         return states;
@@ -127,7 +128,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     @Override
     public StateWrapper buildAnyByteStates() {
         final StateWrapper states = createInitialFinalStates();
-        final NfaState finalState = states.finalStates.get(0);
+        final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAnyByteTransition(finalState);
         states.initialState.addTransition(transition);
         return states;
@@ -147,7 +148,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      */
     public StateWrapper buildAllBitmaskStates(final byte bitMask) {
         final StateWrapper states = createInitialFinalStates();
-        final NfaState finalState = states.finalStates.get(0);
+        final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAllBitmaskTransition(bitMask, finalState);
         states.initialState.addTransition(transition);
         return states;
@@ -167,7 +168,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      */
     public StateWrapper buildAnyBitmaskStates(final byte bitMask) {
         final StateWrapper states = createInitialFinalStates();
-        final NfaState finalState = states.finalStates.get(0);
+        final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAnyBitmaskTransition(bitMask, finalState);
         states.initialState.addTransition(transition);
         return states;
@@ -202,24 +203,24 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     public StateWrapper buildSequenceStates(final List<StateWrapper> sequenceStates) {
         // process the sequence of states joining final states to what the next initial
         // states have transitions to.
-        List<NfaState> finalSequenceStates = new ArrayList<NfaState>();
+        List<State> finalSequenceStates = new ArrayList<State>();
         for (int itemIndex = 1, stop = sequenceStates.size(); itemIndex < stop; itemIndex++) {
             final StateWrapper leftState = sequenceStates.get(itemIndex-1);
             final StateWrapper rightState = sequenceStates.get(itemIndex);
-            final NfaState initialStateToReplace = rightState.initialState;
+            final State initialStateToReplace = rightState.initialState;
             final List<Transition> transitionList = initialStateToReplace.getTransitions();
             final boolean initialStateIsFinal = initialStateToReplace.isFinal();
             finalSequenceStates.addAll(leftState.finalStates);
             // for each final state of the sequence,
             // add the initial transitions from the right hand side,
             // and set whether it is final or not based on the initial right hand state.
-            for (NfaState state : finalSequenceStates) {
+            for (State state : finalSequenceStates) {
                 state.addAllTransitions(transitionList);
                 state.setIsFinal(initialStateIsFinal);
             }
 
             if (!initialStateIsFinal) {
-                finalSequenceStates = new ArrayList<NfaState>();
+                finalSequenceStates = new ArrayList<State>();
             }
         }
 
@@ -264,12 +265,12 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         // transition into any of them from a single initial state.  
         // If any of the initial states being merged is final, then the final merged state is final.
         // Also build a list of the sum of all the final states in all the alternatives.
-        final List<NfaState> finalStates = new ArrayList<NfaState>();
-        NfaState initialState = stateBuilder.build(State.NON_FINAL);
+        final List<State> finalStates = new ArrayList<State>();
+        State initialState = stateFactory.create(State.NON_FINAL);
         boolean anyInitialStateIsFinal = false;
         for (int alternateIndex = 0, stop = alternateStates.size(); alternateIndex < stop; alternateIndex++) {
             final StateWrapper altStates = alternateStates.get(alternateIndex);
-            final NfaState alternateInitialState = altStates.initialState;
+            final State alternateInitialState = altStates.initialState;
             anyInitialStateIsFinal = anyInitialStateIsFinal | alternateInitialState.isFinal();
             initialState.addAllTransitions(alternateInitialState.getTransitions());
             finalStates.addAll(altStates.finalStates);
@@ -311,10 +312,10 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      */
     @Override
     public StateWrapper buildZeroToManyStates(final StateWrapper zeroToManyStates) {
-        final NfaState initialState = zeroToManyStates.initialState;
+        final State initialState = zeroToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
-        final List<NfaState> finalStates = zeroToManyStates.finalStates;
-        for (NfaState state : finalStates) {
+        final List<State> finalStates = zeroToManyStates.finalStates;
+        for (State state : finalStates) {
             state.addAllTransitions(intialTransitions);
         }
         zeroToManyStates.setIsFinal(initialState, State.FINAL);
@@ -346,10 +347,10 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      */
     @Override
     public StateWrapper buildOneToManyStates(final StateWrapper oneToManyStates) {
-        final NfaState initialState = oneToManyStates.initialState;
+        final State initialState = oneToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
-        final List<NfaState> finalStates = oneToManyStates.finalStates;
-        for (NfaState state : finalStates) {
+        final List<State> finalStates = oneToManyStates.finalStates;
+        for (State state : finalStates) {
             state.addAllTransitions(intialTransitions);
         }
         return oneToManyStates;
@@ -514,11 +515,11 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     @Override
     public StateWrapper buildCaseSensitiveStringStates(final String str) {
         final StateWrapper states = new StateWrapper();
-        final NfaState firstState = stateBuilder.build(State.NON_FINAL);
-        NfaState lastState = firstState;
+        final State firstState = stateFactory.create(State.NON_FINAL);
+        State lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
             final byte transitionByte = (byte) str.charAt(index);
-            final NfaState transitionToState = stateBuilder.build(State.NON_FINAL);
+            final State transitionToState = stateFactory.create(State.NON_FINAL);
             final Transition transition = transitionFactory.createByteTransition(transitionByte, transitionToState);
             lastState.addTransition(transition);
             lastState = transitionToState;
@@ -544,12 +545,12 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     @Override
     public StateWrapper buildCaseInsensitiveStringStates(final String str) {
         final StateWrapper states = new StateWrapper();
-        final NfaState firstState = stateBuilder.build(State.NON_FINAL);
-        NfaState lastState = firstState;
+        final State firstState = stateFactory.create(State.NON_FINAL);
+        State lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
             final char transitionChar = str.charAt(index);
             Transition transition;
-            final NfaState transitionToState = stateBuilder.build(State.NON_FINAL);
+            final State transitionToState = stateFactory.create(State.NON_FINAL);
             if ((transitionChar >= 'A' && transitionChar <= 'Z') ||
                 (transitionChar >= 'a' && transitionChar <= 'z')) {
                 transition = transitionFactory.createCaseInsensitiveByteTransition(transitionChar, transitionToState);
@@ -569,9 +570,9 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
     private StateWrapper createInitialFinalStates() {
         final StateWrapper states = new StateWrapper();
-        states.initialState = stateBuilder.build(State.NON_FINAL);
-        states.finalStates = new ArrayList<NfaState>();
-        states.finalStates.add(stateBuilder.build(State.FINAL));
+        states.initialState = stateFactory.create(State.NON_FINAL);
+        states.finalStates = new ArrayList<State>();
+        states.finalStates.add(stateFactory.create(State.FINAL));
         return states;
     }
 

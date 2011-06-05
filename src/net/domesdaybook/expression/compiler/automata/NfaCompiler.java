@@ -3,14 +3,16 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.nfa;
+package net.domesdaybook.expression.compiler.automata;
 
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.automata.nfa.NfaState;
+import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.state.AbstractStateFactory;
+import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.expression.compiler.AstCompiler;
 import net.domesdaybook.expression.parser.ParseException;
 import net.domesdaybook.expression.parser.ParseUtils;
@@ -27,7 +29,7 @@ import org.antlr.runtime.tree.CommonTree;
  * 
  * @author Matt Palmer
  */
-public final class NfaCompiler extends AstCompiler<NfaState> {
+public final class NfaCompiler extends AstCompiler<State> {
 
     private static final String MANY = "*";
     
@@ -38,13 +40,13 @@ public final class NfaCompiler extends AstCompiler<NfaState> {
      * {@link StateBuilder} and {@link StateWrapperBuilder} objects.
      *
      * By default, it uses the {@link TransitionSingleByteMatcherFactory} and
-     * the {@link SimpleStateBuilder} to make a {@link ChamparnaudGlushkovBuilder} to
+     * the {@link StateBuilder} to make a {@link ChamparnaudGlushkovBuilder} to
      * produce the NFA.
      */
     public NfaCompiler() {
         final TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
-        final StateBuilder stateBuilder = new SimpleStateBuilder();
-        stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateBuilder);
+        final AbstractStateFactory stateFactory = new SimpleStateFactory();
+        stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateFactory);
     }
 
     
@@ -77,12 +79,12 @@ public final class NfaCompiler extends AstCompiler<NfaState> {
      * It uses a {@link StateWrapperBuilder} object to build the actual automata,
      * returning only the initial state of the final automata.
      *
-     * @param ast The abstract syntax tree to compile the NfaState automata from.
+     * @param ast The abstract syntax tree to compile the State automata from.
      * @return An automata recognising the expression described by the abstract syntax tree.
      * @throws ParseException If the abstract syntax tree could not be parsed.
      */
     @Override
-    public NfaState compile(final CommonTree ast) throws ParseException {
+    public State compile(final CommonTree ast) throws ParseException {
        if (ast == null) {
            throw new ParseException("Null abstract syntax tree passed in to NfaCompiler.");
        }

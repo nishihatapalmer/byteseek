@@ -3,26 +3,26 @@
  *
  */
 
-package net.domesdaybook.matcher.sequence.searcher;
+package net.domesdaybook.searcher.sequence;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.searcher.Searcher;
 
 /**
- * NaiveSearcher searches for a sequence by trying for a match in each position.
+ * NaiveSequenceSearcher searches for a sequence by trying for a match in each position.
  * In its worst case, where no match is found, if the sequence is m bytes long,
  * and the bytes being searched are n bytes long, it will take O(n * m) to
  * determine there is no match.
  *
  * @author Matt Palmer
  */
-public final class NaiveSearcher extends SequenceMatcherSearcher {
+public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
 
     /**
      * {@inheritDoc}
      */
-    public NaiveSearcher(SequenceMatcher sequence) {
+    public NaiveSequenceSearcher(SequenceMatcher sequence) {
         super(sequence);
     }
 

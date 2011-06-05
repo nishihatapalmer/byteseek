@@ -8,7 +8,6 @@ package net.domesdaybook.automata.transition;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.nfa.NfaState;
 
 /**
  *
@@ -24,8 +23,8 @@ public interface TransitionFactory {
 
     public Transition createSetTransition(final Set<Byte> byteSet, final boolean negated, final State toState);
 
-    public Transition createAnyByteTransition(final NfaState toState);
+    public Transition createAnyByteTransition(final State toState);
 
-    public Transition createCaseInsensitiveByteTransition(final char Char, final NfaState toState);
+    public Transition createCaseInsensitiveByteTransition(final char Char, final State toState);
 
 }
