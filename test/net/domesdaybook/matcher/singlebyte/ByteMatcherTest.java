@@ -38,6 +38,10 @@ public class ByteMatcherTest {
                     assertEquals("no match", false, matcher.matches(nomatch));
                 }
             }
+            if (i % 32 == 0) {
+                String message = String.format("Matching byte %d", i);
+                SimpleTimer.timeMatcher(message, matcher);
+            }
         }
 
     }

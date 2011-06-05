@@ -5,7 +5,6 @@
 
 package net.domesdaybook.expression.compiler.sequence;
 
-import net.domesdaybook.matcher.singlebyte.AllBitMaskMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;

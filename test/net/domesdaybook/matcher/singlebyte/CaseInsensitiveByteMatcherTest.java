@@ -42,6 +42,10 @@ public class CaseInsensitiveByteMatcherTest {
             } else {
                 validateOnlyMatches(matcher, value);
             }
+            if (value % 8 == 0) {
+                final String message = String.format("Case insensitive byte value %c", value);
+                SimpleTimer.timeMatcher(message, matcher);
+            }
         }
     }
 

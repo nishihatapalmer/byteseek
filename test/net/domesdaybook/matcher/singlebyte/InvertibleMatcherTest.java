@@ -29,14 +29,14 @@ public class InvertibleMatcherTest {
     }
 
     /**
-     * Test of isInverted method, of class InvertibleMatcher.
+     * Test of isInverted method, of abstract class InvertibleMatcher.
      */
     @Test
     public void testIsInverted() {
-        InvertibleMatcher matcher = new InvertibleMatcherImpl(true);
+        InvertibleMatcher matcher = new InvertibleMatcherImpl(InvertibleMatcher.INVERTED);
         assertEquals(true, matcher.isInverted());
 
-        matcher = new InvertibleMatcherImpl(false);
+        matcher = new InvertibleMatcherImpl(InvertibleMatcher.NOT_INVERTED);
         assertEquals(false, matcher.isInverted());
     }
 

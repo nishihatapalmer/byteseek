@@ -87,6 +87,7 @@ public class Utilities {
         return statesToBytes;
     }
     
+    
     public static String toDot(final State initialState, final String title) {
         final StringBuilder builder = new StringBuilder();
         builder.append("digraph {\n");
@@ -98,11 +99,10 @@ public class Utilities {
     }
 
 
-    private static void buildDot(State state, Map<State,Integer> visitedStates, int lastStateNumber, StringBuilder builder) {
+    private static int buildDot(State state, Map<State,Integer> visitedStates, int nextStateNumber, StringBuilder builder) {
         if (!visitedStates.containsKey(state)) {
-            int thisStateNumber = lastStateNumber + 1;
-            visitedStates.put(state, thisStateNumber);
-            final String label = Integer.toString(thisStateNumber);
+            visitedStates.put(state, nextStateNumber);
+            final String label = Integer.toString(nextStateNumber);
             final String shape = state.isFinal() ? "doublecircle" : "circle";
             builder.append(String.format("%s [label=\"%s\", shape=\"%s\"]\n", label, label, shape));
 
@@ -110,12 +110,14 @@ public class Utilities {
             final List<Transition> transitions = state.getTransitions();
             for (Transition transition : transitions) {
                 final State toState = transition.getToState();
-                buildDot(toState, visitedStates, thisStateNumber, builder);
+                int processedNumber = buildDot(toState, visitedStates, nextStateNumber + 1, builder);
+                nextStateNumber = processedNumber > nextStateNumber? processedNumber : nextStateNumber;
                 final String toStateLabel = Integer.toString(visitedStates.get(toState));
                 final String transitionLabel = transition.toString();
                 builder.append(String.format("%s->%s [label=\"%s\"]\n", label, toStateLabel,transitionLabel));
             }
         }
+        return nextStateNumber;
     }
 
 

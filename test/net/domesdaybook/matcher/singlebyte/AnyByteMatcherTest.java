@@ -28,43 +28,44 @@ public class AnyByteMatcherTest {
     }
 
     /**
-     * Test of matches method, of class AnyByteMatcher.
+     * Test of matches method, of class AnyMatcher.
      */
     @Test
     public void testMatches_byte() {
         for (int count = 0; count < 256; count++) {
-            AnyByteMatcher matcher = new AnyByteMatcher();
+            AnyMatcher matcher = new AnyMatcher();
             String description = String.format("matches: 0x%02x", count);
             assertEquals(description, true, matcher.matches(b(count)));
         }
+        SimpleTimer.timeMatcher("AnyMatcher", new AnyMatcher());
     }
 
     /**
-     * Test of getMatchingBytes method, of class AnyByteMatcher.
+     * Test of getMatchingBytes method, of class AnyMatcher.
      */
     @Test
     public void testGetMatchingBytes() {
-       AnyByteMatcher matcher = new AnyByteMatcher();
+       AnyMatcher matcher = new AnyMatcher();
        byte[] allBytes = ByteUtilities.getAllByteValues();
        assertArrayEquals(allBytes, matcher.getMatchingBytes());
     }
 
     /**
-     * Test of toRegularExpression method, of class AnyByteMatcher.
+     * Test of toRegularExpression method, of class AnyMatcher.
      */
     @Test
     public void testToRegularExpression() {
-        AnyByteMatcher matcher = new AnyByteMatcher();
+        AnyMatcher matcher = new AnyMatcher();
         assertEquals(".", matcher.toRegularExpression(false));
     }
 
 
     /**
-     * Test of getNumberOfMatchingBytes method, of class AnyByteMatcher.
+     * Test of getNumberOfMatchingBytes method, of class AnyMatcher.
      */
     @Test
     public void testGetNumberOfMatchingBytes() {
-        AnyByteMatcher matcher = new AnyByteMatcher();
+        AnyMatcher matcher = new AnyMatcher();
         assertEquals(256, matcher.getNumberOfMatchingBytes());
     }
 
