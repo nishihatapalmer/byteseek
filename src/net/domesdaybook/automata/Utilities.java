@@ -91,7 +91,8 @@ public class Utilities {
     public static String toDot(final State initialState, final String title) {
         final StringBuilder builder = new StringBuilder();
         builder.append("digraph {\n");
-        builder.append(String.format("label=\"%s\"\n", title));
+        String onelineTitle = title.replaceAll("\\s", " ");
+        builder.append(String.format("label=\"%s\"\n", onelineTitle));
         Map<State,Integer> visitedStates = new HashMap<State,Integer>();
         buildDot(initialState, visitedStates, 0, builder);
         builder.append("\n}");
