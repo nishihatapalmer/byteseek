@@ -38,9 +38,8 @@ public final class ByteRangeMatcher extends InvertibleMatcher implements SingleB
             throw new IllegalArgumentException(error);
         }
         if (minValue > maxValue) {
-            final int tempValue = minValue;
             minByteValue = maxValue;
-            maxByteValue = tempValue;
+            maxByteValue = minValue;
         } else {
             minByteValue = minValue;
             maxByteValue = maxValue;
