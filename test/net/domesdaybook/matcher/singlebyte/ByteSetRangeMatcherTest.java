@@ -36,14 +36,6 @@ public class ByteSetRangeMatcherTest {
         }
     }
 
-    /**
-     * Test of toRegularExpression method, of class ByteRangeMatcher.
-     */
-    @Test
-    public void testToRegularExpression() {
-
-    }
-
     private void validateMatcher(ByteRangeMatcher matcher, int start, int end) {
         int startValue, endValue;
         if (start > end) {
@@ -53,6 +45,8 @@ public class ByteSetRangeMatcherTest {
             startValue = start;
             endValue = end;
         }
+        String regex = String.format("[%s%02x-%02x]", matcher.isInverted()? "^" : "", startValue, endValue);
+        assertEquals(regex, regex, matcher.toRegularExpression(false));
         String isInverted = matcher.isInverted()? "is" : "is not";
         int numberOfBytes = matcher.isInverted()? 255 - endValue + startValue : endValue - startValue + 1;
         assertEquals(String.format("Number of bytes for %d-%d, matcher %s inverted\t", start, end, isInverted), numberOfBytes, matcher.getNumberOfMatchingBytes());
