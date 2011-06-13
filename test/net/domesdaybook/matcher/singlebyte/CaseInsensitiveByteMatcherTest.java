@@ -1,11 +1,10 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.ByteReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

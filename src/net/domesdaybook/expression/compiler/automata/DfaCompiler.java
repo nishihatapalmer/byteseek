@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  */
 
 package net.domesdaybook.expression.compiler.automata;
@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.Utilities;
@@ -18,7 +17,6 @@ import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.expression.compiler.Compiler;
-import net.domesdaybook.expression.compiler.automata.NfaCompiler;
 import net.domesdaybook.expression.parser.ParseException;
 
 /**
