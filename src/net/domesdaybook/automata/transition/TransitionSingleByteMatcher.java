@@ -18,7 +18,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 public class TransitionSingleByteMatcher implements Transition {
 
     private final SingleByteMatcher matcher;
-    private State toState;
+    private final State toState;
 
 
     public TransitionSingleByteMatcher(final SingleByteMatcher matcher, final State toState) {
@@ -27,7 +27,7 @@ public class TransitionSingleByteMatcher implements Transition {
     }
     
     
-    public TransitionSingleByteMatcher(TransitionSingleByteMatcher other, final State toState) {
+    public TransitionSingleByteMatcher(final TransitionSingleByteMatcher other, final State toState) {
         this.matcher = other.matcher;
         this.toState = toState;
     }
