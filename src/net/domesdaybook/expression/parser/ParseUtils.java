@@ -5,7 +5,7 @@
 
 package net.domesdaybook.expression.parser;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import org.antlr.runtime.tree.CommonTree;
@@ -130,7 +130,7 @@ public class ParseUtils {
      * @param cumulativeSet The set of cumulative bytes so far.
      */
     public static Set<Byte> calculateSetValue(final CommonTree node) throws ParseException {
-        final Set<Byte> setValues = new HashSet<Byte>();
+        final Set<Byte> setValues = new LinkedHashSet<Byte>(320);
         for (int childIndex = 0, stop = node.getChildCount(); childIndex < stop; childIndex++) {
             final CommonTree childNode = (CommonTree) node.getChild(childIndex);
             switch (childNode.getType()) {
@@ -240,7 +240,7 @@ public class ParseUtils {
      * @return The inverse of the set of bytes passed in.
      */
     public static Set<Byte> inverseOf(final Set<Byte> byteSet) {
-        final Set<Byte> inverseSet = new HashSet<Byte>();
+        final Set<Byte> inverseSet = new LinkedHashSet<Byte>();
         for (int value = 0; value < 256; value++) {
             if (!byteSet.contains((byte) value)) {
                 inverseSet.add((byte) value);
