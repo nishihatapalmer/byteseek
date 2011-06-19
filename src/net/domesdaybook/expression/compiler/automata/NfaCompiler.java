@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.state.AbstractStateFactory;
+import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.expression.compiler.AstCompiler;
 import net.domesdaybook.expression.parser.ParseException;
@@ -45,7 +45,7 @@ public final class NfaCompiler extends AstCompiler<State> {
      */
     public NfaCompiler() {
         final TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
-        final AbstractStateFactory stateFactory = new SimpleStateFactory();
+        final StateFactory stateFactory = new SimpleStateFactory();
         stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateFactory);
     }
 

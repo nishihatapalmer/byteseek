@@ -6,7 +6,7 @@
 package net.domesdaybook.expression.compiler.automata;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.domesdaybook.automata.State;
@@ -55,7 +55,7 @@ public final class StateWrapper implements DeepCopy {
      * @return A deep copy of this object and its wrapped automata.
      */
     public StateWrapper deepCopy() {
-        final Map<DeepCopy, DeepCopy> oldToNewObjects = new HashMap<DeepCopy, DeepCopy>();
+        final Map<DeepCopy, DeepCopy> oldToNewObjects = new IdentityHashMap<DeepCopy, DeepCopy>();
         return deepCopy(oldToNewObjects);
     }    
 

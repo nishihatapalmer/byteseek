@@ -7,7 +7,7 @@ package net.domesdaybook.expression.compiler.automata;
 
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.automata.state.AbstractStateFactory;
+import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 
 /**
@@ -31,7 +31,7 @@ public interface StateWrapperBuilder {
      *
      * @param stateFactory The {@link StateBuilder} to use to build states.
      */
-    public void setStateFactory(final AbstractStateFactory stateFactory);
+    public void setStateFactory(final StateFactory stateFactory);
 
 
     /**

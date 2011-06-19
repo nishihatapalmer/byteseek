@@ -7,12 +7,14 @@ package net.domesdaybook.expression.compiler.automata;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.Utilities;
-import net.domesdaybook.automata.state.AbstractStateFactory;
+import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
@@ -26,14 +28,14 @@ import net.domesdaybook.expression.parser.ParseException;
 public final class DfaCompiler implements Compiler<State, String> {
 
     private final Compiler<State, String> nfaCompiler;
-    private final AbstractStateFactory StateFactory;
+    private final StateFactory StateFactory;
     private final TransitionFactory transitionFactory;
     
     public DfaCompiler() {
         this(null, null, null);
     }
 
-    public DfaCompiler(AbstractStateFactory StateFactory) {
+    public DfaCompiler(StateFactory StateFactory) {
         this(null, StateFactory, null);
     }
 
@@ -41,7 +43,7 @@ public final class DfaCompiler implements Compiler<State, String> {
         this(nfaCompilerToUse, null, null);
     }
 
-    public DfaCompiler(Compiler<State, String> nfaCompilerToUse, AbstractStateFactory StateFactoryToUse, TransitionFactory factoryToUse) {
+    public DfaCompiler(Compiler<State, String> nfaCompilerToUse, StateFactory StateFactoryToUse, TransitionFactory factoryToUse) {
         if (nfaCompilerToUse == null) {
             nfaCompiler = new NfaCompiler();
         } else {
@@ -67,7 +69,7 @@ public final class DfaCompiler implements Compiler<State, String> {
 
 
     public State compile(State nfaToTransform) {
-        Map<Set<State>, State> nfaToDfa = new HashMap<Set<State>, State>();
+        Map<Set<State>, State> nfaToDfa = new IdentityHashMap<Set<State>, State>();
         Set<State> initialState = new HashSet<State>();
         initialState.add(nfaToTransform);
         return getState(initialState, nfaToDfa);
@@ -137,7 +139,7 @@ public final class DfaCompiler implements Compiler<State, String> {
    
 
    private Map<Byte, Set<State>> buildByteToStates(final Set<State> states) {
-        Map<Byte, Set<State>> byteToTargetStates = new HashMap<Byte, Set<State>>();
+        Map<Byte, Set<State>> byteToTargetStates = new LinkedHashMap<Byte, Set<State>>();
         for (final State state : states) {
             Utilities.buildByteToStates(state, byteToTargetStates);
         }

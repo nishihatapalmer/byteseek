@@ -43,7 +43,7 @@ import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.state.AbstractStateFactory;
+import net.domesdaybook.automata.state.StateFactory;
 
 /**
  *
@@ -52,10 +52,10 @@ import net.domesdaybook.automata.state.AbstractStateFactory;
 public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
      private TransitionFactory transitionFactory;
-     private AbstractStateFactory stateFactory;
+     private StateFactory stateFactory;
 
      
-     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, final AbstractStateFactory stateFactory) {
+     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
          this.transitionFactory = transitionFactory;
          this.stateFactory = stateFactory;
      }
@@ -68,7 +68,7 @@ public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      
 
      @Override
-     public void setStateFactory(final AbstractStateFactory stateFactory) {
+     public void setStateFactory(final StateFactory stateFactory) {
          this.stateFactory= stateFactory;
      }
      
