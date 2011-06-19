@@ -11,7 +11,7 @@ import net.domesdaybook.automata.State;
  *
  * @author matt
  */
-public class SimpleStateFactory implements AbstractStateFactory {
+public class SimpleStateFactory implements StateFactory {
 
     @Override
     public State create(boolean isFinal) {

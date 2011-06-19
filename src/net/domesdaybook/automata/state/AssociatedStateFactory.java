@@ -1,17 +1,17 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
- *
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package net.domesdaybook.automata.state;
 
-import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.AssociatedState;
 
 /**
  *
  * @author matt
  */
-public interface AbstractStateFactory {
+public interface AssociatedStateFactory<T> {
+
     
     /**
      * Builds an {@link NfaState} object.
@@ -19,6 +19,6 @@ public interface AbstractStateFactory {
      * @param isFinal Whether the state is final or not.
      * @return An object implementing the NfaState interface.
      */
-    public State create(final boolean isFinal);    
+    public AssociatedState<T> create(final boolean isFinal);       
     
 }
