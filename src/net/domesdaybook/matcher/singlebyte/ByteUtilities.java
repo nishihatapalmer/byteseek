@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.singlebyte;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -115,7 +115,7 @@ public class ByteUtilities {
      * @return A list of bytes matching the bitmask.
      */
     public static List<Byte> getBytesMatchingAllBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>();
+        final List<Byte> bytes = new ArrayList<Byte>(128);
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) == bitMask) {
@@ -132,7 +132,7 @@ public class ByteUtilities {
 
 
     public static Set<Byte> toSet(final byte[] bytes) {
-        Set<Byte> setOfBytes = new HashSet<Byte>();
+        Set<Byte> setOfBytes = new LinkedHashSet<Byte>((int) Math.round(bytes.length * 1.25));
         final int size = bytes.length;
         for (int count = 0; count < size; count++) {
             setOfBytes.add(bytes[count]);
@@ -167,7 +167,7 @@ public class ByteUtilities {
     
     
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
-        Set<Byte> invertedSet = new HashSet<Byte>();
+        Set<Byte> invertedSet = new LinkedHashSet<Byte>(320);
         for (int value = 0; value < 256; value++) {
             if (!bytes.contains((byte) value)) {
                 invertedSet.add((byte) value);
@@ -196,7 +196,7 @@ public class ByteUtilities {
                 // by that bitmask.
                 final byte mask = (byte) bitsInCommon;
                 if (setSize == countBytesMatchingAllBits(mask)) {
-                    allBitMask = new Byte(mask);
+                    allBitMask = Byte.valueOf(mask);
                 }
             }
         }
@@ -225,7 +225,7 @@ public class ByteUtilities {
             if (possibleAnyMask > 0) {
                 final byte mask = (byte) possibleAnyMask;
                 if (setSize == countBytesMatchingAnyBit(mask)) {
-                    anyBitMask = new Byte(mask);
+                    anyBitMask = Byte.valueOf(mask);
                 }
             }
         }
@@ -320,7 +320,7 @@ public class ByteUtilities {
      * @return A list of all the bytes matching the any bitmask.
      */
     public static List<Byte> getBytesMatchingAnyBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>();
+        final List<Byte> bytes = new ArrayList<Byte>(256);
         // start loop at one - any bitmask matchers can never match the zero byte.
         for (int byteIndex = 1; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
