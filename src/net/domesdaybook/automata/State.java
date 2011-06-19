@@ -75,6 +75,8 @@ public interface State extends DeepCopy {
      */
     public void setIsFinal(final boolean isFinal);
 
+    
+    
     /**
      *
      * @param transition A transition to add to this state.

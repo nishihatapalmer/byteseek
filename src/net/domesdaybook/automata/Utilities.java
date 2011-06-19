@@ -6,8 +6,8 @@
 package net.domesdaybook.automata;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,13 +65,13 @@ public class Utilities {
 
        
     public static Map<Set<State>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State>> bytesToTargetStates) {
-        Map<Set<State>, Set<Byte>> statesToBytes = new HashMap<Set<State>, Set<Byte>>();
+        Map<Set<State>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State>, Set<Byte>>();
 
         // For each byte there is a transition on:
-        for (final Byte transitionByte : bytesToTargetStates.keySet()) {
+        for (final Map.Entry<Byte, Set<State>> transitionByte : bytesToTargetStates.entrySet()) {
 
             // Get the target states for that byte:
-            Set<State> targetStates = bytesToTargetStates.get(transitionByte);
+            Set<State> targetStates = transitionByte.getValue();
 
             // Get the set of bytes so far for those target states:
             Set<Byte> targetStateBytes = statesToBytes.get(targetStates);
@@ -81,7 +81,7 @@ public class Utilities {
             }
             
             // Add the transition byte to that set of bytes:
-            targetStateBytes.add(transitionByte);
+            targetStateBytes.add(transitionByte.getKey());
         }
 
         return statesToBytes;
@@ -93,7 +93,7 @@ public class Utilities {
         builder.append("digraph {\n");
         String onelineTitle = title.replaceAll("\\s", " ");
         builder.append(String.format("label=\"%s\"\n", onelineTitle));
-        Map<State,Integer> visitedStates = new HashMap<State,Integer>();
+        Map<State,Integer> visitedStates = new IdentityHashMap<State,Integer>();
         buildDot(initialState, visitedStates, 0, builder);
         builder.append("\n}");
         return builder.toString();
