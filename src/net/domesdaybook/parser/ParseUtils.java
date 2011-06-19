@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.parser;
+package net.domesdaybook.parser;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.parser;
+package net.domesdaybook.parser;
 
 /**
  * A checked exception class representing the failure to parse an expression.

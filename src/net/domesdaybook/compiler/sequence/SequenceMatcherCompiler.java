@@ -3,15 +3,15 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.sequence;
+package net.domesdaybook.compiler.sequence;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.expression.compiler.AstCompiler;
-import net.domesdaybook.expression.parser.ParseException;
-import net.domesdaybook.expression.parser.ParseUtils;
-import net.domesdaybook.expression.parser.regularExpressionParser;
+import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.ParseUtils;
+import net.domesdaybook.parser.regularExpressionParser;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;

@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.automata;
+package net.domesdaybook.compiler.automata;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,8 +18,8 @@ import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
-import net.domesdaybook.expression.compiler.Compiler;
-import net.domesdaybook.expression.parser.ParseException;
+import net.domesdaybook.compiler.Compiler;
+import net.domesdaybook.parser.ParseException;
 
 /**
  *

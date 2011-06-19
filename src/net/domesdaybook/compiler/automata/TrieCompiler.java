@@ -4,7 +4,7 @@
  */
 
 
-package net.domesdaybook.expression.compiler.automata;
+package net.domesdaybook.compiler.automata;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,8 +19,8 @@ import net.domesdaybook.automata.state.SimpleAssociatedStateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
-import net.domesdaybook.expression.compiler.Compiler;
-import net.domesdaybook.expression.parser.ParseException;
+import net.domesdaybook.compiler.Compiler;
+import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;

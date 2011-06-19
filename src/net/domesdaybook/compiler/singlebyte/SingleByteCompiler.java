@@ -3,13 +3,13 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.singlebyte;
+package net.domesdaybook.compiler.singlebyte;
 
 import java.util.Set;
-import net.domesdaybook.expression.compiler.AstCompiler;
-import net.domesdaybook.expression.parser.ParseException;
-import net.domesdaybook.expression.parser.ParseUtils;
-import net.domesdaybook.expression.parser.regularExpressionParser;
+import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.ParseUtils;
+import net.domesdaybook.parser.regularExpressionParser;
 import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskAnyBitsMatcher;
 import net.domesdaybook.matcher.singlebyte.AnyMatcher;

@@ -5,10 +5,11 @@
 
 package net.domesdaybook.expression.compiler.sequence;
 
+import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
-import net.domesdaybook.expression.parser.ParseException;
+import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;

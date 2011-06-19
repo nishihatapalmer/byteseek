@@ -1,6 +1,6 @@
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g 2011-01-01 11:39:31
 
-	package net.domesdaybook.expression.parser;
+	package net.domesdaybook.parser;
 
 
 import org.antlr.runtime.*;

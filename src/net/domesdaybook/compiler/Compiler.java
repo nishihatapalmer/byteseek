@@ -3,9 +3,9 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.compiler;
 
-import net.domesdaybook.expression.parser.ParseException;
+import net.domesdaybook.parser.ParseException;
 
 /**
  * An interface for compilers which compile a regular expression

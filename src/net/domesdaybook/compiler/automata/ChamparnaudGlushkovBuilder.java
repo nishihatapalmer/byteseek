@@ -34,7 +34,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.automata;
+package net.domesdaybook.compiler.automata;
 
 import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;

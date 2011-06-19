@@ -3,10 +3,10 @@
  *
  */
 
-package net.domesdaybook.expression.compiler;
+package net.domesdaybook.compiler;
 
-import net.domesdaybook.expression.parser.AstParser;
-import net.domesdaybook.expression.parser.ParseException;
+import net.domesdaybook.parser.AstParser;
+import net.domesdaybook.parser.ParseException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 

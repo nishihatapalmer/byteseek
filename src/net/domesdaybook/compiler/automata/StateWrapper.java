@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.automata;
+package net.domesdaybook.compiler.automata;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;

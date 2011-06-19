@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.parser;
+package net.domesdaybook.parser;
 
 import java.util.ArrayList;
 import java.util.List;

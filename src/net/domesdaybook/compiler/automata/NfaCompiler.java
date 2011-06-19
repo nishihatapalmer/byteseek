@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.automata;
+package net.domesdaybook.compiler.automata;
 
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
@@ -13,10 +13,10 @@ import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
-import net.domesdaybook.expression.compiler.AstCompiler;
-import net.domesdaybook.expression.parser.ParseException;
-import net.domesdaybook.expression.parser.ParseUtils;
-import net.domesdaybook.expression.parser.regularExpressionParser;
+import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.ParseUtils;
+import net.domesdaybook.parser.regularExpressionParser;
 import org.antlr.runtime.tree.CommonTree;
 
 /**

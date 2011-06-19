@@ -4,13 +4,13 @@
  */
 
 
-package net.domesdaybook.expression.compiler.multisequence;
+package net.domesdaybook.compiler.multisequence;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.domesdaybook.expression.compiler.Compiler;
-import net.domesdaybook.expression.compiler.sequence.SequenceMatcherCompiler;
-import net.domesdaybook.expression.parser.ParseException;
+import net.domesdaybook.compiler.Compiler;
+import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
+import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
