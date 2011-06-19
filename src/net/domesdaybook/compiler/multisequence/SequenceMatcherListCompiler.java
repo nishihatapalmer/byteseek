@@ -8,9 +8,9 @@ package net.domesdaybook.compiler.multisequence;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
 import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
-import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
@@ -20,7 +20,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 public class SequenceMatcherListCompiler implements Compiler<List<SequenceMatcher>, List<String>> {
 
     @Override
-    public List<SequenceMatcher> compile(List<String> expressions) throws ParseException {
+    public List<SequenceMatcher> compile(List<String> expressions) throws CompileException {
         List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
         SequenceMatcherCompiler sequenceCompiler = new SequenceMatcherCompiler();
         for (String expression : expressions) {

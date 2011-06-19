@@ -5,6 +5,8 @@
 
 package net.domesdaybook.compiler.automata;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseUtils;
 import net.domesdaybook.parser.regularExpressionParser;
@@ -81,22 +84,22 @@ public final class NfaCompiler extends AstCompiler<State> {
      *
      * @param ast The abstract syntax tree to compile the State automata from.
      * @return An automata recognising the expression described by the abstract syntax tree.
-     * @throws ParseException If the abstract syntax tree could not be parsed.
+     * @throws CompileException If the abstract syntax tree could not be parsed.
      */
     @Override
-    public State compile(final CommonTree ast) throws ParseException {
+    public State compile(final CommonTree ast) throws CompileException {
        if (ast == null) {
-           throw new ParseException("Null abstract syntax tree passed in to NfaCompiler.");
+           throw new CompileException("Null abstract syntax tree passed in to NfaCompiler.");
        }
        try {
            return buildAutomata(ast).initialState;
         } catch (IllegalArgumentException e) {
-            throw new ParseException(e);
+            throw new CompileException(e);
         }
     }
 
 
-    private StateWrapper buildAutomata(final CommonTree ast) throws ParseException {
+    private StateWrapper buildAutomata(final CommonTree ast) throws CompileException {
 
         StateWrapper states = null;
 
@@ -190,16 +193,24 @@ public final class NfaCompiler extends AstCompiler<State> {
 
 
             case (regularExpressionParser.SET): {
-                final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-                states = stateWrapperBuilder.buildSetStates(byteSet,false);
-                break;
+                try {
+                    final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
+                    states = stateWrapperBuilder.buildSetStates(byteSet,false);
+                    break;
+                } catch (ParseException ex) {
+                    throw new CompileException(ex);
+                }
             }
 
 
             case (regularExpressionParser.INVERTED_SET): {
-                final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-                states = stateWrapperBuilder.buildSetStates(byteSet, true);
-                break;
+                try {
+                    final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
+                    states = stateWrapperBuilder.buildSetStates(byteSet, true);
+                    break;
+                } catch (ParseException ex) {
+                    throw new CompileException(ex);
+                }
             }
 
             case (regularExpressionParser.ANY): {
@@ -222,7 +233,7 @@ public final class NfaCompiler extends AstCompiler<State> {
             }
 
             default: {
-                throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
+                throw new CompileException(ParseUtils.getTypeErrorMessage(ast));
             }
         }
         return states;

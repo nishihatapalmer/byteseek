@@ -5,7 +5,6 @@
 
 package net.domesdaybook.compiler;
 
-import net.domesdaybook.parser.ParseException;
 
 /**
  * An interface for compilers which compile a regular expression
@@ -22,6 +21,6 @@ public interface Compiler<T,E> {
      * @return An compiled object of type T.
      * @throws ParseException if the expression could not be parsed.
      */
-    public T compile(final E expression) throws ParseException;
+    public T compile(final E expression) throws CompileException;
 
 }

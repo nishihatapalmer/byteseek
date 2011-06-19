@@ -5,7 +5,6 @@
 
 package net.domesdaybook.compiler.automata;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -18,8 +17,8 @@ import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
-import net.domesdaybook.parser.ParseException;
 
 /**
  *
@@ -62,7 +61,8 @@ public final class DfaCompiler implements Compiler<State, String> {
     }
 
 
-    public State compile(String expression) throws ParseException {
+    @Override
+    public State compile(String expression) throws CompileException {
         State initialState = nfaCompiler.compile(expression);
         return compile(initialState);
     }

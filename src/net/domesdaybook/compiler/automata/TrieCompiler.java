@@ -16,9 +16,9 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.state.AssociatedStateFactory;
 import net.domesdaybook.automata.state.SimpleAssociatedStateFactory;
-import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -66,7 +66,7 @@ public class TrieCompiler implements Compiler<AssociatedState<SequenceMatcher>, 
     }
     
     @Override
-    public AssociatedState<SequenceMatcher> compile(List<SequenceMatcher> sequences) throws ParseException {
+    public AssociatedState<SequenceMatcher> compile(List<SequenceMatcher> sequences) throws CompileException {
         AssociatedState<SequenceMatcher> initialState = stateFactory.create(State.NON_FINAL);
         for (SequenceMatcher sequence : sequences) {
             addSequence(sequence, initialState);
