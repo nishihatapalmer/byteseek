@@ -17,8 +17,14 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  *
  * @author matt
  */
-public class SequenceMatcherListCompiler implements Compiler<List<SequenceMatcher>, List<String>> {
+public final class SequenceMatcherListCompiler implements Compiler<List<SequenceMatcher>, List<String>> {
 
+    private static SequenceMatcherListCompiler compiler = new SequenceMatcherListCompiler();
+    
+    public static List<SequenceMatcher> build(List<String> expressions) throws CompileException {
+        return compiler.compile(expressions);
+    }
+    
     @Override
     public List<SequenceMatcher> compile(List<String> expressions) throws CompileException {
         List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();

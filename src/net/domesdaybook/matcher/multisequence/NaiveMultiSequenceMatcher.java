@@ -27,12 +27,11 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
 
 
     @Override
-    public SequenceMatcher matchingSequenceAt(ByteReader reader, long matchPosition) {
-        SequenceMatcher result = null;
+    public List<SequenceMatcher> matchingSequencesAt(ByteReader reader, long matchPosition) {
+        List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         for (SequenceMatcher sequence : matchers) {
             if (sequence.matches(reader, matchPosition)) {
-                result = sequence;
-                break;
+                result.add(sequence);
             }
         }
         return result;
@@ -41,7 +40,7 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
 
     @Override
     public boolean matches(ByteReader reader, long matchPosition) {
-        return matchingSequenceAt(reader, matchPosition) != null;
+        return !matchingSequencesAt(reader, matchPosition).isEmpty();
     }
     
 }

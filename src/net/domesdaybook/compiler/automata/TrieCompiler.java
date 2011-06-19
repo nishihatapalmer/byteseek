@@ -20,7 +20,6 @@ import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
-import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;

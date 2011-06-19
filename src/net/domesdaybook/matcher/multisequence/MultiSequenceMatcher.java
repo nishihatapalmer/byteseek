@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.multisequence;
 
+import java.util.Collection;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
@@ -18,12 +19,13 @@ import net.domesdaybook.reader.ByteReader;
 public interface MultiSequenceMatcher extends Matcher {
 
     /**
-     * Returns the SequenceMatcher object which matched, or null if none matched.
+     * Returns the SequenceMatcher objects which matched.
+     * Should never return null - always returns a collection, even if empty.
      *
      * @param reader The {@link ByteReader} to read from.
      * @param matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher matchingSequenceAt(final ByteReader reader, final long matchPosition);
+    Collection<SequenceMatcher> matchingSequencesAt(final ByteReader reader, final long matchPosition);
 
 }
