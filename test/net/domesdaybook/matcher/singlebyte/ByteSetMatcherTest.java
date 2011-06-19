@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -36,12 +36,12 @@ public class ByteSetMatcherTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyBitSetMatcher() {
-        ByteSetBitSetMatcher matcher = new ByteSetBitSetMatcher(new HashSet<Byte>(), false);
+        ByteSetBitSetMatcher matcher = new ByteSetBitSetMatcher(new LinkedHashSet<Byte>(), false);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyBinarySearchMatcher() {
-        ByteSetBinarySearchMatcher matcher = new ByteSetBinarySearchMatcher(new HashSet<Byte>(), false);
+        ByteSetBinarySearchMatcher matcher = new ByteSetBinarySearchMatcher(new LinkedHashSet<Byte>(), false);
     }    
     
 
