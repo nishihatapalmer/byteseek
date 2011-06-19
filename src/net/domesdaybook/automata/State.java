@@ -6,9 +6,9 @@
 package net.domesdaybook.automata;
 
 import java.util.Collection;
-import net.domesdaybook.automata.transition.strategy.DFATransitionStrategy;
-import net.domesdaybook.automata.transition.strategy.NFATransitionStrategy;
-import net.domesdaybook.automata.transition.strategy.NoTransitionsStrategy;
+import net.domesdaybook.automata.transition.DFATransitionStrategy;
+import net.domesdaybook.automata.transition.NFATransitionStrategy;
+import net.domesdaybook.automata.transition.NoTransitionsStrategy;
 import net.domesdaybook.object.copy.DeepCopy;
 import java.util.List;
 import java.util.Map;
