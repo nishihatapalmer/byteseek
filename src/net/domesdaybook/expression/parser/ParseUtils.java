@@ -240,7 +240,7 @@ public class ParseUtils {
      * @return The inverse of the set of bytes passed in.
      */
     public static Set<Byte> inverseOf(final Set<Byte> byteSet) {
-        final Set<Byte> inverseSet = new LinkedHashSet<Byte>();
+        final Set<Byte> inverseSet = new LinkedHashSet<Byte>(320);
         for (int value = 0; value < 256; value++) {
             if (!byteSet.contains((byte) value)) {
                 inverseSet.add((byte) value);
