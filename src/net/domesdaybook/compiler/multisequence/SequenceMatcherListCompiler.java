@@ -19,11 +19,12 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  */
 public final class SequenceMatcherListCompiler implements Compiler<List<SequenceMatcher>, List<String>> {
 
-    private static SequenceMatcherListCompiler compiler = new SequenceMatcherListCompiler();
-    
-    public static List<SequenceMatcher> build(List<String> expressions) throws CompileException {
-        return compiler.compile(expressions);
+    private static SequenceMatcherListCompiler defaultCompiler;
+    public static List<SequenceMatcher> sequenceMatchersFrom(List<String> expressions) throws CompileException {
+        defaultCompiler = new SequenceMatcherListCompiler();
+        return defaultCompiler.compile(expressions);
     }
+    
     
     @Override
     public List<SequenceMatcher> compile(List<String> expressions) throws CompileException {

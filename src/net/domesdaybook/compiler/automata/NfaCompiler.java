@@ -5,8 +5,6 @@
 
 package net.domesdaybook.compiler.automata;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
@@ -34,6 +32,12 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public final class NfaCompiler extends AstCompiler<State> {
 
+    private static NfaCompiler defaultCompiler;
+    public static State nfaFrom(String expression) throws CompileException {
+        defaultCompiler = new NfaCompiler();
+        return defaultCompiler.compile(expression);
+    }    
+    
     private static final String MANY = "*";
     
     private StateWrapperBuilder stateWrapperBuilder;

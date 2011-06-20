@@ -36,6 +36,12 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  */
 public class TrieCompiler implements Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> {
 
+    private static TrieCompiler defaultCompiler;
+    public static AssociatedState<SequenceMatcher> trieFrom(List<SequenceMatcher> sequences) throws CompileException {
+        defaultCompiler = new TrieCompiler();
+        return defaultCompiler.compile(sequences);
+    }
+    
     private AssociatedStateFactory<SequenceMatcher> stateFactory;
     private TransitionFactory transitionFactory;
     

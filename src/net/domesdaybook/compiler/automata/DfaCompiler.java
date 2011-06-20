@@ -26,6 +26,13 @@ import net.domesdaybook.compiler.Compiler;
  */
 public final class DfaCompiler implements Compiler<State, String> {
 
+    private static DfaCompiler defaultCompiler;
+    public static State dfaFrom(String expression) throws CompileException {
+        defaultCompiler = new DfaCompiler();
+        return defaultCompiler.compile(expression);
+    }
+    
+    
     private final Compiler<State, String> nfaCompiler;
     private final StateFactory StateFactory;
     private final TransitionFactory transitionFactory;

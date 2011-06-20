@@ -31,7 +31,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     @Override
     public List<SequenceMatcher> matchingSequencesAt(final ByteReader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
-        List<State> currentStates = new ArrayList<State>();
+        final List<State> currentStates = new ArrayList<State>();
         currentStates.add(initialTrieState);
         long currentPosition = matchPosition;
         while (!currentStates.isEmpty()) {

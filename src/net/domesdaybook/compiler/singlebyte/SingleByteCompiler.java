@@ -45,6 +45,12 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public final class SingleByteCompiler extends AstCompiler<SingleByteMatcher> {
 
+    private static SingleByteCompiler defaultCompiler;
+    public SingleByteMatcher matcherFrom(String expression) throws CompileException {
+        defaultCompiler = new SingleByteCompiler();
+        return defaultCompiler.compile(expression);
+    }
+    
     private final SingleByteMatcherFactory matcherFactory;
 
     public SingleByteCompiler() {
