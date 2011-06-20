@@ -16,7 +16,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  *
  * @author matt
  */
-public class TrieMatcherCompiler implements Compiler<TrieMatcher, List<SequenceMatcher>> {
+public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<SequenceMatcher>> {
 
     private static TrieMatcherCompiler defaultCompiler;
     public static TrieMatcher trieMatcherFrom(List<SequenceMatcher> expression) throws CompileException {
