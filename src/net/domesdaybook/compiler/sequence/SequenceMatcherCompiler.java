@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseUtils;
 import net.domesdaybook.parser.regularExpressionParser;
@@ -55,6 +56,12 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public final class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> {
 
+    private static SequenceMatcherCompiler defaultCompiler;
+    public static SequenceMatcher sequenceMatcherFrom(final String expression) throws CompileException {
+        defaultCompiler = new SequenceMatcherCompiler();
+        return defaultCompiler.compile(expression);
+    }
+    
     private final SingleByteMatcherFactory matcherFactory;
 
     public SequenceMatcherCompiler() {
@@ -75,14 +82,16 @@ public final class SequenceMatcherCompiler extends AstCompiler<SequenceMatcher> 
      * @throws ParseException If the ast could not be parsed.
      */
     @Override
-    public SequenceMatcher compile(final CommonTree ast) throws ParseException {
+    public SequenceMatcher compile(final CommonTree ast) throws CompileException {
         if (ast == null) {
-            throw new ParseException("Null abstract syntax tree passed in to SequenceMatcherCompiler.");
+            throw new CompileException("Null abstract syntax tree passed in to SequenceMatcherCompiler.");
         }
         try {
             return buildSequence(ast);
         } catch (IllegalArgumentException e) {
-            throw new ParseException(e);
+            throw new CompileException(e);
+        } catch (ParseException ex) {
+            throw new CompileException(ex);
         }
     }
 

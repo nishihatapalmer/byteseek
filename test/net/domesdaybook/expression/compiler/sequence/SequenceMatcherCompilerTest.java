@@ -5,6 +5,7 @@
 
 package net.domesdaybook.expression.compiler.sequence;
 
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
@@ -41,18 +42,18 @@ public class SequenceMatcherCompilerTest {
     }
 
 
-    @Test(expected=ParseException.class)
-    public void testCompileNullExpression() throws ParseException {
+    @Test(expected=CompileException.class)
+    public void testCompileNullExpression() throws CompileException {
         compiler.compile((String) null);
     }
 
-    @Test(expected=ParseException.class)
-    public void testCompileEmptyExpression() throws ParseException {
+    @Test(expected=CompileException.class)
+    public void testCompileEmptyExpression() throws CompileException {
         compiler.compile("");
     }
     
-    @Test(expected=ParseException.class)
-    public void testCompileNullAST() throws ParseException {
+    @Test(expected=CompileException.class)
+    public void testCompileNullAST() throws CompileException {
         compiler.compile((CommonTree) null);
     }
 
@@ -113,7 +114,7 @@ public class SequenceMatcherCompilerTest {
             matcher = compiler.compile(expression);
             assertEquals("length of " + expression, length, matcher.length());
             assertEquals("class of " + expression, matcherClass, matcher.getClass());
-        } catch (ParseException ex) {
+        } catch (CompileException ex) {
             fail(expression + " " + ex.getMessage());
         }
         return matcher;

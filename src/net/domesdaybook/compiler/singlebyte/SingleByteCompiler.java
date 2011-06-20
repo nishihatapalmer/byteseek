@@ -7,6 +7,7 @@ package net.domesdaybook.compiler.singlebyte;
 
 import java.util.Set;
 import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseUtils;
 import net.domesdaybook.parser.regularExpressionParser;
@@ -63,14 +64,16 @@ public final class SingleByteCompiler extends AstCompiler<SingleByteMatcher> {
      * @throws ParseException If the ast could not be parsed.
      */
     @Override
-    public SingleByteMatcher compile(CommonTree ast) throws ParseException {
+    public SingleByteMatcher compile(CommonTree ast) throws CompileException {
         if (ast == null) {
-            throw new ParseException("Null abstract syntax tree passed in to SingleByteCompiler.");
+            throw new CompileException("Null abstract syntax tree passed in to SingleByteCompiler.");
         }
         try {
             return buildSingleByte(ast);
         } catch (IllegalArgumentException e) {
-            throw new ParseException(e);
+            throw new CompileException(e);
+        } catch (ParseException ex) {
+            throw new CompileException(ex);
         }
     }
 
