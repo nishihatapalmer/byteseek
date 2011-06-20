@@ -7,8 +7,6 @@ package net.domesdaybook.compiler.automata;
 
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.automata.state.StateFactory;
-import net.domesdaybook.automata.transition.TransitionFactory;
 
 /**
  * An interface for classes which build automata, 
@@ -17,22 +15,6 @@ import net.domesdaybook.automata.transition.TransitionFactory;
  * @author Matt Palmer
  */
 public interface StateWrapperBuilder {
-
-    /**
-     * Sets the {@link TransitionFactory} to use when building transitions.
-     *
-     * @param transitionFactory The {@link TransitionFactory} to use to build transitions.
-     */
-    public void setTransitionFactory(final TransitionFactory transitionFactory);
-
-    
-    /**
-     * Sets the {@link StateBuilder} to use when building states.
-     *
-     * @param stateFactory The {@link StateBuilder} to use to build states.
-     */
-    public void setStateFactory(final StateFactory stateFactory);
-
 
     /**
      * Builds a simple automata with a transition on a single byte value.

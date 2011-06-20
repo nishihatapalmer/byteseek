@@ -41,35 +41,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
+import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.state.StateFactory;
+import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 
 /**
  *
  * @author Matt Palmer
  */
-public class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
+public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
-     private TransitionFactory transitionFactory;
-     private StateFactory stateFactory;
+     private final TransitionFactory transitionFactory;
+     private final StateFactory stateFactory;
 
+     public ChamparnaudGlushkovBuilder() {
+         this(null, null);
+     }
+     
+     public ChamparnaudGlushkovBuilder(final StateFactory stateFactory) {
+         this(null, stateFactory);
+     }
+         
+         
+     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory) {
+         this(transitionFactory,null);
+     }
      
      public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
-         this.transitionFactory = transitionFactory;
-         this.stateFactory = stateFactory;
-     }
-
-
-     @Override
-     public void setTransitionFactory(final TransitionFactory transitionFactory) {
-         this.transitionFactory = transitionFactory;
-     }
-     
-
-     @Override
-     public void setStateFactory(final StateFactory stateFactory) {
-         this.stateFactory= stateFactory;
+         if (transitionFactory == null) {
+             this.transitionFactory = new TransitionSingleByteMatcherFactory();
+         } else {
+             this.transitionFactory = transitionFactory;
+         }
+         if (stateFactory == null) {
+             this.stateFactory = new SimpleStateFactory();
+         } else {
+            this.stateFactory = stateFactory;   
+         }
      }
      
 

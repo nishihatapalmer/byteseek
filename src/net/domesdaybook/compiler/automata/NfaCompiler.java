@@ -51,9 +51,7 @@ public final class NfaCompiler extends AstCompiler<State> {
      * produce the NFA.
      */
     public NfaCompiler() {
-        final TransitionFactory transitionFactory = new TransitionSingleByteMatcherFactory();
-        final StateFactory stateFactory = new SimpleStateFactory();
-        stateWrapperBuilder = new ChamparnaudGlushkovBuilder(transitionFactory, stateFactory);
+        stateWrapperBuilder = new ChamparnaudGlushkovBuilder();
     }
 
     

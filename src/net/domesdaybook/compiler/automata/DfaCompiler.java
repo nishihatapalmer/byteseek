@@ -41,12 +41,24 @@ public final class DfaCompiler implements Compiler<State, String> {
         this(null, null, null);
     }
 
-    public DfaCompiler(StateFactory StateFactory) {
-        this(null, StateFactory, null);
+    public DfaCompiler(final StateFactory stateFactory) {
+        this(null, stateFactory, null);
     }
 
-    public DfaCompiler(Compiler<State, String> nfaCompilerToUse) {
+    public DfaCompiler(final TransitionFactory transitionFactory) {
+        this(null, null, transitionFactory);
+    }
+    
+    public DfaCompiler(final Compiler<State, String> nfaCompilerToUse) {
         this(nfaCompilerToUse, null, null);
+    }
+    
+    public DfaCompiler(final Compiler<State, String> nfaCompilerToUse, final StateFactory stateFactory) { 
+        this(nfaCompilerToUse, stateFactory, null);
+    }
+    
+    public DfaCompiler(final Compiler<State, String> nfaCompilerToUse, final TransitionFactory transitionFactory) {
+        this(nfaCompilerToUse, null, transitionFactory);
     }
 
     public DfaCompiler(Compiler<State, String> nfaCompilerToUse, StateFactory StateFactoryToUse, TransitionFactory factoryToUse) {
@@ -152,9 +164,6 @@ public final class DfaCompiler implements Compiler<State, String> {
         }
         return byteToTargetStates;
     }
-
-
-
 
 
     private boolean anyStatesAreFinal(Set<State> sourceStates) {
