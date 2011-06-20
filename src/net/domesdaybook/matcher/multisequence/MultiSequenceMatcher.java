@@ -26,6 +26,6 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    Collection<SequenceMatcher> matchingSequencesAt(final ByteReader reader, final long matchPosition);
+    Collection<SequenceMatcher> matchingSequences(final ByteReader reader, final long matchPosition);
 
 }

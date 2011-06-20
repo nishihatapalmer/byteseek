@@ -29,7 +29,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
 
 
     @Override
-    public List<SequenceMatcher> matchingSequencesAt(final ByteReader reader, final long matchPosition) {
+    public List<SequenceMatcher> matchingSequences(final ByteReader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final List<State> currentStates = new ArrayList<State>();
         currentStates.add(initialTrieState);
@@ -52,7 +52,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     
     @Override
     public boolean matches(final ByteReader reader, final long matchPosition) {
-        return !matchingSequencesAt(reader, matchPosition).isEmpty();
+        return !matchingSequences(reader, matchPosition).isEmpty();
     }
 
 }
