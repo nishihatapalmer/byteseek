@@ -26,7 +26,7 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<Seq
     }
     
     
-    final Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> compiler;
+    private final Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> compiler;
    
     
     public TrieMatcherCompiler() {

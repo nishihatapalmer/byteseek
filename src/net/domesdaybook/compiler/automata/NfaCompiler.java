@@ -40,7 +40,7 @@ public final class NfaCompiler extends AstCompiler<State> {
     
     private static final String MANY = "*";
     
-    private StateWrapperBuilder stateWrapperBuilder;
+    private final StateWrapperBuilder stateWrapperBuilder;
 
     /**
      * Constructs an NfaCompiler, using default {@link TransitionFactory},
@@ -67,15 +67,6 @@ public final class NfaCompiler extends AstCompiler<State> {
         this.stateWrapperBuilder = stateWrapperBuilder;
     }
 
-
-    /**
-     * Sets the {@link StateWrapperBuilder} object to use to construct the NFA.
-     *
-     * @param stateWrapperBuilder The StateWrapperBuilder object to use to construct the NFA.
-     */
-    public void setStateWrapperBuilder(final StateWrapperBuilder stateWrapperBuilder) {
-        this.stateWrapperBuilder = stateWrapperBuilder;
-    }
     
 
     /**
