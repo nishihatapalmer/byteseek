@@ -19,13 +19,23 @@ import net.domesdaybook.reader.ByteReader;
 public interface MultiSequenceMatcher extends Matcher {
 
     /**
-     * Returns the SequenceMatcher objects which matched.
+     * Returns all the SequenceMatcher objects which matched.
      * Should never return null - always returns a collection, even if empty.
      *
      * @param reader The {@link ByteReader} to read from.
      * @param matchPosition The position to test for a match.
+     * @return A collection of matching SequenceMatchers or an empty collection if none matched.
+     */
+    Collection<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition);
+
+    
+    /**
+     * Returns the first matching sequence, or null if no sequence matched.
+     * 
+     * @param reader The {@link ByteReader} to read from.
+     * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    Collection<SequenceMatcher> matchingSequences(final ByteReader reader, final long matchPosition);
-
+    SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition);
+    
 }

@@ -29,7 +29,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
 
 
     @Override
-    public List<SequenceMatcher> matchingSequences(final ByteReader reader, final long matchPosition) {
+    public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final List<State> currentStates = new ArrayList<State>();
         currentStates.add(initialTrieState);
@@ -38,7 +38,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
             final State currentState = currentStates.get(0);
             currentStates.clear();
             final byte currentByte = reader.readByte(currentPosition++);
-            currentState.getStatesForByte(currentStates, currentByte);
+            currentState.appendNextStatesForByte(currentStates, currentByte);
             for (State state : currentStates) {
                 if (state.isFinal()) {
                     final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
@@ -51,8 +51,29 @@ public final class TrieMatcher implements MultiSequenceMatcher {
 
     
     @Override
+    public SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition) {
+        final List<State> currentStates = new ArrayList<State>();
+        currentStates.add(initialTrieState);
+        long currentPosition = matchPosition;
+        while (!currentStates.isEmpty()) {
+            final State currentState = currentStates.get(0);
+            currentStates.clear();
+            final byte currentByte = reader.readByte(currentPosition++);
+            currentState.appendNextStatesForByte(currentStates, currentByte);
+            for (State state : currentStates) {
+                if (state.isFinal()) {
+                    final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
+                    return trieState.getAssociations().iterator().next();
+                }
+            }
+        }
+        return null;
+    }
+    
+    
+    @Override
     public boolean matches(final ByteReader reader, final long matchPosition) {
-        return !matchingSequences(reader, matchPosition).isEmpty();
+        return anyMatch(reader, matchPosition) != null;
     }
 
 }
