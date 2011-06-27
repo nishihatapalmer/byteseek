@@ -39,7 +39,7 @@ public interface State extends DeepCopy {
      * @param value The byte value to find the next states for.
      * @param states A collection to which the next states (if any) will be added.
      */
-    public void getStatesForByte(Collection<State> states, final byte value);
+    public void appendNextStatesForByte(Collection<State> states, final byte value);
 
     
     /**
