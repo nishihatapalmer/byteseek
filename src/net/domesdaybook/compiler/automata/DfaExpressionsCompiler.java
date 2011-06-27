@@ -36,7 +36,7 @@ public class DfaExpressionsCompiler implements Compiler<State, List<String>> {
             this.multiNfaCompiler = multiNfaCompilerToUse;
         }
         if (dfaCompilerToUse == null) {
-            this.dfaCompiler = new DfaFromNfaCompiler();
+            this.dfaCompiler = new DfaNfaSubsetCompiler();
         } else {
             this.dfaCompiler = dfaCompilerToUse;
         }
