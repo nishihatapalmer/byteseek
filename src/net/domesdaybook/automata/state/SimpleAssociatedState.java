@@ -65,7 +65,7 @@ public class SimpleAssociatedState<T> implements AssociatedState {
     
     
     @Override
-    public void getStatesForByte(Collection<State> states, byte value) {
+    public void appendNextStatesForByte(Collection<State> states, byte value) {
         transitionStrategy.getDistinctStatesForByte(states, value, transitions);
     }
 
