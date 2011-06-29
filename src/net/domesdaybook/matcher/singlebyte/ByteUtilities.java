@@ -149,6 +149,15 @@ public class ByteUtilities {
         }
         return result;
     }
+    
+    
+    public static int[] toIntArray(final byte[] bytes) {
+        int[] integers = new int[bytes.length];
+        for (int index = 0; index < bytes.length; index++) {
+            integers[index] = (int) bytes[index] & 0xFF;
+        }
+        return integers;
+    }
 
 
     public static byte[] getAllByteValues() {

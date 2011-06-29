@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Set;
 import net.domesdaybook.reader.ByteReader;
 
+//FIXME: signed bytes causes issue in ByteUtilities.toString()
+
 /**
  * A ByteSetBinarySearchMatcher is a {@link SingleByteMatcher which
  * uses a binary search to determine whether a given byte is in the
@@ -93,14 +95,16 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
             regularExpression.append("^");
         }
         int byteIndex = 0;
-        while (byteIndex < bytes.length) {
-            int byteValue = (int) bytes[byteIndex];
+        int[] integers = ByteUtilities.toIntArray(bytes);
+        Arrays.sort(integers);
+        while (byteIndex < integers.length) {
+            int byteValue = integers[byteIndex];
 
             // Look for ranges of values from this position:
             int lastValue = byteValue;
             int searchIndex;
-            for (searchIndex = byteIndex + 1; searchIndex < bytes.length; searchIndex++) {
-                int nextValue = (int) bytes[byteIndex];
+            for (searchIndex = byteIndex + 1; searchIndex < integers.length; searchIndex++) {
+                int nextValue = integers[byteIndex];
                 if (nextValue == lastValue+1) {
                     lastValue = nextValue;
                 } else {
