@@ -132,7 +132,7 @@ public class ByteUtilities {
 
 
     public static Set<Byte> toSet(final byte[] bytes) {
-        Set<Byte> setOfBytes = new LinkedHashSet<Byte>((int) Math.round(bytes.length * 1.25));
+        final Set<Byte> setOfBytes = new LinkedHashSet<Byte>((int) Math.round(bytes.length * 1.25));
         final int size = bytes.length;
         for (int count = 0; count < size; count++) {
             setOfBytes.add(bytes[count]);
