@@ -152,7 +152,7 @@ public class ByteUtilities {
     
     
     public static int[] toIntArray(final byte[] bytes) {
-        int[] integers = new int[bytes.length];
+        final int[] integers = new int[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
             integers[index] = (int) bytes[index] & 0xFF;
         }
