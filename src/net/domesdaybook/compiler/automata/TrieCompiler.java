@@ -7,6 +7,7 @@
 package net.domesdaybook.compiler.automata;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -28,10 +29,6 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 /**
  * Compiles a list of sequence matchers into a Trie automata.
  * 
- * Note: Relies on the State returning a defensive copy of its Transition list
- *       Transitions are added and removed from the State while iterating
- *       over the list returned by State.getTransitiona();
- *    
  * @author matt
  */
 public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> {
@@ -41,22 +38,27 @@ public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatc
         defaultCompiler = new TrieCompiler();
         return defaultCompiler.compile(sequences);
     }
+
     
     private final AssociatedStateFactory<SequenceMatcher> stateFactory;
     private final TransitionFactory transitionFactory;
     
+
     public TrieCompiler() {
         this(null, null);
     }
+
     
     public TrieCompiler(AssociatedStateFactory<SequenceMatcher> stateFactory) {
         this(stateFactory, null);
     }
-    
+
+   
     public TrieCompiler(TransitionFactory transitionFactory) {
         this(null, transitionFactory);
     }
-    
+   
+
     public TrieCompiler(AssociatedStateFactory<SequenceMatcher> stateFactory, TransitionFactory transitionFactory) {
         if (stateFactory == null) {
             this.stateFactory = new SimpleAssociatedStateFactory<SequenceMatcher>();
@@ -69,6 +71,7 @@ public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatc
             this.transitionFactory = transitionFactory;
         }
     }
+
     
     @Override
     public AssociatedState<SequenceMatcher> compile(List<SequenceMatcher> sequences) throws CompileException {
@@ -96,62 +99,62 @@ public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatc
     
     private List<AssociatedState<SequenceMatcher>> nextStates(List<AssociatedState<SequenceMatcher>> currentStates, SingleByteMatcher bytes, boolean isFinal) {
         final List<AssociatedState<SequenceMatcher>> nextStates = new ArrayList<AssociatedState<SequenceMatcher>>();
-        final Set<Byte> bytesToTransitionOn = ByteUtilities.toSet(bytes.getMatchingBytes());
+        final Set<Byte> allBytesToTransitionOn = ByteUtilities.toSet(bytes.getMatchingBytes());
         for (final State currentState : currentStates) {
-            
-            for (final Transition transition : currentState.getTransitions()) {
+            // make a defensive copy of the transitions of the current state:
+            final List<Transition> transitions = new ArrayList<Transition>(currentState.getTransitions());
+            final Set<Byte> bytesToTransitionOn = new HashSet<Byte>(allBytesToTransitionOn);
+            for (final Transition transition : transitions) {
                 
-                final Set<Byte> currentTransitionBytes = ByteUtilities.toSet(transition.getBytes());
-                final int currentTransitionBytesSize = currentTransitionBytes.size();
-                final Set<Byte> bytesInCommon = subtract(currentTransitionBytes, bytesToTransitionOn);
+                final Set<Byte> originalTransitionBytes = ByteUtilities.toSet(transition.getBytes());
+                final int originalTransitionBytesSize = originalTransitionBytes.size();
+                final Set<Byte> bytesInCommon = subtract(originalTransitionBytes, bytesToTransitionOn);
                 
                 // If the existing transition is the same or a subset of the new transition bytes:
                 final int numberOfBytesInCommon = bytesInCommon.size();
-                if (numberOfBytesInCommon == currentTransitionBytesSize) {
+                if (numberOfBytesInCommon == originalTransitionBytesSize) {
                     
                     final State toState = transition.getToState();
-                    nextStates.add((AssociatedState<SequenceMatcher>) toState);
                     
-                    // Ensure if we are final, the next state is too.
+                    // Ensure that the state is final if necessary:
                     if (isFinal) {
                         toState.setIsFinal(true);
                     }
                     
-                    // If we have no further bytes to process, just break out.
-                    final int numberOfBytesLeft = bytesToTransitionOn.size();
-                    if (numberOfBytesLeft == 0) {
-                        break;
-                    }
+                    // Add this state to the states we have to process next.
+                    nextStates.add((AssociatedState<SequenceMatcher>) toState);
+                    
                 } else if (numberOfBytesInCommon > 0) {
                     // Only some bytes are in common.  
-                    // We will have to split the existing transition and the
-                    // state it points to.
-                    final State toState = transition.getToState();
-                    
-                    // Add a transition for the bytes in common:
-                    Transition bytesInCommonTransition = transitionFactory.createSetTransition(bytesInCommon, false, toState);
-                    currentState.addTransition(bytesInCommonTransition);
-                    nextStates.add((AssociatedState<SequenceMatcher>) toState);
-                    
-                    // Ensure if we are final, the next state is too.
+                    // We will have to split the existing transition to
+                    // two states, and recreate the transitions to them:
+                    final State originalToState = transition.getToState();
                     if (isFinal) {
-                        toState.setIsFinal(true);
+                        originalToState.setIsFinal(true);
                     }
+                    final State newToState = originalToState.deepCopy();                    
                     
-                    // Add a transition for the bytes not in common to a new state:
-                    final State newState = toState.deepCopy();
-                    Transition bytesRemainingTransition = transitionFactory.createSetTransition(currentTransitionBytes, false, newState);
-                    currentState.addTransition(bytesRemainingTransition);
+                    // Add a transition to the bytes which are not in common:
+                    final Transition bytesNotInCommonTransition = transitionFactory.createSetTransition(originalTransitionBytes, false, originalToState);
+                    currentState.addTransition(bytesNotInCommonTransition);
                     
-                    // Remove the original transition from the current state.
+                    // Add a transition to the bytes in common:
+                    final Transition bytesInCommonTransition = transitionFactory.createSetTransition(bytesInCommon, false, newToState);
+                    currentState.addTransition(bytesInCommonTransition);
+                   
+                    // Add the bytes in common state to the next states to process:
+                    nextStates.add((AssociatedState<SequenceMatcher>) newToState);
+                    
+                    // Clean up and optimise the current state:
                     currentState.removeTransition(transition);
-                    
-                    // If we have no further bytes to process, just break out.
-                    final int numberOfBytesLeft = bytesToTransitionOn.size();
-                    if (numberOfBytesLeft == 0) {
-                        break;
-                    }
+                    currentState.setTransitionStrategy(State.DFA_STATE_STRATEGY);
                 }
+                
+                // If we have no further bytes to process, just break out.
+                final int numberOfBytesLeft = bytesToTransitionOn.size();
+                if (numberOfBytesLeft == 0) {
+                    break;
+                }                
             }
             
             // If there are any bytes left over, create a transition to a new state:
@@ -171,7 +174,7 @@ public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatc
     
     private Set<Byte> subtract(final Set<Byte> bytes, final Set<Byte> fromSet) {
         final Set<Byte> bytesInCommon = new LinkedHashSet<Byte>();
-        Iterator<Byte> byteIterator = bytes.iterator();
+        final Iterator<Byte> byteIterator = bytes.iterator();
         while (byteIterator.hasNext()) {
             final Byte theByte = byteIterator.next();
             if (fromSet.remove(theByte)) {
