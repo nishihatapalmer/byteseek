@@ -151,6 +151,16 @@ public class ByteUtilities {
     }
     
     
+    public static byte[] reverseArray(final byte[] array) {
+        final int lastpos = array.length - 1;
+        final byte[] reversed = new byte[array.length];
+        for (int i = 0; i <= lastpos; i++) {
+            reversed[i] = array[lastpos - i];
+        }
+        return reversed;
+    }
+    
+    
     public static int[] toIntArray(final byte[] bytes) {
         final int[] integers = new int[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
