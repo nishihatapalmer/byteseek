@@ -34,6 +34,14 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
     
     /**
+     * Returns a reversed SequenceMatcher
+     * 
+     * @return A SequenceMatcher which matches the reverse sequence.
+     */
+    public SequenceMatcher reverse();
+    
+    
+    /**
      * Returns a regular expression representation of the matching sequence.
      * 
      * @param prettyPrint whether to pretty print the regular expression with spacing.

@@ -6,6 +6,8 @@
 package net.domesdaybook.matcher.sequence;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.ByteReader;
@@ -17,7 +19,7 @@ import net.domesdaybook.reader.ByteReader;
  */
 public final class SingleByteSequenceMatcher implements SequenceMatcher {
 
-    private final List<SingleByteMatcher> matcherSequence = new ArrayList<SingleByteMatcher>();
+    private final List<SingleByteMatcher> matcherSequence;
     private final int length;
 
 
@@ -27,11 +29,11 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * @param sequence A list of SingleByteMatchers to construct this sequence matcher from.
      * @throws IllegalArgumentException if the list is null or empty.
      */
-    public SingleByteSequenceMatcher(final List<SingleByteMatcher> sequence) {
+    public SingleByteSequenceMatcher(final Collection<SingleByteMatcher> sequence) {
         if (sequence == null || sequence.isEmpty()) {
             throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
         }
-        this.matcherSequence.addAll(sequence);
+        this.matcherSequence = new ArrayList<SingleByteMatcher>(sequence);
         this.length = this.matcherSequence.size();
     }
 
@@ -46,6 +48,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
         }
+        this.matcherSequence = new ArrayList<SingleByteMatcher>(1);
         this.matcherSequence.add(matcher);
         this.length = 1;
     }
@@ -66,6 +69,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("SingleByteSequenceMatcher requires a positive number of matchers.");
         }
         length = numberOfMatchers;
+        this.matcherSequence = new ArrayList<SingleByteMatcher>(length);
         for (int count = 0; count < numberOfMatchers; count++) {
             this.matcherSequence.add(matcher);
         }
@@ -111,6 +115,17 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
+    public SingleByteSequenceMatcher reverse() {
+        final List<SingleByteMatcher> newList = new ArrayList<SingleByteMatcher>(matcherSequence);
+        Collections.reverse(newList);
+        return new SingleByteSequenceMatcher(newList);
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder builder = new StringBuilder();
         for (SingleByteMatcher matcher : matcherSequence) {
@@ -118,5 +133,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         }
         return builder.toString();
     }
+
+
 
 }

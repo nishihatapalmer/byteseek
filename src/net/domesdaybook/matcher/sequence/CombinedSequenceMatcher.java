@@ -8,6 +8,9 @@ package net.domesdaybook.matcher.sequence;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.ByteReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,7 +22,7 @@ import java.util.List;
  */
 public final class CombinedSequenceMatcher implements SequenceMatcher {
 
-    private final List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
+    private final List<SequenceMatcher> matchers;
     private final List<ByteMatcherIndex> byteMatcherForPosition = new ArrayList<ByteMatcherIndex>();
     private final int length;
 
@@ -29,7 +32,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      *
      * @param matchList A list of SequenceMatchers from which to construct this CombinedSequenceMatcher.
      */
-    public CombinedSequenceMatcher(final List<SequenceMatcher> matchList) {
+    public CombinedSequenceMatcher(final Collection<SequenceMatcher> matchList) {
         this(matchList, 1);
     }
 
@@ -40,13 +43,14 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
      * @throws IllegalArgumentException if the list is null or empty, or the number to repeat is less than one.
      */
-    public CombinedSequenceMatcher(final List<SequenceMatcher> matchList, final int numberOfRepeats) {
+    public CombinedSequenceMatcher(final Collection<SequenceMatcher> matchList, final int numberOfRepeats) {
         if (matchList == null || matchList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
         }
         if (numberOfRepeats < 1) {
             throw new IllegalArgumentException("CombinedSequenceMatcher requires a positive number of repeats.");
         }
+        matchers = new ArrayList<SequenceMatcher>(matchList);
         for (int count = 0; count < numberOfRepeats; count++) {
             matchers.addAll(matchList);
         }
@@ -136,6 +140,20 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
             len += numberOfBytes;
         }
         return len;
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public CombinedSequenceMatcher reverse() {
+        final Deque<SequenceMatcher> reversed = new LinkedList<SequenceMatcher>();
+        for (SequenceMatcher matcher : matchers) {
+            final SequenceMatcher newMatcher = matcher.reverse();
+            reversed.addFirst(newMatcher);
+        }
+        return new CombinedSequenceMatcher(reversed);
     }
 
 

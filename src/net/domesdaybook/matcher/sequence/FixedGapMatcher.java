@@ -26,6 +26,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
 
     private final int gapLength;
 
+   
     /**
      * Constructs a FixedGapMatcher of a given length.
      *
@@ -73,6 +74,15 @@ public final class FixedGapMatcher implements SequenceMatcher {
     @Override
     public boolean matches(ByteReader reader, long matchPosition) {
         return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
+    public FixedGapMatcher reverse() {
+        return this;
     }
 
 }

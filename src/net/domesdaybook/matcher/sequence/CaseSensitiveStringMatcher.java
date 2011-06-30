@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.UnsupportedEncodingException;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.reader.ByteReader;
@@ -17,7 +18,7 @@ import net.domesdaybook.reader.ByteReader;
 public final class CaseSensitiveStringMatcher implements SequenceMatcher {
 
     private final byte[] byteArray;
-    private final String caseSensitiveString;
+    //private final String caseSensitiveString;
     private final int length;
 
     /**
@@ -45,7 +46,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
         if (numberToRepeat < 1) {
             throw new IllegalArgumentException("CaseSensitiveStringMatcher requires a positive number of repeats.");
         }
-        caseSensitiveString = repeatString(caseSensitiveASCIIString, numberToRepeat);
+        String caseSensitiveString = repeatString(caseSensitiveASCIIString, numberToRepeat);
         final int byteSequenceLength = caseSensitiveString.length();
         byteArray = new byte[byteSequenceLength];
         for (int byteIndex = 0; byteIndex < byteSequenceLength; byteIndex++) {
@@ -97,9 +98,9 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     @Override
     public final String toRegularExpression( final boolean prettyPrint ) {
         if (prettyPrint) {
-            return " '" + caseSensitiveString + "' ";
+            return " '" + getCaseSensitiveString() + "' ";
         }
-        return "'" + caseSensitiveString + "'";
+        return "'" + getCaseSensitiveString() + "'";
     }
 
 
@@ -111,14 +112,29 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
         return new ByteMatcher(byteArray[position]);
     }
 
+    
     /**
      *
      * @return The string this matcher matches case sensitively.
      */
     public String getCaseSensitiveString() {
-        return caseSensitiveString;
+        try {
+            return new String(byteArray, "US-ASCII");
+        } catch (UnsupportedEncodingException ex) {
+            return "";
+        }
     }
 
+   
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public CaseSensitiveStringMatcher reverse() {
+        final String reversed = new StringBuffer(getCaseSensitiveString()).reverse().toString();
+        return new CaseSensitiveStringMatcher(reversed);
+    }
 
 }
 

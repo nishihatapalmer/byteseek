@@ -139,5 +139,15 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         return result;
     }
 
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public CaseInsensitiveStringMatcher reverse() {
+        final String reversed = new StringBuffer(caseInsensitiveString).reverse().toString();
+        return new CaseInsensitiveStringMatcher(reversed);
+    }
+
 
 }

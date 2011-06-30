@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**
@@ -165,6 +166,16 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         return new ByteMatcher(byteArray[position]);
     }
 
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
+    public ByteSequenceMatcher reverse() {
+        final byte[] reverseArray = ByteUtilities.reverseArray(byteArray);
+        return new ByteSequenceMatcher(reverseArray);
+    }
+    
 
     private String bytesToString(final boolean prettyPrint, byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
@@ -190,5 +201,8 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
         return hexString.toString();
     }
+
+    
+
 
 }
