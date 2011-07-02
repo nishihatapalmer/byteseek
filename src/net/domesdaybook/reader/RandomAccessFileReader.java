@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -28,7 +26,7 @@ import java.util.logging.Logger;
 public final class RandomAccessFileReader implements ByteReader {
 
     private final static String READ_ONLY = "r";
-    private final static String ILLEGAL_ARGUMENTS = "Null file passed to RandomAccessFileReader";
+    private final static String NULL_ARGUMENTS = "Null file passed to RandomAccessFileReader";
 
     private final RandomAccessFile file;
 
@@ -39,11 +37,15 @@ public final class RandomAccessFileReader implements ByteReader {
      * @param file The file to read from.
      * @throws FileNotFoundException If the file does not exist.
      */
-    public RandomAccessFileReader(final File file) throws FileNotFoundException {
+    public RandomAccessFileReader(final File file) throws ByteReaderException {
         if (file == null) {
-            throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
+            throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
-        this.file = new RandomAccessFile(file, READ_ONLY);
+        try {
+            this.file = new RandomAccessFile(file, READ_ONLY);
+        } catch (FileNotFoundException ex) {
+            throw new ByteReaderException(ex);
+        }
     }
 
 
@@ -63,6 +65,7 @@ public final class RandomAccessFileReader implements ByteReader {
             throw new ByteReaderException(ex);
         }
     }
+    
     
     /**
      * 

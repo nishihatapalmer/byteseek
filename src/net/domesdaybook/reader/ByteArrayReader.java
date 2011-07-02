@@ -13,6 +13,8 @@ package net.domesdaybook.reader;
  */
 public final class ByteArrayReader implements ByteReader {
 
+    private final static String NULL_ARGUMENTS = "Null byte array passed in to ByteArrayReader.";
+    
     private final byte[] bytes;
 
 
@@ -22,6 +24,9 @@ public final class ByteArrayReader implements ByteReader {
      * @param bytes The byte array to read from.
      */
     public ByteArrayReader(final byte[] bytes) {
+        if (bytes == null) {
+            throw new IllegalArgumentException(NULL_ARGUMENTS);
+        }
         this.bytes = bytes;
     }
     
@@ -32,8 +37,13 @@ public final class ByteArrayReader implements ByteReader {
      * Note: the position is cast from a {@code long} to an {@code int},
      * as arrays can only be indexed by integers.
      */
-    public byte readByte(long position) {
-        return bytes[(int) position];
+    @Override
+    public byte readByte(long position) throws ByteReaderException {
+        try {
+            return bytes[(int) position];
+        } catch (IndexOutOfBoundsException ex) {
+            throw new ByteReaderException(ex);
+        }
     }
 
 
