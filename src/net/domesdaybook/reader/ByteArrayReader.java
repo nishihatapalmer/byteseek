@@ -37,5 +37,11 @@ public final class ByteArrayReader implements ByteReader {
     }
 
 
+    /**
+     * @return long The length of the byte array.
+     */
+    public long length() {
+        return bytes.length;
+    }
 
 }

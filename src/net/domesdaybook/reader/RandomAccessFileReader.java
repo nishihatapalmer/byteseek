@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -50,15 +52,28 @@ public final class RandomAccessFileReader implements ByteReader {
      *
      * @param position The position in the file to read a byte from.
      * @return The byte at the given position.
-     * @throws ReadByteException if an IOException occurs reading the file.
+     * @throws ByteReaderException if an IOException occurs reading the file.
      */
     @Override
-    public byte readByte(long position) {
+    public byte readByte(long position) throws ByteReaderException {
         try {
             file.seek(position);
             return file.readByte();
         } catch (IOException ex) {
-            throw new ReadByteException(ex);
+            throw new ByteReaderException(ex);
+        }
+    }
+    
+    /**
+     * 
+     * @return The length of the file accessed by the reader.
+     */
+    @Override
+    public long length()  throws ByteReaderException {
+        try {
+            return file.length();
+        } catch (IOException ex) {
+            throw new ByteReaderException(ex);
         }
     }
 
