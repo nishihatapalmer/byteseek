@@ -35,7 +35,7 @@ public final class RandomAccessFileReader implements ByteReader {
      * Constructs an immutable RandomAccessFileReader.
      *
      * @param file The file to read from.
-     * @throws FileNotFoundException If the file does not exist.
+     * @throws ByteReaderException If the file does not exist.
      */
     public RandomAccessFileReader(final File file) throws ByteReaderException {
         if (file == null) {
@@ -70,6 +70,7 @@ public final class RandomAccessFileReader implements ByteReader {
     /**
      * 
      * @return The length of the file accessed by the reader.
+     * @throws ByteReaderException if an IO error occurs reading a byte.
      */
     @Override
     public long length()  throws ByteReaderException {

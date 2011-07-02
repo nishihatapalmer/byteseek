@@ -36,6 +36,7 @@ public final class ByteArrayReader implements ByteReader {
      * 
      * Note: the position is cast from a {@code long} to an {@code int},
      * as arrays can only be indexed by integers.
+     * @throws ByteReaderException  if the position is outside the bounds of the array.
      */
     @Override
     public byte readByte(long position) throws ByteReaderException {
