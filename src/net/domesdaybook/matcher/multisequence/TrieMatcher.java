@@ -106,7 +106,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     /**
      * @inheritDoc
      * 
-     * Note: will return false if access is outside the byte reader.
+     * Note: will return false if access is outside the byte array.
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
@@ -137,7 +137,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     /**
      * @inheritDoc
      * 
-     * Note: will return false if access is outside the byte reader.
+     * Note: will return false if access is outside the byte array.
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
@@ -167,7 +167,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     /**
      * @inheritDoc
      * 
-     * Note: will return false if access is outside the byte reader.
+     * Note: will return false if access is outside the byte array.
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override     
