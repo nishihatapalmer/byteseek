@@ -19,6 +19,7 @@ import net.domesdaybook.automata.state.AssociatedStateFactory;
 import net.domesdaybook.automata.state.SimpleAssociatedStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -31,10 +32,12 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  * 
  * @author matt
  */
-public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> {
+//public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> {
+public final class TrieCompiler implements Compiler<Trie, List<SequenceMatcher>> {
 
     private static TrieCompiler defaultCompiler;
-    public static AssociatedState<SequenceMatcher> trieFrom(List<SequenceMatcher> sequences) throws CompileException {
+    //public static AssociatedState<SequenceMatcher> trieFrom(List<SequenceMatcher> sequences) throws CompileException {
+    public static Trie trieFrom(List<SequenceMatcher> sequences) throws CompileException {
         defaultCompiler = new TrieCompiler();
         return defaultCompiler.compile(sequences);
     }
@@ -74,12 +77,22 @@ public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatc
 
     
     @Override
-    public AssociatedState<SequenceMatcher> compile(List<SequenceMatcher> sequences) throws CompileException {
+    //public AssociatedState<SequenceMatcher> compile(List<SequenceMatcher> sequences) throws CompileException {
+            public Trie compile(List<SequenceMatcher> sequences) throws CompileException {
         AssociatedState<SequenceMatcher> initialState = stateFactory.create(State.NON_FINAL);
+        int minLength = Integer.MAX_VALUE;
+        int maxLength = 0;
         for (SequenceMatcher sequence : sequences) {
             addSequence(sequence, initialState);
+            final int len = sequence.length();
+            if (len < minLength) {
+                minLength = len;
+            }
+            if (len > maxLength) {
+                maxLength = len;
+            }
         }
-        return initialState;
+        return new Trie(initialState, minLength, maxLength);
     }
 
     

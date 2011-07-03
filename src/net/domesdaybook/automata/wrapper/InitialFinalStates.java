@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.compiler.automata;
+package net.domesdaybook.automata.wrapper;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -22,10 +22,10 @@ import net.domesdaybook.object.copy.DeepCopy;
  *
  * @author Matt Palmer
  */
-public final class StateWrapper implements DeepCopy {
+public final class InitialFinalStates implements DeepCopy {
 
-    State initialState;
-    List<State> finalStates = new ArrayList<State>();
+    public State initialState;
+    public List<State> finalStates = new ArrayList<State>();
 
     /**
      * A method which makes a state final or not, and ensures that
@@ -54,7 +54,7 @@ public final class StateWrapper implements DeepCopy {
      * 
      * @return A deep copy of this object and its wrapped automata.
      */
-    public StateWrapper deepCopy() {
+    public InitialFinalStates deepCopy() {
         final Map<DeepCopy, DeepCopy> oldToNewObjects = new IdentityHashMap<DeepCopy, DeepCopy>();
         return deepCopy(oldToNewObjects);
     }    
@@ -67,8 +67,8 @@ public final class StateWrapper implements DeepCopy {
      * @return A deep copy of this object and its wrapped automata.
      */
     @Override
-    public StateWrapper deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        StateWrapper copy = new StateWrapper();
+    public InitialFinalStates deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        InitialFinalStates copy = new InitialFinalStates();
         oldToNewObjects.put(this, copy);
         if (initialState == null) {
             copy.initialState = null;

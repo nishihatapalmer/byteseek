@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.automata.AssociatedState;
 import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
 
@@ -19,13 +20,13 @@ import net.domesdaybook.reader.ByteReader;
  */
 public final class TrieMatcher implements MultiSequenceMatcher {
 
-    final AssociatedState<SequenceMatcher> initialTrieState;
+    final Trie trie;
 
-    public TrieMatcher(AssociatedState<SequenceMatcher> initialState) {
-        if (initialState == null) {
-            throw new IllegalArgumentException("Null state passed in to TrieMatcher.");
+    public TrieMatcher(final Trie trie) {
+        if (trie == null) {
+            throw new IllegalArgumentException("Null Trie passed in to TrieMatcher.");
         }
-        initialTrieState = initialState;
+        this.trie = trie;
     }
 
 
@@ -36,7 +37,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(initialTrieState);
+        currentStates.add(trie.getInitialState());
         long currentPosition = matchPosition;
         while (!currentStates.isEmpty()) {
             final State currentState = currentStates.get(0);
@@ -60,7 +61,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     @Override
     public SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition) {
         final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(initialTrieState);
+        currentStates.add(trie.getInitialState());
         long currentPosition = matchPosition;
         while (!currentStates.isEmpty()) {
             final State currentState = currentStates.get(0);
@@ -94,7 +95,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(initialTrieState);
+        currentStates.add(trie.getInitialState());
         int currentPosition = matchPosition;
         while (!currentStates.isEmpty()) {
             final State currentState = currentStates.get(0);
@@ -118,7 +119,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     @Override    
     public SequenceMatcher anyMatch(final byte[] bytes, final int matchPosition) {
         final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(initialTrieState);
+        currentStates.add(trie.getInitialState());
         int currentPosition = matchPosition;
         while (!currentStates.isEmpty()) {
             final State currentState = currentStates.get(0);

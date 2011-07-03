@@ -36,6 +36,7 @@
 
 package net.domesdaybook.compiler.automata;
 
+import net.domesdaybook.automata.wrapper.InitialFinalStates;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
  *
  * @author Matt Palmer
  */
-public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
+public final class ChamparnaudGlushkovBuilder implements InitialFinalStatesBuilder {
 
      private final TransitionFactory transitionFactory;
      private final StateFactory stateFactory;
@@ -93,8 +94,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     * @param transitionByte The byte to transition on.
     * @return An automata with a transition on the byte supplied.
     */
-     public StateWrapper buildSingleByteStates(final byte transitionByte) {
-        final StateWrapper states = createInitialFinalStates();
+     public InitialFinalStates buildSingleByteStates(final byte transitionByte) {
+        final InitialFinalStates states = createInitialFinalStates();
         final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createByteTransition(transitionByte, finalState);
         states.initialState.addTransition(transition);
@@ -115,8 +116,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata with a transition on the set of bytes supplied.
      */
     @Override
-    public StateWrapper buildSetStates(final Set<Byte> byteSet, final boolean negated) {
-        final StateWrapper states = createInitialFinalStates();
+    public InitialFinalStates buildSetStates(final Set<Byte> byteSet, final boolean negated) {
+        final InitialFinalStates states = createInitialFinalStates();
         final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createSetTransition(byteSet, negated, finalState);
         states.initialState.addTransition(transition);
@@ -135,8 +136,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata with a transition on any byte.
      */
     @Override
-    public StateWrapper buildAnyByteStates() {
-        final StateWrapper states = createInitialFinalStates();
+    public InitialFinalStates buildAnyByteStates() {
+        final InitialFinalStates states = createInitialFinalStates();
         final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAnyByteTransition(finalState);
         states.initialState.addTransition(transition);
@@ -155,8 +156,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @param bitMask The bitmask to transition on if all bits match.
      * @return An automata using an All bitmask transition.
      */
-    public StateWrapper buildAllBitmaskStates(final byte bitMask) {
-        final StateWrapper states = createInitialFinalStates();
+    public InitialFinalStates buildAllBitmaskStates(final byte bitMask) {
+        final InitialFinalStates states = createInitialFinalStates();
         final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAllBitmaskTransition(bitMask, finalState);
         states.initialState.addTransition(transition);
@@ -175,8 +176,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @param bitMask The bitmask to transition on if any bits match.
      * @return An automata using an Any bitmask transition.
      */
-    public StateWrapper buildAnyBitmaskStates(final byte bitMask) {
-        final StateWrapper states = createInitialFinalStates();
+    public InitialFinalStates buildAnyBitmaskStates(final byte bitMask) {
+        final InitialFinalStates states = createInitialFinalStates();
         final State finalState = states.finalStates.get(0);
         final Transition transition = transitionFactory.createAnyBitmaskTransition(bitMask, finalState);
         states.initialState.addTransition(transition);
@@ -209,13 +210,13 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata which is a sequence of the automata in the list.
      */
     @Override
-    public StateWrapper buildSequenceStates(final List<StateWrapper> sequenceStates) {
+    public InitialFinalStates buildSequenceStates(final List<InitialFinalStates> sequenceStates) {
         // process the sequence of states joining final states to what the next initial
         // states have transitions to.
         List<State> finalSequenceStates = new ArrayList<State>();
         for (int itemIndex = 1, stop = sequenceStates.size(); itemIndex < stop; itemIndex++) {
-            final StateWrapper leftState = sequenceStates.get(itemIndex-1);
-            final StateWrapper rightState = sequenceStates.get(itemIndex);
+            final InitialFinalStates leftState = sequenceStates.get(itemIndex-1);
+            final InitialFinalStates rightState = sequenceStates.get(itemIndex);
             final State initialStateToReplace = rightState.initialState;
             final List<Transition> transitionList = initialStateToReplace.getTransitions();
             final boolean initialStateIsFinal = initialStateToReplace.isFinal();
@@ -234,13 +235,13 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         }
 
         // Add the final states of the very last state to the sequence final states:
-        final StateWrapper lastState = sequenceStates.get(sequenceStates.size() - 1);
+        final InitialFinalStates lastState = sequenceStates.get(sequenceStates.size() - 1);
         finalSequenceStates.addAll(lastState.finalStates);
         
         // Wrap it all up in a new states object representing
         // the start and final states of the sequence.
-        final StateWrapper states = new StateWrapper();
-        final StateWrapper firstState = sequenceStates.get(0);
+        final InitialFinalStates states = new InitialFinalStates();
+        final InitialFinalStates firstState = sequenceStates.get(0);
         states.initialState = firstState.initialState;
         states.finalStates = finalSequenceStates;
         return states;
@@ -268,7 +269,7 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An object holding the initial and final states of the alternative automata.
      */
     @Override
-    public StateWrapper buildAlternativeStates(final List<StateWrapper> alternateStates) {
+    public InitialFinalStates buildAlternativeStates(final List<InitialFinalStates> alternateStates) {
        
         // Merge all the initial states of the alternatives, so we can
         // transition into any of them from a single initial state.  
@@ -278,7 +279,7 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         State initialState = stateFactory.create(State.NON_FINAL);
         boolean anyInitialStateIsFinal = false;
         for (int alternateIndex = 0, stop = alternateStates.size(); alternateIndex < stop; alternateIndex++) {
-            final StateWrapper altStates = alternateStates.get(alternateIndex);
+            final InitialFinalStates altStates = alternateStates.get(alternateIndex);
             final State alternateInitialState = altStates.initialState;
             anyInitialStateIsFinal = anyInitialStateIsFinal | alternateInitialState.isFinal();
             initialState.addAllTransitions(alternateInitialState.getTransitions());
@@ -286,7 +287,7 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
         }
 
         // Wrap it all up in a states object and set whether the initial state is final:
-        final StateWrapper states = new StateWrapper();
+        final InitialFinalStates states = new InitialFinalStates();
         states.initialState = initialState;
         states.finalStates = finalStates;
         states.setIsFinal(initialState, anyInitialStateIsFinal);
@@ -320,7 +321,7 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata which will repeat zero to many times.
      */
     @Override
-    public StateWrapper buildZeroToManyStates(final StateWrapper zeroToManyStates) {
+    public InitialFinalStates buildZeroToManyStates(final InitialFinalStates zeroToManyStates) {
         final State initialState = zeroToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
         final List<State> finalStates = zeroToManyStates.finalStates;
@@ -355,7 +356,7 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return
      */
     @Override
-    public StateWrapper buildOneToManyStates(final StateWrapper oneToManyStates) {
+    public InitialFinalStates buildOneToManyStates(final InitialFinalStates oneToManyStates) {
         final State initialState = oneToManyStates.initialState;
         final List<Transition> intialTransitions = initialState.getTransitions();
         final List<State> finalStates = oneToManyStates.finalStates;
@@ -379,7 +380,7 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return
      */
     @Override
-    public StateWrapper buildOptionalStates(final StateWrapper optionalStates) {
+    public InitialFinalStates buildOptionalStates(final InitialFinalStates optionalStates) {
         optionalStates.setIsFinal(optionalStates.initialState, State.FINAL);
         return optionalStates;
     }
@@ -404,13 +405,13 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata which repeats a minimum number of times, followed by many times.
      */
     @Override
-    public StateWrapper buildMinToManyStates(final int minRepeat, final StateWrapper repeatedAutomata) {
-        StateWrapper states = null;
+    public InitialFinalStates buildMinToManyStates(final int minRepeat, final InitialFinalStates repeatedAutomata) {
+        InitialFinalStates states = null;
         if (minRepeat == 0) {
             states = buildZeroToManyStates(repeatedAutomata);
         } else if (minRepeat > 0) {
-            final StateWrapper repeatStates = buildRepeatedStates(minRepeat, repeatedAutomata);
-            final StateWrapper zeroToManyStates = buildZeroToManyStates(repeatedAutomata.deepCopy());
+            final InitialFinalStates repeatStates = buildRepeatedStates(minRepeat, repeatedAutomata);
+            final InitialFinalStates zeroToManyStates = buildZeroToManyStates(repeatedAutomata.deepCopy());
             states = joinStates(repeatStates, zeroToManyStates);
         }
         return states;
@@ -438,8 +439,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return
      */
     @Override
-    public StateWrapper buildMinToMaxStates(final int minRepeat, final int maxRepeat, final StateWrapper repeatedAutomata) {
-        StateWrapper states = null;
+    public InitialFinalStates buildMinToMaxStates(final int minRepeat, final int maxRepeat, final InitialFinalStates repeatedAutomata) {
+        InitialFinalStates states = null;
         // If min repeat is zero, then we have up to max optional repeated states:
         if (minRepeat == 0) {
             states = buildRepeatedOptionalStates(maxRepeat, repeatedAutomata);
@@ -447,7 +448,7 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
             states = buildRepeatedStates(minRepeat, repeatedAutomata);
             // possibly followed by (max - min) optional repeated states:
             if (maxRepeat > minRepeat) {
-                final StateWrapper optionalStates = buildRepeatedOptionalStates(maxRepeat - minRepeat, repeatedAutomata);
+                final InitialFinalStates optionalStates = buildRepeatedOptionalStates(maxRepeat - minRepeat, repeatedAutomata);
                 states = joinStates(states, optionalStates);
             }
         }
@@ -472,10 +473,10 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata which repeats a source automata optionally a number of times.
      */
     @Override
-    public StateWrapper buildRepeatedOptionalStates(final int numberOptional, final StateWrapper optionalState) {
-        final List<StateWrapper> optionalStates = new ArrayList<StateWrapper>();
+    public InitialFinalStates buildRepeatedOptionalStates(final int numberOptional, final InitialFinalStates optionalState) {
+        final List<InitialFinalStates> optionalStates = new ArrayList<InitialFinalStates>();
         for (int count = 0; count < numberOptional; count++) {
-            final StateWrapper optStates = buildOptionalStates(optionalState.deepCopy());
+            final InitialFinalStates optStates = buildOptionalStates(optionalState.deepCopy());
             optionalStates.add(optStates);
         }
         return buildSequenceStates(optionalStates);
@@ -499,10 +500,10 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return
      */
     @Override
-    public StateWrapper buildRepeatedStates(final int repeatNumber, final StateWrapper repeatedAutomata) {
-        List<StateWrapper> repeatStates = new ArrayList<StateWrapper>();
+    public InitialFinalStates buildRepeatedStates(final int repeatNumber, final InitialFinalStates repeatedAutomata) {
+        List<InitialFinalStates> repeatStates = new ArrayList<InitialFinalStates>();
         for (int count = 0; count < repeatNumber; count++) {
-            final StateWrapper newState = repeatedAutomata.deepCopy();
+            final InitialFinalStates newState = repeatedAutomata.deepCopy();
             repeatStates.add(newState);
         }
         return buildSequenceStates(repeatStates);
@@ -522,8 +523,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata which matches an ASCII string case sensitively.
      */
     @Override
-    public StateWrapper buildCaseSensitiveStringStates(final String str) {
-        final StateWrapper states = new StateWrapper();
+    public InitialFinalStates buildCaseSensitiveStringStates(final String str) {
+        final InitialFinalStates states = new InitialFinalStates();
         final State firstState = stateFactory.create(State.NON_FINAL);
         State lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
@@ -552,8 +553,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
      * @return An automata which matches an ASCII string case insensitively.
      */
     @Override
-    public StateWrapper buildCaseInsensitiveStringStates(final String str) {
-        final StateWrapper states = new StateWrapper();
+    public InitialFinalStates buildCaseInsensitiveStringStates(final String str) {
+        final InitialFinalStates states = new InitialFinalStates();
         final State firstState = stateFactory.create(State.NON_FINAL);
         State lastState = firstState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
@@ -577,8 +578,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
 
 
 
-    private StateWrapper createInitialFinalStates() {
-        final StateWrapper states = new StateWrapper();
+    private InitialFinalStates createInitialFinalStates() {
+        final InitialFinalStates states = new InitialFinalStates();
         states.initialState = stateFactory.create(State.NON_FINAL);
         states.finalStates = new ArrayList<State>();
         states.finalStates.add(stateFactory.create(State.FINAL));
@@ -586,8 +587,8 @@ public final class ChamparnaudGlushkovBuilder implements StateWrapperBuilder {
     }
 
     
-    private StateWrapper joinStates(final StateWrapper leftState, final StateWrapper rightState) {
-        final List<StateWrapper> joinedAutomata = new ArrayList<StateWrapper>();
+    private InitialFinalStates joinStates(final InitialFinalStates leftState, final InitialFinalStates rightState) {
+        final List<InitialFinalStates> joinedAutomata = new ArrayList<InitialFinalStates>();
         joinedAutomata.add(leftState);
         joinedAutomata.add(rightState);
         return buildSequenceStates(joinedAutomata);

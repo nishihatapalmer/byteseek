@@ -5,6 +5,7 @@
 
 package net.domesdaybook.compiler.automata;
 
+import net.domesdaybook.automata.wrapper.InitialFinalStates;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
@@ -40,11 +41,11 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
     
     private static final String MANY = "*";
     
-    private final StateWrapperBuilder stateWrapperBuilder;
+    private final InitialFinalStatesBuilder stateWrapperBuilder;
 
     /**
      * Constructs an NfaExpressionCompiler, using default {@link TransitionFactory},
-     * {@link StateBuilder} and {@link StateWrapperBuilder} objects.
+     * {@link StateBuilder} and {@link InitialFinalStatesBuilder} objects.
      *
      * By default, it uses the {@link TransitionSingleByteMatcherFactory} and
      * the {@link StateBuilder} to make a {@link ChamparnaudGlushkovBuilder} to
@@ -56,12 +57,12 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
 
     
     /**
-     * Constructs an NfaExpressionCompiler, supplying the {@link StateWrapperBuilder} object
+     * Constructs an NfaExpressionCompiler, supplying the {@link InitialFinalStatesBuilder} object
      * to use to construct the NFA from the parse tree.
      *
      * @param stateWrapperBuilder
      */
-    public NfaExpressionCompiler(final StateWrapperBuilder stateWrapperBuilder) {
+    public NfaExpressionCompiler(final InitialFinalStatesBuilder stateWrapperBuilder) {
         this.stateWrapperBuilder = stateWrapperBuilder;
     }
 
@@ -72,7 +73,7 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
      * abstract syntax tree provided by the {@link AstCompiler} which this
      * class extends.
      * <p/>
-     * It uses a {@link StateWrapperBuilder} object to build the actual automata,
+     * It uses a {@link InitialFinalStatesBuilder} object to build the actual automata,
      * returning only the initial state of the final automata.
      *
      * @param ast The abstract syntax tree to compile the State automata from.
@@ -92,19 +93,19 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
     }
 
 
-    private StateWrapper buildAutomata(final CommonTree ast) throws CompileException {
+    private InitialFinalStates buildAutomata(final CommonTree ast) throws CompileException {
 
-        StateWrapper states = null;
+        InitialFinalStates states = null;
 
         switch (ast.getToken().getType()) {
 
             // recursive part of building:
             
             case (regularExpressionParser.SEQUENCE): {
-                List<StateWrapper> sequenceStates = new ArrayList<StateWrapper>();
+                List<InitialFinalStates> sequenceStates = new ArrayList<InitialFinalStates>();
                 for (int childIndex = 0, stop = ast.getChildCount(); childIndex < stop; childIndex++) {
                     final CommonTree child = (CommonTree) ast.getChild(childIndex);
-                    final StateWrapper childAutomata = buildAutomata(child);
+                    final InitialFinalStates childAutomata = buildAutomata(child);
                     sequenceStates.add(childAutomata);
                 }
                 states = stateWrapperBuilder.buildSequenceStates(sequenceStates);
@@ -113,10 +114,10 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
 
 
             case (regularExpressionParser.ALT): {
-                List<StateWrapper> alternateStates = new ArrayList<StateWrapper>();
+                List<InitialFinalStates> alternateStates = new ArrayList<InitialFinalStates>();
                 for (int childIndex = 0, stop = ast.getChildCount(); childIndex < stop; childIndex++) {
                     final CommonTree child = (CommonTree) ast.getChild(childIndex);
-                    final StateWrapper childAutomata = buildAutomata(child);
+                    final InitialFinalStates childAutomata = buildAutomata(child);
                     alternateStates.add(childAutomata);
                 }
                 states = stateWrapperBuilder.buildAlternativeStates(alternateStates);
@@ -126,7 +127,7 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
             //TODO: nested repeats can be optimised.
             case (regularExpressionParser.REPEAT): {
                 final CommonTree nodeToRepeat = (CommonTree) ast.getChild(2);
-                final StateWrapper repeatedAutomata = buildAutomata(nodeToRepeat);
+                final InitialFinalStates repeatedAutomata = buildAutomata(nodeToRepeat);
                 final int minRepeat = ParseUtils.getChildIntValue(ast, 0);
                 if (MANY.equals(ParseUtils.getChildStringValue(ast,1))) {
                     states = stateWrapperBuilder.buildMinToManyStates(minRepeat, repeatedAutomata);
@@ -140,7 +141,7 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
 
             case (regularExpressionParser.MANY): {
                 final CommonTree zeroToManyNode = (CommonTree) ast.getChild(0);
-                final StateWrapper zeroToManyStates = buildAutomata(zeroToManyNode);
+                final InitialFinalStates zeroToManyStates = buildAutomata(zeroToManyNode);
                 states = stateWrapperBuilder.buildZeroToManyStates(zeroToManyStates);
                 break;
             }
@@ -148,7 +149,7 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
 
             case (regularExpressionParser.PLUS): {
                 final CommonTree oneToManyNode = (CommonTree) ast.getChild(0);
-                final StateWrapper oneToManyStates = buildAutomata(oneToManyNode);
+                final InitialFinalStates oneToManyStates = buildAutomata(oneToManyNode);
                 states = stateWrapperBuilder.buildOneToManyStates(oneToManyStates);
                 break;
             }
@@ -156,7 +157,7 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
 
             case (regularExpressionParser.QUESTION_MARK): {
                 final CommonTree optionalNode = (CommonTree) ast.getChild(0);
-                final StateWrapper optionalStates = buildAutomata(optionalNode);
+                final InitialFinalStates optionalStates = buildAutomata(optionalNode);
                 states = stateWrapperBuilder.buildOptionalStates(optionalStates);
                 break;
             }

@@ -7,6 +7,7 @@ package net.domesdaybook.compiler.multisequence;
 
 import java.util.List;
 import net.domesdaybook.automata.AssociatedState;
+import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
 import net.domesdaybook.compiler.automata.TrieCompiler;
@@ -26,7 +27,7 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<Seq
     }
     
     
-    private final Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> compiler;
+    private final Compiler<Trie, List<SequenceMatcher>> compiler;
    
     
     public TrieMatcherCompiler() {
@@ -34,7 +35,7 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<Seq
     }
     
     
-    public TrieMatcherCompiler(Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> trieCompiler) {
+    public TrieMatcherCompiler(Compiler<Trie, List<SequenceMatcher>> trieCompiler) {
         if (trieCompiler == null) {
             compiler = new TrieCompiler();
         } else {
@@ -45,8 +46,8 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<Seq
     
     @Override
     public TrieMatcher compile(List<SequenceMatcher> expression) throws CompileException {
-        AssociatedState<SequenceMatcher> initialTrieState = compiler.compile(expression);
-        return new TrieMatcher(initialTrieState);
+        Trie trie = compiler.compile(expression);
+        return new TrieMatcher(trie);
     }
     
     

@@ -7,14 +7,15 @@ package net.domesdaybook.compiler.automata;
 
 import java.util.List;
 import java.util.Set;
+import net.domesdaybook.automata.wrapper.InitialFinalStates;
 
 /**
  * An interface for classes which build automata, 
- * wrapped in {@link StateWrapper} objects.
+ * wrapped in {@link InitialFinalStates} objects.
  *
  * @author Matt Palmer
  */
-public interface StateWrapperBuilder {
+public interface InitialFinalStatesBuilder {
 
     /**
      * Builds a simple automata with a transition on a single byte value.
@@ -22,7 +23,7 @@ public interface StateWrapperBuilder {
      * @param transitionByte The byte value to transition on.
      * @return An automata with a transition on the transitionByte.
      */
-    public StateWrapper buildSingleByteStates(final byte transitionByte);
+    public InitialFinalStates buildSingleByteStates(final byte transitionByte);
 
 
     /**
@@ -32,7 +33,7 @@ public interface StateWrapperBuilder {
      * @param bitMask The bitmask to match all bits of.
      * @return An automata with a transition on the all-bits bitmask.
      */
-    public StateWrapper buildAllBitmaskStates(final byte bitMask);
+    public InitialFinalStates buildAllBitmaskStates(final byte bitMask);
 
 
     /**
@@ -42,7 +43,7 @@ public interface StateWrapperBuilder {
      * @param bitMask The bitmask to match any bits of.
      * @return An automata with a transition on the any-bits bitmask.
      */
-    public StateWrapper buildAnyBitmaskStates(final byte bitMask);
+    public InitialFinalStates buildAnyBitmaskStates(final byte bitMask);
 
 
     /**
@@ -52,7 +53,7 @@ public interface StateWrapperBuilder {
      * @param sequenceStates A list of automata to join into a sequence.
      * @return An automata which is a sequence of all the automata passed in.
      */
-    public StateWrapper buildSequenceStates(final List<StateWrapper> sequenceStates);
+    public InitialFinalStates buildSequenceStates(final List<InitialFinalStates> sequenceStates);
 
 
     /**
@@ -62,7 +63,7 @@ public interface StateWrapperBuilder {
      * @param alternateStates A list of automata to join into a set of alternatives.
      * @return An automata which allows for a set of alternatives.
      */
-    public StateWrapper buildAlternativeStates(final List<StateWrapper> alternateStates);
+    public InitialFinalStates buildAlternativeStates(final List<InitialFinalStates> alternateStates);
 
 
     /**
@@ -74,7 +75,7 @@ public interface StateWrapperBuilder {
      * @param repeatedAutomata The automata to repeat.
      * @return An automata which repeats from min to max times.
      */
-    public StateWrapper buildMinToMaxStates(final int minRepeat, final int maxRepeat, final StateWrapper repeatedAutomata);
+    public InitialFinalStates buildMinToMaxStates(final int minRepeat, final int maxRepeat, final InitialFinalStates repeatedAutomata);
 
 
     /**
@@ -83,7 +84,7 @@ public interface StateWrapperBuilder {
      * @param zeroToManyStates The automata to repeat from zero to many times.
      * @return An automata which repeats from zero to many times.
      */
-    public StateWrapper buildZeroToManyStates(final StateWrapper zeroToManyStates);
+    public InitialFinalStates buildZeroToManyStates(final InitialFinalStates zeroToManyStates);
 
 
     /**
@@ -92,7 +93,7 @@ public interface StateWrapperBuilder {
      * @param zeroToManyStates The automata to repeat from one to many times.
      * @return An automata which repeats from one to many times.
      */
-    public StateWrapper buildOneToManyStates(final StateWrapper oneToManyStates);
+    public InitialFinalStates buildOneToManyStates(final InitialFinalStates oneToManyStates);
 
 
     /**
@@ -102,7 +103,7 @@ public interface StateWrapperBuilder {
      * @param repeatedAutomata The automata which can repeat from min to many times.
      * @return An automata which repeats from a minimum number of times to many.
      */
-    public StateWrapper buildMinToManyStates(final int minRepeat, final StateWrapper repeatedAutomata);
+    public InitialFinalStates buildMinToManyStates(final int minRepeat, final InitialFinalStates repeatedAutomata);
 
 
     /**
@@ -112,7 +113,7 @@ public interface StateWrapperBuilder {
      * @param repeatedAutomta The automata to repeat.
      * @return An automata which repeats the automata passed in a defined number of times.
      */
-    public StateWrapper buildRepeatedStates(final int repeatNumber, final StateWrapper repeatedAutomta);
+    public InitialFinalStates buildRepeatedStates(final int repeatNumber, final InitialFinalStates repeatedAutomta);
 
 
     /**
@@ -123,7 +124,7 @@ public interface StateWrapperBuilder {
      * @param negated Whether the set of bytes should be inverted or not.
      * @return An automata which transitions on the (negated) set of bytes passed in.
      */
-    public StateWrapper buildSetStates(final Set<Byte> byteSet, final boolean negated);
+    public InitialFinalStates buildSetStates(final Set<Byte> byteSet, final boolean negated);
 
 
     /**
@@ -133,7 +134,7 @@ public interface StateWrapperBuilder {
      * @param optionalState The automata to create repeat optionally.
      * @return An automata which optionally repeats the automata passed in a defined number of times.
      */
-    public StateWrapper buildRepeatedOptionalStates(final int numberOptional, final StateWrapper optionalState);
+    public InitialFinalStates buildRepeatedOptionalStates(final int numberOptional, final InitialFinalStates optionalState);
 
 
     /**
@@ -142,7 +143,7 @@ public interface StateWrapperBuilder {
      * @param optionalStates The automata to make optional.
      * @return An automata which is an optional version of the automata passed in.
      */
-    public StateWrapper buildOptionalStates(final StateWrapper optionalStates);
+    public InitialFinalStates buildOptionalStates(final InitialFinalStates optionalStates);
 
 
     /**
@@ -152,7 +153,7 @@ public interface StateWrapperBuilder {
      * @param str The ASCII string to build the automata from.
      * @return An automata which matches the string passed in case sensitively.
      */
-    public StateWrapper buildCaseSensitiveStringStates(final String str);
+    public InitialFinalStates buildCaseSensitiveStringStates(final String str);
 
     
     /**
@@ -162,7 +163,7 @@ public interface StateWrapperBuilder {
      * @param str The ASCII string to build the automata from.
      * @return An automata which matches the string passed in case insensitively.
      */
-    public StateWrapper buildCaseInsensitiveStringStates(final String str);
+    public InitialFinalStates buildCaseInsensitiveStringStates(final String str);
 
 
     /**
@@ -170,6 +171,6 @@ public interface StateWrapperBuilder {
      *
      * @return An automata which transitions on any byte.
      */
-    public StateWrapper buildAnyByteStates();
+    public InitialFinalStates buildAnyByteStates();
 
 }
