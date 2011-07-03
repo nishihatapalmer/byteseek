@@ -36,18 +36,21 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     @Override
     public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
-        final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(trie.getInitialState());
-        long currentPosition = matchPosition;
-        while (!currentStates.isEmpty()) {
-            final State currentState = currentStates.get(0);
-            currentStates.clear();
-            final byte currentByte = reader.readByte(currentPosition++);
-            currentState.appendNextStatesForByte(currentStates, currentByte);
-            for (final State state : currentStates) {
-                if (state.isFinal()) {
-                    final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                    result.addAll(trieState.getAssociations());
+        final long noOfBytes = reader.length();
+        if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
+            final List<State> currentStates = new ArrayList<State>();
+            currentStates.add(trie.getInitialState());
+            long currentPosition = matchPosition;
+            while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
+                final State currentState = currentStates.get(0);
+                currentStates.clear();
+                final byte currentByte = reader.readByte(currentPosition++);
+                currentState.appendNextStatesForByte(currentStates, currentByte);
+                for (final State state : currentStates) {
+                    if (state.isFinal()) {
+                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
+                        result.addAll(trieState.getAssociations());
+                    }
                 }
             }
         }
@@ -60,18 +63,21 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      */
     @Override
     public SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition) {
-        final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(trie.getInitialState());
-        long currentPosition = matchPosition;
-        while (!currentStates.isEmpty()) {
-            final State currentState = currentStates.get(0);
-            currentStates.clear();
-            final byte currentByte = reader.readByte(currentPosition++);
-            currentState.appendNextStatesForByte(currentStates, currentByte);
-            for (final State state : currentStates) {
-                if (state.isFinal()) {
-                    final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                    return trieState.getAssociations().iterator().next();
+        final long noOfBytes = reader.length();
+        if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
+            final List<State> currentStates = new ArrayList<State>();
+            currentStates.add(trie.getInitialState());
+            long currentPosition = matchPosition;
+            while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
+                final State currentState = currentStates.get(0);
+                currentStates.clear();
+                final byte currentByte = reader.readByte(currentPosition++);
+                currentState.appendNextStatesForByte(currentStates, currentByte);
+                for (final State state : currentStates) {
+                    if (state.isFinal()) {
+                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
+                        return trieState.getAssociations().iterator().next();
+                    }
                 }
             }
         }
@@ -93,19 +99,22 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      */
     @Override    
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
+        final int noOfBytes = bytes.length;
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
-        final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(trie.getInitialState());
-        int currentPosition = matchPosition;
-        while (!currentStates.isEmpty()) {
-            final State currentState = currentStates.get(0);
-            currentStates.clear();
-            final byte currentByte = bytes[currentPosition++];
-            currentState.appendNextStatesForByte(currentStates, currentByte);
-            for (final State state : currentStates) {
-                if (state.isFinal()) {
-                    final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                    result.addAll(trieState.getAssociations());
+        if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
+            final List<State> currentStates = new ArrayList<State>();
+            currentStates.add(trie.getInitialState());
+            int currentPosition = matchPosition;
+            while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
+                final State currentState = currentStates.get(0);
+                currentStates.clear();
+                final byte currentByte = bytes[currentPosition++];
+                currentState.appendNextStatesForByte(currentStates, currentByte);
+                for (final State state : currentStates) {
+                    if (state.isFinal()) {
+                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
+                        result.addAll(trieState.getAssociations());
+                    }
                 }
             }
         }
@@ -118,18 +127,21 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      */
     @Override    
     public SequenceMatcher anyMatch(final byte[] bytes, final int matchPosition) {
-        final List<State> currentStates = new ArrayList<State>();
-        currentStates.add(trie.getInitialState());
-        int currentPosition = matchPosition;
-        while (!currentStates.isEmpty()) {
-            final State currentState = currentStates.get(0);
-            currentStates.clear();
-            final byte currentByte = bytes[currentPosition++];
-            currentState.appendNextStatesForByte(currentStates, currentByte);
-            for (final State state : currentStates) {
-                if (state.isFinal()) {
-                    final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                    return trieState.getAssociations().iterator().next();
+        final int noOfBytes = bytes.length;
+        if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
+            final List<State> currentStates = new ArrayList<State>();
+            currentStates.add(trie.getInitialState());
+            int currentPosition = matchPosition;
+            while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
+                final State currentState = currentStates.get(0);
+                currentStates.clear();
+                final byte currentByte = bytes[currentPosition++];
+                currentState.appendNextStatesForByte(currentStates, currentByte);
+                for (final State state : currentStates) {
+                    if (state.isFinal()) {
+                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
+                        return trieState.getAssociations().iterator().next();
+                    }
                 }
             }
         }
