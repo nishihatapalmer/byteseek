@@ -22,6 +22,7 @@ public final class ByteArrayReader implements ByteReader {
      * Constructs an immutable ByteArrayReader.
      * 
      * @param bytes The byte array to read from.
+     * @throws IllegalArgumentException if the byte array passed in is null.
      */
     public ByteArrayReader(final byte[] bytes) {
         if (bytes == null) {
@@ -36,7 +37,7 @@ public final class ByteArrayReader implements ByteReader {
      * 
      * Note: the position is cast from a {@code long} to an {@code int},
      * as arrays can only be indexed by integers.
-     * @throws ByteReaderException  if the position is outside the bounds of the array.
+     * @throws ByteReaderException if an attempt is made to read outside the array.
      */
     @Override
     public byte readByte(long position) throws ByteReaderException {

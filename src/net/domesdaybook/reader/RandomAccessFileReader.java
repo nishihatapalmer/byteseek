@@ -14,12 +14,12 @@ import java.io.RandomAccessFile;
 /**
  * A very simple {@link ByteReader} which accesses bytes from a file,
  * using an underlying RandomAccessFile.
- *
+ *<p/>
  * Note: performance reading individual bytes from a RandomAccessFile
  * will be very slow, so this class is provided only for convenience.
- *
+ * <p/>
  * Also note, if an IOException occurs reading bytes from the file,
- * then a Runtime exception will be thrown.
+ * then a Runtime exception will be thrown in its place.
  *
  * @author Matt Palmer.
  */
@@ -29,23 +29,22 @@ public final class RandomAccessFileReader implements ByteReader {
     private final static String NULL_ARGUMENTS = "Null file passed to RandomAccessFileReader";
 
     private final RandomAccessFile file;
+    private final long length;
 
 
     /**
      * Constructs an immutable RandomAccessFileReader.
      *
      * @param file The file to read from.
-     * @throws ByteReaderException If the file does not exist.
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
      */
-    public RandomAccessFileReader(final File file) throws ByteReaderException {
+    public RandomAccessFileReader(final File file) throws FileNotFoundException {
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
-        try {
-            this.file = new RandomAccessFile(file, READ_ONLY);
-        } catch (FileNotFoundException ex) {
-            throw new ByteReaderException(ex);
-        }
+        this.file = new RandomAccessFile(file, READ_ONLY);
+        this.length = file.length();
     }
 
 
@@ -70,15 +69,10 @@ public final class RandomAccessFileReader implements ByteReader {
     /**
      * 
      * @return The length of the file accessed by the reader.
-     * @throws ByteReaderException if an IO error occurs reading a byte.
      */
     @Override
-    public long length()  throws ByteReaderException {
-        try {
-            return file.length();
-        } catch (IOException ex) {
-            throw new ByteReaderException(ex);
-        }
+    public long length(){
+        return length;
     }
 
 }

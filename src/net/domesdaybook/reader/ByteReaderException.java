@@ -12,7 +12,7 @@ package net.domesdaybook.reader;
  *
  * @author Matt Palmer.
  */
-public class ByteReaderException extends Exception {
+public class ByteReaderException extends RuntimeException {
 
     public ByteReaderException(String message) {
         super(message);
