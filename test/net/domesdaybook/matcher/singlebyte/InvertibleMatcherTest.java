@@ -65,6 +65,10 @@ public class InvertibleMatcherTest {
         public boolean matches(ByteReader reader, long matchPosition) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+
+        public boolean matches(byte[] bytes, int matchPosition) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 
 }
