@@ -6,10 +6,7 @@
 package net.domesdaybook.matcher.automata;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.ByteReader;
@@ -18,9 +15,10 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public class NfaMatcher implements Matcher {
+//public class NfaMatcher implements Matcher {
+public class NfaMatcher {
 
-    private State firstState;
+    private final State firstState;
 
 
     public NfaMatcher(State firstState) {
@@ -28,7 +26,7 @@ public class NfaMatcher implements Matcher {
     }
     
     
-    @Override
+//    @Override
     public final boolean matches(final ByteReader reader, final long fromPosition) {
         // If the first state is final, this will always match.
         // Most Nfas won't have a first state which matches, but this is possible
