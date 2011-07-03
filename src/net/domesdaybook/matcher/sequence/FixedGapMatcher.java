@@ -63,27 +63,32 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         return prettyPrint ? String.format(" .{%d} ", gapLength) : String.format(".{%d}", gapLength);
     }
 
 
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchPosition) {
-        return true;
+        return matchPosition + gapLength < reader.length() && matchPosition >= 0;
     }
-
     
 
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte array.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        return true;
+        return matchPosition + gapLength < bytes.length && matchPosition >= 0;
     }    
     
     

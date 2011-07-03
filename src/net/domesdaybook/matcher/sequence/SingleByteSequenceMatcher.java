@@ -78,37 +78,49 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte array.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        final List<SingleByteMatcher> matchList = this.matcherSequence;
-        final int localStop = length;
-        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-            final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-            final byte byteRead = reader.readByte(matchFrom + byteIndex);
-            if (!byteMatcher.matches(byteRead)) {
-                return false;
-            };
+        if (matchFrom + length < reader.length() && matchFrom >= 0) {
+            final List<SingleByteMatcher> matchList = this.matcherSequence;
+            final int localStop = length;
+            for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+                final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
+                final byte byteRead = reader.readByte(matchFrom + byteIndex);
+                if (!byteMatcher.matches(byteRead)) {
+                    return false;
+                }
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte array.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
-        final List<SingleByteMatcher> matchList = this.matcherSequence;
-        final int localStop = length;
-        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-            final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-            final byte byteRead = bytes[matchFrom + byteIndex];
-            if (!byteMatcher.matches(byteRead)) {
-                return false;
-            };
+        if (matchFrom + length < bytes.length && matchFrom >= 0) {
+            final List<SingleByteMatcher> matchList = this.matcherSequence;
+            final int localStop = length;
+            for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+                final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
+                final byte byteRead = bytes[matchFrom + byteIndex];
+                if (!byteMatcher.matches(byteRead)) {
+                    return false;
+                }
+            }
+            return true;
         }
-        return true;
+        return false;
     }    
     
 

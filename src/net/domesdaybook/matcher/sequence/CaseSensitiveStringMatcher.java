@@ -70,33 +70,45 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
-        final byte[] localArray = byteArray;
-        final int localStop = length;
-        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-            if (!(localArray[byteIndex] == reader.readByte(matchFrom + byteIndex))) {
-                return false;
+        final int localLength = length;
+        if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
+            final byte[] localArray = byteArray;
+            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+                if (!(localArray[byteIndex] == reader.readByte(matchFrom + byteIndex))) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
 
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte array.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final byte[] bytes, final int matchFrom) {
-        final byte[] localArray = byteArray;
-        final int localStop = length;
-        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-            if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
-                return false;
+        final int localLength = length;
+        if (matchFrom + localLength < bytes.length && matchFrom >= 0) {
+            final byte[] localArray = byteArray;
+            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+                if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }    
     
     

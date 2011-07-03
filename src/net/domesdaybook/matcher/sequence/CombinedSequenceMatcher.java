@@ -54,46 +54,57 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
         for (int count = 0; count < numberOfRepeats; count++) {
             matchers.addAll(matchList);
         }
-        length = calculatePositions();
+        length = indexAllSequenceMatchers();
     }
 
 
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        long matchAt = matchFrom;
-        final List<SequenceMatcher> localList=matchers;
-        for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
-            final SequenceMatcher matcher = localList.get( matchIndex );
-            if (matcher.matches(reader, matchAt)) {
-                matchAt += matcher.length();
-            } else {
-                return false;
+        if (matchFrom + length < reader.length() && matchFrom >= 0) {
+            long matchAt = matchFrom;
+            final List<SequenceMatcher> localList=matchers;
+            for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
+                final SequenceMatcher matcher = localList.get( matchIndex );
+                if (matcher.matches(reader, matchAt)) {
+                    matchAt += matcher.length();
+                } else {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }
-
     
 
     /**
      * {@inheritDoc}
+     * 
+     * Note: will return false if access is outside the byte array.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
-        int matchAt = matchFrom;
-        final List<SequenceMatcher> localList=matchers;
-        for (int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++) {
-            final SequenceMatcher matcher = localList.get(matchIndex);
-            if (matcher.matches(bytes, matchAt)) {
-                matchAt += matcher.length();
-            } else {
-                return false;
+        if (matchFrom + length < bytes.length && matchFrom >= 0) {
+            int matchAt = matchFrom;
+            final List<SequenceMatcher> localList=matchers;
+            for (int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++) {
+                final SequenceMatcher matcher = localList.get(matchIndex);
+                if (matcher.matches(bytes, matchAt)) {
+                    matchAt += matcher.length();
+                } else {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }    
 
     
@@ -146,7 +157,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * 
      * @return The length of the combined sequence matcher.
      */
-    private int calculatePositions() {
+    private int indexAllSequenceMatchers() {
         int len = 0;
         for ( int seqIndex = 0, stop=matchers.size(); seqIndex < stop; seqIndex++ ) {
             final SequenceMatcher matcher = matchers.get(seqIndex);
