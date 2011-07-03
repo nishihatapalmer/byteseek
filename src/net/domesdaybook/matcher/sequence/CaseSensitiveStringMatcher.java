@@ -73,16 +73,33 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
-        boolean result = true;
         final byte[] localArray = byteArray;
         final int localStop = length;
-        for (int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
-            result = localArray[byteIndex] == reader.readByte( matchFrom + byteIndex);
+        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+            if (!(localArray[byteIndex] == reader.readByte(matchFrom + byteIndex))) {
+                return false;
+            }
         }
-        return result;
+        return true;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean matches(final byte[] bytes, final int matchFrom) {
+        final byte[] localArray = byteArray;
+        final int localStop = length;
+        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+            if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
+                return false;
+            }
+        }
+        return true;
+    }    
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -96,7 +113,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression( final boolean prettyPrint ) {
+    public final String toRegularExpression(final boolean prettyPrint) {
         if (prettyPrint) {
             return " '" + getCaseSensitiveString() + "' ";
         }

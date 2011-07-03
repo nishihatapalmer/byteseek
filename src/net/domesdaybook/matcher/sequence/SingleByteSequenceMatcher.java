@@ -81,17 +81,36 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        boolean result = true;
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;
-        for (int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
+        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
             final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
             final byte byteRead = reader.readByte(matchFrom + byteIndex);
-            result = byteMatcher.matches(byteRead);
+            if (!byteMatcher.matches(byteRead)) {
+                return false;
+            };
         }
-        return result;
+        return true;
     }
 
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchFrom) {
+        final List<SingleByteMatcher> matchList = this.matcherSequence;
+        final int localStop = length;
+        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+            final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
+            final byte byteRead = bytes[matchFrom + byteIndex];
+            if (!byteMatcher.matches(byteRead)) {
+                return false;
+            };
+        }
+        return true;
+    }    
+    
 
     /**
      * {@inheritDoc}

@@ -6,6 +6,7 @@
 package net.domesdaybook.matcher.multisequence;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
@@ -26,10 +27,14 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
     }
 
 
+    /**
+     * 
+     * @inheritDoc
+     */
     @Override
-    public List<SequenceMatcher> allMatches(ByteReader reader, long matchPosition) {
-        List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
-        for (SequenceMatcher sequence : matchers) {
+    public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
+        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
+        for (final SequenceMatcher sequence : matchers) {
             if (sequence.matches(reader, matchPosition)) {
                 result.add(sequence);
             }
@@ -38,9 +43,13 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
     }
     
     
+    /**    
+     * 
+     * @inheritDoc
+     */    
     @Override
-    public SequenceMatcher anyMatch(ByteReader reader, long matchPosition) {
-        for (SequenceMatcher sequence : matchers) {
+    public SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition) {
+        for (final SequenceMatcher sequence : matchers) {
             if (sequence.matches(reader, matchPosition)) {
                 return sequence;
             }
@@ -48,10 +57,65 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
         return null;
     }    
 
-
+    
+    /**    
+     * 
+     * @inheritDoc
+     */ 
     @Override
-    public boolean matches(ByteReader reader, long matchPosition) {
-        return anyMatch(reader, matchPosition) != null;
+    public boolean matches(final ByteReader reader, final long matchPosition) {
+        for (final SequenceMatcher sequence : matchers) {
+            if (sequence.matches(reader, matchPosition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
+    /**    
+     * 
+     * @inheritDoc
+     */ 
+    @Override
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        for (final SequenceMatcher sequence : matchers) {
+            if (sequence.matches(bytes, matchPosition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    
+    /**    
+     * 
+     * @inheritDoc
+     */ 
+    @Override   
+    public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
+        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
+        for (final SequenceMatcher sequence : matchers) {
+            if (sequence.matches(bytes, matchPosition)) {
+                result.add(sequence);
+            }
+        }
+        return result;        
+    }
+
+
+    /**    
+     * 
+     * @inheritDoc
+     */ 
+    @Override      
+    public SequenceMatcher anyMatch(byte[] bytes, int matchPosition) {
+        for (final SequenceMatcher sequence : matchers) {
+            if (sequence.matches(bytes, matchPosition)) {
+                return sequence;
+            }
+        }
+        return null;
     }
     
 }

@@ -31,10 +31,20 @@ public class InvertedByteMatcher implements SingleByteMatcher {
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        return matches(reader.readByte(matchFrom));
+        return reader.readByte(matchFrom) != byteToMiss;
     }
 
+    
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchFrom) {
+        return bytes[matchFrom] != byteToMiss;
+    }    
+
+    
     /**
      * {@inheritDoc}
      */

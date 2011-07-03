@@ -62,8 +62,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(ByteReader reader, long matchFrom) {
-        boolean result = true;
+    public boolean matches(final ByteReader reader, final long matchFrom) {
         long matchAt = matchFrom;
         final List<SequenceMatcher> localList=matchers;
         for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
@@ -71,14 +70,33 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
             if (matcher.matches(reader, matchAt)) {
                 matchAt += matcher.length();
             } else {
-                result = false;
-                break;
+                return false;
             }
         }
-        return result;
+        return true;
     }
 
+    
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchFrom) {
+        int matchAt = matchFrom;
+        final List<SequenceMatcher> localList=matchers;
+        for (int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++) {
+            final SequenceMatcher matcher = localList.get(matchIndex);
+            if (matcher.matches(bytes, matchAt)) {
+                matchAt += matcher.length();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }    
+
+    
     /**
      * {@inheritDoc}
      */
@@ -92,7 +110,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public String toRegularExpression(boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
         for ( int matcherIndex = 0, lastMatcher = matchers.size();
             matcherIndex < lastMatcher; matcherIndex++ ) {
@@ -107,7 +125,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
+    public SingleByteMatcher getByteMatcherForPosition(final int position) {
         final ByteMatcherIndex index = byteMatcherForPosition.get(position);
         final SequenceMatcher matcher = index.matcher;
         return matcher.getByteMatcherForPosition(index.offset);

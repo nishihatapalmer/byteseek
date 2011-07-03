@@ -72,10 +72,20 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(ByteReader reader, long matchPosition) {
+    public boolean matches(final ByteReader reader, final long matchPosition) {
         return true;
     }
 
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        return true;
+    }    
+    
     
     /**
      * {@inheritDoc}

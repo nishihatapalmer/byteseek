@@ -50,10 +50,21 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchPosition) {
-        return matches(reader.readByte(matchPosition));
+        final byte theByte = reader.readByte(matchPosition);
+        return (theByte == caseValues[0] || theByte == caseValues[1]);
     }
 
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        final byte theByte = bytes[matchPosition];
+        return (theByte == caseValues[0] || theByte == caseValues[1]);
+    }    
 
+    
     /**
      * {@inheritDoc}
      */

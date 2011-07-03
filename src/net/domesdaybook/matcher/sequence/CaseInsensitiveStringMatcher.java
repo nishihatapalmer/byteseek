@@ -78,7 +78,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression( final boolean prettyPrint ) {
+    public final String toRegularExpression(final boolean prettyPrint) {
         if (prettyPrint) {
             return " `" + caseInsensitiveString + "` ";
         }
@@ -90,19 +90,38 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final boolean matches(ByteReader reader, long matchFrom) {
-        boolean result = true;
+    public final boolean matches(final ByteReader reader, final long matchFrom) {
         final SingleByteMatcher[] matchList = charMatchList;
         final int localStop = length;
-        for ( int byteIndex = 0; result && byteIndex < localStop; byteIndex++) {
+        for ( int byteIndex = 0; byteIndex < localStop; byteIndex++) {
             final SingleByteMatcher charMatcher = matchList[byteIndex];
             final byte theByte = reader.readByte(matchFrom + byteIndex);
-            result = charMatcher.matches(theByte);
+            if (!charMatcher.matches(theByte)) {
+                return false;
+            }
         }
-        return result;
+        return true;
     }
 
 
+     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean matches(final byte[] bytes, final int matchFrom) {
+        final SingleByteMatcher[] matchList = charMatchList;
+        final int localStop = length;
+        for ( int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+            final SingleByteMatcher charMatcher = matchList[byteIndex];
+            final byte theByte = bytes[matchFrom + byteIndex];
+            if (!charMatcher.matches(theByte)) {
+                return false;
+            }
+        }
+        return true;
+    }   
+    
+    
     /**
      * {@inheritDoc}
      */

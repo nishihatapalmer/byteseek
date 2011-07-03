@@ -46,10 +46,19 @@ public final class BitMaskAnyBitsMatcher extends InvertibleMatcher implements Si
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        return matches(reader.readByte(matchFrom));
+        return ((reader.readByte(matchFrom) & mBitMaskValue) != 0) ^ inverted;
     }
 
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchFrom) {
+        return ((bytes[matchFrom] & mBitMaskValue) != 0) ^ inverted;
+    }    
+    
     /**
      * {@inheritDoc}
      */
