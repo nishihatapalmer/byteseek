@@ -79,7 +79,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte array.
+     * Note: will return false if access is outside the byte reader.
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
