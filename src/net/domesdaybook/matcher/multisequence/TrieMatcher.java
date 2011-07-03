@@ -32,6 +32,9 @@ public final class TrieMatcher implements MultiSequenceMatcher {
 
     /**
      * @inheritDoc
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
@@ -60,6 +63,9 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     
     /**
      * @inheritDoc
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition) {
@@ -87,6 +93,9 @@ public final class TrieMatcher implements MultiSequenceMatcher {
 
     /**
      * @inheritDoc
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
     public boolean matches(final ByteReader reader, final long matchPosition) {
@@ -96,6 +105,9 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     
     /**
      * @inheritDoc
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
@@ -124,6 +136,9 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     
     /**
      * @inheritDoc
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
     public SequenceMatcher anyMatch(final byte[] bytes, final int matchPosition) {
@@ -151,6 +166,9 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     
     /**
      * @inheritDoc
+     * 
+     * Note: will return false if access is outside the byte reader.
+     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override     
     public boolean matches(final byte[] bytes, final int matchPosition) {
