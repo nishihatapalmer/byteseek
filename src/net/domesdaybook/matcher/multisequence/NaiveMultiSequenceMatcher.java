@@ -22,7 +22,7 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
     private final List<SequenceMatcher> matchers;
 
     
-    public NaiveMultiSequenceMatcher(List<SequenceMatcher> matchersToUse) {
+    public NaiveMultiSequenceMatcher(Collection<SequenceMatcher> matchersToUse) {
         matchers = new ArrayList(matchersToUse);
     }
 
