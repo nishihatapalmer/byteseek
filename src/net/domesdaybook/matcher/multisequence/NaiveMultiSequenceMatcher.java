@@ -54,7 +54,7 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
      *       It will not throw an IndexOutOfBoundsException.
      */    
     @Override
-    public SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition) {
+    public SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition) {
         for (final SequenceMatcher sequence : matchers) {
             if (sequence.matches(reader, matchPosition)) {
                 return sequence;
@@ -127,7 +127,7 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
      *       It will not throw an IndexOutOfBoundsException.     * 
      */ 
     @Override      
-    public SequenceMatcher anyMatch(byte[] bytes, int matchPosition) {
+    public SequenceMatcher firstMatch(byte[] bytes, int matchPosition) {
         for (final SequenceMatcher sequence : matchers) {
             if (sequence.matches(bytes, matchPosition)) {
                 return sequence;

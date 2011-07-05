@@ -68,7 +68,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
-    public SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition) {
+    public SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition) {
         final long noOfBytes = reader.length();
         if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
             final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one states.
@@ -99,7 +99,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      */
     @Override    
     public boolean matches(final ByteReader reader, final long matchPosition) {
-        return anyMatch(reader, matchPosition) != null;
+        return firstMatch(reader, matchPosition) != null;
     }
 
     
@@ -141,7 +141,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
-    public SequenceMatcher anyMatch(final byte[] bytes, final int matchPosition) {
+    public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition) {
         final int noOfBytes = bytes.length;
         if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
             final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one states.
@@ -172,7 +172,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      */
     @Override     
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        return anyMatch(bytes, matchPosition) != null;
+        return firstMatch(bytes, matchPosition) != null;
     }
 
 }

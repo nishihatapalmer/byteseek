@@ -36,7 +36,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher anyMatch(final ByteReader reader, final long matchPosition);
+    SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition);
   
     
     /**
@@ -57,5 +57,5 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher anyMatch(final byte[] bytes, final int matchPosition);    
+    SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition);    
 }
