@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.expression.compiler.sequence;
+package net.domesdaybook.compiler.sequence;
 
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
