@@ -6,7 +6,6 @@
 package net.domesdaybook.compiler.multisequence;
 
 import java.util.List;
-import net.domesdaybook.automata.AssociatedState;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
