@@ -42,10 +42,15 @@ import net.domesdaybook.searcher.Searcher;
  */
 public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
-    private int[] shiftForwardFunction;
-    private int[] shiftBackwardFunction;
-    private SingleByteMatcher firstSingleMatcher;
-    private SingleByteMatcher lastSingleMatcher;
+    // volatile arrays are usually a bad idea, as volatile applies to the array
+    // reference, not to the contents of the array.  However, we will never change
+    // the array contents once it is initialised, so this is safe.
+    @SuppressWarnings("VolatileArrayField")
+    private volatile int[] shiftForwardFunction;
+    @SuppressWarnings("VolatileArrayField")
+    private volatile int[] shiftBackwardFunction;
+    private volatile SingleByteMatcher firstSingleMatcher;
+    private volatile SingleByteMatcher lastSingleMatcher;
 
 
     /**
@@ -67,8 +72,14 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // and last and first matcher objects, which would mean we would
         // use less memory and construct faster, at the expense of
         // synchronising access.
-        getForwardShifts();
-        getBackwardShifts();
+        //getForwardShifts();
+        //getBackwardShifts();
+        
+        // Or instead, make fields volatile so we can lazy initialize them.
+        // we will use a single-check lazy initialization strategy.  This can
+        // result in the field being initialised more than once (if we are
+        // unlucky), but this doesn't really matter.  Most of the time we
+        // won't, and most field accesses will be slightly faster as a result.
     }
 
 
@@ -79,7 +90,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
 
         final int[] safeShifts = getForwardShifts();
-        final SingleByteMatcher lastMatcher = lastSingleMatcher;
+        final SingleByteMatcher lastMatcher = getLastSingleMatcher();
         final int lastBytePositionInSequence = matcher.length() - 1;
         long matchPosition = fromPosition;
         boolean matchFound = false;
@@ -131,7 +142,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition ) {
         
         final int[] safeShifts = getBackwardShifts();
-        final SingleByteMatcher firstMatcher = firstSingleMatcher;
+        final SingleByteMatcher firstMatcher = getFirstSingleMatcher();
         long matchPosition = fromPosition;
         boolean matchFound = false;
         while (matchPosition >= toPosition) {
@@ -179,43 +190,80 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
     /**
      *
+     * Uses Single-Check lazy initialisation.  This can result in the field
+     * being initialised more than once, but this doesn't really matter.
+     * 
      * @return A 256-element array of integers, giving the safe shift
      * for a given byte when searching forwards.
      */
     private int[] getForwardShifts() {
-        if (this.shiftForwardFunction == null) {
-            calculateForwardShifts();
-            this.lastSingleMatcher = matcher.getByteMatcherForPosition(matcher.length()-1);
+        int[] result = shiftForwardFunction;
+        if (result == null) {
+            shiftForwardFunction = result = createForwardShifts();
         }
-        return this.shiftForwardFunction;
+        return result;
     }
 
 
     /**
      *
+     * Uses Single-Check lazy initialisation.  This can result in the field
+     * being initialised more than once, but this doesn't really matter.
+     * 
      * @return A 256-element array of integers, giving the safe shift
      * for a given byte when searching backwards.
      */
     private int[] getBackwardShifts() {
-        if (this.shiftBackwardFunction == null) {
-            calculateBackwardShifts();
-            this.firstSingleMatcher = matcher.getByteMatcherForPosition(0);
+        int[] result = shiftBackwardFunction;
+        if (result == null) {
+            shiftBackwardFunction = result = createBackwardShifts();
         }
-        return this.shiftBackwardFunction;
+        return result;
+    }
+    
+    
+    /**
+     * Uses Single-Check lazy initialisation.  This can result in the field
+     * being initialised more than once, but this doesn't really matter.
+     * 
+     * @return The last single byte matcher in the matcher sequence.
+     */
+    private SingleByteMatcher getLastSingleMatcher() {
+        SingleByteMatcher result = lastSingleMatcher;
+        if (result == null) {
+            lastSingleMatcher = result = matcher.getByteMatcherForPosition(matcher.length()-1);
+        }
+        return result;
+    }
+    
+    
+    /**
+     * Uses Single-Check lazy initialisation.  This can result in the field
+     * being initialised more than once, but this doesn't really matter.
+     * 
+     * @return The first single byte matcher in the matcher sequence.
+     */
+    private SingleByteMatcher getFirstSingleMatcher() {
+        SingleByteMatcher result = firstSingleMatcher;
+        if (result == null) {
+            firstSingleMatcher = result = matcher.getByteMatcherForPosition(0);
+        }
+        return result;        
     }
 
 
+    
+    
     /**
      * Calculates the safe shifts to use if searching backwards.
      * A safe shift is either the length of the sequence, if the
      * byte does not appear in the {@link SequenceMatcher}, or
      * the shortest distance it appears from the beginning of the matcher.
      */
-    private void calculateBackwardShifts() {
+    private int[] createBackwardShifts() {
         // First set the default shift to the length of the sequence
         // (negative if search direction is reversed)
-        this.shiftBackwardFunction = new int[256];
-        final int[] shifts = this.shiftBackwardFunction;
+        final int[] shifts = new int[256];
         final int numBytes = matcher.length();
 
         final int defaultShift =  numBytes * -1;
@@ -235,6 +283,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
                 shifts[byteSequenceValue] = -sequenceByteIndex; // 1 - numBytes + sequenceByteIndex;
             }
         }
+        return shifts;
     }
 
 
@@ -244,10 +293,9 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
      * byte does not appear in the {@link SequenceMatcher}, or
      * the shortest distance it appears from the end of the matcher.
      */
-    private void calculateForwardShifts() {
+    private int[] createForwardShifts() {
         // First set the default shift to the length of the sequence
-        this.shiftForwardFunction = new int[256];
-        final int[] shifts = this.shiftForwardFunction;
+        final int[] shifts = new int[256];
         final int numBytes = matcher.length();
 
         final int defaultShift =  numBytes;
@@ -267,6 +315,10 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
                 shifts[byteSequenceValue]=numBytes-sequenceByteIndex-1;
             }
         }
+        
+        return shifts;
     }
+    
+
 
 }
