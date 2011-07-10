@@ -32,18 +32,39 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
      */
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
-        long matchPosition = Searcher.NOT_FOUND;
-        long searchPosition = fromPosition;
-        final long lastPosition = toPosition - matcher.length() - 1;
+        final SequenceMatcher theMatcher = matcher;
+        long searchPosition = fromPosition < 0? 0 : fromPosition;
+        final long lastPosition = toPosition < reader.length()?
+                  toPosition - theMatcher.length() + 1
+                : reader.length() - theMatcher.length();
         while (searchPosition <= lastPosition) {
-            if (matcher.matches(reader, searchPosition)) {
-                matchPosition = searchPosition;
-                break;
+            if (theMatcher.matches(reader, searchPosition)) {
+                return searchPosition;
             }
             searchPosition++;
         }
-        return matchPosition;
+        return Searcher.NOT_FOUND;
     }
+    
+    
+    /**
+     * {@inheritDoc}
+     */    
+    @Override
+    public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+        final SequenceMatcher theMatcher = matcher;
+        int searchPosition = fromPosition < 0? 0 : fromPosition;
+        final int lastPosition = toPosition < bytes.length?
+                  toPosition - theMatcher.length() + 1
+                : bytes.length - theMatcher.length();
+        while (searchPosition <= lastPosition) {
+            if (theMatcher.matches(bytes, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition++;
+        }
+        return Searcher.NOT_FOUND;    
+    }    
 
     
     /**
@@ -51,16 +72,38 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
      */
     @Override
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
-        long matchPosition = Searcher.NOT_FOUND;
-        long searchPosition = fromPosition - matcher.length() + 1;
-        while (searchPosition >= toPosition) {
-            if (matcher.matches(reader, searchPosition)) {
-                matchPosition = searchPosition;
-                break;
+        final SequenceMatcher theMatcher = matcher;
+        long searchPosition = fromPosition < reader.length()?
+                  fromPosition - theMatcher.length() + 1
+                : reader.length() - theMatcher.length();
+        final long lastPosition = toPosition < 0? 0 : toPosition;
+        while (searchPosition >= lastPosition) {
+            if (theMatcher.matches(reader, searchPosition)) {
+                return searchPosition;
             }
             searchPosition--;
         }
-        return matchPosition;
+        return Searcher.NOT_FOUND;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+        final SequenceMatcher theMatcher = matcher;
+        int searchPosition = fromPosition < bytes.length?
+                  fromPosition - theMatcher.length() + 1
+                : bytes.length - theMatcher.length();
+        final int lastPosition = toPosition < 0? 0 : toPosition;
+        while (searchPosition >= lastPosition) {
+            if (theMatcher.matches(bytes, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition--;
+        }
+        return Searcher.NOT_FOUND;
     }
 
 }

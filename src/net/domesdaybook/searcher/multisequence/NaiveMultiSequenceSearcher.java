@@ -1,7 +1,8 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Matt Palmer 2011, All rights reserved.
+ *
  */
+
 package net.domesdaybook.searcher.multisequence;
 
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
@@ -24,6 +25,10 @@ public class NaiveMultiSequenceSearcher implements Searcher {
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public long searchForwards(ByteReader reader, long fromPosition, long toPosition) {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
@@ -38,6 +43,29 @@ public class NaiveMultiSequenceSearcher implements Searcher {
     }
 
     
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+        final int lastPossiblePosition = bytes.length - 1;
+        final int upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
+        int currentPosition = fromPosition > 0? fromPosition : 0;
+        while (currentPosition <= upToPosition) {
+            if (matcher.matches(bytes, currentPosition)) {
+                return currentPosition;
+            }
+            currentPosition++;
+        }
+        return Searcher.NOT_FOUND;
+    }    
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public long searchBackwards(ByteReader reader, long fromPosition, long toPosition) {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition > 0? toPosition : 0;
@@ -52,6 +80,24 @@ public class NaiveMultiSequenceSearcher implements Searcher {
         return Searcher.NOT_FOUND;
     }
     
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+        final int lastPossiblePosition = bytes.length - 1;
+        final int upToPosition = toPosition > 0? toPosition : 0;
+        int currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;
+        while (currentPosition >= upToPosition) {
+            if (matcher.matches(bytes, currentPosition)) {
+                return currentPosition;
+            }
+            currentPosition--;
+        }
+        
+        return Searcher.NOT_FOUND;
+    }    
     
     
 }
