@@ -229,7 +229,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             while (!firstMatcher.matches(firstByte)) {
                 // Note: shifts for backwards matching are already negative, so we add them.
                 searchPosition += safeShifts[(int) firstByte & 0xFF]; // shifts always add - if the search is backwards, the shift values are already negative.
-                if (searchPosition >= lastPosition) {
+                if (searchPosition < lastPosition) {
                     return Searcher.NOT_FOUND;
                 }
                 firstByte = bytes[searchPosition];
