@@ -33,10 +33,10 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         final SequenceMatcher theMatcher = matcher;
+        final long lastPossiblePosition = reader.length() - theMatcher.length() + 1;
+        final long lastPosition = toPosition < lastPossiblePosition?
+                toPosition : lastPossiblePosition;
         long searchPosition = fromPosition < 0? 0 : fromPosition;
-        final long lastPosition = toPosition < reader.length()?
-                  toPosition - theMatcher.length() + 1
-                : reader.length() - theMatcher.length();
         while (searchPosition <= lastPosition) {
             if (theMatcher.matches(reader, searchPosition)) {
                 return searchPosition;
@@ -53,10 +53,10 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
         final SequenceMatcher theMatcher = matcher;
-        int searchPosition = fromPosition < 0? 0 : fromPosition;
-        final int lastPosition = toPosition < bytes.length?
-                  toPosition - theMatcher.length() + 1
-                : bytes.length - theMatcher.length();
+        final int lastPossiblePosition = bytes.length - theMatcher.length() + 1;
+        final int lastPosition = toPosition < lastPossiblePosition?
+                toPosition : lastPossiblePosition;
+        int searchPosition = fromPosition < 0? 0 : fromPosition;        
         while (searchPosition <= lastPosition) {
             if (theMatcher.matches(bytes, searchPosition)) {
                 return searchPosition;
@@ -73,10 +73,10 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         final SequenceMatcher theMatcher = matcher;
-        long searchPosition = fromPosition < reader.length()?
-                  fromPosition - theMatcher.length() + 1
-                : reader.length() - theMatcher.length();
-        final long lastPosition = toPosition < 0? 0 : toPosition;
+        final long lastPosition = toPosition < 0? 0 : toPosition;        
+        final long firstPossiblePosition = reader.length() - theMatcher.length() + 1;
+        long searchPosition = fromPosition < firstPossiblePosition?
+                fromPosition : firstPossiblePosition;
         while (searchPosition >= lastPosition) {
             if (theMatcher.matches(reader, searchPosition)) {
                 return searchPosition;
@@ -93,10 +93,10 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         final SequenceMatcher theMatcher = matcher;
-        int searchPosition = fromPosition < bytes.length?
-                  fromPosition - theMatcher.length() + 1
-                : bytes.length - theMatcher.length();
         final int lastPosition = toPosition < 0? 0 : toPosition;
+        final int firstPossiblePosition = bytes.length - theMatcher.length() + 1;
+        int searchPosition = fromPosition < firstPossiblePosition?
+                fromPosition : firstPossiblePosition;
         while (searchPosition >= lastPosition) {
             if (theMatcher.matches(bytes, searchPosition)) {
                 return searchPosition;
