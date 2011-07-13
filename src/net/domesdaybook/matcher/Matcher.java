@@ -39,6 +39,7 @@ public interface Matcher {
     
     /**
      * Returns whether there is a match or not at the given position in a byte array.
+     * 
      * @param bytes An array of bytes to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
