@@ -123,6 +123,42 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         return false;
     }    
     
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+        final List<SingleByteMatcher> matchList = this.matcherSequence;
+        final int localStop = length;
+        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+            final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
+            final byte byteRead = reader.readByte(matchFrom + byteIndex);
+            if (!byteMatcher.matches(byteRead)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+        final List<SingleByteMatcher> matchList = this.matcherSequence;
+        final int localStop = length;
+        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
+            final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
+            final byte byteRead = bytes[matchFrom + byteIndex];
+            if (!byteMatcher.matches(byteRead)) {
+                return false;
+            }
+        }
+        return true;        
+    }
+    
 
     /**
      * {@inheritDoc}
@@ -164,7 +200,6 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         }
         return builder.toString();
     }
-
 
 
 }

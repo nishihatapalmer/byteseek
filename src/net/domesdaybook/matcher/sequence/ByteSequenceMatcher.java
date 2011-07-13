@@ -128,8 +128,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
@@ -137,7 +135,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
             final byte[] localArray = byteArray;
             for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                if (!(localArray[byteIndex] == reader.readByte( matchFrom + byteIndex))) {
+                if (!(localArray[byteIndex] == reader.readByte(matchFrom + byteIndex))) {
                     return false;
                 }
             }
@@ -151,8 +149,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * 
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final byte[] bytes, final int matchFrom) {
@@ -168,6 +164,39 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
         return false;
     }    
+    
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+        final int localLength = length;
+        final byte[] localArray = byteArray;
+        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            if (!(localArray[byteIndex] == reader.readByte(matchPosition + byteIndex))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        final int localLength = length;
+        final byte[] localArray = byteArray;
+        for ( int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            if (!(localArray[byteIndex] == bytes[matchPosition + byteIndex])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     
     
     /**
@@ -231,8 +260,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
         return hexString.toString();
     }
-
-    
 
 
 }

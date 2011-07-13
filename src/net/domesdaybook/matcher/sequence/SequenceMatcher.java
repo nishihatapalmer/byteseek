@@ -7,6 +7,7 @@ package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.reader.ByteReader;
 
 /**
  * An extension to the {@link Matcher} interface to support sequences.
@@ -24,6 +25,37 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      */
     public SingleByteMatcher getByteMatcherForPosition(final int position);
 
+    
+    /**
+     * Returns whether there is a match or not at the given position in a ByteReader.
+     * <p/>
+     * It does not perform any bounds checking, so an exception can be thrown,
+     * or results may be undefined if matching is outside the bounds of the array,
+     * depending on the implementation of the ByteReader object.
+     * <p/>
+     * It may also throw a ByteReaderException or other exception if a serious problem
+     * occurred, depending on the implementation of the ByteReader.
+     * 
+     * @param reader The {@link ByteReader} to read from.
+     * @param matchPosition The position to try to match at.
+     * @return Whether there is a match at the given position.
+     */    
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition);
+    
+    
+    
+    /**
+     * Returns whether there is a match or not at the given position in a byte array.
+     * <p/>
+     * It does not perform any bounds checking, so an IndexOutOfBoundsException
+     * can be thrown by this method if matching is outside the bounds of the array.
+     * 
+     * @param bytes An array of bytes to read from.
+     * @param matchPosition The position to try to match at.
+     * @return Whether there is a match at the given position.
+     */
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition);    
+    
 
     /**
      * Gets the length of the matching sequence.

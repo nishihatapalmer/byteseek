@@ -61,17 +61,16 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
         if (matchFrom + length < reader.length() && matchFrom >= 0) {
             long matchAt = matchFrom;
-            final List<SequenceMatcher> localList=matchers;
+            final List<SequenceMatcher> localList = matchers;
             for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
                 final SequenceMatcher matcher = localList.get( matchIndex );
-                if (matcher.matches(reader, matchAt)) {
+                // Don't need to do a bounds check here, as we already have above.
+                if (matcher.matchesNoBoundsCheck(reader, matchAt)) {
                     matchAt += matcher.length();
                 } else {
                     return false;
@@ -86,17 +85,16 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
         if (matchFrom + length < bytes.length && matchFrom >= 0) {
             int matchAt = matchFrom;
-            final List<SequenceMatcher> localList=matchers;
+            final List<SequenceMatcher> localList = matchers;
             for (int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++) {
                 final SequenceMatcher matcher = localList.get(matchIndex);
-                if (matcher.matches(bytes, matchAt)) {
+                // Don't need to do a bounds check here, as we already have above.
+                if (matcher.matchesNoBoundsCheck(bytes, matchAt)) {
                     matchAt += matcher.length();
                 } else {
                     return false;
@@ -107,6 +105,46 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
         return false;
     }    
 
+    
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+        long matchAt = matchFrom;
+        final List<SequenceMatcher> localList = matchers;
+        for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
+            final SequenceMatcher matcher = localList.get( matchIndex );
+            if (matcher.matchesNoBoundsCheck(reader, matchAt)) {
+                matchAt += matcher.length();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+        int matchAt = matchFrom;
+        final List<SequenceMatcher> localList = matchers;
+        for (int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++) {
+            final SequenceMatcher matcher = localList.get(matchIndex);
+            if (matcher.matchesNoBoundsCheck(bytes, matchAt)) {
+                matchAt += matcher.length();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }    
+    
     
     /**
      * {@inheritDoc}
@@ -190,7 +228,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * A simple class to hold a SequenceMatcher and the offset into it for a
      * given position in the CombinedSequenceMatcher.
      */
-    private final class ByteMatcherIndex {
+    private final static class ByteMatcherIndex {
         public final SequenceMatcher matcher;
         public final int offset;
         ByteMatcherIndex(final SequenceMatcher matcher, final int offset) {

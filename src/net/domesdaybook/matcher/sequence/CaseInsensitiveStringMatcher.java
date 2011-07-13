@@ -89,16 +89,13 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
         final int localLength = length;        
         if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
             final SingleByteMatcher[] matchList = charMatchList;
-            for ( int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
                 final SingleByteMatcher charMatcher = matchList[byteIndex];
                 final byte theByte = reader.readByte(matchFrom + byteIndex);
                 if (!charMatcher.matches(theByte)) {
@@ -114,15 +111,13 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final byte[] bytes, final int matchFrom) {
         final int localLength = length;
         if (matchFrom + localLength < bytes.length && matchFrom >= 0) {
             final SingleByteMatcher[] matchList = charMatchList;
-            for ( int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
                 final SingleByteMatcher charMatcher = matchList[byteIndex];
                 final byte theByte = bytes[matchFrom + byteIndex];
                 if (!charMatcher.matches(theByte)) {
@@ -133,6 +128,42 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         }
         return false;
     }   
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+        final int localLength = length;        
+        final SingleByteMatcher[] matchList = charMatchList;
+        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            final SingleByteMatcher charMatcher = matchList[byteIndex];
+            final byte theByte = reader.readByte(matchFrom + byteIndex);
+            if (!charMatcher.matches(theByte)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+        final int localLength = length;
+        final SingleByteMatcher[] matchList = charMatchList;
+        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            final SingleByteMatcher charMatcher = matchList[byteIndex];
+            final byte theByte = bytes[matchFrom + byteIndex];
+            if (!charMatcher.matches(theByte)) {
+                return false;
+            }
+        }
+        return true;
+    }
     
     
     /**

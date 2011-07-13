@@ -71,8 +71,6 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
@@ -93,8 +91,6 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public final boolean matches(final byte[] bytes, final int matchFrom) {
@@ -109,6 +105,40 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
             return true;
         }
         return false;
+    }    
+    
+    
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+        final int localLength = length;
+        final byte[] localArray = byteArray;
+        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            if (!(localArray[byteIndex] == reader.readByte(matchFrom + byteIndex))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+        final int localLength = length;
+        final byte[] localArray = byteArray;
+        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
+                return false;
+            }
+        }
+        return true;
     }    
     
     

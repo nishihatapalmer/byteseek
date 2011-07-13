@@ -71,8 +71,6 @@ public final class FixedGapMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchPosition) {
@@ -83,13 +81,31 @@ public final class FixedGapMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return matchPosition + gapLength < bytes.length && matchPosition >= 0;
     }    
+    
+    
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+        return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        return true;
+    }
     
     
     /**
