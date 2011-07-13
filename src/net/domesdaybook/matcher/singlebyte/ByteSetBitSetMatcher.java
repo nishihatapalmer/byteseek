@@ -52,7 +52,8 @@ public final class ByteSetBitSetMatcher extends InvertibleMatcher implements Sin
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        return byteValues.get((int) reader.readByte(matchFrom) & 0xFF) ^ inverted;
+        return (matchFrom >= 0 && matchFrom < reader.length()) &&
+                (byteValues.get((int) reader.readByte(matchFrom) & 0xFF) ^ inverted);
     }  
 
 
@@ -61,7 +62,8 @@ public final class ByteSetBitSetMatcher extends InvertibleMatcher implements Sin
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
-        return byteValues.get((int) bytes[matchFrom] & 0xFF) ^ inverted;
+        return (matchFrom >= 0 && matchFrom < bytes.length) &&
+                (byteValues.get((int) bytes[matchFrom] & 0xFF) ^ inverted);
     }  
     
     

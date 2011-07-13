@@ -34,7 +34,8 @@ public final class ByteMatcher implements SingleByteMatcher {
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        return reader.readByte(matchFrom) == byteToMatch;
+        return matchFrom >= 0 && matchFrom <= reader.length() &&
+                reader.readByte(matchFrom) == byteToMatch;
     }
 
 
@@ -43,7 +44,8 @@ public final class ByteMatcher implements SingleByteMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
-        return bytes[matchFrom] == byteToMatch;
+        return matchFrom >= 0 && matchFrom < bytes.length &&
+                bytes[matchFrom] == byteToMatch;
     }    
     
     

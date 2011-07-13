@@ -57,7 +57,8 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        return (Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted;
+        return (matchFrom >= 0 && matchFrom < reader.length()) &&
+                ((Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted);
     }    
 
     
@@ -66,7 +67,8 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
      */
     @Override
     public boolean matches(final byte[] bytesFrom, final int matchFrom) {
-        return (Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted;
+        return (matchFrom >= 0 && matchFrom < bytes.length) &&
+                ((Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted);
     }        
     
 

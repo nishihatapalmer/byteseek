@@ -61,12 +61,7 @@ public final class AnyMatcher implements SingleByteMatcher {
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        if (matchFrom >= reader.length() || matchFrom < 0) {
-            final String message 
-                = String.format("Cannot access byte %d in reader of size %d", matchFrom, reader.length());
-            throw new IndexOutOfBoundsException(message);
-        }
-        return true;
+        return matchFrom >= 0 && matchFrom < reader.length();
     }
     
     
@@ -75,12 +70,7 @@ public final class AnyMatcher implements SingleByteMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
-        if (matchFrom >= bytes.length || matchFrom < 0) {
-            final String message 
-                = String.format("Cannot access byte %d in array of size %d", matchFrom, bytes.length);
-            throw new IndexOutOfBoundsException(message);
-        }
-        return true;
+        return matchFrom >= 0 && matchFrom < bytes.length;
     }    
 
 

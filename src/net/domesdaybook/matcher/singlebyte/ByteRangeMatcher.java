@@ -52,9 +52,12 @@ public final class ByteRangeMatcher extends InvertibleMatcher implements SingleB
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        final int byteValue = reader.readByte(matchFrom) & 0xFF;
-        final boolean insideRange = (byteValue >= minByteValue && byteValue <= maxByteValue);
-        return insideRange ^ inverted;
+        if (matchFrom >= 0 && matchFrom < reader.length()) {
+            final int byteValue = reader.readByte(matchFrom) & 0xFF;
+            final boolean insideRange = (byteValue >= minByteValue && byteValue <= maxByteValue);
+            return insideRange ^ inverted;
+        }
+        return false;
     }
     
 
@@ -63,9 +66,12 @@ public final class ByteRangeMatcher extends InvertibleMatcher implements SingleB
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
-        final int byteValue = bytes[matchFrom] & 0xFF;
-        final boolean insideRange = (byteValue >= minByteValue && byteValue <= maxByteValue);
-        return insideRange ^ inverted;
+        if (matchFrom >= 0 && matchFrom < bytes.length) {
+            final int byteValue = bytes[matchFrom] & 0xFF;
+            final boolean insideRange = (byteValue >= minByteValue && byteValue <= maxByteValue);
+            return insideRange ^ inverted;
+        }
+        return false;
     }    
     
     
