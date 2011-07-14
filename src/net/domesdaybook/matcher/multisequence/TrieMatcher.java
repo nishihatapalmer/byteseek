@@ -38,7 +38,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final long noOfBytes = reader.length();
         if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
-            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one states.
+            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one state.
             currentStates.add(trie.getInitialState());
             long currentPosition = matchPosition;
             while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
@@ -64,7 +64,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     public SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition) {
         final long noOfBytes = reader.length();
         if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
-            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one states.
+            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one state.
             currentStates.add(trie.getInitialState());
             long currentPosition = matchPosition;
             while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
@@ -102,7 +102,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
         final int noOfBytes = bytes.length;
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
-            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one states.
+            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one state.
             currentStates.add(trie.getInitialState());
             int currentPosition = matchPosition;
             while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
@@ -129,7 +129,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition) {
         final int noOfBytes = bytes.length;
         if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {
-            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one states.
+            final List<State> currentStates = new ArrayList<State>(1); // only ever zero or one state.
             currentStates.add(trie.getInitialState());
             int currentPosition = matchPosition;
             while (!currentStates.isEmpty() && currentPosition < noOfBytes) {
