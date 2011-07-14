@@ -20,7 +20,7 @@ import net.domesdaybook.reader.ByteReader;
  */
 public final class TrieMatcher implements MultiSequenceMatcher {
 
-    final Trie trie;
+    private final Trie trie;
 
     public TrieMatcher(final Trie trie) {
         if (trie == null) {
