@@ -57,5 +57,20 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition);    
+    SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition);   
+    
+    
+    /**
+     * 
+     * @return int The minimum length of the sequences that can match.
+     */
+    int getMinimumLength();
+    
+    
+    
+    /**
+     * 
+     * @return int The maximum length of the sequences that can match.
+     */
+    int getMaximumLength();
 }

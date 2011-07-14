@@ -20,19 +20,35 @@ import net.domesdaybook.reader.ByteReader;
 public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
 
     private final List<SequenceMatcher> matchers;
+    private final int minimumLength;
+    private final int maximumLength;
 
     
     public NaiveMultiSequenceMatcher(Collection<SequenceMatcher> matchersToUse) {
+        if (matchersToUse == null) {
+            throw new IllegalArgumentException("Null collection of matchers passed in.");
+        }
         matchers = new ArrayList(matchersToUse);
+        if (matchers.isEmpty()) {
+            minimumLength = 0;
+            maximumLength = 0;
+        } else {
+            int minLength = Integer.MAX_VALUE;
+            int maxLength = Integer.MIN_VALUE;
+            for (final SequenceMatcher matcher : matchers) {
+                final int length = matcher.length();
+                minLength = Math.min(minLength, length);
+                maxLength = Math.max(maxLength, length);
+            }
+            minimumLength = minLength;
+            maximumLength = maxLength;
+        }
     }
 
 
     /**
      * 
      * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
@@ -49,9 +65,6 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
     /**    
      * 
      * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */    
     @Override
     public SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition) {
@@ -67,9 +80,6 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
     /**    
      * 
      * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */ 
     @Override
     public boolean matches(final ByteReader reader, final long matchPosition) {
@@ -85,9 +95,6 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
     /**    
      * 
      * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */ 
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
@@ -103,9 +110,6 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
     /**    
      * 
      * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */ 
     @Override   
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
@@ -120,11 +124,7 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
 
 
     /**    
-     * 
-     * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.     * 
+     * @inheritDoc 
      */ 
     @Override      
     public SequenceMatcher firstMatch(byte[] bytes, int matchPosition) {
@@ -134,6 +134,24 @@ public final class NaiveMultiSequenceMatcher implements MultiSequenceMatcher {
             }
         }
         return null;
+    }
+
+    
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override  
+    public int getMinimumLength() {
+        return minimumLength;
+    }
+
+    
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override  
+    public int getMaximumLength() {
+        return maximumLength;
     }
     
 }

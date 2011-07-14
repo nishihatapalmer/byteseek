@@ -32,9 +32,6 @@ public final class TrieMatcher implements MultiSequenceMatcher {
 
     /**
      * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
@@ -63,9 +60,6 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     
     /**
      * @inheritDoc
-     * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
     public SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition) {
@@ -94,8 +88,6 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     /**
      * @inheritDoc
      * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
     public boolean matches(final ByteReader reader, final long matchPosition) {
@@ -106,8 +98,6 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     /**
      * @inheritDoc
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
@@ -137,8 +127,6 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     /**
      * @inheritDoc
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override    
     public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition) {
@@ -167,12 +155,30 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     /**
      * @inheritDoc
      * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override     
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return firstMatch(bytes, matchPosition) != null;
+    }
+
+    
+    /**
+     * @inheritDoc
+     * 
+     */
+    @Override 
+    public int getMinimumLength() {
+        return trie.getMinimumLength();
+    }
+
+    
+    /**
+     * @inheritDoc
+     * 
+     */
+    @Override 
+    public int getMaximumLength() {
+        return trie.getMaximumLength();
     }
 
 }
