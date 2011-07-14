@@ -33,8 +33,9 @@ public class NaiveMultiSequenceSearcher implements Searcher {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
         long currentPosition = fromPosition > 0? fromPosition : 0;
+        final MultiSequenceMatcher localMatcher = matcher;
         while (currentPosition <= upToPosition) {
-            if (matcher.matches(reader, currentPosition)) {
+            if (localMatcher.matches(reader, currentPosition)) {
                 return currentPosition;
             }
             currentPosition++;
@@ -52,8 +53,9 @@ public class NaiveMultiSequenceSearcher implements Searcher {
         final int lastPossiblePosition = bytes.length - 1;
         final int upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
         int currentPosition = fromPosition > 0? fromPosition : 0;
+        final MultiSequenceMatcher localMatcher = matcher;
         while (currentPosition <= upToPosition) {
-            if (matcher.matches(bytes, currentPosition)) {
+            if (localMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
             }
             currentPosition++;
@@ -70,8 +72,9 @@ public class NaiveMultiSequenceSearcher implements Searcher {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition > 0? toPosition : 0;
         long currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;
+        final MultiSequenceMatcher localMatcher = matcher;
         while (currentPosition >= upToPosition) {
-            if (matcher.matches(reader, currentPosition)) {
+            if (localMatcher.matches(reader, currentPosition)) {
                 return currentPosition;
             }
             currentPosition--;
@@ -89,8 +92,9 @@ public class NaiveMultiSequenceSearcher implements Searcher {
         final int lastPossiblePosition = bytes.length - 1;
         final int upToPosition = toPosition > 0? toPosition : 0;
         int currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;
+        final MultiSequenceMatcher localMatcher = matcher;
         while (currentPosition >= upToPosition) {
-            if (matcher.matches(bytes, currentPosition)) {
+            if (localMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
             }
             currentPosition--;
