@@ -99,7 +99,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
             // Do we have a match?
             final long startMatchPosition = searchPosition - lastBytePositionInSequence;
-            if (theMatcher.matches(reader, startMatchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(reader, startMatchPosition)) {
                 return startMatchPosition;
             }
 
@@ -146,7 +146,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
 
             // Do we have a match?
             final int startMatchPosition = searchPosition - lastBytePositionInSequence;
-            if (theMatcher.matches(bytes, startMatchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(bytes, startMatchPosition)) {
                 return startMatchPosition;
             }
 
@@ -191,7 +191,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             }
 
             // Do we have a match?
-            if (theMatcher.matches(reader, searchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
                 return searchPosition;
             }
 
@@ -236,7 +236,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
             }
 
             // Do we have a match?
-            if (theMatcher.matches(bytes, searchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
 

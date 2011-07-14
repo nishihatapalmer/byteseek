@@ -43,7 +43,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
         
         // Search forwards
         while (searchPosition <= lastPosition) {
-            if (theMatcher.matches(reader, searchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
                 return searchPosition;
             }
             searchPosition++;
@@ -68,7 +68,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
         
         // Search forwards
         while (searchPosition <= lastPosition) {
-            if (theMatcher.matches(bytes, searchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
             searchPosition++;
@@ -93,7 +93,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
         
         // Search backwards:
         while (searchPosition >= lastPosition) {
-            if (theMatcher.matches(reader, searchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
                 return searchPosition;
             }
             searchPosition--;
@@ -118,7 +118,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
         
         // Search backwards:
         while (searchPosition >= lastPosition) {
-            if (theMatcher.matches(bytes, searchPosition)) {
+            if (theMatcher.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
             searchPosition--;
