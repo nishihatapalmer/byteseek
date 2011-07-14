@@ -48,8 +48,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
                 currentState.appendNextStatesForByte(currentStates, currentByte);
                 for (final State state : currentStates) {
                     if (state.isFinal()) {
-                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                        result.addAll(trieState.getAssociations());
+                        result.addAll(getAllAssociations(state));
                     }
                 }
             }
@@ -75,8 +74,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
                 currentState.appendNextStatesForByte(currentStates, currentByte);
                 for (final State state : currentStates) {
                     if (state.isFinal()) {
-                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                        return trieState.getAssociations().iterator().next();
+                        return getFirstAssociation(state);
                     }
                 }
             }
@@ -114,8 +112,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
                 currentState.appendNextStatesForByte(currentStates, currentByte);
                 for (final State state : currentStates) {
                     if (state.isFinal()) {
-                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                        result.addAll(trieState.getAssociations());
+                        result.addAll(getAllAssociations(state));
                     }
                 }
             }
@@ -142,8 +139,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
                 currentState.appendNextStatesForByte(currentStates, currentByte);
                 for (final State state : currentStates) {
                     if (state.isFinal()) {
-                        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
-                        return trieState.getAssociations().iterator().next();
+                        return getFirstAssociation(state);
                     }
                 }
             }
@@ -179,6 +175,18 @@ public final class TrieMatcher implements MultiSequenceMatcher {
     @Override 
     public int getMaximumLength() {
         return trie.getMaximumLength();
+    }
+    
+    
+    private SequenceMatcher getFirstAssociation(final State state) {
+        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
+        return trieState.getAssociations().iterator().next();
+    }
+    
+    
+    private Collection<SequenceMatcher> getAllAssociations(final State state) {
+        final AssociatedState<SequenceMatcher> trieState = (AssociatedState<SequenceMatcher>) state;
+        return trieState.getAssociations();
     }
 
 }
