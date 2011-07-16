@@ -45,7 +45,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(int position) {
+    public SingleByteMatcher getByteMatcherForPosition(final int position) {
         return ANY_MATCHER;
     }
 
