@@ -33,7 +33,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         // Get objects needed for the search:
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final long lastPossiblePosition = reader.length() - theMatcher.length();
@@ -58,7 +58,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
         // Get objects needed for the search:
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final int lastPossiblePosition = bytes.length - theMatcher.length();
@@ -83,7 +83,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         // Get objects needed for the search:
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final long lastPosition = toPosition < 0? 0 : toPosition;        
@@ -108,7 +108,7 @@ public final class NaiveSequenceSearcher extends SequenceMatcherSearcher {
     @Override
     public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         // Get objects needed for the search:
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final int lastPosition = toPosition < 0? 0 : toPosition;

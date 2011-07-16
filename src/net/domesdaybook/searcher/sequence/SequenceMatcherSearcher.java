@@ -21,7 +21,7 @@ import net.domesdaybook.searcher.Searcher;
 public abstract class SequenceMatcherSearcher implements Searcher {
 
 
-    protected final SequenceMatcher matcher;
+    private final SequenceMatcher matcher;
 
     /**
      * Constructs an immutable SequenceMatcherSearcher.

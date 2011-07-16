@@ -74,7 +74,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // Get the objects needed to search:
         final int[] safeShifts = getForwardShifts();
         final SingleByteMatcher lastMatcher = getLastSingleMatcher();
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final int lastBytePositionInSequence = theMatcher.length() - 1;
@@ -121,7 +121,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // Get the objects needed to search:
         final int[] safeShifts = getForwardShifts();
         final SingleByteMatcher lastMatcher = getLastSingleMatcher();
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final int lastBytePositionInSequence = theMatcher.length() - 1;
@@ -168,7 +168,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // Get objects needed to search:
         final int[] safeShifts = getBackwardShifts();
         final SingleByteMatcher firstMatcher = getFirstSingleMatcher();
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final long lastPosition = toPosition > 0? toPosition : 0;
@@ -213,7 +213,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // Get objects needed for the search:
         final int[] safeShifts = getBackwardShifts();
         final SingleByteMatcher firstMatcher = getFirstSingleMatcher();
-        final SequenceMatcher theMatcher = matcher;
+        final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
         final int lastPosition = toPosition > 0? toPosition : 0;
@@ -291,7 +291,8 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private SingleByteMatcher getLastSingleMatcher() {
         SingleByteMatcher result = lastSingleMatcher;
         if (result == null) {
-            lastSingleMatcher = result = matcher.getByteMatcherForPosition(matcher.length()-1);
+            final SequenceMatcher theMatcher = getMatcher();
+            lastSingleMatcher = result = theMatcher.getByteMatcherForPosition(theMatcher.length()-1);
         }
         return result;
     }
@@ -306,7 +307,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private SingleByteMatcher getFirstSingleMatcher() {
         SingleByteMatcher result = firstSingleMatcher;
         if (result == null) {
-            firstSingleMatcher = result = matcher.getByteMatcherForPosition(0);
+            firstSingleMatcher = result = getMatcher().getByteMatcherForPosition(0);
         }
         return result;        
     }
@@ -324,7 +325,8 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // First set the default shift to the length of the sequence
         // (negative if search direction is reversed)
         final int[] shifts = new int[256];
-        final int numBytes = matcher.length();
+        final SequenceMatcher theMatcher = getMatcher();
+        final int numBytes = theMatcher.length();
 
         final int defaultShift =  numBytes * -1;
         for (int charValueIndex=255; charValueIndex>=0; charValueIndex--) {
@@ -336,7 +338,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // from the end of the sequence, as a zero-indexed offset.
         // Each position can match more than one byte (e.g. if a byte class appears).
         for (int sequenceByteIndex = numBytes-1; sequenceByteIndex > 0; sequenceByteIndex--) {
-            final SingleByteMatcher aMatcher = matcher.getByteMatcherForPosition(sequenceByteIndex);
+            final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
             final byte[] matchingBytes = aMatcher.getMatchingBytes();
             for (int byteIndex = 0; byteIndex < matchingBytes.length; byteIndex++)  {
                 final int byteSequenceValue = (matchingBytes[byteIndex] & 0xFF);
@@ -356,7 +358,8 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private int[] createForwardShifts() {
         // First set the default shift to the length of the sequence
         final int[] shifts = new int[256];
-        final int numBytes = matcher.length();
+        final SequenceMatcher theMatcher = getMatcher();
+        final int numBytes = theMatcher.length();
 
         final int defaultShift =  numBytes;
         for (int charValueIndex=255; charValueIndex>=0; charValueIndex--) {
@@ -368,7 +371,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         // from the end of the sequence, as a zero-indexed offset.
         // Each position can match more than one byte (e.g. if a byte class appears).
         for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes -1; sequenceByteIndex++) {
-            final SingleByteMatcher aMatcher = matcher.getByteMatcherForPosition(sequenceByteIndex);
+            final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
             final byte[] matchingBytes = aMatcher.getMatchingBytes();
             for (int byteIndex = 0; byteIndex < matchingBytes.length; byteIndex++)  {
                 final int byteSequenceValue = ( matchingBytes[byteIndex] & 0xFF );
