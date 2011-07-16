@@ -85,7 +85,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
         this.byteArray = new byte[totalLength];
         int position = 0;
-        for (ByteSequenceMatcher matcher : matchers) {
+        for (final ByteSequenceMatcher matcher : matchers) {
             System.arraycopy(matcher.byteArray, 0, this.byteArray, position, matcher.length);
             position += matcher.length;
         }
@@ -118,8 +118,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @param byteValue The byte to match.
      */
     public ByteSequenceMatcher(final byte byteValue) {
-        //this.byteArray = new byte[1];
-        //this.byteArray[0] = byteValue;
         this.byteArray = new byte[] {byteValue};
         length = 1;
     }
@@ -155,7 +153,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         final int localLength = length;
         if (matchFrom + localLength < bytes.length && matchFrom >= 0) {
             final byte[] localArray = byteArray;
-            for ( int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
                 if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
                     return false;
                 }
@@ -221,7 +219,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final SingleByteMatcher getByteMatcherForPosition(int position) {
+    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
         return new ByteMatcher(byteArray[position]);
     }
 
@@ -236,7 +234,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     }
     
 
-    private String bytesToString(final boolean prettyPrint, byte[] bytes) {
+    private String bytesToString(final boolean prettyPrint, final byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         boolean inString = false;
         for (int byteIndex = 0, byteLength = bytes.length;
