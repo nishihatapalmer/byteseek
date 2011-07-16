@@ -21,7 +21,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 public final class TrieMatcherCompiler implements Compiler<TrieMatcher, Collection<SequenceMatcher>> {
 
     private static TrieMatcherCompiler defaultCompiler;
-    public static TrieMatcher trieMatcherFrom(Collection<SequenceMatcher> expression) throws CompileException {
+    public static TrieMatcher trieMatcherFrom(final Collection<SequenceMatcher> expression) throws CompileException {
         defaultCompiler = new TrieMatcherCompiler();
         return defaultCompiler.compile(expression);
     }
@@ -35,7 +35,7 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, Collecti
     }
     
     
-    public TrieMatcherCompiler(Compiler<Trie, Collection<SequenceMatcher>> trieCompiler) {
+    public TrieMatcherCompiler(final Compiler<Trie, Collection<SequenceMatcher>> trieCompiler) {
         if (trieCompiler == null) {
             compiler = new TrieCompiler();
         } else {
@@ -45,7 +45,7 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, Collecti
     
     
     @Override
-    public TrieMatcher compile(Collection<SequenceMatcher> expression) throws CompileException {
+    public TrieMatcher compile(final Collection<SequenceMatcher> expression) throws CompileException {
         Trie trie = compiler.compile(expression);
         return new TrieMatcher(trie);
     }
