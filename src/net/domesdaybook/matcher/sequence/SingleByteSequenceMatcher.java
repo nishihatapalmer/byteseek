@@ -84,9 +84,9 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final ByteReader reader, final long matchFrom) {
-        if (matchFrom + length < reader.length() && matchFrom >= 0) {
+        final int localStop = length;
+        if (matchFrom + localStop < reader.length() && matchFrom >= 0) {
             final List<SingleByteMatcher> matchList = this.matcherSequence;
-            final int localStop = length;
             for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
                 final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
                 final byte byteRead = reader.readByte(matchFrom + byteIndex);
@@ -108,9 +108,9 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
-        if (matchFrom + length < bytes.length && matchFrom >= 0) {
+        final int localStop = length;
+        if (matchFrom + localStop < bytes.length && matchFrom >= 0) {
             final List<SingleByteMatcher> matchList = this.matcherSequence;
-            final int localStop = length;
             for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
                 final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
                 final byte byteRead = bytes[matchFrom + byteIndex];
@@ -194,8 +194,8 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        StringBuilder builder = new StringBuilder();
-        for (SingleByteMatcher matcher : matcherSequence) {
+        final StringBuilder builder = new StringBuilder();
+        for (final SingleByteMatcher matcher : matcherSequence) {
             builder.append(matcher.toRegularExpression(prettyPrint));
         }
         return builder.toString();
