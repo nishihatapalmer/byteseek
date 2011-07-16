@@ -18,7 +18,6 @@ import net.domesdaybook.reader.ByteReader;
 public final class CaseSensitiveStringMatcher implements SequenceMatcher {
 
     private final byte[] byteArray;
-    //private final String caseSensitiveString;
     private final int length;
 
     /**
@@ -167,7 +166,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final SingleByteMatcher getByteMatcherForPosition(int position) {
+    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
         return new ByteMatcher(byteArray[position]);
     }
 
