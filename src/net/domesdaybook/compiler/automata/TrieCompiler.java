@@ -7,6 +7,7 @@
 package net.domesdaybook.compiler.automata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -28,16 +29,14 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 
 /**
- * Compiles a list of sequence matchers into a Trie automata.
+ * Compiles a collection of sequence matchers into a Trie automata.
  * 
  * @author matt
  */
-//public final class TrieCompiler implements Compiler<AssociatedState<SequenceMatcher>, List<SequenceMatcher>> {
-public final class TrieCompiler implements Compiler<Trie, List<SequenceMatcher>> {
+public final class TrieCompiler implements Compiler<Trie, Collection<SequenceMatcher>> {
 
     private static TrieCompiler defaultCompiler;
-    //public static AssociatedState<SequenceMatcher> trieFrom(List<SequenceMatcher> sequences) throws CompileException {
-    public static Trie trieFrom(List<SequenceMatcher> sequences) throws CompileException {
+    public static Trie trieFrom(Collection<SequenceMatcher> sequences) throws CompileException {
         defaultCompiler = new TrieCompiler();
         return defaultCompiler.compile(sequences);
     }
@@ -77,12 +76,11 @@ public final class TrieCompiler implements Compiler<Trie, List<SequenceMatcher>>
 
     
     @Override
-    //public AssociatedState<SequenceMatcher> compile(List<SequenceMatcher> sequences) throws CompileException {
-            public Trie compile(List<SequenceMatcher> sequences) throws CompileException {
+    public Trie compile(Collection<SequenceMatcher> sequences) throws CompileException {
         AssociatedState<SequenceMatcher> initialState = stateFactory.create(State.NON_FINAL);
         int minLength = Integer.MAX_VALUE;
         int maxLength = 0;
-        for (SequenceMatcher sequence : sequences) {
+        for (final SequenceMatcher sequence : sequences) {
             addSequence(sequence, initialState);
             final int len = sequence.length();
             if (len < minLength) {

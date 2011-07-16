@@ -34,7 +34,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public List<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
+    public Collection<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final long noOfBytes = reader.length();
         if (matchPosition >= 0 && matchPosition + trie.getMinimumLength() < noOfBytes) {

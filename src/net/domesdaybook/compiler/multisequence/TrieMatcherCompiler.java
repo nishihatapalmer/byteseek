@@ -5,6 +5,7 @@
 
 package net.domesdaybook.compiler.multisequence;
 
+import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
@@ -17,16 +18,16 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  *
  * @author matt
  */
-public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<SequenceMatcher>> {
+public final class TrieMatcherCompiler implements Compiler<TrieMatcher, Collection<SequenceMatcher>> {
 
     private static TrieMatcherCompiler defaultCompiler;
-    public static TrieMatcher trieMatcherFrom(List<SequenceMatcher> expression) throws CompileException {
+    public static TrieMatcher trieMatcherFrom(Collection<SequenceMatcher> expression) throws CompileException {
         defaultCompiler = new TrieMatcherCompiler();
         return defaultCompiler.compile(expression);
     }
     
     
-    private final Compiler<Trie, List<SequenceMatcher>> compiler;
+    private final Compiler<Trie, Collection<SequenceMatcher>> compiler;
    
     
     public TrieMatcherCompiler() {
@@ -34,7 +35,7 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<Seq
     }
     
     
-    public TrieMatcherCompiler(Compiler<Trie, List<SequenceMatcher>> trieCompiler) {
+    public TrieMatcherCompiler(Compiler<Trie, Collection<SequenceMatcher>> trieCompiler) {
         if (trieCompiler == null) {
             compiler = new TrieCompiler();
         } else {
@@ -44,7 +45,7 @@ public final class TrieMatcherCompiler implements Compiler<TrieMatcher, List<Seq
     
     
     @Override
-    public TrieMatcher compile(List<SequenceMatcher> expression) throws CompileException {
+    public TrieMatcher compile(Collection<SequenceMatcher> expression) throws CompileException {
         Trie trie = compiler.compile(expression);
         return new TrieMatcher(trie);
     }
