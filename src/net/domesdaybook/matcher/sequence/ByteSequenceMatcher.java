@@ -187,7 +187,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         final int localLength = length;
         final byte[] localArray = byteArray;
-        for ( int byteIndex = 0; byteIndex < localLength; byteIndex++) {
+        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
             if (!(localArray[byteIndex] == bytes[matchPosition + byteIndex])) {
                 return false;
             }
@@ -235,11 +235,11 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     
 
     private String bytesToString(final boolean prettyPrint, final byte[] bytes) {
-        StringBuilder hexString = new StringBuilder();
+        final StringBuilder hexString = new StringBuilder();
         boolean inString = false;
         for (int byteIndex = 0, byteLength = bytes.length;
             byteIndex < byteLength; byteIndex++) {
-            int byteValue = 0xFF & bytes[byteIndex];
+            final int byteValue = 0xFF & bytes[byteIndex];
             if (prettyPrint &&
                     byteValue >= START_PRINTABLE_ASCII &&
                     byteValue <= END_PRINTABLE_ASCII &&
