@@ -170,7 +170,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final SingleByteMatcher getByteMatcherForPosition(int position) {
+    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
         return charMatchList[position];
     }
 
@@ -191,7 +191,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * @param theChar the character to get a byte matcher for.
      * @return A SingleByteMatcher optimised for the character.
      */
-    private SingleByteMatcher getByteMatcherForChar(char theChar) {
+    private SingleByteMatcher getByteMatcherForChar(final char theChar) {
         SingleByteMatcher result;
         if ((theChar >= 'a' && theChar <= 'z') ||
             (theChar >= 'A' && theChar <= 'Z')) {
