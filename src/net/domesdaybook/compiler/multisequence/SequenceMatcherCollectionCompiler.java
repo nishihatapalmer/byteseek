@@ -29,9 +29,9 @@ public final class SequenceMatcherCollectionCompiler implements Compiler<Collect
     @Override
     public Collection<SequenceMatcher> compile(final Collection<String> expressions) throws CompileException {
         final Collection<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
-        SequenceMatcherCompiler sequenceCompiler = new SequenceMatcherCompiler();
-        for (String expression : expressions) {
-            SequenceMatcher matcher = sequenceCompiler.compile(expression);
+        final SequenceMatcherCompiler sequenceCompiler = new SequenceMatcherCompiler();
+        for (final String expression : expressions) {
+            final SequenceMatcher matcher = sequenceCompiler.compile(expression);
             matchers.add(matcher);
         }
         return matchers;
