@@ -332,9 +332,7 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         final int[] shifts = new int[256];
         final SequenceMatcher theMatcher = getMatcher();
         final int numBytes = theMatcher.length();
-
-        final int defaultShift =  numBytes * -1;
-        Arrays.fill(shifts, defaultShift);
+        Arrays.fill(shifts, numBytes * -1);
 
         // Now set specific byte shifts for the bytes actually in
         // the sequence itself.  The shift is the distance of each character
@@ -363,9 +361,7 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         final int[] shifts = new int[256];
         final SequenceMatcher theMatcher = getMatcher();
         final int numBytes = theMatcher.length();
-
-        final int defaultShift =  numBytes;
-        Arrays.fill(shifts, defaultShift);
+        Arrays.fill(shifts, numBytes);
 
         // Now set specific byte shifts for the bytes actually in
         // the sequence itself.  The shift is the distance of each character
