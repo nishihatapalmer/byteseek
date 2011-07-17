@@ -6,38 +6,135 @@
 package net.domesdaybook.searcher.sequence;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.searcher.Searcher;
 
 /**
- * A SequenceMatcherSearcher is an abstract class implementing the {@link Searcher}
- * interface, using {@link SequenceMatcher} objects as the specification for what
- * to search for.
- *
- * SequenceMatcherSearchers should be thread-safe, either by being immutable,
- * or by some other way of ensuring shared access to the searcher is safe.
+ * SequenceMatcherSearcher searches for a sequence by trying for a match in each position.
+ * In its worst case, where no match is found, if the sequence is m bytes long,
+ * and the bytes being searched are n bytes long, it will take O(n * m) to
+ * determine there is no match.
  *
  * @author Matt Palmer
  */
-public abstract class SequenceMatcherSearcher implements Searcher {
-
-
+public final class SequenceMatcherSearcher implements Searcher {
+    
     private final SequenceMatcher matcher;
 
-    /**
-     * Constructs an immutable SequenceMatcherSearcher.
-     *
-     * @param matcher The {@link SequenceMatcher} to search for.
-     */
-    public SequenceMatcherSearcher(final SequenceMatcher matcher) {
-        if (matcher == null) {
-            throw new IllegalArgumentException("Null matcher passed in to SequenceMatcherSearcher.");
-        }
-        this.matcher = matcher;
+
+    public SequenceMatcherSearcher(final SequenceMatcher sequence) {
+        if (sequence == null) {
+            throw new IllegalArgumentException("Null sequence passed in to SequenceMatcherSearcher.");
+        }        
+        this.matcher = sequence;
     }
 
 
     /**
-     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
+        // Get objects needed for the search:
+        final SequenceMatcher theMatcher = getMatcher();
+        
+        // Calculate safe bounds for the search:
+        final long lastPossiblePosition = reader.length() - theMatcher.length();
+        final long lastPosition = toPosition < lastPossiblePosition?
+                toPosition : lastPossiblePosition;
+        long searchPosition = fromPosition < 0? 0 : fromPosition;
+        
+        // Search forwards
+        while (searchPosition <= lastPosition) {
+            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition++;
+        }
+        return Searcher.NOT_FOUND;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */    
+    @Override
+    public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+        // Get objects needed for the search:
+        final SequenceMatcher theMatcher = getMatcher();
+        
+        // Calculate safe bounds for the search:
+        final int lastPossiblePosition = bytes.length - theMatcher.length();
+        final int lastPosition = toPosition < lastPossiblePosition?
+                toPosition : lastPossiblePosition;
+        int searchPosition = fromPosition < 0? 0 : fromPosition;        
+        
+        // Search forwards
+        while (searchPosition <= lastPosition) {
+            if (theMatcher.matchesNoBoundsCheck(bytes, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition++;
+        }
+        return Searcher.NOT_FOUND;    
+    }    
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
+        // Get objects needed for the search:
+        final SequenceMatcher theMatcher = getMatcher();
+        
+        // Calculate safe bounds for the search:
+        final long lastPosition = toPosition < 0? 0 : toPosition;        
+        final long firstPossiblePosition = reader.length() - theMatcher.length();
+        long searchPosition = fromPosition < firstPossiblePosition?
+                fromPosition : firstPossiblePosition;
+        
+        // Search backwards:
+        while (searchPosition >= lastPosition) {
+            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition--;
+        }
+        return Searcher.NOT_FOUND;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+        // Get objects needed for the search:
+        final SequenceMatcher theMatcher = getMatcher();
+        
+        // Calculate safe bounds for the search:
+        final int lastPosition = toPosition < 0? 0 : toPosition;
+        final int firstPossiblePosition = bytes.length - theMatcher.length();
+        int searchPosition = fromPosition < firstPossiblePosition?
+                fromPosition : firstPossiblePosition;
+        
+        // Search backwards:
+        while (searchPosition >= lastPosition) {
+            if (theMatcher.matchesNoBoundsCheck(bytes, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition--;
+        }
+        return Searcher.NOT_FOUND;
+    }
+
+    /**
+     *
+     * @return The underlying {@link SequenceMatcher} to search for.
+     */
+    /**
+     *
      * @return The underlying {@link SequenceMatcher} to search for.
      */
     public final SequenceMatcher getMatcher() {

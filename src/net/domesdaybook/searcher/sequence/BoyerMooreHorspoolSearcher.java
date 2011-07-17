@@ -40,7 +40,7 @@ import net.domesdaybook.searcher.Searcher;
  * 
  * @author Matt Palmer
  */
-public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
+public final class BoyerMooreHorspoolSearcher implements Searcher {
 
     // volatile arrays are usually a bad idea, as volatile applies to the array
     // reference, not to the contents of the array.  However, we will never change
@@ -51,6 +51,7 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
     private volatile int[] shiftBackwardFunction;
     private volatile SingleByteMatcher firstSingleMatcher;
     private volatile SingleByteMatcher lastSingleMatcher;
+    private final SequenceMatcher matcher;
 
 
     /**
@@ -59,8 +60,11 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
      * 
      * @param matcher A {@link SequenceMatcher} to search for.
      */
-    public BoyerMooreHorspoolSearcher(final SequenceMatcher matcher) {
-        super(matcher);
+    public BoyerMooreHorspoolSearcher(final SequenceMatcher sequence) {
+        if (sequence == null) {
+            throw new IllegalArgumentException("Null sequence passed in to BoyerMooreHorspoolSearcher.");
+        }        
+        this.matcher = sequence;
     }
 
 
@@ -380,6 +384,14 @@ public final class BoyerMooreHorspoolSearcher extends SequenceMatcherSearcher {
         }
         
         return shifts;
+    }
+
+    /**
+     *
+     * @return The underlying {@link SequenceMatcher} to search for.
+     */
+    public final SequenceMatcher getMatcher() {
+        return matcher;
     }
 
 }
