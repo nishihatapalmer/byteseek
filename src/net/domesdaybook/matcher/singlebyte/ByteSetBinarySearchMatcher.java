@@ -19,7 +19,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implements SingleByteMatcher {
+public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
 
     private static final String ILLEGAL_ARGUMENTS = "Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.";
 
@@ -62,14 +62,33 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
     }    
 
     
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean matches(final byte[] bytesFrom, final int matchFrom) {
-        return (matchFrom >= 0 && matchFrom < bytes.length) &&
-                ((Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted);
-    }        
+        return (Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted;
+    }     
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+        return (Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytesFrom, final int matchFrom) {
+        return (Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted;
+    }
+    
     
 
     /**
@@ -151,7 +170,5 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher implemen
         }
         return regularExpression.toString();
     }
-
-
 
 }

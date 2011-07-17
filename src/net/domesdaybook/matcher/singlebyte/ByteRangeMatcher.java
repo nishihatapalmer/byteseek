@@ -14,7 +14,7 @@ import net.domesdaybook.reader.ByteReader;
  * @author Matt Palmer
  *
  */
-public final class ByteRangeMatcher extends InvertibleMatcher implements SingleByteMatcher {
+public final class ByteRangeMatcher extends InvertibleMatcher {
 
     private final static String ILLEGAL_ARGUMENTS = "Values must be between 0 and 255 inclusive: min=%d max=%d";
 
@@ -54,7 +54,7 @@ public final class ByteRangeMatcher extends InvertibleMatcher implements SingleB
     public boolean matches(final ByteReader reader, final long matchFrom) {
         if (matchFrom >= 0 && matchFrom < reader.length()) {
             final int byteValue = reader.readByte(matchFrom) & 0xFF;
-            final boolean insideRange = (byteValue >= minByteValue && byteValue <= maxByteValue);
+            final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
             return insideRange ^ inverted;
         }
         return false;
@@ -68,10 +68,32 @@ public final class ByteRangeMatcher extends InvertibleMatcher implements SingleB
     public boolean matches(final byte[] bytes, final int matchFrom) {
         if (matchFrom >= 0 && matchFrom < bytes.length) {
             final int byteValue = bytes[matchFrom] & 0xFF;
-            final boolean insideRange = (byteValue >= minByteValue && byteValue <= maxByteValue);
+            final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
             return insideRange ^ inverted;
         }
         return false;
+    }    
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+        final int byteValue = reader.readByte(matchPosition) & 0xFF;
+        final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
+        return insideRange ^ inverted;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        final int byteValue = bytes[matchPosition] & 0xFF;
+        final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
+        return insideRange ^ inverted;
     }    
     
     

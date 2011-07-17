@@ -16,7 +16,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
+public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence {
 
     private final static String ILLEGAL_ARGUMENTS = "Non-ASCII char passed in to CaseInsensitiveByteMatcher: %s";
 
@@ -68,6 +68,26 @@ public final class CaseInsensitiveByteMatcher implements SingleByteMatcher {
             return (theByte == caseValues[0] || theByte == caseValues[1]);
         }
         return false;
+    }    
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+        final byte theByte = reader.readByte(matchPosition);
+        return (theByte == caseValues[0] || theByte == caseValues[1]);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        final byte theByte = bytes[matchPosition];
+        return (theByte == caseValues[0] || theByte == caseValues[1]);
     }    
 
     

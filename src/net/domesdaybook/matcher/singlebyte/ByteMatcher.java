@@ -14,7 +14,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public final class ByteMatcher implements SingleByteMatcher {
+public final class ByteMatcher extends AbstractSingleByteSequence {
 
     private final byte byteToMatch;
 
@@ -46,6 +46,24 @@ public final class ByteMatcher implements SingleByteMatcher {
     public boolean matches(final byte[] bytes, final int matchFrom) {
         return matchFrom >= 0 && matchFrom < bytes.length &&
                 bytes[matchFrom] == byteToMatch;
+    }   
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+        return reader.readByte(matchPosition) == byteToMatch;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        return bytes[matchPosition] == byteToMatch;
     }    
     
     
@@ -84,5 +102,6 @@ public final class ByteMatcher implements SingleByteMatcher {
     public int getNumberOfMatchingBytes() {
         return 1;
     }
+
 
 }

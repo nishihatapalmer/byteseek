@@ -6,6 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.matcher.Matcher;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
  * An interface for classes which match a single provided byte.
@@ -18,7 +19,7 @@ import net.domesdaybook.matcher.Matcher;
  * 
  * @author Matt Palmer
  */
-public interface SingleByteMatcher extends Matcher {
+public interface SingleByteMatcher extends SequenceMatcher {
 
     /*
      * Implementations of this method should strive to be as efficient as possible.

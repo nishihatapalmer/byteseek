@@ -5,10 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import net.domesdaybook.reader.ByteReader;
 
@@ -24,7 +21,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public final class ByteSetBitSetMatcher extends InvertibleMatcher implements SingleByteMatcher {
+public final class ByteSetBitSetMatcher extends InvertibleMatcher {
 
     private static final String ILLEGAL_ARGUMENTS = "Null or empty Byte set passed in to ByteSetMatcher.";
     private final BitSet byteValues = new BitSet(256);
@@ -65,6 +62,24 @@ public final class ByteSetBitSetMatcher extends InvertibleMatcher implements Sin
         return (matchFrom >= 0 && matchFrom < bytes.length) &&
                 (byteValues.get((int) bytes[matchFrom] & 0xFF) ^ inverted);
     }  
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+        return byteValues.get((int) reader.readByte(matchFrom) & 0xFF) ^ inverted;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+        return byteValues.get((int) bytes[matchFrom] & 0xFF) ^ inverted;
+    }    
     
     
     /**

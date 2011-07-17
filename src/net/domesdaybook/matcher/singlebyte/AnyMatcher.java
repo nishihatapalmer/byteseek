@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
 
 /**
@@ -12,7 +13,7 @@ import net.domesdaybook.reader.ByteReader;
  *
  * @author Matt Palmer
  */
-public final class AnyMatcher implements SingleByteMatcher {
+public final class AnyMatcher extends AbstractSingleByteSequence {
 
     // A static 256-element array containing all the bytes.
     private static final byte[] allBytes =  ByteUtilities.getAllByteValues();
@@ -85,5 +86,25 @@ public final class AnyMatcher implements SingleByteMatcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     *
+     * Always true
+     */ 
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+        return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     *
+     * Always true
+     */ 
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        return true;
+    }
 
 }

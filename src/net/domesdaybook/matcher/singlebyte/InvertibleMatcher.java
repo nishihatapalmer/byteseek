@@ -18,7 +18,7 @@ package net.domesdaybook.matcher.singlebyte;
  *
  * @author Matt Palmer
  */
-public abstract class InvertibleMatcher implements SingleByteMatcher {
+public abstract class InvertibleMatcher extends AbstractSingleByteSequence {
 
     public static final boolean INVERTED = true;
     public static final boolean NOT_INVERTED = false;

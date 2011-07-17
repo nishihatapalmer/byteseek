@@ -14,7 +14,7 @@ import net.domesdaybook.reader.ByteReader;
  * 
  * @author Matt Palmer
  */
-public final class BitMaskAnyBitsMatcher extends InvertibleMatcher implements SingleByteMatcher {
+public final class BitMaskAnyBitsMatcher extends InvertibleMatcher {
 
     final byte mBitMaskValue;
 
@@ -97,6 +97,24 @@ public final class BitMaskAnyBitsMatcher extends InvertibleMatcher implements Si
     @Override
     public int getNumberOfMatchingBytes() {
         return ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+        return ((reader.readByte(matchFrom) & mBitMaskValue) != 0) ^ inverted;
+    }
+        
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+        return ((bytes[matchFrom] & mBitMaskValue) != 0) ^ inverted;
     }
 
 
