@@ -17,11 +17,11 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  *
  * @author matt
  */
-public final class SequenceMatcherCollectionCompiler implements Compiler<Collection<SequenceMatcher>, Collection<String>> {
+public final class SequenceMatchersCompiler implements Compiler<Collection<SequenceMatcher>, Collection<String>> {
 
-    private static SequenceMatcherCollectionCompiler defaultCompiler;
+    private static SequenceMatchersCompiler defaultCompiler;
     public static Collection<SequenceMatcher> sequenceMatchersFrom(final Collection<String> expressions) throws CompileException {
-        defaultCompiler = new SequenceMatcherCollectionCompiler();
+        defaultCompiler = new SequenceMatchersCompiler();
         return defaultCompiler.compile(expressions);
     }
     
