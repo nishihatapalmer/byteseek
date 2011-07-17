@@ -15,11 +15,14 @@ public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
  /**
      * @inheritDoc
      * 
-     * Returns this for position 0, null otherwise.
+     * Returns this for position 0, or throws an IndexOutOfBoundsException.
      */
     @Override
     public SingleByteMatcher getByteMatcherForPosition(final int position) {
-        return position == 0 ? this : null;
+        if (position == 0) {
+            return this;
+        }
+        throw new IndexOutOfBoundsException("SingleByteMatchers only have a matcher at position 0.");
     }
 
     
