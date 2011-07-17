@@ -7,12 +7,15 @@ package net.domesdaybook.searcher.multisequence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import net.domesdaybook.automata.wrapper.Trie;
+import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.searcher.Searcher;
 import net.domesdaybook.compiler.Compiler;
-import net.domesdaybook.compiler.automata.TrieCompiler;
+import net.domesdaybook.compiler.ReversibleCompiler;
+import net.domesdaybook.compiler.ReversibleCompiler.Direction;
+import net.domesdaybook.compiler.multisequence.TrieMatcherCompiler;
+import net.domesdaybook.matcher.multisequence.TrieMatcher;
 
 /**
  *
@@ -24,42 +27,123 @@ public class WuManberSearcher implements Searcher {
     private volatile int[] forwardShifts;
     @SuppressWarnings("VolatileArrayField")
     private volatile int[] backwardShifts;
-    private volatile Trie forwardTrie;
-    private volatile Trie backwardTrie;
+    private volatile TrieMatcher forwardTrie;
+    private volatile TrieMatcher backwardTrie;
     private final List<SequenceMatcher> matcherList;
-    private final Compiler<Trie, Collection<SequenceMatcher>> trieCompiler;
+    private final ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> trieCompiler;
     
     
     public WuManberSearcher(final Collection<SequenceMatcher> matchers) {
-        this.matcherList = new ArrayList(matchers);
-        this.trieCompiler = new TrieCompiler();
+        this(matchers, null);
     }
     
     
     public WuManberSearcher(final Collection<SequenceMatcher> matchers, 
-            final Compiler<Trie, Collection<SequenceMatcher>> compiler) {
+            final ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> compiler) {
+        if (matchers == null) {
+            throw new IllegalArgumentException("Null sequence matchers passed in to WuManberSearch");
+        }
         this.matcherList = new ArrayList(matchers);
-        this.trieCompiler = compiler;
+        if (compiler == null) {
+            this.trieCompiler = new TrieMatcherCompiler();
+        } else {
+            this.trieCompiler = compiler;
+        }
+
     }
     
     
+    
     public long searchForwards(ByteReader reader, long fromPosition, long toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        calculateForwardParameters();
+        final TrieMatcher validator = forwardTrie;
+        final int[] safeShifts = forwardShifts;
+        
+        
+        
+        return Searcher.NOT_FOUND;
     }
 
     
     public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        calculateForwardParameters();
+        final TrieMatcher validator = forwardTrie;
+        final int[] safeShifts = forwardShifts;
+        
+        return Searcher.NOT_FOUND;
     }
 
     
     public long searchBackwards(ByteReader reader, long fromPosition, long toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        calculateBackwardParameters();
+        final TrieMatcher validator = backwardTrie;
+        final int[] safeShifts = backwardShifts;
+        
+        
+        return Searcher.NOT_FOUND;
     }
 
     
     public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        calculateBackwardParameters();
+        final TrieMatcher validator = backwardTrie;
+        final int[] safeShifts = backwardShifts;
+        
+        
+        return Searcher.NOT_FOUND;
+
     }
+    
+    
+    private void calculateForwardParameters() {
+        if (forwardShifts == null) {
+             forwardShifts = createForwardShifts();
+             if (forwardTrie == null) {
+                 forwardTrie = createTrie(Direction.REVERSED);
+             }
+        }
+    }
+    
+    
+    private void calculateBackwardParameters() {
+        if (backwardShifts == null) {
+            backwardShifts = createBackwardShifts();
+            if (backwardTrie == null) {
+                backwardTrie = createTrie(Direction.FORWARDS);
+            }
+        }
+    }
+
+    
+    private int[] createForwardShifts() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    
+    private int[] createBackwardShifts() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    
+    private TrieMatcher createTrie(final Direction direction) {
+        try {
+            return trieCompiler.compile(matcherList, direction);
+        } catch (CompileException ex) {
+            return null; 
+        }
+    }
+
+
+    private List<SequenceMatcher> createReversedMatcherList() {
+        final List<SequenceMatcher> reversedMatchers = new ArrayList(matcherList.size());
+        for (final SequenceMatcher matcher : matcherList) {
+            reversedMatchers.add(matcher.reverse());
+        }
+        return reversedMatchers;
+    }
+    
+
+    
+    
     
 }

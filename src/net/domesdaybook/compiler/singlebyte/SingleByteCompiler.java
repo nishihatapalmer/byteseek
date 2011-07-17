@@ -6,7 +6,7 @@
 package net.domesdaybook.compiler.singlebyte;
 
 import java.util.Set;
-import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.compiler.AbstractAstCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseUtils;
@@ -23,7 +23,7 @@ import org.antlr.runtime.tree.CommonTree;
 
 /**
  * A compiler which produces a {@link SingleByteMatcher} from an
- * abstract syntax tree provided by the {@link AstCompiler} class,
+ * abstract syntax tree provided by the {@link AbstractAstCompiler} class,
  * which it extends.
  *
  * It can only handle syntax which would result in a single byte being
@@ -33,17 +33,13 @@ import org.antlr.runtime.tree.CommonTree;
  *
  * It can handle alternative sequences (X|Y|Z) where each alternative
  * is one byte long, but only because they are pre-optimised by the
- * AstCompiler class into a [set] of bytes instead of a list of alternatives,
- * before this compiler even sees them.
+ * AbstractAstCompiler class into a [set] of bytes instead of a list of alternatives,
+ * before this compiler even sees them.  Any alternative sequences provided
+ * directly to this compiler will result in a CompileException.
  * 
- * Therefore, this should not be relied upon, as it is an artefact of an earlier
- * stage of optimisation which may or may not hold true in the future.  This
- * compiler, in principle, cannot handle alternative sequences if they are
- * directly provided to it.
- *
  * @author matt
  */
-public final class SingleByteCompiler extends AstCompiler<SingleByteMatcher> {
+public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatcher> {
 
     private static SingleByteCompiler defaultCompiler;
     public SingleByteMatcher matcherFrom(String expression) throws CompileException {
@@ -62,10 +58,10 @@ public final class SingleByteCompiler extends AstCompiler<SingleByteMatcher> {
     }
 
     /**
-     * Compiles an abstract syntax tree provided by the {@link AstCompiler} class
+     * Compiles an abstract syntax tree provided by the {@link AbstractAstCompiler} class
      * which it extends, to create a {@SingleByteMatcher} object.
      *
-     * @param ast The abstract syntax tree provided by the {@link AstCompiler} class.
+     * @param ast The abstract syntax tree provided by the {@link AbstractAstCompiler} class.
      * @return A {@link SingleByteMatcher} which matches the expression defined by the ast passed in.
      * @throws ParseException If the ast could not be parsed.
      */

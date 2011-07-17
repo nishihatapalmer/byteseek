@@ -22,7 +22,8 @@ import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.compiler.Compiler;
+import net.domesdaybook.compiler.ReversibleCompiler;
+import net.domesdaybook.compiler.ReversibleCompiler.Direction;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
@@ -33,15 +34,17 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  * 
  * @author matt
  */
-public final class TrieCompiler implements Compiler<Trie, Collection<SequenceMatcher>> {
+public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<SequenceMatcher>> {
 
     private static TrieCompiler defaultCompiler;
-    public static Trie trieFrom(Collection<SequenceMatcher> sequences) throws CompileException {
+    public static Trie trieFrom(final Collection<SequenceMatcher> sequences) throws CompileException {
+        return trieFrom(sequences, Direction.FORWARDS);
+    }
+    public static Trie trieFrom(final Collection<SequenceMatcher> sequences, final Direction direction) throws CompileException {
         defaultCompiler = new TrieCompiler();
-        return defaultCompiler.compile(sequences);
+        return defaultCompiler.compile(sequences, direction);
     }
 
-    
     private final AssociatedStateFactory<SequenceMatcher> stateFactory;
     private final TransitionFactory transitionFactory;
     
@@ -74,14 +77,23 @@ public final class TrieCompiler implements Compiler<Trie, Collection<SequenceMat
         }
     }
 
+    @Override
+    public Trie compile(Collection<SequenceMatcher> expression) throws CompileException {
+        return compile(expression, Direction.FORWARDS);
+    }    
+    
     
     @Override
-    public Trie compile(Collection<SequenceMatcher> sequences) throws CompileException {
+    public final Trie compile(Collection<SequenceMatcher> sequences, final Direction direction) throws CompileException {
         AssociatedState<SequenceMatcher> initialState = stateFactory.create(State.NON_FINAL);
         int minLength = Integer.MAX_VALUE;
         int maxLength = 0;
         for (final SequenceMatcher sequence : sequences) {
-            addSequence(sequence, initialState);
+            if (direction == Direction.FORWARDS) {
+                addSequence(sequence, initialState);
+            } else {
+                addReversedSequence(sequence, initialState);
+            }
             final int len = sequence.length();
             if (len < minLength) {
                 minLength = len;
@@ -106,9 +118,23 @@ public final class TrieCompiler implements Compiler<Trie, Collection<SequenceMat
             finalState.addObject(sequence);
         }
     }
+    
+    
+    private void addReversedSequence(SequenceMatcher sequence, AssociatedState<SequenceMatcher> initialState) {
+        List<AssociatedState<SequenceMatcher>> currentStates = new ArrayList<AssociatedState<SequenceMatcher>>();
+        currentStates.add(initialState);
+        final int lastPosition = sequence.length() - 1;
+        for (int position = lastPosition; position >= 0; position--) {
+            final SingleByteMatcher byteMatcher = sequence.getByteMatcherForPosition(position);
+            currentStates = nextStates(currentStates, byteMatcher, position == 0);
+        }
+        for (AssociatedState<SequenceMatcher> finalState : currentStates) {
+            finalState.addObject(sequence);
+        }
+    }      
 
     
-    private List<AssociatedState<SequenceMatcher>> nextStates(List<AssociatedState<SequenceMatcher>> currentStates, SingleByteMatcher bytes, boolean isFinal) {
+    protected final List<AssociatedState<SequenceMatcher>> nextStates(List<AssociatedState<SequenceMatcher>> currentStates, SingleByteMatcher bytes, boolean isFinal) {
         final List<AssociatedState<SequenceMatcher>> nextStates = new ArrayList<AssociatedState<SequenceMatcher>>();
         final Set<Byte> allBytesToTransitionOn = ByteUtilities.toSet(bytes.getMatchingBytes());
         for (final State currentState : currentStates) {

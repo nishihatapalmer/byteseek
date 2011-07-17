@@ -14,7 +14,7 @@ import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
-import net.domesdaybook.compiler.AstCompiler;
+import net.domesdaybook.compiler.AbstractAstCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseUtils;
@@ -23,7 +23,7 @@ import org.antlr.runtime.tree.CommonTree;
 
 /**
  * A compiler which produces Non-deterministic Finite-state Automata (NFA)
- * from an expression.  This class extends {@link AstCompiler}, which
+ * from an expression.  This class extends {@link AbstractAstCompiler}, which
  * parses the expression using an ANTLR generated parser, and turns it into
  * an abstract syntax tree.  The compiler takes the abstract syntax tree
  * and uses it to direct the construction of an NFA using various builder
@@ -31,7 +31,7 @@ import org.antlr.runtime.tree.CommonTree;
  * 
  * @author Matt Palmer
  */
-public final class NfaExpressionCompiler extends AstCompiler<State> {
+public final class NfaExpressionCompiler extends AbstractAstCompiler<State> {
 
     private static NfaExpressionCompiler defaultCompiler;
     public static State nfaFrom(String expression) throws CompileException {
@@ -70,7 +70,7 @@ public final class NfaExpressionCompiler extends AstCompiler<State> {
 
     /**
      * Compiles a Non-deterministic Finite-state Automata (NFA) from the
-     * abstract syntax tree provided by the {@link AstCompiler} which this
+     * abstract syntax tree provided by the {@link AbstractAstCompiler} which this
      * class extends.
      * <p/>
      * It uses a {@link InitialFinalStatesBuilder} object to build the actual automata,
