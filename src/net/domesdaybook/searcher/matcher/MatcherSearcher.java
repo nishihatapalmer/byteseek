@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.domesdaybook.searcher;
+package net.domesdaybook.searcher.matcher;
 
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.searcher.Searcher;
 
 /**
  *
