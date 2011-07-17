@@ -19,10 +19,10 @@ public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
      */
     @Override
     public SingleByteMatcher getByteMatcherForPosition(final int position) {
-        if (position == 0) {
-            return this;
+        if (position != 0) {
+            throw new IndexOutOfBoundsException("SingleByteMatchers only have a matcher at position 0.");
         }
-        throw new IndexOutOfBoundsException("SingleByteMatchers only have a matcher at position 0.");
+        return this;
     }
 
     
