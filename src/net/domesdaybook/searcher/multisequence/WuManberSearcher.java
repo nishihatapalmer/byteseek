@@ -133,17 +133,4 @@ public class WuManberSearcher implements Searcher {
         }
     }
 
-
-    private List<SequenceMatcher> createReversedMatcherList() {
-        final List<SequenceMatcher> reversedMatchers = new ArrayList(matcherList.size());
-        for (final SequenceMatcher matcher : matcherList) {
-            reversedMatchers.add(matcher.reverse());
-        }
-        return reversedMatchers;
-    }
-    
-
-    
-    
-    
 }
