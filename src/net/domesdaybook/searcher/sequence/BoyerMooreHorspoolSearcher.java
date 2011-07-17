@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher.sequence;
 
+import java.util.Arrays;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
@@ -333,9 +334,7 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         final int numBytes = theMatcher.length();
 
         final int defaultShift =  numBytes * -1;
-        for (int charValueIndex=255; charValueIndex>=0; charValueIndex--) {
-            shifts[charValueIndex] = defaultShift;
-        }
+        Arrays.fill(shifts, defaultShift);
 
         // Now set specific byte shifts for the bytes actually in
         // the sequence itself.  The shift is the distance of each character
@@ -366,9 +365,7 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         final int numBytes = theMatcher.length();
 
         final int defaultShift =  numBytes;
-        for (int charValueIndex=255; charValueIndex>=0; charValueIndex--) {
-            shifts[charValueIndex] = defaultShift;
-        }
+        Arrays.fill(shifts, defaultShift);
 
         // Now set specific byte shifts for the bytes actually in
         // the sequence itself.  The shift is the distance of each character
