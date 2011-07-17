@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * An immutable sequence matcher which matches sequences of other sequence matchers.
  * For example, we could have a sequence of bytes, followed by a case insensitive
- * sequence, followed by a fixed gap.
+ * sequence, followed by a fixed gap, followed by a byte set sequence.
  * 
  * @author Matt Palmer
  */
