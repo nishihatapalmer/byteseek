@@ -8,7 +8,6 @@ package net.domesdaybook.matcher.automata;
 import java.util.ArrayList;
 import java.util.List;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.ByteReader;
 
 /**
