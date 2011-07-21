@@ -25,7 +25,7 @@ public interface SingleByteMatcher extends SequenceMatcher {
      *
      * @return Whether a given byte matches the byte matcher.
      */
-    public boolean matches(byte theByte);
+    public boolean matches(final byte theByte);
 
     
     /**
