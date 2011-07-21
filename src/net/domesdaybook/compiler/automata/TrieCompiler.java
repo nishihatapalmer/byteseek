@@ -24,6 +24,7 @@ import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.ReversibleCompiler;
 import net.domesdaybook.compiler.ReversibleCompiler.Direction;
+import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
@@ -37,14 +38,34 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<SequenceMatcher>> {
 
     private static TrieCompiler defaultCompiler;
+    
+    
     public static Trie trieFrom(final Collection<SequenceMatcher> sequences) throws CompileException {
         return trieFrom(sequences, Direction.FORWARDS);
     }
+    
+    public static Trie trieFrom(final List<byte[]> bytes) throws CompileException {
+        return trieFrom(bytes, Direction.FORWARDS);
+    }
+    
+    
     public static Trie trieFrom(final Collection<SequenceMatcher> sequences, final Direction direction) throws CompileException {
         defaultCompiler = new TrieCompiler();
         return defaultCompiler.compile(sequences, direction);
     }
+    
+    public static Trie trieFrom(final List<byte[]> bytes, final Direction direction) throws CompileException {
+        defaultCompiler = new TrieCompiler();
+        List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
+        for (final byte[] bytesToUse : bytes) {
+            matchers.add(new ByteSequenceMatcher(bytesToUse));
+        }
+        return defaultCompiler.compile(matchers, direction);
+    }
 
+    
+    
+    
     private final AssociatedStateFactory<SequenceMatcher> stateFactory;
     private final TransitionFactory transitionFactory;
     
