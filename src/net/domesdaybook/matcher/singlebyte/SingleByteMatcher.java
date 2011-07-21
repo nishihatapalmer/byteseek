@@ -5,7 +5,6 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
