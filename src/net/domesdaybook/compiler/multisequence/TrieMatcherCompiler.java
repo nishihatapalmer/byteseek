@@ -20,9 +20,11 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> {
 
     private static TrieMatcherCompiler defaultCompiler;
+    
     public static TrieMatcher trieMatcherFrom(final Collection<SequenceMatcher> expression) throws CompileException {
         return trieMatcherFrom(expression, Direction.FORWARDS);
     }
+    
     public static TrieMatcher trieMatcherFrom(final Collection<SequenceMatcher> expression,
                                               final Direction direction) throws CompileException {
         defaultCompiler = new TrieMatcherCompiler();

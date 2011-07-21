@@ -16,7 +16,7 @@ import net.domesdaybook.searcher.Searcher;
 import net.domesdaybook.compiler.ReversibleCompiler;
 import net.domesdaybook.compiler.ReversibleCompiler.Direction;
 import net.domesdaybook.compiler.multisequence.TrieMatcherCompiler;
-import net.domesdaybook.matcher.multisequence.TrieMatcher;
+import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 /**
@@ -56,14 +56,16 @@ public class WuManberSearcher implements Searcher {
     private volatile int[] forwardShifts;
     @SuppressWarnings("VolatileArrayField")
     private volatile int[] backwardShifts;
-    private volatile TrieMatcher forwardTrie;
-    private volatile TrieMatcher backwardTrie;
+    private volatile MultiSequenceMatcher forwardMatcher;
+    private volatile MultiSequenceMatcher backwardMatcher;
     
     private final List<SequenceMatcher> matcherList;
-    private final ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> trieCompiler;
+    //TODO: refresh memory on extends and super for generics, check Effective Java...
+    private final ReversibleCompiler<? extends MultiSequenceMatcher, Collection<SequenceMatcher>> multiSequenceCompiler;
     private final int minimumLength;
     private final int maximumLength;
     private final int blockSize;
+    
     
     public WuManberSearcher(final Collection<SequenceMatcher> matchers) {
         this(matchers, null, 0);
@@ -71,13 +73,13 @@ public class WuManberSearcher implements Searcher {
     
     
     public WuManberSearcher(final Collection<SequenceMatcher> matchers, 
-        final ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> compiler) {
+        final ReversibleCompiler<MultiSequenceMatcher, Collection<SequenceMatcher>> compiler) {
         this(matchers, compiler, 0);
     }
     
     
     public WuManberSearcher(final Collection<SequenceMatcher> matchers, 
-            final ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> compiler,
+            final ReversibleCompiler< MultiSequenceMatcher, Collection<SequenceMatcher>> compiler,
             final int blockSize) {
         if (matchers == null || matchers.isEmpty()) {
             throw new IllegalArgumentException("Null or empty sequence matchers passed in to WuManberSearch");
@@ -101,18 +103,17 @@ public class WuManberSearcher implements Searcher {
         }
         
         if (compiler == null) {
-            this.trieCompiler = new TrieMatcherCompiler();
+            this.multiSequenceCompiler = new TrieMatcherCompiler();
         } else {
-            this.trieCompiler = compiler;
+            this.multiSequenceCompiler = compiler;
         }
-
     }
     
     
     
     public long searchForwards(ByteReader reader, long fromPosition, long toPosition) {
         calculateForwardParameters();
-        final TrieMatcher validator = forwardTrie;
+        final MultiSequenceMatcher validator = forwardMatcher;
         final int[] safeShifts = forwardShifts;
         
         
@@ -123,7 +124,7 @@ public class WuManberSearcher implements Searcher {
     
     public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
         calculateForwardParameters();
-        final TrieMatcher validator = forwardTrie;
+        final MultiSequenceMatcher validator = forwardMatcher;
         final int[] safeShifts = forwardShifts;
         
         return Searcher.NOT_FOUND;
@@ -132,7 +133,7 @@ public class WuManberSearcher implements Searcher {
     
     public long searchBackwards(ByteReader reader, long fromPosition, long toPosition) {
         calculateBackwardParameters();
-        final TrieMatcher validator = backwardTrie;
+        final MultiSequenceMatcher validator = backwardMatcher;
         final int[] safeShifts = backwardShifts;
         
         
@@ -142,7 +143,7 @@ public class WuManberSearcher implements Searcher {
     
     public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         calculateBackwardParameters();
-        final TrieMatcher validator = backwardTrie;
+        final MultiSequenceMatcher validator = backwardMatcher;
         final int[] safeShifts = backwardShifts;
         
         
@@ -152,8 +153,8 @@ public class WuManberSearcher implements Searcher {
     
     
     private void calculateForwardParameters() {
-        if (forwardTrie == null) {
-            forwardTrie = createTrie(Direction.REVERSED);
+        if (forwardMatcher == null) {
+            forwardMatcher = compileMultiSequenceMatcher(Direction.REVERSED);
             if (forwardShifts == null) {
              forwardShifts = createForwardShifts();
             }
@@ -162,8 +163,8 @@ public class WuManberSearcher implements Searcher {
     
     
     private void calculateBackwardParameters() {
-        if (backwardTrie == null) {
-            backwardTrie = createTrie(Direction.FORWARDS);
+        if (backwardMatcher == null) {
+            backwardMatcher = compileMultiSequenceMatcher(Direction.FORWARDS);
             if (backwardShifts == null) {
                 backwardShifts = createBackwardShifts();
             }
@@ -225,9 +226,9 @@ public class WuManberSearcher implements Searcher {
      * Keep hitting this issue of an implementation of an interface that wants
      * to throw a checked exception. Should we throw something else instead?
      */
-    private TrieMatcher createTrie(final Direction direction) {
+    private MultiSequenceMatcher compileMultiSequenceMatcher(final Direction direction) {
         try {
-            return trieCompiler.compile(matcherList, direction);
+            return multiSequenceCompiler.compile(matcherList, direction);
         } catch (CompileException ex) {
             return null; 
         }

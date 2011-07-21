@@ -56,7 +56,7 @@ import net.domesdaybook.reader.ByteReader;
      */
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition);    
     
-
+    
     /**
      * Gets the length of the matching sequence.
      *
