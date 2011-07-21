@@ -24,13 +24,14 @@ public final class SequenceMatchersCompiler implements Compiler<Collection<Seque
 
     private static SequenceMatchersCompiler defaultCompiler;
     
+    
     public static Collection<SequenceMatcher> sequenceMatchersFrom(final Collection<String> expressions) throws CompileException {
         defaultCompiler = new SequenceMatchersCompiler();
         return defaultCompiler.compile(expressions);
     }
     
+    
     public static Collection<SequenceMatcher> sequenceMatchersFrom(final List<byte[]> bytes) throws CompileException {
-        defaultCompiler = new SequenceMatchersCompiler();
         List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
         for (final byte[] bytesToUse : bytes) {
             final SequenceMatcher byteMatcher = new ByteSequenceMatcher(bytesToUse);
