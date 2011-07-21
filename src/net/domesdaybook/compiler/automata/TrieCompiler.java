@@ -56,7 +56,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
     
     public static Trie trieFrom(final List<byte[]> bytes, final Direction direction) throws CompileException {
         defaultCompiler = new TrieCompiler();
-        List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
+        final List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
         for (final byte[] bytesToUse : bytes) {
             matchers.add(new ByteSequenceMatcher(bytesToUse));
         }

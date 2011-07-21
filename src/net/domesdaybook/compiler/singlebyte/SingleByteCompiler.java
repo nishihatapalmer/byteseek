@@ -17,6 +17,7 @@ import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
+import net.domesdaybook.matcher.singlebyte.InvertedByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SimpleSingleByteMatcherFactory;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
@@ -51,8 +52,14 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
         return defaultCompiler.compile(expression);
     }
     
+    
     public static SingleByteMatcher matcherFrom(final byte aByte) {
         return new ByteMatcher(aByte);
+    }
+    
+    
+    public static SingleByteMatcher invertedMatcherFrom(final byte aByte) {
+        return new InvertedByteMatcher(aByte);
     }
     
     
@@ -60,6 +67,13 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
         defaultFactory = new SimpleSingleByteMatcherFactory();
         final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
         return defaultFactory.create(byteSet, false);
+    }
+    
+    
+    public static SingleByteMatcher invertedMatcherFrom(final byte[] bytes) {
+        defaultFactory = new SimpleSingleByteMatcherFactory();
+        final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
+        return defaultFactory.create(byteSet, true);
     }
     
     
