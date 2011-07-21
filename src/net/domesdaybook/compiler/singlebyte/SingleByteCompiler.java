@@ -15,6 +15,7 @@ import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskAnyBitsMatcher;
 import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SimpleSingleByteMatcherFactory;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
@@ -42,10 +43,25 @@ import org.antlr.runtime.tree.CommonTree;
 public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatcher> {
 
     private static SingleByteCompiler defaultCompiler;
-    public SingleByteMatcher matcherFrom(String expression) throws CompileException {
+    private static SingleByteMatcherFactory defaultFactory;
+    
+    
+    public static SingleByteMatcher matcherFrom(final String expression) throws CompileException {
         defaultCompiler = new SingleByteCompiler();
         return defaultCompiler.compile(expression);
     }
+    
+    public static SingleByteMatcher matcherFrom(final byte aByte) {
+        return new ByteMatcher(aByte);
+    }
+    
+    
+    public static SingleByteMatcher matcherFrom(final byte[] bytes) {
+        defaultFactory = new SimpleSingleByteMatcherFactory();
+        final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
+        return defaultFactory.create(byteSet, false);
+    }
+    
     
     private final SingleByteMatcherFactory matcherFactory;
 

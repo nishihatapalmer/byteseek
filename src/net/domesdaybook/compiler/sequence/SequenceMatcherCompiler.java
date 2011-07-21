@@ -57,13 +57,22 @@ import org.antlr.runtime.tree.CommonTree;
 public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceMatcher> {
 
     private static SequenceMatcherCompiler defaultCompiler;
+    
+    
     public static SequenceMatcher sequenceMatcherFrom(final String expression) throws CompileException {
         defaultCompiler = new SequenceMatcherCompiler();
         return defaultCompiler.compile(expression);
     }
     
+    
+    public static SequenceMatcher sequenceMatcherFrom(final byte[] bytes) {
+        return new ByteSequenceMatcher(bytes);
+    }
+    
+    
     private final SingleByteMatcherFactory matcherFactory;
 
+    
     public SequenceMatcherCompiler() {
         matcherFactory = new SimpleSingleByteMatcherFactory();
     }

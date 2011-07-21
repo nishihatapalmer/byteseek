@@ -31,7 +31,7 @@ public final class SequenceMatchersCompiler implements Compiler<Collection<Seque
     }
     
     
-    public static Collection<SequenceMatcher> sequenceMatchersFrom(final List<byte[]> bytes) throws CompileException {
+    public static Collection<SequenceMatcher> sequenceMatchersFrom(final List<byte[]> bytes) {
         List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
         for (final byte[] bytesToUse : bytes) {
             final SequenceMatcher byteMatcher = new ByteSequenceMatcher(bytesToUse);
