@@ -5,12 +5,15 @@
 
 package net.domesdaybook.compiler.multisequence;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.ReversibleCompiler;
 import net.domesdaybook.compiler.automata.TrieCompiler;
 import net.domesdaybook.matcher.multisequence.TrieMatcher;
+import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
@@ -25,11 +28,26 @@ public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher
         return trieMatcherFrom(expression, Direction.FORWARDS);
     }
     
+    public static TrieMatcher trieMatcherFrom(final List<byte[]> bytes) throws CompileException {
+        return trieMatcherFrom(bytes, Direction.FORWARDS);
+    }
+    
     public static TrieMatcher trieMatcherFrom(final Collection<SequenceMatcher> expression,
                                               final Direction direction) throws CompileException {
         defaultCompiler = new TrieMatcherCompiler();
         return defaultCompiler.compile(expression, direction);
     }
+    
+    
+    public static TrieMatcher trieMatcherFrom(final List<byte[]> bytes,
+                                              final Direction direction) throws CompileException {
+        defaultCompiler = new TrieMatcherCompiler();
+        List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
+        for (final byte[] bytesToUse : bytes) {
+            matchers.add(new ByteSequenceMatcher(bytesToUse));
+        }
+        return defaultCompiler.compile(matchers, direction);
+    }    
     
     
     private final ReversibleCompiler<Trie, Collection<SequenceMatcher>> compiler;
