@@ -30,7 +30,7 @@ public class BridgingByteArrayReader implements ByteReader {
      * @inheritDoc
      */
     @Override
-    public byte readByte(long position) throws ByteReaderException {
+    public byte readByte(final long position) throws ByteReaderException {
         final int crossOver = firstArrayLength;
         try {
             return position < crossOver ?
