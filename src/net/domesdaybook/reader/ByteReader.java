@@ -6,6 +6,13 @@
 
 package net.domesdaybook.reader;
 
+//TODO: implement a ByteArrayFetcher which given a position, returns an
+//      object containing a byte array and the offset of the position in it.
+//      This will allow us to write Search routines which mostly operate
+//      directly on byte arrays (faster, avoiding readByte function call),
+//      but which can use a special BridgingByteArrayReader to search across
+//      byte array boundaries.
+
 /**
  * An interface for classes which can read bytes at a given position.
  * <p/>
