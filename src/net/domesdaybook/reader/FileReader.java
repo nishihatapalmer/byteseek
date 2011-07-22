@@ -28,8 +28,6 @@ public final class FileReader implements ByteReader {
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to RandomAccessFileReader";
 
-    private int cacheBlockSize = 8192;
-    
     private final RandomAccessFile file;
     private final long length;
 
