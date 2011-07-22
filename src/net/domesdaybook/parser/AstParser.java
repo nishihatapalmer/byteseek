@@ -15,6 +15,9 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.Tree;
 
+//TODO: define an AST interface separated from the ANTLR parser.
+//      This will allow different parsers to the ANTLR parser to be defined.
+
 /**
  * Parses a regular expression into an Abstract Syntax Tree (ast),
  * using ANTLR generated code to parse the expression.
