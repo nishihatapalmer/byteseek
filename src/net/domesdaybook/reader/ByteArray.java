@@ -10,6 +10,8 @@ package net.domesdaybook.reader;
  */
 public final class ByteArray {
     
+    public final static ByteArray EMPTY_ARRAY = new ByteArray(new byte[] {}, 0);
+    
     private final byte[] bytes;
     private final int offset;
     

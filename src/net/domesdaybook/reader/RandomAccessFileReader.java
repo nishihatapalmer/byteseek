@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -23,11 +25,13 @@ import java.io.RandomAccessFile;
  *
  * @author Matt Palmer.
  */
-public final class RandomAccessFileReader implements ByteReader {
+public final class RandomAccessFileReader implements ByteReader, ByteArrayProvider {
 
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to RandomAccessFileReader";
 
+    private int cacheBlockSize = 8192;
+    
     private final RandomAccessFile file;
     private final long length;
 
@@ -73,6 +77,38 @@ public final class RandomAccessFileReader implements ByteReader {
     @Override
     public long length(){
         return length;
+    }
+
+    
+    
+    
+    /**
+     * 
+     * @return A ByteArray containing a byte array and the offset into it for a given position.
+     */
+    @Override
+    public ByteArray getByteArray(final long position) {
+        if (position >= 0 && position < length) {
+            try {
+                int blockSize = cacheBlockSize;
+                long readPos = position / blockSize;
+                int offset = (int) (position % blockSize); 
+                
+                //TODO: check position calculations here...
+                if (position + blockSize > length) {
+                    blockSize = (int) (length - position);
+                } 
+                if (blockSize > 0) {
+                    final byte[] cacheBlock = new byte[blockSize];
+                    file.seek(readPos);
+                    file.read(cacheBlock, 0, blockSize);
+                    return new ByteArray(cacheBlock, offset);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(RandomAccessFileReader.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return ByteArray.EMPTY_ARRAY;
     }
 
 }
