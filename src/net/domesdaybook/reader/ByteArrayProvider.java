@@ -13,4 +13,5 @@ public interface ByteArrayProvider {
     
     ByteArray getByteArray(final long position);
     
+    long length();
 }
