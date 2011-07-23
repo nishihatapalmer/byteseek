@@ -83,10 +83,10 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         
         // Calculate safe bounds for the search:
         final int lastBytePositionInSequence = theMatcher.length() - 1;
-        final long lastPossiblePosition = reader.length() - lastBytePositionInSequence - 1;
+        final long lastPossiblePosition = reader.length() - 1;
         final long lastPosition = toPosition < lastPossiblePosition?
                 toPosition : lastPossiblePosition;
-        long searchPosition = fromPosition < 0?
+        long searchPosition = fromPosition <= lastBytePositionInSequence?
                 lastBytePositionInSequence : fromPosition + lastBytePositionInSequence;
         
         // Search forwards:
@@ -130,10 +130,10 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         
         // Calculate safe bounds for the search:
         final int lastBytePositionInSequence = theMatcher.length() - 1;
-        final int lastPossiblePosition = bytes.length - lastBytePositionInSequence - 1;
+        final int lastPossiblePosition = bytes.length - 1;
         final int lastPosition = toPosition < lastPossiblePosition?
                 toPosition : lastPossiblePosition;
-        int searchPosition = fromPosition < 0?
+        int searchPosition = fromPosition <= lastBytePositionInSequence?
                 lastBytePositionInSequence : fromPosition + lastBytePositionInSequence;
         
         // Search forwards:
@@ -176,7 +176,8 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
-        final long lastPosition = toPosition > 0? toPosition : 0;
+        final int lastPossiblePosition = theMatcher.length() - 1; 
+        final long lastPosition = toPosition > lastPossiblePosition? toPosition : lastPossiblePosition;
         final long firstPossiblePosition = reader.length() - theMatcher.length();        
         long searchPosition = fromPosition < firstPossiblePosition?
                 fromPosition : firstPossiblePosition;
@@ -221,7 +222,8 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
-        final int lastPosition = toPosition > 0? toPosition : 0;
+        final int lastPossiblePosition = theMatcher.length() - 1; 
+        final int lastPosition = toPosition > lastPossiblePosition? toPosition : lastPossiblePosition;
         final int firstPossiblePosition = bytes.length - theMatcher.length();        
         int searchPosition = fromPosition < firstPossiblePosition?
                 fromPosition : firstPossiblePosition;
@@ -341,9 +343,9 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         for (int sequenceByteIndex = numBytes-1; sequenceByteIndex > 0; sequenceByteIndex--) {
             final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
             final byte[] matchingBytes = aMatcher.getMatchingBytes();
-            for (int byteIndex = 0; byteIndex < matchingBytes.length; byteIndex++)  {
-                final int byteSequenceValue = (matchingBytes[byteIndex] & 0xFF);
-                shifts[byteSequenceValue] = -sequenceByteIndex; // 1 - numBytes + sequenceByteIndex;
+            final int distanceFromEnd = -sequenceByteIndex; 
+            for (final byte b : matchingBytes) {
+                shifts[b & 0xFF] = distanceFromEnd;
             }
         }
         return shifts;
@@ -370,9 +372,9 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes -1; sequenceByteIndex++) {
             final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
             final byte[] matchingBytes = aMatcher.getMatchingBytes();
-            for (int byteIndex = 0; byteIndex < matchingBytes.length; byteIndex++)  {
-                final int byteSequenceValue = ( matchingBytes[byteIndex] & 0xFF );
-                shifts[byteSequenceValue] = numBytes-sequenceByteIndex-1;
+            final int distanceFromEnd = numBytes-sequenceByteIndex-1;
+            for (final byte b : matchingBytes) {
+                shifts[b & 0xFF] = distanceFromEnd;
             }
         }
         
