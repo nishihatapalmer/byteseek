@@ -22,8 +22,7 @@ public interface Searcher {
      * A constant indicating that a search was not successful.
      */
     public static final int NOT_FOUND = -1;
-
-
+    
     /**
      * Searches bytes forwards provided by a {@link ByteReader} object,
      * from the position given by fromPosition up to toPosition.
@@ -35,6 +34,7 @@ public interface Searcher {
      */
     public long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition);
 
+ 
     
     /**
      * Searches bytes forwards provided by a byte array
@@ -47,6 +47,7 @@ public interface Searcher {
      */
     public int searchForwards(byte[] bytes, final int fromPosition, final int toPosition);
 
+    
     /**
      * Searches bytes backwards provided by a {@link ByteReader} object,
      * from the position given by fromPosition up to toPosition.
@@ -57,6 +58,7 @@ public interface Searcher {
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
     public long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition);
+    
     
     /**
      * Searches bytes backwards provided by a byte array,
