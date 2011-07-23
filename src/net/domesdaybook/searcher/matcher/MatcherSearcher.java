@@ -7,8 +7,8 @@ package net.domesdaybook.searcher.matcher;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.BridgingByteArrayReader;
 import net.domesdaybook.reader.ByteReader;
-import net.domesdaybook.reader.OffsetArray;
-import net.domesdaybook.reader.OffsetArrayProvider;
+import net.domesdaybook.reader.Array;
+import net.domesdaybook.reader.ArrayProvider;
 import net.domesdaybook.searcher.Searcher;
 
 /**
@@ -24,16 +24,16 @@ public class MatcherSearcher implements Searcher {
     }
     
     
-    //TODO: experiment with OffsetArrayProvider
-    public long searchForwards(final OffsetArrayProvider provider, final long fromPosition, final long toPosition) {
-        final OffsetArray bytes = provider.getByteArray(fromPosition);
+    //TODO: experiment with ArrayProvider
+    public long searchForwards(final ArrayProvider provider, final long fromPosition, final long toPosition) {
+        final Array bytes = provider.getByteArray(fromPosition);
         final byte[] array = bytes.getArray();
         final int lastPossiblePosition = array.length - 1;
         long result = searchForwards(array, bytes.getOffset(), lastPossiblePosition);
         if (result >= 0) {
             return result;
         }
-        OffsetArray nextBytes = provider.getByteArray(fromPosition + lastPossiblePosition);
+        Array nextBytes = provider.getByteArray(fromPosition + lastPossiblePosition);
         BridgingByteArrayReader bridge = new BridgingByteArrayReader(bytes.getArray(), nextBytes.getArray());
         
         return Searcher.NOT_FOUND;
@@ -79,7 +79,7 @@ public class MatcherSearcher implements Searcher {
 
     
 
-    public long searchBackwards(final OffsetArrayProvider provider, final long fromPosition, long toPosition) {
+    public long searchBackwards(final ArrayProvider provider, final long fromPosition, long toPosition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }    
     
