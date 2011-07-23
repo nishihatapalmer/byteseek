@@ -5,7 +5,10 @@
 package net.domesdaybook.searcher.matcher;
 
 import net.domesdaybook.matcher.Matcher;
+import net.domesdaybook.reader.BridgingByteArrayReader;
 import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.OffsetArray;
+import net.domesdaybook.reader.OffsetArrayProvider;
 import net.domesdaybook.searcher.Searcher;
 
 /**
@@ -21,11 +24,27 @@ public class MatcherSearcher implements Searcher {
     }
     
     
+    //TODO: experiment with OffsetArrayProvider
+    public long searchForwards(final OffsetArrayProvider provider, final long fromPosition, final long toPosition) {
+        final OffsetArray bytes = provider.getByteArray(fromPosition);
+        final byte[] array = bytes.getArray();
+        final int lastPossiblePosition = array.length - 1;
+        long result = searchForwards(array, bytes.getOffset(), lastPossiblePosition);
+        if (result >= 0) {
+            return result;
+        }
+        OffsetArray nextBytes = provider.getByteArray(fromPosition + lastPossiblePosition);
+        BridgingByteArrayReader bridge = new BridgingByteArrayReader(bytes.getArray(), nextBytes.getArray());
+        
+        return Searcher.NOT_FOUND;
+    }
+
+    
     /**
      * @inheritDoc
      */
     @Override
-    public long searchForwards(ByteReader reader, long fromPosition, long toPosition) {
+    public long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
         long currentPosition = fromPosition > 0? fromPosition : 0;
@@ -44,7 +63,7 @@ public class MatcherSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+    public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final int lastPossiblePosition = bytes.length - 1;
         final int upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
         int currentPosition = fromPosition > 0? fromPosition : 0;
@@ -59,11 +78,17 @@ public class MatcherSearcher implements Searcher {
     }
 
     
+
+    public long searchBackwards(final OffsetArrayProvider provider, final long fromPosition, long toPosition) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }    
+    
+    
     /**
      * @inheritDoc
      */
     @Override
-    public long searchBackwards(ByteReader reader, long fromPosition, long toPosition) {
+    public long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition > 0? toPosition : 0;
         long currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;
@@ -83,7 +108,7 @@ public class MatcherSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final int lastPossiblePosition = bytes.length - 1;
         final int upToPosition = toPosition > 0? toPosition : 0;
         int currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;
@@ -97,5 +122,6 @@ public class MatcherSearcher implements Searcher {
         
         return Searcher.NOT_FOUND;
     }
+
     
 }
