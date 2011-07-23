@@ -20,7 +20,52 @@ import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 /**
- *
+ * WuManberSearcher implements a variation of the classic multi-pattern
+ * search algorithm invented by Wu and Manber.
+ * <p/>
+ * The Wu Manber multi-pattern search aims to locate a large number of
+ * patterns, while remaining sub-linear, shifting over bytes which can't
+ * match any of the patterns.
+ * <p/>
+ * Like Boyer-Moore-Horspool, it calculates a safe shift to make if there
+ * is no match at the current position, which should be greater than one in
+ * most cases - thus avoiding reading most of the bytes.  However, if shifts
+ * are calculated for a large number of patterns (e.g. 1000 patterns), the
+ * chances are that most shifts will tend towards one, losing the advantage
+ * of this sort of searching.
+ * </p>The Wu Manber search gets around this limitation by matching on more than
+ * one byte at a time.  It looks at blocks of bytes (effectively extending the 
+ * available alphabet), and calculates a hash code for them.  It uses this hash
+ * code to look up a safe shift in a limited size table.  E.g. for a two bytes block,
+ * the table isn't 65536 in size (a direct 16 bit look up ) - we could have a 
+ * smaller table, with some collisions.  The smaller the table, the greater the
+ * number of collisions, and the worse performance the algorithm will probably have.
+ * However, we can tune the table size to fit our requirements - the table does
+ * not have to be as big as the possible permutations of a block, and we will
+ * still get good performance.
+ * <p/>
+ * This version of the Wu Manber algorithm is simplified from the original 
+ * description.  In the original, there is a hash table to give the safe shifts
+ * which we also have.  However, there were additional tables also defined to
+ * define for a given possible match, which of the patterns needed to be validated.
+ * This is clearly an optimisation by Wu and Manber - you only need to validate a 
+ * small subset of the patterns being matched at any one time.  However, it is the
+ * default of this searcher to use a backwards Trie structure to validate the patterns.
+ * This structure is a deterministic finite state automata, and it takes no more
+ * time to validate all the patterns than it does to validate one of them.  Hence,
+ * since our validator can validate all patterns in constant time, we do not need
+ * the additional complexity of sub-pattern lookup tables.
+ * </p>
+ * If a block size of one is chosen, this algorithm is broadly the same as running
+ * the BoyerMooreHorspoolSearcher (using only one pattern, of course).  With multiple
+ * patterns, and a block size of one, it is equivalent to the SetHorspoolSearcher 
+ * algorithm (not currently implemented). 
+ * <p/>
+ * There seems little point in having a block size greater than one if you are only 
+ * searching a single pattern, as a higher block size is intended to mitigate the 
+ * effects of the ever reducing safe shift when multiple patterns map to the same
+ * single byte block.  
+ * 
  * @author matt
  */
 public class WuManberSearcher implements Searcher {
@@ -35,13 +80,21 @@ public class WuManberSearcher implements Searcher {
      * @param numberOfSequences The number of sequences to be matched.
      * @return The suggested block size for an efficient Wu Manber search.
      */
-    public static double getOptimumBlockSize(final int minimumLength, final int numberOfSequences) {
+    public static double getWuManberRecommendedBlockSize(final int minimumLength, final int numberOfSequences) {
         return logOfBase(ALPHABET_SIZE, 2 * minimumLength * numberOfSequences);
     }
     
     
+    /**
+     * TODO: requires performance testing to determine good block sizes, when
+     * varying in minimum length and number of sequences.
+     * 
+     * @param minimumLength
+     * @param numberOfSequences
+     * @return 
+     */
     public static int getPossibleBlockSize(final int minimumLength, final int numberOfSequences) {
-        final double optimumBlockSize = getOptimumBlockSize(minimumLength, numberOfSequences);
+        final double optimumBlockSize = getWuManberRecommendedBlockSize(minimumLength, numberOfSequences);
         final int possibleBlockSize = (int) Math.floor(optimumBlockSize);
         return possibleBlockSize > 0 ? possibleBlockSize : 1;
     }
@@ -86,6 +139,7 @@ public class WuManberSearcher implements Searcher {
         }
         this.matcherList = new ArrayList(matchers);
         
+        // Find out the minimum and maximum length of the sequences to be matched:
         int minimumLen = Integer.MAX_VALUE;
         int maximumLen = Integer.MIN_VALUE;
         for (final SequenceMatcher matcher : matcherList) {
@@ -96,12 +150,16 @@ public class WuManberSearcher implements Searcher {
         minimumLength = minimumLen;
         maximumLength = maximumLen;
         
-        if (blockSize < 1) {
-            this.blockSize = getPossibleBlockSize(minimumLength, matcherList.size());
-        } else {
-            this.blockSize = blockSize;
+        // Figure out the block size to use:
+        int possibleBlockSize = blockSize;
+        if (possibleBlockSize < 1) {
+            possibleBlockSize = getPossibleBlockSize(minimumLength, matcherList.size());
         }
+        // Can't have a block size greater than the minimum length of a sequence 
+        // to be matched.
+        this.blockSize = possibleBlockSize > minimumLength ? possibleBlockSize : minimumLength;
         
+        // Set the multisequence compiler to use:
         if (compiler == null) {
             this.multiSequenceCompiler = new TrieMatcherCompiler();
         } else {
@@ -112,20 +170,176 @@ public class WuManberSearcher implements Searcher {
     
     
     public long searchForwards(ByteReader reader, long fromPosition, long toPosition) {
+        // Get the data we need to search with:
         calculateForwardParameters();
         final MultiSequenceMatcher validator = forwardMatcher;
         final int[] safeShifts = forwardShifts;
+        final int hashBitMask = safeShifts.length - 1; 
         
+        // Calculate safe bounds for the search:
+        final long lastPossiblePosition = reader.length() - 1;
+        final long lastPosition = toPosition <= lastPossiblePosition ?
+                toPosition : lastPossiblePosition;
+        final int lastMinimumPosition = minimumLength - 1;
+        long searchPosition = fromPosition <= lastMinimumPosition ?
+                lastMinimumPosition : fromPosition + lastMinimumPosition;
         
+        // Search with a block size of two (most probable useful block size).
+        if (blockSize == 2) { 
+            while (searchPosition <= lastPosition) {
+
+                // Calculate the hash of the current block:
+                final int firstValue = (int) (reader.readByte(searchPosition - 1) & 0xFF);
+                final int blockHash = (firstValue << 5) - firstValue +
+                                      ((int) (reader.readByte(searchPosition) & 0xFF));
+
+                // Get the safe shift for this block:
+                final int safeShift = safeShifts[blockHash & hashBitMask];
+
+                // See if we have a match.  
+                if (safeShift == 0) {
+                    if (validator.matchesBackwards(reader, searchPosition)) {
+                        return searchPosition; // a match!
+                    }
+                    searchPosition++; // no safe shift other than to advance one on.
+                } else {
+                    searchPosition += safeShift; // move on with the safe shift.
+                }
+            }
+            
+        // Search with a block size of one:
+        } else if (blockSize == 1) { 
+            
+            while (searchPosition <= lastPosition) {
+
+                // Get the safe shift for this byte:
+                final int safeShift = safeShifts[(int) (reader.readByte(searchPosition) & 0xFF)];
+
+                // See if we have a match.  
+                if (safeShift == 0) {
+                    if (validator.matchesBackwards(reader, searchPosition)) {
+                        return searchPosition; // a match!
+                    }
+                    searchPosition++; // no safe shift other than to advance one on.
+                } else {
+                    searchPosition += safeShift; // move on with the safe shift.
+                }
+            }
+
+        // Search with a larger block size:
+        } else { 
+            while (searchPosition <= lastPosition) {
+
+                // Calculate the hash of the current block:
+                int blockHash = 0;
+                for (long blockPosition = searchPosition - blockSize + 1; 
+                        blockPosition <= searchPosition; blockPosition++) {
+                    final int value = (int) (reader.readByte(blockPosition) & 0xFF);
+                    blockHash = ((blockHash << 5) - blockHash) * value;
+                }
+
+                // Get the safe shift for this block:
+                final int safeShift = safeShifts[blockHash & hashBitMask];
+
+                // See if we have a match.  
+                if (safeShift == 0) {
+                    if (validator.matchesBackwards(reader, searchPosition)) {
+                        return searchPosition; // a match!
+                    }
+                    searchPosition++; // no safe shift other than to advance one on.
+                } else {
+                    searchPosition += safeShift; // move on with the safe shift.
+                }
+            }
+        }
         
         return Searcher.NOT_FOUND;
     }
 
     
-    public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+    public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        // Get the data we need to search with:
         calculateForwardParameters();
         final MultiSequenceMatcher validator = forwardMatcher;
         final int[] safeShifts = forwardShifts;
+        final int hashBitMask = safeShifts.length - 1; 
+        
+        // Calculate safe bounds for the search:
+        final int lastPossiblePosition = bytes.length - 1;
+        final int lastPosition = toPosition <= lastPossiblePosition ?
+                toPosition : lastPossiblePosition;
+        final int lastMinimumPosition = minimumLength - 1;
+        int searchPosition = fromPosition <= lastMinimumPosition ?
+                lastMinimumPosition : fromPosition + lastMinimumPosition;
+        
+        // Search with a block size of two (most probable useful block size).
+        if (blockSize == 2) { 
+            while (searchPosition <= lastPosition) {
+
+                // Calculate the hash of the current block:
+                final int firstValue = (int) (bytes[searchPosition - 1] & 0xFF);
+                final int blockHash = (firstValue << 5) - firstValue +
+                                      ((int) (bytes[searchPosition] & 0xFF));
+
+                // Get the safe shift for this block:
+                final int safeShift = safeShifts[blockHash & hashBitMask];
+
+                // See if we have a match.  
+                if (safeShift == 0) {
+                    if (validator.matchesBackwards(bytes, searchPosition)) {
+                        return searchPosition; // a match!
+                    }
+                    searchPosition++; // no safe shift other than to advance one on.
+                } else {
+                    searchPosition += safeShift; // move on with the safe shift.
+                }
+            }
+            
+        // Search with a block size of one:
+        } else if (blockSize == 1) { 
+            
+            while (searchPosition <= lastPosition) {
+
+               // Get the safe shift for this byte:
+                final int safeShift = safeShifts[(int) (bytes[searchPosition] & 0xFF)];
+
+                // See if we have a match.  
+                if (safeShift == 0) {
+                    if (validator.matchesBackwards(bytes, searchPosition)) {
+                        return searchPosition; // a match!
+                    }
+                    searchPosition++; // no safe shift other than to advance one on.
+                } else {
+                    searchPosition += safeShift; // move on with the safe shift.
+                }
+            }
+
+        // Search with a larger block size:
+        } else { 
+            while (searchPosition <= lastPosition) {
+
+                // Calculate the hash of the current block:
+                int blockHash = 0;
+                for (int blockPosition = searchPosition - blockSize + 1; 
+                        blockPosition <= searchPosition; blockPosition++) {
+                    final int value = (int) (bytes[blockPosition] & 0xFF);
+                    blockHash = ((blockHash << 5) - blockHash) * value;
+                }
+
+                // Get the safe shift for this block:
+                final int safeShift = safeShifts[blockHash & hashBitMask];
+
+                // See if we have a match.  
+                if (safeShift == 0) {
+                    if (validator.matchesBackwards(bytes, searchPosition)) {
+                        return searchPosition; // a match!
+                    }
+                    searchPosition++; // no safe shift other than to advance one on.
+                } else {
+                    searchPosition += safeShift; // move on with the safe shift.
+                }
+            }
+        }
         
         return Searcher.NOT_FOUND;
     }
@@ -190,12 +404,12 @@ public class WuManberSearcher implements Searcher {
                 
                 // For each possible permutation of bytes in a block:
                 final List<byte[]> blockBytes = getBlockByteList(position, sequence);
-                final BytePermutationIterator matchingBytes = new BytePermutationIterator(blockBytes);
-                while (matchingBytes.hasNext()) {
+                final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
+                while (permutation.hasNext()) {
                     
                     // Set the shift for the hash position of this permutation to be 
-                    // the smaller of the existing shift and the shift for this position:
-                    final int hashPos = getBlockHash(matchingBytes.next()) & hashBitMask;
+                    // the smaller of the existing shift and current distance from the end:
+                    final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
                     shifts[hashPos] = Math.min(shifts[hashPos], distanceFromEnd);
                 }
             }
@@ -205,12 +419,7 @@ public class WuManberSearcher implements Searcher {
 
     
     private int[] createBackwardShifts() {
-        final int defaultShift = minimumLength - blockSize + 1;        
-        final int[] shifts = createDefaultShifts(defaultShift);
-
-        //TODO: finish backward shifts.
-        
-        return shifts;
+        throw new UnsupportedOperationException("Operation not yet supported");
     }
     
     
@@ -261,9 +470,17 @@ public class WuManberSearcher implements Searcher {
      * Need to profile performance given different table sizes and investigate
      * hash functions.
      * 
-     * @return a pure guess at an optimal table size, an exact power of two.
+     * @return a pure guess at an optimal table size, an exact power of two, or
+     *         256 if the block size is one.
      */
     private int guessOptimalTablePowerOfTwoSize() {
+        // with a block size of 1, we only have a single byte value, with 256
+        // distinct values.  
+        if (blockSize == 1) {
+            return 256; 
+        }
+        // Otherwise, take a guess - we probably don't want a table of 65,536 values
+        // or greater under normal circumstances...
         final int numberOfSequences = matcherList.size();
         final int smallestTableSize = 192 + (numberOfSequences * 16);
         final int nextHighestPowerOfTwo = (int) Math.ceil(logOfBase(2, smallestTableSize));
