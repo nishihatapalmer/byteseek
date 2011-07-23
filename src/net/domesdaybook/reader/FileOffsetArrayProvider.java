@@ -14,7 +14,7 @@ import java.io.RandomAccessFile;
  *
  * @author matt
  */
-public class FileByteArrayProvider implements ByteArrayProvider {
+public class FileOffsetArrayProvider implements OffsetArrayProvider {
 
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to FileByteArrayProvider";
@@ -32,7 +32,7 @@ public class FileByteArrayProvider implements ByteArrayProvider {
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileByteArrayProvider(final File file) throws FileNotFoundException {
+    public FileOffsetArrayProvider(final File file) throws FileNotFoundException {
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
@@ -54,10 +54,10 @@ public class FileByteArrayProvider implements ByteArrayProvider {
     
     /**
      * 
-     * @return A ByteArray containing a byte array and the offset into it for a given position.
+     * @return A OffsetArray containing a byte array and the offset into it for a given position.
      */
     @Override
-    public ByteArray getByteArray(final long position) throws ByteReaderException {
+    public OffsetArray getByteArray(final long position) throws ByteReaderException {
         if (position >= 0 && position < length) {
             try {
                 int blockSize = cacheBlockSize;
@@ -72,13 +72,13 @@ public class FileByteArrayProvider implements ByteArrayProvider {
                     final byte[] cacheBlock = new byte[blockSize];
                     file.seek(readPos);
                     file.read(cacheBlock, 0, blockSize);
-                    return new ByteArray(cacheBlock, offset);
+                    return new OffsetArray(cacheBlock, offset);
                 }
             } catch (IOException ex) {
                 throw new ByteReaderException(ex);
             }
         }
-        return ByteArray.EMPTY_ARRAY;
+        return OffsetArray.EMPTY;
     }
     
     

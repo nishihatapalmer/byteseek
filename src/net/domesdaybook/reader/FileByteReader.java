@@ -23,7 +23,7 @@ import java.io.RandomAccessFile;
  *
  * @author Matt Palmer.
  */
-public final class FileReader implements ByteReader {
+public final class FileByteReader implements ByteReader {
 
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to RandomAccessFileReader";
@@ -33,13 +33,13 @@ public final class FileReader implements ByteReader {
 
 
     /**
-     * Constructs an immutable FileReader.
+     * Constructs an immutable FileByteReader.
      *
      * @param file The file to read from.
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final File file) throws FileNotFoundException {
+    public FileByteReader(final File file) throws FileNotFoundException {
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }

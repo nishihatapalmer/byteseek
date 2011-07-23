@@ -8,14 +8,14 @@ package net.domesdaybook.reader;
  *
  * @author matt
  */
-public final class ByteArray {
+public final class OffsetArray {
     
-    public final static ByteArray EMPTY_ARRAY = new ByteArray(new byte[] {}, 0);
+    public final static OffsetArray EMPTY = new OffsetArray(new byte[] {}, 0);
     
     private final byte[] bytes;
     private final int offset;
     
-    public ByteArray(final byte[] bytes, final int offset) {
+    public OffsetArray(final byte[] bytes, final int offset) {
         this.bytes = bytes;
         this.offset = offset;
     }
