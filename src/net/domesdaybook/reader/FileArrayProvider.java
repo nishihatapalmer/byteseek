@@ -77,7 +77,7 @@ public class FileArrayProvider implements ArrayProvider {
                         if (read == -1) break;
                         totalRead += read;
                     }
-                    return new Array(cacheBlock, offset);
+                    return new Array(cacheBlock, offset, offset+totalRead-1);
                 }
             } catch (IOException ex) {
                 throw new ByteReaderException(ex);
