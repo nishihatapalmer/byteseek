@@ -54,7 +54,7 @@ public class FileArrayProvider implements ArrayProvider {
     
     /**
      * 
-     * @return A Array containing a byte array and the offset into it for a given position.
+     * @return An Array containing a byte array and the offset into it for a given position.
      */
     @Override
     public Array getByteArray(final long position) throws ByteReaderException {
