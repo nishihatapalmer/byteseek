@@ -69,15 +69,15 @@ public class FileArrayProvider implements ArrayProvider {
                     blockSize = (int) (length - position);
                 } 
                 if (blockSize > 0) {
-                    final byte[] cacheBlock = new byte[blockSize];
+                    final byte[] bytes = new byte[blockSize];
                     file.seek(readPos);
                     int totalRead = 0;
                     while (totalRead < blockSize) {
-                        int read = file.read(cacheBlock, totalRead, blockSize - totalRead);
+                        int read = file.read(bytes, totalRead, blockSize - totalRead);
                         if (read == -1) break;
                         totalRead += read;
                     }
-                    return new Array(cacheBlock, offset, offset+totalRead-1);
+                    return new Array(bytes, offset, offset+totalRead-1);
                 }
             } catch (IOException ex) {
                 throw new ByteReaderException(ex);
