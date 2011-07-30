@@ -287,4 +287,22 @@ public class SundayQuickSearcher implements Searcher {
         return matcher;
     }
     
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareForwards() {
+        getForwardShifts();
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareBackwards() {
+        getBackwardShifts();
+    }
+    
 }

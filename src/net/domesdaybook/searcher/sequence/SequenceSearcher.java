@@ -141,4 +141,22 @@ public final class SequenceSearcher implements Searcher {
         return matcher;
     }
 
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareForwards() {
+        // no preparation necessary.
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareBackwards() {
+        // no preparation necessary.
+    }
+
 }

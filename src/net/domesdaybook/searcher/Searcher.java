@@ -71,5 +71,24 @@ public interface Searcher {
      */
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition);
     
+    
+    
+    /**
+     * Ensures that the searcher is fully prepared to search forwards.  
+     * Some searchers may defer calculating all the necessary parameters
+     * until the first search is made.  Calling this function ensures that
+     * all preparation is complete before the first search forwards.
+     */
+    public void prepareForwards();
+
+    
+    /**
+     * Ensures that the searcher is fully prepared to search backwards.  
+     * Some searchers may defer calculating all the necessary parameters
+     * until the first search is made.  Calling this function ensures that
+     * all preparation is complete before the first search backwards.
+     */
+    public void prepareBackwards();
+    
 
 }

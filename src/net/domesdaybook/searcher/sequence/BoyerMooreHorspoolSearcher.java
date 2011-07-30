@@ -81,6 +81,8 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
         final SingleByteMatcher lastMatcher = getLastSingleMatcher();
         final SequenceMatcher theMatcher = getMatcher();
         
+        //TODO: check all these bounds.
+        
         // Calculate safe bounds for the search:
         final int lastBytePositionInSequence = theMatcher.length() - 1;
         final long lastPossiblePosition = reader.length() - 1;
@@ -387,6 +389,26 @@ public final class BoyerMooreHorspoolSearcher implements Searcher {
      */
     public final SequenceMatcher getMatcher() {
         return matcher;
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareForwards() {
+        getForwardShifts();
+        getLastSingleMatcher();
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareBackwards() {
+        getBackwardShifts();
+        getFirstSingleMatcher();
     }
 
 }

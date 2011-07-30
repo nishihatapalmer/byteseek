@@ -365,6 +365,23 @@ public class WuManberSearcher implements Searcher {
 
     }
     
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareForwards() {
+        calculateForwardParameters();
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareBackwards() {
+        calculateBackwardParameters();
+    }    
+    
     
     private void calculateForwardParameters() {
         if (forwardMatcher == null) {

@@ -124,4 +124,22 @@ public class MatcherSearcher implements Searcher {
     }
 
     
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareForwards() {
+        // no preparation necessary.
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareBackwards() {
+        // no preparation necessary.
+    }
+
+    
 }
