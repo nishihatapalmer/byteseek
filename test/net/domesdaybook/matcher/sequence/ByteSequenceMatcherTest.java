@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.domesdaybook.reader.FileByteReader;
 import java.net.URL;
-import net.domesdaybook.test.Utilities;
+import net.domesdaybook.reader.Utilities;
 import java.io.File;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.ByteReader;

@@ -14,9 +14,9 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class AnyByteMatcherTest {
+public class AnyMatcherTest {
 
-    public AnyByteMatcherTest() {
+    public AnyMatcherTest() {
     }
 
     @BeforeClass

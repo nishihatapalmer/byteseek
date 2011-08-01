@@ -14,9 +14,9 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class AllBitMaskMatcherTest {
+public class BitMaskAllBitesMatcherTest {
 
-    public AllBitMaskMatcherTest() {
+    public BitMaskAllBitesMatcherTest() {
     }
 
     @BeforeClass
