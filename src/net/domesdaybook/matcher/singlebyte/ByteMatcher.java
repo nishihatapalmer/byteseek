@@ -27,6 +27,17 @@ public final class ByteMatcher extends AbstractSingleByteSequence {
     public ByteMatcher(final byte byteToMatch) {
         this.byteToMatch = byteToMatch;
     }
+    
+    
+    /**
+     * Constructs an immutable ByteMatcher from a hex representation of a byte.
+     * 
+     * @param hexByte 
+     * @throws IllegalArgumentException if the string is not a valid 2-digit hex byte.
+     */
+    public ByteMatcher(final String hexByte) {
+        this.byteToMatch = ByteUtilities.byteFromHex(hexByte);
+    }
 
 
     /**

@@ -175,8 +175,8 @@ public class ByteUtilities {
     }
 
 
-    public static byte[] getBytesInRange(int from, int to) {
-        byte[] range = new byte[to-from+1];
+    public static byte[] getBytesInRange(final int from, final int to) {
+        final byte[] range = new byte[to-from+1];
         int position = 0;
         for (int value = from; value <= to; value++) {
             range[position++] = (byte) value;
@@ -350,7 +350,26 @@ public class ByteUtilities {
         return bytes;
     }
 
+    
+    /**
+     * Returns the byte represented by a two-digit hex string.
+     * 
+     * @param hexByte The string containing the 2-digit hex representation of a byte.
+     * @return The byte represented by the hexByte.
+     * @throws IllegalArgumentException if the string does not contain a valid hex byte.
+     */
+    public static byte byteFromHex(final String hexByte) {
+        if (hexByte != null && hexByte.length() == 2) {
+            try {
+                return Byte.valueOf(hexByte, 16);
+            } catch (NumberFormatException ex) {
+                // do nothing - illegal argument exception will be thrown below.
+            }
+        }
+        throw new IllegalArgumentException("Not a valid hex byte.");
+    }
 
+    
     /**
      * Returns a byte value as either a 2-char hex string, or if
      * pretty printing, and the byte value is a printable ASCII

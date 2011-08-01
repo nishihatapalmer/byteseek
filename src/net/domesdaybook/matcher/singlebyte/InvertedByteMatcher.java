@@ -24,6 +24,17 @@ public class InvertedByteMatcher extends AbstractSingleByteSequence {
     public InvertedByteMatcher(final byte byteToMiss) {
         this.byteToMiss = byteToMiss;
     }
+    
+    
+    /**
+     * Constructs an immutable InvertedByteMatcher from a hex representation of a byte.
+     * 
+     * @param hexByte 
+     * @throws IllegalArgumentException if the string is not a valid 2-digit hex byte.
+     */
+    public InvertedByteMatcher(final String hexByte) {
+        this.byteToMiss = ByteUtilities.byteFromHex(hexByte);
+    }    
 
 
     /**
@@ -81,9 +92,10 @@ public class InvertedByteMatcher extends AbstractSingleByteSequence {
     public byte[] getMatchingBytes() {
         byte[] matchingBytes = new byte[255];
         int byteIndex = 0;
-        for (byte byteToMatch = Byte.MIN_VALUE; byteToMatch <= Byte.MAX_VALUE; byteToMatch++) {
-            if (matches(byteToMatch)) {
-                matchingBytes[byteIndex++]=byteToMatch;
+        for (int byteValue = 0; byteValue < 256; byteValue++) {
+            final byte theByte = (byte) byteValue;
+            if (theByte != byteToMiss) {
+                matchingBytes[byteIndex++] = theByte;
             }
         }
         return matchingBytes;
