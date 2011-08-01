@@ -19,7 +19,7 @@ public class FileArrayProvider implements ArrayProvider {
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to FileByteArrayProvider";
 
-    private int cacheBlockSize = 8192;
+    private final int cacheBlockSize;
     
     private final RandomAccessFile file;
     private final long length;
@@ -38,7 +38,26 @@ public class FileArrayProvider implements ArrayProvider {
         }
         this.file = new RandomAccessFile(file, READ_ONLY);
         this.length = file.length();
+        this.cacheBlockSize = this.length < Integer.MAX_VALUE ?
+                (int) this.length : Integer.MAX_VALUE;
     }
+    
+
+    /**
+     * Constructs an immutable FileReader.
+     *
+     * @param file The file to read from.
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileArrayProvider(final File file, int arraySize) throws FileNotFoundException {
+        if (file == null) {
+            throw new IllegalArgumentException(NULL_ARGUMENTS);
+        }
+        this.file = new RandomAccessFile(file, READ_ONLY);
+        this.length = file.length();
+        this.cacheBlockSize = arraySize;
+    }    
 
 
    

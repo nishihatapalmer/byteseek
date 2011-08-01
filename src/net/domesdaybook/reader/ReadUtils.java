@@ -24,7 +24,7 @@ public final class ReadUtils {
         final int blockSize = bytes.length;
         int totalRead = 0;
         while (totalRead < blockSize) {
-            int read = input.read(bytes, totalRead, blockSize - totalRead);
+            final int read = input.read(bytes, totalRead, blockSize - totalRead);
             if (read == -1) break;
             totalRead += read;
         }   
@@ -36,7 +36,7 @@ public final class ReadUtils {
         final int blockSize = bytes.length;
         int totalRead = 0;
         while (totalRead < blockSize) {
-            int read = input.read(bytes, totalRead, blockSize - totalRead);
+            final int read = input.read(bytes, totalRead, blockSize - totalRead);
             if (read == -1) break;
             totalRead += read;
         }   

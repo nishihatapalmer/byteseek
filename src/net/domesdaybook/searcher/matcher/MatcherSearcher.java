@@ -5,7 +5,7 @@
 package net.domesdaybook.searcher.matcher;
 
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.reader.BridgingByteArrayReader;
+import net.domesdaybook.reader.BridgingArrayReader;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.reader.Array;
 import net.domesdaybook.reader.ArrayProvider;
@@ -34,7 +34,7 @@ public class MatcherSearcher implements Searcher {
             return result;
         }
         Array nextBytes = provider.getByteArray(fromPosition + lastPossiblePosition);
-        BridgingByteArrayReader bridge = new BridgingByteArrayReader(bytes.getArray(), nextBytes.getArray());
+        BridgingArrayReader bridge = new BridgingArrayReader(bytes.getArray(), nextBytes.getArray());
         
         return Searcher.NOT_FOUND;
     }
