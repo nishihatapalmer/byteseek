@@ -20,7 +20,7 @@ public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence
 
     private final static String ILLEGAL_ARGUMENTS = "Non-ASCII char passed in to CaseInsensitiveByteMatcher: %s";
 
-    private final Character value;
+    private final char value;
     private final byte[] caseValues;
 
 
@@ -31,10 +31,9 @@ public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence
      * @throws {@link IllegalArgumentException} if the character is not ASCII.
      *
      */
-    public CaseInsensitiveByteMatcher(Character asciiChar) {
+    public CaseInsensitiveByteMatcher(final char asciiChar) {
         // Precondition: must be an ASCII char:
-        final long val = (long) asciiChar;
-        if (val > 127 || val < 0) {
+        if (asciiChar > 127 || asciiChar < 0) {
             final String message = String.format(ILLEGAL_ARGUMENTS, asciiChar);
             throw new IllegalArgumentException(message);
         }
@@ -122,7 +121,8 @@ public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return prettyPrint? " `" + value.toString() + "` " : '`' + value.toString() + '`';
+        return prettyPrint? " `" + Character.toString(value) + "` " : '`'
+                + Character.toString(value) + '`';
     }
 
 
