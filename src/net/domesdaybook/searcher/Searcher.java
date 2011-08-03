@@ -71,13 +71,19 @@ public interface Searcher {
      */
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition);
     
-    
-    
+
     /**
      * Ensures that the searcher is fully prepared to search forwards.  
      * Some searchers may defer calculating all the necessary parameters
      * until the first search is made.  Calling this function ensures that
      * all preparation is complete before the first search forwards.
+     * 
+     * Note: some implemented searchers use single-check lazy initialisation
+     * with volatile fields.  This means that if multiple threads attempt to
+     * search with such a searcher simultaneously without being prepared first, 
+     * it is possible that the fields may be initialised more than once
+     * (maximum as many times as the number of threads using that searcher simultaneously).  
+     * This will not produce an error, but would result in unnecessary calculation;
      */
     public void prepareForwards();
 
@@ -87,6 +93,13 @@ public interface Searcher {
      * Some searchers may defer calculating all the necessary parameters
      * until the first search is made.  Calling this function ensures that
      * all preparation is complete before the first search backwards.
+     * 
+     * Note: some implemented searchers use single-check lazy initialisation
+     * with volatile fields.  This means that if multiple threads attempt to
+     * search with such a searcher simultaneously without being prepared first, 
+     * it is possible that the fields may be initialised more than once
+     * (maximum as many times as the number of threads using that searcher simultaneously).  
+     * This will not produce an error, but would result in unnecessary calculation;
      */
     public void prepareBackwards();
     
