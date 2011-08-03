@@ -96,10 +96,10 @@ public interface Searcher {
      * in that calling it from multiple threads may result in multiple 
      * initialisations (but should not produce an error).
      * <p/>
-     * If only a single thread accesses the search object, then calling this function
-     * only changes when any final calculations of search parameters are made.
+     * Calling this function only changes when (and possibly how many) final 
+     * calculations of search parameters are made.
      * If this function is called, it should be made from a single thread before
-     * allowing multiple threads to use the searcher.
+     * allowing multiple threads to use the searcher. 
      */
     public void prepareForwards();
 
@@ -128,10 +128,10 @@ public interface Searcher {
      * in that calling it from multiple threads may result in multiple 
      * initialisations (but should not produce an error).
      * <p/>
-     * If only a single thread accesses the search object, then calling this function
-     * only changes when any final calculations of search parameters are made.  
+     * Calling this function only changes when (and possibly how many) final 
+     * calculations of search parameters are made.
      * If this function is called, it should be made from a single thread before
-     * allowing multiple threads to use the searcher.
+     * allowing multiple threads to use the searcher. 
      */
     public void prepareBackwards();
     
