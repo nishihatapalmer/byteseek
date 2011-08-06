@@ -15,7 +15,7 @@ import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskAnyBitsMatcher;
 import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteUtilities;
+import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.InvertedByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SimpleSingleByteMatcherFactory;

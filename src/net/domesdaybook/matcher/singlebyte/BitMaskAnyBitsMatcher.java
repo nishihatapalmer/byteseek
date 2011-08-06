@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import net.domesdaybook.bytes.ByteUtilities;
 import java.util.List;
 import net.domesdaybook.reader.ByteReader;
 

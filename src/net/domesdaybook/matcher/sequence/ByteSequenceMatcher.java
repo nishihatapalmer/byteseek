@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteUtilities;
+import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.reader.ByteReader;
 
 /**

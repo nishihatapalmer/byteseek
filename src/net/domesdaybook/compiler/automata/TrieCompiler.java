@@ -26,7 +26,7 @@ import net.domesdaybook.compiler.ReversibleCompiler;
 import net.domesdaybook.compiler.ReversibleCompiler.Direction;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteUtilities;
+import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 

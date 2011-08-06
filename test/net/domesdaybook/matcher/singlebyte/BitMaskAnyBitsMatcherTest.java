@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import net.domesdaybook.bytes.ByteUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

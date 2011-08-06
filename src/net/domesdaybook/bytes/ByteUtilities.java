@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.bytes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +13,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Some useful bit-twiddling utilities to count bits in a byte,
- * and the bytes which match those bits.
+ * Any and all functions doing things with bytes.
+ * 
+ *  Translating between arrays and collections of bytes
+ *  Counting bits in bytes.
+ *  Counting permutations of bytes given a bit mask matching any or all bits.
+ *  Returning the set of bytes matching a bit mask (on any or all of them).
+ * 
  *
  * @author Matt Palmer
  */
