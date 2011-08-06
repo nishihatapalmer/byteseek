@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.bytes;
 
 import net.domesdaybook.bytes.ByteUtilities;
 import org.junit.After;
