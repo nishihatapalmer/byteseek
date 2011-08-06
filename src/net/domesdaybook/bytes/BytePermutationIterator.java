@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.searcher.multisequence;
+package net.domesdaybook.bytes;
 
 import java.util.ArrayList;
 import java.util.Iterator;

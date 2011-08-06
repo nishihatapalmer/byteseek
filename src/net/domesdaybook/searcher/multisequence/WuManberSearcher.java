@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher.multisequence;
 
+import net.domesdaybook.bytes.BytePermutationIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
