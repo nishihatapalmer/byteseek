@@ -191,11 +191,12 @@ public class WuManberSearcher implements Searcher {
 
                 // Calculate the hash of the current block:
                 final int firstValue = (int) (reader.readByte(searchPosition - 1) & 0xFF);
-                final int blockHash = (firstValue << 5) - firstValue +
-                                      ((int) (reader.readByte(searchPosition) & 0xFF));
+                final int blockHash = ((firstValue << 5) - firstValue +
+                                      ((int) (reader.readByte(searchPosition) & 0xFF)))
+                                      & hashBitMask;
 
                 // Get the safe shift for this block:
-                final int safeShift = safeShifts[blockHash & hashBitMask];
+                final int safeShift = safeShifts[blockHash];
 
                 // See if we have a match.  
                 if (safeShift == 0) {
@@ -279,11 +280,12 @@ public class WuManberSearcher implements Searcher {
 
                 // Calculate the hash of the current block:
                 final int firstValue = (int) (bytes[searchPosition - 1] & 0xFF);
-                final int blockHash = (firstValue << 5) - firstValue +
-                                      ((int) (bytes[searchPosition] & 0xFF));
+                final int blockHash = ((firstValue << 5) - firstValue +
+                                      ((int) (bytes[searchPosition] & 0xFF)))
+                                      & hashBitMask;
 
                 // Get the safe shift for this block:
-                final int safeShift = safeShifts[blockHash & hashBitMask];
+                final int safeShift = safeShifts[blockHash];
 
                 // See if we have a match.  
                 if (safeShift == 0) {
