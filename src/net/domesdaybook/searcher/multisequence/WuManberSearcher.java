@@ -406,7 +406,7 @@ public class WuManberSearcher implements Searcher {
     
     private int[] createForwardShifts() {
         final int defaultShift = minimumLength - blockSize + 1;        
-        final int[] shifts = createDefaultShifts(defaultShift);
+        final int[] shifts = createShiftHashTable(defaultShift);
         // (relies on shifts being a size which is a power of two):
         final int hashBitMask = shifts.length - 1; 
         
@@ -441,7 +441,7 @@ public class WuManberSearcher implements Searcher {
     }
     
     
-    private int[] createDefaultShifts(final int defaultShift) {
+    private int[] createShiftHashTable(final int defaultShift) {
         final int optimumTableSize = guessOptimalTablePowerOfTwoSize();
         final int[] shifts = new int[optimumTableSize];
         Arrays.fill(shifts, defaultShift);  
