@@ -19,6 +19,7 @@ import net.domesdaybook.compiler.ReversibleCompiler.Direction;
 import net.domesdaybook.compiler.multisequence.TrieMatcherCompiler;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.searcher.AbstractSearcher;
 
 /**
  * WuManberSearcher implements a variation of the classic multi-pattern
@@ -69,7 +70,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  * 
  * @author matt
  */
-public class WuManberSearcher implements Searcher {
+public class WuManberSearcher extends AbstractSearcher {
 
     public static final int ALPHABET_SIZE = 256;
     

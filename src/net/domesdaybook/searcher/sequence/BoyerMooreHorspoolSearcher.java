@@ -9,6 +9,7 @@ import java.util.Arrays;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
 
@@ -41,7 +42,7 @@ import net.domesdaybook.searcher.Searcher;
  * 
  * @author Matt Palmer
  */
-public final class BoyerMooreHorspoolSearcher implements Searcher {
+public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
 
     // volatile arrays are usually a bad idea, as volatile applies to the array
     // reference, not to the contents of the array.  However, we will never change

@@ -9,13 +9,14 @@ import net.domesdaybook.reader.BridgingArrayReader;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.reader.Array;
 import net.domesdaybook.reader.ArrayProvider;
+import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
 /**
  *
  * @author matt
  */
-public class MatcherSearcher implements Searcher {
+public class MatcherSearcher extends AbstractSearcher {
 
     private final Matcher matcher;
     

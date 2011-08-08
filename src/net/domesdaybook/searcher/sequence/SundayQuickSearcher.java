@@ -9,13 +9,14 @@ import java.util.Arrays;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
 /**
  *
  * @author matt
  */
-public class SundayQuickSearcher implements Searcher {
+public class SundayQuickSearcher extends AbstractSearcher {
     
     // Volatile arrays are usually a bad idea, as volatile applies to the array
     // reference, not to the contents of the array.  However, we will never change

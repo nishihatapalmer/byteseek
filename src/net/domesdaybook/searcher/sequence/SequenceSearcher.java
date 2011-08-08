@@ -7,6 +7,7 @@ package net.domesdaybook.searcher.sequence;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
 /**
@@ -17,7 +18,7 @@ import net.domesdaybook.searcher.Searcher;
  *
  * @author Matt Palmer
  */
-public final class SequenceSearcher implements Searcher {
+public final class SequenceSearcher extends AbstractSearcher {
     
     private final SequenceMatcher matcher;
 

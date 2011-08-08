@@ -34,7 +34,27 @@ public interface Searcher {
      */
     public long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition);
 
+
+    /**
+     * Searches bytes forwards provided by a {@link ByteReader} object,
+     * from the position given by fromPosition up to the end of the byte reader.
+     *
+     * @param reader       The byte reader giving access to the bytes being searched.
+     * @param fromPosition The position to search from.
+     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public long searchForwards(final ByteReader reader, final long fromPosition);
  
+    
+    /**
+     * Searches bytes forwards provided by a {@link ByteReader} object,
+     * from the start of the {@link ByteReader} to the end, if a match is not found.
+     *
+     * @param reader       The byte reader giving access to the bytes being searched.
+     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public long searchForwards(final ByteReader reader);    
+    
     
     /**
      * Searches bytes forwards provided by a byte array
@@ -47,6 +67,27 @@ public interface Searcher {
      */
     public int searchForwards(byte[] bytes, final int fromPosition, final int toPosition);
 
+   
+    
+    /**
+     * Searches bytes forwards provided by a byte array
+     * from the position given by fromPosition up to the end of the byte array.
+     *
+     * @param bytes        The byte array giving access to the bytes being searched.
+     * @param fromPosition The position to search from.
+     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public int searchForwards(byte[] bytes, final int fromPosition);
+    
+    
+    /**
+     * Searches bytes forwards provided by a byte array
+     *
+     * @param bytes        The byte array giving access to the bytes being searched.
+\     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public int searchForwards(byte[] bytes);
+    
     
     /**
      * Searches bytes backwards provided by a {@link ByteReader} object,
@@ -61,6 +102,27 @@ public interface Searcher {
     
     
     /**
+     * Searches bytes backwards provided by a {@link ByteReader} object,
+     * from the position given by fromPosition up to the start of the reader.
+     *
+     * @param reader       The byte reader giving access to the bytes being searched.
+     * @param fromPosition The position to search from.
+     * @param toPosition   The position to search back to.
+     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public long searchBackwards(final ByteReader reader, final long fromPosition);
+        
+    
+    /**
+     * Searches bytes backwards provided by a {@link ByteReader} object,
+     * from the end to the start.
+     *
+     * @param reader       The byte reader giving access to the bytes being searched.
+     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public long searchBackwards(final ByteReader reader);    
+    
+    /**
      * Searches bytes backwards provided by a byte array,
      * from the position given by fromPosition up to toPosition.
      *
@@ -72,6 +134,26 @@ public interface Searcher {
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition);
     
 
+    /**
+     * Searches bytes backwards provided by a byte array,
+     * from the position given by fromPosition up to the start of the byte array.
+     *
+     * @param bytes        The byte array giving access to the bytes being searched.
+     * @param fromPosition The position to search from.
+     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public int searchBackwards(final byte[] bytes, final int fromPosition);
+    
+   
+    /**
+     * Searches a byte array backwards, from the end to the start.
+     *
+     * @param bytes        The byte array giving access to the bytes being searched.
+     * @return             The position a match was found at, or NOT_FOUND (-1).
+     */
+    public int searchBackwards(final byte[] bytes);    
+    
+    
     /**
      * Ensures that the searcher is fully prepared to search forwards.  
      * Some searchers may defer calculating all the necessary parameters
