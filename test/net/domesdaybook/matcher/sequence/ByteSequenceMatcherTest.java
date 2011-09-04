@@ -130,10 +130,42 @@ public class ByteSequenceMatcherTest {
     }
     
     
-      
-    // Test expected construction failures        
+    // Test expected construction failures:
     
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructNoRepeats() {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x8f, 0);
+    }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructNullArray() {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte[]) null);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructEmptyArray() {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher(new byte[0]);
+    }    
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructNullCollection() {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher((ArrayList<Byte>) null);
+    }   
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructEmptyCollection() {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher(new ArrayList<Byte>());
+    }       
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructNullList() {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher((ArrayList<ByteSequenceMatcher>) null);
+    }        
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructEmptyList() {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher(new ArrayList<ByteSequenceMatcher>());
+    }        
     
     
     /**
