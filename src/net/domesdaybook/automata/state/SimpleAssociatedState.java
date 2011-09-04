@@ -24,7 +24,7 @@ public class SimpleAssociatedState<T> implements AssociatedState {
     
     private List<Transition> transitions;
     private boolean isFinal;
-    private TransitionStrategy transitionStrategy = NO_TRANSITIONS;
+    private TransitionStrategy transitionStrategy = NO_TRANSITION;
     private List<T> associations;
     
     public SimpleAssociatedState(final boolean isFinal) {
@@ -72,13 +72,13 @@ public class SimpleAssociatedState<T> implements AssociatedState {
     
     private void setBasicStrategy() {
         if (transitions.isEmpty()) {
-            transitionStrategy = NO_TRANSITIONS;
+            transitionStrategy = NO_TRANSITION;
         } else if (transitions.size() == 1) {
-            transitionStrategy = DFA_STATE_STRATEGY;
+            transitionStrategy = FIRST_MATCHING_TRANSITION;
         } else {
             // Determining whether the state satisfies a DFA strategy is expensive
             // so defer this decision to the optimise() method call.
-            transitionStrategy = NFA_STATE_STRATEGY;
+            transitionStrategy = ALL_MATCHING_TRANSITIONS;
         }
     }
     

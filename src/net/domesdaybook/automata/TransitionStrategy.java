@@ -7,6 +7,8 @@ package net.domesdaybook.automata;
 
 import java.util.Collection;
 import java.util.Map;
+import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.Transition;
 import net.domesdaybook.object.copy.DeepCopy;
 
 /**

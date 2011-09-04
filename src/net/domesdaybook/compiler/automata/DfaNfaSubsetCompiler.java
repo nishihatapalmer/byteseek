@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.Utilities;
+import net.domesdaybook.automata.AutomataUtils;
 import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
@@ -112,8 +112,9 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
         // Create transitions to all the new dfa states this one points to:
         createDfaTransitions(sourceStates, newState, StatesToDfa);
 
-        // Set the state strategy to DFA:
-        newState.setTransitionStrategy(State.DFA_STATE_STRATEGY);
+        // Set the state strategy to first transition to match (if it matches in
+        // a DFA, then there can be no other transition which will match):
+        newState.setTransitionStrategy(State.FIRST_MATCHING_TRANSITION);
         
         return newState;
     }
@@ -147,14 +148,14 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
         Map<Byte, Set<State>> byteToStates = buildByteToStates(sourceStates);
 
         // Return a map of target nfa states to the bytes they each transition on:
-        return Utilities.getStatesToBytes(byteToStates);
+        return AutomataUtils.getStatesToBytes(byteToStates);
    }
    
 
    private Map<Byte, Set<State>> buildByteToStates(final Set<State> states) {
         Map<Byte, Set<State>> byteToTargetStates = new LinkedHashMap<Byte, Set<State>>();
         for (final State state : states) {
-            Utilities.buildByteToStates(state, byteToTargetStates);
+            AutomataUtils.buildByteToStates(state, byteToTargetStates);
         }
         return byteToTargetStates;
     }

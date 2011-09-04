@@ -5,17 +5,17 @@
 
 package net.domesdaybook.automata;
 
+import net.domesdaybook.automata.strategy.AllMatchingTransitions;
+import net.domesdaybook.automata.strategy.FirstMatchingTransition;
+import net.domesdaybook.automata.strategy.NoTransition;
 import java.util.Collection;
-import net.domesdaybook.automata.transition.DFATransitionStrategy;
-import net.domesdaybook.automata.transition.NFATransitionStrategy;
-import net.domesdaybook.automata.transition.NoTransitionsStrategy;
 import net.domesdaybook.object.copy.DeepCopy;
 import java.util.List;
 import java.util.Map;
 
 /**
  * State is an interface representing a state of an automata.
- * A state can have a label, transitions to other states (or to itself),
+ * A state can have transitions to other states (or to itself),
  * and be a final or non-final state.  A final state is one which indicates
  * a match if it is reached processing the automata.
  * 
@@ -26,20 +26,21 @@ import java.util.Map;
  */
 public interface State extends DeepCopy {
 
-    //FIXME: replace these with an enum and wherever they are currently used.
+    //FIXME: replace these with an enum and wherever they are currently used?
     public static boolean FINAL = true;
     public static boolean NON_FINAL = false;
     
-    public static final TransitionStrategy DFA_STATE_STRATEGY = new DFATransitionStrategy();
-    public static final TransitionStrategy NFA_STATE_STRATEGY = new NFATransitionStrategy();
-    public static final TransitionStrategy NO_TRANSITIONS = new NoTransitionsStrategy();
+    public static final TransitionStrategy FIRST_MATCHING_TRANSITION = new FirstMatchingTransition();
+    public static final TransitionStrategy ALL_MATCHING_TRANSITIONS = new AllMatchingTransitions();
+    public static final TransitionStrategy NO_TRANSITION = new NoTransition();
+   
     
     /**
      * 
      * @param value The byte value to find the next states for.
      * @param states A collection to which the next states (if any) will be added.
      */
-    public void appendNextStatesForByte(Collection<State> states, final byte value);
+    public void appendNextStatesForByte(final Collection<State> states, final byte value);
 
     
     /**
@@ -60,7 +61,8 @@ public interface State extends DeepCopy {
      * 
      * @param strategy Sets a transition strategy to use for this state.
      */
-    public void setTransitionStrategy(TransitionStrategy strategy);
+    public void setTransitionStrategy(final TransitionStrategy strategy);
+    
     
     /**
      * 
@@ -116,7 +118,7 @@ public interface State extends DeepCopy {
      * @param oldToNewObjects
      * @return State
      */
-    public State deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
+    public State deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }
 

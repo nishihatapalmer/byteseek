@@ -205,7 +205,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
                     
                     // Clean up and optimise the current state:
                     currentState.removeTransition(transition);
-                    currentState.setTransitionStrategy(State.DFA_STATE_STRATEGY);
+                    currentState.setTransitionStrategy(State.FIRST_MATCHING_TRANSITION);
                 }
                 
                 // If we have no further bytes to process, just break out.
