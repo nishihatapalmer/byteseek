@@ -28,7 +28,6 @@ public class ByteUtilities {
     private static final int QUOTE_CHARACTER_VALUE = 39;
     private static final int START_PRINTABLE_ASCII = 32;
     private static final int END_PRINTABLE_ASCII = 126;
-    private static int[] MASK = {0x55, 0x33, 0x0F};
 
     private static int[] VALID_ALL_BITMASK_SET_SIZES = {1, 2, 4, 8, 16, 32, 64, 128, 256};
     private static int[] VALID_ANY_BITMASK_SET_SIZES = {0, 128, 192, 224, 240, 248, 252, 254, 255};
@@ -49,11 +48,11 @@ public class ByteUtilities {
      * @param b The byte to count the set bits.
      * @return The number of bits set in the byte.
      */
-    public static int countSetBits(byte b) {
+    public static int countSetBits(final byte b) {
         int bits = (int) b;
-        int result = bits - ((bits >>> 1) & MASK[0]);
-        result = ((result >>> 2) & MASK[1]) + (result & MASK[1]);
-        result = ((result >>> 4) + result) & MASK[2];
+        int result = bits - ((bits >>> 1) & 0x55);
+        result = ((result >>> 2) & 0x33) + (result & 0x33);
+        result = ((result >>> 4) + result) & 0x0F;
         return result;
     }
 
@@ -76,7 +75,7 @@ public class ByteUtilities {
      * @param bitmask The bitmask.
      * @return The number of bytes matching all the bits in the bitmask.
      */
-    public static int countBytesMatchingAllBits(byte bitmask) {
+    public static int countBytesMatchingAllBits(final byte bitmask) {
         // 00000000 - 1 << 8 = 256
         // 00000001 - 1 << 7 = 128
         // 00000011 - 1 << 6 = 64
@@ -97,7 +96,7 @@ public class ByteUtilities {
      * @param bitmask The bitmask.
      * @return The number of bytes matching any of the bits in the bitmask.
      */
-    public static int countBytesMatchingAnyBit(byte bitmask) {
+    public static int countBytesMatchingAnyBit(final byte bitmask) {
         // 00000000 - 256 - 256 = 0    (no match: zero).
         // 00000001 - 256 - 128 = 128  (no match: half the bytes where that bit is not set)
         // 00000011 - 256 - 64  = 192  (no match: zero & 63 other possible values)
@@ -138,18 +137,23 @@ public class ByteUtilities {
 
     public static Set<Byte> toSet(final byte[] bytes) {
         final Set<Byte> setOfBytes = new LinkedHashSet<Byte>((int) Math.round(bytes.length * 1.25));
-        final int size = bytes.length;
-        for (int count = 0; count < size; count++) {
-            setOfBytes.add(bytes[count]);
-        }
+        addAll(bytes, setOfBytes);
         return setOfBytes;
     }
 
     
+    public static void addAll(final byte[] bytes, final Collection<Byte> toCollection) {
+        final int size = bytes.length;
+        for (int count = 0; count < size; count++) {
+            toCollection.add(bytes[count]);
+        }
+    }
+    
+    
     public static byte[] toArray(final Collection<Byte> collection) {
         final byte[] result = new byte[collection.size()];
         int position = 0;
-        for (Byte b : collection) {
+        for (final Byte b : collection) {
             result[position++] = b;
         }
         return result;
@@ -268,8 +272,8 @@ public class ByteUtilities {
      */
     public static int getBitsInCommon(final Set<Byte> bytes) {
         int bitsinCommon = 0xFF;
-        for (Byte b : bytes) {
-            bitsinCommon = bitsinCommon & b;
+        for (final Byte b : bytes) {
+            bitsinCommon &= b;
         }
         return bitsinCommon;
     }
@@ -320,8 +324,8 @@ public class ByteUtilities {
      */
     public static int getAllBitsUsed(final Set<Byte> bytes) {
         int bitsUsed = 0x00;
-        for (Byte b : bytes) {
-            bitsUsed = bitsUsed | b;
+        for (final Byte b : bytes) {
+            bitsUsed |= b;
         }
         return bitsUsed;
     }
@@ -387,7 +391,7 @@ public class ByteUtilities {
      * @return A string containing the byte value as a string.
      */
     public static String byteToString(final boolean prettyPrint, int byteValue) {
-        String result = null;
+        String result;
         if (prettyPrint) {
             if (byteValue >= START_PRINTABLE_ASCII &&
                 byteValue <= END_PRINTABLE_ASCII &&
