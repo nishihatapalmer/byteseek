@@ -90,7 +90,7 @@ public class FileArrayProvider implements ArrayProvider {
                 if (blockSize > 0) {
                     final byte[] bytes = new byte[blockSize];
                     file.seek(readPos);
-                    final int totalRead = ReadUtils.readBytesFrom(file, bytes);
+                    final int totalRead = ReadUtils.readBytes(file, bytes);
                     return new Array(bytes, offset, offset+totalRead-1);
                 }
             } catch (IOException ex) {

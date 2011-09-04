@@ -20,7 +20,7 @@ public final class ReadUtils {
     }
     
     
-    public static int readBytesFrom(final InputStream input, final byte[] bytes) throws IOException {
+    public static int readBytes(final InputStream input, final byte[] bytes) throws IOException {
         final int blockSize = bytes.length;
         int totalRead = 0;
         while (totalRead < blockSize) {
@@ -32,7 +32,7 @@ public final class ReadUtils {
     }
     
     
-    public static int readBytesFrom(final RandomAccessFile input, final byte[] bytes) throws IOException {
+    public static int readBytes(final RandomAccessFile input, final byte[] bytes) throws IOException {
         final int blockSize = bytes.length;
         int totalRead = 0;
         while (totalRead < blockSize) {
