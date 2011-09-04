@@ -14,6 +14,7 @@ import java.util.Map;
 import net.domesdaybook.reader.ByteReader;
 import net.domesdaybook.reader.FileByteReader;
 import net.domesdaybook.reader.Utilities;
+import net.domesdaybook.searcher.SearchIterator.Direction;
 
 /**
  *
@@ -189,6 +190,11 @@ public final class SearcherProfiler {
         
         private List<Long> searchEntireArrayForwards(Searcher searcher, byte[] bytes) {
             final List<Long> positions = new ArrayList<Long>();
+            final SearchIterator iterator = new SearchIterator(searcher, bytes);
+            while (iterator.hasNext()) {
+                positions.add(iterator.next());
+            }
+            /*
             final int lastPos = bytes.length - 1;
             int searchPos = 0;
             while (searchPos <= lastPos) {
@@ -198,12 +204,19 @@ public final class SearcherProfiler {
                     searchPos += 1;
                 }
             }
+             * 
+             */
             return positions;
         }
 
         
         private List<Long> searchEntireReaderForwards(Searcher searcher, ByteReader reader) {
             final List<Long> positions = new ArrayList<Long>();
+            final SearchIterator iterator = new SearchIterator(searcher, reader);
+            while (iterator.hasNext()) {
+                positions.add(iterator.next());
+            }
+            /*
             final long lastPos = reader.length() - 1;
             long searchPos = 0;
             while (searchPos <= lastPos) {
@@ -213,12 +226,19 @@ public final class SearcherProfiler {
                     searchPos += 1;
                 }
             }
+             * 
+             */
             return positions;
         }
 
         
         private List<Long> searchEntireArrayBackwards(Searcher searcher, byte[] bytes) {
             final List<Long> positions = new ArrayList<Long>();
+            final SearchIterator iterator = new SearchIterator(searcher, Direction.BACKWARDS, bytes);
+            while (iterator.hasNext()) {
+                positions.add(iterator.next());
+            }
+            /*
             final int lastPos = bytes.length - 1;
             int searchPos = lastPos;
             while (searchPos >= 0) {
@@ -228,12 +248,19 @@ public final class SearcherProfiler {
                     searchPos -= 1;
                 }
             }
+             * 
+             */
             return positions;
         }
 
         
         private List<Long> searchEntireReaderBackwards(Searcher searcher, ByteReader reader) {
             final List<Long> positions = new ArrayList<Long>();
+            final SearchIterator iterator = new SearchIterator(searcher, Direction.BACKWARDS, reader);
+            while (iterator.hasNext()) {
+                positions.add(iterator.next());
+            }          
+            /*
             final long lastPos = reader.length() - 1;
             long searchPos = lastPos;
             while (searchPos >= 0) {
@@ -243,6 +270,8 @@ public final class SearcherProfiler {
                     searchPos -= 1;
                 }
             }
+             * 
+             */
             return positions;
         }
         
