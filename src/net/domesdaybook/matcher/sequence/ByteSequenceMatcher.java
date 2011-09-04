@@ -6,6 +6,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
@@ -59,7 +60,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
         this.byteArray = new byte[byteList.size()];
         int index = 0;
-        for (Byte b : byteList) {
+        for (final Byte b : byteList) {
             this.byteArray[index++] = b;
         }
         length = byteArray.length;
@@ -76,11 +77,12 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the matcher list is null or empty.
      */
     public ByteSequenceMatcher(final List<ByteSequenceMatcher> matchers) {
+        // Preconditions: list is not null and has at least one member:
         if (matchers == null || matchers.isEmpty()) {
             throw new IllegalArgumentException("Null or empty matcher list passed in to ByteSequenceMatcher.");
         }
         int totalLength = 0;
-        for (ByteSequenceMatcher matcher : matchers) {
+        for (final ByteSequenceMatcher matcher : matchers) {
             totalLength += matcher.length;
         }
         this.byteArray = new byte[totalLength];
@@ -101,14 +103,13 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException If the number of bytes is less than one.
      */
     public ByteSequenceMatcher(final byte byteValue, final int numberOfBytes) {
+        // Preconditions: at least one byte to repeat.
         if (numberOfBytes < 1) {
             throw new IllegalArgumentException("ByteSequenceMatcher requires a positive number of bytes.");
         }
         length = numberOfBytes;
         this.byteArray = new byte[numberOfBytes];
-        for (int count = 0; count < numberOfBytes; count++) {
-            this.byteArray[count] = byteValue;
-        }
+        Arrays.fill(this.byteArray, byteValue);
     }
 
 

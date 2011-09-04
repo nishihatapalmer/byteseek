@@ -4,19 +4,13 @@
  */
 package net.domesdaybook.matcher.sequence;
 
-import net.domesdaybook.reader.FileArrayProvider;
-import java.io.RandomAccessFile;
-import java.io.FileNotFoundException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.domesdaybook.reader.FileByteReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.net.URL;
-import net.domesdaybook.reader.Utilities;
 import java.io.File;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.ByteReader;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -26,17 +20,110 @@ import static org.junit.Assert.*;
  */
 public class ByteSequenceMatcherTest {
     
+    private final Random rand = new Random();   
+    
     public ByteSequenceMatcherTest() {
     }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+  
+    
+    /**
+     * 
+     * Construct all possible single byte value sequences.
+     * 
+     */
+    @Test
+    public void testConstructSingleByte() {
+        for (int byteValue = 0; byteValue < 256; byteValue++) {
+            final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue);
+            assertEquals("length:1, byte value:" + Integer.toString(byteValue), 1, matcher.length());
+            final SingleByteMatcher sbm = matcher.getByteMatcherForPosition(0);
+            final byte[] matchingBytes = sbm.getMatchingBytes();
+            assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+            assertEquals("byte value:" + Integer.toString(byteValue), byteValue, matchingBytes[0] & 0xFF);
+        }
     }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
+    
+    
+    /**
+     * Construct using random repeated byte values for all byte values.
+     */
+    @Test
+    public void testConstructRepeatedBytes() {
+        for (int byteValue = 0; byteValue < 256; byteValue++) {
+            final int repeats = rand.nextInt(1024) + 1;
+            final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue, repeats);
+            assertEquals("length:" + Integer.toString(repeats) + ", byte value:" + Integer.toString(byteValue), repeats, matcher.length());
+            for (int pos = 0; pos < repeats; pos++) {
+                final SingleByteMatcher sbm = matcher.getByteMatcherForPosition(pos);
+                final byte[] matchingBytes = sbm.getMatchingBytes();
+                assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+                assertEquals("byte value:" + Integer.toString(byteValue), byteValue, matchingBytes[0] & 0xFF);
+            }
+        }
     }
+    
+        
+    /**
+     * Construct using random arrays of bytes.
+     */
+    @Test
+    public void testConstructByteArray() {
+        for (int testNo = 0; testNo < 1000; testNo++) {
+            final byte[] array = createRandomArray(1024);
+            final ByteSequenceMatcher matcher = new ByteSequenceMatcher(array);
+            assertEquals("length:" + Integer.toString(array.length), array.length, matcher.length());
+            for (int pos = 0; pos < array.length; pos++) {
+                final SingleByteMatcher sbm = matcher.getByteMatcherForPosition(pos);
+                final byte[] matchingBytes = sbm.getMatchingBytes();
+                final byte matchingValue = array[pos];
+                assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+                assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue, matchingBytes[0]);
+            }
+        }
+    }
+ 
 
+    /**
+     * Construct using random lists of byte sequence matchers:
+     */
+    @Test
+    public void testConstructByteSequenceMatcherList() {
+        for (int testNo = 0; testNo < 1000; testNo++) {
+            final List<ByteSequenceMatcher> list = createRandomList(32);
+            int totalLength = 0;
+            for (final SequenceMatcher matcher : list) {
+                totalLength += matcher.length();
+            }
+            final ByteSequenceMatcher matcher = new ByteSequenceMatcher(list);
+            assertEquals("length:" + Integer.toString(totalLength), totalLength, matcher.length());
+            int localPos = -1;
+            int matchIndex = 0;
+            SequenceMatcher currentMatcher = list.get(matchIndex);
+            for (int pos = 0; pos < totalLength; pos++) {
+                final SingleByteMatcher sbm = matcher.getByteMatcherForPosition(pos);
+                final byte[] matchingBytes = sbm.getMatchingBytes();
+                localPos++;
+                if (localPos == currentMatcher.length()) {
+                    matchIndex++;
+                    currentMatcher = list.get(matchIndex);
+                    localPos = 0;
+                }
+                final SingleByteMatcher sbm2 = currentMatcher.getByteMatcherForPosition(localPos);
+                final byte[] matchingBytes2 = sbm2.getMatchingBytes();
+                assertEquals("number of bytes matched source=1", 1, matchingBytes2.length);
+                assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+                assertEquals("byte value:" + Integer.toString(matchingBytes2[0]), matchingBytes2[0], matchingBytes[0]);
+            }
+        }
+    }
+    
+    
+      
+    // Test expected construction failures        
+    
+    
+    
+    
     /**
      * Test of matches method, of class ByteSequenceMatcher.
      */
@@ -45,6 +132,7 @@ public class ByteSequenceMatcherTest {
         File file = getFile("/A Midsommer Night's Dreame.txt");
     }
 
+    
     /**
      * Test of matches method, of class ByteSequenceMatcher.
      */
@@ -93,19 +181,7 @@ public class ByteSequenceMatcherTest {
         fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of length method, of class ByteSequenceMatcher.
-     */
-    @Test
-    public void testLength() {
-        System.out.println("length");
-        ByteSequenceMatcher instance = null;
-        int expResult = 0;
-        int result = instance.length();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+
 
     /**
      * Test of toRegularExpression method, of class ByteSequenceMatcher.
@@ -157,6 +233,47 @@ public class ByteSequenceMatcherTest {
         return new File(url.getPath());
     }  
     
+    
+    private byte[] createRandomArray(final int maxLength) {
+        final int length = rand.nextInt(maxLength) + 1;
+        final byte[] array = new byte[length];
+        for (int pos = 0; pos < length; pos++) {
+            array[pos] = (byte) rand.nextInt(256);
+        }
+        return array;
+    }
+
+    private List<ByteSequenceMatcher> createRandomList(final int maxNum) {
+        final int noOfMatchers = rand.nextInt(maxNum) + 1;
+        final List<ByteSequenceMatcher> matchers = new ArrayList<ByteSequenceMatcher>();
+        for (int num = 0; num < noOfMatchers; num++) {
+            final int matchType = rand.nextInt(3);
+            ByteSequenceMatcher matcher;
+            switch (matchType) {
+                case 0: {
+                    final int byteValue = rand.nextInt(256);
+                    matcher = new ByteSequenceMatcher((byte) byteValue);
+                    break;
+                }
+                case 1: {
+                    final byte[] values = createRandomArray(256);
+                    matcher = new ByteSequenceMatcher(values);
+                    break;
+                }
+                case 2: {
+                    final int byteValue = rand.nextInt(256);
+                    final int repeats = rand.nextInt(256) + 1;
+                    matcher = new ByteSequenceMatcher((byte) byteValue, repeats);
+                    break;
+                }
+                default: {
+                    throw new IllegalArgumentException("Invalid matcher type");
+                }
+            }
+            matchers.add(matcher);
+        }
+        return matchers;
+    }
 
     
     
