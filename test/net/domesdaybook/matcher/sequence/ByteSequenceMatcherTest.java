@@ -5,6 +5,9 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import org.junit.BeforeClass;
+import java.io.FileNotFoundException;
+import net.domesdaybook.reader.FileByteReader;
 import org.junit.Before;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,19 +25,28 @@ import static org.junit.Assert.*;
  */
 public class ByteSequenceMatcherTest {
     
-    private final Random rand = new Random();   
+    private final static Random rand = new Random();   
     
+    private FileByteReader reader;
+        
     public ByteSequenceMatcherTest() {
     }
   
     
-    @Before
-    public void setUp() throws Exception {
+    
+    @BeforeClass
+    public static void setUpClass() throws Exception {
         final long seed = System.currentTimeMillis();
         // final long seed = ?
         rand.setSeed(seed);
         System.out.println("Seeding random number generator with: " + Long.toString(seed));
         System.out.println("To repeat these exact tests, set the seed to the value above.");
+    }
+    
+    @Before
+    public void setUp() throws Exception {
+        File file = getFile("/TestASCII.txt");
+        reader = new FileByteReader(file);
     }
     
     
@@ -172,10 +184,26 @@ public class ByteSequenceMatcherTest {
      * Test of matches method, of class ByteSequenceMatcher.
      */
     @Test
-    public void testMatches_ByteReader_long() {
-        File file = getFile("/A Midsommer Night's Dreame.txt");
+    public void testMatches_ByteReader_long() throws FileNotFoundException {
+        ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x2A, 3); // ***
+        testMatchesAround(matcher, 0);
+        testMatchesAround(matcher, 61);
+        testMatchesAround(matcher, 1017);
+        
+        matcher = new ByteSequenceMatcher(new byte[] {0x48, 0x65, 0x72, 0x65}); // Here
+        testMatchesAround(matcher, 28200);
+        testMatchesAround(matcher, 60836);
+        testMatchesAround(matcher, 64481);
+        
     }
 
+    
+    private void testMatchesAround(ByteSequenceMatcher matcher, long pos) {
+        String matchDesc = matcher.toRegularExpression(true);
+        assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
+    }
     
     /**
      * Test of matches method, of class ByteSequenceMatcher.
