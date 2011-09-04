@@ -35,12 +35,12 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * and concurrency issues.
      * 
      * @param byteArray The array of bytes to match.
-     * @throws IllegalArgumentException if the array of bytes passed in is null.
+     * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
      */
     public ByteSequenceMatcher(final byte[] byteArray) {
-        // Preconditions byteArray is not null:
-        if (byteArray == null) {
-            throw new IllegalArgumentException("Null byte array passed in to ByteSequenceMatcher");
+        // Preconditions byteArray is not null or empty:
+        if (byteArray == null || byteArray.length == 0) {
+            throw new IllegalArgumentException("Null or empty byte array passed in to ByteSequenceMatcher");
         }
         this.byteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
         length = byteArray.length;
