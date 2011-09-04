@@ -4,6 +4,7 @@
  */
 package net.domesdaybook.matcher.sequence;
 
+import org.junit.Before;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -25,6 +26,16 @@ public class ByteSequenceMatcherTest {
     public ByteSequenceMatcherTest() {
     }
   
+    
+    @Before
+    public void setUp() throws Exception {
+        final long seed = System.currentTimeMillis();
+        // final long seed = ?
+        rand.setSeed(seed);
+        System.out.println("Seeding random number generator with: " + Long.toString(seed));
+        System.out.println("To repeat these exact tests, set the seed to the value above.");
+    }
+    
     
     /**
      * 
