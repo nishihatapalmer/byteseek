@@ -33,7 +33,6 @@ public class ByteSequenceMatcherTest {
     }
   
     
-    
     @BeforeClass
     public static void setUpClass() throws Exception {
         final long seed = System.currentTimeMillis();
@@ -43,10 +42,10 @@ public class ByteSequenceMatcherTest {
         System.out.println("To repeat these exact tests, set the seed to the value above.");
     }
     
+    
     @Before
     public void setUp() throws Exception {
-        File file = getFile("/TestASCII.txt");
-        reader = new FileByteReader(file);
+        reader = new FileByteReader(getFile("/TestASCII.txt"));
     }
     
     
@@ -194,7 +193,6 @@ public class ByteSequenceMatcherTest {
         testMatchesAround(matcher, 28200);
         testMatchesAround(matcher, 60836);
         testMatchesAround(matcher, 64481);
-        
     }
 
     
