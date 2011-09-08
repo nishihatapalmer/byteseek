@@ -131,7 +131,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     @Override
     public final boolean matches(final ByteReader reader, final long matchFrom) {
         final int localLength = length;
-        if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
+        if (matchFrom + localLength <= reader.length() && matchFrom >= 0) {
             final byte[] localArray = byteArray;
             for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
                 if (localArray[byteIndex] != reader.readByte(matchFrom + byteIndex)) {
@@ -152,7 +152,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     @Override
     public final boolean matches(final byte[] bytes, final int matchFrom) {
         final int localLength = length;
-        if (matchFrom + localLength < bytes.length && matchFrom >= 0) {
+        if (matchFrom + localLength <= bytes.length && matchFrom >= 0) {
             final byte[] localArray = byteArray;
             for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
                 if (localArray[byteIndex] != bytes[matchFrom + byteIndex]) {
