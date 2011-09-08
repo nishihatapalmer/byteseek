@@ -134,7 +134,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
             final byte[] localArray = byteArray;
             for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                if (!(localArray[byteIndex] == reader.readByte(matchFrom + byteIndex))) {
+                if (localArray[byteIndex] != reader.readByte(matchFrom + byteIndex)) {
                     return false;
                 }
             }
@@ -155,7 +155,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         if (matchFrom + localLength < bytes.length && matchFrom >= 0) {
             final byte[] localArray = byteArray;
             for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
+                if (localArray[byteIndex] != bytes[matchFrom + byteIndex]) {
                     return false;
                 }
             }
@@ -173,7 +173,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         final int localLength = length;
         final byte[] localArray = byteArray;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-            if (!(localArray[byteIndex] == reader.readByte(matchPosition + byteIndex))) {
+            if (localArray[byteIndex] != reader.readByte(matchPosition + byteIndex)) {
                 return false;
             }
         }
@@ -189,7 +189,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         final int localLength = length;
         final byte[] localArray = byteArray;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-            if (!(localArray[byteIndex] == bytes[matchPosition + byteIndex])) {
+            if (localArray[byteIndex] != bytes[matchPosition + byteIndex]) {
                 return false;
             }
         }
