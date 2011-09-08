@@ -56,7 +56,7 @@ public final class FileByteReader implements ByteReader {
      * @throws ByteReaderException if an IOException occurs reading the file.
      */
     @Override
-    public byte readByte(long position) throws ByteReaderException {
+    public byte readByte(final long position) throws ByteReaderException {
         try {
             file.seek(position);
             return file.readByte();
