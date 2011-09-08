@@ -193,6 +193,11 @@ public class ByteSequenceMatcherTest {
         testMatchesAround(matcher, 28200);
         testMatchesAround(matcher, 60836);
         testMatchesAround(matcher, 64481);
+        
+        matcher = new ByteSequenceMatcher(new byte[] {0x2e, 0x0d, 0x0a}); // . <LF> <CR>
+        testMatchesAround(matcher, 196);
+        testMatchesAround(matcher, 42004);
+        testMatchesAround(matcher, 112277);
     }
 
     
