@@ -80,18 +80,20 @@ public class FileArrayProvider implements ArrayProvider {
         if (position >= 0 && position < length) {
             try {
                 int blockSize = cacheBlockSize;
-                final long readPos = position / blockSize;
+                final long readPos = (position / blockSize) * blockSize;
                 final int offset = (int) (position % blockSize); 
                 
-                //TODO: check position calculations here...
-                if (position + blockSize > length) {
-                    blockSize = (int) (length - position);
+                // If the remaining length is smaller than the block size,
+                if (readPos + blockSize > length) {
+                    blockSize = (int) (length - readPos); // cut down the blocksize.
                 } 
+                
+                // If there is anything 
                 if (blockSize > 0) {
                     final byte[] bytes = new byte[blockSize];
                     file.seek(readPos);
                     final int totalRead = ReadUtils.readBytes(file, bytes);
-                    return new Array(bytes, offset, offset+totalRead-1);
+                    return new Array(bytes, offset, totalRead - 1);
                 }
             } catch (IOException ex) {
                 throw new ByteReaderException(ex);
