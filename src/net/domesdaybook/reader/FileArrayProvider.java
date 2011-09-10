@@ -88,13 +88,10 @@ public class FileArrayProvider implements ArrayProvider {
                     blockSize = (int) (length - readPos); // cut down the blocksize.
                 } 
                 
-                // If there is anything 
-                if (blockSize > 0) {
-                    final byte[] bytes = new byte[blockSize];
-                    file.seek(readPos);
-                    final int totalRead = ReadUtils.readBytes(file, bytes);
-                    return new Array(bytes, offset, totalRead - 1);
-                }
+                final byte[] bytes = new byte[blockSize];
+                file.seek(readPos);
+                final int totalRead = ReadUtils.readBytes(file, bytes);
+                return new Array(bytes, offset, totalRead - 1);
             } catch (IOException ex) {
                 throw new ByteReaderException(ex);
             }
