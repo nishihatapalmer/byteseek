@@ -32,6 +32,14 @@ public interface ByteReader {
      */
     public byte readByte(final long position) throws ByteReaderException;
 
+    /**
+     * 
+     * @param position The position of the byte to read in the underlying data.
+     * @return Array an Array containing a byte array, and a startPos which gives
+     *         the position of the byte in the byte array.
+     */
+    Array getByteArray(final long position);
+    
     
     /**
      * @return long the length of the byte source accessed by the reader.

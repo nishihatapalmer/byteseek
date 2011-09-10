@@ -15,7 +15,7 @@ import java.util.Iterator;
  *
  * @author matt
  */
-public class FileArrayProvider implements ArrayProvider, Iterable {
+public class FileArrayReader implements ByteReader, Iterable {
 
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to FileByteArrayProvider";
@@ -34,7 +34,7 @@ public class FileArrayProvider implements ArrayProvider, Iterable {
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileArrayProvider(final File file) throws FileNotFoundException {
+    public FileArrayReader(final File file) throws FileNotFoundException {
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
@@ -52,7 +52,7 @@ public class FileArrayProvider implements ArrayProvider, Iterable {
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileArrayProvider(final File file, int arraySize) throws FileNotFoundException {
+    public FileArrayReader(final File file, int arraySize) throws FileNotFoundException {
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
@@ -72,6 +72,24 @@ public class FileArrayProvider implements ArrayProvider, Iterable {
         return length;
     }
 
+    
+    
+    /**
+     * Reads a byte in the file at the given position.
+     *
+     * @param position The position in the file to read a byte from.
+     * @return The byte at the given position.
+     * @throws ByteReaderException if an IOException occurs reading the file.
+     */
+    @Override
+    public byte readByte(final long position) throws ByteReaderException {
+        try {
+            file.seek(position);
+            return file.readByte();
+        } catch (IOException ex) {
+            throw new ByteReaderException(ex);
+        }
+    }
     
     /**
      * 

@@ -22,7 +22,7 @@ package net.domesdaybook.reader;
  * a byte buffer.  The problem occurs when you want to match or search across the
  * boundaries of these byte buffers.
  * <p/>
- * The ArrayProvider is designed to solve this issue.  Given a position, it returns
+ * The ArrayReader is designed to solve this issue.  Given a position, it returns
  * a {@link Array} object, which is a simple wrapper object that contains a byte
  * array, and an offset into that array which contains the byte the position indexes.
  * <p/>
@@ -43,7 +43,7 @@ package net.domesdaybook.reader;
  * 
  * @author matt
  */
-public interface ArrayProvider {
+public interface ArrayReader {
     
     Array getByteArray(final long position);
     

@@ -16,6 +16,7 @@ public final class ByteArrayReader implements ByteReader {
     private final static String NULL_ARGUMENTS = "Null byte array passed in to ByteArrayReader.";
     
     private final byte[] bytes;
+    private final Array array;
 
 
     /**
@@ -29,6 +30,7 @@ public final class ByteArrayReader implements ByteReader {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
         this.bytes = bytes;
+        this.array = new Array(bytes, 0, bytes.length - 1);
     }
     
     
@@ -54,6 +56,10 @@ public final class ByteArrayReader implements ByteReader {
      */
     public long length() {
         return bytes.length;
+    }
+
+    public Array getByteArray(long position) {
+        return array;
     }
 
 }
