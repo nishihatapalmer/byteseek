@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 public final class FileReader implements Reader, Iterable<Window> {
 
     private final static String READ_ONLY = "r";
-    private final static String NULL_ARGUMENTS = "Null file passed to FileByteArrayProvider";
+    private final static String NULL_ARGUMENTS = "Null file passed to FileReader";
 
     private final static int DEFAULT_ARRAY_SIZE = 4096;
     private final static int DEFAULT_CAPACITY = 8;

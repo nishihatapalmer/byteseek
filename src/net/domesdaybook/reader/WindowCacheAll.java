@@ -13,6 +13,7 @@ import java.util.HashMap;
  */
 public final class WindowCacheAll extends HashMap<Long, Window> implements WindowCache {
 
+    
     @Override
     public Window getWindow(final long position) {
         return get(position);
@@ -21,8 +22,8 @@ public final class WindowCacheAll extends HashMap<Long, Window> implements Windo
     
     @Override
     public void addWindow(final Window window) {
-        put(window.getWindowPosition(), window);
-    }
-    
+        final long position = window.getWindowPosition();
+        put(position, window);
+    }    
     
 }
