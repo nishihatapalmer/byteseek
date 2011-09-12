@@ -24,15 +24,19 @@ public final class FileReader implements Reader, Iterable<Window> {
 
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to FileReader";
+    private final static boolean TEMP_FILE = true;
+    private final static boolean NOT_TEMP = false;
 
     private final static int DEFAULT_ARRAY_SIZE = 4096;
     private final static int DEFAULT_CAPACITY = 8;
     
     private final int arraySize;
     
-    private final RandomAccessFile file;
+    private final File file;
+    private final RandomAccessFile randomAccessFile;
     private final long length;
     private final WindowCache cache;
+    private final boolean fileIsTemporary;
 
     /**
      * Constructs a FileReader which defaults to an array size of 4096,
@@ -43,7 +47,7 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file) throws FileNotFoundException {
-        this(file, DEFAULT_ARRAY_SIZE, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY));
+        this(file, DEFAULT_ARRAY_SIZE, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), NOT_TEMP);
     }
     
 
@@ -57,7 +61,7 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file, final WindowCache cache) throws FileNotFoundException {
-        this(file, DEFAULT_ARRAY_SIZE, cache);
+        this(file, DEFAULT_ARRAY_SIZE, cache, NOT_TEMP);
     }     
     
     
@@ -71,7 +75,8 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file, final int arraySize) throws FileNotFoundException {
-        this(file, arraySize, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY));
+        this(file, arraySize,
+             new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), NOT_TEMP);
     }    
     
     
@@ -86,7 +91,8 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file, final int arraySize, final int capacity) throws FileNotFoundException {
-        this(file, arraySize, new WindowCacheMostRecentlyUsed(capacity));
+        this(file, arraySize, 
+             new WindowCacheMostRecentlyUsed(capacity), NOT_TEMP);
     }    
     
 
@@ -99,7 +105,8 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final InputStream in) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY));
+        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, 
+             new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), TEMP_FILE);
     }
     
 
@@ -113,7 +120,7 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final InputStream in, final WindowCache cache) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, cache);
+        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, cache, TEMP_FILE);
     }     
     
     
@@ -127,7 +134,8 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final InputStream in, final int arraySize) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), arraySize, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY));
+        this(ReadUtils.createTempFile(in), arraySize, 
+             new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), TEMP_FILE);
     }    
     
     
@@ -142,7 +150,8 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final InputStream in, final int arraySize, final int capacity) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), arraySize, new WindowCacheMostRecentlyUsed(capacity));
+        this(ReadUtils.createTempFile(in), arraySize, 
+             new WindowCacheMostRecentlyUsed(capacity), TEMP_FILE);
     }        
     
     
@@ -156,14 +165,17 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final File file, final int arraySize, final WindowCache cache) throws FileNotFoundException {
+    public FileReader(final File file, final int arraySize, 
+                      final WindowCache cache, final boolean fileIsTemporary) throws FileNotFoundException {
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
-        this.file = new RandomAccessFile(file, READ_ONLY);
+        this.file = file;
+        this.randomAccessFile = new RandomAccessFile(file, READ_ONLY);
         this.length = file.length();
         this.arraySize = arraySize;
         this.cache = cache;
+        this.fileIsTemporary = fileIsTemporary;
     }    
 
 
@@ -227,8 +239,8 @@ public final class FileReader implements Reader, Iterable<Window> {
         // Read the bytes for this position and create the window for it:
         final byte[] bytes = new byte[blockSize];
         try {
-            file.seek(readPos);
-            final int totalRead = ReadUtils.readBytes(file, bytes);
+            randomAccessFile.seek(readPos);
+            final int totalRead = ReadUtils.readBytes(randomAccessFile, bytes);
             return new Window(bytes, readPos, totalRead);
         } catch (IOException ex) {
             throw new ReaderException(ex);
@@ -246,8 +258,21 @@ public final class FileReader implements Reader, Iterable<Window> {
     public void close() {
         cache.clear();        
         try {
-            file.close();
+            randomAccessFile.close();
+            if (fileIsTemporary) {
+                file.delete();
+            }
         } catch (final IOException canDoNothing) {
+        }
+    }
+    
+    
+    @Override
+    public void finalize() throws Throwable {
+        try {
+            close();
+        } finally {
+            super.finalize();
         }
     }
 
