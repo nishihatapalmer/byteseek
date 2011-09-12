@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.automata;
 import java.util.ArrayList;
 import java.util.List;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  *
@@ -26,7 +26,7 @@ public class NfaMatcher {
     
     
 //    @Override
-    public final boolean matches(final ByteReader reader, final long fromPosition) {
+    public final boolean matches(final Reader reader, final long fromPosition) {
         // If the first state is final, this will always match.
         // Most Nfas won't have a first state which matches, but this is possible
         // For example, the expression "A?" matches A, or nothing at all.  

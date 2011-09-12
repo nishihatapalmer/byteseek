@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable class which matches a sequence of {@link SingleByteMatcher} objects.
@@ -83,7 +83,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) {
         final int localStop = length;
         if (matchFrom + localStop < reader.length() && matchFrom >= 0) {
             final List<SingleByteMatcher> matchList = this.matcherSequence;
@@ -128,7 +128,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;
         for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {

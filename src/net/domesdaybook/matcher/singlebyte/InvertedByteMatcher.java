@@ -6,7 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.bytes.ByteUtilities;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  *
@@ -42,7 +42,7 @@ public class InvertedByteMatcher extends AbstractSingleByteSequence {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) {
         return matchFrom >= 0 && matchFrom < reader.length() &&
                 reader.readByte(matchFrom) != byteToMiss;
     }
@@ -63,7 +63,7 @@ public class InvertedByteMatcher extends AbstractSingleByteSequence {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
         return reader.readByte(matchFrom) != byteToMiss;
     }
 

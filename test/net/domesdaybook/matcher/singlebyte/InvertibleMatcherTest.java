@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class InvertibleMatcherTest {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public boolean matches(ByteReader reader, long matchPosition) {
+        public boolean matches(Reader reader, long matchPosition) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
@@ -70,7 +70,7 @@ public class InvertibleMatcherTest {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public boolean matchesNoBoundsCheck(ByteReader reader, long matchPosition) {
+        public boolean matchesNoBoundsCheck(Reader reader, long matchPosition) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

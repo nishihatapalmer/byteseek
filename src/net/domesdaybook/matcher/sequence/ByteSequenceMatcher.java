@@ -12,7 +12,7 @@ import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.bytes.ByteUtilities;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable class which matches a sequence of bytes.
@@ -129,7 +129,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final ByteReader reader, final long matchFrom) {
+    public final boolean matches(final Reader reader, final long matchFrom) {
         final int localLength = length;
         if (matchFrom + localLength <= reader.length() && matchFrom >= 0) {
             final byte[] localArray = byteArray;
@@ -169,7 +169,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
         final int localLength = length;
         final byte[] localArray = byteArray;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {

@@ -6,7 +6,7 @@
 package net.domesdaybook.searcher.sequence;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
@@ -35,7 +35,7 @@ public final class SequenceSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public final long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
+    public final long searchForwards(final Reader reader, final long fromPosition, final long toPosition) {
         // Get objects needed for the search:
         final SequenceMatcher theMatcher = getMatcher();
         
@@ -85,7 +85,7 @@ public final class SequenceSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public final long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
+    public final long searchBackwards(final Reader reader, final long fromPosition, final long toPosition) {
         // Get objects needed for the search:
         final SequenceMatcher theMatcher = getMatcher();
         

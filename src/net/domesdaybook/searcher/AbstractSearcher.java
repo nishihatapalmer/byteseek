@@ -6,7 +6,7 @@
 
 package net.domesdaybook.searcher;
 
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  *
@@ -18,7 +18,7 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchForwards(final ByteReader reader, final long fromPosition) {
+    public long searchForwards(final Reader reader, final long fromPosition) {
         return searchForwards(reader, fromPosition, reader.length() - 1);
     }
 
@@ -27,7 +27,7 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchForwards(final ByteReader reader) {
+    public long searchForwards(final Reader reader) {
         return searchForwards(reader, 0, reader.length() - 1);
     }
 
@@ -54,7 +54,7 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchBackwards(final ByteReader reader, final long fromPosition) {
+    public long searchBackwards(final Reader reader, final long fromPosition) {
         return searchBackwards(reader, fromPosition, 0);
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchBackwards(final ByteReader reader) {
+    public long searchBackwards(final Reader reader) {
         return searchBackwards(reader, reader.length() - 1, 0);
     }
 

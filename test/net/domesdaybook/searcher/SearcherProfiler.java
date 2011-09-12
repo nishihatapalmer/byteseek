@@ -11,8 +11,8 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import net.domesdaybook.reader.ByteReader;
-import net.domesdaybook.reader.FileByteReader;
+import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.FileReader;
 import net.domesdaybook.reader.Utilities;
 import net.domesdaybook.searcher.SearchIterator.Direction;
 
@@ -48,7 +48,7 @@ public final class SearcherProfiler {
         byte[] bytes = Utilities.getByteArray(ASCIIFilePath);
         results.profile("ASCII byte array", bytes, searcher);
 
-        FileByteReader reader = Utilities.getFileByteReader(ASCIIFilePath);
+        FileReader reader = Utilities.getFileByteReader(ASCIIFilePath);
         results.profile("ASCII FileByteReader", reader, searcher);
 
         bytes = Utilities.getByteArray(ZIPFILEPATH);
@@ -71,7 +71,7 @@ public final class SearcherProfiler {
         }
 
 
-        private void profile(String description, ByteReader reader, Searcher searcher) {
+        private void profile(String description, Reader reader, Searcher searcher) {
             startProfiling(description);
             currentProfile.profile(searcher, reader);
             logProfileResults();
@@ -152,7 +152,7 @@ public final class SearcherProfiler {
         }
 
         
-        public void profile(Searcher searcher, ByteReader reader) {
+        public void profile(Searcher searcher, Reader reader) {
             
             // log forward preparation time.
             long startNano = System.nanoTime();
@@ -210,7 +210,7 @@ public final class SearcherProfiler {
         }
 
         
-        private List<Long> searchEntireReaderForwards(Searcher searcher, ByteReader reader) {
+        private List<Long> searchEntireReaderForwards(Searcher searcher, Reader reader) {
             final List<Long> positions = new ArrayList<Long>();
             final SearchIterator iterator = new SearchIterator(searcher, reader);
             while (iterator.hasNext()) {
@@ -254,7 +254,7 @@ public final class SearcherProfiler {
         }
 
         
-        private List<Long> searchEntireReaderBackwards(Searcher searcher, ByteReader reader) {
+        private List<Long> searchEntireReaderBackwards(Searcher searcher, Reader reader) {
             final List<Long> positions = new ArrayList<Long>();
             final SearchIterator iterator = new SearchIterator(searcher, Direction.BACKWARDS, reader);
             while (iterator.hasNext()) {

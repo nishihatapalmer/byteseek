@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.multisequence;
 import java.util.Collection;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An interface for matchers which can match more than one
@@ -22,11 +22,11 @@ public interface MultiSequenceMatcher extends Matcher {
      * Returns all the SequenceMatcher objects which matched.
      * Should never return null - always returns a collection, even if empty.
      *
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition);
+    Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition);
 
     
     /**
@@ -47,11 +47,11 @@ public interface MultiSequenceMatcher extends Matcher {
      * 
      * Should never return null - always returns a collection, even if empty.
      *
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatchesBackwards(final ByteReader reader, final long matchPosition);
+    Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, final long matchPosition);
 
     
     /**
@@ -70,11 +70,11 @@ public interface MultiSequenceMatcher extends Matcher {
     /**
      * Returns the first matching sequence, or null if no sequence matched.
      * 
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition);
+    SequenceMatcher firstMatch(final Reader reader, final long matchPosition);
   
     
     
@@ -92,11 +92,11 @@ public interface MultiSequenceMatcher extends Matcher {
      * Returns the first matching sequence backwards from the matchPosition,
      * or null if no sequence matched.
      * 
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatchBackwards(final ByteReader reader, final long matchPosition);
+    SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition);
     
 
     /**
@@ -113,17 +113,17 @@ public interface MultiSequenceMatcher extends Matcher {
     /**
      * Returns whether or not there is a match backwards from the matchPosition
      * 
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    boolean matchesBackwards(final ByteReader reader, final long matchPosition);    
+    boolean matchesBackwards(final Reader reader, final long matchPosition);    
     
     
     /**
      * Returns whether or not there is a match backwards from the matchPosition
      * 
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    

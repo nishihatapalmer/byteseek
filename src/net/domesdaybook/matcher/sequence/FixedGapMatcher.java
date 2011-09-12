@@ -7,16 +7,16 @@ package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable object which matches a gap of unknown bytes.
  *
  * It always matches, even if the sequence being matched against is shorter
  * than the gap. This is true in general of all the sequence matchers, in that
- * they do not test to see if they overrun the ByteReader, or guarantee that an
+ * they do not test to see if they overrun the Reader, or guarantee that an
  * IndexOutOfBounds exception will be thrown. In the case of the fixed gap matcher,
- * no access is made to the ByteReader at all, so no exception can ever be thrown.
+ * no access is made to the Reader at all, so no exception can ever be thrown.
  *
  * @author matt
  */
@@ -73,7 +73,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchPosition) {
+    public boolean matches(final Reader reader, final long matchPosition) {
         return matchPosition + gapLength < reader.length() && matchPosition >= 0;
     }
     
@@ -93,7 +93,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
         return true;
     }
 

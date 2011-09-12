@@ -5,10 +5,10 @@
 
 package net.domesdaybook.searcher;
 
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
- * An interface for classes that search bytes provided by a {@link ByteReader}.
+ * An interface for classes that search bytes provided by a {@link Reader}.
  * Searching can be forwards or backwards.
  * <p>
  * Searching either returns the position at which a match was found,
@@ -24,7 +24,7 @@ public interface Searcher {
     public static final int NOT_FOUND = -1;
     
     /**
-     * Searches bytes forwards provided by a {@link ByteReader} object,
+     * Searches bytes forwards provided by a {@link Reader} object,
      * from the position given by fromPosition up to toPosition.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
@@ -32,28 +32,28 @@ public interface Searcher {
      * @param toPosition   The position to search up to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition);
+    public long searchForwards(final Reader reader, final long fromPosition, final long toPosition);
 
 
     /**
-     * Searches bytes forwards provided by a {@link ByteReader} object,
+     * Searches bytes forwards provided by a {@link Reader} object,
      * from the position given by fromPosition up to the end of the byte reader.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchForwards(final ByteReader reader, final long fromPosition);
+    public long searchForwards(final Reader reader, final long fromPosition);
  
     
     /**
-     * Searches bytes forwards provided by a {@link ByteReader} object,
-     * from the start of the {@link ByteReader} to the end, if a match is not found.
+     * Searches bytes forwards provided by a {@link Reader} object,
+     * from the start of the {@link Reader} to the end, if a match is not found.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchForwards(final ByteReader reader);    
+    public long searchForwards(final Reader reader);    
     
     
     /**
@@ -90,7 +90,7 @@ public interface Searcher {
     
     
     /**
-     * Searches bytes backwards provided by a {@link ByteReader} object,
+     * Searches bytes backwards provided by a {@link Reader} object,
      * from the position given by fromPosition up to toPosition.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
@@ -98,11 +98,11 @@ public interface Searcher {
      * @param toPosition   The position to search back to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition);
+    public long searchBackwards(final Reader reader, final long fromPosition, final long toPosition);
     
     
     /**
-     * Searches bytes backwards provided by a {@link ByteReader} object,
+     * Searches bytes backwards provided by a {@link Reader} object,
      * from the position given by fromPosition up to the start of the reader.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
@@ -110,17 +110,17 @@ public interface Searcher {
      * @param toPosition   The position to search back to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchBackwards(final ByteReader reader, final long fromPosition);
+    public long searchBackwards(final Reader reader, final long fromPosition);
         
     
     /**
-     * Searches bytes backwards provided by a {@link ByteReader} object,
+     * Searches bytes backwards provided by a {@link Reader} object,
      * from the end to the start.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchBackwards(final ByteReader reader);    
+    public long searchBackwards(final Reader reader);    
     
     /**
      * Searches bytes backwards provided by a byte array,

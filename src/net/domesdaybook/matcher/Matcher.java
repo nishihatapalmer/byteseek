@@ -5,14 +5,14 @@
 
 package net.domesdaybook.matcher;
 
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An interface for classes that can match bytes from a given position.
  * <p>
  * Design notes:
  * <p/>
- * 1. Provide matching routines for both ByteReader objects and byte arrays.
+ * 1. Provide matching routines for both Reader objects and byte arrays.
  *    The reason for this is to allow more efficient matching directly on byte
  *    arrays, rather than every byte access going through a readByte function call.
  * <p/>
@@ -28,13 +28,13 @@ import net.domesdaybook.reader.ByteReader;
 public interface Matcher {
 
     /**
-     * Returns whether there is a match or not at the given position in a ByteReader.
+     * Returns whether there is a match or not at the given position in a Reader.
      * 
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */
-    public boolean matches(final ByteReader reader, final long matchPosition);
+    public boolean matches(final Reader reader, final long matchPosition);
     
     
     /**

@@ -7,7 +7,7 @@ package net.domesdaybook.matcher.sequence;
 
 import org.junit.BeforeClass;
 import java.io.FileNotFoundException;
-import net.domesdaybook.reader.FileByteReader;
+import net.domesdaybook.reader.FileReader;
 import org.junit.Before;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Random;
 import java.net.URL;
 import java.io.File;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -27,7 +27,7 @@ public class ByteSequenceMatcherTest {
     
     private final static Random rand = new Random();   
     
-    private FileByteReader reader;
+    private FileReader reader;
         
     public ByteSequenceMatcherTest() {
     }
@@ -45,7 +45,7 @@ public class ByteSequenceMatcherTest {
     
     @Before
     public void setUp() throws Exception {
-        reader = new FileByteReader(getFile("/TestASCII.txt"));
+        reader = new FileReader(getFile("/TestASCII.txt"));
     }
     
     
@@ -230,7 +230,7 @@ public class ByteSequenceMatcherTest {
     @Test
     public void testMatchesNoBoundsCheck_ByteReader_long() {
         System.out.println("matchesNoBoundsCheck");
-        ByteReader reader = null;
+        Reader reader = null;
         long matchPosition = 0L;
         ByteSequenceMatcher instance = null;
         boolean expResult = false;

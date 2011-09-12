@@ -7,7 +7,7 @@ package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An extension to the {@link Matcher} interface to support sequences.
@@ -27,20 +27,20 @@ import net.domesdaybook.reader.ByteReader;
 
     
     /**
-     * Returns whether there is a match or not at the given position in a ByteReader.
+     * Returns whether there is a match or not at the given position in a Reader.
      * <p/>
      * It does not perform any bounds checking, so an exception can be thrown,
      * or results may be undefined if matching is outside the bounds of the array,
-     * depending on the implementation of the ByteReader object.
+     * depending on the implementation of the Reader object.
      * <p/>
      * It may also throw a ByteReaderException or other exception if a serious problem
-     * occurred, depending on the implementation of the ByteReader.
+     * occurred, depending on the implementation of the Reader.
      * 
-     * @param reader The {@link ByteReader} to read from.
+     * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition);
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition);
     
     
     

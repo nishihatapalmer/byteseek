@@ -6,7 +6,7 @@
 package net.domesdaybook.searcher.sequence;
 
 import java.util.Arrays;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.searcher.AbstractSearcher;
@@ -74,7 +74,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public final long searchForwards(final ByteReader reader, 
+    public final long searchForwards(final Reader reader, 
             final long fromPosition, final long toPosition ) {
         
         // Get the objects needed to search:
@@ -170,7 +170,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public final long searchBackwards(final ByteReader reader, 
+    public final long searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) {
         
         // Get objects needed to search:

@@ -6,7 +6,7 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.bytes.ByteUtilities;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable {@link SingleByteMatcher} which matches a range of bytes, 
@@ -52,7 +52,7 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) {
         if (matchFrom >= 0 && matchFrom < reader.length()) {
             final int byteValue = reader.readByte(matchFrom) & 0xFF;
             final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
@@ -80,7 +80,7 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
         final int byteValue = reader.readByte(matchPosition) & 0xFF;
         final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
         return insideRange ^ inverted;

@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable {@link SingleByteMatcher} which matches ASCII bytes case insensitively.
@@ -48,7 +48,7 @@ public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchPosition) {
+    public boolean matches(final Reader reader, final long matchPosition) {
         if (matchPosition >= 0 && matchPosition < reader.length()) {
             final byte theByte = reader.readByte(matchPosition);
             return (theByte == caseValues[0] || theByte == caseValues[1]);
@@ -74,7 +74,7 @@ public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
         final byte theByte = reader.readByte(matchPosition);
         return (theByte == caseValues[0] || theByte == caseValues[1]);
     }

@@ -12,7 +12,7 @@ import net.domesdaybook.automata.AssociatedState;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  *
@@ -35,7 +35,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public Collection<SequenceMatcher> allMatches(final ByteReader reader, final long matchPosition) {
+    public Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
@@ -93,7 +93,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override  
-    public Collection<SequenceMatcher> allMatchesBackwards(final ByteReader reader, final long matchPosition) {
+    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, final long matchPosition) {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
@@ -151,7 +151,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public SequenceMatcher firstMatch(final ByteReader reader, final long matchPosition) {
+    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) {
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
@@ -207,7 +207,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override  
-    public SequenceMatcher firstMatchBackwards(final ByteReader reader, final long matchPosition) {
+    public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition) {
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
@@ -263,7 +263,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override    
-    public boolean matches(final ByteReader reader, final long matchPosition) {
+    public boolean matches(final Reader reader, final long matchPosition) {
         return firstMatch(reader, matchPosition) != null;
     }
 
@@ -283,7 +283,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override 
-    public boolean matchesBackwards(ByteReader reader, long matchPosition) {
+    public boolean matchesBackwards(Reader reader, long matchPosition) {
         return firstMatchBackwards(reader, matchPosition) != null;
     }
 

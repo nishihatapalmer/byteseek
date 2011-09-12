@@ -5,10 +5,9 @@
 package net.domesdaybook.searcher.matcher;
 
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.reader.BridgingArrayReader;
-import net.domesdaybook.reader.ByteReader;
-import net.domesdaybook.reader.Array;
-import net.domesdaybook.reader.ArrayProvider;
+import net.domesdaybook.reader.BridgedReader;
+import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
@@ -25,27 +24,12 @@ public class MatcherSearcher extends AbstractSearcher {
     }
     
     
-    //TODO: experiment with ArrayProvider
-    public long searchForwards(final ArrayProvider provider, final long fromPosition, final long toPosition) {
-        final Array bytes = provider.getByteArray(fromPosition);
-        final byte[] array = bytes.getArray();
-        final int lastPossiblePosition = array.length - 1;
-        long result = searchForwards(array, bytes.getOffset(), lastPossiblePosition);
-        if (result >= 0) {
-            return result;
-        }
-        Array nextBytes = provider.getByteArray(fromPosition + lastPossiblePosition);
-        BridgingArrayReader bridge = new BridgingArrayReader(bytes.getArray(), nextBytes.getArray());
-        
-        return Searcher.NOT_FOUND;
-    }
-
-    
+   
     /**
      * @inheritDoc
      */
     @Override
-    public long searchForwards(final ByteReader reader, final long fromPosition, final long toPosition) {
+    public long searchForwards(final Reader reader, final long fromPosition, final long toPosition) {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
         long currentPosition = fromPosition > 0? fromPosition : 0;
@@ -77,19 +61,14 @@ public class MatcherSearcher extends AbstractSearcher {
         }
         return Searcher.NOT_FOUND;
     }
-
-    
-
-    public long searchBackwards(final ArrayProvider provider, final long fromPosition, long toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }    
+  
     
     
     /**
      * @inheritDoc
      */
     @Override
-    public long searchBackwards(final ByteReader reader, final long fromPosition, final long toPosition) {
+    public long searchBackwards(final Reader reader, final long fromPosition, final long toPosition) {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition > 0? toPosition : 0;
         long currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;

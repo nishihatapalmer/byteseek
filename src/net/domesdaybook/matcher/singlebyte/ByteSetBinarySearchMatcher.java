@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.singlebyte;
 import net.domesdaybook.bytes.ByteUtilities;
 import java.util.Arrays;
 import java.util.Set;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 //FIXME: signed bytes causes issue in ByteUtilities.toString()
 
@@ -57,7 +57,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) {
         return (matchFrom >= 0 && matchFrom < reader.length()) &&
                 ((Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted);
     }    
@@ -77,7 +77,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
         return (Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted;
     }
 

@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 import net.domesdaybook.searcher.Searcher;
 import net.domesdaybook.compiler.ReversibleCompiler;
 import net.domesdaybook.compiler.ReversibleCompiler.Direction;
@@ -171,7 +171,7 @@ public class WuManberSearcher extends AbstractSearcher {
     
     
     
-    public long searchForwards(ByteReader reader, long fromPosition, long toPosition) {
+    public long searchForwards(Reader reader, long fromPosition, long toPosition) {
         // Get the data we need to search with:
         calculateForwardParameters();
         final MultiSequenceMatcher validator = forwardMatcher;
@@ -349,7 +349,7 @@ public class WuManberSearcher extends AbstractSearcher {
     }
 
     
-    public long searchBackwards(ByteReader reader, long fromPosition, long toPosition) {
+    public long searchBackwards(Reader reader, long fromPosition, long toPosition) {
         calculateBackwardParameters();
         final MultiSequenceMatcher validator = backwardMatcher;
         final int[] safeShifts = backwardShifts;

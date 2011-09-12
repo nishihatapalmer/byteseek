@@ -4,8 +4,7 @@
  */
 package net.domesdaybook.searcher.matcher;
 
-import net.domesdaybook.reader.ArrayProvider;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,12 +33,12 @@ public class MatcherSearcherTest {
     @Test
     public void testSearchForwards_3args_1() {
         System.out.println("searchForwards");
-        ArrayProvider provider = null;
+        Reader reader = null;
         long fromPosition = 0L;
         long toPosition = 0L;
         MatcherSearcher instance = null;
         long expResult = 0L;
-        long result = instance.searchForwards(provider, fromPosition, toPosition);
+        long result = instance.searchForwards(reader, fromPosition, toPosition);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -51,7 +50,7 @@ public class MatcherSearcherTest {
     @Test
     public void testSearchForwards_3args_2() {
         System.out.println("searchForwards");
-        ByteReader reader = null;
+        Reader reader = null;
         long fromPosition = 0L;
         long toPosition = 0L;
         MatcherSearcher instance = null;
@@ -85,12 +84,12 @@ public class MatcherSearcherTest {
     @Test
     public void testSearchBackwards_3args_1() {
         System.out.println("searchBackwards");
-        ArrayProvider provider = null;
+        Reader reader = null;
         long fromPosition = 0L;
         long toPosition = 0L;
         MatcherSearcher instance = null;
         long expResult = 0L;
-        long result = instance.searchBackwards(provider, fromPosition, toPosition);
+        long result = instance.searchBackwards(reader, fromPosition, toPosition);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -102,7 +101,7 @@ public class MatcherSearcherTest {
     @Test
     public void testSearchBackwards_3args_2() {
         System.out.println("searchBackwards");
-        ByteReader reader = null;
+        Reader reader = null;
         long fromPosition = 0L;
         long toPosition = 0L;
         MatcherSearcher instance = null;

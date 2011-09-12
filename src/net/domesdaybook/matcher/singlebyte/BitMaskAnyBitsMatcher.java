@@ -7,7 +7,7 @@ package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.bytes.ByteUtilities;
 import java.util.List;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * A {@link SingleByteMatcher} which matches a byte which
@@ -46,7 +46,7 @@ public final class BitMaskAnyBitsMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) {
         return (matchFrom >= 0 && matchFrom < reader.length()) &&
                 (((reader.readByte(matchFrom) & mBitMaskValue) != 0) ^ inverted);
     }
@@ -105,7 +105,7 @@ public final class BitMaskAnyBitsMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
         return ((reader.readByte(matchFrom) & mBitMaskValue) != 0) ^ inverted;
     }
         

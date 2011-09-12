@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.sequence;
 import java.io.UnsupportedEncodingException;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable class which matches ASCII text case sensitively.
@@ -72,7 +72,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final ByteReader reader, final long matchFrom) {
+    public final boolean matches(final Reader reader, final long matchFrom) {
         final int localLength = length;
         if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
             final byte[] localArray = byteArray;
@@ -112,7 +112,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
         final int localLength = length;
         final byte[] localArray = byteArray;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {

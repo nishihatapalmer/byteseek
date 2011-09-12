@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class FileByteReaderTest {
+public class FileReaderTest {
     
-    public FileByteReaderTest() {
+    public FileReaderTest() {
     }
 
     @BeforeClass
@@ -30,11 +30,11 @@ public class FileByteReaderTest {
     }
 
     /**
-     * Test of readByte method, of class FileByteReader.
+     * Test of readByte method, of class FileReader.
      */
     @Test
     public void testReadByte() throws FileNotFoundException {
-        FileByteReader reader = new FileByteReader(getFile("/TestASCII.txt"));
+        FileReader reader = new FileReader(getFile("/TestASCII.txt"));
         
         test(reader, 112122, (byte) 0x50);
         test(reader, 112271, (byte) 0x44);
@@ -42,17 +42,17 @@ public class FileByteReaderTest {
         test(reader, 112277, (byte) 0x2e);
     }
 
-    private void test(FileByteReader reader, long position, byte value) {
+    private void test(FileReader reader, long position, byte value) {
         assertEquals(value, reader.readByte(position));
     }
     
     /**
-     * Test of length method, of class FileByteReader.
+     * Test of length method, of class FileReader.
      */
     @Test
     public void testLength() {
         System.out.println("length");
-        FileByteReader instance = null;
+        FileReader instance = null;
         long expResult = 0L;
         long result = instance.length();
         assertEquals(expResult, result);

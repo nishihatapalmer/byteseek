@@ -7,7 +7,7 @@ package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * A {@link SingleByteMatcher} which matches any byte at all.
@@ -62,7 +62,7 @@ public final class AnyMatcher extends AbstractSingleByteSequence {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final ByteReader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) {
         return matchFrom >= 0 && matchFrom < reader.length();
     }
     
@@ -93,7 +93,7 @@ public final class AnyMatcher extends AbstractSingleByteSequence {
      * Always true
      */ 
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
         return true;
     }
 

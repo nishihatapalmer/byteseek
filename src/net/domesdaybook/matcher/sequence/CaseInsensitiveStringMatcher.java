@@ -8,7 +8,7 @@ package net.domesdaybook.matcher.sequence;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.reader.ByteReader;
+import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable class which matches an ASCII string case insensitively.
@@ -91,7 +91,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final ByteReader reader, final long matchFrom) {
+    public final boolean matches(final Reader reader, final long matchFrom) {
         final int localLength = length;        
         if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
             final SingleByteMatcher[] matchList = charMatchList;
@@ -134,7 +134,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final ByteReader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
         final int localLength = length;        
         final SingleByteMatcher[] matchList = charMatchList;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
