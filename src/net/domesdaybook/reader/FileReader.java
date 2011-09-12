@@ -8,6 +8,7 @@ package net.domesdaybook.reader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -89,6 +90,61 @@ public final class FileReader implements Reader, Iterable<Window> {
     }    
     
 
+    /**
+     * Constructs a FileReader which defaults to an array size of 4096,
+     * caching the last 3 most recently used Windows.
+     * 
+     * @param file The file to read from.
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileReader(final InputStream in) throws FileNotFoundException, IOException {
+        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY));
+    }
+    
+
+    /**
+     * Constructs a FileReader which defaults to an array size of 4096
+     * using the WindowCache passed in to cache ArrayWindows.
+     * 
+     * @param file The file to read from.
+     * @param cache the cache of Windows to use.
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileReader(final InputStream in, final WindowCache cache) throws FileNotFoundException, IOException {
+        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, cache);
+    }     
+    
+    
+    /**
+     * Constructs a FileReader using the array size passed in, and caches the
+     * last Window 
+     * 
+     * @param file The file to read from.
+     * @param arraySize the size of the byte array to read from the file.
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileReader(final InputStream in, final int arraySize) throws FileNotFoundException, IOException {
+        this(ReadUtils.createTempFile(in), arraySize, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY));
+    }    
+    
+    
+    /**
+     * Constructs a FileReader using the array size passed in, and caches the
+     * last Window 
+     * 
+     * @param file The file to read from.
+     * @param arraySize the size of the byte array to read from the file.
+     * @param capacity the number of byte arrays to cache (using a most recently used strategy).
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileReader(final InputStream in, final int arraySize, final int capacity) throws FileNotFoundException, IOException {
+        this(ReadUtils.createTempFile(in), arraySize, new WindowCacheMostRecentlyUsed(capacity));
+    }        
+    
     
     /**
      * Constructs a FileReader which reads the file into arrays of
@@ -167,7 +223,7 @@ public final class FileReader implements Reader, Iterable<Window> {
         if (readPos + blockSize > length) {
             blockSize = (int) (length - readPos); // cut down the blocksize.
         } 
-        
+
         // Read the bytes for this position and create the window for it:
         final byte[] bytes = new byte[blockSize];
         try {
