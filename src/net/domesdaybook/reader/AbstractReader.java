@@ -50,9 +50,8 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      */
     @Override
     public Window getWindow(final long position) throws ReaderException {
-        if (position >= 0 && position < length()) {
-            final int blockSize = arraySize;
-            final long readPos = (position / blockSize) * blockSize;
+        if (position >= 0) {
+            final long readPos =  position - (position % arraySize);
             Window window = cache.getWindow(readPos);
             if (window == null) {
                 window = createWindow(readPos);
