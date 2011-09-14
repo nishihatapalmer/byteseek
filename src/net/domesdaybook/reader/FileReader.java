@@ -40,7 +40,8 @@ public final class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file) throws FileNotFoundException {
-        this(file, DEFAULT_WINDOW_SIZE, new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
+        this(file, DEFAULT_WINDOW_SIZE, 
+             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
     }
     
 
@@ -86,18 +87,77 @@ public final class FileReader extends AbstractReader {
     public FileReader(final File file, final int windowSize, final int capacity) throws FileNotFoundException {
         this(file, windowSize, 
              new WindowMostRecentlyUsedCache(capacity), NOT_TEMP);
-    }    
+    }   
     
 
     /**
      * Constructs a FileReader which defaults to an array size of 4096,
      * caching the last 3 most recently used Windows.
      * 
-     * @param file The file to read from.
+     * @param path The path of the file to read from.
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final InputStream in) throws FileNotFoundException, IOException {
+    public FileReader(final String path) throws FileNotFoundException {
+        this(new File(path), DEFAULT_WINDOW_SIZE, 
+             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
+    }
+    
+
+    /**
+     * Constructs a FileReader which defaults to an array size of 4096
+     * using the WindowCache passed in to cache ArrayWindows.
+     * 
+     * @param path The path of the file to read from.
+     * @param cache the cache of Windows to use.
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileReader(final String path, final WindowCache cache) throws FileNotFoundException {
+        this(new File(path), DEFAULT_WINDOW_SIZE, cache, NOT_TEMP);
+    }     
+    
+    
+    /**
+     * Constructs a FileReader using the array size passed in, and caches the
+     * last Window 
+     * 
+     * @param path The path of the file to read from.
+     * @param windowSize the size of the byte array to read from the file.
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileReader(final String path, final int windowSize) throws FileNotFoundException {
+        this(new File(path), windowSize, 
+             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
+    }    
+    
+    
+    /**
+     * Constructs a FileReader using the array size passed in, and caches the
+     * last Window 
+     * 
+     * @param path The path of the file to read from.
+     * @param windowSize the size of the byte array to read from the file.
+     * @param capacity the number of byte arrays to cache (using a most recently used strategy).
+     * @throws FileNotFoundException If the file does not exist.
+     * @throws IllegalArgumentException if the file passed in is null.
+     */
+    public FileReader(final String path, final int windowSize, final int capacity) throws FileNotFoundException {
+        this(new File(path), windowSize, 
+             new WindowMostRecentlyUsedCache(capacity), NOT_TEMP);
+    }      
+    
+
+    /**
+     * Constructs a FileReader which defaults to an array size of 4096,
+     * caching the last 3 most recently used Windows.
+     * 
+     * @param in The InputStream to create a temporary file from.
+     * @throws IOException if the stream could not be read from.
+     * @throws IllegalArgumentException if the InputStream passed in is null.
+     */
+    public FileReader(final InputStream in) throws IOException {
         this(ReadUtils.createTempFile(in), DEFAULT_WINDOW_SIZE, 
              new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), TEMP_FILE);
     }
@@ -109,10 +169,9 @@ public final class FileReader extends AbstractReader {
      * 
      * @param file The file to read from.
      * @param cache the cache of Windows to use.
-     * @throws FileNotFoundException If the file does not exist.
-     * @throws IllegalArgumentException if the file passed in is null.
+     * @throws IllegalArgumentException if the InputStream passed in is null.
      */
-    public FileReader(final InputStream in, final WindowCache cache) throws FileNotFoundException, IOException {
+    public FileReader(final InputStream in, final WindowCache cache) throws IOException {
         this(ReadUtils.createTempFile(in), DEFAULT_WINDOW_SIZE, cache, TEMP_FILE);
     }     
     
