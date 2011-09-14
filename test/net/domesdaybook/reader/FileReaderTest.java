@@ -40,11 +40,16 @@ public class FileReaderTest {
         test(reader, 112271, (byte) 0x44);
         test(reader, 112275, (byte) 0x6d);
         test(reader, 112277, (byte) 0x2e);
+        
+        reader = new FileReader(getFile("/TestASCII.zip"));
+        //TODO: add tests for zip file reading.
+        
     }
 
     private void test(FileReader reader, long position, byte value) {
         assertEquals(value, reader.readByte(position));
     }
+    
     
     /**
      * Test of length method, of class FileReader.
@@ -52,10 +57,12 @@ public class FileReaderTest {
     @Test
     public void testLength() throws FileNotFoundException {
          FileReader reader = new FileReader(getFile("/TestASCII.txt"));
-         assertEquals("length", 112280, reader.length());
+         assertEquals("length ASCII", 112280, reader.length());
+         
+         reader = new FileReader(getFile("/TestASCII.zip"));
+         assertEquals("length ZIP", 45846, reader.length());
     }
    
-    
     
     private File getFile(final String resourceName) {
         URL url = this.getClass().getResource(resourceName);
