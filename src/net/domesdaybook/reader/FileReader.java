@@ -10,8 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
  * A class which reads a random access file into cached byte arrays.
@@ -20,22 +18,17 @@ import java.util.NoSuchElementException;
  * 
  * @author matt
  */
-public final class FileReader implements Reader, Iterable<Window> {
+public final class FileReader extends AbstractReader {
 
+    private final static int DEFAULT_CAPACITY = 8;
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to FileReader";
     private final static boolean TEMP_FILE = true;
     private final static boolean NOT_TEMP = false;
-
-    private final static int DEFAULT_ARRAY_SIZE = 4096;
-    private final static int DEFAULT_CAPACITY = 8;
-    
-    private final int arraySize;
     
     private final File file;
     private final RandomAccessFile randomAccessFile;
     private final long length;
-    private final WindowCache cache;
     private final boolean fileIsTemporary;
 
     /**
@@ -165,19 +158,17 @@ public final class FileReader implements Reader, Iterable<Window> {
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final File file, final int arraySize, 
+    public FileReader(final File file, final int arraySize,
                       final WindowCache cache, final boolean fileIsTemporary) throws FileNotFoundException {
+        super(arraySize, cache);
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
         this.file = file;
         this.randomAccessFile = new RandomAccessFile(file, READ_ONLY);
         this.length = file.length();
-        this.arraySize = arraySize;
-        this.cache = cache;
         this.fileIsTemporary = fileIsTemporary;
     }    
-
 
    
     /**
@@ -190,46 +181,8 @@ public final class FileReader implements Reader, Iterable<Window> {
     }
 
     
-    
-    /**
-     * Reads a byte in the file at the given position.
-     *
-     * @param position The position in the file to read a byte from.
-     * @return The byte at the given position.
-     * @throws ReaderException if an IOException occurs reading the file.
-     */
     @Override
-    public byte readByte(final long position) throws ReaderException {
-        final Window window = getWindow(position);
-        if (window == null) {
-            throw new ReaderException("No bytes can be read from this position:" + position);
-        }
-        return window.getByte((int) (position % arraySize));
-    }
-    
-    
-    /**
-     * 
-     * @return An Window containing a byte array and the offset into it for a given position.
-     *         If an arrayWindow can't be provided for the given position, null is returned.
-     */
-    @Override
-    public Window getWindow(final long position) throws ReaderException {
-        if (position >= 0 && position < length) {
-            final int blockSize = arraySize;
-            final long readPos = (position / blockSize) * blockSize;
-            Window window = cache.getWindow(readPos);
-            if (window == null) {
-                window = createWindow(readPos);
-                cache.addWindow(window);
-            }
-            return window;
-        }
-        return null;
-    }
-    
-    
-    private Window createWindow(final long readPos) throws ReaderException {
+    Window createWindow(final long readPos) throws ReaderException {
         // If the remaining length is smaller than the block size,
         int blockSize = arraySize;
         if (readPos + blockSize > length) {
@@ -247,65 +200,18 @@ public final class FileReader implements Reader, Iterable<Window> {
         }
     }
     
-
-    @Override
-    public Iterator<Window> iterator() {
-        return new FileWindowIterator();
-    }
-
     
     @Override
     public void close() {
-        cache.clear();        
+        super.close();    
         try {
             randomAccessFile.close();
-            if (fileIsTemporary) {
-                file.delete();
-            }
         } catch (final IOException canDoNothing) {
         }
+        if (fileIsTemporary) {
+            file.delete();
+        }        
     }
     
-    
-    @Override
-    public void finalize() throws Throwable {
-        try {
-            close();
-        } finally {
-            super.finalize();
-        }
-    }
-
-    
-    @Override
-    public void clearCache() {
-        cache.clear();
-    }
-    
-    
-    private class FileWindowIterator implements Iterator<Window> {
-
-        private int position = 0;
-        
-        @Override
-        public boolean hasNext() {
-            return position < length;
-        }
-
-        @Override
-        public Window next() {
-            final Window window = getWindow(position);
-            if (window == null) {
-                throw new NoSuchElementException();
-            }
-            position += arraySize;
-            return window;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Cannot remove Arrays from the FileArrayIterator.");
-        }
-    }
     
 }

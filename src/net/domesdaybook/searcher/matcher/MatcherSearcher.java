@@ -5,9 +5,7 @@
 package net.domesdaybook.searcher.matcher;
 
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.reader.BridgedReader;
 import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 

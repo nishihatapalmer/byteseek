@@ -7,58 +7,28 @@ package net.domesdaybook.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Iterator;
 
 /**
  *
  * @author matt
  */
-public class InputStreamReader implements Reader {
+public class InputStreamReader extends AbstractReader {
 
-    private final static int DEFAULT_ARRAY_SIZE = 4096;
-   
-    private final int arraySize;
     private final InputStream stream;
-    private final WindowCache cache;    
     private long streamPos = 0;
     private long length = -1;
     
     
     //TODO: provide new constructors for different settings.
     public InputStreamReader(final InputStream stream) {
+        super(DEFAULT_ARRAY_SIZE, new WindowCacheAll());
         this.stream = stream;
-        this.cache = new WindowCacheAll();
-        arraySize = DEFAULT_ARRAY_SIZE;
     }
     
-    
+ 
     @Override
-    public byte readByte(final long position) throws ReaderException {
-        final Window window = getWindow(position);
-        if (window == null) {
-            throw new ReaderException("No bytes can be read from this position:" + position);
-        }
-        return window.getByte((int) (position % arraySize));
-    }
-
-    
-    @Override
-    public Window getWindow(final long position) throws ReaderException {
-        if (position >= 0) {
-            final int blockSize = arraySize;
-            final long readPos = (position / blockSize) * blockSize;
-            Window window = cache.getWindow(readPos);            
-            if (window == null) {
-                window = createWindow(readPos);
-            }
-            return window;
-        }
-        return null;
-    }
-    
-    
-    private Window createWindow(final long readPos) {
+    Window createWindow(final long readPos) {
         Window lastWindow = null;
         try {
             while (readPos > streamPos) {
@@ -68,9 +38,11 @@ public class InputStreamReader implements Reader {
                     lastWindow = new Window(bytes, streamPos, totalRead);  
                     streamPos += totalRead;                                        
                     cache.addWindow(lastWindow);
+                } else if (totalRead <= 0) { // If no further bytes can be read
+                    streamPos++; // advance the stream pos past the last byte.
                 }
                 if (totalRead < arraySize) { // If we read less than the available array:
-                    length = streamPos;
+                    length = streamPos; // then the length is whatever the streampos is now.
                 }
             }
         } catch (IOException io) {
@@ -87,7 +59,7 @@ public class InputStreamReader implements Reader {
                 final byte[] bytes = new byte[arraySize];
                 final int totalRead = ReadUtils.readBytes(stream, bytes);
                 if (totalRead > 0) {
-                    Window lastWindow = new Window(bytes, streamPos, totalRead); 
+                    final Window lastWindow = new Window(bytes, streamPos, totalRead); 
                     streamPos += totalRead;                  
                     cache.addWindow(lastWindow);
                 }
@@ -111,11 +83,13 @@ public class InputStreamReader implements Reader {
     
     @Override
     public void close() {
+        super.close();
         try {
             stream.close();
         } catch (IOException canDoNothing) {
         }
     }
+
    
     
 }
