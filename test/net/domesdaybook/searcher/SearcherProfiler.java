@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -30,7 +31,7 @@ public final class SearcherProfiler {
     }
     
     
-    public static Map<Searcher, ProfileResults> profile(final Collection<Searcher> searchers) {
+    public static Map<Searcher, ProfileResults> profile(final Collection<Searcher> searchers) throws FileNotFoundException {
         final Map<Searcher, ProfileResults> searcherResults 
                 = new IdentityHashMap<Searcher, ProfileResults>();
   
@@ -42,19 +43,19 @@ public final class SearcherProfiler {
     }
     
     
-    private static ProfileResults getProfileResults(final Searcher searcher) {
+    private static ProfileResults getProfileResults(final Searcher searcher) throws FileNotFoundException {
         final ProfileResults results = new ProfileResults();
         
         byte[] bytes = Utilities.getByteArray(ASCIIFilePath);
         results.profile("ASCII byte array", bytes, searcher);
 
-        FileReader reader = Utilities.getFileReader(ASCIIFilePath);
+        FileReader reader = new FileReader(ASCIIFilePath);
         results.profile("ASCII FileByteReader", reader, searcher);
 
         bytes = Utilities.getByteArray(ZIPFILEPATH);
         results.profile("ZIP byte array", bytes, searcher);  
         
-        reader = Utilities.getFileReader(ZIPFILEPATH);
+        reader = new FileReader(ZIPFILEPATH);
         results.profile("ZIP FileByteReader", reader, searcher);        
         
         return results;

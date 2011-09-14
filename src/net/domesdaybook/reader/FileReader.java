@@ -33,7 +33,7 @@ public final class FileReader extends AbstractReader {
 
     /**
      * Constructs a FileReader which defaults to an array size of 4096,
-     * caching the last 3 most recently used Windows.
+     * caching the last 8 most recently used Windows.
      * 
      * @param file The file to read from.
      * @throws FileNotFoundException If the file does not exist.
@@ -61,7 +61,7 @@ public final class FileReader extends AbstractReader {
     
     /**
      * Constructs a FileReader using the array size passed in, and caches the
-     * last Window 
+     * last 8 Windows.
      * 
      * @param file The file to read from.
      * @param windowSize the size of the byte array to read from the file.
@@ -76,7 +76,7 @@ public final class FileReader extends AbstractReader {
     
     /**
      * Constructs a FileReader using the array size passed in, and caches the
-     * last Window 
+     * last most recently used Windows up to the capacity specified.
      * 
      * @param file The file to read from.
      * @param windowSize the size of the byte array to read from the file.
@@ -92,7 +92,7 @@ public final class FileReader extends AbstractReader {
 
     /**
      * Constructs a FileReader which defaults to an array size of 4096,
-     * caching the last 3 most recently used Windows.
+     * caching the last 8 most recently used Windows.
      * 
      * @param path The path of the file to read from.
      * @throws FileNotFoundException If the file does not exist.
@@ -106,7 +106,7 @@ public final class FileReader extends AbstractReader {
 
     /**
      * Constructs a FileReader which defaults to an array size of 4096
-     * using the WindowCache passed in to cache ArrayWindows.
+     * using the WindowCache passed in to cache Windows.
      * 
      * @param path The path of the file to read from.
      * @param cache the cache of Windows to use.
