@@ -48,13 +48,13 @@ public final class SearcherProfiler {
         byte[] bytes = Utilities.getByteArray(ASCIIFilePath);
         results.profile("ASCII byte array", bytes, searcher);
 
-        FileReader reader = Utilities.getFileByteReader(ASCIIFilePath);
+        FileReader reader = Utilities.getFileReader(ASCIIFilePath);
         results.profile("ASCII FileByteReader", reader, searcher);
 
         bytes = Utilities.getByteArray(ZIPFILEPATH);
         results.profile("ZIP byte array", bytes, searcher);  
         
-        reader = Utilities.getFileByteReader(ZIPFILEPATH);
+        reader = Utilities.getFileReader(ZIPFILEPATH);
         results.profile("ZIP FileByteReader", reader, searcher);        
         
         return results;

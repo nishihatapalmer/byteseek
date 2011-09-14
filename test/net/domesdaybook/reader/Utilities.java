@@ -15,12 +15,12 @@ import java.io.FileNotFoundException;
 public class Utilities {
     
     
-    public static FileReader getFileByteReader(final String path) {
-        return getFileByteReader(new File(path));
+    public static FileReader getFileReader(final String path) {
+        return getFileReader(new File(path));
     }
     
     
-    public static FileReader getFileByteReader(final File file) {
+    public static FileReader getFileReader(final File file) {
         try {
             return new FileReader(file);
         } catch (FileNotFoundException ex) {
@@ -28,14 +28,6 @@ public class Utilities {
         }
     }
     
-    
-    public static FileReader getFileArrayProvider(final File file) {
-        try {
-            return new FileReader(file);
-        } catch (FileNotFoundException ex) {
-            return null;
-        }
-    }
 
     
     public static byte[] getByteArray(String path) {
