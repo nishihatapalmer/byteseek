@@ -50,14 +50,9 @@ public class FileReaderTest {
      * Test of length method, of class FileReader.
      */
     @Test
-    public void testLength() {
-        System.out.println("length");
-        FileReader instance = null;
-        long expResult = 0L;
-        long result = instance.length();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testLength() throws FileNotFoundException {
+         FileReader reader = new FileReader(getFile("/TestASCII.txt"));
+         assertEquals("length", 112280, reader.length());
     }
    
     
