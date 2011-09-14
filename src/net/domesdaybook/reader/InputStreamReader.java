@@ -7,7 +7,6 @@ package net.domesdaybook.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 /**
  *
@@ -20,11 +19,25 @@ public class InputStreamReader extends AbstractReader {
     private long length = -1;
     
     
-    //TODO: provide new constructors for different settings.
     public InputStreamReader(final InputStream stream) {
-        super(DEFAULT_ARRAY_SIZE, new WindowCacheAll());
-        this.stream = stream;
+        this(stream, DEFAULT_ARRAY_SIZE);
     }
+    
+    
+    public InputStreamReader(final InputStream stream, final WindowCache cache) {
+        this(stream, DEFAULT_ARRAY_SIZE, cache);
+    }      
+    
+    
+    public InputStreamReader(final InputStream stream, final int arraySize) {
+        this(stream, arraySize, new WindowAllCache());
+    }
+
+    
+    public InputStreamReader(final InputStream stream, final int arraySize, final WindowCache cache) { 
+        super(arraySize, cache);
+        this.stream = stream;
+    }    
     
  
     @Override

@@ -40,7 +40,7 @@ public final class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file) throws FileNotFoundException {
-        this(file, DEFAULT_ARRAY_SIZE, new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), NOT_TEMP);
+        this(file, DEFAULT_ARRAY_SIZE, new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
     }
     
 
@@ -69,7 +69,7 @@ public final class FileReader extends AbstractReader {
      */
     public FileReader(final File file, final int arraySize) throws FileNotFoundException {
         this(file, arraySize,
-             new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), NOT_TEMP);
+             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
     }    
     
     
@@ -85,7 +85,7 @@ public final class FileReader extends AbstractReader {
      */
     public FileReader(final File file, final int arraySize, final int capacity) throws FileNotFoundException {
         this(file, arraySize, 
-             new WindowCacheMostRecentlyUsed(capacity), NOT_TEMP);
+             new WindowMostRecentlyUsedCache(capacity), NOT_TEMP);
     }    
     
 
@@ -99,7 +99,7 @@ public final class FileReader extends AbstractReader {
      */
     public FileReader(final InputStream in) throws FileNotFoundException, IOException {
         this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, 
-             new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), TEMP_FILE);
+             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), TEMP_FILE);
     }
     
 
@@ -128,7 +128,7 @@ public final class FileReader extends AbstractReader {
      */
     public FileReader(final InputStream in, final int arraySize) throws FileNotFoundException, IOException {
         this(ReadUtils.createTempFile(in), arraySize, 
-             new WindowCacheMostRecentlyUsed(DEFAULT_CAPACITY), TEMP_FILE);
+             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), TEMP_FILE);
     }    
     
     
@@ -144,7 +144,7 @@ public final class FileReader extends AbstractReader {
      */
     public FileReader(final InputStream in, final int arraySize, final int capacity) throws FileNotFoundException, IOException {
         this(ReadUtils.createTempFile(in), arraySize, 
-             new WindowCacheMostRecentlyUsed(capacity), TEMP_FILE);
+             new WindowMostRecentlyUsedCache(capacity), TEMP_FILE);
     }        
     
     

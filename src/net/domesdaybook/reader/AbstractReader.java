@@ -19,6 +19,11 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     protected final int arraySize;
     protected final WindowCache cache;
 
+    
+    public AbstractReader(final WindowCache cache) {
+        this(DEFAULT_ARRAY_SIZE, cache);
+    }
+    
 
     public AbstractReader(final int arraySize, final WindowCache cache) {
         this.arraySize = arraySize;

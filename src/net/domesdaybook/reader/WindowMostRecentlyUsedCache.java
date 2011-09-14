@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * @author matt
  */
-public final class WindowCacheMostRecentlyUsed extends LinkedHashMap<Long, Window> implements WindowCache  {
+public final class WindowMostRecentlyUsedCache extends LinkedHashMap<Long, Window> implements WindowCache  {
     
     private final static boolean ORDER_BY_ACCESS = true;
     
     private final int capacity;
 
     
-    public WindowCacheMostRecentlyUsed(final int capacity) {
+    public WindowMostRecentlyUsedCache(final int capacity) {
         super(capacity + 1, 1.1f, ORDER_BY_ACCESS);
         this.capacity = capacity;
     }

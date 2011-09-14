@@ -11,7 +11,7 @@ import java.util.HashMap;
  *
  * @author matt
  */
-public final class WindowCacheAll extends HashMap<Long, Window> implements WindowCache {
+public final class WindowAllCache extends HashMap<Long, Window> implements WindowCache {
 
     
     @Override

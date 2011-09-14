@@ -9,7 +9,7 @@ package net.domesdaybook.reader;
  *
  * @author matt
  */
-public class WindowCacheLast implements WindowCache {
+public class WindowLastCache implements WindowCache {
 
     private Window lastWindow;
     
