@@ -14,19 +14,20 @@ import java.util.NoSuchElementException;
  */
 public abstract class AbstractReader implements Reader, Iterable<Window> {
 
-    protected final static int DEFAULT_ARRAY_SIZE = 4096;
+    protected final static int DEFAULT_WINDOW_SIZE = 4096;
     
-    protected final int arraySize;
+    protected final int windowSize;
     protected final WindowCache cache;
+    private Window lastWindow = null;
 
     
     public AbstractReader(final WindowCache cache) {
-        this(DEFAULT_ARRAY_SIZE, cache);
+        this(DEFAULT_WINDOW_SIZE, cache);
     }
     
 
-    public AbstractReader(final int arraySize, final WindowCache cache) {
-        this.arraySize = arraySize;
+    public AbstractReader(final int windowSize, final WindowCache cache) {
+        this.windowSize = windowSize;
         this.cache = cache;
     }
     
@@ -44,7 +45,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
         if (window == null) {
             throw new ReaderException("No bytes can be read from this position:" + position);
         }
-        return window.getByte((int) (position % arraySize));
+        return window.getByte((int) (position % windowSize));
     }
     
     
@@ -55,12 +56,16 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      */
     @Override
     public Window getWindow(final long position) throws ReaderException {
+        final long readPos =  position - (position % windowSize);
+        if (lastWindow != null && lastWindow.getWindowPosition() == readPos) {
+            return lastWindow;
+        }
         if (position >= 0) {
-            final long readPos =  position - (position % arraySize);
             Window window = cache.getWindow(readPos);
             if (window == null) {
                 window = createWindow(readPos);
                 cache.addWindow(window);
+                lastWindow = window;
             }
             return window;
         }
@@ -99,6 +104,12 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     }
     
     
+    @Override
+    public int getWindowSize() {
+        return windowSize;
+    }
+    
+    
     private class WindowIterator implements Iterator<Window> {
 
         private int position = 0;
@@ -114,7 +125,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
             if (window == null) {
                 throw new NoSuchElementException();
             }
-            position += arraySize;
+            position += windowSize;
             return window;
         }
 

@@ -41,6 +41,10 @@ public interface Reader {
     Window getWindow(final long position) throws ReaderException;
     
     
+    
+    int getWindowSize();
+    
+    
     /**
      * @return long the length of the byte source accessed by the reader.
      */

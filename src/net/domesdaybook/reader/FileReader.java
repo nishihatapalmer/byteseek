@@ -40,7 +40,7 @@ public final class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file) throws FileNotFoundException {
-        this(file, DEFAULT_ARRAY_SIZE, new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
+        this(file, DEFAULT_WINDOW_SIZE, new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
     }
     
 
@@ -54,7 +54,7 @@ public final class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file, final WindowCache cache) throws FileNotFoundException {
-        this(file, DEFAULT_ARRAY_SIZE, cache, NOT_TEMP);
+        this(file, DEFAULT_WINDOW_SIZE, cache, NOT_TEMP);
     }     
     
     
@@ -63,12 +63,12 @@ public final class FileReader extends AbstractReader {
      * last Window 
      * 
      * @param file The file to read from.
-     * @param arraySize the size of the byte array to read from the file.
+     * @param windowSize the size of the byte array to read from the file.
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final File file, final int arraySize) throws FileNotFoundException {
-        this(file, arraySize,
+    public FileReader(final File file, final int windowSize) throws FileNotFoundException {
+        this(file, windowSize,
              new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), NOT_TEMP);
     }    
     
@@ -78,13 +78,13 @@ public final class FileReader extends AbstractReader {
      * last Window 
      * 
      * @param file The file to read from.
-     * @param arraySize the size of the byte array to read from the file.
+     * @param windowSize the size of the byte array to read from the file.
      * @param capacity the number of byte arrays to cache (using a most recently used strategy).
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final File file, final int arraySize, final int capacity) throws FileNotFoundException {
-        this(file, arraySize, 
+    public FileReader(final File file, final int windowSize, final int capacity) throws FileNotFoundException {
+        this(file, windowSize, 
              new WindowMostRecentlyUsedCache(capacity), NOT_TEMP);
     }    
     
@@ -98,7 +98,7 @@ public final class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final InputStream in) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, 
+        this(ReadUtils.createTempFile(in), DEFAULT_WINDOW_SIZE, 
              new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), TEMP_FILE);
     }
     
@@ -113,7 +113,7 @@ public final class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final InputStream in, final WindowCache cache) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), DEFAULT_ARRAY_SIZE, cache, TEMP_FILE);
+        this(ReadUtils.createTempFile(in), DEFAULT_WINDOW_SIZE, cache, TEMP_FILE);
     }     
     
     
@@ -122,12 +122,12 @@ public final class FileReader extends AbstractReader {
      * last Window 
      * 
      * @param file The file to read from.
-     * @param arraySize the size of the byte array to read from the file.
+     * @param windowSize the size of the byte array to read from the file.
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final InputStream in, final int arraySize) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), arraySize, 
+    public FileReader(final InputStream in, final int windowSize) throws FileNotFoundException, IOException {
+        this(ReadUtils.createTempFile(in), windowSize, 
              new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY), TEMP_FILE);
     }    
     
@@ -137,13 +137,13 @@ public final class FileReader extends AbstractReader {
      * last Window 
      * 
      * @param file The file to read from.
-     * @param arraySize the size of the byte array to read from the file.
+     * @param windowSize the size of the byte array to read from the file.
      * @param capacity the number of byte arrays to cache (using a most recently used strategy).
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final InputStream in, final int arraySize, final int capacity) throws FileNotFoundException, IOException {
-        this(ReadUtils.createTempFile(in), arraySize, 
+    public FileReader(final InputStream in, final int windowSize, final int capacity) throws FileNotFoundException, IOException {
+        this(ReadUtils.createTempFile(in), windowSize, 
              new WindowMostRecentlyUsedCache(capacity), TEMP_FILE);
     }        
     
@@ -153,14 +153,14 @@ public final class FileReader extends AbstractReader {
      * the specified size.
      *
      * @param file The file to read from.
-     * @param arraySize the size of the byte array to read from the file.
+     * @param windowSize the size of the byte array to read from the file.
      * @param cache the cache of Windows to use.
      * @throws FileNotFoundException If the file does not exist.
      * @throws IllegalArgumentException if the file passed in is null.
      */
-    public FileReader(final File file, final int arraySize,
+    public FileReader(final File file, final int windowSize,
                       final WindowCache cache, final boolean fileIsTemporary) throws FileNotFoundException {
-        super(arraySize, cache);
+        super(windowSize, cache);
         if (file == null) {
             throw new IllegalArgumentException(NULL_ARGUMENTS);
         }
@@ -183,14 +183,7 @@ public final class FileReader extends AbstractReader {
     
     @Override
     Window createWindow(final long readPos) throws ReaderException {
-        // If the remaining length is smaller than the block size,
-        int blockSize = arraySize;
-        if (readPos + blockSize > length) {
-            blockSize = (int) (length - readPos); // cut down the blocksize.
-        } 
-
-        // Read the bytes for this position and create the window for it:
-        final byte[] bytes = new byte[blockSize];
+        final byte[] bytes = new byte[windowSize];
         try {
             randomAccessFile.seek(readPos);
             final int totalRead = ReadUtils.readBytes(randomAccessFile, bytes);

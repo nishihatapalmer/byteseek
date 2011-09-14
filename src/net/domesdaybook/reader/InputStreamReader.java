@@ -22,22 +22,22 @@ public class InputStreamReader extends AbstractReader {
     
     
     public InputStreamReader(final InputStream stream) {
-        this(stream, DEFAULT_ARRAY_SIZE);
+        this(stream, DEFAULT_WINDOW_SIZE);
     }
     
     
     public InputStreamReader(final InputStream stream, final WindowCache cache) {
-        this(stream, DEFAULT_ARRAY_SIZE, cache);
+        this(stream, DEFAULT_WINDOW_SIZE, cache);
     }      
     
     
-    public InputStreamReader(final InputStream stream, final int arraySize) {
-        this(stream, arraySize, new WindowAllCache());
+    public InputStreamReader(final InputStream stream, final int windowSize) {
+        this(stream, windowSize, new WindowAllCache());
     }
 
     
-    public InputStreamReader(final InputStream stream, final int arraySize, final WindowCache cache) { 
-        super(arraySize, cache);
+    public InputStreamReader(final InputStream stream, final int windowSize, final WindowCache cache) { 
+        super(windowSize, cache);
         this.stream = stream;
     }    
     
@@ -47,14 +47,14 @@ public class InputStreamReader extends AbstractReader {
         Window lastWindow = null;
         try {
             while (readPos > streamPos && length == UNKNOWN_LENGTH) {
-                final byte[] bytes = new byte[arraySize];
+                final byte[] bytes = new byte[windowSize];
                 final int totalRead = ReadUtils.readBytes(stream, bytes);
                 if (totalRead > 0) {
                     lastWindow = new Window(bytes, streamPos, totalRead);  
                     streamPos += totalRead;                                        
                     cache.addWindow(lastWindow);
                 }
-                if (totalRead < arraySize) { // If we read less than the available array:
+                if (totalRead < windowSize) { // If we read less than the available array:
                     length = streamPos; // then the length is whatever the streampos is now.
                 }
             }
@@ -69,14 +69,14 @@ public class InputStreamReader extends AbstractReader {
     public long length() {
         try {
             while (length < 0) {
-                final byte[] bytes = new byte[arraySize];
+                final byte[] bytes = new byte[windowSize];
                 final int totalRead = ReadUtils.readBytes(stream, bytes);
                 if (totalRead > 0) {
                     final Window lastWindow = new Window(bytes, streamPos, totalRead); 
                     streamPos += totalRead;                  
                     cache.addWindow(lastWindow);
                 }
-                if (totalRead < arraySize) { // If we read less than the available array:
+                if (totalRead < windowSize) { // If we read less than the available array:
                     length = streamPos;
                 }
             }
