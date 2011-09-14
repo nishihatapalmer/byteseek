@@ -14,9 +14,11 @@ import java.io.InputStream;
  */
 public class InputStreamReader extends AbstractReader {
 
+    private static final long UNKNOWN_LENGTH = -1;
     private final InputStream stream;
     private long streamPos = 0;
-    private long length = -1;
+    private long length = UNKNOWN_LENGTH;
+    
     
     
     public InputStreamReader(final InputStream stream) {
@@ -44,15 +46,13 @@ public class InputStreamReader extends AbstractReader {
     Window createWindow(final long readPos) {
         Window lastWindow = null;
         try {
-            while (readPos > streamPos) {
+            while (readPos > streamPos && length == UNKNOWN_LENGTH) {
                 final byte[] bytes = new byte[arraySize];
                 final int totalRead = ReadUtils.readBytes(stream, bytes);
                 if (totalRead > 0) {
                     lastWindow = new Window(bytes, streamPos, totalRead);  
                     streamPos += totalRead;                                        
                     cache.addWindow(lastWindow);
-                } else if (totalRead <= 0) { // If no further bytes can be read
-                    streamPos++; // advance the stream pos past the last byte.
                 }
                 if (totalRead < arraySize) { // If we read less than the available array:
                     length = streamPos; // then the length is whatever the streampos is now.
