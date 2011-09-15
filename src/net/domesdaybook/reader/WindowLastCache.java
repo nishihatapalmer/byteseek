@@ -37,4 +37,9 @@ public class WindowLastCache implements WindowCache {
         lastWindow = null;
     }
     
+    @Override
+    public WindowCache newInstance() {
+        return new WindowLastCache();
+    }    
+    
 }

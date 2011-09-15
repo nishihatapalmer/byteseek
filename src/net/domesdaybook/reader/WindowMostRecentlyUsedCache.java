@@ -39,4 +39,9 @@ public final class WindowMostRecentlyUsedCache extends LinkedHashMap<Long, Windo
         return size() > capacity;
     }    
     
+    @Override
+    public WindowCache newInstance() {
+        return new WindowMostRecentlyUsedCache(capacity);
+    }    
+    
 }

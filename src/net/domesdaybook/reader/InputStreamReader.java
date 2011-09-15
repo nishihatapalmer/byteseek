@@ -5,6 +5,7 @@
 
 package net.domesdaybook.reader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -18,7 +19,6 @@ public class InputStreamReader extends AbstractReader {
     private final InputStream stream;
     private long streamPos = 0;
     private long length = UNKNOWN_LENGTH;
-    
     
     
     public InputStreamReader(final InputStream stream) {
@@ -68,7 +68,7 @@ public class InputStreamReader extends AbstractReader {
     @Override
     public long length() {
         try {
-            while (length < 0) {
+            while (length == UNKNOWN_LENGTH) {
                 final byte[] bytes = new byte[windowSize];
                 final int totalRead = ReadUtils.readBytes(stream, bytes);
                 if (totalRead > 0) {
@@ -96,13 +96,13 @@ public class InputStreamReader extends AbstractReader {
     
     @Override
     public void close() {
-        super.close();
         try {
             stream.close();
         } catch (IOException canDoNothing) {
+        } finally {
+            super.close();
         }
     }
 
-   
     
 }

@@ -24,6 +24,11 @@ public final class WindowAllCache extends HashMap<Long, Window> implements Windo
     public void addWindow(final Window window) {
         final long position = window.getWindowPosition();
         put(position, window);
-    }    
+    }
+
+    @Override
+    public WindowCache newInstance() {
+        return new WindowAllCache();
+    }
     
 }

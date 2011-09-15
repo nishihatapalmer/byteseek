@@ -16,4 +16,6 @@ public interface WindowCache {
     void addWindow(final Window window);
     
     void clear();
+    
+    WindowCache newInstance();
 }
