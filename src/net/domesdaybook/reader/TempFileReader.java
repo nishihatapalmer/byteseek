@@ -18,9 +18,8 @@ import java.io.InputStream;
 public final class TempFileReader extends FileReader {
 
     
-        public static FileReader getTempFileReader(final InputStream stream) throws IOException {
-        final File tempFile = ReadUtils.createTempFile(stream);
-        return new TempFileReader(tempFile);
+    TempFileReader(final InputStream stream) throws IOException {
+        this(ReadUtils.createTempFile(stream));
     }
     
     
