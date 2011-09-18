@@ -17,7 +17,7 @@ import java.util.Set;
  *
  * @author matt
  */
-public class SimpleSingleByteMatcherFactory implements SingleByteMatcherFactory {
+public final class SimpleSingleByteMatcherFactory implements SingleByteMatcherFactory {
 
     private static final String ILLEGAL_ARGUMENTS = "Null or empty Byte set passed in to ByteSetMatcher.";
     private static final int BINARY_SEARCH_THRESHOLD = 16;

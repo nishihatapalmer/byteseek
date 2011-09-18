@@ -18,7 +18,7 @@ public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
      * Returns this for position 0, or throws an IndexOutOfBoundsException.
      */
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(final int position) {
+    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
         if (position != 0) {
             throw new IndexOutOfBoundsException("SingleByteMatchers only have a matcher at position 0.");
         }
@@ -32,7 +32,7 @@ public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
      * Always returns 1.
      */ 
     @Override
-    public int length() {
+    public final int length() {
         return 1;
     }
     
@@ -43,7 +43,7 @@ public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
      * Always returns this.
      */ 
     @Override
-    public SequenceMatcher reverse() {
+    public final SequenceMatcher reverse() {
         return this;
     }    
     

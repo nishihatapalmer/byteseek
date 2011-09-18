@@ -25,7 +25,7 @@ public interface SingleByteMatcher extends SequenceMatcher {
      *
      * @return Whether a given byte matches the byte matcher.
      */
-    public boolean matches(final byte theByte);
+    boolean matches(final byte theByte);
 
     
     /**
@@ -34,7 +34,7 @@ public interface SingleByteMatcher extends SequenceMatcher {
      *
      * @return An array of all the bytes that this byte matcher could match.
      */
-    public byte[] getMatchingBytes();
+    byte[] getMatchingBytes();
 
 
     /**
@@ -43,7 +43,7 @@ public interface SingleByteMatcher extends SequenceMatcher {
      *
      * @return The number of bytes this byte matcher will match.
      */
-    public int getNumberOfMatchingBytes();
+    int getNumberOfMatchingBytes();
     
 
     /**
@@ -52,6 +52,6 @@ public interface SingleByteMatcher extends SequenceMatcher {
      *
      * @return A string representation of a regular expression for this matcher.
      */
-    public String toRegularExpression(final boolean prettyPrint);
+    String toRegularExpression(final boolean prettyPrint);
 
 }

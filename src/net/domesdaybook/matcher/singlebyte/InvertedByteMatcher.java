@@ -13,7 +13,7 @@ import net.domesdaybook.reader.Reader;
  *
  * @author matt
  */
-public class InvertedByteMatcher extends AbstractSingleByteSequence {
+public final class InvertedByteMatcher extends AbstractSingleByteSequence {
 
     private final byte byteToMiss;
 
