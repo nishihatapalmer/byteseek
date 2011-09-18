@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.IOException;
 import org.junit.BeforeClass;
 import java.io.FileNotFoundException;
 import net.domesdaybook.reader.FileReader;
@@ -183,7 +184,7 @@ public class ByteSequenceMatcherTest {
      * Test of matches method, of class ByteSequenceMatcher.
      */
     @Test
-    public void testMatches_ByteReader_long() throws FileNotFoundException {
+    public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {
         ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x2A, 3); // ***
         testMatchesAround(matcher, 0);
         testMatchesAround(matcher, 61);
@@ -201,7 +202,7 @@ public class ByteSequenceMatcherTest {
     }
 
     
-    private void testMatchesAround(ByteSequenceMatcher matcher, long pos) {
+    private void testMatchesAround(ByteSequenceMatcher matcher, long pos) throws IOException {
         String matchDesc = matcher.toRegularExpression(true);
         assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
         assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
@@ -228,7 +229,7 @@ public class ByteSequenceMatcherTest {
      * Test of matchesNoBoundsCheck method, of class ByteSequenceMatcher.
      */
     @Test
-    public void testMatchesNoBoundsCheck_ByteReader_long() {
+    public void testMatchesNoBoundsCheck_ByteReader_long() throws IOException {
         System.out.println("matchesNoBoundsCheck");
         Reader reader = null;
         long matchPosition = 0L;
