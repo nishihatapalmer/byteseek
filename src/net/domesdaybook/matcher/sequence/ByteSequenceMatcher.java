@@ -6,6 +6,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -129,7 +130,8 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final Reader reader, final long matchFrom) {
+    public final boolean matches(final Reader reader, final long matchFrom)
+            throws IOException {
         final int localLength = length;
         if (matchFrom + localLength <= reader.length() && matchFrom >= 0) {
             final byte[] localArray = byteArray;
@@ -169,7 +171,8 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) 
+            throws IOException {
         final int localLength = length;
         final byte[] localArray = byteArray;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {

@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.multisequence;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +36,8 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) {
+    public Collection<SequenceMatcher> allMatches(final Reader reader, 
+            final long matchPosition) throws IOException {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
@@ -93,7 +95,8 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override  
-    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, final long matchPosition) {
+    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
+            final long matchPosition) throws IOException {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
@@ -151,7 +154,8 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) {
+    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) 
+            throws IOException {
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
@@ -207,7 +211,8 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override  
-    public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition) {
+    public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
+            throws IOException {
         final long noOfBytes = reader.length();
         final int minimumLength = trie.getMinimumLength();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
@@ -263,7 +268,8 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override    
-    public boolean matches(final Reader reader, final long matchPosition) {
+    public boolean matches(final Reader reader, final long matchPosition) 
+            throws IOException {
         return firstMatch(reader, matchPosition) != null;
     }
 
@@ -283,7 +289,8 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override 
-    public boolean matchesBackwards(Reader reader, long matchPosition) {
+    public boolean matchesBackwards(Reader reader, long matchPosition) 
+            throws IOException {
         return firstMatchBackwards(reader, matchPosition) != null;
     }
 

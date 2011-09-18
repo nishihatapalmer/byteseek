@@ -5,8 +5,11 @@
 
 package net.domesdaybook.reader;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -37,47 +40,51 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      *
      * @param position The position in the reader to read a byte from.
      * @return The byte at the given position.
-     * @throws ReaderException if an IOException occurs reading the file.
+     * @throws ReaderException if an error occurs reading the byte.
+     * @throws IndexOutOfBoundsException If there are no bytes at the position given. 
      */
     @Override
-    public byte readByte(final long position) throws ReaderException {
+    public final byte readByte(final long position) throws IOException {
         final Window window = getWindow(position);
-        if (window == null) {
-            throw new ReaderException("No bytes can be read from this position:" + position);
+        final int offset = (int) position % windowSize;
+        if (window == null || offset >= window.getLimit()) {
+            throw new IndexOutOfBoundsException("No bytes can be read from this position:" + position);
         }
-        return window.getByte((int) (position % windowSize));
+        return window.getByte(offset);
     }
     
     
     /**
      * 
-     * @return A Window containing a byte array and the offset into it for a given position.
+     * @return A Window backed by a byte array onto the data for a given position.
      *         If a window can't be provided for the given position, null is returned.
+     * @throws IOException if an IO error occurred trying to create a new window.
      */
     @Override
-    public Window getWindow(final long position) throws ReaderException {
-        final long readPos =  position - (position % windowSize);
-        if (lastWindow != null && lastWindow.getWindowPosition() == readPos) {
+    public final Window getWindow(final long position) throws IOException {
+        final long windowStart =  position - (position % windowSize);
+        if (lastWindow != null && lastWindow.getWindowPosition() == windowStart) {
             return lastWindow;
         }
-        if (position >= 0) {
-            Window window = cache.getWindow(readPos);
-            if (window == null) {
-                window = createWindow(readPos);
-                cache.addWindow(window);
+        Window window = cache.getWindow(windowStart);
+        if (window != null) {
+            lastWindow = window;
+        } else if (position >= 0) {
+            window = createWindow(windowStart);
+            if (window != null) {
                 lastWindow = window;
+                cache.addWindow(window);
             }
-            return window;
-        }
-        return null;
+        } 
+        return window;
     }
     
     
-    abstract Window createWindow(final long readPos) throws ReaderException;
+    abstract Window createWindow(final long windowStart) throws IOException;
     
 
     @Override
-    public Iterator<Window> iterator() {
+    public final Iterator<Window> iterator() {
         return new WindowIterator();
     }
 
@@ -105,7 +112,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     
     
     @Override
-    public int getWindowSize() {
+    public final int getWindowSize() {
         return windowSize;
     }
     
@@ -114,21 +121,31 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 
         private int position = 0;
         
+        
         @Override
-        public boolean hasNext() {
-            return position < length();
+        public boolean hasNext(){
+            try {
+                return getWindow(position) != null;
+            } catch (IOException ex) {
+                return false;
+            }
         }
 
+        
         @Override
         public Window next() {
-            final Window window = getWindow(position);
-            if (window == null) {
-                throw new NoSuchElementException();
+            try {
+                final Window window = getWindow(position);
+                if (window != null) {
+                    position += windowSize;
+                    return window;
+                }
+            } catch (final IOException dropDownToNoSuchElementException) {
             }
-            position += windowSize;
-            return window;
+            throw new NoSuchElementException();            
         }
 
+        
         @Override
         public void remove() {
             throw new UnsupportedOperationException("Cannot remove a window from a reader.");

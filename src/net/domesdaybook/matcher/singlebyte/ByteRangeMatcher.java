@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
 
@@ -52,7 +53,8 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) 
+            throws IOException{
         if (matchFrom >= 0 && matchFrom < reader.length()) {
             final int byteValue = reader.readByte(matchFrom) & 0xFF;
             final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
@@ -80,7 +82,8 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) 
+            throws IOException{
         final int byteValue = reader.readByte(matchPosition) & 0xFF;
         final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
         return insideRange ^ inverted;

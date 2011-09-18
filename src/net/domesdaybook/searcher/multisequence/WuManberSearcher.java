@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher.multisequence;
 
+import java.io.IOException;
 import net.domesdaybook.bytes.BytePermutationIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -171,7 +172,8 @@ public class WuManberSearcher extends AbstractSearcher {
     
     
     
-    public long searchForwards(Reader reader, long fromPosition, long toPosition) {
+    public long searchForwards(final Reader reader, final long fromPosition, 
+            final long toPosition) throws IOException {
         // Get the data we need to search with:
         calculateForwardParameters();
         final MultiSequenceMatcher validator = forwardMatcher;
@@ -349,17 +351,20 @@ public class WuManberSearcher extends AbstractSearcher {
     }
 
     
-    public long searchBackwards(Reader reader, long fromPosition, long toPosition) {
+    public long searchBackwards(final Reader reader, final long fromPosition, 
+            final long toPosition) throws IOException {
         calculateBackwardParameters();
         final MultiSequenceMatcher validator = backwardMatcher;
         final int[] safeShifts = backwardShifts;
         
+        //TODO: implement backwards searching.
         
-        return Searcher.NOT_FOUND;
+        //return Searcher.NOT_FOUND;
+        throw new UnsupportedOperationException("TODO: implement backwards searching.");
     }
 
     
-    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         calculateBackwardParameters();
         final MultiSequenceMatcher validator = backwardMatcher;
         final int[] safeShifts = backwardShifts;

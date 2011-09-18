@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher;
 
+import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 
 /**
@@ -32,7 +33,8 @@ public interface Searcher {
      * @param toPosition   The position to search up to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchForwards(final Reader reader, final long fromPosition, final long toPosition);
+    public long searchForwards(final Reader reader, final long fromPosition, 
+            final long toPosition) throws IOException;
 
 
     /**
@@ -43,7 +45,8 @@ public interface Searcher {
      * @param fromPosition The position to search from.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchForwards(final Reader reader, final long fromPosition);
+    public long searchForwards(final Reader reader, final long fromPosition)
+             throws IOException;
  
     
     /**
@@ -53,7 +56,7 @@ public interface Searcher {
      * @param reader       The byte reader giving access to the bytes being searched.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchForwards(final Reader reader);    
+    public long searchForwards(final Reader reader) throws IOException;    
     
     
     /**
@@ -98,7 +101,8 @@ public interface Searcher {
      * @param toPosition   The position to search back to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchBackwards(final Reader reader, final long fromPosition, final long toPosition);
+    public long searchBackwards(final Reader reader, final long fromPosition, 
+            final long toPosition) throws IOException;
     
     
     /**
@@ -110,7 +114,8 @@ public interface Searcher {
      * @param toPosition   The position to search back to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchBackwards(final Reader reader, final long fromPosition);
+    public long searchBackwards(final Reader reader, final long fromPosition)
+             throws IOException;
         
     
     /**
@@ -120,7 +125,7 @@ public interface Searcher {
      * @param reader       The byte reader giving access to the bytes being searched.
      * @return             The position a match was found at, or NOT_FOUND (-1).
      */
-    public long searchBackwards(final Reader reader);    
+    public long searchBackwards(final Reader reader) throws IOException;    
     
     /**
      * Searches bytes backwards provided by a byte array,

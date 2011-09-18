@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher.matcher;
 
+import java.io.IOException;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.searcher.AbstractSearcher;
@@ -28,7 +29,8 @@ public class MatcherSearcher extends AbstractSearcher {
      * @inheritDoc
      */
     @Override
-    public long searchForwards(final Reader reader, final long fromPosition, final long toPosition) {
+    public long searchForwards(final Reader reader, final long fromPosition, 
+           final long toPosition) throws IOException {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
         long currentPosition = fromPosition > 0? fromPosition : 0;
@@ -67,7 +69,8 @@ public class MatcherSearcher extends AbstractSearcher {
      * @inheritDoc
      */
     @Override
-    public long searchBackwards(final Reader reader, final long fromPosition, final long toPosition) {
+    public long searchBackwards(final Reader reader, final long fromPosition, 
+           final long toPosition) throws IOException {
         final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition > 0? toPosition : 0;
         long currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;

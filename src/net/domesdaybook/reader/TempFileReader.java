@@ -28,7 +28,7 @@ public final class TempFileReader extends FileReader {
     }
     
     
-   TempFileReader(final InputStream stream, final int windowSize, 
+    TempFileReader(final InputStream stream, final int windowSize, 
                   final int capacity) throws IOException {
         this(ReadUtils.createTempFile(stream), windowSize, capacity);
     }    

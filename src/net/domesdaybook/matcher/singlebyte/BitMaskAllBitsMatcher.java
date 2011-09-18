@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import java.util.List;
 import net.domesdaybook.reader.Reader;
@@ -46,7 +47,7 @@ public final class BitMaskAllBitsMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) throws IOException {
         final byte localbitmask = mBitMaskValue;
         return (matchFrom >= 0 && matchFrom < reader.length()) &&
                (((reader.readByte(matchFrom) & localbitmask) == localbitmask) ^ inverted);
@@ -108,7 +109,8 @@ public final class BitMaskAllBitsMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
+            throws IOException {
         final byte localbitmask = mBitMaskValue;
         return ((reader.readByte(matchFrom) & localbitmask) == localbitmask) ^ inverted;
         

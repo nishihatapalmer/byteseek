@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.IOException;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Reader;
 import java.util.ArrayList;
@@ -63,7 +64,8 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom)
+            throws IOException {
         if (matchFrom + length < reader.length() && matchFrom >= 0) {
             long matchAt = matchFrom;
             final List<SequenceMatcher> localList = matchers;
@@ -111,7 +113,8 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
+            throws IOException {
         long matchAt = matchFrom;
         final List<SequenceMatcher> localList = matchers;
         for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {

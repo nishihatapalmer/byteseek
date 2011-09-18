@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.IOException;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
@@ -91,7 +92,8 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final Reader reader, final long matchFrom) {
+    public final boolean matches(final Reader reader, final long matchFrom) 
+            throws IOException {
         final int localLength = length;        
         if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
             final SingleByteMatcher[] matchList = charMatchList;
@@ -134,7 +136,8 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom)
+            throws IOException {
         final int localLength = length;        
         final SingleByteMatcher[] matchList = charMatchList;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {

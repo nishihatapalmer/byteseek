@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -83,7 +84,8 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) 
+            throws IOException {
         final int localStop = length;
         if (matchFrom + localStop < reader.length() && matchFrom >= 0) {
             final List<SingleByteMatcher> matchList = this.matcherSequence;
@@ -128,7 +130,8 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
+            throws IOException {
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;
         for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {

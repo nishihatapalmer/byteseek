@@ -5,7 +5,6 @@
 
 package net.domesdaybook.reader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -15,7 +14,6 @@ import java.io.InputStream;
  */
 public class InputStreamReader extends AbstractReader {
 
-    private static final long UNKNOWN_LENGTH = -1;
     private final InputStream stream;
     private long streamPos = 0;
     private long length = UNKNOWN_LENGTH;
@@ -43,7 +41,7 @@ public class InputStreamReader extends AbstractReader {
     
  
     @Override
-    Window createWindow(final long readPos) {
+    Window createWindow(final long readPos) throws ReaderException {
         Window lastWindow = null;
         try {
             while (readPos > streamPos && length == UNKNOWN_LENGTH) {

@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.multisequence;
 
+import java.io.IOException;
 import java.util.Collection;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -26,7 +27,8 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition);
+    Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition)
+            throws IOException;
 
     
     /**
@@ -51,7 +53,8 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, final long matchPosition);
+    Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
+            final long matchPosition) throws IOException;;
 
     
     /**
@@ -74,7 +77,8 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatch(final Reader reader, final long matchPosition);
+    SequenceMatcher firstMatch(final Reader reader, final long matchPosition)
+       throws IOException;
   
     
     
@@ -96,7 +100,8 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition);
+    SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
+        throws IOException;
     
 
     /**
@@ -117,7 +122,8 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    boolean matchesBackwards(final Reader reader, final long matchPosition);    
+    boolean matchesBackwards(final Reader reader, final long matchPosition)
+         throws IOException;;
     
     
     /**

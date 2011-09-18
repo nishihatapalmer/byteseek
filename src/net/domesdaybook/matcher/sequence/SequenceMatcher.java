@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.IOException;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Reader;
@@ -40,7 +41,8 @@ import net.domesdaybook.reader.Reader;
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition);
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition)
+            throws IOException;
     
     
     

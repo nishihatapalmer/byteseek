@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher.sequence;
 
+import java.io.IOException;
 import java.util.Arrays;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -75,7 +76,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
      */
     @Override
     public final long searchForwards(final Reader reader, 
-            final long fromPosition, final long toPosition ) {
+            final long fromPosition, final long toPosition ) throws IOException {
         
         // Get the objects needed to search:
         final int[] safeShifts = getForwardShifts();
@@ -171,7 +172,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
      */
     @Override
     public final long searchBackwards(final Reader reader, 
-            final long fromPosition, final long toPosition ) {
+            final long fromPosition, final long toPosition ) throws IOException {
         
         // Get objects needed to search:
         final int[] safeShifts = getBackwardShifts();

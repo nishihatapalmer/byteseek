@@ -6,6 +6,7 @@
 package net.domesdaybook.reader;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.io.FileNotFoundException;
 import org.junit.AfterClass;
@@ -34,7 +35,7 @@ public class FileReaderTest {
      * Test of readByte method, of class FileReader.
      */
     @Test
-    public void testReadByte() throws FileNotFoundException {
+    public void testReadByte() throws FileNotFoundException, IOException {
         FileReader reader = new FileReader(getFile("/TestASCII.txt"));
         
         test(reader, 112122, (byte) 0x50);
@@ -47,7 +48,7 @@ public class FileReaderTest {
         
     }
 
-    private void test(FileReader reader, long position, byte value) {
+    private void test(FileReader reader, long position, byte value) throws IOException {
         assertEquals(value, reader.readByte(position));
     }
     

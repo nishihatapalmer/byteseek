@@ -5,6 +5,7 @@
 
 package net.domesdaybook.searcher.sequence;
 
+import java.io.IOException;
 import java.util.Arrays;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
@@ -47,7 +48,7 @@ public class SundayQuickSearcher extends AbstractSearcher {
      */
     @Override
     public final long searchForwards(final Reader reader, 
-            final long fromPosition, final long toPosition ) {
+            final long fromPosition, final long toPosition ) throws IOException {
         
         // Get the objects needed to search:
         final int[] safeShifts = getForwardShifts();
@@ -121,7 +122,7 @@ public class SundayQuickSearcher extends AbstractSearcher {
      */
     @Override
     public final long searchBackwards(final Reader reader, 
-            final long fromPosition, final long toPosition ) {
+            final long fromPosition, final long toPosition ) throws IOException {
         
         // Get objects needed to search:
         final int[] safeShifts = getBackwardShifts();

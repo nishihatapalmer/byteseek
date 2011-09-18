@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
 
@@ -45,7 +46,8 @@ public final class ByteMatcher extends AbstractSingleByteSequence {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom) 
+            throws IOException{
         return matchFrom >= 0 && matchFrom <= reader.length() &&
                 reader.readByte(matchFrom) == byteToMatch;
     }
@@ -65,7 +67,8 @@ public final class ByteMatcher extends AbstractSingleByteSequence {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) 
+            throws IOException{
         return reader.readByte(matchPosition) == byteToMatch;
     }
     

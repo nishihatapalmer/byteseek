@@ -5,6 +5,7 @@
 
 package net.domesdaybook.reader;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,9 +27,6 @@ public class FileReader extends AbstractReader {
     private final File file;
     private final RandomAccessFile randomAccessFile;
     private final long length;
-
-    
-    
     
     
     /**
@@ -199,15 +197,17 @@ public class FileReader extends AbstractReader {
 
     
     @Override
-    final Window createWindow(final long readPos) throws ReaderException {
-        final byte[] bytes = new byte[windowSize];
+    final Window createWindow(final long windowStart) throws IOException {
         try {
-            randomAccessFile.seek(readPos);
+            randomAccessFile.seek(windowStart);
+            final byte[] bytes = new byte[windowSize];            
             final int totalRead = ReadUtils.readBytes(randomAccessFile, bytes);
-            return new Window(bytes, readPos, totalRead);
-        } catch (IOException ex) {
-            throw new ReaderException(ex);
+            if (totalRead > 0) {
+                return new Window(bytes, windowStart, totalRead);
+            }
+        } catch (final EOFException justReturnNull) {
         }
+        return null;
     }
     
     
@@ -222,7 +222,7 @@ public class FileReader extends AbstractReader {
     }
     
     
-    public File getFile() {
+    public final File getFile() {
         return file;
     }
     

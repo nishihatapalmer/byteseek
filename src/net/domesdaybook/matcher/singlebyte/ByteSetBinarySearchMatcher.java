@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.singlebyte;
 
+import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import java.util.Arrays;
 import java.util.Set;
@@ -57,7 +58,8 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) {
+    public boolean matches(final Reader reader, final long matchFrom)
+            throws IOException{
         return (matchFrom >= 0 && matchFrom < reader.length()) &&
                 ((Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted);
     }    
@@ -77,7 +79,8 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) {
+    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
+            throws IOException{
         return (Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted;
     }
 

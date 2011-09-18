@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.multisequence;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +79,8 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public List<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) {
+    public List<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) 
+        throws IOException {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
         final long noOfBytes = reader.length();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
@@ -134,7 +136,8 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */
     @Override
-    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, final long matchPosition) {
+    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
+            final long matchPosition) throws IOException {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
         final long noOfBytes = reader.length();
         if (matchPosition >= minimumLength - 1 && matchPosition < noOfBytes) {
@@ -193,7 +196,8 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */    
     @Override
-    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) {
+    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) 
+            throws IOException {
         final long noOfBytes = reader.length();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
             final List<SequenceMatcher> localMatchers = matchers;
@@ -245,7 +249,8 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc 
      */ 
     @Override 
-    public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition) {
+    public SequenceMatcher firstMatchBackwards(final Reader reader, 
+            final long matchPosition) throws IOException {
         final long noOfBytes = reader.length();
         if (matchPosition >= minimumLength - 1 && matchPosition < noOfBytes) {
             final List<SequenceMatcher> localMatchers = matchers;
@@ -300,7 +305,8 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */ 
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) {
+    public boolean matches(final Reader reader, final long matchPosition) 
+            throws IOException {
         final long noOfBytes = reader.length();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
             final List<SequenceMatcher> localMatchers = matchers;
@@ -355,7 +361,8 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */ 
     @Override
-    public boolean matchesBackwards(final Reader reader, final long matchPosition) {
+    public boolean matchesBackwards(final Reader reader, 
+            final long matchPosition) throws IOException { 
         final long noOfBytes = reader.length();
         if (matchPosition >= minimumLength - 1 && matchPosition < noOfBytes) {
             final List<SequenceMatcher> localMatchers = matchers;

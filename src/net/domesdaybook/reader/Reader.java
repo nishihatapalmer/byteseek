@@ -6,6 +6,9 @@
 
 package net.domesdaybook.reader;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 
 /**
  * An interface for classes which can read bytes at a given position.
@@ -22,23 +25,26 @@ package net.domesdaybook.reader;
  * 
  * @author Matt Palmer
  */
-public interface Reader {
+public interface Reader extends Closeable {
 
+    public static final long UNKNOWN_LENGTH = -1;
+    
     /**
      * Read a byte from a given position.
      *
      * @param position The position of the byte to read.
      * @return byte The byte at the position given.
      */
-    public byte readByte(final long position) throws ReaderException;
+    byte readByte(final long position) throws IOException;
 
+    
     /**
      * 
      * @param position The position of the byte to read in the underlying data.
      * @return Window an Window containing a byte array, and a startPos which gives
      *         the position of the byte in the byte array.
      */
-    Window getWindow(final long position) throws ReaderException;
+    Window getWindow(final long position) throws IOException;
     
     
     
@@ -56,10 +62,5 @@ public interface Reader {
      */
     public void clearCache();
     
-    
-    /**
-     * Close any underlying resources the reader has open.
-     */
-    public void close();
     
 }

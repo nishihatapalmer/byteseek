@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher;
 
+import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 
 /**
@@ -34,7 +35,7 @@ public interface Matcher {
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */
-    public boolean matches(final Reader reader, final long matchPosition);
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException;
     
     
     /**
