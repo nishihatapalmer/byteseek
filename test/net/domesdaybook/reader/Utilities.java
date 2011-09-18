@@ -16,12 +16,12 @@ public class Utilities {
     
 
     
-    public static byte[] getByteArray(String path) throws IOException {
+    public static byte[] getByteArray(final String path) throws IOException {
         return getByteArray(new File(path));
     }
                 
     
-    public static byte[] getByteArray(File file) throws IOException {
+    public static byte[] getByteArray(final File file) throws IOException {
         final Reader reader = new FileReader(file);
         final Window window = reader.getWindow(0);
         return window.getArray();
