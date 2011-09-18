@@ -24,7 +24,7 @@ import net.domesdaybook.reader.Reader;
      * @param position The position in the byte matcher to return a dedicated byte matcher for.
      * @return A SingleByteMatcher for the position in the sequence provided.
      */
-    public SingleByteMatcher getByteMatcherForPosition(final int position);
+    SingleByteMatcher getByteMatcherForPosition(final int position);
 
     
     /**
@@ -41,7 +41,7 @@ import net.domesdaybook.reader.Reader;
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition)
+    boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition)
             throws IOException;
     
     
@@ -56,7 +56,7 @@ import net.domesdaybook.reader.Reader;
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition);    
+    boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition);    
     
     
     /**
@@ -64,7 +64,7 @@ import net.domesdaybook.reader.Reader;
      *
      * @return Returns the length of a matching byte sequence.
      */
-    public int length();
+    int length();
 
     
     /**
@@ -72,7 +72,7 @@ import net.domesdaybook.reader.Reader;
      * 
      * @return A SequenceMatcher which matches the reverse sequence.
      */
-    public SequenceMatcher reverse();
+    SequenceMatcher reverse();
     
     
     /**
@@ -81,6 +81,6 @@ import net.domesdaybook.reader.Reader;
      * @param prettyPrint whether to pretty print the regular expression with spacing.
      * @return A string containing a regular expression of the byte matcher.
      */
-    public String toRegularExpression(final boolean prettyPrint);
+    String toRegularExpression(final boolean prettyPrint);
 
 }

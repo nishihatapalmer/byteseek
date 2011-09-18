@@ -70,7 +70,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final int length() {
+    public int length() {
         return length;
     }
 
@@ -79,7 +79,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(final boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         if (prettyPrint) {
             return " `" + caseInsensitiveString + "` ";
         }
@@ -92,7 +92,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final Reader reader, final long matchFrom) 
+    public boolean matches(final Reader reader, final long matchFrom) 
             throws IOException {
         final int localLength = length;        
         if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
@@ -115,7 +115,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final byte[] bytes, final int matchFrom) {
+    public boolean matches(final byte[] bytes, final int matchFrom) {
         final int localLength = length;
         if (matchFrom + localLength < bytes.length && matchFrom >= 0) {
             final SingleByteMatcher[] matchList = charMatchList;
@@ -173,7 +173,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
+    public SingleByteMatcher getByteMatcherForPosition(final int position) {
         return charMatchList[position];
     }
 

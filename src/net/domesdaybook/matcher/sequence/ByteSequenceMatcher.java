@@ -152,7 +152,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final byte[] bytes, final int matchFrom) {
+    public boolean matches(final byte[] bytes, final int matchFrom) {
         final int localLength = length;
         if (matchFrom + localLength <= bytes.length && matchFrom >= 0) {
             final byte[] localArray = byteArray;
@@ -205,7 +205,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final int length() {
+    public int length() {
         return length;
     }
 
@@ -214,7 +214,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final String toRegularExpression(final boolean prettyPrint) {
+    public String toRegularExpression(final boolean prettyPrint) {
         return bytesToString(prettyPrint, byteArray);
     }
 
@@ -223,7 +223,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
+    public SingleByteMatcher getByteMatcherForPosition(final int position) {
         return new ByteMatcher(byteArray[position]);
     }
 
