@@ -6,7 +6,6 @@
 package net.domesdaybook.reader;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -23,13 +22,9 @@ public class Utilities {
                 
     
     public static byte[] getByteArray(File file) throws IOException {
-        try {
-            final Reader reader = new FileReader(file);
-            final Window array = reader.getWindow(0);
-            return array.getArray();
-        } catch (FileNotFoundException ex) {
-            return null;
-        }
+        final Reader reader = new FileReader(file);
+        final Window window = reader.getWindow(0);
+        return window.getArray();
     }
     
     
