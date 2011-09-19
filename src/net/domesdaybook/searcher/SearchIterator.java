@@ -5,8 +5,11 @@
 
 package net.domesdaybook.searcher;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.domesdaybook.reader.Reader;
 
 /**
@@ -116,8 +119,12 @@ public class SearchIterator implements Iterator {
     @Override
     public boolean hasNext() {
         if (!searchedForNext) {
-            matchPosition = getNextMatchPosition();
-            searchedForNext = true;
+            try {
+                matchPosition = getNextMatchPosition();
+                searchedForNext = true;
+            } catch (IOException ex) {
+                return false;
+            }
         }
         return matchPosition >= 0;
     }
@@ -144,7 +151,7 @@ public class SearchIterator implements Iterator {
     }
     
     
-    private long getNextMatchPosition() {
+    private long getNextMatchPosition() throws IOException {
         long nextMatchingPosition = Searcher.NOT_FOUND;
         if (direction == Direction.FORWARDS) {
             if (reader != null) {

@@ -6,6 +6,7 @@
 
 package net.domesdaybook.searcher;
 
+import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 
 /**
@@ -18,7 +19,8 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchForwards(final Reader reader, final long fromPosition) {
+    public long searchForwards(final Reader reader, final long fromPosition) 
+            throws IOException {
         return searchForwards(reader, fromPosition, reader.length() - 1);
     }
 
@@ -27,7 +29,8 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchForwards(final Reader reader) {
+    public long searchForwards(final Reader reader) 
+            throws IOException {
         return searchForwards(reader, 0, reader.length() - 1);
     }
 
@@ -54,7 +57,8 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchBackwards(final Reader reader, final long fromPosition) {
+    public long searchBackwards(final Reader reader, final long fromPosition) 
+            throws IOException {
         return searchBackwards(reader, fromPosition, 0);
     }
 
@@ -63,7 +67,8 @@ public abstract class AbstractSearcher implements Searcher {
      * @inheritDoc
      */
     @Override
-    public long searchBackwards(final Reader reader) {
+    public long searchBackwards(final Reader reader) 
+            throws IOException {
         return searchBackwards(reader, reader.length() - 1, 0);
     }
 
