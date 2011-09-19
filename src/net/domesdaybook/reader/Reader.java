@@ -47,6 +47,8 @@ public interface Reader extends Closeable {
     Window getWindow(final long position) throws IOException;
     
     
+    int getWindowOffset(final long position);
+    
     
     int getWindowSize();
     

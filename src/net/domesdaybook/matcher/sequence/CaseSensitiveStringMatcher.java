@@ -79,7 +79,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
         final Window window = reader.getWindow(matchFrom);
         if (window != null) {
             final int localLength = length;            
-            final int offset = (int) matchFrom % reader.getWindowSize();
+            final int offset = reader.getWindowOffset(matchFrom);
             if (offset + localLength <= window.getLimit()) {
                 return matchesNoBoundsCheck(window.getArray(), offset);
             }
