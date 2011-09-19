@@ -38,7 +38,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      *
      * @param position The position in the reader to read a byte from.
      * @return The byte at the given position.
-     * @throws ReaderException if an error occurs reading the byte.
+     * @throws IOException if an error occurs reading the byte.
      * @throws IndexOutOfBoundsException If there are no bytes at the position given. 
      */
     @Override
