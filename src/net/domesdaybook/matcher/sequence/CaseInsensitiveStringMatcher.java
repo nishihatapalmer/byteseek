@@ -10,6 +10,7 @@ import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  * An immutable class which matches an ASCII string case insensitively.
@@ -58,7 +59,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         if (numberToRepeat == 1) {
             return stringToRepeat;
         }
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (int count = 0; count < numberToRepeat; count++) {
             builder.append(stringToRepeat);
         }
@@ -92,23 +93,22 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) 
+    public final boolean matches(final Reader reader, final long matchFrom)
             throws IOException {
-        final int localLength = length;        
-        if (matchFrom + localLength < reader.length() && matchFrom >= 0) {
-            final SingleByteMatcher[] matchList = charMatchList;
-            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                final SingleByteMatcher charMatcher = matchList[byteIndex];
-                final byte theByte = reader.readByte(matchFrom + byteIndex);
-                if (!charMatcher.matches(theByte)) {
-                    return false;
-                }
+        final Window window = reader.getWindow(matchFrom);
+        if (window != null) {
+            final int localLength = length;            
+            final int offset = (int) matchFrom % reader.getWindowSize();
+            if (offset + localLength <= window.getLimit()) {
+                return matchesNoBoundsCheck(window.getArray(), offset);
             }
-            return true;
+            if (matchFrom + localLength <= reader.length()) {
+                return matchesNoBoundsCheck(reader, matchFrom);
+            }
         }
         return false;
     }
-
+    
 
     /**
      * {@inheritDoc}

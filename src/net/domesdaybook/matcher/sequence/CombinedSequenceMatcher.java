@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import net.domesdaybook.reader.Window;
 
 /**
  * An immutable sequence matcher which matches sequences of other sequence matchers.
@@ -59,31 +60,29 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
+    
     /**
      * {@inheritDoc}
      * 
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom)
+    public final boolean matches(final Reader reader, final long matchFrom)
             throws IOException {
-        if (matchFrom + length < reader.length() && matchFrom >= 0) {
-            long matchAt = matchFrom;
-            final List<SequenceMatcher> localList = matchers;
-            for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
-                final SequenceMatcher matcher = localList.get( matchIndex );
-                // Don't need to do a bounds check here, as we already have above.
-                if (matcher.matchesNoBoundsCheck(reader, matchAt)) {
-                    matchAt += matcher.length();
-                } else {
-                    return false;
-                }
+        final Window window = reader.getWindow(matchFrom);
+        if (window != null) {
+            final int localLength = length;            
+            final int offset = (int) matchFrom % reader.getWindowSize();
+            if (offset + localLength <= window.getLimit()) {
+                return matchesNoBoundsCheck(window.getArray(), offset);
             }
-            return true;
+            if (matchFrom + localLength <= reader.length()) {
+                return matchesNoBoundsCheck(reader, matchFrom);
+            }
         }
         return false;
     }
     
-
+    
     /**
      * {@inheritDoc}
      * 

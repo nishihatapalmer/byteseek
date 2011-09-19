@@ -14,6 +14,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  * An immutable class which matches a sequence of bytes.
@@ -132,15 +133,16 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     @Override
     public final boolean matches(final Reader reader, final long matchFrom)
             throws IOException {
-        final int localLength = length;
-        if (matchFrom + localLength <= reader.length() && matchFrom >= 0) {
-            final byte[] localArray = byteArray;
-            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                if (localArray[byteIndex] != reader.readByte(matchFrom + byteIndex)) {
-                    return false;
-                }
+        final Window window = reader.getWindow(matchFrom);
+        if (window != null) {
+            final int localLength = length;            
+            final int offset = (int) matchFrom % reader.getWindowSize();
+            if (offset + localLength <= window.getLimit()) {
+                return matchesNoBoundsCheck(window.getArray(), offset);
             }
-            return true;
+            if (matchFrom + localLength <= reader.length()) {
+                return matchesNoBoundsCheck(reader, matchFrom);
+            }
         }
         return false;
     }

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  * An immutable class which matches a sequence of {@link SingleByteMatcher} objects.
@@ -80,27 +81,24 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      * 
-     * Note: will return false if access is outside the byte reader.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) 
+    public final boolean matches(final Reader reader, final long matchFrom)
             throws IOException {
-        final int localStop = length;
-        if (matchFrom + localStop < reader.length() && matchFrom >= 0) {
-            final List<SingleByteMatcher> matchList = this.matcherSequence;
-            for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-                final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-                final byte byteRead = reader.readByte(matchFrom + byteIndex);
-                if (!byteMatcher.matches(byteRead)) {
-                    return false;
-                }
+        final Window window = reader.getWindow(matchFrom);
+        if (window != null) {
+            final int localLength = length;            
+            final int offset = (int) matchFrom % reader.getWindowSize();
+            if (offset + localLength <= window.getLimit()) {
+                return matchesNoBoundsCheck(window.getArray(), offset);
             }
-            return true;
+            if (matchFrom + localLength <= reader.length()) {
+                return matchesNoBoundsCheck(reader, matchFrom);
+            }
         }
         return false;
-    }
-
+    }    
+    
     
     /**
      * {@inheritDoc}
