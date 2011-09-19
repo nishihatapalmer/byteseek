@@ -60,21 +60,24 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      */
     @Override
     public final Window getWindow(final long position) throws IOException {
-        final long windowStart =  position - (position % windowSize);
-        if (lastWindow != null && lastWindow.getWindowPosition() == windowStart) {
-            return lastWindow;
-        }
-        Window window = cache.getWindow(windowStart);
-        if (window != null) {
-            lastWindow = window;
-        } else if (position >= 0) {
-            window = createWindow(windowStart);
+        if (position >= 0) {
+            final long windowStart =  position - (position % windowSize);
+            if (lastWindow != null && lastWindow.getWindowPosition() == windowStart) {
+                return lastWindow;
+            }
+            Window window = cache.getWindow(windowStart);
             if (window != null) {
                 lastWindow = window;
-                cache.addWindow(window);
-            }
-        } 
-        return window;
+            } else {
+                window = createWindow(windowStart);
+                if (window != null) {
+                    lastWindow = window;
+                    cache.addWindow(window);
+                }
+            } 
+            return window;
+        }
+        return null;
     }
     
     
