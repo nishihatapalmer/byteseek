@@ -6,6 +6,7 @@
 package net.domesdaybook.searcher;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -31,7 +32,7 @@ public final class SearcherProfiler {
     }
     
     
-    public static Map<Searcher, ProfileResults> profile(final Collection<Searcher> searchers) throws FileNotFoundException {
+    public static Map<Searcher, ProfileResults> profile(final Collection<Searcher> searchers) throws FileNotFoundException, IOException {
         final Map<Searcher, ProfileResults> searcherResults 
                 = new IdentityHashMap<Searcher, ProfileResults>();
   
@@ -43,7 +44,7 @@ public final class SearcherProfiler {
     }
     
     
-    private static ProfileResults getProfileResults(final Searcher searcher) throws FileNotFoundException {
+    private static ProfileResults getProfileResults(final Searcher searcher) throws FileNotFoundException, IOException {
         final ProfileResults results = new ProfileResults();
         
         byte[] bytes = Utilities.getByteArray(ASCIIFilePath);

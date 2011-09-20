@@ -4,6 +4,7 @@
  */
 package net.domesdaybook.searcher.matcher;
 
+import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -31,7 +32,7 @@ public class MatcherSearcherTest {
      * Test of searchForwards method, of class MatcherSearcher.
      */
     @Test
-    public void testSearchForwards_3args_1() {
+    public void testSearchForwards_3args_1() throws IOException {
         System.out.println("searchForwards");
         Reader reader = null;
         long fromPosition = 0L;
@@ -48,7 +49,7 @@ public class MatcherSearcherTest {
      * Test of searchForwards method, of class MatcherSearcher.
      */
     @Test
-    public void testSearchForwards_3args_2() {
+    public void testSearchForwards_3args_2() throws IOException {
         System.out.println("searchForwards");
         Reader reader = null;
         long fromPosition = 0L;
@@ -82,7 +83,7 @@ public class MatcherSearcherTest {
      * Test of searchBackwards method, of class MatcherSearcher.
      */
     @Test
-    public void testSearchBackwards_3args_1() {
+    public void testSearchBackwards_3args_1() throws IOException {
         System.out.println("searchBackwards");
         Reader reader = null;
         long fromPosition = 0L;
@@ -99,7 +100,7 @@ public class MatcherSearcherTest {
      * Test of searchBackwards method, of class MatcherSearcher.
      */
     @Test
-    public void testSearchBackwards_3args_2() {
+    public void testSearchBackwards_3args_2() throws IOException {
         System.out.println("searchBackwards");
         Reader reader = null;
         long fromPosition = 0L;
