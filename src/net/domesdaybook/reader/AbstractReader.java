@@ -61,20 +61,29 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     @Override
     public final Window getWindow(final long position) throws IOException {
         if (position >= 0) {
-            final long windowStart =  position - (position % windowSize);
+            Window window = null;
+            final int offset = (int) position % windowSize;
+            final long windowStart =  position - offset;
             if (lastWindow != null && lastWindow.getWindowPosition() == windowStart) {
-                return lastWindow;
-            }
-            Window window = cache.getWindow(windowStart);
-            if (window != null) {
-                lastWindow = window;
+                window = lastWindow;
             } else {
-                window = createWindow(windowStart);
+                window = cache.getWindow(windowStart);
                 if (window != null) {
                     lastWindow = window;
-                    cache.addWindow(window);
-                }
-            } 
+                } else {
+                    window = createWindow(windowStart);
+                    if (window != null) {
+                        lastWindow = window;
+                        cache.addWindow(window);
+                    }
+                } 
+            }
+            // Finally, if the position requested is outside the window limit,
+            // don't return a window. The position itself is invalid, even though
+            // that position is part of a window which has valid positions.
+            if (window != null && offset >= window.getLimit()) {
+                window = null;
+            }
             return window;
         }
         return null;
