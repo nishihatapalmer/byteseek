@@ -53,7 +53,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("CombinedSequenceMatcher requires a positive number of repeats.");
         }
         matchers = new ArrayList<SequenceMatcher>(matchList);
-        for (int count = 0; count < numberOfRepeats; count++) {
+        for (int count = 1; count < numberOfRepeats; count++) {
             matchers.addAll(matchList);
         }
         length = indexAllSequenceMatchers();
