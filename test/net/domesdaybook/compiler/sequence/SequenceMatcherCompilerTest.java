@@ -5,6 +5,10 @@
 
 package net.domesdaybook.compiler.sequence;
 
+import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteRangeMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteSetBinarySearchMatcher;
+import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
@@ -64,15 +68,15 @@ public class SequenceMatcherCompilerTest {
     @Test
     public void testBasicCompile() throws Exception {
         SequenceMatcher matcher;
-        basicTests("00", 1, ByteSequenceMatcher.class);
-        basicTests("01", 1, ByteSequenceMatcher.class);
-        basicTests("fF", 1, ByteSequenceMatcher.class);
+        basicTests("00", 1, ByteMatcher.class);
+        basicTests("01", 1, ByteMatcher.class);
+        basicTests("fF", 1, ByteMatcher.class);
 
-        basicTests("[00ff]", 1, SingleByteSequenceMatcher.class);
-        basicTests("[ff00]", 1, SingleByteSequenceMatcher.class);
-        basicTests("[7f80]", 1, SingleByteSequenceMatcher.class);
-        basicTests("[807f]", 1, SingleByteSequenceMatcher.class);
-        basicTests(" [0102]", 1, SingleByteSequenceMatcher.class);
+        basicTests("[00ff]", 1, ByteSetBinarySearchMatcher.class);
+        basicTests("[ff00]", 1, ByteSetBinarySearchMatcher.class);
+        basicTests("[7f80]", 1, ByteRangeMatcher.class);
+        basicTests("[807f]", 1, ByteRangeMatcher.class);
+        basicTests(" [0102]", 1, ByteRangeMatcher.class);
         
         basicTests("'a string'", 8, CaseSensitiveStringMatcher.class);
         basicTests("`a string`", 8, CaseInsensitiveStringMatcher.class);
@@ -97,7 +101,7 @@ public class SequenceMatcherCompilerTest {
 
         basicTests("010203{6}", 8, ByteSequenceMatcher.class);
 
-        basicTests("[fffe]", 1, SingleByteSequenceMatcher.class);
+        basicTests("[fffe]", 1, BitMaskAllBitsMatcher.class);
         basicTests("[fffe]{5}", 5, SingleByteSequenceMatcher.class);
         
         basicTests("(0102){2}", 4, ByteSequenceMatcher.class);
