@@ -8,6 +8,7 @@ package net.domesdaybook.matcher.singlebyte;
 import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  *
@@ -43,12 +44,11 @@ public final class InvertedByteMatcher extends AbstractSingleByteSequence {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom)
-            throws IOException{
-        return matchFrom >= 0 && matchFrom < reader.length() &&
-                reader.readByte(matchFrom) != byteToMiss;
+    public boolean matches(final Reader reader, final long matchFrom) throws IOException{
+        final Window window = reader.getWindow(matchFrom);
+        return window == null? false
+                : window.getByte(reader.getWindowOffset(matchFrom)) != byteToMiss;
     }
-
     
 
     /**
@@ -60,16 +60,6 @@ public final class InvertedByteMatcher extends AbstractSingleByteSequence {
                 bytes[matchFrom] != byteToMiss;
     }    
     
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
-            throws IOException{
-        return reader.readByte(matchFrom) != byteToMiss;
-    }
-
     
     /**
      * {@inheritDoc}

@@ -88,26 +88,35 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
     
+
     /**
      * {@inheritDoc}
      * 
      */
     @Override
-    public final boolean matches(final Reader reader, final long matchFrom)
-            throws IOException {
-        final Window window = reader.getWindow(matchFrom);
-        if (window != null) {
-            final int localLength = length;            
-            final int offset = reader.getWindowOffset(matchFrom);
-            if (offset + localLength <= window.getLimit()) {
-                return matchesNoBoundsCheck(window.getArray(), offset);
+    public boolean matches(final Reader reader, final long matchFrom) throws IOException {
+        final int localLength = length;
+        final SingleByteMatcher[] matchList = charMatchList;   
+        Window window = reader.getWindow(matchFrom);
+        int checkPos = 0;
+        while (window != null) {
+            final int offset = reader.getWindowOffset(matchFrom + checkPos);
+            final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
+            final byte[] array = window.getArray();
+            for (int windowPos = offset; windowPos < endPos; windowPos++) {
+                final SingleByteMatcher byteMatcher = matchList[checkPos++];
+                if (!byteMatcher.matches(array[windowPos])) {
+                    return false;
+                }
             }
-            if (matchFrom + localLength <= reader.length()) {
-                return matchesNoBoundsCheck(reader, matchFrom);
+            if (checkPos == localLength) {
+                return true;
+            } else {
+                window = reader.getWindow(matchFrom + checkPos);
             }
         }
         return false;
-    }
+    }   
     
 
     /**
@@ -132,24 +141,6 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }   
     
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom)
-            throws IOException {
-        final int localLength = length;        
-        final SingleByteMatcher[] matchList = charMatchList;
-        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-            final SingleByteMatcher charMatcher = matchList[byteIndex];
-            final byte theByte = reader.readByte(matchFrom + byteIndex);
-            if (!charMatcher.matches(theByte)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     
     /**
      * {@inheritDoc}

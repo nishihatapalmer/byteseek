@@ -74,17 +74,25 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final Reader reader, final long matchFrom)
+    public boolean matches(final Reader reader, final long matchFrom)
             throws IOException {
-        final Window window = reader.getWindow(matchFrom);
-        if (window != null) {
-            final int localLength = length;            
-            final int offset = reader.getWindowOffset(matchFrom);
-            if (offset + localLength <= window.getLimit()) {
-                return matchesNoBoundsCheck(window.getArray(), offset);
+        final int localLength = length;
+        final byte[] localArray = byteArray;          
+        Window window = reader.getWindow(matchFrom);
+        int checkPos = 0;
+        while (window != null) {
+            final int offset = reader.getWindowOffset(matchFrom + checkPos);
+            final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
+            final byte[] array = window.getArray();
+            for (int windowPos = offset; windowPos < endPos; windowPos++) {
+                if (array[windowPos] != localArray[checkPos++]) {
+                    return false;
+                }
             }
-            if (matchFrom + localLength <= reader.length()) {
-                return matchesNoBoundsCheck(reader, matchFrom);
+            if (checkPos == localLength) {
+                return true;
+            } else {
+                window = reader.getWindow(matchFrom + checkPos);
             }
         }
         return false;
@@ -92,41 +100,25 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
 
 
     /**
+     * 
      * {@inheritDoc}
      * 
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
         final int localLength = length;
-        if (matchFrom + localLength < bytes.length && matchFrom >= 0) {
+        if (matchFrom + localLength <= bytes.length && matchFrom >= 0) {
             final byte[] localArray = byteArray;
             for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
+                if (localArray[byteIndex] != bytes[matchFrom + byteIndex]) {
                     return false;
                 }
             }
             return true;
         }
         return false;
-    }    
-    
-    
-    /**
-     * {@inheritDoc}
-     * 
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom)
-            throws IOException {
-        final int localLength = length;
-        final byte[] localArray = byteArray;
-        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-            if (!(localArray[byteIndex] == reader.readByte(matchFrom + byteIndex))) {
-                return false;
-            }
-        }
-        return true;
-    }
+    }  
+
 
     
     /**

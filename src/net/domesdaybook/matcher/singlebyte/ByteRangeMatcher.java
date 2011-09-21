@@ -8,6 +8,7 @@ package net.domesdaybook.matcher.singlebyte;
 import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  * An immutable {@link SingleByteMatcher} which matches a range of bytes, 
@@ -55,8 +56,9 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     @Override
     public boolean matches(final Reader reader, final long matchFrom) 
             throws IOException{
-        if (matchFrom >= 0 && matchFrom < reader.length()) {
-            final int byteValue = reader.readByte(matchFrom) & 0xFF;
+        final Window window = reader.getWindow(matchFrom);
+        if (window != null) {
+            final int byteValue = window.getByte(reader.getWindowOffset(matchFrom)) & 0xFF;
             final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
             return insideRange ^ inverted;
         }
@@ -77,18 +79,6 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         return false;
     }    
     
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) 
-            throws IOException{
-        final int byteValue = reader.readByte(matchPosition) & 0xFF;
-        final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
-        return insideRange ^ inverted;
-    }
-
     
     /**
      * {@inheritDoc}

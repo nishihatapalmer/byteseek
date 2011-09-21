@@ -10,6 +10,7 @@ import net.domesdaybook.bytes.ByteUtilities;
 import java.util.Arrays;
 import java.util.Set;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 //FIXME: signed bytes causes issue in ByteUtilities.toString()
 
@@ -58,10 +59,11 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom)
-            throws IOException{
-        return (matchFrom >= 0 && matchFrom < reader.length()) &&
-                ((Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted);
+    public boolean matches(final Reader reader, final long matchFrom) throws IOException{
+        final Window window = reader.getWindow(matchFrom);
+        return window == null? false
+               : ((Arrays.binarySearch(bytes, 
+                       window.getByte(reader.getWindowOffset(matchFrom))) >= 0) ^ inverted);
     }    
 
     
@@ -74,15 +76,6 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
         return (Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted;
     }     
     
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
-            throws IOException{
-        return (Arrays.binarySearch(bytes, reader.readByte(matchFrom)) >= 0) ^ inverted;
-    }
 
     
     /**

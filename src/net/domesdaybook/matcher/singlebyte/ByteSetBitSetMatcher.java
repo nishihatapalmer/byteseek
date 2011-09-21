@@ -10,6 +10,7 @@ import net.domesdaybook.bytes.ByteUtilities;
 import java.util.BitSet;
 import java.util.Set;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  * A ByteSetBitSetMatcher is a {@link SingleByteMatcher  which
@@ -50,10 +51,10 @@ public final class ByteSetBitSetMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) 
-            throws IOException{
-        return (matchFrom >= 0 && matchFrom < reader.length()) &&
-                (byteValues.get((int) reader.readByte(matchFrom) & 0xFF) ^ inverted);
+    public boolean matches(final Reader reader, final long matchFrom) throws IOException{
+        final Window window = reader.getWindow(matchFrom);
+        return window == null? false
+               : (byteValues.get(window.getByte(reader.getWindowOffset(matchFrom)) & 0xFF) ^ inverted);
     }  
 
 
@@ -66,15 +67,6 @@ public final class ByteSetBitSetMatcher extends InvertibleMatcher {
                 (byteValues.get((int) bytes[matchFrom] & 0xFF) ^ inverted);
     }  
     
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
-            throws IOException{
-        return byteValues.get((int) reader.readByte(matchFrom) & 0xFF) ^ inverted;
-    }
 
     
     /**

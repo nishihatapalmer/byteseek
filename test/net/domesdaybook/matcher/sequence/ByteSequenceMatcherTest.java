@@ -225,21 +225,7 @@ public class ByteSequenceMatcherTest {
         fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of matchesNoBoundsCheck method, of class ByteSequenceMatcher.
-     */
-    @Test
-    public void testMatchesNoBoundsCheck_ByteReader_long() throws IOException {
-        System.out.println("matchesNoBoundsCheck");
-        Reader reader = null;
-        long matchPosition = 0L;
-        ByteSequenceMatcher instance = null;
-        boolean expResult = false;
-        boolean result = instance.matchesNoBoundsCheck(reader, matchPosition);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+
 
     /**
      * Test of matchesNoBoundsCheck method, of class ByteSequenceMatcher.

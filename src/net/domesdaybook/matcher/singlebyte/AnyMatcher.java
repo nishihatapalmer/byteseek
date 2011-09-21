@@ -85,17 +85,6 @@ public final class AnyMatcher extends AbstractSingleByteSequence {
         return 256;
     }
 
-
-    /**
-     * {@inheritDoc}
-     *
-     * Always true
-     */ 
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
-        return true;
-    }
-
     
     /**
      * {@inheritDoc}

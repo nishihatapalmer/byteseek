@@ -60,27 +60,45 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
-    
+
     /**
      * {@inheritDoc}
      * 
      */
     @Override
-    public final boolean matches(final Reader reader, final long matchFrom)
-            throws IOException {
-        final Window window = reader.getWindow(matchFrom);
-        if (window != null) {
-            final int localLength = length;            
-            final int offset = reader.getWindowOffset(matchFrom);
-            if (offset + localLength <= window.getLimit()) {
-                return matchesNoBoundsCheck(window.getArray(), offset);
+    public boolean matches(final Reader reader, final long matchFrom) throws IOException {
+        final int localLength = length;
+        final List<SequenceMatcher> localList = matchers;        
+        Window window = reader.getWindow(matchFrom);
+        int checkPos = 0;
+        int matchIndex = 0;
+        while (window != null) {
+            final int offset = reader.getWindowOffset(matchFrom + checkPos);
+            final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
+            final byte[] array = window.getArray();
+            while (offset + checkPos < endPos) {
+                final SequenceMatcher matcher = localList.get(matchIndex++);
+                final int matcherLength = matcher.length();
+                // If our matcher fits within the current window, check using the window:
+                if (offset + checkPos + matcherLength <= endPos) {
+                    if (!matcher.matchesNoBoundsCheck(array, offset + checkPos)) {
+                        return false;
+                    }
+                } else { // the matcher spans two windows, or is at the limit of the final window.
+                    if (!matcher.matches(reader, matchFrom + checkPos)) {
+                        return false;
+                    }
+                }
+                checkPos += matcherLength;
             }
-            if (matchFrom + localLength <= reader.length()) {
-                return matchesNoBoundsCheck(reader, matchFrom);
+            if (checkPos == localLength) {
+                return true;
+            } else {
+                window = reader.getWindow(matchFrom + checkPos);
             }
         }
         return false;
-    }
+    }   
     
     
     /**
@@ -107,26 +125,6 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     }    
 
     
-    /**
-     * {@inheritDoc}
-     * 
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
-            throws IOException {
-        long matchAt = matchFrom;
-        final List<SequenceMatcher> localList = matchers;
-        for ( int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++ ) {
-            final SequenceMatcher matcher = localList.get( matchIndex );
-            if (matcher.matchesNoBoundsCheck(reader, matchAt)) {
-                matchAt += matcher.length();
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
     
     /**
      * {@inheritDoc}

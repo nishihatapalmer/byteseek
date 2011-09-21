@@ -9,6 +9,7 @@ import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import java.util.List;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  * A {@link SingleByteMatcher} which matches a byte which
@@ -48,8 +49,9 @@ public final class BitMaskAnyBitsMatcher extends InvertibleMatcher {
      */
     @Override
     public boolean matches(final Reader reader, final long matchFrom) throws IOException {
-        return (matchFrom >= 0 && matchFrom < reader.length()) &&
-                (((reader.readByte(matchFrom) & mBitMaskValue) != 0) ^ inverted);
+        final Window window = reader.getWindow(matchFrom);
+        return window == null? false
+               : ((window.getByte(reader.getWindowOffset(matchFrom)) & mBitMaskValue) != 0) ^ inverted;
     }
 
 
@@ -102,16 +104,7 @@ public final class BitMaskAnyBitsMatcher extends InvertibleMatcher {
     }
 
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
-            throws IOException {
-        return ((reader.readByte(matchFrom) & mBitMaskValue) != 0) ^ inverted;
-    }
-        
-    
+
     /**
      * {@inheritDoc}
      */

@@ -83,17 +83,25 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public final boolean matches(final Reader reader, final long matchFrom)
-            throws IOException {
-        final Window window = reader.getWindow(matchFrom);
-        if (window != null) {
-            final int localLength = length;            
-            final int offset = reader.getWindowOffset(matchFrom);
-            if (offset + localLength <= window.getLimit()) {
-                return matchesNoBoundsCheck(window.getArray(), offset);
+    public boolean matches(final Reader reader, final long matchFrom) throws IOException {
+        final int localLength = length;
+        final List<SingleByteMatcher> matchList = this.matcherSequence;        
+        Window window = reader.getWindow(matchFrom);
+        int checkPos = 0;
+        while (window != null) {
+            final int offset = reader.getWindowOffset(matchFrom + checkPos);
+            final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
+            final byte[] array = window.getArray();
+            for (int windowPos = offset; windowPos < endPos; windowPos++) {
+                final SingleByteMatcher byteMatcher = matchList.get(checkPos++);
+                if (!byteMatcher.matches(array[windowPos])) {
+                    return false;
+                }
             }
-            if (matchFrom + localLength <= reader.length()) {
-                return matchesNoBoundsCheck(reader, matchFrom);
+            if (checkPos == localLength) {
+                return true;
+            } else {
+                window = reader.getWindow(matchFrom + checkPos);
             }
         }
         return false;
@@ -113,8 +121,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
             final List<SingleByteMatcher> matchList = this.matcherSequence;
             for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
                 final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-                final byte byteRead = bytes[matchFrom + byteIndex];
-                if (!byteMatcher.matches(byteRead)) {
+                if (!byteMatcher.matches(bytes[matchFrom + byteIndex])) {
                     return false;
                 }
             }
@@ -122,25 +129,6 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         }
         return false;
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchFrom) 
-            throws IOException {
-        final List<SingleByteMatcher> matchList = this.matcherSequence;
-        final int localStop = length;
-        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-            final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-            final byte byteRead = reader.readByte(matchFrom + byteIndex);
-            if (!byteMatcher.matches(byteRead)) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     
     /**

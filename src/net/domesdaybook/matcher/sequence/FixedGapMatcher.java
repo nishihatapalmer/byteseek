@@ -86,16 +86,6 @@ public final class FixedGapMatcher implements SequenceMatcher {
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return matchPosition + gapLength < bytes.length && matchPosition >= 0;
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     * 
-     */
-    @Override
-    public boolean matchesNoBoundsCheck(final Reader reader, final long matchPosition) {
-        return true;
-    }
 
     
     /**
