@@ -50,9 +50,6 @@ public interface Reader extends Closeable {
     int getWindowOffset(final long position);
     
     
-    int getWindowSize();
-    
-    
     /**
      * @return long the length of the byte source accessed by the reader.
      */

@@ -127,12 +127,6 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     }
     
     
-    @Override
-    public final int getWindowSize() {
-        return windowSize;
-    }
-    
-    
     private class WindowIterator implements Iterator<Window> {
 
         private int position = 0;
