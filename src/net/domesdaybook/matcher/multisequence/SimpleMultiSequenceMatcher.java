@@ -12,6 +12,7 @@ import java.util.List;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  * A very simple MultiSequenceMatcher which simply tries all of the
@@ -82,21 +83,10 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     public List<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) 
         throws IOException {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
-        final long noOfBytes = reader.length();
-        if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
-            final List<SequenceMatcher> localMatchers = matchers;
-            if (matchPosition + maximumLength < noOfBytes) {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matchesNoBoundsCheck(reader, matchPosition)) {
-                        result.add(sequence);
-                    }
-                }
-            } else {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matches(reader, matchPosition)) {
-                        result.add(sequence);
-                    }
-                }            
+        final List<SequenceMatcher> localMatchers = matchers;
+        for (final SequenceMatcher sequence : localMatchers) {
+            if (sequence.matches(reader, matchPosition)) {
+                result.add(sequence);
             }
         }
         return result;
@@ -139,25 +129,14 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
             final long matchPosition) throws IOException {
         final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
-        final long noOfBytes = reader.length();
-        if (matchPosition >= minimumLength - 1 && matchPosition < noOfBytes) {
-            final List<SequenceMatcher> localMatchers = matchers;
-            final long onePastMatchPosition = matchPosition + 1;
-            if (onePastMatchPosition >= maximumLength) {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matchesNoBoundsCheck(reader, onePastMatchPosition - sequence.length())) {
-                        result.add(sequence);
-                    }
-                }
-            } else {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matches(reader, onePastMatchPosition - sequence.length())) {
-                        result.add(sequence);
-                    }
-                }            
+        final List<SequenceMatcher> localMatchers = matchers;
+        final long onePastMatchPosition = matchPosition + 1;
+        for (final SequenceMatcher sequence : localMatchers) {
+            if (sequence.matches(reader, onePastMatchPosition - sequence.length())) {
+                result.add(sequence);
             }
-        }
-        return result;     
+        }            
+        return result;
     }    
     
     
@@ -198,23 +177,12 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override
     public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) 
             throws IOException {
-        final long noOfBytes = reader.length();
-        if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
-            final List<SequenceMatcher> localMatchers = matchers;
-            if (matchPosition + maximumLength < noOfBytes) {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matchesNoBoundsCheck(reader, matchPosition)) {
-                        return sequence;
-                    }
-                }
-            } else {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matches(reader, matchPosition)) {
-                        return sequence;
-                    }
-                }            
+        final List<SequenceMatcher> localMatchers = matchers;
+        for (final SequenceMatcher sequence : localMatchers) {
+            if (sequence.matches(reader, matchPosition)) {
+                return sequence;
             }
-        }
+        }            
         return null;
     }    
 
@@ -251,24 +219,13 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override 
     public SequenceMatcher firstMatchBackwards(final Reader reader, 
             final long matchPosition) throws IOException {
-        final long noOfBytes = reader.length();
-        if (matchPosition >= minimumLength - 1 && matchPosition < noOfBytes) {
-            final List<SequenceMatcher> localMatchers = matchers;
-            final long onePastMatchPosition = matchPosition + 1;
-            if (onePastMatchPosition >= maximumLength) {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matchesNoBoundsCheck(reader, onePastMatchPosition - sequence.length())) {
-                        return sequence;
-                    }
-                }
-            } else {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matches(reader, onePastMatchPosition - sequence.length())) {
-                        return sequence;
-                    }
-                }            
+        final List<SequenceMatcher> localMatchers = matchers;
+        final long onePastMatchPosition = matchPosition + 1;
+        for (final SequenceMatcher sequence : localMatchers) {
+            if (sequence.matches(reader, onePastMatchPosition - sequence.length())) {
+                return sequence;
             }
-        }
+        }            
         return null;    
     }
 
@@ -307,23 +264,12 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override
     public boolean matches(final Reader reader, final long matchPosition) 
             throws IOException {
-        final long noOfBytes = reader.length();
-        if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
-            final List<SequenceMatcher> localMatchers = matchers;
-            if (matchPosition + maximumLength < noOfBytes) {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matchesNoBoundsCheck(reader, matchPosition)) {
-                        return true;
-                    }
-                }
-            } else {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matches(reader, matchPosition)) {
-                        return true;
-                    }
-                }            
+        final List<SequenceMatcher> localMatchers = matchers;
+        for (final SequenceMatcher sequence : localMatchers) {
+            if (sequence.matches(reader, matchPosition)) {
+                return true;
             }
-        }
+        }            
         return false;
     }
     
@@ -363,24 +309,13 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override
     public boolean matchesBackwards(final Reader reader, 
             final long matchPosition) throws IOException { 
-        final long noOfBytes = reader.length();
-        if (matchPosition >= minimumLength - 1 && matchPosition < noOfBytes) {
-            final List<SequenceMatcher> localMatchers = matchers;
-            final long onePastMatchPosition = matchPosition + 1;
-            if (onePastMatchPosition >= maximumLength) {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matchesNoBoundsCheck(reader, onePastMatchPosition - sequence.length())) {
-                        return true;
-                    }
-                }
-            } else {
-                for (final SequenceMatcher sequence : localMatchers) {
-                    if (sequence.matches(reader, onePastMatchPosition - sequence.length())) {
-                        return true;
-                    }
-                }            
+        final List<SequenceMatcher> localMatchers = matchers;
+        final long onePastMatchPosition = matchPosition + 1;
+        for (final SequenceMatcher sequence : localMatchers) {
+            if (sequence.matches(reader, onePastMatchPosition - sequence.length())) {
+                return true;
             }
-        }
+        }            
         return false; 
     }
 
