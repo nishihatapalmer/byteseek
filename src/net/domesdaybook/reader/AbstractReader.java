@@ -15,11 +15,14 @@ import java.util.NoSuchElementException;
  */
 public abstract class AbstractReader implements Reader, Iterable<Window> {
 
+    public final static int NO_BYTE_AT_POSITION = -1;
+    
     protected final static int DEFAULT_WINDOW_SIZE = 4096;
     
     protected final int windowSize;
     protected final WindowCache cache;
     private Window lastWindow = null;
+    
 
     
     public AbstractReader(final WindowCache cache) {
@@ -37,16 +40,16 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      * Reads a byte in the file at the given position.
      *
      * @param position The position in the reader to read a byte from.
-     * @return The byte at the given position.
+     * @return The byte at the given position (0-255), or -1 if there is no
+     *         byte at the position specified.
      * @throws IOException if an error occurs reading the byte.
-     * @throws IndexOutOfBoundsException If there are no bytes at the position given. 
      */
     @Override
-    public final byte readByte(final long position) throws IOException {
+    public final int readByte(final long position) throws IOException {
         final Window window = getWindow(position);
         final int offset = (int) position % windowSize;
         if (window == null || offset >= window.getLimit()) {
-            throw new IndexOutOfBoundsException("No bytes can be read from this position:" + position);
+            return NO_BYTE_AT_POSITION;
         }
         return window.getByte(offset);
     }

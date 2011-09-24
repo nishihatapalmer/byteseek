@@ -33,9 +33,10 @@ public interface Reader extends Closeable {
      * Read a byte from a given position.
      *
      * @param position The position of the byte to read.
-     * @return byte The byte at the position given.
+     * @return int The byte value at the position given as an integer (0-255)
+     *         If there is no byte at the position, it returns -1.
      */
-    byte readByte(final long position) throws IOException;
+    int readByte(final long position) throws IOException;
 
     
     /**
