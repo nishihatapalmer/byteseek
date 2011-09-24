@@ -21,7 +21,7 @@ public abstract class AbstractSearcher implements Searcher {
     @Override
     public long searchForwards(final Reader reader, final long fromPosition) 
             throws IOException {
-        return searchForwards(reader, fromPosition, reader.length() - 1);
+        return searchForwards(reader, fromPosition, Long.MAX_VALUE);
     }
 
     
@@ -31,7 +31,7 @@ public abstract class AbstractSearcher implements Searcher {
     @Override
     public long searchForwards(final Reader reader) 
             throws IOException {
-        return searchForwards(reader, 0, reader.length() - 1);
+        return searchForwards(reader, 0, Long.MAX_VALUE);
     }
 
     
