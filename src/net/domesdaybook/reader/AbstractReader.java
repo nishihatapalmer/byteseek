@@ -103,7 +103,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 
     
     @Override
-    public void close() {
+    public void close() throws IOException {
         cache.clear();        
     }
     

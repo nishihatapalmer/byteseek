@@ -100,16 +100,16 @@ public class InputStreamReader extends AbstractReader {
     
     @Override
     public void clearCache() {
+        cache.clear();
         // The cache is the only representation of the stream we can replay,
-        // so we don't clear it, as it's not really a cache anymore.
+        // so clearing the cache would seem to be pretty final.
     }
 
     
     @Override
-    public void close() {
+    public void close() throws IOException {
         try {
             stream.close();
-        } catch (IOException canDoNothing) {
         } finally {
             super.close();
         }

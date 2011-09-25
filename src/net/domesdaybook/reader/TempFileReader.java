@@ -72,7 +72,7 @@ public final class TempFileReader extends FileReader {
     
     
     @Override
-    public void close() {
+    public void close() throws IOException {
         try {
             super.close();
         } finally {

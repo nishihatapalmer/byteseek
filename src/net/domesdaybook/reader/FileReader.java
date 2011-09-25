@@ -212,10 +212,9 @@ public class FileReader extends AbstractReader {
     
     
     @Override
-    public void close() {
+    public void close() throws IOException {
         try {
             randomAccessFile.close();
-        } catch (final IOException canDoNothing) {
         } finally {
             super.close();
         }
