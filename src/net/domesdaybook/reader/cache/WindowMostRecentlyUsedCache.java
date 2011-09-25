@@ -3,10 +3,11 @@
  *
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.reader.cache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import net.domesdaybook.reader.Window;
 
 /**
  * @author matt

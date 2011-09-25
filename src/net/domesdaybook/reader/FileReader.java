@@ -5,6 +5,8 @@
 
 package net.domesdaybook.reader;
 
+import net.domesdaybook.reader.cache.WindowCache;
+import net.domesdaybook.reader.cache.WindowMostRecentlyUsedCache;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;

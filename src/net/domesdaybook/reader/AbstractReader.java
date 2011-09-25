@@ -5,6 +5,7 @@
 
 package net.domesdaybook.reader;
 
+import net.domesdaybook.reader.cache.WindowCache;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;

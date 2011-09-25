@@ -3,7 +3,9 @@
  *
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.reader.cache;
+
+import net.domesdaybook.reader.Window;
 
 /**
  *

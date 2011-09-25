@@ -6,6 +6,7 @@
 
 package net.domesdaybook.reader;
 
+import net.domesdaybook.reader.cache.WindowCache;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

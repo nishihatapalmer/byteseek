@@ -3,9 +3,10 @@
  *
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.reader.cache;
 
 import java.util.HashMap;
+import net.domesdaybook.reader.Window;
 
 /**
  *
