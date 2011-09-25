@@ -8,8 +8,6 @@ package net.domesdaybook.searcher;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.domesdaybook.reader.Reader;
 
 /**
@@ -34,13 +32,13 @@ public class SearchIterator implements Iterator {
     private boolean searchedForNext = false;
     private long matchPosition = Searcher.NOT_FOUND;
     
-    public SearchIterator(final Searcher searcher, final Reader reader) {
+    public SearchIterator(final Searcher searcher, final Reader reader) throws IOException {
         this(searcher, Direction.FORWARDS, reader);
     }
     
     
     public SearchIterator(final Searcher searcher, final Direction direction,
-            final Reader reader) {
+            final Reader reader) throws IOException {
         if (searcher == null || reader == null) {
             throw new IllegalArgumentException("Null searcher or byte reader.");
         }            
@@ -49,7 +47,7 @@ public class SearchIterator implements Iterator {
         this.direction = direction;
         if (direction == Direction.FORWARDS) {
             this.fromPosition = 0;
-            this.toPosition = reader.length() - 1;
+            this.toPosition = Long.MAX_VALUE;
         } else {
             this.fromPosition = reader.length() - 1;
             this.toPosition = 0;
