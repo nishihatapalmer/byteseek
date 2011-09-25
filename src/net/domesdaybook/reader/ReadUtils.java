@@ -74,8 +74,7 @@ public final class ReadUtils {
                                   final int bufferSize) throws IOException {
         final byte[] buffer = new byte[bufferSize];
         int byteRead = 0;
-        while ((byteRead = in.read(buffer)) >= 0)
-        {
+        while ((byteRead = in.read(buffer)) >= 0) {
             out.write(buffer, 0, byteRead);
         }
     }
