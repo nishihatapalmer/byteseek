@@ -12,14 +12,14 @@ import net.domesdaybook.reader.Window;
 /**
  * @author matt
  */
-public final class WindowMostRecentlyUsedCache extends LinkedHashMap<Long, Window> implements WindowCache  {
+public final class MostRecentlyUsedWindowCache extends LinkedHashMap<Long, Window> implements WindowCache  {
     
     private final static boolean ORDER_BY_ACCESS = true;
     
     private final int capacity;
 
     
-    public WindowMostRecentlyUsedCache(final int capacity) {
+    public MostRecentlyUsedWindowCache(final int capacity) {
         super(capacity + 1, 1.1f, ORDER_BY_ACCESS);
         this.capacity = capacity;
     }
@@ -42,7 +42,7 @@ public final class WindowMostRecentlyUsedCache extends LinkedHashMap<Long, Windo
     
     @Override
     public WindowCache newInstance() {
-        return new WindowMostRecentlyUsedCache(capacity);
+        return new MostRecentlyUsedWindowCache(capacity);
     }    
     
 }

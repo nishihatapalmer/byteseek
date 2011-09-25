@@ -11,7 +11,7 @@ import net.domesdaybook.reader.Window;
  *
  * @author matt
  */
-public class WindowLastCache implements WindowCache {
+public class LastWindowCache implements WindowCache {
 
     private Window lastWindow;
     
@@ -41,7 +41,7 @@ public class WindowLastCache implements WindowCache {
     
     @Override
     public WindowCache newInstance() {
-        return new WindowLastCache();
+        return new LastWindowCache();
     }    
     
 }

@@ -10,13 +10,13 @@ import net.domesdaybook.reader.Window;
  *
  * @author matt
  */
-public class WindowTwoLevelCache implements WindowCache {
+public class TwoLevelWindowCache implements WindowCache {
 
     WindowCache primaryCache;
     WindowCache secondaryCache;
 
     
-    private WindowTwoLevelCache(WindowCache primaryCache, WindowCache secondaryCache) {
+    private TwoLevelWindowCache(WindowCache primaryCache, WindowCache secondaryCache) {
         this.primaryCache = primaryCache;
         this.secondaryCache = secondaryCache;
     }
@@ -43,7 +43,7 @@ public class WindowTwoLevelCache implements WindowCache {
 
     
     public WindowCache newInstance() {
-        return new WindowTwoLevelCache(primaryCache, secondaryCache);
+        return new TwoLevelWindowCache(primaryCache, secondaryCache);
     }
     
 }
