@@ -54,7 +54,7 @@ public interface Reader extends Closeable {
     /**
      * @return long the length of the byte source accessed by the reader.
      */
-    public long length();
+    public long length() throws IOException;
     
     
     /**
