@@ -45,7 +45,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      * @throws IOException if an error occurs reading the byte.
      */
     @Override
-    public final int readByte(final long position) throws IOException {
+    public int readByte(final long position) throws IOException {
         final Window window = getWindow(position);
         final int offset = (int) position % windowSize;
         if (window == null || offset >= window.getLimit()) {
@@ -97,7 +97,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     
 
     @Override
-    public final Iterator<Window> iterator() {
+    public Iterator<Window> iterator() {
         return new WindowIterator();
     }
 
@@ -125,7 +125,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     
     
     @Override
-    public final int getWindowOffset(final long position) {
+    public int getWindowOffset(final long position) {
         return (int) position % windowSize;
     }
     
