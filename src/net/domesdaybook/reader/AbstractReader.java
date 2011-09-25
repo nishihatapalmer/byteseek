@@ -62,7 +62,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      * @throws IOException if an IO error occurred trying to create a new window.
      */
     @Override
-    public final Window getWindow(final long position) throws IOException {
+    public Window getWindow(final long position) throws IOException {
         if (position >= 0) {
             Window window = null;
             final int offset = (int) position % windowSize;
