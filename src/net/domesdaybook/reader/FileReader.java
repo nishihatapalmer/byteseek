@@ -6,7 +6,7 @@
 package net.domesdaybook.reader;
 
 import net.domesdaybook.reader.cache.WindowCache;
-import net.domesdaybook.reader.cache.WindowMostRecentlyUsedCache;
+import net.domesdaybook.reader.cache.MostRecentlyUsedCache;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,7 +41,7 @@ public class FileReader extends AbstractReader {
      */
     public FileReader(final File file) throws FileNotFoundException {
         this(file, DEFAULT_WINDOW_SIZE, 
-             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY));
+             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }
     
 
@@ -70,7 +70,7 @@ public class FileReader extends AbstractReader {
      */
     public FileReader(final File file, final int windowSize) throws FileNotFoundException {
         this(file, windowSize,
-             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY));
+             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }    
     
     
@@ -86,7 +86,7 @@ public class FileReader extends AbstractReader {
      */
     public FileReader(final File file, final int windowSize, final int capacity) throws FileNotFoundException {
         this(file, windowSize, 
-             new WindowMostRecentlyUsedCache(capacity));
+             new MostRecentlyUsedCache(capacity));
     }   
     
 
@@ -100,7 +100,7 @@ public class FileReader extends AbstractReader {
      */
     public FileReader(final String path) throws FileNotFoundException {
         this(new File(path), DEFAULT_WINDOW_SIZE, 
-             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY));
+             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }
     
 
@@ -129,7 +129,7 @@ public class FileReader extends AbstractReader {
      */
     public FileReader(final String path, final int windowSize) throws FileNotFoundException {
         this(new File(path), windowSize, 
-             new WindowMostRecentlyUsedCache(DEFAULT_CAPACITY));
+             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }    
     
     
@@ -145,7 +145,7 @@ public class FileReader extends AbstractReader {
      */
     public FileReader(final String path, final int windowSize, final int capacity) throws FileNotFoundException {
         this(new File(path), windowSize, 
-             new WindowMostRecentlyUsedCache(capacity));
+             new MostRecentlyUsedCache(capacity));
     }      
     
 

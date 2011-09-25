@@ -6,7 +6,7 @@
 package net.domesdaybook.reader;
 
 import net.domesdaybook.reader.cache.WindowCache;
-import net.domesdaybook.reader.cache.WindowAllCache;
+import net.domesdaybook.reader.cache.AllCache;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -32,7 +32,7 @@ public class InputStreamReader extends AbstractReader {
     
     
     public InputStreamReader(final InputStream stream, final int windowSize) {
-        this(stream, windowSize, new WindowAllCache());
+        this(stream, windowSize, new AllCache());
     }
 
     
