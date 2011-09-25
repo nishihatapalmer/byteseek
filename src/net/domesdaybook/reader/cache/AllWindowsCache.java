@@ -12,7 +12,7 @@ import net.domesdaybook.reader.Window;
  *
  * @author matt
  */
-public final class AllCache extends HashMap<Long, Window> implements WindowCache {
+public final class AllWindowsCache extends HashMap<Long, Window> implements WindowCache {
 
     
     @Override
@@ -29,7 +29,7 @@ public final class AllCache extends HashMap<Long, Window> implements WindowCache
 
     @Override
     public WindowCache newInstance() {
-        return new AllCache();
+        return new AllWindowsCache();
     }
     
 }
