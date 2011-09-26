@@ -5,10 +5,8 @@
 
 package net.domesdaybook.matcher.sequence;
 
-import java.io.IOException;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.reader.Reader;
 
 /**
  * An extension to the {@link Matcher} interface to support sequences.
