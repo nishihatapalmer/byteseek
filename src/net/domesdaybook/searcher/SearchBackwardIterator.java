@@ -16,11 +16,13 @@ import net.domesdaybook.reader.Reader;
  */
 public class SearchBackwardIterator implements Iterator {
     
+    // immutable fields:
     private final byte[] bytes;
     private final Reader reader;
     private final long toPosition;
     private final Searcher searcher;
     
+    // private state:
     private long searchPosition;
     private boolean searchedForNext = false;
     private long matchPosition = Searcher.NOT_FOUND;
