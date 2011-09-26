@@ -18,7 +18,6 @@ public class SearchBackwardIterator implements Iterator {
     
     private final byte[] bytes;
     private final Reader reader;
-    private final long fromPosition;
     private final long toPosition;
     private final Searcher searcher;
     
@@ -39,7 +38,6 @@ public class SearchBackwardIterator implements Iterator {
         }        
         this.searcher = searcher;
         this.reader = reader;
-        this.fromPosition = fromPosition;
         this.toPosition = toPosition;
         this.bytes = null;
         this.searchPosition = fromPosition;
@@ -59,7 +57,6 @@ public class SearchBackwardIterator implements Iterator {
         }
         this.searcher = searcher;
         this.bytes = bytes;
-        this.fromPosition = fromPosition;
         this.toPosition = toPosition;
         this.reader = null;
         this.searchPosition = fromPosition;  
