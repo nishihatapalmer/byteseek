@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import java.io.IOException;
 import net.domesdaybook.matcher.singlebyte.AnyMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Reader;
@@ -73,8 +74,9 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * 
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) {
-        return matchPosition + gapLength < reader.length() && matchPosition >= 0;
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+        return reader.getWindow(matchPosition) != null && 
+               reader.getWindow(matchPosition + gapLength) != null;
     }
     
 
