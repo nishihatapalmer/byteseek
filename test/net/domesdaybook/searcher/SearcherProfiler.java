@@ -16,7 +16,6 @@ import java.util.Map;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.FileReader;
 import net.domesdaybook.reader.Utilities;
-import net.domesdaybook.searcher.SearchIterator.Direction;
 
 /**
  *
@@ -73,7 +72,7 @@ public final class SearcherProfiler {
         }
 
 
-        private void profile(String description, Reader reader, Searcher searcher) {
+        private void profile(String description, Reader reader, Searcher searcher) throws IOException {
             startProfiling(description);
             currentProfile.profile(searcher, reader);
             logProfileResults();
@@ -154,7 +153,7 @@ public final class SearcherProfiler {
         }
 
         
-        public void profile(Searcher searcher, Reader reader) {
+        public void profile(Searcher searcher, Reader reader) throws IOException {
             
             // log forward preparation time.
             long startNano = System.nanoTime();
@@ -192,88 +191,40 @@ public final class SearcherProfiler {
         
         private List<Long> searchEntireArrayForwards(Searcher searcher, byte[] bytes) {
             final List<Long> positions = new ArrayList<Long>();
-            final SearchIterator iterator = new SearchIterator(searcher, bytes);
+            final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, bytes);
             while (iterator.hasNext()) {
                 positions.add(iterator.next());
             }
-            /*
-            final int lastPos = bytes.length - 1;
-            int searchPos = 0;
-            while (searchPos <= lastPos) {
-                searchPos = searcher.searchForwards(bytes, searchPos, lastPos);
-                if (searchPos >= 0) {
-                    positions.add((long) searchPos);
-                    searchPos += 1;
-                }
-            }
-             * 
-             */
             return positions;
         }
 
         
-        private List<Long> searchEntireReaderForwards(Searcher searcher, Reader reader) {
+        private List<Long> searchEntireReaderForwards(Searcher searcher, Reader reader) throws IOException {
             final List<Long> positions = new ArrayList<Long>();
-            final SearchIterator iterator = new SearchIterator(searcher, reader);
+            final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, reader);
             while (iterator.hasNext()) {
                 positions.add(iterator.next());
             }
-            /*
-            final long lastPos = reader.length() - 1;
-            long searchPos = 0;
-            while (searchPos <= lastPos) {
-                searchPos = searcher.searchForwards(reader, searchPos, lastPos);
-                if (searchPos >= 0) {
-                    positions.add(searchPos);
-                    searchPos += 1;
-                }
-            }
-             * 
-             */
             return positions;
         }
 
         
         private List<Long> searchEntireArrayBackwards(Searcher searcher, byte[] bytes) {
             final List<Long> positions = new ArrayList<Long>();
-            final SearchIterator iterator = new SearchIterator(searcher, Direction.BACKWARDS, bytes);
+            final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, bytes);
             while (iterator.hasNext()) {
                 positions.add(iterator.next());
             }
-            /*
-            final int lastPos = bytes.length - 1;
-            int searchPos = lastPos;
-            while (searchPos >= 0) {
-                searchPos = searcher.searchBackwards(bytes, searchPos, lastPos);
-                if (searchPos != Searcher.NOT_FOUND) {
-                    positions.add((long) searchPos);
-                    searchPos -= 1;
-                }
-            }
-             * 
-             */
             return positions;
         }
 
         
-        private List<Long> searchEntireReaderBackwards(Searcher searcher, Reader reader) {
+        private List<Long> searchEntireReaderBackwards(Searcher searcher, Reader reader) throws IOException {
             final List<Long> positions = new ArrayList<Long>();
-            final SearchIterator iterator = new SearchIterator(searcher, Direction.BACKWARDS, reader);
+            final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, reader);
             while (iterator.hasNext()) {
                 positions.add(iterator.next());
             }          
-            /*
-            final long lastPos = reader.length() - 1;
-            long searchPos = lastPos;
-            while (searchPos >= 0) {
-                searchPos = searcher.searchBackwards(reader, searchPos, lastPos);
-                if (searchPos >= 0) {
-                    positions.add(searchPos);
-                    searchPos -= 1;
-                }
-            }
-             * 
-             */
             return positions;
         }
         
