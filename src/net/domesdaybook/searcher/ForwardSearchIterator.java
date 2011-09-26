@@ -14,7 +14,7 @@ import net.domesdaybook.reader.Reader;
  *
  * @author matt
  */
-public class SearchBackwardIterator implements Iterator {
+public class ForwardSearchIterator implements Iterator {
     
     // immutable fields:
     private final byte[] bytes;
@@ -24,16 +24,16 @@ public class SearchBackwardIterator implements Iterator {
     
     // private state:
     private long searchPosition;
-    private boolean searchedForNext = false;
+    private boolean searchedForNext;
     private long matchPosition = Searcher.NOT_FOUND;
-   
     
-    public SearchBackwardIterator(final Searcher searcher, final Reader reader) throws IOException {
-        this(searcher, reader.length() - 1, 0, reader);
+    
+    public ForwardSearchIterator(final Searcher searcher, final Reader reader) throws IOException {
+        this(searcher, 0, Long.MAX_VALUE, reader);
     }
     
     
-    public SearchBackwardIterator(final Searcher searcher, final long fromPosition, 
+    public ForwardSearchIterator(final Searcher searcher, final long fromPosition, 
                                  final long toPosition, final Reader reader) {
         if (searcher == null || reader == null) {
             throw new IllegalArgumentException("Null searcher or byte reader.");
@@ -47,12 +47,12 @@ public class SearchBackwardIterator implements Iterator {
    
     
     
-    public SearchBackwardIterator(final Searcher searcher, final byte[] bytes) {
-        this(searcher, bytes.length - 1, 0, bytes);
+    public ForwardSearchIterator(final Searcher searcher, final byte[] bytes) {
+        this(searcher, 0, bytes.length - 1, bytes);
     }
     
     
-    public SearchBackwardIterator(final Searcher searcher, final long fromPosition, 
+    public ForwardSearchIterator(final Searcher searcher, final long fromPosition, 
                                  final long toPosition, final byte[] bytes) {
         if (searcher == null || bytes == null) {
             throw new IllegalArgumentException("Null searcher or byte array.");
@@ -82,7 +82,7 @@ public class SearchBackwardIterator implements Iterator {
     @Override
     public Long next() {
         if (hasNext()) {
-            searchPosition = matchPosition - 1;
+            searchPosition = matchPosition + 1;
             searchedForNext = false;
             return matchPosition;
         }
@@ -99,9 +99,9 @@ public class SearchBackwardIterator implements Iterator {
     private long getNextMatchPosition() throws IOException {
         long nextMatchingPosition = Searcher.NOT_FOUND;
         if (reader != null) {
-            nextMatchingPosition = searcher.searchBackwards(reader, searchPosition, toPosition);
+            nextMatchingPosition = searcher.searchForwards(reader, searchPosition, toPosition);
         } else if (bytes != null) {
-            nextMatchingPosition = searcher.searchBackwards(bytes, (int) searchPosition, (int) toPosition);
+            nextMatchingPosition = searcher.searchForwards(bytes, (int) searchPosition, (int) toPosition);
         }
         return nextMatchingPosition;
     }
