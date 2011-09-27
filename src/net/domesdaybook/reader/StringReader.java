@@ -23,6 +23,15 @@ public class StringReader extends AbstractReader {
     }
     
     
+    /**
+     * Does not need a cache, as we will create a single window large enough to
+     * store the entire string.  The AbstractReader already holds on to the last
+     * Window created, or creates it if it's not already there.  So no further
+     * caching is required.
+     * 
+     * @param string
+     * @param charset 
+     */
     public StringReader(final String string, final Charset charset) {
         super(string == null? 0 : string.length(), NoCache.NO_CACHE);        
         if (string == null) {
