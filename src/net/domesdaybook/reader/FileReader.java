@@ -40,8 +40,7 @@ public class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file) throws FileNotFoundException {
-        this(file, DEFAULT_WINDOW_SIZE, 
-             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
+        this(file, DEFAULT_WINDOW_SIZE, new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }
     
 
@@ -69,8 +68,7 @@ public class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file, final int windowSize) throws FileNotFoundException {
-        this(file, windowSize,
-             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
+        this(file, windowSize, new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }    
     
     
@@ -85,8 +83,7 @@ public class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final File file, final int windowSize, final int capacity) throws FileNotFoundException {
-        this(file, windowSize, 
-             new MostRecentlyUsedCache(capacity));
+        this(file, windowSize, new MostRecentlyUsedCache(capacity));
     }   
     
 
@@ -99,8 +96,7 @@ public class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final String path) throws FileNotFoundException {
-        this(new File(path), DEFAULT_WINDOW_SIZE, 
-             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
+        this(new File(path), DEFAULT_WINDOW_SIZE, new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }
     
 
@@ -128,8 +124,7 @@ public class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final String path, final int windowSize) throws FileNotFoundException {
-        this(new File(path), windowSize, 
-             new MostRecentlyUsedCache(DEFAULT_CAPACITY));
+        this(new File(path), windowSize, new MostRecentlyUsedCache(DEFAULT_CAPACITY));
     }    
     
     
@@ -144,21 +139,45 @@ public class FileReader extends AbstractReader {
      * @throws IllegalArgumentException if the file passed in is null.
      */
     public FileReader(final String path, final int windowSize, final int capacity) throws FileNotFoundException {
-        this(new File(path), windowSize, 
-             new MostRecentlyUsedCache(capacity));
+        this(new File(path), windowSize, new MostRecentlyUsedCache(capacity));
     }      
     
 
+    /**
+     * Copy constructor for a file reader, sharing the same underlying file
+     * and window size, but with a new cache of the same type as the original.
+     * 
+     * @param from
+     * @throws FileNotFoundException 
+     */
     public FileReader(final FileReader from) throws FileNotFoundException {
         this(from.file, from.windowSize, from.cache.newInstance());
     }
     
     
+    /**
+     * Copy constructor for a file reader, sharing the same underlying file,
+     * specifying a new window size, and having a new cache of the same type as th
+     * original.
+     * 
+     * @param from
+     * @param windowSize
+     * @throws FileNotFoundException 
+     */
     public FileReader(final FileReader from, final int windowSize) throws FileNotFoundException {
         this(from.file, windowSize, from.cache.newInstance());
     }  
     
     
+    /**
+     * Copy constructor for a file reader, sharing the same underlying file,
+     * but specifying a new window size and cache to use.
+     * 
+     * @param from
+     * @param windowSize
+     * @param cache
+     * @throws FileNotFoundException 
+     */
     public FileReader(final FileReader from, final int windowSize,
                   final WindowCache cache) throws FileNotFoundException {
         this(from.file, windowSize, cache);
