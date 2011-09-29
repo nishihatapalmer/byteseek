@@ -1,31 +1,71 @@
 /*
  * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
+ * This code is licensed under a standard 3-clause BSD license:
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright notice, 
+ *    this list of conditions and the following disclaimer in the documentation 
+ *    and/or other materials provided with the distribution.
+ * 
+ *  * Neither the "byteseek" name nor the names of its contributors 
+ *    may be used to endorse or promote products derived from this software 
+ *    without specific prior written permission. 
+ *  
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * ----------------------------------------------------------------------------
+ * 
+ * What is a Champarnaud-Glushkov builder?
+ * 
+ * This class builds an automata as it is invoked for each node of the regular 
+ * expression parse-tree.  It builds a particular kind of automata as it goes,
+ * called a Glushkov automata.  The technique of constructing a Glushkov automata
+ * by traversing the parse-tree is due to Jean-Marc Champarnaud.
+ * 
  * A Glushkov Non-deterministic Finite-state Automata (NFA) is an automata which
  * is constructed to have one initial state, and additionally, a state for each
  * position in the regular expression that defines a byte or set of bytes.
  *
- * Transitions exist from each position to every other reachable position,
- * on the byte or bytes of the position being transitioned to.
+ * Each position has transitions to every other reachable position,
+ * on the bytes which need to match to get to those positions.
  *
- * Being non-deterministic means that from any given state,
- * you can have transitions to more than one other state on the same byte value.
- * By way of constrast, Deterministic Finite-state Automata (DFAs) have at most one
- * state they can transition to on a given byte value (or none, if there is no match).
+ * Being Non-Deterministic means that from any given state,
+ * there can be transitions to several states on the same byte value.
+ * 
+ * By constrast, Deterministic Finite-state Automata (DFAs) have at most one
+ * state they can transition to on a given byte value.
  *
  * Unlike the classic Thompson construction (the most common regular expression NFA)
  * Glushkov automata have no "empty" transitions - that is, transitions to another
- * state without reading a byte.  The Thompson NFA uses empty transitions to
- * simplify constructing the automata, by wiring up states together as the need
- * arises during construction, and to make mathematically proving certain properties
- * of the automata easier.  However, they seem to have no value other than this.
- *
- * Having no empty transitions makes the automata smaller, more peformant,
- * and easier to transform it further (e.g. building a DFA from it)
- * but makes constructing it a little more difficult in the first place.
+ * state without reading a byte. The Thompson NFA uses empty transitions as a sort of 
+ * permanent scaffolding to simplify constructing the automata, by wiring up states 
+ * together as the need arises during construction.  
+ * 
+ * Having no empty transitions makes the automata smaller, and easier to transform
+ * it further (e.g. building a DFA from it) but makes constructing it a little more
+ * difficult in the first place.
  *
  * This construction of a Glushkov automata is directly from the parse tree,
- * in the same fashion as the Thompson construction, due to Champarnaud.
+ * (in the same fashion as the Thompson construction), and is due to Champarnaud.
+ * 
  * Details of the construction can be found in the paper:
  *
  *   "A reexamination of the Glushkov and Thompson Constructions"

@@ -1,6 +1,36 @@
 /*
  * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
+ * This code is licensed under a standard 3-clause BSD license:
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright notice, 
+ *    this list of conditions and the following disclaimer in the documentation 
+ *    and/or other materials provided with the distribution.
+ * 
+ *  * Neither the "byteseek" name nor the names of its contributors 
+ *    may be used to endorse or promote products derived from this software 
+ *    without specific prior written permission. 
+ *  
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
  */
 
 package net.domesdaybook.searcher.sequence;
@@ -10,6 +40,7 @@ import java.util.Arrays;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
@@ -70,12 +101,65 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
         this.matcher = sequence;
     }
 
-
+    
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    @Override
-    public final long searchForwards(final Reader reader, 
+    public long searchForwards(final Reader reader, 
+            final long fromPosition, final long toPosition ) throws IOException {
+        // Calculate some positions and bounds:
+        final SequenceMatcher theMatcher = getMatcher();
+        final int matcherLength = theMatcher.length();
+        long searchPosition = fromPosition >= matcherLength? 
+                fromPosition + matcherLength - 1 : matcherLength - 1;
+        final long lastPosition = toPosition + matcherLength;
+        
+        // Search forwards:
+        Window window = reader.getWindow(searchPosition);
+        while (searchPosition < lastPosition && window != null) {
+            final int startPos = reader.getWindowOffset(searchPosition);           
+            final int endPos = window.getLimit();
+            final int availableSpace = endPos - startPos;
+            if (matcherLength > availableSpace) {
+                // sequence crosses a window boundary, search using readByte
+                // from searchPosition, up to sequence length -1 in new window.
+                long nextEndPos = searchPosition + availableSpace + matcherLength - 1;
+                nextEndPos = nextEndPos < lastPosition? nextEndPos : lastPosition - 1;
+                final long readerMatchPos = searchForwardsReadByte(reader, searchPosition, nextEndPos);
+                if (readerMatchPos >= 0) {
+                    return readerMatchPos;
+                }
+                searchPosition = nextEndPos + 1; // + 1?
+            } else {
+                // the window has enough room to search in, search using byte array from window.
+                final long arrayMatchPos = searchForwards(window.getArray(), startPos, endPos);
+                if (arrayMatchPos >= 0) {
+                    return searchPosition + arrayMatchPos - startPos;
+                }
+                searchPosition += availableSpace; // +/- 1?
+            }
+            window = reader.getWindow(searchPosition);
+        }
+
+        return Searcher.NOT_FOUND;
+    }
+
+    
+    /**
+     * Searches forwards in a Reader, using the readByte() method. 
+     * The performance of calling readByte repeatedly is lower than
+     * just operating directly over byte arrays provided by Window objects,
+     * hence this method is called only when we have to search across Window
+     * boundaries, and only for the minimum number of bytes necessary to
+     * cross a boundary.
+     * 
+     * @param reader
+     * @param fromPosition
+     * @param toPosition
+     * @return
+     * @throws IOException 
+     */
+    private long searchForwardsReadByte(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get the objects needed to search:
@@ -83,24 +167,20 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
         final SingleByteMatcher lastMatcher = getLastSingleMatcher();
         final SequenceMatcher theMatcher = getMatcher();
         
-        //TODO: check all these bounds.
-        
+
         // Calculate safe bounds for the search:
         final int lastBytePositionInSequence = theMatcher.length() - 1;
-        final long lastPossiblePosition = reader.length() - 1;
-        final long lastPosition = toPosition < lastPossiblePosition?
-                toPosition : lastPossiblePosition;
         long searchPosition = fromPosition <= lastBytePositionInSequence?
                 lastBytePositionInSequence : fromPosition + lastBytePositionInSequence;
         
         // Search forwards:
-        while (searchPosition <= lastPosition) {
+        while (searchPosition <= toPosition) {
 
             // Scan forwards to find a match to the last byte in the sequence:
-            byte lastByte = reader.readByte(searchPosition);
-            while (!lastMatcher.matches(lastByte)) {
-                searchPosition += safeShifts[(int) lastByte & 0xFF];
-                if (searchPosition > lastPosition) {
+            int lastByte = reader.readByte(searchPosition);
+            while (lastByte >= 0 && !lastMatcher.matches((byte) lastByte)) {
+                searchPosition += safeShifts[lastByte];
+                if (searchPosition > toPosition) {
                     return Searcher.NOT_FOUND;
                 }
                 lastByte = reader.readByte(searchPosition);
@@ -108,7 +188,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
 
             // Do we have a match?
             final long startMatchPosition = searchPosition - lastBytePositionInSequence;
-            if (theMatcher.matchesNoBoundsCheck(reader, startMatchPosition)) {
+            if (theMatcher.matches(reader, startMatchPosition)) {
                 return startMatchPosition;
             }
 
@@ -171,7 +251,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public final long searchBackwards(final Reader reader, 
+    public long searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get objects needed to search:
@@ -190,10 +270,10 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
         while (searchPosition >= lastPosition) {
 
             // Scan backwards for a match to the first byte in the sequence.
-            byte firstByte = reader.readByte(searchPosition);
-            while (!firstMatcher.matches(firstByte)) {
+            int firstByte = reader.readByte(searchPosition);
+            while (firstByte >= 0 && !firstMatcher.matches((byte) firstByte)) {
                 // Note: shifts for backwards matching are already negative, so we add them.
-                searchPosition += safeShifts[(int) firstByte & 0xFF]; // shifts always add - if the search is backwards, the shift values are already negative.
+                searchPosition += safeShifts[firstByte]; // shifts always add - if the search is backwards, the shift values are already negative.
                 if (searchPosition < lastPosition) {
                     return Searcher.NOT_FOUND;
                 }
@@ -201,7 +281,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
             }
 
             // Do we have a match?
-            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
+            if (theMatcher.matches(reader, searchPosition)) {
                 return searchPosition;
             }
 
@@ -389,7 +469,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
      *
      * @return The underlying {@link SequenceMatcher} to search for.
      */
-    public final SequenceMatcher getMatcher() {
+    public SequenceMatcher getMatcher() {
         return matcher;
     }
 

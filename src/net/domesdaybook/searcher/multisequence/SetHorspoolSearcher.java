@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2011, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -33,13 +33,14 @@
  * 
  */
 
+package net.domesdaybook.searcher.multisequence;
 
-package net.domesdaybook.matcher.automata;
+import net.domesdaybook.searcher.AbstractSearcher;
 
 /**
  *
- * @author Matt Palmer
+ * @author matt
  */
-public class DfaMatcher {
-
+public class SetHorspoolSearcher extends AbstractSearcher {
+    
 }

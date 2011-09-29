@@ -1,18 +1,28 @@
-=Fast searching=
+=Searching=
 
-Searching for some pattern in a text isn't particularly hard, if you can match the pattern in the first place.  However, doing it efficiently has many interesting and frankly devious solutions - particularly when a lot of patterns need to be matched. 
+Search algorithms can be broadly divided into two types - those that search a known text and those that search a novel text. I use the word "text" here very broadly to mean any sequence of data, not just actual text.
 
-==Online searching==
-Search algorithms can be broadly divided into two types - those that search a known text and those that search a novel text. I use the word "text" here very broadly, to mean any sequence of data, not just text.
+To search a known text the usual method is to index it first, then use the index to search afterwards. This works well if the cost of indexing is repaid by the higher search efficiency, and you only need to search for the things that were indexed.  We won't talk about searching known texts any more here.
 
-To search a known text, the usual method is to index the text first, then search using the index afterwards.  This works well if the cost of indexing the text is repaid by the searches made afterwards, and you only need to search for the kinds of patterns you indexed.  This is all about distilling some particular information about the text ahead of time.
+A novel text is one which you know nothing about ahead of time. The cost of indexing it may be too high, or you must process as it streams past, or you need to find arbitrary patterns in it. Searching for a pattern isn't hard if you can match the pattern in the first place.  Doing it efficiently, or for more than one pattern at the same time, is less obvious. Various tricks can be used to skip over chunks of the (still unknown) text, and to look for millions of patterns simultaneously. These are called online search algorithms.
 
-A novel text is one for which nothing is known ahead of time. The cost of indexing may be too high, or it must be processed as it streams past for the first time, or you need to find arbitrary patterns in it.  The rest of this post will be about these methods, which are sometimes called "online" search algorithms.  Various clever tricks are used to safely skip over chunks of text which can't possibly match, and to match thousands of patterns simultaneously.
+==Simple searching==
+If you already have something which can match the pattern you are looking for, the simplest search is just to look at every position in turn until you either find a match, or you run out of text.  This works, but it is horribly inefficient. At best, it will look at every bit of the text. At worst, that work is multiplied by the length of the pattern. Normally it is somewhere between the two, depending on the specific pattern and text.
 
 
-==Naive searching==
 
-Just check every position in turn until you find a match or you run out of text.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
