@@ -143,47 +143,6 @@ public class FileReader extends AbstractReader {
     }      
     
 
-    /**
-     * Copy constructor for a file reader, sharing the same underlying file
-     * and window size, but with a new cache of the same type as the original.
-     * 
-     * @param from
-     * @throws FileNotFoundException 
-     */
-    public FileReader(final FileReader from) throws FileNotFoundException {
-        this(from.file, from.windowSize, from.cache.newInstance());
-    }
-    
-    
-    /**
-     * Copy constructor for a file reader, sharing the same underlying file,
-     * specifying a new window size, and having a new cache of the same type as th
-     * original.
-     * 
-     * @param from
-     * @param windowSize
-     * @throws FileNotFoundException 
-     */
-    public FileReader(final FileReader from, final int windowSize) throws FileNotFoundException {
-        this(from.file, windowSize, from.cache.newInstance());
-    }  
-    
-    
-    /**
-     * Copy constructor for a file reader, sharing the same underlying file,
-     * but specifying a new window size and cache to use.
-     * 
-     * @param from
-     * @param windowSize
-     * @param cache
-     * @throws FileNotFoundException 
-     */
-    public FileReader(final FileReader from, final int windowSize,
-                  final WindowCache cache) throws FileNotFoundException {
-        this(from.file, windowSize, cache);
-    }  
-    
-       
     
     /**
      * Constructs a FileReader which reads the file into arrays of
