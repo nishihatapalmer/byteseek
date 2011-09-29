@@ -18,8 +18,16 @@ public class StringReader extends AbstractReader {
     private final byte[] string;
     private final Charset charset;
     
+    
+    
     public StringReader(final String string) {
         this(string, Charset.defaultCharset());
+    }
+
+    
+    
+    public StringReader(final String string, final String charsetName) {
+        this(string, Charset.forName(charsetName));
     }
     
     
@@ -59,6 +67,11 @@ public class StringReader extends AbstractReader {
     
     public String getString() {
         return new String(string, charset);
+    }
+    
+    
+    public Charset getCharset() {
+        return charset;
     }
     
 }
