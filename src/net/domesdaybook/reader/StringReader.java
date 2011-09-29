@@ -15,7 +15,7 @@ import net.domesdaybook.reader.cache.NoCache;
  */
 public class StringReader extends AbstractReader {
 
-    private final byte[] string;
+    private final byte[] bytes;
     private final Charset charset;
     
     
@@ -48,25 +48,25 @@ public class StringReader extends AbstractReader {
         if (charset == null) {
             throw new IllegalArgumentException("Null charset passed in to StringReader.");
         }
-        this.string = string.getBytes(charset);
+        this.bytes = string.getBytes(charset);
         this.charset = charset;
     }
     
     
     @Override
     Window createWindow(final long windowStart) throws IOException {
-        return new Window(string, 0, string.length);
+        return new Window(bytes, 0, bytes.length);
     }
 
     
     @Override
     public long length() throws IOException {
-        return string.length;
+        return bytes.length;
     }
     
     
     public String getString() {
-        return new String(string, charset);
+        return new String(bytes, charset);
     }
     
     
