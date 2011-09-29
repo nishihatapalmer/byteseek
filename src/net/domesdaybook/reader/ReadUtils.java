@@ -49,13 +49,38 @@ public final class ReadUtils {
     }
     
     
+    public static int readBytes(final RandomAccessFile input, final byte[] bytes, 
+            final long fromPosition) throws IOException {
+        final int blockSize = bytes.length;
+        int totalRead = 0;
+        input.seek(fromPosition);
+        while (totalRead < blockSize) {
+            final int read = input.read(bytes, totalRead, blockSize - totalRead);
+            if (read == -1) break;
+            totalRead += read;
+        }   
+        return totalRead;
+    }
+    
+    public static void writeBytes(final RandomAccessFile output, final byte[] bytes, 
+            final long atPosition) throws IOException {
+        output.seek(atPosition);
+        output.write(bytes);
+    }
+    
+    
+    public static File createTempFile() throws IOException {
+        return File.createTempFile("byteseek", ".tmp");
+    }
+    
+    
     public static File createTempFile(final InputStream in) throws IOException {
         return createTempFile(in, DEFAULT_BUFFER_SIZE);
     }
     
     
     public static File createTempFile(final InputStream in, final int bufferSize) throws IOException {
-        final File tempFile = File.createTempFile("byteseek", ".tmp");
+        final File tempFile = createTempFile();
         final FileOutputStream out = new FileOutputStream(tempFile);
         copyStream(in, out, bufferSize);
         out.close();
