@@ -54,8 +54,8 @@ public class InputStreamReader extends AbstractReader {
             // done at this point other than to throw an exception.
             // This runtime exception flags a programming error, in selecting an
             // innapropriate cache algorithm to use for the access needed.
-            // A reader should always be able to return a window for a valid position,
-            // setting aside genuine IO Exceptions.
+            // A reader should always be able to return a window for a valid,
+            // requested position, setting aside genuine IO Exceptions.
             final String message = "Cache failed to provide a window at position: %d when we have already read past this position, currently at: %d";
             throw new CacheFailureException(String.format(message, position, streamPos));
         }
