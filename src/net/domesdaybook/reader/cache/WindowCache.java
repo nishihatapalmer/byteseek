@@ -13,11 +13,26 @@ import net.domesdaybook.reader.Window;
  */
 public interface WindowCache {
     
-    Window getWindow(final long position);
     
-    void addWindow(final Window window);
+    public Window getWindow(final long position);
     
-    void clear();
     
-    WindowCache newInstance();
+    public void addWindow(final Window window);
+    
+    
+    public void clear();
+    
+    
+    public void subscribe(final CacheObserver observer);
+    
+    
+    public boolean unsubscribe(final CacheObserver observer);
+    
+    
+    public interface CacheObserver {
+        void windowAdded(final Window window, final WindowCache toCache);
+        void windowRemoved(final Window window, final WindowCache fromCache);
+    }
+    
+    
 }

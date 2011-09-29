@@ -12,14 +12,14 @@ import net.domesdaybook.reader.Window;
 /**
  * @author matt
  */
-public final class MostRecentlyUsedCache extends AbstractObservableCache  {
+public final class MostRecentlyAddedCache extends AbstractObservableCache  {
 
-    private final static boolean ACCESS_ORDER = true;    
+    private final static boolean INSERTION_ORDER = false;    
     
     private final Cache cache;
     
-    public MostRecentlyUsedCache(final int capacity) {
-        cache = new Cache(capacity + 1, 1.1f, ACCESS_ORDER);
+    public MostRecentlyAddedCache(final int capacity) {
+        cache = new Cache(capacity + 1, 1.1f, INSERTION_ORDER);
     }
     
     
@@ -37,8 +37,8 @@ public final class MostRecentlyUsedCache extends AbstractObservableCache  {
             notifyWindowAdded(window, this);
         }
     }
+
     
-   
     @Override
     public void clear() {
         cache.clear();
@@ -58,7 +58,7 @@ public final class MostRecentlyUsedCache extends AbstractObservableCache  {
         protected boolean removeEldestEntry(final Map.Entry eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
-                notifyWindowRemoved((Window) eldest.getValue(), MostRecentlyUsedCache.this);
+                notifyWindowRemoved((Window) eldest.getValue(), MostRecentlyAddedCache.this);
             }
             return remove;
         }   
