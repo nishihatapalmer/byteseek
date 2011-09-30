@@ -2,7 +2,7 @@
  * Copyright Matt Palmer 2011, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
- * http://www.opensource.org/licenses/BSD-3-Clause
+ *
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
