@@ -118,9 +118,8 @@ public class MatcherSearcher extends AbstractSearcher {
     @Override
     public long searchBackwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
-        final long lastPossiblePosition = reader.length() - 1;
         final long upToPosition = toPosition > 0? toPosition : 0;
-        long currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;
+        long currentPosition = fromPosition; 
         final Matcher localMatcher = matcher;
         while (currentPosition >= upToPosition) {
             if (localMatcher.matches(reader, currentPosition)) {
