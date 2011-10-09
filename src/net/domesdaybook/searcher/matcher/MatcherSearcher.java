@@ -78,7 +78,6 @@ public class MatcherSearcher extends AbstractSearcher {
      * @inheritDoc
      */
     @Override
-    //TODO: update to use Windows rather than knowing length.
     public long searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         long searchPosition = fromPosition > 0? fromPosition : 0;
