@@ -38,8 +38,10 @@ package net.domesdaybook.matcher;
 import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 
+
 /**
- * An interface for classes that can match bytes from a given position.
+ * An interface for classes that can match bytes from a given position, either
+ * directly within a byte array, or through a Reader object.
  * 
  * @author Matt Palmer
  */
