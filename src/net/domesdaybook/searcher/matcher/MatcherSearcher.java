@@ -41,9 +41,28 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
+
 /**
- *
- * @author matt
+ * A Searcher which looks for an underlying {@link Matcher} in the simplest manner
+ * possible: by trying to match at every possible position until a match is 
+ * found or not.
+ * <p/>
+ * The performance of this Searcher is generally poor (although it may compare
+ * favorably for very, very short searches due to its essential simplicity). 
+ * <p/>
+ * Because it is not optimised for particular kinds of matcher, 
+ * it can search for any matcher at all, with no knowledge of its implementation.
+ * This also means that it can't directly use Window-based searching.  
+ * Without knowing the maximum length of a matcher, it must fall back on the 
+ * underlying Matcher to interact with the Reader.
+ * <p/>
+ * Design question: can we provide an interface for querying max / min lengths
+ * of all Matchers without polluting it too badly...?  Some Matchers will have
+ * no limit to their possible length (e.g. a reg ex using a .* ). Others may
+ * have definable limits, but which are expensive to compute.  At present, limits
+ * are only defined on sub-interfaces of Matcher which actually have them.
+ * 
+ * @author Matt Palmer
  */
 public class MatcherSearcher extends AbstractSearcher {
 
@@ -60,17 +79,14 @@ public class MatcherSearcher extends AbstractSearcher {
      */
     @Override
     //TODO: update to use Windows rather than knowing length.
-    //public long searchForwards(final Reader reader, final long fromPosition, 
+    public long searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
-        final long lastPossiblePosition = reader.length() - 1;
-        final long upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
-        long currentPosition = fromPosition > 0? fromPosition : 0;
-        final Matcher localMatcher = matcher;
-        while (currentPosition <= upToPosition) {
-            if (localMatcher.matches(reader, currentPosition)) {
-                return currentPosition;
+        long searchPosition = fromPosition > 0? fromPosition : 0;
+        while (searchPosition <= toPosition) {
+            if (matcher.matches(reader, searchPosition)) {
+                return searchPosition;
             }
-            currentPosition++;
+            searchPosition++;
         }
         return Searcher.NOT_FOUND;
     }

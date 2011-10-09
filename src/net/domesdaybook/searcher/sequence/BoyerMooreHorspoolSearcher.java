@@ -105,6 +105,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
     /**
      * @inheritDoc
      */
+    @Override
     public long searchForwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         // Calculate some positions and bounds:
@@ -339,6 +340,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
         return Searcher.NOT_FOUND;
     }    
 
+    
     /**
      *
      * Uses Single-Check lazy initialisation.  This can result in the field
