@@ -73,23 +73,23 @@ public class MatcherSearcher extends AbstractSearcher {
     }
     
     
-   
     /**
      * @inheritDoc
      */
     @Override
     public long searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
-        long searchPosition = fromPosition > 0? fromPosition : 0;
-        while (searchPosition <= toPosition) {
-            if (matcher.matches(reader, searchPosition)) {
-                return searchPosition;
+        long currentPosition = fromPosition > 0? fromPosition : 0;
+        while (currentPosition <= toPosition) {
+            if (matcher.matches(reader, currentPosition)) {
+                return currentPosition;
             }
-            searchPosition++;
+            currentPosition++;
         }
         return Searcher.NOT_FOUND;
     }
 
+    
     
     /**
      * @inheritDoc
