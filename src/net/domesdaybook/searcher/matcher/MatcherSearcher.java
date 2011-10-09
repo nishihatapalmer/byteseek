@@ -80,8 +80,9 @@ public class MatcherSearcher extends AbstractSearcher {
     public long searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         long currentPosition = fromPosition > 0? fromPosition : 0;
+        final Matcher localMatcher = matcher;        
         while (currentPosition <= toPosition) {
-            if (matcher.matches(reader, currentPosition)) {
+            if (localMatcher.matches(reader, currentPosition)) {
                 return currentPosition;
             }
             currentPosition++;
