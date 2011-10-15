@@ -41,17 +41,20 @@ import java.io.IOException;
 
 
 /**
- * An interface for classes which can read bytes at a given position.
- * <p/>
- * Design issues: 
- * <p/>
- * 1. Should ReaderException be a checked or unchecked exception?  
- *    It is currently a RuntimeException, but it can encapsulate 
- *    sources which may throw a checked IOException (e.g. RandomAccessFile).
- *    It can also encapsulate sources which only throw RuntimExceptions,
- *     e.g. byte arrays.  
- *    Require behaviour to be consistent across all implementations for client code,
+ * An interface for random access to bytes from an underlying byte source.
  * 
+ * The interface supports two usage models:
+ * 
+ *  1. Read a single byte at a given position
+ *  2. Get a {@link Window} onto the underlying byte source for a given position.
+ * 
+ * The two access methods can be combined to provide fast matching or searching.
+ * Matching or searching within a Window will normally be faster, as reading can
+ * be performed on a byte array directly.  Reading a byte at a position allows
+ * matching or searching at any position.  This can be useful to run an algorithm
+ * over a Window boundary without building in knowledge of the Windows into the
+ * algorithm.  However, this is likely to be slower, as every read of a byte
+ * carries an additional method call overhead.
  * 
  * @author Matt Palmer
  */
@@ -65,19 +68,45 @@ public interface Reader extends Closeable {
      * @param position The position of the byte to read.
      * @return int The byte value at the position given as an integer (0-255)
      *         If there is no byte at the position, it returns -1.
+     * @throws IOException if there was a problem reading the byte.
      */
     int readByte(final long position) throws IOException;
 
     
     /**
+     * Returns a {@link Window} for the given position.
+     * 
+     * The Window does not have to begin at the position specified; the Window
+     * only needs to contain a byte at the position requested.  Use getWindowOffset()
+     * to determine the position of the byte in the Window.
+     * 
+     * A Window must only be returned if there is a legitimate byte for the position
+     * requested, otherwise null must be returned.  Any position less than zero, or
+     * greater than or equal to the length of the reader MUST return a null window,
      * 
      * @param position The position of the byte to read in the underlying data.
      * @return Window an Window containing a byte array, and a startPos which gives
      *         the position of the byte in the byte array.
+     * @throws IOException if there was a problem reading byte into the Window.
      */
     Window getWindow(final long position) throws IOException;
     
     
+    /**
+     * Returns the offset into a {@link Window} for a given position.
+     * 
+     * This allows the following access pattern  to read a byte at
+     * the absolute position 1234 in the reader:
+     * 
+     * <code>
+     * Window window = reader.getWindow(1234);
+     * int windowPos = reader.getWindowOffset(1234);
+     * byte byteAtPos1234 = window.getByte(windowPos);
+     * </code>
+     * 
+     * @param position The position which you want the Window offset of.
+     * @return The offset into a Window matching the position given.
+     */
     int getWindowOffset(final long position);
     
     
