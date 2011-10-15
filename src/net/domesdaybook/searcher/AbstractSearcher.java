@@ -14,9 +14,9 @@
  *    this list of conditions and the following disclaimer in the documentation 
  *    and/or other materials provided with the distribution.
  * 
- *  * Neither the "byteseek" name nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software 
- *    without specific prior written permission. 
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ * 
  *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
@@ -120,4 +120,8 @@ public abstract class AbstractSearcher implements Searcher {
         return searchBackwards(bytes, bytes.length - 1, 0);
     }
     
+    
+    protected final long withinLength(final Reader reader, final long position) throws IOException {
+        return reader.getWindow(position) != null? position : reader.length() - 1;
+    }
 }

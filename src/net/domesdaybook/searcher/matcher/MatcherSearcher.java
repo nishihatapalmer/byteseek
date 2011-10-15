@@ -14,9 +14,9 @@
  *    this list of conditions and the following disclaimer in the documentation 
  *    and/or other materials provided with the distribution.
  * 
- *  * Neither the "byteseek" name nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software 
- *    without specific prior written permission. 
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ * 
  *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
@@ -38,6 +38,7 @@ package net.domesdaybook.searcher.matcher;
 import java.io.IOException;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.Searcher;
 
@@ -52,15 +53,10 @@ import net.domesdaybook.searcher.Searcher;
  * <p/>
  * Because it is not optimised for particular kinds of matcher, 
  * it can search for any matcher at all, with no knowledge of its implementation.
- * This also means that it can't directly use Window-based searching.  
+ * This also means that it can't directly use Window-based searching (although
+ * it can use it to indicate there is no more data, when the Window is null.)
  * Without knowing the maximum length of a matcher, it must fall back on the 
  * underlying Matcher to interact with the Reader.
- * <p/>
- * Design question: can we provide an interface for querying max / min lengths
- * of all Matchers without polluting it too badly...?  Some Matchers will have
- * no limit to their possible length (e.g. a reg ex using a .* ). Others may
- * have definable limits, but which are expensive to compute.  At present, limits
- * are only defined on sub-interfaces of Matcher which actually have them.
  * 
  * @author Matt Palmer
  */
@@ -79,17 +75,23 @@ public class MatcherSearcher extends AbstractSearcher {
     @Override
     public long searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
+        final Matcher localMatcher = matcher;  
         long currentPosition = fromPosition > 0? fromPosition : 0;
-        final Matcher localMatcher = matcher;        
-        while (currentPosition <= toPosition) {
-            if (localMatcher.matches(reader, currentPosition)) {
-                return currentPosition;
+        Window window = reader.getWindow(currentPosition);
+        while (window != null) {
+            final int availableSpace = window.getLimit() - reader.getWindowOffset(currentPosition);
+            final long endWindowPosition = currentPosition + availableSpace;
+            final long lastPosition = endWindowPosition < toPosition?
+                                      endWindowPosition : toPosition;
+            for (; currentPosition <= lastPosition; currentPosition++) {
+                if (localMatcher.matches(reader, currentPosition)) {
+                    return currentPosition;
+                }
             }
-            currentPosition++;
+            window = reader.getWindow(currentPosition);
         }
         return Searcher.NOT_FOUND;
     }
-
     
     
     /**
@@ -97,10 +99,10 @@ public class MatcherSearcher extends AbstractSearcher {
      */
     @Override
     public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        final Matcher localMatcher = matcher;
         final int lastPossiblePosition = bytes.length - 1;
         final int upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
         int currentPosition = fromPosition > 0? fromPosition : 0;
-        final Matcher localMatcher = matcher;
         while (currentPosition <= upToPosition) {
             if (localMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
@@ -110,7 +112,13 @@ public class MatcherSearcher extends AbstractSearcher {
         return Searcher.NOT_FOUND;
     }
   
+ 
     
+    //REVIEW:
+    
+    // is this vulnerable to fromPosition being smaller than toPosition?
+    // is the same true in reverse for searchForwards?
+  
     
     /**
      * @inheritDoc
@@ -118,36 +126,44 @@ public class MatcherSearcher extends AbstractSearcher {
     @Override
     public long searchBackwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
-        final long upToPosition = toPosition > 0? toPosition : 0;
-        long currentPosition = fromPosition; 
         final Matcher localMatcher = matcher;
-        while (currentPosition >= upToPosition) {
-            if (localMatcher.matches(reader, currentPosition)) {
-                return currentPosition;
+        final long upToPosition = toPosition > 0? toPosition : 0;
+        long currentPosition = withinLength(reader, fromPosition);
+        Window window = reader.getWindow(currentPosition);
+        while (window != null) {
+            final int availableSpace = reader.getWindowOffset(currentPosition);
+            final long startWindowPosition = currentPosition - availableSpace;
+            final long finalPosition = startWindowPosition > upToPosition?
+                    startWindowPosition : upToPosition;
+            for (; currentPosition >= finalPosition; currentPosition--) {
+                if (localMatcher.matches(reader, currentPosition)) {
+                    return currentPosition;
+                }                
             }
-            currentPosition--;
+            window = reader.getWindow(currentPosition);
+            
         }
-        
         return Searcher.NOT_FOUND;
     }
 
+    
     
     /**
      * @inheritDoc
      */
     @Override
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        final Matcher localMatcher = matcher;
         final int lastPossiblePosition = bytes.length - 1;
         final int upToPosition = toPosition > 0? toPosition : 0;
-        int currentPosition = fromPosition < lastPossiblePosition? fromPosition : lastPossiblePosition;
-        final Matcher localMatcher = matcher;
+        int currentPosition = fromPosition < lastPossiblePosition? 
+               fromPosition : lastPossiblePosition;
         while (currentPosition >= upToPosition) {
             if (localMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
             }
             currentPosition--;
         }
-        
         return Searcher.NOT_FOUND;
     }
 
