@@ -15,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -46,19 +44,20 @@ import net.domesdaybook.object.copy.DeepCopy;
  * <p>
  * Different transition strategies are appropriate for different kinds of automata.
  * For example, a Deterministic Finite State Automata (DFA) has a unique state for  
- * any byte it can transition on, so a strategy which picks the first state it can
- * find for a byte is appropriate (@link FirstMatchingTransition}.  On the other hand,
- * a Non-deterministic Finite State Automata (NFA) can transition to more than one
- * State on a given byte, so the {@link AllMatchingTransitions} strategy is more .
- * appropriate.  If a state has no outgoing transitions at all, then the {@link NoTransitions} 
- * strategy is appropriate.  
+ * any byte it can transition on from any other state, so a strategy which picks 
+ * the first state it can find for a byte is appropriate (@link FirstMatchingTransition}. 
+ * On the other hand, a Non-deterministic Finite State Automata (NFA) can transition 
+ * to more than one State on a given byte, so the {@link AllMatchingTransitions} 
+ * strategy is more appropriate.  If a state has no outgoing transitions at all, 
+ * then the {@link NoTransitions} strategy is appropriate.  
  * <p>
  * However, no matter what the overall type of the automata, any given State can
  * use a transition strategy which works for its particular mix of transitions. 
  * For example, a state with only one outgoing transition can obviously use the 
  * FirstMatchingTransition strategy, even if the state is part of an NFA.  For
  * maximum efficiency, the most appropriate transition strategy should be picked
- * for each State (once you are sure that the State will not change its transitions).
+ * for each State (once you are sure that the State will not have further transitions 
+ * added or removed).
  * <p>
  * It supports two usage models:
  * <ul>
@@ -79,8 +78,8 @@ import net.domesdaybook.object.copy.DeepCopy;
  * built at the time it was initialised.
  * <p>
  * Note that in the stateful case, any Transitions added to or removed from
- * the parent State after the TransitionStrategy is set will probably have no effect,
- * as the TransitionStrategy will already have calculated its lookups.  Therefore,
+ * the parent State after the TransitionStrategy is set may cause the State to
+ * automatically select a different Transition strategy.  Therefore,
  * these types of TransitionStrategy should only be set once the State will have
  * no further changes to its transitions.
  * <p>
@@ -101,15 +100,27 @@ import net.domesdaybook.object.copy.DeepCopy;
 public interface TransitionStrategy extends DeepCopy {
     
     /**
+     * Appends a set of distinct states which can be transitioned to given a byte
+     * and a collection of transitions.  
      * 
-     * @param states
-     * @param value
-     * @param transitions
+     * @param states The collection of states to append to.
+     * @param value The byte which we want to transition on.
+     * @param transitions A collection of transitions which this strategy may
+     *                    interrogate to determine the states (if it is a stateless strategy)
      */
-    void getDistinctStatesForByte(Collection<State> states, byte value, Collection<Transition> transitions);
+    void appendDistinctStatesForByte(Collection<State> states, byte value, Collection<Transition> transitions);
 
     
-    
+    /**
+     * This method is inherited from the {@link DeepCopy} interface,
+     * and is redeclared here with a return type of TransitionStrategy
+     * (rather than DeepCopy), to make using the method easier.
+     *
+     * @param oldToNewObjects A map of the original objects to their new deep copies.
+     * @return TransitionStrategy A deep copy of this TransitionStrategy.  If the TransitionStrategy
+     * is stateless, it may return itself. If it is stateful, it should ensure that
+     * all the States it references are also deep copied.
+     */    
     TransitionStrategy deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
     
 }
