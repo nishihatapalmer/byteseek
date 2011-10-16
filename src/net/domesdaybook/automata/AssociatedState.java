@@ -45,7 +45,7 @@ import java.util.Collection;
 public interface AssociatedState<T> extends State {
     
     /**
-     * Adds an object to the State.  
+     * Adds an object of type T to the State.  
      * <p>
      * This interface does not guarantee that the instance added will be unique.
      * Specific implementations may provide this guarantee.
@@ -56,7 +56,7 @@ public interface AssociatedState<T> extends State {
     
     
     /**
-     * Removes an object from the State.
+     * Removes an object of type T from the State.
      * <p>
      * This interface does not guarantee that all instances will be removed, only
      * the first encountered. Specific implementations may provide this guarantee.
@@ -67,7 +67,7 @@ public interface AssociatedState<T> extends State {
     
     
     /**
-     * Returns a collection of the objects currently associated with this state.
+     * Returns a collection of the objects of type T currently associated with this state.
      * No guarantee is made that the objects will be unique, although specific
      * implementations may provide this guarantee.
      * 
@@ -77,7 +77,7 @@ public interface AssociatedState<T> extends State {
     
     
     /**
-     * Sets a collection of objects to be associated with this State.
+     * Sets a collection of objects of type T to be associated with this State.
      * This method should ensure that only the associations passed in are
      * associated with the state - any prior associations should be cleared.
      * 
