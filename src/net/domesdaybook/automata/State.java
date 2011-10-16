@@ -151,7 +151,13 @@ public interface State extends DeepCopy {
 
     
     /**
-     * Sets a {@link TransitionStrategy} to use for this state.
+     * Sets a {@link TransitionStrategy} to use for this state.  
+     * <p>
+     * Implementations of State must call the initialise() method
+     * on any TransitionStrategy set here, to ensure that the strategy
+     * is properly initialised for this State.  
+     * <p>
+     * Note: not all TransitionStrategies require initialisation, but some do.
      * 
      * @param strategy The transition strategy to use for this state.
      */
