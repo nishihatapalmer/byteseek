@@ -155,7 +155,7 @@ public interface State extends DeepCopy {
      * <p>
      * Implementations of State must call the initialise() method
      * on any TransitionStrategy set here, to ensure that the strategy
-     * is properly initialised for this State.  
+     * is properly initialised.  
      * <p>
      * Note: not all TransitionStrategies require initialisation, but some do.
      * 
