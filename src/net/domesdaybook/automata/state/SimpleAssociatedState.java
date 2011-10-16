@@ -47,6 +47,7 @@ import net.domesdaybook.object.copy.DeepCopy;
 
 /**
  *
+ * @param <T> 
  * @author matt
  */
 public class SimpleAssociatedState<T> implements AssociatedState {
@@ -56,46 +57,57 @@ public class SimpleAssociatedState<T> implements AssociatedState {
     private TransitionStrategy transitionStrategy = NO_TRANSITION;
     private List<T> associations;
     
+    /**
+     * 
+     * @param isFinal
+     */
     public SimpleAssociatedState(final boolean isFinal) {
         this.isFinal = isFinal;
         this.transitions = new ArrayList<Transition>();
     }
 
     
+    /**
+     * 
+     * @param other
+     */
     public SimpleAssociatedState(final SimpleAssociatedState other) {
         this.isFinal = other.isFinal;
         this.transitions = new ArrayList<Transition>(other.transitions); 
     }
 
     
+    /**
+     * 
+     */
     public SimpleAssociatedState() {
         this(State.NON_FINAL);
     }
 
     
     @Override
-    public void addTransition(Transition transition) {
+    public void addTransition(final Transition transition) {
         this.transitions.add(transition);
     }
 
     
     @Override
-    public void addAllTransitions(List<Transition> transitions) {
+    public void addAllTransitions(final List<Transition> transitions) {
         this.transitions.addAll(transitions);
         setBasicStrategy();
     }
 
     
     @Override
-    public void removeTransition(Transition transition) {
+    public void removeTransition(final Transition transition) {
         this.transitions.remove(transition);
         setBasicStrategy();
     }
     
     
     @Override
-    public void appendNextStatesForByte(Collection<State> states, byte value) {
-        transitionStrategy.getDistinctStatesForByte(states, value, transitions);
+    public void appendNextStatesForByte(final Collection<State> states, byte value) {
+        transitionStrategy.appendDistinctStatesForByte(states, value, transitions);
     }
 
     
@@ -129,7 +141,7 @@ public class SimpleAssociatedState<T> implements AssociatedState {
     }
 
     @Override
-    public SimpleAssociatedState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+    public SimpleAssociatedState<T> deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
         SimpleAssociatedState<T> stateCopy = (SimpleAssociatedState<T>) oldToNewObjects.get(this);
         if (stateCopy == null) {
             stateCopy = new SimpleAssociatedState<T>(this.isFinal);
@@ -146,15 +158,14 @@ public class SimpleAssociatedState<T> implements AssociatedState {
 
     
     @Override
-    public void setIsFinal(boolean isFinal) {
+    public void setIsFinal(final boolean isFinal) {
         this.isFinal = isFinal;
     }
 
     
     @Override
-    public void setTransitionStrategy(TransitionStrategy strategy) {
+    public void setTransitionStrategy(final TransitionStrategy strategy) {
         this.transitionStrategy = strategy;
-        this.transitionStrategy.initialise(this);
     }
 
     
@@ -164,14 +175,22 @@ public class SimpleAssociatedState<T> implements AssociatedState {
     }
 
     
+    /**
+     * 
+     * @return
+     */
     @Override
     public Collection<T> getAssociations() {
         return associations;
     }
 
     
+    /**
+     * 
+     * @param object
+     */
     @Override
-    public void addObject(Object object) {
+    public void addObject(final Object object) {
         if (associations == null) {
             associations = new ArrayList<T>(1);
         }
@@ -179,19 +198,29 @@ public class SimpleAssociatedState<T> implements AssociatedState {
     }
 
     
+    /**
+     * 
+     * @param object
+     */
     @Override
-    public void removeObject(Object object) {
+    public boolean removeObject(final Object object) {
+        boolean result = false;
         if (associations != null) {
-            associations.remove((T) object);
+            result = associations.remove((T) object);
             if (associations.isEmpty()) {
                 associations = null;
             }
         }
+        return result;
     }
 
     
+    /**
+     * 
+     * @param associations
+     */
     @Override
-    public void setAssociations(Collection associations) {
+    public void setAssociations(final Collection associations) {
         if (associations == null) {
             this.associations = null;
         } else {
