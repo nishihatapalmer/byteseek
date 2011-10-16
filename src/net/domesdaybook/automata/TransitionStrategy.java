@@ -106,7 +106,7 @@ public interface TransitionStrategy extends DeepCopy {
      * @param states The collection of states to append to.
      * @param value The byte which we want to transition on.
      * @param transitions A collection of transitions which this strategy may
-     *                    interrogate to determine the states (if it is a stateless strategy)
+     * interrogate to determine the states (if it is a stateless strategy)
      */
     void appendDistinctStatesForByte(Collection<State> states, byte value, Collection<Transition> transitions);
 
