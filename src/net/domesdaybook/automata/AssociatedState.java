@@ -34,6 +34,7 @@ package net.domesdaybook.automata;
 
 import java.util.Collection;
 
+
 /**
  * A {@link State} which can be associated with a list of objects of a given type.
  * 
@@ -43,6 +44,7 @@ import java.util.Collection;
  * @author Matt Palmer
  */
 public interface AssociatedState<T> extends State {
+    
     
     /**
      * Adds an object of type T to the State.  
