@@ -15,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -37,17 +35,44 @@ package net.domesdaybook.automata;
 import java.util.Collection;
 
 /**
- *
- * @author matt
+ * A {@link State} which can be associated with a list of objects of a given type.
+ * 
+ * @param <T> The type of objects the state will be associated with.
+ * @see State
+ * 
+ * @author Matt Palmer
  */
 public interface AssociatedState<T> extends State {
     
+    /**
+     * Adds an object to the State.  
+     * 
+     * @param object The object to associated with the state.
+     */
     void addObject(T object);
     
+    
+    /**
+     * Removes an object from the State.
+     * 
+     * @param object The object to remove from the state.
+     */
     void removeObject(T object);
     
+    
+    /**
+     * Returns a collection of the objects currently associated with this state.
+     * 
+     * @return A collection of the objects currently associated with this state.
+     */
     Collection<T> getAssociations();
     
+    
+    /**
+     * Sets a collection of objects to be associated with this State.
+     * 
+     * @param associations The objects to associated with this State.
+     */
     void setAssociations(Collection<T> associations);
     
 }
