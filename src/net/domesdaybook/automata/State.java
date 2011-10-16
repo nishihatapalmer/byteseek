@@ -210,12 +210,11 @@ public interface State extends DeepCopy {
 
 
     /**
-     * This method is inherited from the <CODE>DeepCopy</COPY> interface,
+     * This method is inherited from the {@link DeepCopy} interface,
      * and is redeclared here with a return type of State (rather than DeepCopy),
      * to make using the method easier.
      *
-     * @param oldToNewObjects A map of objects reachable from this state 
-     *        to their copies, including the copy of this state.
+     * @param oldToNewObjects A map of the original objects to their new deep copies.
      * @return State A deep copy of this State and any Transitions and States
      *         reachable from this State.
      */

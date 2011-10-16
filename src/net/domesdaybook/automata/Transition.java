@@ -38,17 +38,54 @@ import java.util.Map;
 import net.domesdaybook.object.copy.DeepCopy;
 
 /**
- *
+ * A Transition is an immutable link to a {@link State} which can be followed 
+ * if a given  byte value matches. 
+ * <p>
+ * The link is uni-directional, as a Transition only knows the single State it can
+ * transition to on a given byte.  It has no knowledge of the State it transitions from.
+ * 
  * @author Matt Palmer
+ * @see State
  */
 public interface Transition extends DeepCopy {
 
+    
+    /**
+     * Returns a {@link State} if the byte supplied matches this Transition.  
+     * If the byte does not match, null is returned.
+     * 
+     * @param theByte The byte value we would like to transition on.
+     * @return State The State to transition to for this byte, or null if the
+     *               byte does not match.
+     */
     public State getStateForByte(final byte theByte);
 
+    
+    /**
+     * Returns the {@link State} this transition links to.
+     * 
+     * @return State the state this transition links to.
+     */
     public State getToState();
 
+    
+    /**
+     * Returns an array of all the bytes which this transition can match.
+     * 
+     * @return byte[] An array of bytes on which this transition will match.
+     */
     public byte[] getBytes();
     
+    
+    /**
+     * This method is inherited from the {@link DeepCopy} interface,
+     * and is redeclared here with a return type of Transition (rather than DeepCopy),
+     * to make using the method easier.
+     *
+     * @param oldToNewObjects A map of the original objects to their new deep copies.
+     * @return Transition A deep copy of this Transition and any States and Transitions
+     *         reachable from this Transition.
+     */
     public Transition deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }
