@@ -54,7 +54,7 @@ public interface AssociatedState<T> extends State {
      * 
      * @param object The object to associated with the state.
      */
-    void addObject(T object);
+    public void addObject(T object);
     
     
     /**
@@ -64,8 +64,9 @@ public interface AssociatedState<T> extends State {
      * the first encountered. Specific implementations may provide this guarantee.
      * 
      * @param object The object to remove from the state.
+     * @return boolean true if the object was present in the State.
      */
-    void removeObject(T object);
+    public boolean removeObject(T object);
     
     
     /**
@@ -75,7 +76,7 @@ public interface AssociatedState<T> extends State {
      * 
      * @return A collection of the objects currently associated with this state.
      */
-    Collection<T> getAssociations();
+    public Collection<T> getAssociations();
     
     
     /**
@@ -85,6 +86,6 @@ public interface AssociatedState<T> extends State {
      * 
      * @param associations The objects to associated with this State.
      */
-    void setAssociations(Collection<T> associations);
+    public void setAssociations(Collection<T> associations);
     
 }
