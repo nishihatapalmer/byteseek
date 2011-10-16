@@ -199,7 +199,6 @@ public interface State extends DeepCopy {
     public void removeTransition(final Transition transition);    
     
     
-    
     /**
      * This is a convenience method, providing the initial map to:
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
