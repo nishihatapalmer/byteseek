@@ -47,13 +47,20 @@ import java.util.TreeSet;
  * 
  * @author Matt Palmer
  */
-public class AutomataUtils {
+public final class AutomataUtils {
 
 
     private AutomataUtils() {
     };
 
 
+    /**
+     * Returns a list of all the final states in the automata, given the initial
+     * state of the automata.
+     * 
+     * @param initialState The initial state of the automata.
+     * @return A list of the final states in the automata.
+     */
     public static List<State> getFinalStates(final State initialState) {
         Set<State> visitedStates = new HashSet<State>();
         List<State> finalStates = new ArrayList<State>();
@@ -76,6 +83,13 @@ public class AutomataUtils {
     }
 
     
+    /**
+     * Builds a map of bytes to the states which can be reached by them from a
+     * given state.
+     * 
+     * @param state The state to build the map from.
+     * @param byteToTargetStates The map of byte to states in which the results are placed.
+     */
     public static void buildByteToStates(final State state, Map<Byte, Set<State>> byteToTargetStates) {
         for (final Transition transition : state.getTransitions()) {
             final State transitionToState = (State) transition.getToState();
@@ -93,6 +107,15 @@ public class AutomataUtils {
     }
 
        
+    /**
+     * Given a map of the bytes to the states which can be reached by them, this
+     * method returns the reversed map of the sets of states to the sets of bytes 
+     * required to reach them.  The map is many-to-many (sets of states to sets of
+     * bytes) because a set of states can be reached by more than one byte.
+     * 
+     * @param bytesToTargetStates The map of bytes to states reachable by them.
+     * @return A map of the set of states to the set of bytes required to reach that set of states.
+     */
     public static Map<Set<State>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State>> bytesToTargetStates) {
         Map<Set<State>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State>, Set<Byte>>();
 
@@ -117,6 +140,17 @@ public class AutomataUtils {
     }
     
     
+    /**
+     * Builds a text representation of the automata in Graphviz dot format.
+     * http://www.graphviz.org/
+     * <p/>
+     * Graphviz can then render the automata using a variety of graph layout 
+     * algorithms, outputting the render to many common formats.
+     *
+     * @param initialState
+     * @param title
+     * @return
+     */
     public static String toDot(final State initialState, final String title) {
         final StringBuilder builder = new StringBuilder();
         builder.append("digraph {\n");
