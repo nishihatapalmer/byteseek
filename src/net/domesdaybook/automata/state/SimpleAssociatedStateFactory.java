@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -35,11 +33,24 @@
 package net.domesdaybook.automata.state;
 
 /**
- *
- * @author matt
+ * An implementation of the {@link AssociatedStateFactory} which creates 
+ * {@link SimpleAssociatedState} objects.
+ * 
+ * @param <T> The type of object the SimpleAssociatedState can be associated with.
+ * 
+ * @author Matt Palmer
  */
 public class SimpleAssociatedStateFactory<T> implements AssociatedStateFactory {
 
+    
+    /**
+     * Creates an instance of a {@link SimpleAsociatedState}.
+     * 
+     * @param isFinal Whether the SimpleAsociatedState is final or not.
+     * 
+     * @return A SimpleAsociatedState object.
+     * @see SimpleAsociatedState
+     */
     @Override
     public SimpleAssociatedState<T> create(boolean isFinal) {
         return new SimpleAssociatedState<T>(isFinal);
