@@ -37,11 +37,20 @@ package net.domesdaybook.automata.state;
 import net.domesdaybook.automata.State;
 
 /**
- *
- * @author matt
+ * A factory which creates {@link SimpleState} objects.
+ * 
+ * @author Matt Palmer
  */
-public class SimpleStateFactory implements StateFactory {
+public final class SimpleStateFactory implements StateFactory {
 
+    
+    /**
+     * Creates an instance of a {@link SimpleState}.
+     * 
+     * @param isFinal Whether the SimpleState is final or not.
+     * @return A SimpleState object.
+     * @see SimpleState
+     */
     @Override
     public State create(boolean isFinal) {
         return new SimpleState(isFinal);
