@@ -37,16 +37,20 @@ package net.domesdaybook.automata.state;
 import net.domesdaybook.automata.State;
 
 /**
- *
- * @author matt
+ * An abstract factory for State objects.
+ * <p>
+ * Implementations of this interface should create the particular type of State
+ * required.
+ * 
+ * @author Matt Palmer
  */
 public interface StateFactory {
     
     /**
-     * Builds an {@link NfaState} object.
+     * Builds an {@link State} object.
      *
      * @param isFinal Whether the state is final or not.
-     * @return An object implementing the NfaState interface.
+     * @return An object implementing the State interface.
      */
     public State create(final boolean isFinal);    
     
