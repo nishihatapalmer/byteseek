@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -36,18 +34,25 @@ package net.domesdaybook.automata.state;
 
 import net.domesdaybook.automata.AssociatedState;
 
+
 /**
- *
- * @author matt
+ * An abstract factory which creates an {@link AssociatedState} which can be
+ * associated with objects of type T.
+ *  
+ * @param <T> The type of object to associated with the AssociatedState.
+ * @see net.domesdaybook.automata.AssociatedState
+ * 
+ * @author Matt Palmer
  */
 public interface AssociatedStateFactory<T> {
 
     
     /**
-     * Builds an {@link NfaState} object.
-     *
-     * @param isFinal Whether the state is final or not.
-     * @return An object implementing the NfaState interface.
+     * Creates an instance of an {@link AssociatedState}.
+     * 
+     * @param isFinal Whether the AssociatedState is final or not.
+     * @return An AssociatedState object.
+     * @see net.domesdaybook.automata.AssociatedState
      */
     public AssociatedState<T> create(final boolean isFinal);       
     
