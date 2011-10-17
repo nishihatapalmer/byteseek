@@ -122,12 +122,13 @@ public interface State extends DeepCopy {
     
     
     /**
-     * Appends to the collection the states reachable by the byte.
+     * Appends to the collection supplied any states reachable by the byte given.
      * <p/>
      * The {@link TransitionStrategy} used by this State controls which states are appended.
      * 
      * @param value The byte value to find the next states for.
      * @param states The collection to which the next states (if any) will be added.
+     * @see TransitionStrategy
      */
     public void appendNextStatesForByte(final Collection<State> states, final byte value);
 
@@ -199,8 +200,9 @@ public interface State extends DeepCopy {
      * Removes a {@link Transition} from this state.
      * 
      * @param transition The transition to remove from this state.
+     * @return boolean Whether the transition was in the State.
      */
-    public void removeTransition(final Transition transition);    
+    public boolean removeTransition(final Transition transition);    
     
     
     /**
