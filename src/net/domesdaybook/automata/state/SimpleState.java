@@ -47,7 +47,10 @@ import net.domesdaybook.object.copy.DeepCopy;
 
 /**
  * A simple implementation of the {@link State} interface with no added extras.
- * Transitions are managed internally as a simple list of Transitions.
+ * Transitions are managed internally as a simple list of Transitions.  
+ * <p>
+ * It is intentionally not a final class, allowing other States to inherit from 
+ * this implementation.
  * 
  * @see net.domesdaybook.automata.State
  * @see net.domesdaybook.automata.Transition
