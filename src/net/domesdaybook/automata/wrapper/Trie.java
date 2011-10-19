@@ -15,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -37,8 +35,19 @@ package net.domesdaybook.automata.wrapper;
 import net.domesdaybook.automata.State;
 
 /**
- *
- * @author matt
+ * A simple immutable wrapper around a {@link State} for automata which are
+ * Trie structures. It also provides some simple information about the Trie structure itself
+ * which is derivable when it is constructed, including:
+ * <ul>
+ * <li>Minimum length of a sequence in the Trie.
+ * <li>Maximum length of a sequence in the Trie.
+ * </ul>
+ * Note: while the wrapper itself is immutable, it cannot be guaranteed that the states 
+ * of the automata are also immutable.
+ * 
+ * @author Matt Palmer
+ * @see net.domesdaybook.automata.State
+ * @see <a href="http://en.wikipedia.org/wiki/Trie">Trie structures</a>
  */
 public final class Trie {
     
@@ -47,6 +56,13 @@ public final class Trie {
     private final int minimumLength;
     
     
+    /**
+     * Constructor for a Trie.
+     * 
+     * @param firstState The initial state of the Trie structure.
+     * @param minLength The minimum length of a sequence in the Trie.
+     * @param maxLength The maximum length of a sequence in the Trie.
+     */
     public Trie(final State firstState, final int minLength, final int maxLength) {
         this.initialState = firstState;
         this.minimumLength = minLength;
@@ -54,16 +70,31 @@ public final class Trie {
     }
     
     
+    /**
+     * Returns the first {@link State} of the Trie structure.
+     * 
+     * @return State The first state of the Trie.
+     */
     public State getInitialState() {
         return initialState;
     }
     
     
+    /**
+     * Returns the minimum length of the sequences in the Trie.
+     * 
+     * @return int the minimum length of the sequences in the Trie.
+     */
     public int getMinimumLength() {
         return minimumLength;
     }
     
     
+    /**
+     * Returns the maximum length of the sequences in the Trie.
+     * 
+     * @return int the maximum length of the sequences in the Trie.
+     */
     public int getMaximumLength() {
         return maximumLength;
     }

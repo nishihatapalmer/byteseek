@@ -15,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -36,30 +34,70 @@
 package net.domesdaybook.automata.strategy;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.TransitionStrategy;
+import net.domesdaybook.collections.IdentityHashSet;
 import net.domesdaybook.object.copy.DeepCopy;
 
+
 /**
- *
- * @author matt
+ * This transition strategy finds all {@link Transition}s which match a given byte value,
+ * and appends the unique {@link State}s referenced by those transitions to a
+ * supplied collection.
+ * <p>
+ * This strategy may be used under two circumstances:
+ * <ul>
+ * <li>If more than one State can be reached on the same byte value.
+ * <li>If the State has more than one Transition (but may be sub-optimal).
+ * </ul>
+ * The second circumstance is only a safe default to take, but may be sub-optimal. 
+ * It is entirely possible for a State with more than one Transition to not 
+ * be able to reach more than one State on any byte value, making it fully 
+ * deterministic, rather than non-deterministic.
+ * <p>
+ * If you know that at most one State can be reached on any given byte value, 
+ * then the {@link FirstMatchingTransition} strategy should be preferred, as this is
+ * more efficient.  However, this may be expensive to determine, and so choosing this
+ * strategy in the absence of this knowledge is a safe default position to take when
+ * a State has more than one Transition.
+ * <p>
+ * This strategy is safe to use under all circumstances, but is the least
+ * efficient of all the strategies in this package.  Where possible, choose a more
+ * appropriate strategy.
+ * 
+ * @see net.domesdaybook.automata.State
+ * @see net.domesdaybook.automata.Transition
+ * @see net.domesdaybook.automata.TransitionStrategy
+ * @see FirstMatchingTransition
+ * 
+ * @author Matt Palmer
  */
 public final class AllMatchingTransitions implements TransitionStrategy {
 
+    /**
+     * Appends all distinct {@link State}s to the supplied collection of states which are 
+     * referenced by a {@link Transition} which matches the supplied byte value.
+     * <p>
+     * More than one State can be reached by the same byte value (if more than one
+     * Transition matches the byte value), and the same State can be reachable more
+     * than once on the same byte value (if different Transitions point to the same
+     * State and overlap in the byte values they match on).
+     * However, only distinct States will be appended to the collection supplied.
+     * 
+     * @param states The collection of states to append to.
+     * @param value The byte value to find matching transitions for
+     * @param transitions The collection of transitions to match the byte value against.
+     */
     @Override
-    public void getDistinctStatesForByte(Collection<State> states, byte value, Collection<Transition> transitions) {
-        // Do not know whether there will be:
-        // (1) more than one state for the same byte value, or
-        // (2) whether the same state will appear more than once against the
-        //     same byte value. 
-        // Ensure that only distinct states are returned which match the byte value.
-        Set<State> matchingStates = new HashSet<State>();
-        for (Transition transition : transitions) {
-            State nextState = transition.getStateForByte(value);
+    public void appendDistinctStatesForByte(final Collection<State> states, 
+                                            final byte value,
+                                            final Collection<Transition> transitions) {
+        final Set<State> matchingStates = new IdentityHashSet<State>();
+        for (final Transition transition : transitions) {
+            final State nextState = transition.getStateForByte(value);
             if (nextState != null && !matchingStates.contains(nextState)) {
                 matchingStates.add(nextState);
                 states.add(nextState);
@@ -67,9 +105,6 @@ public final class AllMatchingTransitions implements TransitionStrategy {
         }
     }
 
-    @Override
-    public void initialise(State state) {
-    }
 
     public TransitionStrategy deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
         return this;

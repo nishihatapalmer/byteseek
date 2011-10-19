@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -38,10 +36,25 @@ package net.domesdaybook.automata.walker;
 import net.domesdaybook.automata.State;
 
 /**
- *
- * @author matt
+ * An interface for classes which walk an automata beginning at the start state
+ * supplied.  It takes a {@link StepObserver} as a parameter, which is the class
+ * that observes each step of the walk.
+ * <p>
+ * Different implementations can walk the automata in different ways.  Some may
+ * visit each state only once, some may visit each transition once and the order
+ * of visiting may be different.
+ *  
+ * @author Matt Palmer
  */
 public interface Walker {
     
+    /**
+     * Walks the automata beginning at the startState.  The {@link StepObserver} 
+     * is invoked for each step of the walk.
+     * 
+     * @param startState The state to begin walking at.
+     * @param observer The class which observes each step of the walk.
+     */
     void walk(final State startState, final StepObserver observer);
+    
 }

@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -46,22 +44,43 @@ import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
- *
- * @author matt
+ * Compiles a collection of String regular expressions into a collection of 
+ * {@link SequenceMatcher}s.
+ * <p>
+ * Unlike most byteSeek compilers, this compiler does not produce a single 
+ * output which can match something.  It is really a convenience class to
+ * simplify compiling a list of SequenceMatchers from a list of expressions.
+ * 
+ * @author Matt Palmer
  */
 public final class SequenceMatchersCompiler implements Compiler<Collection<SequenceMatcher>, Collection<String>> {
 
     private static SequenceMatchersCompiler defaultCompiler;
-    
-    
+
+    /**
+     * A static utility method to produce a collection of {@link SequenceMatcher}s 
+     * from a collection of strings containing byteSeek regular expressions
+     * defining each sequence.
+     * 
+     * @param expressions A collection of Strings containing byteSeek regular expressions.
+     * @return A collection of SequenceMatchers which match the expressions.
+     * @throws CompileException if the expressions could not be compiled.
+     */
     public static Collection<SequenceMatcher> sequenceMatchersFrom(final Collection<String> expressions) throws CompileException {
         defaultCompiler = new SequenceMatchersCompiler();
         return defaultCompiler.compile(expressions);
     }
     
     
+    /**
+     * A static utility method to produce a collection of {@link SequenceMatcher}s
+     * from a list of byte arrays.
+     * 
+     * @param bytes A list of byte arrays
+     * @return A collection of SequenceMatchers which match the list of byte arrays.
+     */
     public static Collection<SequenceMatcher> sequenceMatchersFrom(final List<byte[]> bytes) {
-        List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
+        final List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(bytes.size());
         for (final byte[] bytesToUse : bytes) {
             final SequenceMatcher byteMatcher = new ByteSequenceMatcher(bytesToUse);
             matchers.add(byteMatcher);
@@ -70,6 +89,19 @@ public final class SequenceMatchersCompiler implements Compiler<Collection<Seque
     }
     
     
+    /**
+     * Compiles a collection of strings containing byteSeek regular expressions
+     * into a list of {@link SequenceMatcher}s which match those expressions.
+     * <p>
+     * Note that the regular expressions must be confined to syntax which produces
+     * fixed length sequences.  No syntax which would produce a variable length
+     * sequence can be compiled.  For example, you cannot specify quantifiers such
+     * as ? (zero to one), * (zero to many) or + (one to many) in the expressions.
+     * 
+     * @param expressions A collection of strings containing byteSeek regular expressions.
+     * @return a list of SequenceMatchers which match the expressions.
+     * @throws CompileException if the expressions could not be compiled.
+     */
     @Override
     public Collection<SequenceMatcher> compile(final Collection<String> expressions) throws CompileException {
         final Collection<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();

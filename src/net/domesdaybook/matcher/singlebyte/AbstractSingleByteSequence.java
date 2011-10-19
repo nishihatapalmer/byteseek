@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -38,13 +36,15 @@ package net.domesdaybook.matcher.singlebyte;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
- *
- * @author matt
+ * A simple abstract base class which implements most of the methods required
+ * for a {@link SingleByteMatcher} to also behave as a {@link SequenceMatcher}.
+ * 
+ * @author Matt Palmer
  */
 public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
     
- /**
-     * @inheritDoc
+    /**
+     * {@inheritDoc}
      * 
      * Returns this for position 0, or throws an IndexOutOfBoundsException.
      */

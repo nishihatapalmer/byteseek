@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -36,7 +34,7 @@
 package net.domesdaybook.compiler;
 
 /**
- * A checked exception class representing the failure to parse an expression.
+ * A checked exception class representing the failure to compile an expression.
  * 
  * @author Matt Palmer
  */
@@ -44,7 +42,7 @@ public class CompileException extends Exception {
 
 
     /**
-     *
+     * Constructor taking an error message as a paramater.
      * @param message the error message
      */
     public CompileException(final String message) {
@@ -53,6 +51,8 @@ public class CompileException extends Exception {
 
 
     /**
+     * Constructor taking a Throwable cause as a parameter.
+     * 
      * @param cause the cause of the compile exception
      */
     public CompileException(final Throwable cause) {
@@ -61,7 +61,8 @@ public class CompileException extends Exception {
 
 
     /**
-     *
+     * Constructor taking a message and a Throwable cause as parameters.
+     * 
      * @param message The error message
      * @param cause The cause of the compile exception.
      */

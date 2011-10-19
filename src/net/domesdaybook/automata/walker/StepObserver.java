@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -36,11 +34,21 @@
 package net.domesdaybook.automata.walker;
 
 /**
- *
- * @author matt
+ * An interface for classes which observe each step of a walk of an automata.
+ * <p>
+ * The walker controls which steps are sent to the observer (probably an implementation
+ * of the {@ink Walker} interface.  Each step of the walk is encapsulated in a 
+ * {@link Step} object, which contains details of the step taken.
+ * 
+ * @author Matt Palmer
  */
 public interface StepObserver {
     
-    void process(final Step step);
+    /**
+     * Observes a step of the walk of an automata.
+     * 
+     * @param step The step to observe.
+     */
+    public void observe(Step step);
     
 }

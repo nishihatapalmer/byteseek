@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -37,20 +35,20 @@ package net.domesdaybook.compiler;
 
 
 /**
- * An interface for compilers which compile a regular expression
+ * An interface for compilers which compile an expression of some type E
  * into an object of type T.
  *
  * @author Matt Palmer
  */
-public interface Compiler<T,E> {
+public interface Compiler<T, E> {
 
     /**
-     * Compiles an expression into an object of type T.
+     * Compiles an expression of type E into an object of type T.
      *
-     * @param expression The expression to compile.
+     * @param expression The expression of type E to compile.
      * @return An compiled object of type T.
-     * @throws ParseException if the expression could not be parsed.
+     * @throws CompileException if an object could not be compiled.
      */
-    public T compile(final E expression) throws CompileException;
+    public T compile(E expression) throws CompileException;
 
 }

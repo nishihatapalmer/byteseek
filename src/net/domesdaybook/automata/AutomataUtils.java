@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import net.domesdaybook.collections.IdentityHashSet;
 
 /**
  * A utility class to do useful things with automata.
@@ -60,7 +61,7 @@ public final class AutomataUtils {
      * @return A list of the final states in the automata.
      */
     public static List<State> getFinalStates(final State initialState) {
-        Set<State> visitedStates = new HashSet<State>();
+        Set<State> visitedStates = new IdentityHashSet<State>();
         List<State> finalStates = new ArrayList<State>();
         getAllFinalStates(initialState, visitedStates, finalStates);
         return finalStates;
@@ -96,7 +97,7 @@ public final class AutomataUtils {
                 final Byte transitionByte = transitionBytes[index];
                 Set<State> states = byteToTargetStates.get(transitionByte);
                 if (states == null) {
-                    states = new HashSet<State>();
+                    states = new IdentityHashSet<State>();
                     byteToTargetStates.put(transitionByte, states);
                 }
                 states.add(transitionToState);

@@ -47,6 +47,7 @@ import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.collections.IdentityHashSet;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
 
@@ -113,7 +114,7 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
     @Override
     public State compile(State nfaToTransform) {
         Map<Set<State>, State> nfaToDfa = new IdentityHashMap<Set<State>, State>();
-        Set<State> initialState = new HashSet<State>();
+        Set<State> initialState = new IdentityHashSet<State>();
         initialState.add(nfaToTransform);
         return getState(initialState, nfaToDfa);
     }

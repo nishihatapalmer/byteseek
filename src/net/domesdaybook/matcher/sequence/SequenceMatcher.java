@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -39,7 +37,8 @@ import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
 /**
- * An extension to the {@link Matcher} interface to support sequences.
+ * An extension to the {@link Matcher} interface to support sequences of 
+ * Matchers. 
  *
  * @author Matt Palmer
  */
@@ -51,30 +50,42 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      *
      * @param position The position in the byte matcher to return a dedicated byte matcher for.
      * @return A SingleByteMatcher for the position in the sequence provided.
+     * @throws IndexOutOfBoundsException if an attempt is made to get a SingleByteMatcher
+     *                                   for a position outside of the sequence.
+     * 
      */
-    SingleByteMatcher getByteMatcherForPosition(final int position);
+    public SingleByteMatcher getByteMatcherForPosition(final int position);
 
-    
     
     /**
      * Returns whether there is a match or not at the given position in a byte array.
      * <p/>
      * It does not perform any bounds checking, so an IndexOutOfBoundsException
      * can be thrown by this method if matching is outside the bounds of the array.
+     * <p>
+     * This method is useful when searching in byte arrays, where the bounds checking
+     * of the search algorithm has already assured a safe usage, hence it is more
+     * efficient in those circumstances.  
+     * <p>
+     * It is not recommended to use this method for normal matching without some
+     * additional bounds checking, or unless you would rather accept the overhead
+     * of an IndexOutOfBoundsException on an improper access.  
      * 
      * @param bytes An array of bytes to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
+     * @throws IndexOutOfBoundsException if a match is made outside the bounds of 
+     *                                   the array.
      */
-    boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition);    
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition);    
     
     
     /**
-     * Gets the length of the matching sequence.
+     * Returns the length of the matching sequence.
      *
      * @return Returns the length of a matching byte sequence.
      */
-    int length();
+    public int length();
 
     
     /**
@@ -82,7 +93,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      * 
      * @return A SequenceMatcher which matches the reverse sequence.
      */
-    SequenceMatcher reverse();
+    public SequenceMatcher reverse();
     
     
     /**
@@ -91,6 +102,6 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      * @param prettyPrint whether to pretty print the regular expression with spacing.
      * @return A string containing a regular expression of the byte matcher.
      */
-    String toRegularExpression(final boolean prettyPrint);
+    public String toRegularExpression(final boolean prettyPrint);
 
 }

@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -64,7 +62,6 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
 
-
     /**
      * Constructs an immutable CaseSensitiveStringMatcher from a repeated
      * number of ASCII strings.
@@ -106,7 +103,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     }
 
     
-     /**
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -121,7 +118,6 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final Reader reader, final long matchFrom) throws IOException {
@@ -151,7 +147,6 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
@@ -200,10 +195,14 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
 
     /**
-     *
+     * Returns the string which is matched case insensitively.
+     * 
      * @return The string which is matched by this class.
      */
     public String getCaseInsensitiveString() {
+        //TODO: do we need this member variable, or can we reconstruct it from 
+        //      the matcher list?  Performance issues?
+        //      We do not seem to be enforcing ASCII text anywhere either.
         return caseInsensitiveString;
     }
     
@@ -221,6 +220,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
             (theChar >= 'A' && theChar <= 'Z')) {
             result = new CaseInsensitiveByteMatcher(theChar);
         } else {
+            //FIXME: if the char is not an ASCII char, this will not be correct.
             result = new ByteMatcher((byte) theChar);
         }
         return result;
@@ -228,7 +228,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public CaseInsensitiveStringMatcher reverse() {

@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -70,7 +68,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
      */
     public ByteSequenceMatcher(final byte[] byteArray) {
-        // Preconditions byteArray is not null or empty:
         if (byteArray == null || byteArray.length == 0) {
             throw new IllegalArgumentException("Null or empty byte array passed in to ByteSequenceMatcher");
         }
@@ -86,7 +83,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the byteList is empty or null.
      */
     public ByteSequenceMatcher(final Collection<Byte> byteList) {
-        // Preconditions: list is not null and has at least one member:
         if (byteList == null || byteList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty byte list passed in to ByteSequenceMatcher.");
         }
@@ -109,7 +105,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the matcher list is null or empty.
      */
     public ByteSequenceMatcher(final List<ByteSequenceMatcher> matchers) {
-        // Preconditions: list is not null and has at least one member:
         if (matchers == null || matchers.isEmpty()) {
             throw new IllegalArgumentException("Null or empty matcher list passed in to ByteSequenceMatcher.");
         }
@@ -135,7 +130,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException If the number of bytes is less than one.
      */
     public ByteSequenceMatcher(final byte byteValue, final int numberOfBytes) {
-        // Preconditions: at least one byte to repeat.
         if (numberOfBytes < 1) {
             throw new IllegalArgumentException("ByteSequenceMatcher requires a positive number of bytes.");
         }
@@ -158,7 +152,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final Reader reader, final long matchFrom)
@@ -187,9 +180,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
 
 
     /**
-     * 
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
@@ -205,11 +196,10 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
         return false;
     }    
-    
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
@@ -222,7 +212,6 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         }
         return true;
     }
-    
     
     
     /**
@@ -239,7 +228,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return bytesToString(prettyPrint, byteArray);
+        return ByteUtilities.bytesToString(prettyPrint, byteArray);
     }
 
 
@@ -262,30 +251,4 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
     }
     
 
-    private String bytesToString(final boolean prettyPrint, final byte[] bytes) {
-        final StringBuilder hexString = new StringBuilder();
-        boolean inString = false;
-        for (int byteIndex = 0, byteLength = bytes.length;
-            byteIndex < byteLength; byteIndex++) {
-            final int byteValue = 0xFF & bytes[byteIndex];
-            if (prettyPrint &&
-                    byteValue >= START_PRINTABLE_ASCII &&
-                    byteValue <= END_PRINTABLE_ASCII &&
-                    byteValue != QUOTE_CHARACTER_VALUE) {
-                final String formatString = inString ? "%c" : " '%c";
-                hexString.append(String.format(formatString, (char) byteValue));
-                inString = true;
-            } else {
-                final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";
-                hexString.append(String.format(formatString, byteValue));
-                inString = false;
-            }
-        }
-        if (prettyPrint && inString) {
-            hexString.append("' ");
-        }
-        return hexString.toString();
     }
-
-
-}

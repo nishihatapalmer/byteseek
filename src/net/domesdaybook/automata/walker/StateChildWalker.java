@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -36,32 +34,47 @@ package net.domesdaybook.automata.walker;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
+import net.domesdaybook.collections.IdentityHashSet;
 
 /**
- *
- * @author matt
+ * Walks an automata from an initial {@link State}, visiting each one in the automata
+ * only once.  The states are walked in a child-first order (i.e. depth-first).
+ * <p>
+ * Note that not all transitions may be followed using this walker, as it is possible
+ * for more than one {@link Transition} to reference the same State.  The transition
+ * followed will simply be the first one which references a State which has not yet
+ * been visited.
+ * 
+ * @author Matt Palmer
  */
 public final class StateChildWalker implements Walker {
 
+    /**
+     * Walks an automata from the startState, invoking the {@link StepObserver} for
+     * each step of the walk.  This method will visit each State reachable from the 
+     * start State only once, in a child-first (i.e. depth-first) order.
+     * 
+     * @param startState The state to begin walking the automata.
+     * @param observer The observer to invoke for each step of the walk.
+     */
     @Override
     public void walk(final State startState, final StepObserver observer) {
-        final Set<State> visitedStates = new HashSet<State>();
+        final Set<State> visitedStates = new IdentityHashSet<State>();
         final Deque<Step> walkSteps = new ArrayDeque<Step>();
         walkSteps.addFirst(new Step(null, null, startState));
         while (!walkSteps.isEmpty()) {
             final Step step = walkSteps.removeFirst();
-            final State state = step.toState;
+            final State state = step.currentState;
             if (!visitedStates.contains(state)) {
                 visitedStates.add(state);
                 for (final Transition transition: state.getTransitions()) {
                     walkSteps.addFirst(
                         new Step(state, transition, transition.getToState()));
                 }
-                observer.process(step);                
+                observer.observe(step);                
             }
         }
     }

@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -38,19 +36,54 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 
 /**
- *
- * @author matt
+ * A class which encapsulates a step of a walk of an automata.  It is often
+ * not enough to know which state is being visited. Some walks may entail 
+ * visiting each step more than once, as every transition is followed.  
+ * Alternatively, not all transitions may be followed if each State will only
+ * be visited once.  
+ * <p>
+ * It may be as important to know the details of where you have come from, and how you
+ * got there, as where you currently are in the walk.
+ * <p>
+ * Note: the very first step of a walk will probably have a null previousState and a null
+ * transitionFollowed, as it did not come from a previous state by any transition.
+ * 
+ * @author Matt Palmer
  */
-public class Step {
+public final class Step {
     
-    public State fromState;
-    public Transition onTransition;
-    public State toState;
+    /** 
+     * The previous State from which the step was taken.  
+     * Can be null if the first state is being processed, as it did not originate
+     * from another State.
+     */
+    public final State previousState;
     
-    public Step(final State fromState, final Transition onTransition, final State toState) {
-        this.fromState = fromState;
-        this.onTransition = onTransition;
-        this.toState = toState;
+    /**
+     * The transition followed to arrive at the current State.
+     * Can be null if the first state is being processed, as it did not originate
+     * by following a transition.
+     */
+    public final Transition transitionFollowed;
+    
+    /**
+     * The current State being observed.  If this is the first state being
+     * processing in a walk of an automata, then the other parameters will be null.
+     */
+    public final State currentState;
+    
+    
+    /**
+     * Constructor for a Step.
+     * 
+     * @param previous The previous state
+     * @param followed The transition followed to arrive at the current state.
+     * @param currentState The current state in the walk.
+     */
+    public Step(final State previous, final Transition followed, final State currentState) {
+        this.previousState = previous;
+        this.transitionFollowed = followed;
+        this.currentState = currentState;
     }
     
 }

@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -40,14 +38,25 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * This class iterates all the permutations of byte strings which can be produced
- * from a list of byte arrays.
- * 
+ * This class iterates through all the permutations of byte strings which can be 
+ * produced from a list of byte arrays.  For example, given three arrays: 
+ * <code>{2},  {3, 4, 5}, {6, 7}</code>, we get the following permutations:
+ * <ul>
+ * <li>{2, 3, 6}
+ * <li>{2, 3, 7}
+ * <li>{2, 4, 6}
+ * <li>{2, 4, 7}
+ * <li>{2, 5, 6}
+ * <li>{2, 5, 7}
+ * </ul>
  * It is not thread-safe, as it maintains state as it iterates.
- * In addition, the byte array returned by next() is always the same
- * underlying byte array, so each call to next() modifies the values in it
+ * In addition, for efficiency the byte array returned by next() is always the 
+ * same underlying byte array, so each call to next() modifies the values in it.
+ * Do not rely on the array returned by next() remaining the same across iterations.
+ * If you need to maintain access to the permutation values, you should copy the
+ * array returned by next().
  * 
- * @author matt
+ * @author Matt Palmer
  */
 public class BytePermutationIterator implements Iterator<byte[]> {
 
@@ -56,12 +65,20 @@ public class BytePermutationIterator implements Iterator<byte[]> {
     private final int length;
     private final byte[] permutation;
 
+    
+    /**
+     * Constructor for the iterator.
+     * 
+     * @param byteArrays The list of byte arrays to produce permutations for
+     * @throws IllegalArgumentException if either the list of arrays is null, or
+     *         any of the byte arrays in the list are null or empty.
+     */
     public BytePermutationIterator(final List<byte[]> byteArrays) {
         if (byteArrays == null) {
             throw new IllegalArgumentException("Null byteArrays passed in to PermutationIterator.");
         }
         this.byteArrays = new ArrayList<byte[]>(byteArrays);
-        for (byte[] array : this.byteArrays) {
+        for (final byte[] array : this.byteArrays) {
             if (array == null || array.length == 0) {
                 throw new IllegalArgumentException("Null or empty byte array passed in to PermutationIterator.");
             }
@@ -73,7 +90,7 @@ public class BytePermutationIterator implements Iterator<byte[]> {
 
     
     /**
-     * @inheritDoc 
+     * {@inheritDoc}
      */
     @Override
     public boolean hasNext() {
@@ -82,11 +99,12 @@ public class BytePermutationIterator implements Iterator<byte[]> {
 
     
     /**
-     * @inheritDoc 
-     * 
+     * Returns the next permutation of the list of byte arrays as a byte array.
+     * <p>
      * Note: the values of the byte array returned are correct in this iteration.
      * However, it is always the same underlying byte array. If you need a record
      * of the byte arrays returned, you must copy them into new ones.
+     * 
      * @throws NoSuchElementException if there are no more permutations.
      */
     @Override
@@ -102,7 +120,10 @@ public class BytePermutationIterator implements Iterator<byte[]> {
 
     
     /**
-     * @inheritDoc 
+     * The remove operation is unsupported in the byte permutation iterator, as it
+     * is not possible to remove logical permutations!
+     * 
+     * @throws UnsupportedOperationException if this method is called.
      */
     @Override
     public void remove() {

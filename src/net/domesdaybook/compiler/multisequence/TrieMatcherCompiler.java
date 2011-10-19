@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -47,20 +45,38 @@ import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
- *
- * @author matt
+ * 
+ * 
+ * @author Matt Palmer
  */
 public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> {
 
+    // -------------------------------------------------------------------------
+    // Static utility methods to build TrieMatchers using the TrieCompiler class   
+    // from the net.domesdaybook.compiler.automata package to build the Trie.
+    
+    
+    /**
+     * A default static instance of this class to use in the static utility methods.
+     */
     private static TrieMatcherCompiler defaultCompiler;
     
+    
+    /**
+     * 
+     * @param expression
+     * @return
+     * @throws CompileException 
+     */
     public static TrieMatcher trieMatcherFrom(final Collection<SequenceMatcher> expression) throws CompileException {
         return trieMatcherFrom(expression, Direction.FORWARDS);
     }
+   
     
     public static TrieMatcher trieMatcherFrom(final List<byte[]> bytes) throws CompileException {
         return trieMatcherFrom(bytes, Direction.FORWARDS);
     }
+    
     
     public static TrieMatcher trieMatcherFrom(final Collection<SequenceMatcher> expression,
                                               final Direction direction) throws CompileException {
@@ -80,34 +96,35 @@ public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher
     }    
     
     
+    //--------------------------------------------------------------------------
+    // Class variables and methods
+    
+    
     private final ReversibleCompiler<Trie, Collection<SequenceMatcher>> compiler;
-   
+  
     
     public TrieMatcherCompiler() {
-        this(null);
+        compiler = new TrieCompiler();
     }
     
     
     public TrieMatcherCompiler(final ReversibleCompiler<Trie, Collection<SequenceMatcher>> trieCompiler) {
         if (trieCompiler == null) {
-            compiler = new TrieCompiler();
-        } else {
-            compiler = trieCompiler;
+           throw new IllegalArgumentException("Null compiler passed in to TrieMatcherCompiler.");
         }
+        compiler = trieCompiler;
     }    
     
     
     @Override
     public TrieMatcher compile(final Collection<SequenceMatcher> expression) throws CompileException {
-        final Trie trie = compiler.compile(expression);
-        return new TrieMatcher(trie);
+        return new TrieMatcher(compiler.compile(expression));
     }
     
 
     @Override
     public TrieMatcher compile(Collection<SequenceMatcher> expression, Direction direction) throws CompileException {
-        final Trie trie = compiler.compile(expression, direction);
-        return new TrieMatcher(trie);
+        return new TrieMatcher(compiler.compile(expression, direction));
     }
     
     

@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -80,6 +78,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
         String caseSensitiveString = repeatString(caseSensitiveASCIIString, numberToRepeat);
         final int byteSequenceLength = caseSensitiveString.length();
         byteArray = new byte[byteSequenceLength];
+        //FIXME: does not work with non-ASCII characters properly.
         for (int byteIndex = 0; byteIndex < byteSequenceLength; byteIndex++) {
             byteArray[byteIndex] = (byte) (caseSensitiveString.charAt(byteIndex));
         }
@@ -91,7 +90,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
         if (numberToRepeat == 1) {
             return stringToRepeat;
         }
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (int count = 0; count < numberToRepeat; count++) {
             builder.append(stringToRepeat);
         }
@@ -101,7 +100,6 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final Reader reader, final long matchFrom)
@@ -130,9 +128,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
 
 
     /**
-     * 
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchFrom) {
@@ -153,7 +149,6 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
@@ -199,7 +194,8 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
 
     
     /**
-     *
+     * Returns the string which is matched case sensitively.
+     * 
      * @return The string this matcher matches case sensitively.
      */
     public String getCaseSensitiveString() {
@@ -213,7 +209,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
    
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public CaseSensitiveStringMatcher reverse() {

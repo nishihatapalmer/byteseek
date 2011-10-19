@@ -202,7 +202,7 @@ public class SimpleState implements State {
     
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public final boolean isFinal() {
@@ -262,7 +262,7 @@ public class SimpleState implements State {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public final void setIsFinal(boolean isFinal) {
@@ -271,7 +271,7 @@ public class SimpleState implements State {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public final void setTransitionStrategy(TransitionStrategy strategy) {
@@ -280,7 +280,7 @@ public class SimpleState implements State {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public final TransitionStrategy getTransitionStrategy() {

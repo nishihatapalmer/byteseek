@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -36,26 +34,34 @@
 package net.domesdaybook.compiler;
 
 /**
- *
- * @author matt
+ * A compiler which can compile expressions of type E into objects of type T
+ * in either a forwards or reverse direction.
+ * <p>
+ * For example, if compiling a list of strings into a Trie structure, you can
+ * either compile the Trie from the start of each string (forwards), or produce
+ * a reversed Trie by compiling from the end of each string (reversed).
+ * 
+ * @author Matt Palmer
  */
 public interface ReversibleCompiler<T, E> extends Compiler<T, E> {
     
+    /**
+     * Simple enum for the direction of compilation.
+     */
     public static enum Direction {
         FORWARDS,
         REVERSED
     }
     
+    
     /**
-     * Compiles an expression into an object of type T.
+     * Compiles an expression into an object of type T in the direction specified.
      *
      * @param expression The expression to compile.
      * @param reversed whether to reverse the expressions before compiling.
      * @return An compiled object of type T.
-     * @throws ParseException if the expression could not be parsed.
+     * @throws CompileException if the expression could not be compiled.
      */
-    public T compile(final E expression, final Direction direction) throws CompileException;
-    
-    
+    public T compile(E expression, Direction direction) throws CompileException;
     
 }

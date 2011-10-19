@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -42,17 +40,19 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Any and all functions doing things with bytes.
+ * A utility class containing useful methods to work with bytes, including:
+ * <ul>
+ * <li>Translating between arrays and collections of bytes
+ * <li>Counting bits in bytes.
+ * <li>Counting permutations of bytes given a bit mask matching any or all bits.
+ * <li>Returning the set of bytes matching a bit mask (on any or all of them).
+ * </ul>
+ * Note: This class will probably be split up into smaller and more
+ * targeted utility classes in future.
  * 
- *  Translating between arrays and collections of bytes
- *  Counting bits in bytes.
- *  Counting permutations of bytes given a bit mask matching any or all bits.
- *  Returning the set of bytes matching a bit mask (on any or all of them).
- * 
- *
  * @author Matt Palmer
  */
-public class ByteUtilities {
+public final class ByteUtilities {
 
     private static final int QUOTE_CHARACTER_VALUE = 39;
     private static final int START_PRINTABLE_ASCII = 32;
@@ -434,5 +434,40 @@ public class ByteUtilities {
         }
         return result;
     }
+    
+    /**
+     * Returns a byte array as a String.  If not pretty printed, the bytes
+     * are presented as 2 digit hex numbers.  If pretty printed, then bytes
+     * which would be printable ASCII characters are represented as such
+     * enclosed in single quotes.
+     * 
+     * @param prettyPrint Whether to pretty print the byte array.
+     * @param bytes The bytes to render as a String.
+     * @return A string containing a representation of the byte array.
+     */
+    public static String bytesToString(final boolean prettyPrint, final byte[] bytes) {
+        final StringBuilder hexString = new StringBuilder();
+        boolean inString = false;
+        for (int byteIndex = 0, byteLength = bytes.length;
+            byteIndex < byteLength; byteIndex++) {
+            final int byteValue = 0xFF & bytes[byteIndex];
+            if (prettyPrint &&
+                    byteValue >= START_PRINTABLE_ASCII &&
+                    byteValue <= END_PRINTABLE_ASCII &&
+                    byteValue != QUOTE_CHARACTER_VALUE) {
+                final String formatString = inString ? "%c" : " '%c";
+                hexString.append(String.format(formatString, (char) byteValue));
+                inString = true;
+            } else {
+                final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";
+                hexString.append(String.format(formatString, byteValue));
+                inString = false;
+            }
+        }
+        if (prettyPrint && inString) {
+            hexString.append("' ");
+        }
+        return hexString.toString();
+    }    
     
 }

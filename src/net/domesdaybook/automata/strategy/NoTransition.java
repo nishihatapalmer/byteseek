@@ -15,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -42,22 +40,45 @@ import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.TransitionStrategy;
 import net.domesdaybook.object.copy.DeepCopy;
 
+
 /**
- *
- * @author matt
+ * A transition strategy to use when a {@link State} has no outgoing transitions.
+ * <p>
+ * It should be considered an error to set this strategy on a state which does
+ * have outgoing transitions (unless the intention is explicitly to ignore them for
+ * some reason without removing them from the State).
+ * 
+ * @see net.domesdaybook.automata.State
+ * @see net.domesdaybook.automata.Transition
+ * @see net.domesdaybook.automata.TransitionStrategy
+ * 
+ * @author Matt Palmer
  */
 public final class NoTransition implements TransitionStrategy {
 
+    
+    /**
+     * Appends no states at all, as this strategy should be used in a State with
+     * no outgoing Transitions.  If it is improperly assigned to a State which does
+     * have outgoing transitions, then the Transitions will simply be ignored.
+     * 
+     * @param states A collection of states which can be appended to (but not by this class).
+     * @param value The byte value normally used to determine which states can be appended.
+     * @param transitions The transitions normally used to determine which states can be appended.
+     */
     @Override
-    public void getDistinctStatesForByte(Collection<State> states, byte value, Collection<Transition> transitions) {
+    public void appendDistinctStatesForByte(final Collection<State> states, 
+                                            final byte value, 
+                                            final Collection<Transition> transitions) {
+        // method does nothing with a no transition strategy.
     }
-
-    @Override
-    public void initialise(State state) {
-    }
-
-    public TransitionStrategy deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+    
+    
+    //TODO: review - can an object safely return itself from a deepcopy method?
+    //      Should it add itself to the map, even if it does return itself?
+    public TransitionStrategy deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
         return this;
     }
+
     
 }

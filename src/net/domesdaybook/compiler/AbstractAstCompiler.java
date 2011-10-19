@@ -15,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -40,9 +38,8 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 /**
- * An abstract base class for compilers which compile an
- * expression into an object of type T using an AstParser
- * to generate a parse tree.
+ * An abstract base class for compilers which compile a String expression into an 
+ * object of type T using an {@link AstParser} to generate the parse tree.
  * 
  * @author Matt Palmer
  */
@@ -53,7 +50,7 @@ public abstract class AbstractAstCompiler<T> implements Compiler<T, String> {
      * {@link AstParser}.  Then it invokes the abstract compile
      * method with the resulting parse-tree, to build and return a
      * compiled object of type T.
-     *
+     * <p>
      * Classes implementing this abstract class must implement
      * the other abstract compile method.
      *
@@ -62,24 +59,25 @@ public abstract class AbstractAstCompiler<T> implements Compiler<T, String> {
      * @throws CompileException If the expression could not be parsed.
      */
     @Override
-    public T compile(String expression) throws CompileException {
+    public T compile(final String expression) throws CompileException {
         try {
-            AstParser parser = new AstParser();
-            Tree tree = parser.parseToAST(expression);
-            CommonTree optimisedAST = (CommonTree) parser.optimiseAST(tree);
+            final AstParser parser = new AstParser();
+            final Tree tree = parser.parseToAST(expression);
+            final CommonTree optimisedAST = (CommonTree) parser.optimiseAST(tree);
             return compile(optimisedAST);
-        } catch (ParseException ex) {
+        } catch (final ParseException ex) {
             throw new CompileException(ex);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new CompileException(e);
         }
     }
 
+    
     /**
      * An abstract compile method which takes a parse tree created
      * using the ANTLR parse generator and uses it to build the
      * compiled object of type T.
-     *
+     * <p>
      * Classes implementing this base class must implement this method
      * to perform the actual compilation.
      *

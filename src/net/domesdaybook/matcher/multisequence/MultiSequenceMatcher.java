@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -57,7 +55,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition)
+    public Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition)
             throws IOException;
 
     
@@ -69,7 +67,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition);
+    public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition);
     
     
    
@@ -83,8 +81,8 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
-            final long matchPosition) throws IOException;;
+    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
+            final long matchPosition) throws IOException;
 
     
     /**
@@ -97,7 +95,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, final int matchPosition);    
+    public Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, final int matchPosition);    
         
      
     /**
@@ -107,7 +105,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatch(final Reader reader, final long matchPosition)
+    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition)
        throws IOException;
   
     
@@ -119,7 +117,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition);   
+    public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition);   
     
     
     /**
@@ -130,7 +128,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
+    public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
         throws IOException;
     
 
@@ -142,7 +140,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    SequenceMatcher firstMatchBackwards(final byte[] bytes, final int matchPosition);       
+    public SequenceMatcher firstMatchBackwards(final byte[] bytes, final int matchPosition);       
     
     
     /**
@@ -152,7 +150,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    boolean matchesBackwards(final Reader reader, final long matchPosition)
+    public boolean matchesBackwards(final Reader reader, final long matchPosition)
          throws IOException;;
     
     
@@ -163,20 +161,22 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    boolean matchesBackwards(final byte[] bytes, final int matchPosition);
+    public boolean matchesBackwards(final byte[] bytes, final int matchPosition);
     
     
     /**
+     * Returns the minimum length of the sequences that can matchl
      * 
      * @return int The minimum length of the sequences that can match.
      */
-    int getMinimumLength();
+    public int getMinimumLength();
     
     
     
     /**
+     *  Returns the maximum length of the sequences that can match.
      * 
      * @return int The maximum length of the sequences that can match.
      */
-    int getMaximumLength();
+    public int getMaximumLength();
 }

@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -40,13 +38,15 @@ import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 
 /**
- *
- * @author matt
+ * An abstract searcher implementation which implements the common convenience
+ * search methods, by providing default values to the real search methods.
+ * 
+ * @author Matt Palmer
  */
 public abstract class AbstractSearcher implements Searcher {
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public long searchForwards(final Reader reader, final long fromPosition) 
@@ -56,17 +56,16 @@ public abstract class AbstractSearcher implements Searcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
-    public long searchForwards(final Reader reader) 
-            throws IOException {
+    public long searchForwards(final Reader reader) throws IOException {
         return searchForwards(reader, 0, Long.MAX_VALUE);
     }
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int searchForwards(final byte[] bytes, final int fromPosition) {
@@ -75,7 +74,7 @@ public abstract class AbstractSearcher implements Searcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int searchForwards(final byte[] bytes) {
@@ -84,7 +83,7 @@ public abstract class AbstractSearcher implements Searcher {
 
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public long searchBackwards(final Reader reader, final long fromPosition) 
@@ -94,17 +93,16 @@ public abstract class AbstractSearcher implements Searcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
-    public long searchBackwards(final Reader reader) 
-            throws IOException {
+    public long searchBackwards(final Reader reader) throws IOException {
         return searchBackwards(reader, reader.length() - 1, 0);
     }
 
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int searchBackwards(final byte[] bytes, final int fromPosition) {
@@ -113,15 +111,27 @@ public abstract class AbstractSearcher implements Searcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int searchBackwards(final byte[] bytes) {
         return searchBackwards(bytes, bytes.length - 1, 0);
     }
     
-    
-    protected final long withinLength(final Reader reader, final long position) throws IOException {
-        return reader.getWindow(position) != null? position : reader.length() - 1;
+    /**
+     * Returns a position guaranteed to be within the length of the reader,
+     * or -1 if the reader itself has a length of zero.
+     *
+     * @param reader The reader to acquire a valid position for.
+     * @param position The position to try.
+     * @return A position guaranteed to be a valid position in the reader, or -1 
+     *         if the reader has a length of zero.
+     * @throws IOException if the reader cannot be read from.
+     */
+    protected final long withinLength(final Reader reader, final long position) 
+            throws IOException {
+        final long positionToTry = position < 0 ? 0 : position;
+        return reader.getWindow(positionToTry) != null? 
+                positionToTry : reader.length() - 1;
     }
 }

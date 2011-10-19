@@ -16,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -45,7 +43,7 @@ import net.domesdaybook.object.copy.DeepCopy;
  * A simple class which wraps the initial and final states of an automata.
  * This is useful when building automata, as we don't have to keep
  * recalculating the final states from the automata each time we need them.
- *
+ * <p>
  * Also implements the {@link DeepCopy} interface, so we can easily
  * make deep copies of the wrapper and its wrapped automata.
  *
