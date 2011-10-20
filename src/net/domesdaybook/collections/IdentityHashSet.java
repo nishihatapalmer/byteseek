@@ -110,6 +110,9 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean contains(final Object object) {
         return map.containsKey((T)object);
