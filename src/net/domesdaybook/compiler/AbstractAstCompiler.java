@@ -41,6 +41,8 @@ import org.antlr.runtime.tree.Tree;
  * An abstract base class for compilers which compile a String expression into an 
  * object of type T using an {@link AstParser} to generate the parse tree.
  * 
+ * @param <T> The type of object to build.
+ * 
  * @author Matt Palmer
  */
 public abstract class AbstractAstCompiler<T> implements Compiler<T, String> {
