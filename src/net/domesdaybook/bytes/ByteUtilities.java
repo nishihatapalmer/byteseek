@@ -159,11 +159,26 @@ public final class ByteUtilities {
     }
 
 
+    /**
+     * Returns a bitmask which would match the set of bytes in the array
+     * and no others, if they must match all the bits in the bitmask.  If no
+     * such bitmask exists, then null is returned.
+     * 
+     * @param bytes An array of bytes for which a matching bitmask is required.
+     * @return A bitmask which matches all the bytes in the array (and no others)
+     *         or null if no such bitmask exists.
+     */
     public static Byte getAllBitMaskForBytes(final byte[] bytes) {
         return getAllBitMaskForBytes(toSet(bytes));
     }
 
 
+    /**
+     * Returns a set of bytes from an array of bytes.
+     * 
+     * @param bytes The array of bytes.
+     * @return A set of bytes.
+     */
     public static Set<Byte> toSet(final byte[] bytes) {
         final Set<Byte> setOfBytes = new LinkedHashSet<Byte>((int) Math.round(bytes.length * 1.25));
         addAll(bytes, setOfBytes);
@@ -171,6 +186,12 @@ public final class ByteUtilities {
     }
 
     
+    /**
+     * Adds all the bytes in an array to a collection of Bytes.
+     * 
+     * @param bytes The array of bytes to add.
+     * @param toCollection The collection of Bytes to add to.
+     */
     public static void addAll(final byte[] bytes, final Collection<Byte> toCollection) {
         final int size = bytes.length;
         for (int count = 0; count < size; count++) {
@@ -179,6 +200,12 @@ public final class ByteUtilities {
     }
     
     
+    /**
+     * Returns an array of bytes from a collection of Bytes.
+     * 
+     * @param collection The collection of bytes to convert to an array.
+     * @return An array of bytes
+     */
     public static byte[] toArray(final Collection<Byte> collection) {
         final byte[] result = new byte[collection.size()];
         int position = 0;
@@ -189,6 +216,12 @@ public final class ByteUtilities {
     }
     
     
+    /**
+     * Reverses an array of bytes.
+     * 
+     * @param array The array of bytes to reverse.
+     * @return byte[] The reversed array of bytes.
+     */
     public static byte[] reverseArray(final byte[] array) {
         final int lastpos = array.length - 1;
         final byte[] reversed = new byte[array.length];
@@ -199,6 +232,12 @@ public final class ByteUtilities {
     }
     
     
+    /**
+     * Converts an array of bytes to an array of ints.
+     * 
+     * @param bytes The byte array.
+     * @return int[] The integer array.
+     */
     public static int[] toIntArray(final byte[] bytes) {
         final int[] integers = new int[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
@@ -208,11 +247,25 @@ public final class ByteUtilities {
     }
 
 
+    /**
+     * Returns an array of bytes containing all possible byte values.
+     * 
+     * @return byte[] The array of bytes.
+     */
     public static byte[] getAllByteValues() {
         return getBytesInRange(0, 255);
     }
 
 
+    /**
+     * Returns an array of bytes in the range of values inclusive.
+     * <p>
+     * Note: byte values are specified in the range 0 to 255 (unsigned).
+     * 
+     * @param from The lowest byte value to include.
+     * @param to The highest byte value to include.
+     * @return byte[] The array of bytes.
+     */
     public static byte[] getBytesInRange(final int from, final int to) {
         final byte[] range = new byte[to-from+1];
         int position = 0;
@@ -223,8 +276,15 @@ public final class ByteUtilities {
     }
     
     
+    /**
+     * Returns an inverted set of bytes.  This set of bytes contains all other
+     * possible byte values than the ones in the set provided.
+     * 
+     * @param bytes A set of bytes.
+     * @return Set<Byte> A set of all other bytes.
+     */
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
-        Set<Byte> invertedSet = new LinkedHashSet<Byte>(320);
+        final Set<Byte> invertedSet = new LinkedHashSet<Byte>(320);
         for (int value = 0; value < 256; value++) {
             if (!bytes.contains((byte) value)) {
                 invertedSet.add((byte) value);
@@ -235,7 +295,9 @@ public final class ByteUtilities {
 
     
     /**
-     *
+     * Calculates a bitmask for which the set of bytes provided would match all of
+     * the bits in the bitmask, and for which there are no other bytes it would match.
+     * 
      * @param bytes A set of bytes to find an all bitmask to match.
      * @return A bitmask to match the set with, or null if no bitmask exists for that set of bytes.
      */
@@ -246,7 +308,7 @@ public final class ByteUtilities {
             allBitMask = new Byte((byte) 0);
         } else if (Arrays.binarySearch(VALID_ALL_BITMASK_SET_SIZES, setSize) >= 0) {
             // Build a candidate bitmask from the bits all the bytes have in common.
-            int bitsInCommon = getBitsInCommon(bytes);
+            final int bitsInCommon = getBitsInCommon(bytes);
             if (bitsInCommon > 0) {
                 // If the number of bytes in the set is the same as the number of bytes
                 // which would match the bitmask, then the set of bytes can be matched
@@ -263,6 +325,8 @@ public final class ByteUtilities {
 
 
     /**
+     * Calculates a bitmask for which the set of bytes provided would match any of
+     * the bits in the bitmask, and for which there are no other bytes it would match.
      *
      * @param bytes A set of bytes to find an any bitmask to match.
      * @return A bitmask to match the set with, or null if no bitmask exists for that set of bytes.
@@ -290,12 +354,23 @@ public final class ByteUtilities {
     }
 
 
+    /**
+     * Calculates a bitmask for which the set of bytes provided in the array
+     * would match all of the bits in the bitmask, and for which there are no 
+     * other bytes it would match.
+     *
+     * @param bytes
+     * @return
+     */
     public static Byte getAnyBitMaskForBytes(final byte[] bytes) {
         return getAnyBitMaskForBytes(toSet(bytes));
     }
     
+    
     /**
-     *
+     * Returns a bitmask which contains all the bits in common in the set of bytes
+     * provided.
+     * 
      * @param bytes A set of bytes to find the bits in common.
      * @return An integer mask containing only the bits in common.
      */
@@ -308,10 +383,23 @@ public final class ByteUtilities {
     }
 
 
+    /**
+     * Calculate a bitmask in which a bit is set if across all the bytes in the 
+     * set provided, there were 128 matches for that bit.  This means that the
+     * set of bytes contains all the bytes with that bit set.
+     * 
+     * <p>
+     * Any given bit can only match a maximum of 128 byte values (the other 128 
+     * being the ones where that bit is not set).  
+     * 
+     * @param bytes A set of bytes 
+     * @return int a bitmask containing bits where all possible byte values are
+     *             present in the set for that bit.
+     */
     public static int getBitsSetForAllPossibleBytes(final Set<Byte> bytes) {
         // Count how many bytes match each bit:
         int bit1 = 0, bit2 = 0, bit3 = 0, bit4 = 0, bit5 = 0, bit6 = 0, bit7 = 0, bit8 = 0;
-        for (Byte b : bytes) {
+        for (final Byte b : bytes) {
             final int value = b & 0xFF;
             bit1 += value & 1;
             bit2 += (value & 2) >> 1;
@@ -347,7 +435,8 @@ public final class ByteUtilities {
 
 
     /**
-     *
+     * Calculates a bitmask containing all the set bits in the set of bytes provided.
+     * 
      * @param bytes The set of bytes to find all the bits used in.
      * @return A bitmask containing all the bits used across the set of bytes.
      */
@@ -361,7 +450,8 @@ public final class ByteUtilities {
 
 
     /**
-     *
+     * Calculates a bitmask containing all the unset bits in the set of bytes provided.
+     * 
      * @param bytes A set of bytes to test for unused bits.
      * @return A bitmask containing all the bits which were unused across the set of bytes.
      */
@@ -416,7 +506,7 @@ public final class ByteUtilities {
      * a hex byte.
      * 
      * @param prettyPrint Whether to pretty print the byte value.
-     * @param value The byte value to represent as a string.
+     * @param byteValue 
      * @return A string containing the byte value as a string.
      */
     public static String byteToString(final boolean prettyPrint, int byteValue) {
