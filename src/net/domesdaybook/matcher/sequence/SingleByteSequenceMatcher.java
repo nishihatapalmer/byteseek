@@ -90,7 +90,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * Constructs a SingleByteSequenceMatcher from a repeated {@link SingleByteMatcher} object.
      *
      * @param matcher The SingleByteMatcher to construct this sequence matcher from.
-     * @param numberOfRepeats The number of times to repeat the SingleByteMatcher.
+     * @param numberOfMatchers 
      * @throws IllegalArgumentException if the matcher is null or the number of repeats is less than one.
      */
     public SingleByteSequenceMatcher(final SingleByteMatcher matcher, final int numberOfMatchers) {
@@ -110,16 +110,15 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) throws IOException {
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
         final int localLength = length;
         final List<SingleByteMatcher> matchList = this.matcherSequence;        
-        Window window = reader.getWindow(matchFrom);
+        Window window = reader.getWindow(matchPosition);
         int checkPos = 0;
         while (window != null) {
-            final int offset = reader.getWindowOffset(matchFrom + checkPos);
+            final int offset = reader.getWindowOffset(matchPosition + checkPos);
             final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             for (int windowPos = offset; windowPos < endPos; windowPos++) {
@@ -131,7 +130,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
             if (checkPos == localLength) {
                 return true;
             } else {
-                window = reader.getWindow(matchFrom + checkPos);
+                window = reader.getWindow(matchPosition + checkPos);
             }
         }
         return false;
@@ -140,18 +139,15 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
-     * 
-     * Note: will return false if access is outside the byte array.
-     *       It will not throw an IndexOutOfBoundsException.
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
+    public boolean matches(final byte[] bytes, final int matchPosition) {
         final int localStop = length;
-        if (matchFrom + localStop < bytes.length && matchFrom >= 0) {
+        if (matchPosition + localStop < bytes.length && matchPosition >= 0) {
             final List<SingleByteMatcher> matchList = this.matcherSequence;
             for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
                 final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-                if (!byteMatcher.matches(bytes[matchFrom + byteIndex])) {
+                if (!byteMatcher.matches(bytes[matchPosition + byteIndex])) {
                     return false;
                 }
             }
@@ -165,12 +161,12 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         final List<SingleByteMatcher> matchList = this.matcherSequence;
         final int localStop = length;
         for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
             final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-            final byte byteRead = bytes[matchFrom + byteIndex];
+            final byte byteRead = bytes[matchPosition + byteIndex];
             if (!byteMatcher.matches(byteRead)) {
                 return false;
             }

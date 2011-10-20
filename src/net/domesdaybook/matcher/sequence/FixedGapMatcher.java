@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -42,13 +40,7 @@ import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable object which matches a gap of unknown bytes.
- *
- * It always matches, even if the sequence being matched against is shorter
- * than the gap. This is true in general of all the sequence matchers, in that
- * they do not test to see if they overrun the Reader, or guarantee that an
- * IndexOutOfBounds exception will be thrown. In the case of the fixed gap matcher,
- * no access is made to the Reader at all, so no exception can ever be thrown.
- *
+ * 
  * @author matt
  */
 public final class FixedGapMatcher implements SequenceMatcher {
@@ -77,6 +69,10 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public SingleByteMatcher getByteMatcherForPosition(final int position) {
+        if (position < 0 || position >= gapLength) {
+            final String message = String.format("Position %d out of bounds, length is %d", position, gapLength);
+            throw new IndexOutOfBoundsException(message);
+        }
         return ANY_MATCHER;
     }
 
@@ -101,7 +97,6 @@ public final class FixedGapMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final Reader reader, final long matchPosition) throws IOException {
@@ -112,7 +107,6 @@ public final class FixedGapMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
@@ -122,7 +116,6 @@ public final class FixedGapMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {

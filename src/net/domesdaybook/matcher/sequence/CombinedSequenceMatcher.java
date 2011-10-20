@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -90,20 +88,18 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     }
 
 
-
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) throws IOException {
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
         final int localLength = length;
         final List<SequenceMatcher> localList = matchers;        
-        Window window = reader.getWindow(matchFrom);
+        Window window = reader.getWindow(matchPosition);
         int checkPos = 0;
         int matchIndex = 0;
         while (window != null) {
-            final int offset = reader.getWindowOffset(matchFrom + checkPos);
+            final int offset = reader.getWindowOffset(matchPosition + checkPos);
             final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             while (offset + checkPos < endPos) {
@@ -115,7 +111,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
                         return false;
                     }
                 } else { // the matcher spans two windows, or is at the limit of the final window.
-                    if (!matcher.matches(reader, matchFrom + checkPos)) {
+                    if (!matcher.matches(reader, matchPosition + checkPos)) {
                         return false;
                     }
                 }
@@ -124,7 +120,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
             if (checkPos == localLength) {
                 return true;
             } else {
-                window = reader.getWindow(matchFrom + checkPos);
+                window = reader.getWindow(matchPosition + checkPos);
             }
         }
         return false;
@@ -133,12 +129,11 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
-        if (matchFrom + length < bytes.length && matchFrom >= 0) {
-            int matchAt = matchFrom;
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        if (matchPosition + length < bytes.length && matchPosition >= 0) {
+            int matchAt = matchPosition;
             final List<SequenceMatcher> localList = matchers;
             for (int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++) {
                 final SequenceMatcher matcher = localList.get(matchIndex);
@@ -158,11 +153,10 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
-     * 
      */
     @Override
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
-        int matchAt = matchFrom;
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        int matchAt = matchPosition;
         final List<SequenceMatcher> localList = matchers;
         for (int matchIndex = 0, stop=localList.size(); matchIndex < stop; matchIndex++) {
             final SequenceMatcher matcher = localList.get(matchIndex);
@@ -212,13 +206,15 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
 
 
     /**
-     *
-     * @return The list of {@link SequenceMatcher} objects this combined matcher matches.
+     * Returns the list of {@link SequenceMatcher}s this combined matcher matches.
+     * 
+     * @return The list of SequenceMatchers.
      */
     public List<SequenceMatcher> getMatchers() {
         return matchers;
     }
 
+    
     /**
      * Calculates an index of which {@link SequenceMatcher} to use at which
      * position in the combined sequence matcher.
@@ -258,9 +254,10 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
      * A simple class to hold a SequenceMatcher and the offset into it for a
      * given position in the CombinedSequenceMatcher.
      */
-    private final static class ByteMatcherIndex {
+    private static class ByteMatcherIndex {
         public final SequenceMatcher matcher;
         public final int offset;
+        
         ByteMatcherIndex(final SequenceMatcher matcher, final int offset) {
             this.matcher = matcher;
             this.offset= offset;

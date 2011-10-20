@@ -102,14 +102,14 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom)
+    public boolean matches(final Reader reader, final long matchPosition)
             throws IOException {
         final int localLength = length;
         final byte[] localArray = byteArray;          
-        Window window = reader.getWindow(matchFrom);
+        Window window = reader.getWindow(matchPosition);
         int checkPos = 0;
         while (window != null) {
-            final int offset = reader.getWindowOffset(matchFrom + checkPos);
+            final int offset = reader.getWindowOffset(matchPosition + checkPos);
             final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             for (int windowPos = offset; windowPos < endPos; windowPos++) {
@@ -120,7 +120,7 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
             if (checkPos == localLength) {
                 return true;
             } else {
-                window = reader.getWindow(matchFrom + checkPos);
+                window = reader.getWindow(matchPosition + checkPos);
             }
         }
         return false;
@@ -131,12 +131,12 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
+    public boolean matches(final byte[] bytes, final int matchPosition) {
         final int localLength = length;
-        if (matchFrom + localLength <= bytes.length && matchFrom >= 0) {
+        if (matchPosition + localLength <= bytes.length && matchPosition >= 0) {
             final byte[] localArray = byteArray;
             for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                if (localArray[byteIndex] != bytes[matchFrom + byteIndex]) {
+                if (localArray[byteIndex] != bytes[matchPosition + byteIndex]) {
                     return false;
                 }
             }
@@ -151,11 +151,11 @@ public final class CaseSensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         final int localLength = length;
         final byte[] localArray = byteArray;
         for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-            if (!(localArray[byteIndex] == bytes[matchFrom + byteIndex])) {
+            if (!(localArray[byteIndex] == bytes[matchPosition + byteIndex])) {
                 return false;
             }
         }
