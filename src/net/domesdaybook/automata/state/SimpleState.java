@@ -172,7 +172,7 @@ public class SimpleState implements State {
      * @inheritDoc
      */
     @Override
-    public final void appendNextStatesForByte(final Collection<State> states, byte value) {
+    public final void appendNextStates(final Collection<State> states, byte value) {
         transitionStrategy.appendDistinctStatesForByte(states, value, transitions);
     }
 

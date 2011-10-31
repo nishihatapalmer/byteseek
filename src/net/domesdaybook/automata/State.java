@@ -130,7 +130,7 @@ public interface State extends DeepCopy {
      * @param states The collection to which the next states (if any) will be added.
      * @see TransitionStrategy
      */
-    public void appendNextStatesForByte(final Collection<State> states, final byte value);
+    public void appendNextStates(final Collection<State> states, final byte value);
 
     
     /**
