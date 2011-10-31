@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -36,64 +34,125 @@
 package net.domesdaybook.matcher.automata;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import net.domesdaybook.automata.State;
+import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  *
  * @author Matt Palmer
  */
-//public class NfaMatcher implements Matcher {
-public class NfaMatcher {
+public final class NfaMatcher implements Matcher {
 
     private final State firstState;
 
 
-    public NfaMatcher(State firstState) {
+    /**
+     * 
+     * @param firstState
+     */
+    public NfaMatcher(final State firstState) {
         this.firstState = firstState;
     }
     
     
-//    @Override
-    public final boolean matches(final Reader reader, final long fromPosition) 
+    /**
+     * 
+     * @param reader
+     * @param matchPosition
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public boolean matches(final Reader reader, final long matchPosition) 
         throws IOException {
-        // If the first state is final, this will always match.
-        // Most Nfas won't have a first state which matches, but this is possible
-        // For example, the expression "A?" matches A, or nothing at all.  
-        // It can make sense for an Nfa to have an initial final state, but only 
-        // if the matching algorithm is trying to locate all possible matches,
-        // in which case you don't stop matching until there are no further options.
+        // Setup 
+        long currentPosition = matchPosition;    
+        Set<State> nextStates = new LinkedHashSet<State>();   
+        Set<State> activeStates = new LinkedHashSet<State>();
+        activeStates.add(firstState);
+        Window window = reader.getWindow(currentPosition);
         
-        //FIX: can have duplicate states from nfa or dfa's.
-        //     An nfa can return more than one state for the same byte,
-        //     and we are processing more than one state in any case.
-        
-        if (!firstState.isFinal()) {
+        //While we have a window on the data to match in:
+        while (window != null) {
+            final byte[] bytes = window.getArray();            
+            final int windowLength = window.getLimit();
+            final int windowStart = reader.getWindowOffset(currentPosition);            
+            int windowPos = windowStart;
+            
+            // While we have states to match:
+            while (!activeStates.isEmpty() && windowPos < windowLength) {
                 
-            final List<State> nextStates = new ArrayList<State>();                
-            List<State> currentStates = new ArrayList<State>();
-            currentStates.add(firstState);
-            long currentPosition = fromPosition;            
-            while (!currentStates.isEmpty()) {
-                
-                // Get the next byte to match on:
-                final byte currentByte = reader.readByte(currentPosition++);
-
-                // Get the next set of active states from the current states:
-                nextStates.clear();
-                for (State currentState : currentStates) {
+                // See if any active states are final (a match).
+                for (final State currentState : activeStates) {
                     if (currentState.isFinal()) {
                         return true;
                     }
-                    currentState.appendNextStatesForByte(nextStates, currentByte);
+                }
+                
+                // No match was found, find the next distinct states to follow:
+                final byte currentByte = bytes[windowPos++];
+                for (final State currentState : activeStates) {
+                    currentState.appendNextStates(nextStates, currentByte);
                 }
 
-                currentStates = nextStates;
+                // Make the next states active.  The last active set is 
+                // re-used for the next states to be processed.
+                final Set<State> lastActiveSet = activeStates;
+                activeStates = nextStates;
+                nextStates = lastActiveSet;
+                nextStates.clear();
             }
+            currentPosition += windowLength - windowStart;
+            window = reader.getWindow(currentPosition);
         }
-        return firstState.isFinal();
+        return false;
     }
+
+    
+    /**
+     * 
+     * @param bytes
+     * @param matchPosition
+     * @return 
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        // Setup
+        int currentPosition = matchPosition;    
+        Set<State> nextStates = new LinkedHashSet<State>();   
+        Set<State> activeStates = new LinkedHashSet<State>();
+        activeStates.add(firstState);
+        
+        // Match automata:
+        while (!activeStates.isEmpty()) {
+
+            // See if any active states are final (a match).
+            for (final State currentState : activeStates) {
+                if (currentState.isFinal()) {
+                    return true;
+                }
+            }
+            
+            // No match was found, find the next distinct states to follow:
+            final byte currentByte = bytes[currentPosition++];
+            for (final State currentState : activeStates) {
+                currentState.appendNextStates(nextStates, currentByte);
+            }
+
+            // Make the next states active.  The last active set is cleared 
+            // and re-used for the next states.
+            final Set<State> lastActiveSet = activeStates;
+            activeStates = nextStates;
+            nextStates = lastActiveSet;
+            nextStates.clear();
+        }
+        return false;
+    }
+
+
 }
 
