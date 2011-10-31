@@ -115,22 +115,25 @@ public class DfaMatcher implements Matcher {
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         // Setup
-        int currentPosition = matchPosition;    
-        final LastItemCollection<State> activeState = new LastItemCollection<State>();
-        activeState.add(firstState);
-        
-        // While there is a state to process:
-        while (!activeState.isEmpty()) {
-            final State currentState = activeState.getItem();
-            
-            // See if the next state is final (a match).
-            if (currentState.isFinal()) {
-                return true;
+        final int length = bytes.length;
+        if (matchPosition >= 0 && matchPosition < length) {
+            int currentPosition = matchPosition;    
+            final LastItemCollection<State> activeState = new LastItemCollection<State>();
+            activeState.add(firstState);
+
+            // While there is a state to process:
+            while (!activeState.isEmpty() && currentPosition < length) {
+                final State currentState = activeState.getItem();
+
+                // See if the next state is final (a match).
+                if (currentState.isFinal()) {
+                    return true;
+                }
+
+                // No match was found, find the next state to follow:
+                final byte currentByte = bytes[currentPosition++];
+                currentState.appendNextStates(activeState, currentByte);
             }
-            
-            // No match was found, find the next state to follow:
-            final byte currentByte = bytes[currentPosition++];
-            currentState.appendNextStates(activeState, currentByte);
         }
         return false;
     }
