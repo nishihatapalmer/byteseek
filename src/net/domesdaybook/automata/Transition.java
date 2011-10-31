@@ -56,7 +56,7 @@ public interface Transition extends DeepCopy {
      * @return State The State to transition to for this byte, or null if the
      *               byte does not match.
      */
-    public State getStateForByte(final byte theByte);
+    public State getStateForByte(byte theByte);
 
     
     /**

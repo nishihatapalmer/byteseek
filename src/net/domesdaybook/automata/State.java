@@ -130,7 +130,7 @@ public interface State extends DeepCopy {
      * @param states The collection to which the next states (if any) will be added.
      * @see TransitionStrategy
      */
-    public void appendNextStates(final Collection<State> states, final byte value);
+    public void appendNextStates(Collection<State> states, byte value);
 
     
     /**
@@ -160,7 +160,7 @@ public interface State extends DeepCopy {
      * 
      * @param strategy The transition strategy to use for this state.
      */
-    public void setTransitionStrategy(final TransitionStrategy strategy);
+    public void setTransitionStrategy(TransitionStrategy strategy);
     
     
     /**
@@ -176,7 +176,7 @@ public interface State extends DeepCopy {
      * 
      * @param isFinal The finality of the state.
      */
-    public void setIsFinal(final boolean isFinal);
+    public void setIsFinal(boolean isFinal);
 
     
     
@@ -185,7 +185,7 @@ public interface State extends DeepCopy {
      * 
      * @param transition The transition to add to this state.
      */
-    public void addTransition(final Transition transition);
+    public void addTransition(Transition transition);
 
 
     /**
@@ -193,7 +193,7 @@ public interface State extends DeepCopy {
      * 
      * @param transitions A list of transitions to add to this state.
      */
-    public void addAllTransitions(final List<Transition> transitions);
+    public void addAllTransitions(List<Transition> transitions);
 
     
     /**
@@ -202,7 +202,7 @@ public interface State extends DeepCopy {
      * @param transition The transition to remove from this state.
      * @return boolean Whether the transition was in the State.
      */
-    public boolean removeTransition(final Transition transition);    
+    public boolean removeTransition(Transition transition);    
     
     
     /**
@@ -224,7 +224,7 @@ public interface State extends DeepCopy {
      * @return State A deep copy of this State and any Transitions and States
      *         reachable from this State.
      */
-    public State deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects);
+    public State deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }
 
