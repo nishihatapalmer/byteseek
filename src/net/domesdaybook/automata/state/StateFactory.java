@@ -52,6 +52,6 @@ public interface StateFactory {
      * @param isFinal Whether the state is final or not.
      * @return An object implementing the State interface.
      */
-    public State create(final boolean isFinal);    
+    public State create(boolean isFinal);    
     
 }

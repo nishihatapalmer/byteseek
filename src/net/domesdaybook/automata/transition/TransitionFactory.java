@@ -64,7 +64,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition A transition to the State on the byte value provided.
      */
-    public Transition createByteTransition(final byte theByte, final State toState);
+    public Transition createByteTransition(byte theByte, State toState);
 
     
     /**
@@ -78,7 +78,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition a transition to the State on matching all bits set in the bitmask provided.
      */
-    public Transition createAllBitmaskTransition(final byte bitMask, final State toState);
+    public Transition createAllBitmaskTransition(byte bitMask, State toState);
 
     
     /**
@@ -92,7 +92,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition a transition to the State on matching any bits set in the bitmask provided.
      */
-    public Transition createAnyBitmaskTransition(final byte bitMask, final State toState);
+    public Transition createAnyBitmaskTransition(byte bitMask, State toState);
 
     
     /**
@@ -105,7 +105,7 @@ public interface TransitionFactory {
      * @return Transition a transition to the State on matching any of the bytes in the
      *                    set of bytes (or the inverted set) provided.
      */
-    public Transition createSetTransition(final Set<Byte> byteSet, final boolean inverted, final State toState);
+    public Transition createSetTransition(Set<Byte> byteSet, boolean inverted, State toState);
 
     
     /**
@@ -114,7 +114,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition a transition to the State which always matches.
      */
-    public Transition createAnyByteTransition(final State toState);
+    public Transition createAnyByteTransition(State toState);
 
     
     /**
@@ -126,6 +126,6 @@ public interface TransitionFactory {
      * @return Transition a transition to the State which matches bytes as if they
      *         were ASCII text case-insensitively.
      */
-    public Transition createCaseInsensitiveByteTransition(final char Char, final State toState);
+    public Transition createCaseInsensitiveByteTransition(char Char, State toState);
 
 }
