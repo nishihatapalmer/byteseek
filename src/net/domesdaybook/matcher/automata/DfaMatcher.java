@@ -36,10 +36,103 @@
 
 package net.domesdaybook.matcher.automata;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
+import net.domesdaybook.automata.State;
+import net.domesdaybook.collections.LastItemCollection;
+import net.domesdaybook.matcher.Matcher;
+import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
+
 /**
  *
  * @author Matt Palmer
  */
-public class DfaMatcher {
+public class DfaMatcher implements Matcher {
+
+    private final State firstState;
+
+
+    /**
+     * 
+     * @param firstState
+     */
+    public DfaMatcher(final State firstState) {
+        this.firstState = firstState;
+    }
+    
+    
+    /**
+     * 
+     * @param reader
+     * @param matchPosition
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public boolean matches(final Reader reader, final long matchPosition) 
+        throws IOException {
+        // Setup 
+        long currentPosition = matchPosition;    
+        final LastItemCollection<State> activeState = new LastItemCollection<State>();
+        activeState.add(firstState);
+        Window window = reader.getWindow(currentPosition);
+        
+        //While we have a window on the data to match in:
+        while (window != null) {
+            final byte[] bytes = window.getArray();            
+            final int windowLength = window.getLimit();
+            final int windowStart = reader.getWindowOffset(currentPosition);            
+            int windowPos = windowStart;
+            
+            // While we have states to match:
+            while (!activeState.isEmpty() && windowPos < windowLength) {
+                final State currentState = activeState.getItem();
+                
+                // See if the active states is final (a match).
+                if (currentState.isFinal()) {
+                    return true;
+                }
+                
+                // No match was found, find the next state to follow:
+                final byte currentByte = bytes[windowPos++];
+                currentState.appendNextStates(activeState, currentByte);
+            }
+            currentPosition += windowLength - windowStart;
+            window = reader.getWindow(currentPosition);
+        }
+        return false;
+    }
+
+    
+    /**
+     * 
+     * @param bytes
+     * @param matchPosition
+     * @return 
+     */
+    @Override
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        // Setup
+        int currentPosition = matchPosition;    
+        final LastItemCollection<State> activeState = new LastItemCollection<State>();
+        activeState.add(firstState);
+        
+        // While there is a state to process:
+        while (!activeState.isEmpty()) {
+            final State currentState = activeState.getItem();
+            
+            // See if the next state is final (a match).
+            if (currentState.isFinal()) {
+                return true;
+            }
+            
+            // No match was found, find the next state to follow:
+            final byte currentByte = bytes[currentPosition++];
+            currentState.appendNextStates(activeState, currentByte);
+        }
+        return false;
+    }
 
 }
