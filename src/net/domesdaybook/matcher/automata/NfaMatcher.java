@@ -122,33 +122,36 @@ public final class NfaMatcher implements Matcher {
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         // Setup
-        int currentPosition = matchPosition;    
-        Set<State> nextStates = new LinkedHashSet<State>();   
-        Set<State> activeStates = new LinkedHashSet<State>();
-        activeStates.add(firstState);
-        
-        // Match automata:
-        while (!activeStates.isEmpty()) {
+        final int length = bytes.length;
+        if (matchPosition >= 0 && matchPosition < length) {
+            int currentPosition = matchPosition;    
+            Set<State> nextStates = new LinkedHashSet<State>();   
+            Set<State> activeStates = new LinkedHashSet<State>();
+            activeStates.add(firstState);
 
-            // See if any active states are final (a match).
-            for (final State currentState : activeStates) {
-                if (currentState.isFinal()) {
-                    return true;
+            // Match automata:
+            while (!activeStates.isEmpty() && currentPosition < length) {
+
+                // See if any active states are final (a match).
+                for (final State currentState : activeStates) {
+                    if (currentState.isFinal()) {
+                        return true;
+                    }
                 }
-            }
-            
-            // No match was found, find the next distinct states to follow:
-            final byte currentByte = bytes[currentPosition++];
-            for (final State currentState : activeStates) {
-                currentState.appendNextStates(nextStates, currentByte);
-            }
 
-            // Make the next states active.  The last active set is cleared 
-            // and re-used for the next states.
-            final Set<State> lastActiveSet = activeStates;
-            activeStates = nextStates;
-            nextStates = lastActiveSet;
-            nextStates.clear();
+                // No match was found, find the next distinct states to follow:
+                final byte currentByte = bytes[currentPosition++];
+                for (final State currentState : activeStates) {
+                    currentState.appendNextStates(nextStates, currentByte);
+                }
+
+                // Make the next states active.  The last active set is cleared 
+                // and re-used for the next states.
+                final Set<State> lastActiveSet = activeStates;
+                activeStates = nextStates;
+                nextStates = lastActiveSet;
+                nextStates.clear();
+            }
         }
         return false;
     }
