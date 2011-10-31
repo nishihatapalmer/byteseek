@@ -53,7 +53,7 @@ public interface Matcher {
      * @return Whether there is a match at the given position.
      * @throws IOException if the Reader cannot read.
      */
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException;
+    public boolean matches(Reader reader, long matchPosition) throws IOException;
     
     
     /**
@@ -63,5 +63,5 @@ public interface Matcher {
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */
-    public boolean matches(final byte[] bytes, final int matchPosition);
+    public boolean matches(byte[] bytes, int matchPosition);
 }
