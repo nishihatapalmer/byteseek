@@ -75,7 +75,7 @@ public class DfaMatcher implements Matcher {
         throws IOException {
         // Setup 
         long currentPosition = matchPosition;    
-        final LastItemCollection<State> nextStateCollection = new LastItemCollection<State>();
+        final LastItemCollection<State> nextState = new LastItemCollection<State>();
         Window window = reader.getWindow(currentPosition);
         State currentState = firstState;
         //While we have a window on the data to match in:
@@ -95,8 +95,8 @@ public class DfaMatcher implements Matcher {
                 
                 // No match was found, find the next state to follow:
                 final byte currentByte = bytes[windowPos++];
-                currentState.appendNextStates(nextStateCollection, currentByte);
-                currentState = nextStateCollection.getItem();
+                currentState.appendNextStates(nextState, currentByte);
+                currentState = nextState.getItem();
             }
             currentPosition += windowLength - windowStart;
             window = reader.getWindow(currentPosition);
@@ -117,7 +117,7 @@ public class DfaMatcher implements Matcher {
         final int length = bytes.length;
         if (matchPosition >= 0 && matchPosition < length) {
             int currentPosition = matchPosition;    
-            final LastItemCollection<State> nextStateCollection = new LastItemCollection<State>();
+            final LastItemCollection<State> nextState = new LastItemCollection<State>();
             State currentState = firstState;
 
             // While there is a state to process:
@@ -130,8 +130,8 @@ public class DfaMatcher implements Matcher {
 
                 // No match was found, find the next state to follow:
                 final byte currentByte = bytes[currentPosition++];
-                currentState.appendNextStates(nextStateCollection, currentByte);
-                currentState = nextStateCollection.getItem();
+                currentState.appendNextStates(nextState, currentByte);
+                currentState = nextState.getItem();
             }
         }
         return false;
