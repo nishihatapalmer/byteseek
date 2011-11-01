@@ -75,10 +75,9 @@ public class DfaMatcher implements Matcher {
         throws IOException {
         // Setup 
         long currentPosition = matchPosition;    
-        final LastItemCollection<State> activeState = new LastItemCollection<State>();
-        activeState.add(firstState);
+        final LastItemCollection<State> nextStateCollection = new LastItemCollection<State>();
         Window window = reader.getWindow(currentPosition);
-        
+        State currentState = firstState;
         //While we have a window on the data to match in:
         while (window != null) {
             final byte[] bytes = window.getArray();            
@@ -87,8 +86,7 @@ public class DfaMatcher implements Matcher {
             int windowPos = windowStart;
             
             // While we have states to match:
-            while (!activeState.isEmpty() && windowPos < windowLength) {
-                final State currentState = activeState.getItem();
+            while (currentState != null && windowPos < windowLength) {
                 
                 // See if the active states is final (a match).
                 if (currentState.isFinal()) {
@@ -97,7 +95,8 @@ public class DfaMatcher implements Matcher {
                 
                 // No match was found, find the next state to follow:
                 final byte currentByte = bytes[windowPos++];
-                currentState.appendNextStates(activeState, currentByte);
+                currentState.appendNextStates(nextStateCollection, currentByte);
+                currentState = nextStateCollection.getItem();
             }
             currentPosition += windowLength - windowStart;
             window = reader.getWindow(currentPosition);
@@ -118,12 +117,11 @@ public class DfaMatcher implements Matcher {
         final int length = bytes.length;
         if (matchPosition >= 0 && matchPosition < length) {
             int currentPosition = matchPosition;    
-            final LastItemCollection<State> activeState = new LastItemCollection<State>();
-            activeState.add(firstState);
+            final LastItemCollection<State> nextStateCollection = new LastItemCollection<State>();
+            State currentState = firstState;
 
             // While there is a state to process:
-            while (!activeState.isEmpty() && currentPosition < length) {
-                final State currentState = activeState.getItem();
+            while (currentState != null && currentPosition < length) {
 
                 // See if the next state is final (a match).
                 if (currentState.isFinal()) {
@@ -132,7 +130,8 @@ public class DfaMatcher implements Matcher {
 
                 // No match was found, find the next state to follow:
                 final byte currentByte = bytes[currentPosition++];
-                currentState.appendNextStates(activeState, currentByte);
+                currentState.appendNextStates(nextStateCollection, currentByte);
+                currentState = nextStateCollection.getItem();
             }
         }
         return false;
