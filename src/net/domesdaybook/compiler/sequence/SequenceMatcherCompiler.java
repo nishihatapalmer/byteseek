@@ -63,38 +63,55 @@ import org.antlr.runtime.tree.CommonTree;
  * A compiler which produces a {@link SequenceMatcher} from an
  * abstract syntax tree provided by the {@link AbstractAstCompiler} class,
  * which it extends.
- *
+ * <p>
  * It can handle nearly all the syntax processable by the {@link AstParser},
  * but it cannot handle any syntax which would give variable lengths to
  * match, or which would have alternative sequences of bytes,
  * as a sequence matcher can only match a single defined sequence.
- *
+ * <p>
  * In general, this means that it *cannot* handle alternatives (X|Y|Z),
  * optionality X?, variable length repeats {n-m}, 
  * and the wildcard repeats * and +.
- *
+ * <p>
  * It can handle fixed length repeats {n}.  Also, alternative sequences
  * (X|Y|Z) where each alternative is one byte long can be handled, but only
- * because they are pre-optimised by the AbstractAstCompiler class into a [set] of bytes
- * instead of a list of alternatives, before this compiler even sees them.
- * Therefore, this should not be relied upon, as it is an artefact of an earlier
- * stage of optimisation which may or may not hold true in the future.  This
+ * because they are pre-optimised by the AbstractAstCompiler class into a [set] 
+ * of bytes instead of a list of alternatives, before this compiler even sees them.
+ * Therefore, this may not be relied upon, as it is an artefact of an earlier
+ * stage of optimisation which may or may not hold true in the future. This
  * compiler, in principle, cannot handle alternative sequences if they are
  * provided to it.
  * 
  * @author Matt Palmer
+ * @see AbstractAstCompiler
+ * @see SequenceMatcher
  */
 public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceMatcher> {
 
     private static SequenceMatcherCompiler defaultCompiler;
     
     
+    /**
+     * Compiles a SequenceMatcher from a byteSeek regular expression (limited to
+     * syntax which produces fixed-length sequences).  It will use the default
+     * {@link SimpleSingleByteMatcherFactory} to produce matchers for sets of bytes.
+     * 
+     * @param expression The regular expression to compile
+     * @return SequenceMatcher a SequenceMatcher matching the regular expression.
+     * @throws CompileException If the expression could not be compiled into a SequenceMatcher.
+     */
     public static SequenceMatcher sequenceMatcherFrom(final String expression) throws CompileException {
         defaultCompiler = new SequenceMatcherCompiler();
         return defaultCompiler.compile(expression);
     }
     
     
+    /**
+     * Returns a SequenceMatcher matching the array of bytes.
+     * 
+     * @param bytes The bytes to produce a SequenceMatcher from.
+     * @return SequenceMatcher a SequenceMatcher matching the bytes.
+     */
     public static SequenceMatcher sequenceMatcherFrom(final byte[] bytes) {
         return new ByteSequenceMatcher(bytes);
     }
@@ -103,11 +120,23 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     private final SingleByteMatcherFactory matcherFactory;
 
     
+    /**
+     * Default constructor which uses the {@link SimpleSingleByteMatcherFactory}
+     * to produce matchers for sets of bytes.
+     * 
+     */
     public SequenceMatcherCompiler() {
         matcherFactory = new SimpleSingleByteMatcherFactory();
     }
 
-    public SequenceMatcherCompiler(SingleByteMatcherFactory factoryToUse) {
+    /**
+     * Constructor which uses the provided {@link SingleByteMatcherFactory} to
+     * produce matchers for sets of bytes
+     * 
+     * @param factoryToUse The SingleByteMatcherFactory used to produce matchers
+     * for sets of bytes.
+     */
+    public SequenceMatcherCompiler(final SingleByteMatcherFactory factoryToUse) {
         matcherFactory = factoryToUse;
     }
 
@@ -118,7 +147,6 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
      *
      * @param ast The abstract syntax tree provided by the {@link AbstractAstCompiler} class.
      * @return A {@link SequenceMatcher} which matches the expression defined by the ast passed in.
-     * @throws ParseException If the ast could not be parsed.
      */
     @Override
     public SequenceMatcher compile(final CommonTree ast) throws CompileException {
@@ -158,9 +186,9 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
             case (regularExpressionParser.SEQUENCE): {
 
-                List<Byte> byteValuesToJoin = new ArrayList<Byte>();
-                List<SingleByteMatcher> singleByteSequence = new ArrayList<SingleByteMatcher>();
-                List<SequenceMatcher> sequences = new ArrayList<SequenceMatcher>();
+                final List<Byte> byteValuesToJoin = new ArrayList<Byte>();
+                final List<SingleByteMatcher> singleByteSequence = new ArrayList<SingleByteMatcher>();
+                final List<SequenceMatcher> sequences = new ArrayList<SequenceMatcher>();
 
                 for (int childIndex = 0, stop = ast.getChildCount(); childIndex < stop; childIndex++) {
                     final CommonTree child = (CommonTree) ast.getChild(childIndex);
@@ -302,42 +330,36 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
             // where there is not a parent Sequence node.
 
             case (regularExpressionParser.BYTE): {
-                //matcher = new ByteSequenceMatcher(ParseUtils.getHexByteValue(ast));
                 matcher = new ByteMatcher(ParseUtils.getHexByteValue(ast));
                 break;
             }
 
 
             case (regularExpressionParser.ALL_BITMASK): {
-                //matcher = new SingleByteSequenceMatcher(getAllBitmaskMatcher(ast));
                 matcher = getAllBitmaskMatcher(ast);
                 break;
             }
 
 
             case (regularExpressionParser.ANY_BITMASK): {
-                //matcher = new SingleByteSequenceMatcher(getAnyBitmaskMatcher(ast));
                 matcher = getAnyBitmaskMatcher(ast);
                 break;
             }
 
 
             case (regularExpressionParser.SET): {
-                //matcher = new SingleByteSequenceMatcher(getSetMatcher(ast, false));
                 matcher = getSetMatcher(ast, false);
                 break;
             }
 
 
             case (regularExpressionParser.INVERTED_SET): {
-                //matcher = new SingleByteSequenceMatcher(getSetMatcher(ast, true));
                 matcher = getSetMatcher(ast, true);
                 break;
             }
 
 
             case (regularExpressionParser.ANY): {
-                //matcher = new SingleByteSequenceMatcher(getAnyByteMatcher(ast));
                 matcher = getAnyByteMatcher(ast);
                 break;
             }
@@ -378,6 +400,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
         }
     }
 
+    
     private void addCollectedSingleByteMatchers(final List<SingleByteMatcher> matchers, final List<SequenceMatcher> sequences) {
         if (matchers.size() == 1) {
             sequences.add(matchers.get(0));
@@ -388,6 +411,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
         matchers.clear();
     }
 
+    
     private SequenceMatcher getCaseInsensitiveStringMatcher(final CommonTree ast) {
         final String str = ParseUtils.trimString(ast.getText());
         return new CaseInsensitiveStringMatcher(str);
@@ -417,37 +441,38 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     }
 
     
-    private SequenceMatcher getRepeatedSequence(SequenceMatcher sequence, final int numberOfRepeats) {
+
+    private SequenceMatcher getRepeatedSequence(final SequenceMatcher sequence, final int numberOfRepeats) {
         
         if (sequence instanceof ByteSequenceMatcher) {
-            List<ByteSequenceMatcher> byteSequences = new ArrayList<ByteSequenceMatcher>(numberOfRepeats);
+            final List<ByteSequenceMatcher> byteSequences = new ArrayList<ByteSequenceMatcher>(numberOfRepeats);
             for (int count = 0; count < numberOfRepeats; count++) {
                 byteSequences.add((ByteSequenceMatcher) sequence);
             }
             return new ByteSequenceMatcher(byteSequences);
         } else if (sequence instanceof CaseInsensitiveStringMatcher) {
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             for (int count = 0; count < numberOfRepeats; count++) {
                 builder.append(((CaseInsensitiveStringMatcher) sequence).getCaseInsensitiveString());
             }
             return new CaseSensitiveStringMatcher(builder.toString());
         } else if (sequence instanceof CaseSensitiveStringMatcher) {
-             StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             for (int count = 0; count < numberOfRepeats; count++) {
                 builder.append(((CaseSensitiveStringMatcher) sequence).getCaseSensitiveString());
             }
             return new CaseSensitiveStringMatcher(builder.toString());
         } else if (sequence instanceof CombinedSequenceMatcher) {
-            CombinedSequenceMatcher combined = (CombinedSequenceMatcher) sequence;
-            List<SequenceMatcher> internalMatchers = combined.getMatchers();
+            final CombinedSequenceMatcher combined = (CombinedSequenceMatcher) sequence;
+            final List<SequenceMatcher> internalMatchers = combined.getMatchers();
             int numberOfMatchers = numberOfRepeats * internalMatchers.size();
-            List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfMatchers);
+            final List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfMatchers);
             for (int count = 0; count < numberOfRepeats; count++) {
                 repeats.addAll(internalMatchers);
             }
             return new CombinedSequenceMatcher(repeats);
         } else {
-            List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfRepeats);
+            final List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfRepeats);
             for (int count = 0; count < numberOfRepeats; count++) {
                 repeats.add(sequence);
             }
