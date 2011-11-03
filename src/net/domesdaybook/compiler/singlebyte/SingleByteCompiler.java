@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -53,14 +51,15 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
 import org.antlr.runtime.tree.CommonTree;
 
+
 /**
  * A compiler which produces a {@link SingleByteMatcher} from an
  * abstract syntax tree provided by the {@link AbstractAstCompiler} class,
  * which it extends.
  *
  * It can only handle syntax which would result in a single byte being
- * matched.  This means hex bytes, any byte (.), all bitmasks (&),
- * any bitmasks (~),single-character case sensitive and insensitive
+ * matched.  This means hex bytes, any byte (.), all bit-masks (&),
+ * any bit-masks (~),single-character case sensitive and insensitive
  * strings, and sets of bytes [].
  *
  * It can handle alternative sequences (X|Y|Z) where each alternative
@@ -69,50 +68,114 @@ import org.antlr.runtime.tree.CommonTree;
  * before this compiler even sees them.  Any alternative sequences provided
  * directly to this compiler will result in a CompileException.
  * 
- * @author matt
+ * @author Matt Palmer
  */
 public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatcher> {
 
+    // Private constants:
+    
+    private static final boolean NOT_INVERTED = false;
+    private static final boolean INVERTED = true;
+    
+    
+    // Static fields and utility methods:
+    
     private static SingleByteCompiler defaultCompiler;
     private static SingleByteMatcherFactory defaultFactory;
     
     
+    /**
+     * Compiles a {@link SingleByteMatcher} from the expression (assuming the syntax
+     * provided results in a match for a single byte), using a {@link SingleByteCompiler}.
+     * 
+     * @param expression The regular expression syntax
+     * @return SingleByteMatcher A SingleByteMatcher which matches a byte according to the expression.
+     * @throws CompileException If a SingleByteMatcher cannot be produced from the expression.
+     */
     public static SingleByteMatcher matcherFrom(final String expression) throws CompileException {
         defaultCompiler = new SingleByteCompiler();
         return defaultCompiler.compile(expression);
     }
     
     
+    /**
+     * Returns a {@link ByteMatcher} which matches the byte provided.
+     * Equivalent to <code>new ByteMatcher(aByte)</code>
+     * 
+     * @param aByte The byte to match.
+     * @return ByteMatcher a SingleByteMatcher which matches a single byte value.
+     */
     public static SingleByteMatcher matcherFrom(final byte aByte) {
         return new ByteMatcher(aByte);
     }
     
     
+    /**
+     * Returns an {@link InvertedByteMatcher} which matches everything but the
+     * byte provided.  Equivalent to <code>new InvertedByteMatcher(aByte)</code>
+     * 
+     * @param aByte The byte which should not match.
+     * @return InvertedByteMatcher a matcher which matches everything but the byte provided.
+     */
     public static SingleByteMatcher invertedMatcherFrom(final byte aByte) {
         return new InvertedByteMatcher(aByte);
     }
     
     
+    /**
+     * Returns a {@link SingleByteMatcher} which optimally matches the set of 
+     * bytes provided in the array.  It uses a @link SimpleSingleByteMatcherFactory}
+     * to produce an appropriate matcher.
+     * 
+     * @param bytes An array of bytes containing the values the SingleByteMatcher must match.
+     * @return SingleByteMatcher a matcher which matches the byte values in the array provided.
+     */
     public static SingleByteMatcher matcherFrom(final byte[] bytes) {
         defaultFactory = new SimpleSingleByteMatcherFactory();
         final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
-        return defaultFactory.create(byteSet, false);
+        return defaultFactory.create(byteSet, NOT_INVERTED);
     }
     
     
+    /**
+     * Returns a {@link SingleByteMatcher} which optimally matches the inverted set of 
+     * bytes provided in the array.  It uses a @link SimpleSingleByteMatcherFactory}
+     * to produce an appropriate matcher.
+     * 
+     * @param bytes An array of bytes containing the values the SingleByteMatcher
+     *              must not match.
+     * @return SingleByteMatcher a matcher which matches all byte values other 
+     *         than those in the array provided.
+     */
     public static SingleByteMatcher invertedMatcherFrom(final byte[] bytes) {
         defaultFactory = new SimpleSingleByteMatcherFactory();
         final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
-        return defaultFactory.create(byteSet, true);
+        return defaultFactory.create(byteSet, INVERTED);
     }
     
     
+    // Fields:
+    
     private final SingleByteMatcherFactory matcherFactory;
 
+    
+    // Constructors:
+    
+    /**
+     * Constructs a SingleByteCompiler using a {@link SimpleSingleByteMatcherFactory}
+     * to construct optimal matchers for sets of bytes.
+     * 
+     */
     public SingleByteCompiler() {
         matcherFactory = new SimpleSingleByteMatcherFactory();
     }
     
+    /**
+     * Constructs a SingleByteCompiler using the provided factory
+     * to construct optimal matchers for sets of bytes.
+     * 
+     * @param factoryToUse The factory used to create optimal matchers for sets of bytes.
+     */
     public SingleByteCompiler(SingleByteMatcherFactory factoryToUse) {
         matcherFactory = factoryToUse;
     }
@@ -123,7 +186,6 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
      *
      * @param ast The abstract syntax tree provided by the {@link AbstractAstCompiler} class.
      * @return A {@link SingleByteMatcher} which matches the expression defined by the ast passed in.
-     * @throws ParseException If the ast could not be parsed.
      */
     @Override
     public SingleByteMatcher compile(CommonTree ast) throws CompileException {
