@@ -75,7 +75,7 @@ import net.domesdaybook.object.copy.DeepCopy;
  * 
  * @author Matt Palmer
  */
-public final class AllMatchingTransitions implements TransitionStrategy {
+public final class IterateTransitions implements TransitionStrategy {
 
     /**
      * Appends all distinct {@link State}s to the supplied collection of states which are 
@@ -104,10 +104,27 @@ public final class AllMatchingTransitions implements TransitionStrategy {
             }
         }
     }
+    
+    
+    
+    @Override
+    public State getFirstMatchingState(byte value, final Collection<Transition> transitions) {
+        for (final Transition transition : transitions) {
+            final State nextState = transition.getStateForByte(value);
+            if (nextState != null) {
+                return nextState;
+            }
+        } 
+        return null;
+    }    
 
 
+    //TODO: review - is it safe to return this in a deepcopy call?
     public TransitionStrategy deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
         return this;
     }
+
+    
+    
     
 }

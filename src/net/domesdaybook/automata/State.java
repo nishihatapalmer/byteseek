@@ -32,8 +32,7 @@
 
 package net.domesdaybook.automata;
 
-import net.domesdaybook.automata.strategy.AllMatchingTransitions;
-import net.domesdaybook.automata.strategy.FirstMatchingTransition;
+import net.domesdaybook.automata.strategy.IterateTransitions;
 import net.domesdaybook.automata.strategy.NoTransition;
 import java.util.Collection;
 import net.domesdaybook.object.copy.DeepCopy;
@@ -90,22 +89,16 @@ public interface State extends DeepCopy {
     public static boolean NON_FINAL = false;
     
     
+   
     /**
-     * A reusable instance of the first matching transition strategy, which given
-     * a byte will return the first State it can find a transition to.  
+     * A reusable instance of the iterate transition strategy, which given 
+     * a byte will return all the States it can find a transition to by
+     * iterating over a collection of transitions.
+     * 
      * <p/>
      * This strategy is entirely stateless, so it is safe to re-use anywhere.
      */
-    public static final TransitionStrategy FIRST_MATCHING_TRANSITION = new FirstMatchingTransition();
-    
-    
-    /**
-     * A reusable instance of the all matching transition strategy, which given 
-     * a byte will return all the States it can find a transition to. 
-     * <p/>
-     * This strategy is entirely stateless, so it is safe to re-use anywhere.
-     */
-    public static final TransitionStrategy ALL_MATCHING_TRANSITIONS = new AllMatchingTransitions();
+    public static final TransitionStrategy ITERATE_TRANSITIONS = new IterateTransitions();
     
     
 /**
@@ -132,6 +125,22 @@ public interface State extends DeepCopy {
      */
     public void appendNextStates(Collection<State> states, byte value);
 
+    
+    /**
+     * Returns the first matching state for the give byte value, or null if no State
+     * can be transitioned to on that value.
+     * <p>
+     * This should only be used for Deterministic Finite-state Automata (DFA), 
+     * which guarantees that there can be at most one State to follow for any
+     * given byte value.  Other automata may transition to more than one State
+     * on a byte.  
+     * 
+     * @param value The byte value to get the next State for.
+     * @return The State to transition to for the byte value, or null if there is no
+     * State to transition to.
+     */
+    public State getNextState(byte value);
+    
     
     /**
      * Returns true if this state is final.

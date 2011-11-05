@@ -172,8 +172,17 @@ public class SimpleState implements State {
      * @inheritDoc
      */
     @Override
-    public final void appendNextStates(final Collection<State> states, byte value) {
+    public final void appendNextStates(final Collection<State> states, final byte value) {
         transitionStrategy.appendDistinctStatesForByte(states, value, transitions);
+    }
+    
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public final State getNextState(final byte value) {
+        return transitionStrategy.getFirstMatchingState(value, transitions);
     }
 
     
@@ -181,22 +190,18 @@ public class SimpleState implements State {
      * Sets a basic transition strategy based on the following simple heuristic:
      * <ul>
      * <li>If there are no transitions, then the {@link NoTransition} strategy is used.
-     * <li>If there is only one transition, then the {@link FirstMatchingTransition} strategy is used.
-     * <li>If there is more than one transition, then the {@link AllMatchingTransitions} strategy is used.
+     * <li>If there is more than one transition, then the {@link IterateTransitions} strategy is used.
      * </ul>
      * 
      * @see net.domesdaybook.automata.TransitionStrategy
-     * @see net.domesdaybook.automata.strategy.FirstMatchingTransition
-     * @see net.domesdaybook.automata.strategy.AllMatchingTransitions
+     * @see net.domesdaybook.automata.strategy.IterateTransitions
      * @see net.domesdaybook.automata.strategy.NoTransition
      */
     private void setBasicTransitionStrategy() {
         if (transitions.isEmpty()) {
             transitionStrategy = NO_TRANSITION;
-        } else if (transitions.size() == 1) {
-            transitionStrategy = FIRST_MATCHING_TRANSITION;
         } else {
-            transitionStrategy = ALL_MATCHING_TRANSITIONS;
+            transitionStrategy = ITERATE_TRANSITIONS;
         }
     }
     

@@ -74,11 +74,24 @@ public final class NoTransition implements TransitionStrategy {
     }
     
     
+    /**
+     * Always returns null.
+     * 
+     * @param value A byte value.
+     * @param transitions A collection of transitions.
+     * @return null under all circumstances.
+     */
+    public State getFirstMatchingState(final byte value, final Collection<Transition> transitions) {
+        return null;
+    }
+    
+    
     //TODO: review - can an object safely return itself from a deepcopy method?
     //      Should it add itself to the map, even if it does return itself?
     public TransitionStrategy deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
         return this;
     }
+
 
     
 }
