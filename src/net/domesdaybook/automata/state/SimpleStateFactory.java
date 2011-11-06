@@ -34,6 +34,7 @@
 
 package net.domesdaybook.automata.state;
 
+import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.State;
 
 /**

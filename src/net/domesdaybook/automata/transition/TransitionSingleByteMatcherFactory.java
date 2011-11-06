@@ -32,6 +32,7 @@
 
 package net.domesdaybook.automata.transition;
 
+import net.domesdaybook.automata.TransitionFactory;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;

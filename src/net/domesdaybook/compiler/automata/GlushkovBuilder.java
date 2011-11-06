@@ -75,14 +75,14 @@
 package net.domesdaybook.compiler.automata;
 
 import net.domesdaybook.automata.wrapper.InitialFinalStates;
-import net.domesdaybook.automata.transition.TransitionFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.state.SimpleStateFactory;
-import net.domesdaybook.automata.state.StateFactory;
+import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 
 /**

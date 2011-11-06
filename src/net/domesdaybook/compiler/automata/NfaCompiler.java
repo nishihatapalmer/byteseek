@@ -33,14 +33,16 @@
 
 package net.domesdaybook.compiler.automata;
 
+import java.util.Collection;
 import net.domesdaybook.automata.wrapper.InitialFinalStates;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
-import net.domesdaybook.automata.transition.TransitionFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import net.domesdaybook.automata.AutomataUtils;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.state.StateFactory;
+import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.compiler.AbstractAstCompiler;
 import net.domesdaybook.compiler.CompileException;
@@ -125,8 +127,18 @@ public final class NfaCompiler extends AbstractAstCompiler<State> {
             throw new CompileException(e);
         }
     }
-
-
+    
+    
+    @Override
+    public State compile(Collection<String> expressions) throws CompileException {
+        final List<State> automataFirstStates = new ArrayList<State>();
+        for (final String expression : expressions) {
+            automataFirstStates.add(compile(expression));
+        }
+        return AutomataUtils.join(automataFirstStates);
+    }    
+    
+    
     private InitialFinalStates buildAutomata(final CommonTree ast) throws CompileException {
 
         InitialFinalStates states = null;
@@ -266,6 +278,5 @@ public final class NfaCompiler extends AbstractAstCompiler<State> {
         }
         return states;
     }
-
 
 }

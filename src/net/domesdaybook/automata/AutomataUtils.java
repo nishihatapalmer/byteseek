@@ -75,8 +75,8 @@ public final class AutomataUtils {
     
     /**
      * This function joins all the automata into a single automata,
-     * by adding all the transitions of the states after the first
-     * in to the first state in the collection, and ensuring that
+     * by adding all the transitions and associations of all the states after 
+     * the first in to the first state in the collection, and ensuring that
      * any references to the other states are updated to point to the
      * first state.
      * <o>
@@ -96,6 +96,7 @@ public final class AutomataUtils {
                 isFinal |= automataFirstState.isFinal();
                 replaceState(automataFirstState, root);
                 root.addAllTransitions(automataFirstState.getTransitions());
+                root.addAllAssociations(automataFirstState.getAssociations());
             }
             root.setIsFinal(isFinal);
             return root;

@@ -178,7 +178,11 @@ public interface State<T> extends DeepCopy {
      * 
      * @param object The object to associated with the state.
      */
-    public void addObject(T object);
+    public void addAssociation(T association);
+    
+    
+    
+    public void addAllAssociations(Collection<T> associations);
     
     
     /**
@@ -190,25 +194,18 @@ public interface State<T> extends DeepCopy {
      * @param object The object to remove from the state.
      * @return boolean true if the object was present in the State.
      */
-    public boolean removeObject(T object);
+    public boolean removeAssociation(T object);
     
     
     /**
-     * Appends any associations of type T to a collection of the objects of type T. 
+     * Returns the associations of type T. 
      * No guarantee is made that the objects will be unique, although specific
      * implementations may provide this guarantee.
      * 
      * @return A collection of the objects currently associated with this state.
      */
-    public void appendAssociations(Collection<T> toCollection);
+    public Collection<T> getAssociations();
     
-    
-    /**
-     * Returns the number of objects associated with this State.
-     * 
-     * @return int the number of objects associated with this State.
-     */
-    public int getNumberOfAssociations();
     
     
     /**

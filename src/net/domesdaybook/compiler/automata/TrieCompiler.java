@@ -44,8 +44,8 @@ import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.state.SimpleStateFactory;
-import net.domesdaybook.automata.state.StateFactory;
-import net.domesdaybook.automata.transition.TransitionFactory;
+import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
@@ -62,7 +62,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  * 
  * @author matt
  */
-public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<SequenceMatcher>> {
+public final class TrieCompiler implements ReversibleCompiler<Trie, SequenceMatcher> {
 
     private static TrieCompiler defaultCompiler;
     
@@ -76,6 +76,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
     public static Trie trieFrom(final Collection<SequenceMatcher> sequences) throws CompileException {
         return trieFrom(sequences, Direction.FORWARDS);
     }
+    
     
     /**
      * 
@@ -135,7 +136,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
      * 
      * @param stateFactory
      */
-    public TrieCompiler(StateFactory<SequenceMatcher> stateFactory) {
+    public TrieCompiler(final StateFactory<SequenceMatcher> stateFactory) {
         this(stateFactory, null);
     }
 
@@ -144,7 +145,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
      * 
      * @param transitionFactory
      */
-    public TrieCompiler(TransitionFactory transitionFactory) {
+    public TrieCompiler(final TransitionFactory transitionFactory) {
         this(null, transitionFactory);
     }
    
@@ -154,7 +155,8 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
      * @param stateFactory
      * @param transitionFactory
      */
-    public TrieCompiler(StateFactory<SequenceMatcher> stateFactory, TransitionFactory transitionFactory) {
+    public TrieCompiler(final StateFactory<SequenceMatcher> stateFactory, 
+                        final TransitionFactory transitionFactory) {
         if (stateFactory == null) {
             this.stateFactory = new SimpleStateFactory<SequenceMatcher>();
         } else {
@@ -167,14 +169,34 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
         }
     }
 
+
+   
     @Override
-    public Trie compile(Collection<SequenceMatcher> expression) throws CompileException {
-        return compile(expression, Direction.FORWARDS);
+    public Trie compile(final SequenceMatcher matcher) throws CompileException {
+        final Collection<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(1);
+        matchers.add(matcher);
+        return compile(matchers, Direction.FORWARDS);
     }    
     
     
     @Override
-    public final Trie compile(Collection<SequenceMatcher> sequences, final Direction direction) throws CompileException {
+    public Trie compile(final SequenceMatcher matcher, 
+                        final Direction direction) throws CompileException {
+        final Collection<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(1);
+        matchers.add(matcher);
+        return compile(matchers, direction);        
+    }   
+    
+
+    @Override
+    public Trie compile(final Collection<SequenceMatcher> matchers) throws CompileException {
+        return compile(matchers, Direction.FORWARDS);
+    }       
+    
+    
+    @Override
+    public final Trie compile(final Collection<SequenceMatcher> sequences, 
+                              final Direction direction) throws CompileException {
         State<SequenceMatcher> initialState = stateFactory.create(State.NON_FINAL);
         int minLength = Integer.MAX_VALUE;
         int maxLength = 0;
@@ -196,7 +218,8 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
     }
 
     
-    private void addSequence(SequenceMatcher sequence, State<SequenceMatcher> initialState) {
+    private void addSequence(final SequenceMatcher sequence, 
+                             final State<SequenceMatcher> initialState) {
         List<State<SequenceMatcher>> currentStates = new ArrayList<State<SequenceMatcher>>();
         currentStates.add(initialState);
         final int lastPosition = sequence.length() - 1;
@@ -205,12 +228,13 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
             currentStates = nextStates(currentStates, byteMatcher, position == lastPosition);
         }
         for (final State<SequenceMatcher> finalState : currentStates) {
-            finalState.addObject(sequence);
+            finalState.addAssociation(sequence);
         }
     }
     
     
-    private void addReversedSequence(SequenceMatcher sequence, State<SequenceMatcher> initialState) {
+    private void addReversedSequence(final SequenceMatcher sequence, 
+                                     final State<SequenceMatcher> initialState) {
         List<State<SequenceMatcher>> currentStates = new ArrayList<State<SequenceMatcher>>();
         currentStates.add(initialState);
         final int lastPosition = sequence.length() - 1;
@@ -219,7 +243,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
             currentStates = nextStates(currentStates, byteMatcher, position == 0);
         }
         for (final State<SequenceMatcher> finalState : currentStates) {
-            finalState.addObject(sequence);
+            finalState.addAssociation(sequence);
         }
     }      
 
@@ -231,7 +255,9 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
      * @param isFinal
      * @return
      */
-    protected final List<State<SequenceMatcher>> nextStates(List<State<SequenceMatcher>> currentStates, SingleByteMatcher bytes, boolean isFinal) {
+    protected final List<State<SequenceMatcher>> nextStates(final List<State<SequenceMatcher>> currentStates, 
+                                                            final SingleByteMatcher bytes, 
+                                                            final boolean isFinal) {
         final List<State<SequenceMatcher>> nextStates = new ArrayList<State<SequenceMatcher>>();
         final Set<Byte> allBytesToTransitionOn = ByteUtilities.toSet(bytes.getMatchingBytes());
         for (final State currentState : currentStates) {
@@ -242,7 +268,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
                 
                 final Set<Byte> originalTransitionBytes = ByteUtilities.toSet(transition.getBytes());
                 final int originalTransitionBytesSize = originalTransitionBytes.size();
-                final Set<Byte> bytesInCommon = subtract(originalTransitionBytes, bytesToTransitionOn);
+                final Set<Byte> bytesInCommon = ByteUtilities.subtract(originalTransitionBytes, bytesToTransitionOn);
                 
                 // If the existing transition is the same or a subset of the new transition bytes:
                 final int numberOfBytesInCommon = bytesInCommon.size();
@@ -305,18 +331,4 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, Collection<S
 
     
     
-    private Set<Byte> subtract(final Set<Byte> bytes, final Set<Byte> fromSet) {
-        final Set<Byte> bytesInCommon = new LinkedHashSet<Byte>();
-        final Iterator<Byte> byteIterator = bytes.iterator();
-        while (byteIterator.hasNext()) {
-            final Byte theByte = byteIterator.next();
-            if (fromSet.remove(theByte)) {
-                bytesInCommon.add(theByte);
-                byteIterator.remove();
-            }
-        }
-        return bytesInCommon;
-    }
-    
-
 }

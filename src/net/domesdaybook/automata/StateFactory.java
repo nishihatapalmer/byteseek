@@ -32,9 +32,7 @@
  * 
  */
 
-package net.domesdaybook.automata.state;
-
-import net.domesdaybook.automata.State;
+package net.domesdaybook.automata;
 
 /**
  * An abstract factory for State objects.

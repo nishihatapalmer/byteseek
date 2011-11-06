@@ -96,8 +96,8 @@ public class SimpleState<T> implements State<T> {
     public SimpleState(final State other) {
         this.isFinal = other.isFinal();
         this.transitions = new ArrayList<Transition>(other.getTransitions());
-        this.associations = new ArrayList<T>(other.getNumberOfAssociations());
-        other.appendAssociations(this.associations);
+        this.associations = new ArrayList<T>();
+        this.associations.addAll(other.getAssociations());
     }
 
     
@@ -187,40 +187,40 @@ public class SimpleState<T> implements State<T> {
     }
     
     
-   
+    
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getNumberOfAssociations() {
-        return associations.size();
+    public Collection<T> getAssociations() {
+        return new ArrayList<T>(associations);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addAssociation(final Object association) {
+        associations.add((T) association);
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addAllAssociations(Collection<T> associations) {
+        this.associations.addAll(associations);
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void appendAssociations(Collection<T> toCollection) {
-        toCollection.addAll(associations);
-    }
 
     
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addObject(final Object object) {
-        associations.add((T) object);
-    }
-
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean removeObject(final Object object) {
-        return associations.remove((T) object);
+    public boolean removeAssociation(final Object association) {
+        return associations.remove((T) association);
     }
 
     
@@ -270,6 +270,7 @@ public class SimpleState<T> implements State<T> {
         }
         return stateCopy;
     }
+
 
 
 

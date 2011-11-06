@@ -33,6 +33,8 @@
 
 package net.domesdaybook.compiler;
 
+import java.util.Collection;
+
 /**
  * A compiler which can compile expressions of type E into objects of type T
  * in either a forwards or reverse direction.
@@ -64,4 +66,15 @@ public interface ReversibleCompiler<T, E> extends Compiler<T, E> {
      */
     public T compile(E expression, Direction direction) throws CompileException;
     
+    
+    /**
+     * Compiles a collection of expressions E into an object of type T 
+     * in the direction specified.
+     *
+     * @param expressions The expressions to compile.
+     * @param reversed whether to reverse the expressions before compiling.
+     * @return An compiled object of type T.
+     * @throws CompileException if the expression could not be compiled.
+     */
+    public T compile(Collection<E> expressions, Direction direction) throws CompileException;    
 }

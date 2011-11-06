@@ -35,6 +35,7 @@ package net.domesdaybook.bytes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -284,13 +285,46 @@ public final class ByteUtilities {
      * @return Set<Byte> A set of all other bytes.
      */
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
-        final Set<Byte> invertedSet = new LinkedHashSet<Byte>(320);
+        final Set<Byte> inverted = new LinkedHashSet<Byte>(320);
+        buildInvertedSet(bytes, inverted);
+        return inverted;
+    }
+    
+
+    /**
+     * Builds an inverted set of bytes.  This set of bytes contains all other
+     * possible byte values than the ones in the set provided.
+     * 
+     * @param bytes A set of bytes.
+     * @return Set<Byte> A set of all other bytes.
+     */
+    public static void buildInvertedSet(final Set<Byte> bytes, final Set<Byte> invertedSet) {
         for (int value = 0; value < 256; value++) {
             if (!bytes.contains((byte) value)) {
                 invertedSet.add((byte) value);
             }
         }
-        return invertedSet;
+    }    
+    
+    
+    public static Set<Byte> subtract(final Set<Byte> bytes, final Set<Byte> fromSet) {
+        final Set<Byte> bytesRemoved = new LinkedHashSet<Byte>();
+        buildSubtractedSet(bytes, fromSet, bytesRemoved);
+        return bytesRemoved;
+    }   
+    
+    
+    public static void buildSubtractedSet(final Set<Byte> bytes, 
+                                          final Set<Byte> fromSet,
+                                          final Set<Byte> bytesRemoved) {
+        final Iterator<Byte> byteIterator = bytes.iterator();
+        while (byteIterator.hasNext()) {
+            final Byte theByte = byteIterator.next();
+            if (fromSet.remove(theByte)) {
+                bytesRemoved.add(theByte);
+                byteIterator.remove();
+            }
+        }
     }
 
     

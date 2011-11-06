@@ -33,6 +33,7 @@
 package net.domesdaybook.automata.wrapper;
 
 import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.State;
 
 /**
  * A simple immutable wrapper around a {@link State} for automata which are

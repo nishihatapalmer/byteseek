@@ -30,11 +30,9 @@
  * 
  */
 
-package net.domesdaybook.automata.transition;
+package net.domesdaybook.automata;
 
 import java.util.Set;
-import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.Transition;
 
 
 /**
