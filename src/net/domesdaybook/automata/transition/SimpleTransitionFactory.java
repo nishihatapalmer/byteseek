@@ -46,7 +46,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
 
 /**
  * An implementation of {@link TransitionFactory} which creates 
- * {@link TransitionSingleByteMatcher}s.
+ * {@link SimpleTransition}s.
  * <p>
  * Where the requirement for a matcher is unambiguous, the factory will
  * create an appropriate underlying {@link SingleByteMatcher} directly.
@@ -57,7 +57,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
  * 
  * @author Matt Palmer
  */
-public class TransitionSingleByteMatcherFactory implements TransitionFactory {
+public class SimpleTransitionFactory implements TransitionFactory {
 
     private final SingleByteMatcherFactory matcherFactory;
 
@@ -66,7 +66,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      * Default constructor which used an underlying {@link SimpleSingleByteMatcherFactory}
      * to create {@link SingleByteMatcher}s based on sets of bytes.
      */
-    public TransitionSingleByteMatcherFactory() {
+    public SimpleTransitionFactory() {
         matcherFactory = new SimpleSingleByteMatcherFactory();
     }
 
@@ -77,7 +77,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      * 
      * @param factoryToUse The factory to create transitions based on sets of bytes.
      */
-    public TransitionSingleByteMatcherFactory(final SingleByteMatcherFactory factoryToUse) {
+    public SimpleTransitionFactory(final SingleByteMatcherFactory factoryToUse) {
         matcherFactory = factoryToUse;
     }
 
@@ -91,7 +91,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      */
     @Override
     public final Transition createByteTransition(final byte theByte, final State toState) {
-        return new TransitionSingleByteMatcher(new ByteMatcher(theByte), toState);
+        return new SimpleTransition(new ByteMatcher(theByte), toState);
     }
 
     
@@ -109,7 +109,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      */
     @Override
     public final Transition createAllBitmaskTransition(final byte bitMask, final State toState) {
-        return new TransitionSingleByteMatcher(new BitMaskAllBitsMatcher(bitMask), toState);
+        return new SimpleTransition(new BitMaskAllBitsMatcher(bitMask), toState);
     }
 
     
@@ -127,7 +127,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      */
     @Override
     public final Transition createAnyBitmaskTransition(final byte bitMask, final State toState) {
-        return new TransitionSingleByteMatcher(new BitMaskAnyBitsMatcher(bitMask), toState);
+        return new SimpleTransition(new BitMaskAnyBitsMatcher(bitMask), toState);
     }
     
     
@@ -147,7 +147,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      */
     @Override
     public final Transition createSetTransition(final Set<Byte> byteSet, final boolean inverted, final State toState) {
-        return new TransitionSingleByteMatcher(matcherFactory.create(byteSet, inverted), toState);
+        return new SimpleTransition(matcherFactory.create(byteSet, inverted), toState);
     }
 
     
@@ -159,7 +159,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      */
     @Override
     public final Transition createAnyByteTransition(State toState) {
-        return new TransitionSingleByteMatcher(new AnyMatcher(), toState);
+        return new SimpleTransition(new AnyMatcher(), toState);
     }
 
     
@@ -174,7 +174,7 @@ public class TransitionSingleByteMatcherFactory implements TransitionFactory {
      */
     @Override
     public final Transition createCaseInsensitiveByteTransition(final char Char, final State toState) {
-        return new TransitionSingleByteMatcher(new CaseInsensitiveByteMatcher(Char), toState);
+        return new SimpleTransition(new CaseInsensitiveByteMatcher(Char), toState);
     }
 
 }

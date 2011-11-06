@@ -46,7 +46,7 @@ import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.TransitionFactory;
-import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.automata.transition.SimpleTransitionFactory;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.ReversibleCompiler;
@@ -163,7 +163,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, SequenceMatc
             this.stateFactory = stateFactory;
         }
         if (transitionFactory == null) {
-            this.transitionFactory = new TransitionSingleByteMatcherFactory();
+            this.transitionFactory = new SimpleTransitionFactory();
         } else {
             this.transitionFactory = transitionFactory;
         }

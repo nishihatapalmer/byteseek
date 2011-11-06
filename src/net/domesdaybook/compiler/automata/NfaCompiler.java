@@ -35,7 +35,7 @@ package net.domesdaybook.compiler.automata;
 
 import java.util.Collection;
 import net.domesdaybook.automata.wrapper.InitialFinalStates;
-import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.automata.transition.SimpleTransitionFactory;
 import net.domesdaybook.automata.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +83,7 @@ public final class NfaCompiler extends AbstractAstCompiler<State> {
      * Constructs an NfaCompiler, using default {@link TransitionFactory},
      * {@link StateBuilder} and {@link StatesBuilder} objects.
      *
-     * By default, it uses the {@link TransitionSingleByteMatcherFactory} and
+     * By default, it uses the {@link SimpleTransitionFactory} and
      * the {@link StateBuilder} to make a {@link GlushkovBuilder} to
      * produce the NFA.
      */

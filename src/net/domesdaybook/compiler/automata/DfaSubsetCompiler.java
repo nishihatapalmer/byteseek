@@ -45,7 +45,7 @@ import net.domesdaybook.automata.AutomataUtils;
 import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.TransitionFactory;
-import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.automata.transition.SimpleTransitionFactory;
 import net.domesdaybook.collections.IdentityHashSet;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
@@ -148,7 +148,7 @@ public final class DfaSubsetCompiler implements Compiler<State, State> {
             StateFactory = StateFactoryToUse;
         }
         if (factoryToUse == null) {
-            transitionFactory = new TransitionSingleByteMatcherFactory();
+            transitionFactory = new SimpleTransitionFactory();
         } else {
             transitionFactory = factoryToUse;
         }

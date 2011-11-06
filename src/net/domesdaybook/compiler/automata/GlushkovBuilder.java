@@ -83,7 +83,7 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.state.SimpleStateFactory;
 import net.domesdaybook.automata.StateFactory;
-import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
+import net.domesdaybook.automata.transition.SimpleTransitionFactory;
 
 /**
  *
@@ -125,7 +125,7 @@ public final class GlushkovBuilder implements StatesBuilder {
       */
      public GlushkovBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
          if (transitionFactory == null) {
-             this.transitionFactory = new TransitionSingleByteMatcherFactory();
+             this.transitionFactory = new SimpleTransitionFactory();
          } else {
              this.transitionFactory = transitionFactory;
          }
