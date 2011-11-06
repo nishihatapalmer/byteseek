@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -91,25 +89,41 @@ import net.domesdaybook.automata.transition.TransitionSingleByteMatcherFactory;
  *
  * @author Matt Palmer
  */
-public final class ChamparnaudGlushkovBuilder implements InitialFinalStatesBuilder {
+public final class GlushkovBuilder implements StatesBuilder {
 
      private final TransitionFactory transitionFactory;
      private final StateFactory stateFactory;
 
-     public ChamparnaudGlushkovBuilder() {
+     /**
+      * 
+      */
+     public GlushkovBuilder() {
          this(null, null);
      }
      
-     public ChamparnaudGlushkovBuilder(final StateFactory stateFactory) {
+     /**
+      * 
+      * @param stateFactory
+      */
+     public GlushkovBuilder(final StateFactory stateFactory) {
          this(null, stateFactory);
      }
          
          
-     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory) {
+     /**
+      * 
+      * @param transitionFactory
+      */
+     public GlushkovBuilder(final TransitionFactory transitionFactory) {
          this(transitionFactory,null);
      }
      
-     public ChamparnaudGlushkovBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
+     /**
+      * 
+      * @param transitionFactory
+      * @param stateFactory
+      */
+     public GlushkovBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
          if (transitionFactory == null) {
              this.transitionFactory = new TransitionSingleByteMatcherFactory();
          } else {

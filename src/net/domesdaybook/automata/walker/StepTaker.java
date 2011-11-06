@@ -30,30 +30,25 @@
  * 
  */
 
-package net.domesdaybook.automata.state;
+
+package net.domesdaybook.automata.walker;
 
 /**
- * An implementation of the {@link AssociatedStateFactory} which creates 
- * {@link SimpleAssociatedState} objects.
- * 
- * @param <T> The type of object the SimpleAssociatedState can be associated with.
+ * An interface for classes which take each step of a walk of an automata.
+ * <p>
+ * The walker controls which steps are sent to the observer (probably an implementation
+ * of the {@ink Walker} interface.  Each step of the walk is encapsulated in a 
+ * {@link Step} object, which contains details of the step taken.
  * 
  * @author Matt Palmer
  */
-public class SimpleAssociatedStateFactory<T> implements AssociatedStateFactory {
-
+public interface StepTaker {
     
     /**
-     * Creates an instance of a {@link SimpleAsociatedState}.
+     * Takes a step of the walk of an automata.
      * 
-     * @param isFinal Whether the SimpleAsociatedState is final or not.
-     * 
-     * @return A SimpleAsociatedState object.
-     * @see SimpleAsociatedState
+     * @param step The step to take.
      */
-    @Override
-    public SimpleAssociatedState<T> create(boolean isFinal) {
-        return new SimpleAssociatedState<T>(isFinal);
-    }
+    public void take(Step step);
     
 }

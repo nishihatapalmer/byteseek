@@ -36,7 +36,7 @@ import java.util.Map;
 import net.domesdaybook.object.copy.DeepCopy;
 
 /**
- * A Transition is an immutable link to a {@link State} which can be followed 
+ * A Transition is a link to a {@link State} which can be followed 
  * if a given  byte value matches. 
  * <p>
  * The link is uni-directional, as a Transition only knows the single State it can
@@ -66,6 +66,14 @@ public interface Transition extends DeepCopy {
      */
     public State getToState();
 
+    
+    /**
+     * Sets the state this transition points at.
+     * 
+     * @param stateToPointAt THe state this transition points at.
+     */
+    public void setToState(State stateToPointAt);
+    
     
     /**
      * Returns an array of all the bytes which this transition can match.

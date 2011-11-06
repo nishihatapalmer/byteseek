@@ -41,7 +41,7 @@ import net.domesdaybook.automata.State;
  * 
  * @author Matt Palmer
  */
-public final class SimpleStateFactory implements StateFactory {
+public final class SimpleStateFactory<T> implements StateFactory<T> {
 
     
     /**
@@ -52,8 +52,8 @@ public final class SimpleStateFactory implements StateFactory {
      * @see SimpleState
      */
     @Override
-    public State create(boolean isFinal) {
-        return new SimpleState(isFinal);
+    public State<T> create(boolean isFinal) {
+        return new SimpleState<T>(isFinal);
     }
     
 }

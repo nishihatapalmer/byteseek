@@ -16,8 +16,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -47,6 +45,12 @@ import net.domesdaybook.compiler.Compiler;
 public class NfaExpressionsCompiler implements Compiler<State, List<String>> {
 
     private static NfaExpressionsCompiler defaultCompiler;
+    /**
+     * 
+     * @param expressions
+     * @return
+     * @throws CompileException
+     */
     public static State nfaFrom(List<String> expressions) throws CompileException {
         defaultCompiler = new NfaExpressionsCompiler();
         return defaultCompiler.compile(expressions);
@@ -54,13 +58,20 @@ public class NfaExpressionsCompiler implements Compiler<State, List<String>> {
     
     private final Compiler<State, String> nfaCompiler;
     
+    /**
+     * 
+     */
     public NfaExpressionsCompiler() {
         this(null);
     }
     
+    /**
+     * 
+     * @param nfaCompilerToUse
+     */
     public NfaExpressionsCompiler(final Compiler<State, String> nfaCompilerToUse) {
         if (nfaCompilerToUse == null) {
-            this.nfaCompiler = new NfaExpressionCompiler();
+            this.nfaCompiler = new NfaCompiler();
         } else {
             this.nfaCompiler = nfaCompilerToUse;
         }

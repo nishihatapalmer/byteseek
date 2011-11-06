@@ -33,6 +33,8 @@
 
 package net.domesdaybook.compiler;
 
+import java.util.Collection;
+
 
 /**
  * An interface for compilers which compile an expression of some type E
@@ -46,9 +48,19 @@ public interface Compiler<T, E> {
      * Compiles an expression of type E into an object of type T.
      *
      * @param expression The expression of type E to compile.
-     * @return An compiled object of type T.
+     * @return A compiled object of type T.
      * @throws CompileException if an object could not be compiled.
      */
     public T compile(E expression) throws CompileException;
-
+    
+    
+    /**
+     * Compiles a collection of expressions into a single object of type T.
+     * 
+     * @param expressions A collection of expressions of type E to compile.
+     * @return A compiled object of type T
+     * @throws CompileException if an object could not be compiled.
+     */
+    public T compile(Collection<E> expressions) throws CompileException;
+    
 }

@@ -34,14 +34,15 @@
 
 package net.domesdaybook.automata.state;
 
-import net.domesdaybook.automata.TransitionStrategy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
+import net.domesdaybook.collections.IdentityHashSet;
 import net.domesdaybook.object.copy.DeepCopy;
 
 
@@ -56,12 +57,14 @@ import net.domesdaybook.object.copy.DeepCopy;
  * @see net.domesdaybook.automata.Transition
  * @author Matt Palmer
  */
-public class SimpleState implements State {
+public class SimpleState<T> implements State<T> {
     
-    private List<Transition> transitions;
+    private final List<Transition> transitions;
+    private final List<T> associations;    
     private boolean isFinal;
-    private TransitionStrategy transitionStrategy = NO_TRANSITION;
 
+    
+    // Constructors
     
     /**
      * The default constructor for SimpleState, as a non-final state.
@@ -79,7 +82,8 @@ public class SimpleState implements State {
      */
     public SimpleState(final boolean isFinal) {
         this.isFinal = isFinal;
-        this.transitions = new ArrayList<Transition>();
+        this.transitions = new ArrayList<Transition>(1);
+        this.associations = new ArrayList<T>(0);
     }
 
     
@@ -87,84 +91,42 @@ public class SimpleState implements State {
      * A copy constructor for SimpleState from another state.
      * 
      * @param other The other State to copy from.
+     * @throws NullPointerException if the State passed in is null.
      */
     public SimpleState(final State other) {
         this.isFinal = other.isFinal();
-        this.transitions = new ArrayList<Transition>(other.getTransitions()); 
+        this.transitions = new ArrayList<Transition>(other.getTransitions());
+        this.associations = new ArrayList<T>(other.getNumberOfAssociations());
+        other.appendAssociations(this.associations);
     }
 
     
+    // Methods
+    
     /**
-     * Adds a transition to this State.
-     * <p>
-     * It also changes the transition strategy based on the following simple heuristic:
-     * <ul>
-     * <li>If there is only one transition after adding, then the {@link FirstMatchingTransition} strategy is used.
-     * <li>If there is more than one transition after adding, then the {@link AllMatchingTransitions} strategy is used.
-     * </ul>
-     * This will change any prior strategy set.  If you want to set a custom strategy
-     * for this State, do so after adding any transitions you wish to add.
-     * 
-     * @param transition The transition to add to this State.
-     * @see net.domesdaybook.automata.Transition
-     * @see net.domesdaybook.automata.strategy.FirstMatchingTransition
-     * @see net.domesdaybook.automata.strategy.AllMatchingTransitions
+     * {@inheritDoc}
      */
     @Override
     public final void addTransition(final Transition transition) {
-        this.transitions.add(transition);
-        setBasicTransitionStrategy();
+        transitions.add(transition);
     }
 
     
     /**
-     * Adds all the transitions in the list to this State, preserving any
-     * previous transitions which were already attached to this state.
-     * <p>
-     * It also changes the transition strategy based on the following simple heuristic:
-     * <ul>
-     * <li>If there is only one transition after adding, then the {@link FirstMatchingTransition} strategy is used.
-     * <li>If there is more than one transition after adding, then the {@link AllMatchingTransitions} strategy is used.
-     * </ul>
-     * This will change any prior strategy set.  If you want to set a custom strategy
-     * for this State, do so after adding any transitions you wish to add.
-     * @param transitions 
-     * @see net.domesdaybook.automata.Transition
-     * @see net.domesdaybook.automata.strategy.FirstMatchingTransition
-     * @see net.domesdaybook.automata.strategy.AllMatchingTransitions
+     * {@inheritDoc}
      */
     @Override
     public final void addAllTransitions(final List<Transition> transitions) {
         this.transitions.addAll(transitions);
-        setBasicTransitionStrategy();
     }
 
     
     /**
-     * Removes the transition from this State.
-     * <p>
-     * It also changes the transition strategy based on the following simple heuristic:
-     * <ul>
-     * <li>If there are no transitions after removing, then the {@link NoTransition} strategy is used.
-     * <li>If there is only one transition after removing, then the {@link FirstMatchingTransition} strategy is used.
-     * <li>If there is more than one transition after removing, then the {@link AllMatchingTransitions} strategy is used.
-     * </ul>
-     * This will change any prior strategy set.  If you want to set a custom strategy
-     * for this State, do so after adding or removing any other transitions.
-     * 
-     * @param transition The transition to add to this State.
-     * @return boolean Whether the transition was in the State.
-     * @see net.domesdaybook.automata.Transition
-     * @see net.domesdaybook.automata.TransitionStrategy
-     * @see net.domesdaybook.automata.strategy.FirstMatchingTransition
-     * @see net.domesdaybook.automata.strategy.AllMatchingTransitions
-     * @see net.domesdaybook.automata.strategy.NoTransition
-     */ 
+     * {@inheritDoc}
+     */
     @Override
     public final boolean removeTransition(final Transition transition) {
-        final boolean result = transitions.remove(transition);
-        setBasicTransitionStrategy();
-        return result;
+        return transitions.remove(transition);
     }
     
     
@@ -173,7 +135,14 @@ public class SimpleState implements State {
      */
     @Override
     public final void appendNextStates(final Collection<State> states, final byte value) {
-        transitionStrategy.appendDistinctStatesForByte(states, value, transitions);
+       final Set<State> matchingStates = new IdentityHashSet<State>();
+        for (final Transition transition : transitions) {
+            final State nextState = transition.getStateForByte(value);
+            if (nextState != null && !matchingStates.contains(nextState)) {
+                matchingStates.add(nextState);
+                states.add(nextState);
+            }
+        }        
     }
     
     
@@ -182,29 +151,15 @@ public class SimpleState implements State {
      */
     @Override
     public final State getNextState(final byte value) {
-        return transitionStrategy.getFirstMatchingState(value, transitions);
+        for (final Transition transition : transitions) {
+            final State nextState = transition.getStateForByte(value);
+            if (nextState != null) {
+                return nextState;
+            }
+        } 
+        return null;        
     }
 
-    
-    /**
-     * Sets a basic transition strategy based on the following simple heuristic:
-     * <ul>
-     * <li>If there are no transitions, then the {@link NoTransition} strategy is used.
-     * <li>If there is more than one transition, then the {@link IterateTransitions} strategy is used.
-     * </ul>
-     * 
-     * @see net.domesdaybook.automata.TransitionStrategy
-     * @see net.domesdaybook.automata.strategy.IterateTransitions
-     * @see net.domesdaybook.automata.strategy.NoTransition
-     */
-    private void setBasicTransitionStrategy() {
-        if (transitions.isEmpty()) {
-            transitionStrategy = NO_TRANSITION;
-        } else {
-            transitionStrategy = ITERATE_TRANSITIONS;
-        }
-    }
-    
     
     /**
      * {@inheritDoc}
@@ -213,20 +168,72 @@ public class SimpleState implements State {
     public final boolean isFinal() {
         return isFinal;
     }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void setIsFinal(boolean isFinal) {
+        this.isFinal = isFinal;
+    }    
 
     
     /**
-     * Returns the transitions currently set in this State.  The list returned
-     * is newly created.
-     * 
-     * @return A new ArrayList of transitions.
-     * @see net.domesdaybook.automata.Transition
+     * {@inheritDoc}
      */
     public final List<Transition> getTransitions() {
         return new ArrayList<Transition>(this.transitions);
     }
     
     
+   
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNumberOfAssociations() {
+        return associations.size();
+    }    
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void appendAssociations(Collection<T> toCollection) {
+        toCollection.addAll(associations);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addObject(final Object object) {
+        associations.add((T) object);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean removeObject(final Object object) {
+        return associations.remove((T) object);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAssociations(final Collection<T> associations) {
+        this.associations.clear();
+        this.associations.addAll(associations);
+    }
+    
+
     /**
      * This is a convenience method, providing the initial map to:
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
@@ -235,7 +242,7 @@ public class SimpleState implements State {
      * @see #deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)
      */
     @Override
-    public SimpleState deepCopy() {
+    public SimpleState<T> deepCopy() {
         final Map<DeepCopy, DeepCopy> oldToNewObjects = new IdentityHashMap<DeepCopy,DeepCopy>();
         return deepCopy(oldToNewObjects);
     }
@@ -251,8 +258,8 @@ public class SimpleState implements State {
      *         reachable from this State.
      */
     @Override
-    public SimpleState deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        SimpleState stateCopy = (SimpleState) oldToNewObjects.get(this);
+    public SimpleState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        SimpleState<T> stateCopy = (SimpleState<T>)oldToNewObjects.get(this);
         if (stateCopy == null) {
             stateCopy = new SimpleState(this.isFinal);
             oldToNewObjects.put(this, stateCopy);
@@ -260,37 +267,11 @@ public class SimpleState implements State {
                 final Transition transitionCopy = transition.deepCopy(oldToNewObjects);
                 stateCopy.transitions.add(transitionCopy);
             }
-            stateCopy.setTransitionStrategy(transitionStrategy.deepCopy(oldToNewObjects));
         }
         return stateCopy;
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final void setIsFinal(boolean isFinal) {
-        this.isFinal = isFinal;
-    }
 
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final void setTransitionStrategy(TransitionStrategy strategy) {
-        this.transitionStrategy = strategy;
-    }
-
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final TransitionStrategy getTransitionStrategy() {
-        return transitionStrategy;
-    }
 
    
 }

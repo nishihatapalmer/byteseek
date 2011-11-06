@@ -32,8 +32,6 @@
 
 package net.domesdaybook.automata;
 
-import net.domesdaybook.automata.strategy.IterateTransitions;
-import net.domesdaybook.automata.strategy.NoTransition;
 import java.util.Collection;
 import net.domesdaybook.object.copy.DeepCopy;
 import java.util.List;
@@ -69,12 +67,13 @@ import java.util.Map;
  * It extends the {@link DeepCopy} interface, to ensure that all states
  * can provide deep copies of themselves.
  * 
+ * @param <T> The type of objects the state will be associated with.
  * @see Transition
  * @see TransitionStrategy
  *
  * @author Matt Palmer
  */
-public interface State extends DeepCopy {
+public interface State<T> extends DeepCopy {
 
     // -------------------------------------------------------------------------
     // Constants
@@ -89,27 +88,6 @@ public interface State extends DeepCopy {
     public static boolean NON_FINAL = false;
     
     
-   
-    /**
-     * A reusable instance of the iterate transition strategy, which given 
-     * a byte will return all the States it can find a transition to by
-     * iterating over a collection of transitions.
-     * 
-     * <p/>
-     * This strategy is entirely stateless, so it is safe to re-use anywhere.
-     */
-    public static final TransitionStrategy ITERATE_TRANSITIONS = new IterateTransitions();
-    
-    
-/**
-     * A reusable instance of the no transition strategy, which given 
-     * a byte will always return no States.
-     * <p/>
-     * This strategy is entirely stateless, so it is safe to re-use anywhere.
-     */
-    public static final TransitionStrategy NO_TRANSITION = new NoTransition();
-   
-
     // -------------------------------------------------------------------------
     // Methods
     
@@ -157,28 +135,6 @@ public interface State extends DeepCopy {
      */
     public List<Transition> getTransitions();
 
-    
-    /**
-     * Sets a {@link TransitionStrategy} to use for this state.  
-     * <p>
-     * Implementations of State must call the initialise() method
-     * on any TransitionStrategy set here, to ensure that the strategy
-     * is properly initialised.  
-     * <p>
-     * Note: not all TransitionStrategies require initialisation, but some do.
-     * 
-     * @param strategy The transition strategy to use for this state.
-     */
-    public void setTransitionStrategy(TransitionStrategy strategy);
-    
-    
-    /**
-     * Returns the {@link TransitionStrategy} in use for this state.
-     * 
-     * @return The transition strategy used by this state.
-     */
-    public TransitionStrategy getTransitionStrategy();
-    
    
     /**
      * Sets whether this state is final or not.
@@ -212,6 +168,57 @@ public interface State extends DeepCopy {
      * @return boolean Whether the transition was in the State.
      */
     public boolean removeTransition(Transition transition);    
+    
+    
+    /**
+     * Adds an object of type T to the State.  
+     * <p>
+     * This interface does not guarantee that the instance added will be unique.
+     * Specific implementations may provide this guarantee.
+     * 
+     * @param object The object to associated with the state.
+     */
+    public void addObject(T object);
+    
+    
+    /**
+     * Removes an object of type T from the State.
+     * <p>
+     * This interface does not guarantee that all instances will be removed, only
+     * the first encountered. Specific implementations may provide this guarantee.
+     * 
+     * @param object The object to remove from the state.
+     * @return boolean true if the object was present in the State.
+     */
+    public boolean removeObject(T object);
+    
+    
+    /**
+     * Appends any associations of type T to a collection of the objects of type T. 
+     * No guarantee is made that the objects will be unique, although specific
+     * implementations may provide this guarantee.
+     * 
+     * @return A collection of the objects currently associated with this state.
+     */
+    public void appendAssociations(Collection<T> toCollection);
+    
+    
+    /**
+     * Returns the number of objects associated with this State.
+     * 
+     * @return int the number of objects associated with this State.
+     */
+    public int getNumberOfAssociations();
+    
+    
+    /**
+     * Sets a collection of objects of type T to be associated with this State.
+     * This method should ensure that only the associations passed in are
+     * associated with the state - any prior associations should be cleared.
+     * 
+     * @param associations The objects to associated with this State.
+     */
+    public void setAssociations(Collection<T> associations);
     
     
     /**

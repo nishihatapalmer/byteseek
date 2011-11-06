@@ -44,7 +44,7 @@ import net.domesdaybook.automata.State;
  * 
  * @author Matt Palmer
  */
-public interface StateFactory {
+public interface StateFactory<T> {
     
     /**
      * Builds an {@link State} object.
@@ -52,6 +52,6 @@ public interface StateFactory {
      * @param isFinal Whether the state is final or not.
      * @return An object implementing the State interface.
      */
-    public State create(boolean isFinal);    
+    public State<T> create(boolean isFinal);    
     
 }

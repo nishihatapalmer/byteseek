@@ -54,8 +54,14 @@ import net.domesdaybook.collections.IdentityHashSet;
 public final class StateSiblingWalker implements Walker {
 
     
+    public static void walkAutomata(final State startState, final StepTaker taker) {
+        final Walker walker = new StateSiblingWalker();
+        walker.walk(startState, taker);
+    }    
+    
+    
     /**
-     * Walks an automata from the startState, invoking the {@link StepObserver} for
+     * Walks an automata from the startState, invoking the {@link StepTaker} for
      * each step of the walk.  This method will visit each State reachable from the 
      * start State only once, in a sibling-first (i.e. breadth-first) order.
      * 
@@ -63,20 +69,20 @@ public final class StateSiblingWalker implements Walker {
      * @param observer The observer to invoke for each step of the walk.
      */    
     @Override
-    public void walk(final State startState, final StepObserver observer) {
+    public void walk(final State startState, final StepTaker observer) {
         final Set<State> visitedStates = new IdentityHashSet<State>();
         final Deque<Step> walkSteps = new ArrayDeque<Step>();
         walkSteps.addFirst(new Step(null, null, startState));
         while (!walkSteps.isEmpty()) {
             final Step step = walkSteps.removeLast();
-            final State state = step.currentState;
+            final State<?> state = step.currentState;
             if (!visitedStates.contains(state)) {
                 visitedStates.add(state);
                 for (final Transition transition: state.getTransitions()) {
                     walkSteps.addFirst(
                        new Step(state, transition, transition.getToState()));
                 }
-                observer.observe(step);                
+                observer.take(step);                
             }
         }
     }

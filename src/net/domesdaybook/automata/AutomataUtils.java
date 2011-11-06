@@ -33,12 +33,16 @@
 package net.domesdaybook.automata;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import net.domesdaybook.automata.walker.StateChildWalker;
+import net.domesdaybook.automata.walker.Step;
+import net.domesdaybook.automata.walker.StepTaker;
 import net.domesdaybook.collections.IdentityHashSet;
 
 /**
@@ -66,7 +70,64 @@ public final class AutomataUtils {
         getAllFinalStates(initialState, visitedStates, finalStates);
         return finalStates;
     }
+    
 
+    
+    /**
+     * This function joins all the automata into a single automata,
+     * by adding all the transitions of the states after the first
+     * in to the first state in the collection, and ensuring that
+     * any references to the other states are updated to point to the
+     * first state.
+     * <o>
+     * If any of the first states are final, then the state returned will
+     * also be final.
+     * 
+     * @param automata
+     * @return 
+     */
+    public static State join(final Collection<State> automata) {
+        final Iterator<State> automataFirstStates = automata.iterator();
+        if (automataFirstStates.hasNext()) {
+            final State root = automataFirstStates.next();
+            boolean isFinal = root.isFinal();            
+            while (automataFirstStates.hasNext()) {
+                final State automataFirstState = automataFirstStates.next();
+                isFinal |= automataFirstState.isFinal();
+                replaceState(automataFirstState, root);
+                root.addAllTransitions(automataFirstState.getTransitions());
+            }
+            root.setIsFinal(isFinal);
+            return root;
+        }
+        return null;
+    }
+    
+    
+    /**
+     * This function replaces all references to an old State with references 
+     * to the new state in the entire automata reachable from the oldState 
+     * passed in.
+     * 
+     * @param oldState
+     * @param newState
+     * @return 
+     */
+    public static void replaceState(final State oldState, final State newState) {
+        final StepTaker replaceWithNewState = new StepTaker() {
+            @Override
+            public void take(final Step step) {
+                final State<?> stateToUpdate = step.currentState;
+                for (final Transition transition : stateToUpdate.getTransitions()) {
+                    if (transition.getToState() == oldState) {
+                        transition.setToState(newState);
+                    }
+                }
+            }
+        };
+        StateChildWalker.walkAutomata(oldState, replaceWithNewState);
+    }
+    
 
     private static void getAllFinalStates(final State state, final Set<State> visitedStates, final List<State> finalStates) {
         if (!visitedStates.contains(state)) {
@@ -89,7 +150,7 @@ public final class AutomataUtils {
      * @param state The state to build the map from.
      * @param byteToTargetStates The map of byte to states in which the results are placed.
      */
-    public static void buildByteToStates(final State state, Map<Byte, Set<State>> byteToTargetStates) {
+    public static void buildByteToStates(final State<?> state, Map<Byte, Set<State>> byteToTargetStates) {
         for (final Transition transition : state.getTransitions()) {
             final State transitionToState = (State) transition.getToState();
             final byte[] transitionBytes = transition.getBytes();

@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -45,7 +43,7 @@ import net.domesdaybook.automata.wrapper.InitialFinalStates;
  *
  * @author Matt Palmer
  */
-public interface InitialFinalStatesBuilder {
+public interface StatesBuilder {
 
     /**
      * Builds a simple automata with a transition on a single byte value.
@@ -120,7 +118,7 @@ public interface InitialFinalStatesBuilder {
     /**
      * Builds an automata which repeats from one to many times.
      *
-     * @param zeroToManyStates The automata to repeat from one to many times.
+     * @param oneToManyStates 
      * @return An automata which repeats from one to many times.
      */
     public InitialFinalStates buildOneToManyStates(final InitialFinalStates oneToManyStates);

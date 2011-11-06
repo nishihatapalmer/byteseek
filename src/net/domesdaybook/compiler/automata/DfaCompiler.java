@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -35,6 +33,7 @@
 
 package net.domesdaybook.compiler.automata;
 
+import java.util.Collection;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
@@ -43,49 +42,70 @@ import net.domesdaybook.compiler.Compiler;
  *
  * @author matt
  */
-public class DfaExpressionCompiler implements Compiler<State, String> {
+public class DfaCompiler implements Compiler<State, String> {
 
-    private static DfaExpressionCompiler defaultCompiler;
-    public static State dfaFrom(String expression) throws CompileException {
-        defaultCompiler = new DfaExpressionCompiler();
+    private static DfaCompiler defaultCompiler;
+    /**
+     * 
+     * @param expression
+     * @return
+     * @throws CompileException
+     */
+    public static State dfaFrom(final String expression) throws CompileException {
+        defaultCompiler = new DfaCompiler();
         return defaultCompiler.compile(expression);
     }
     
     private final Compiler<State, String> nfaCompiler;
     private final Compiler<State, State> dfaFromNfaCompiler;
     
-    public DfaExpressionCompiler() {
+    /**
+     * 
+     */
+    public DfaCompiler() {
         this(null, null);
     }
 
-    /* can't include this method as the the following constructor has the
-     * same type erasure as this one.
-    public DfaExpressionCompiler(Compiler<State, String> nfaCompilerToUse) {
-        this(nfaCompilerToUse, null);
-    }
-     *
-     */
+   
     
-    public DfaExpressionCompiler(Compiler<State, State> dfaFromNfaCompilerToUse) {
+    /**
+     * 
+     * @param dfaFromNfaCompilerToUse
+     */
+    public DfaCompiler(final Compiler<State, State> dfaFromNfaCompilerToUse) {
         this(null, dfaFromNfaCompilerToUse);
     }    
     
-    public DfaExpressionCompiler(Compiler<State, String> nfaCompilerToUse, Compiler<State, State> dfaFromNfaCompilerToUse) {
+    
+    /**
+     * 
+     * @param nfaCompilerToUse
+     * @param dfaFromNfaCompilerToUse
+     */
+    public DfaCompiler(final Compiler<State, String> nfaCompilerToUse, final Compiler<State, State> dfaFromNfaCompilerToUse) {
         if (nfaCompilerToUse == null) {
-            this.nfaCompiler = new NfaExpressionCompiler();
+            this.nfaCompiler = new NfaCompiler();
         } else {
             this.nfaCompiler = nfaCompilerToUse;
         }
         if (dfaFromNfaCompilerToUse == null) {
-            this.dfaFromNfaCompiler = new DfaNfaSubsetCompiler();
+            this.dfaFromNfaCompiler = new DfaSubsetCompiler();
         } else {
             this.dfaFromNfaCompiler = dfaFromNfaCompilerToUse;
         }
     }
     
+    
     @Override
-    public State compile(String expression) throws CompileException {
+    public State compile(final String expression) throws CompileException {
         State initialNfaState = nfaCompiler.compile(expression);
+        return dfaFromNfaCompiler.compile(initialNfaState);
+    }
+
+    
+    @Override
+    public State compile(Collection<String> expressions) throws CompileException {
+        State initialNfaState = nfaCompiler.compile(expressions);
         return dfaFromNfaCompiler.compile(initialNfaState);
     }
     

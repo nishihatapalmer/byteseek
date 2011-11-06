@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -35,8 +33,9 @@
 
 package net.domesdaybook.compiler.automata;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -53,13 +52,20 @@ import net.domesdaybook.compiler.Compiler;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
-public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
+public final class DfaSubsetCompiler implements Compiler<State, State> {
 
-    private static DfaNfaSubsetCompiler defaultCompiler;
+    private static DfaSubsetCompiler defaultCompiler;
+    
+    /**
+     * 
+     * @param nfaInitialState
+     * @return
+     * @throws CompileException
+     */
     public static State dfaFromNfa(State nfaInitialState) throws CompileException {
-        defaultCompiler = new DfaNfaSubsetCompiler();
+        defaultCompiler = new DfaSubsetCompiler();
         return defaultCompiler.compile(nfaInitialState);
     }
     
@@ -68,33 +74,71 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
     private final StateFactory StateFactory;
     private final TransitionFactory transitionFactory;
     
-    public DfaNfaSubsetCompiler() {
+    
+    /**
+     * 
+     */
+    public DfaSubsetCompiler() {
         this(null, null, null);
     }
 
-    public DfaNfaSubsetCompiler(final StateFactory stateFactory) {
+    
+    /**
+     * 
+     * @param stateFactory
+     */
+    public DfaSubsetCompiler(final StateFactory stateFactory) {
         this(null, stateFactory, null);
     }
 
-    public DfaNfaSubsetCompiler(final TransitionFactory transitionFactory) {
+    
+    /**
+     * 
+     * @param transitionFactory
+     */
+    public DfaSubsetCompiler(final TransitionFactory transitionFactory) {
         this(null, null, transitionFactory);
     }
     
-    public DfaNfaSubsetCompiler(final Compiler<State, String> nfaCompilerToUse) {
+    
+    /**
+     * 
+     * @param nfaCompilerToUse
+     */
+    public DfaSubsetCompiler(final Compiler<State, String> nfaCompilerToUse) {
         this(nfaCompilerToUse, null, null);
     }
     
-    public DfaNfaSubsetCompiler(final Compiler<State, String> nfaCompilerToUse, final StateFactory stateFactory) { 
+    
+    /**
+     * 
+     * @param nfaCompilerToUse
+     * @param stateFactory
+     */
+    public DfaSubsetCompiler(final Compiler<State, String> nfaCompilerToUse, final StateFactory stateFactory) { 
         this(nfaCompilerToUse, stateFactory, null);
     }
     
-    public DfaNfaSubsetCompiler(final Compiler<State, String> nfaCompilerToUse, final TransitionFactory transitionFactory) {
+    
+    /**
+     * 
+     * @param nfaCompilerToUse
+     * @param transitionFactory
+     */
+    public DfaSubsetCompiler(final Compiler<State, String> nfaCompilerToUse, final TransitionFactory transitionFactory) {
         this(nfaCompilerToUse, null, transitionFactory);
     }
 
-    public DfaNfaSubsetCompiler(Compiler<State, String> nfaCompilerToUse, StateFactory StateFactoryToUse, TransitionFactory factoryToUse) {
+    
+    /**
+     * 
+     * @param nfaCompilerToUse
+     * @param StateFactoryToUse
+     * @param factoryToUse
+     */
+    public DfaSubsetCompiler(Compiler<State, String> nfaCompilerToUse, StateFactory StateFactoryToUse, TransitionFactory factoryToUse) {
         if (nfaCompilerToUse == null) {
-            nfaCompiler = new NfaExpressionCompiler();
+            nfaCompiler = new NfaCompiler();
         } else {
             nfaCompiler = nfaCompilerToUse;
         }
@@ -112,26 +156,32 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
 
 
     @Override
-    public State compile(State nfaToTransform) {
-        Map<Set<State>, State> nfaToDfa = new IdentityHashMap<Set<State>, State>();
-        Set<State> initialState = new IdentityHashSet<State>();
+    public State compile(final State nfaToTransform) {
+        final Map<Set<State>, State> nfaToDfa = new IdentityHashMap<Set<State>, State>();
+        final Set<State> initialState = new IdentityHashSet<State>();
         initialState.add(nfaToTransform);
         return getState(initialState, nfaToDfa);
     }
+    
+    
+    @Override
+    public State compile(final Collection<State> automata) throws CompileException {
+        return compile(AutomataUtils.join(automata));
+    }    
 
 
-    private State getState(Set<State> States, Map<Set<State>, State> StatesToDfa) {
+    private State getState(final Set<State> states, final Map<Set<State>, State> statesToDfa) {
         // This method is called recursively -
         // if we have already built this dfa state, just return it:
-        if (StatesToDfa.containsKey(States)) {
-            return StatesToDfa.get(States);
+        if (statesToDfa.containsKey(states)) {
+            return statesToDfa.get(states);
         } else {
-            return createState(States, StatesToDfa);
+            return createState(states, statesToDfa);
         }
     }
 
 
-    private State createState(Set<State> sourceStates, Map<Set<State>, State> StatesToDfa) {
+    private State createState(final Set<State> sourceStates, final Map<Set<State>, State> StatesToDfa) {
 
         // Determine if the new Dfa state should be final:
         boolean isFinal = anyStatesAreFinal(sourceStates);
@@ -143,15 +193,12 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
         // Create transitions to all the new dfa states this one points to:
         createDfaTransitions(sourceStates, newState, StatesToDfa);
 
-        // Set the state strategy to first transition to match (if it matches in
-        // a DFA, then there can be no other transition which will match):
-        newState.setTransitionStrategy(State.FIRST_MATCHING_TRANSITION);
-        
         return newState;
     }
 
 
-   private void createDfaTransitions(Set<State> sourceStates, State newState, Map<Set<State>, State> StatesToDfa)  {
+    private void createDfaTransitions(final Set<State> sourceStates, final State newState,
+                                     final Map<Set<State>, State> StatesToDfa)  {
        // For each target nfa state set, add a transition on those bytes:
        Map<Set<State>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(sourceStates);
        for (Set<State> targetState : targetStatesToBytes.keySet()) {
@@ -171,10 +218,10 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
             // Add the transition to the source state:
             newState.addTransition(transition);
         }
-   }
+    }
 
    
-   private Map<Set<State>, Set<Byte>> getDfaTransitionInfo(Set<State> sourceStates) {
+   private Map<Set<State>, Set<Byte>> getDfaTransitionInfo(final Set<State> sourceStates) {
         // Build a map of bytes to the target nfa states each points to:
         Map<Byte, Set<State>> byteToStates = buildByteToStates(sourceStates);
 
@@ -192,17 +239,16 @@ public final class DfaNfaSubsetCompiler implements Compiler<State, State> {
     }
 
 
-    private boolean anyStatesAreFinal(Set<State> sourceStates) {
-        boolean isFinal = false;
-        for (State state : sourceStates) {
+    private boolean anyStatesAreFinal(final Set<State> sourceStates) {
+        for (final State state : sourceStates) {
             if (state.isFinal()) {
-                isFinal = true;
-                break;
+                return true;
             }
         }
-        return isFinal;
+        return false;
     }
-   
+
+ 
 
 
 }

@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -61,38 +59,44 @@ import org.antlr.runtime.tree.CommonTree;
  * 
  * @author Matt Palmer
  */
-public final class NfaExpressionCompiler extends AbstractAstCompiler<State> {
+public final class NfaCompiler extends AbstractAstCompiler<State> {
 
-    private static NfaExpressionCompiler defaultCompiler;
+    private static NfaCompiler defaultCompiler;
+    /**
+     * 
+     * @param expression
+     * @return
+     * @throws CompileException
+     */
     public static State nfaFrom(String expression) throws CompileException {
-        defaultCompiler = new NfaExpressionCompiler();
+        defaultCompiler = new NfaCompiler();
         return defaultCompiler.compile(expression);
     }    
     
     private static final String MANY = "*";
     
-    private final InitialFinalStatesBuilder stateWrapperBuilder;
+    private final StatesBuilder stateWrapperBuilder;
 
     /**
-     * Constructs an NfaExpressionCompiler, using default {@link TransitionFactory},
-     * {@link StateBuilder} and {@link InitialFinalStatesBuilder} objects.
+     * Constructs an NfaCompiler, using default {@link TransitionFactory},
+     * {@link StateBuilder} and {@link StatesBuilder} objects.
      *
      * By default, it uses the {@link TransitionSingleByteMatcherFactory} and
-     * the {@link StateBuilder} to make a {@link ChamparnaudGlushkovBuilder} to
+     * the {@link StateBuilder} to make a {@link GlushkovBuilder} to
      * produce the NFA.
      */
-    public NfaExpressionCompiler() {
-        stateWrapperBuilder = new ChamparnaudGlushkovBuilder();
+    public NfaCompiler() {
+        stateWrapperBuilder = new GlushkovBuilder();
     }
 
     
     /**
-     * Constructs an NfaExpressionCompiler, supplying the {@link InitialFinalStatesBuilder} object
+     * Constructs an NfaCompiler, supplying the {@link StatesBuilder} object
      * to use to construct the NFA from the parse tree.
      *
      * @param stateWrapperBuilder
      */
-    public NfaExpressionCompiler(final InitialFinalStatesBuilder stateWrapperBuilder) {
+    public NfaCompiler(final StatesBuilder stateWrapperBuilder) {
         this.stateWrapperBuilder = stateWrapperBuilder;
     }
 
@@ -103,7 +107,7 @@ public final class NfaExpressionCompiler extends AbstractAstCompiler<State> {
      * abstract syntax tree provided by the {@link AbstractAstCompiler} which this
      * class extends.
      * <p/>
-     * It uses a {@link InitialFinalStatesBuilder} object to build the actual automata,
+     * It uses a {@link StatesBuilder} object to build the actual automata,
      * returning only the initial state of the final automata.
      *
      * @param ast The abstract syntax tree to compile the State automata from.

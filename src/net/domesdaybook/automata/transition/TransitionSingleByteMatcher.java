@@ -55,7 +55,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 public class TransitionSingleByteMatcher implements Transition {
 
     private final SingleByteMatcher matcher;
-    private final State toState;
+    private State toState;
 
 
     /**
@@ -162,6 +162,15 @@ public class TransitionSingleByteMatcher implements Transition {
     @Override
     public String toString() {
         return matcher.toRegularExpression(true);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    public void setToState(final State stateToPointAt) {
+        this.toState = stateToPointAt;
     }
 
 }
