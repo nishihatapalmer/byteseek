@@ -84,11 +84,11 @@ public final class NfaCompiler extends AbstractAstCompiler<State> {
      * {@link StateBuilder} and {@link StatesBuilder} objects.
      *
      * By default, it uses the {@link SimpleTransitionFactory} and
-     * the {@link StateBuilder} to make a {@link GlushkovBuilder} to
+     * the {@link StateBuilder} to make a {@link GlushkovStatesBuilder} to
      * produce the NFA.
      */
     public NfaCompiler() {
-        stateWrapperBuilder = new GlushkovBuilder();
+        stateWrapperBuilder = new GlushkovStatesBuilder();
     }
 
     

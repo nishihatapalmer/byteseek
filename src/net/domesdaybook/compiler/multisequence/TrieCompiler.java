@@ -32,7 +32,7 @@
  */
 
 
-package net.domesdaybook.compiler.automata;
+package net.domesdaybook.compiler.multisequence;
 
 import java.util.ArrayList;
 import java.util.Collection;

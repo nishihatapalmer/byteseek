@@ -39,7 +39,7 @@ import java.util.List;
 import net.domesdaybook.automata.wrapper.Trie;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.ReversibleCompiler;
-import net.domesdaybook.compiler.automata.TrieCompiler;
+import net.domesdaybook.compiler.ReversibleCompiler.Direction;
 import net.domesdaybook.matcher.multisequence.TrieMatcher;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -49,7 +49,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  * 
  * @author Matt Palmer
  */
-public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher, Collection<SequenceMatcher>> {
+public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher, SequenceMatcher> {
 
     // -------------------------------------------------------------------------
     // Static utility methods to build TrieMatchers using the TrieCompiler class   
@@ -100,7 +100,7 @@ public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher
     // Class variables and methods
     
     
-    private final ReversibleCompiler<Trie, Collection<SequenceMatcher>> compiler;
+    private final ReversibleCompiler<Trie, SequenceMatcher> compiler;
   
     
     public TrieMatcherCompiler() {
@@ -108,7 +108,7 @@ public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher
     }
     
     
-    public TrieMatcherCompiler(final ReversibleCompiler<Trie, Collection<SequenceMatcher>> trieCompiler) {
+    public TrieMatcherCompiler(final ReversibleCompiler<Trie, SequenceMatcher> trieCompiler) {
         if (trieCompiler == null) {
            throw new IllegalArgumentException("Null compiler passed in to TrieMatcherCompiler.");
         }
@@ -117,13 +117,27 @@ public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher
     
     
     @Override
+    public TrieMatcher compile(final SequenceMatcher expression) throws CompileException {
+        return new TrieMatcher(compiler.compile(expression, Direction.FORWARDS));
+    }  
+    
+    
+    @Override
+    public TrieMatcher compile(final SequenceMatcher expression, 
+                               final Direction direction) throws CompileException {
+        return new TrieMatcher(compiler.compile(expression, direction));
+    }  
+    
+    
+    @Override
     public TrieMatcher compile(final Collection<SequenceMatcher> expression) throws CompileException {
-        return new TrieMatcher(compiler.compile(expression));
+        return new TrieMatcher(compiler.compile(expression, Direction.FORWARDS));
     }
     
 
     @Override
-    public TrieMatcher compile(Collection<SequenceMatcher> expression, Direction direction) throws CompileException {
+    public TrieMatcher compile(final Collection<SequenceMatcher> expression, 
+                               final Direction direction) throws CompileException {
         return new TrieMatcher(compiler.compile(expression, direction));
     }
     

@@ -89,7 +89,7 @@ import net.domesdaybook.automata.transition.SimpleTransitionFactory;
  *
  * @author Matt Palmer
  */
-public final class GlushkovBuilder implements StatesBuilder {
+public final class GlushkovStatesBuilder implements StatesBuilder {
 
      private final TransitionFactory transitionFactory;
      private final StateFactory stateFactory;
@@ -97,7 +97,7 @@ public final class GlushkovBuilder implements StatesBuilder {
      /**
       * 
       */
-     public GlushkovBuilder() {
+     public GlushkovStatesBuilder() {
          this(null, null);
      }
      
@@ -105,7 +105,7 @@ public final class GlushkovBuilder implements StatesBuilder {
       * 
       * @param stateFactory
       */
-     public GlushkovBuilder(final StateFactory stateFactory) {
+     public GlushkovStatesBuilder(final StateFactory stateFactory) {
          this(null, stateFactory);
      }
          
@@ -114,7 +114,7 @@ public final class GlushkovBuilder implements StatesBuilder {
       * 
       * @param transitionFactory
       */
-     public GlushkovBuilder(final TransitionFactory transitionFactory) {
+     public GlushkovStatesBuilder(final TransitionFactory transitionFactory) {
          this(transitionFactory,null);
      }
      
@@ -123,7 +123,7 @@ public final class GlushkovBuilder implements StatesBuilder {
       * @param transitionFactory
       * @param stateFactory
       */
-     public GlushkovBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
+     public GlushkovStatesBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
          if (transitionFactory == null) {
              this.transitionFactory = new SimpleTransitionFactory();
          } else {
