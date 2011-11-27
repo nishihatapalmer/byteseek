@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -33,6 +32,8 @@
 
 package net.domesdaybook.compiler.singlebyte;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import net.domesdaybook.compiler.AbstractAstCompiler;
 import net.domesdaybook.compiler.CompileException;
@@ -170,15 +171,17 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
         matcherFactory = new SimpleSingleByteMatcherFactory();
     }
     
+    
     /**
      * Constructs a SingleByteCompiler using the provided factory
      * to construct optimal matchers for sets of bytes.
      * 
      * @param factoryToUse The factory used to create optimal matchers for sets of bytes.
      */
-    public SingleByteCompiler(SingleByteMatcherFactory factoryToUse) {
+    public SingleByteCompiler(final SingleByteMatcherFactory factoryToUse) {
         matcherFactory = factoryToUse;
     }
+    
 
     /**
      * Compiles an abstract syntax tree provided by the {@link AbstractAstCompiler} class
@@ -188,7 +191,7 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
      * @return A {@link SingleByteMatcher} which matches the expression defined by the ast passed in.
      */
     @Override
-    public SingleByteMatcher compile(CommonTree ast) throws CompileException {
+    public SingleByteMatcher compile(final CommonTree ast) throws CompileException {
         if (ast == null) {
             throw new CompileException("Null abstract syntax tree passed in to SingleByteCompiler.");
         }
@@ -200,6 +203,24 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
             throw new CompileException(ex);
         }
     }
+    
+
+    /**
+     * Compiles a SingleByteMatcher which matches all of the bytes in the expressions.
+     * It simply
+     * 
+     * @param expressions
+     * @return
+     * @throws CompileException 
+     */
+    public SingleByteMatcher compile(Collection<String> expressions) throws CompileException {
+        final Set<Byte> bytesToMatch = new HashSet<Byte>();
+        for (final String expression : expressions) {
+            final byte[] matchingBytes = compile(expression).getMatchingBytes();
+            bytesToMatch.addAll(ByteUtilities.toList(matchingBytes));
+        }
+        return matcherFactory.create(bytesToMatch, NOT_INVERTED);
+    }    
 
 
     /**
@@ -281,5 +302,6 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
         }
         return matcher;
     }
+
 
 }
