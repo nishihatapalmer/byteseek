@@ -41,13 +41,13 @@ import java.util.Set;
 
 
 /**
- * A {@link Set} implementation backed by an {@link java.util.IdentityHashMap}. Membership
- * in the set is determined by comparing object identity (==), rather than by
- * invoking the equals() method on the set members.
+ * A {@link Set} implementation backed by an {@link java.util.IdentityHashMap}. 
+ * Membership in the set is determined by comparing object identity (==), rather 
+ * than by invoking the equals() method on the set members.
  * <p>
- * It extends {@link java.util.AbstractSet} to provide most of its implementation, only
- * overriding the methods necessary to add to, remove from and query the underlying
- * IdentityHashMap.
+ * It extends {@link java.util.AbstractSet} to provide most of its implementation, 
+ * only overriding the methods necessary to add to, remove from and query the 
+ * underlying IdentityHashMap.
  * <p>
  * This class will be most useful when working with graphs of objects, where
  * the object identity is most important in determining set membership.
