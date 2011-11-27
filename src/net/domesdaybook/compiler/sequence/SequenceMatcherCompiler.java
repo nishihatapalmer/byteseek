@@ -17,8 +17,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -36,6 +34,7 @@
 package net.domesdaybook.compiler.sequence;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.compiler.AbstractAstCompiler;
@@ -161,6 +160,16 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
             throw new CompileException(ex);
         }
     }
+    
+    
+    @Override
+    public SequenceMatcher compile(Collection<String> expressions) throws CompileException {
+        final List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
+        for (final String expression : expressions) {
+            matchers.add(compile(expression));
+        }
+        return new CombinedSequenceMatcher(matchers);
+    }    
 
 
     /**
@@ -441,7 +450,13 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     }
 
     
-
+    //REVIEW: method of creating repeated sequences and fixed repeats.
+    //        does it work for single byte matchers?  Use of instanceof is
+    //        ugly and not easily extensible.
+    
+    //TODO: use of instanceof not very extensible.
+    //      should sequence matchers have a repeated() interface to allow construction
+    //      of repeated sequences of themselves?
     private SequenceMatcher getRepeatedSequence(final SequenceMatcher sequence, final int numberOfRepeats) {
         
         if (sequence instanceof ByteSequenceMatcher) {
