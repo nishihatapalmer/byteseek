@@ -62,6 +62,7 @@ public final class ByteUtilities {
     private static int[] VALID_ALL_BITMASK_SET_SIZES = {1, 2, 4, 8, 16, 32, 64, 128, 256};
     private static int[] VALID_ANY_BITMASK_SET_SIZES = {0, 128, 192, 224, 240, 248, 252, 254, 255};
 
+
     /**
      * Private constructor for static utility class.
      */
@@ -185,6 +186,21 @@ public final class ByteUtilities {
         addAll(bytes, setOfBytes);
         return setOfBytes;
     }
+    
+    
+    /**
+     * Returns a list of bytes from an array of bytes.
+     * 
+     * @param bytes The array of bytes
+     * @return A list of bytes
+     */
+    public static Collection<? extends Byte> toList(byte[] bytes) {
+        final List<Byte> listOfBytes = new ArrayList<Byte>(bytes.length);
+        for (final byte b : bytes) {
+            listOfBytes.add(b);
+        }
+        return listOfBytes;
+    }    
 
     
     /**
