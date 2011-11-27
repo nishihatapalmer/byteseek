@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -39,12 +38,15 @@ import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
 
 /**
- *
- * @author matt
+ * Compiles an expression or a collection of expressions into a Deterministic
+ * Finite-state Automata (DFA).
+ * 
+ * @author Matt Palmer
  */
 public class DfaCompiler implements Compiler<State, String> {
 
     private static DfaCompiler defaultCompiler;
+    
     /**
      * 
      * @param expression
