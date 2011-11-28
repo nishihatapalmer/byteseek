@@ -70,6 +70,7 @@ public class MatcherSearcher extends AbstractSearcher {
     
     
     /**
+     * @throws IOException 
      * @inheritDoc
      */
     @Override
@@ -121,6 +122,7 @@ public class MatcherSearcher extends AbstractSearcher {
   
     
     /**
+     * @throws IOException 
      * @inheritDoc
      */
     @Override
