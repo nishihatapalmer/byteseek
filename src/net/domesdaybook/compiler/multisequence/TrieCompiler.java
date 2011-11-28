@@ -62,7 +62,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  * 
  * @author matt
  */
-public final class TrieCompiler implements ReversibleCompiler<Trie, SequenceMatcher> {
+public final class TrieCompiler implements ReversibleCompiler<Trie<SequenceMatcher>, SequenceMatcher> {
 
     private static TrieCompiler defaultCompiler;
     
@@ -172,7 +172,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, SequenceMatc
 
    
     @Override
-    public Trie compile(final SequenceMatcher matcher) throws CompileException {
+    public Trie<SequenceMatcher> compile(final SequenceMatcher matcher) throws CompileException {
         final Collection<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(1);
         matchers.add(matcher);
         return compile(matchers, Direction.FORWARDS);
@@ -180,7 +180,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, SequenceMatc
     
     
     @Override
-    public Trie compile(final SequenceMatcher matcher, 
+    public Trie<SequenceMatcher> compile(final SequenceMatcher matcher, 
                         final Direction direction) throws CompileException {
         final Collection<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>(1);
         matchers.add(matcher);
@@ -189,13 +189,13 @@ public final class TrieCompiler implements ReversibleCompiler<Trie, SequenceMatc
     
 
     @Override
-    public Trie compile(final Collection<SequenceMatcher> matchers) throws CompileException {
+    public Trie<SequenceMatcher> compile(final Collection<SequenceMatcher> matchers) throws CompileException {
         return compile(matchers, Direction.FORWARDS);
     }       
     
     
     @Override
-    public final Trie compile(final Collection<SequenceMatcher> sequences, 
+    public final Trie<SequenceMatcher> compile(final Collection<SequenceMatcher> sequences, 
                               final Direction direction) throws CompileException {
         State<SequenceMatcher> initialState = stateFactory.create(State.NON_FINAL);
         int minLength = Integer.MAX_VALUE;
