@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -41,8 +40,9 @@ import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
+
 /**
- *
+ * 
  * @author Matt Palmer
  */
 public final class NfaMatcher implements Matcher {
