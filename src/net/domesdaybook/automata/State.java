@@ -101,7 +101,7 @@ public interface State<T> extends DeepCopy {
      * @param states The collection to which the next states (if any) will be added.
      * @see TransitionStrategy
      */
-    public void appendNextStates(Collection<State> states, byte value);
+    public void appendNextStates(Collection<State<T>> states, byte value);
 
     
     /**
@@ -117,7 +117,7 @@ public interface State<T> extends DeepCopy {
      * @return The State to transition to for the byte value, or null if there is no
      * State to transition to.
      */
-    public State getNextState(byte value);
+    public State<T> getNextState(byte value);
     
     
     /**
@@ -171,6 +171,12 @@ public interface State<T> extends DeepCopy {
     
     
     /**
+     * Clears all transitions from this state.
+     */
+    public void clearTransitions();
+    
+    
+    /**
      * Adds an object of type T to the State.  
      * <p>
      * This interface does not guarantee that the instance added will be unique.
@@ -199,8 +205,13 @@ public interface State<T> extends DeepCopy {
     
     /**
      * Returns the associations of type T. 
-     * No guarantee is made that the objects will be unique, although specific
-     * implementations may provide this guarantee.
+     * <p>
+     * No guarantee is made that the associations returned will be unique,
+     * although specific implementations may provide this guarantee.
+     * <p>
+     * Implementors of this interface guarantee that null will never be returned
+     * by this call.  If there are no associations then an empty collection will
+     * be returned.
      * 
      * @return A collection of the objects currently associated with this state.
      */
@@ -216,6 +227,13 @@ public interface State<T> extends DeepCopy {
      * @param associations The objects to associated with this State.
      */
     public void setAssociations(Collection<T> associations);
+    
+    
+    /**
+     * Clears any associations with this state.
+     */
+    public void clearAssociations();
+    
     
     
     /**
@@ -237,7 +255,7 @@ public interface State<T> extends DeepCopy {
      * @return State A deep copy of this State and any Transitions and States
      *         reachable from this State.
      */
-    public State deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
+    public State<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }
 
