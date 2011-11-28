@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -55,6 +52,13 @@ public final class ReadUtils {
     
     
     
+    /**
+     * 
+     * @param input
+     * @param bytes
+     * @return
+     * @throws IOException
+     */
     public static int readBytes(final InputStream input, final byte[] bytes) throws IOException {
         final int blockSize = bytes.length;
         int totalRead = 0;
@@ -67,6 +71,13 @@ public final class ReadUtils {
     }
     
     
+    /**
+     * 
+     * @param input
+     * @param bytes
+     * @return
+     * @throws IOException
+     */
     public static int readBytes(final RandomAccessFile input, final byte[] bytes) throws IOException {
         final int blockSize = bytes.length;
         int totalRead = 0;
@@ -79,6 +90,14 @@ public final class ReadUtils {
     }
     
     
+    /**
+     * 
+     * @param input
+     * @param bytes
+     * @param fromPosition
+     * @return
+     * @throws IOException
+     */
     public static int readBytes(final RandomAccessFile input, final byte[] bytes, 
             final long fromPosition) throws IOException {
         final int blockSize = bytes.length;
@@ -92,6 +111,13 @@ public final class ReadUtils {
         return totalRead;
     }
     
+    /**
+     * 
+     * @param output
+     * @param bytes
+     * @param atPosition
+     * @throws IOException
+     */
     public static void writeBytes(final RandomAccessFile output, final byte[] bytes, 
             final long atPosition) throws IOException {
         output.seek(atPosition);
@@ -99,16 +125,34 @@ public final class ReadUtils {
     }
     
     
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     public static File createTempFile() throws IOException {
         return File.createTempFile("byteseek", ".tmp");
     }
     
     
+    /**
+     * 
+     * @param in
+     * @return
+     * @throws IOException
+     */
     public static File createTempFile(final InputStream in) throws IOException {
         return createTempFile(in, DEFAULT_BUFFER_SIZE);
     }
     
     
+    /**
+     * 
+     * @param in
+     * @param bufferSize
+     * @return
+     * @throws IOException
+     */
     public static File createTempFile(final InputStream in, final int bufferSize) throws IOException {
         final File tempFile = createTempFile();
         final FileOutputStream out = new FileOutputStream(tempFile);
@@ -118,12 +162,25 @@ public final class ReadUtils {
     }
         
     
+    /**
+     * 
+     * @param in
+     * @param out
+     * @throws IOException
+     */
     public static void copyStream(final InputStream in,
                                   final OutputStream out) throws IOException {
         copyStream(in, out, DEFAULT_BUFFER_SIZE);
     }
     
     
+    /**
+     * 
+     * @param in
+     * @param out
+     * @param bufferSize
+     * @throws IOException
+     */
     public static void copyStream(final InputStream in, 
                                   final OutputStream out,
                                   final int bufferSize) throws IOException {

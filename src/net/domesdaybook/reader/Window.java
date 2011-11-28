@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -50,7 +47,6 @@ public final class Window {
 =    * 
      * @param bytes  The byte array to wrap.
      * @param windowPosition The position at which the Window starts.
-     * @param offset A starting position of a slice of the array.
      * @param limit  An ending position of a slice of the array.
      */
     public Window(final byte[] bytes, final long windowPosition, final int limit) {
@@ -64,21 +60,38 @@ public final class Window {
     
     
     
+    /**
+     * 
+     * @param position
+     * @return
+     */
     public byte getByte(final int position) {
         return bytes[position];
     }
 
     
+    /**
+     * 
+     * @return
+     */
     public byte[] getArray() {
         return bytes;
     }
     
     
+    /**
+     * 
+     * @return
+     */
     public long getWindowPosition() {
         return windowPosition;
     }
     
     
+    /**
+     * 
+     * @return
+     */
     public int getLimit() {
         return limit;
     }

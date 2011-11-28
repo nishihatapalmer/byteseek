@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -51,21 +48,41 @@ public class InputStreamReader extends AbstractReader {
     private long length = UNKNOWN_LENGTH;
     
     
+    /**
+     * 
+     * @param stream
+     */
     public InputStreamReader(final InputStream stream) {
         this(stream, DEFAULT_WINDOW_SIZE);
     }
     
     
+    /**
+     * 
+     * @param stream
+     * @param cache
+     */
     public InputStreamReader(final InputStream stream, final WindowCache cache) {
         this(stream, DEFAULT_WINDOW_SIZE, cache);
     }      
     
     
+    /**
+     * 
+     * @param stream
+     * @param windowSize
+     */
     public InputStreamReader(final InputStream stream, final int windowSize) {
         this(stream, windowSize, new AllWindowsCache());
     }
 
     
+    /**
+     * 
+     * @param stream
+     * @param windowSize
+     * @param cache
+     */
     public InputStreamReader(final InputStream stream, final int windowSize, final WindowCache cache) { 
         super(windowSize, cache);
         this.stream = stream;

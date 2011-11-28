@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -41,14 +38,27 @@ package net.domesdaybook.reader;
  */
 public class CacheFailureException extends RuntimeException {
 
+    /**
+     * 
+     * @param message
+     */
     public CacheFailureException(String message) {
         super(message);
     }
 
+    /**
+     * 
+     * @param cause
+     */
     public CacheFailureException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * 
+     * @param message
+     * @param cause
+     */
     public CacheFailureException(String message, Throwable cause) {
         super(message, cause);
     }
