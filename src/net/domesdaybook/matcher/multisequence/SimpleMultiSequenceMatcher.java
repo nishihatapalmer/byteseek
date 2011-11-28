@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -56,7 +53,11 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     private final int maximumLength;
 
     
-    public SimpleMultiSequenceMatcher(List<byte[]> bytesToMatch) {
+    /**
+     * 
+     * @param bytesToMatch
+     */
+    public SimpleMultiSequenceMatcher(final List<byte[]> bytesToMatch) {
         if (bytesToMatch == null) {
             throw new IllegalArgumentException("Null collection of bytes passed in.");
         }
@@ -82,7 +83,11 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     }
     
     
-    public SimpleMultiSequenceMatcher(Collection<SequenceMatcher> matchersToUse) {
+    /**
+     * 
+     * @param matchersToUse
+     */
+    public SimpleMultiSequenceMatcher(final Collection<SequenceMatcher> matchersToUse) {
         if (matchersToUse == null) {
             throw new IllegalArgumentException("Null collection of matchers passed in.");
         }
@@ -106,6 +111,7 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
 
     /**
      * 
+     * @throws IOException 
      * @inheritDoc
      */
     @Override
@@ -152,6 +158,7 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     
     /**
      * 
+     * @throws IOException 
      * @inheritDoc
      */
     @Override
@@ -172,6 +179,7 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     
     /**    
      * 
+     * @param bytes 
      * @inheritDoc
      */    
     @Override
@@ -201,6 +209,7 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     
     /**    
      * 
+     * @throws IOException 
      * @inheritDoc
      */    
     @Override
@@ -243,6 +252,7 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
+     * @throws IOException 
      * @inheritDoc 
      */ 
     @Override 
@@ -333,11 +343,11 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
 
     /**    
      * 
+     * @throws IOException 
      * @inheritDoc
      */ 
     @Override
-    public boolean matchesBackwards(final Reader reader, 
-            final long matchPosition) throws IOException { 
+    public boolean matchesBackwards(final Reader reader, final long matchPosition) throws IOException { 
         final List<SequenceMatcher> localMatchers = matchers;
         final long onePastMatchPosition = matchPosition + 1;
         for (final SequenceMatcher sequence : localMatchers) {
@@ -351,6 +361,7 @@ public final class SimpleMultiSequenceMatcher implements MultiSequenceMatcher {
     
     /**    
      * 
+     * @param bytes 
      * @inheritDoc
      */ 
     @Override
