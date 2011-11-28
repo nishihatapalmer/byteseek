@@ -36,6 +36,7 @@ package net.domesdaybook.automata.state;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,9 @@ import net.domesdaybook.object.copy.DeepCopy;
  */
 public class SimpleState<T> implements State<T> {
     
-    private final List<Transition> transitions;
-    private final List<T> associations;    
+    
+    private List<Transition> transitions;
+    private List<T> associations;    
     private boolean isFinal;
 
     
@@ -82,8 +84,8 @@ public class SimpleState<T> implements State<T> {
      */
     public SimpleState(final boolean isFinal) {
         this.isFinal = isFinal;
-        this.transitions = new ArrayList<Transition>(1);
-        this.associations = new ArrayList<T>(0);
+        this.transitions = Collections.EMPTY_LIST; // new ArrayList<Transition>(1);
+        this.associations = Collections.EMPTY_LIST; // = new ArrayList<T>(0);
     }
 
     
@@ -93,11 +95,20 @@ public class SimpleState<T> implements State<T> {
      * @param other The other State to copy from.
      * @throws NullPointerException if the State passed in is null.
      */
-    public SimpleState(final State other) {
+    public SimpleState(final State<T> other) {
         this.isFinal = other.isFinal();
-        this.transitions = new ArrayList<Transition>(other.getTransitions());
-        this.associations = new ArrayList<T>();
-        this.associations.addAll(other.getAssociations());
+        final List<Transition> otherTransitions = other.getTransitions();
+        if (otherTransitions != null && otherTransitions.size() > 0) {
+            this.transitions = new ArrayList<Transition>(otherTransitions);
+        } else {
+            this.transitions = Collections.EMPTY_LIST;
+        }
+        final Collection<T> otherAssoc = other.getAssociations();
+        if (otherAssoc != null) {
+            this.associations = new ArrayList<T>(otherAssoc);
+        } else {
+            this.associations = Collections.EMPTY_LIST;
+        }
     }
 
     
@@ -108,6 +119,9 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public final void addTransition(final Transition transition) {
+        if (transitions.isEmpty()) {
+            transitions = new ArrayList<Transition>(1);
+        }
         transitions.add(transition);
     }
 
@@ -117,7 +131,10 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public final void addAllTransitions(final List<Transition> transitions) {
-        this.transitions.addAll(transitions);
+        if (transitions.isEmpty()) {
+            this.transitions = new ArrayList<Transition>(transitions.size());
+        }        
+        transitions.addAll(transitions);
     }
 
     
@@ -126,7 +143,20 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public final boolean removeTransition(final Transition transition) {
-        return transitions.remove(transition);
+        boolean wasRemoved = transitions.remove(transition);
+        if (transitions.isEmpty()) {
+            transitions = Collections.EMPTY_LIST;
+        }
+        return wasRemoved;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override        
+    public void clearTransitions() {
+        transitions = Collections.EMPTY_LIST;
     }
     
     
@@ -134,10 +164,10 @@ public class SimpleState<T> implements State<T> {
      * @inheritDoc
      */
     @Override
-    public final void appendNextStates(final Collection<State> states, final byte value) {
-       final Set<State> matchingStates = new IdentityHashSet<State>();
+    public final void appendNextStates(final Collection<State<T>> states, final byte value) {
+       final Set<State<T>> matchingStates = new IdentityHashSet<State<T>>();
         for (final Transition transition : transitions) {
-            final State nextState = transition.getStateForByte(value);
+            final State<T> nextState = transition.getStateForByte(value);
             if (nextState != null && !matchingStates.contains(nextState)) {
                 matchingStates.add(nextState);
                 states.add(nextState);
@@ -150,9 +180,9 @@ public class SimpleState<T> implements State<T> {
      * @inheritDoc
      */
     @Override
-    public final State getNextState(final byte value) {
+    public final State<T> getNextState(final byte value) {
         for (final Transition transition : transitions) {
-            final State nextState = transition.getStateForByte(value);
+            final State<T> nextState = transition.getStateForByte(value);
             if (nextState != null) {
                 return nextState;
             }
@@ -183,9 +213,11 @@ public class SimpleState<T> implements State<T> {
      * {@inheritDoc}
      */
     public final List<Transition> getTransitions() {
-        return new ArrayList<Transition>(this.transitions);
+        if (transitions.isEmpty()) {
+            return transitions;
+        }
+        return new ArrayList<Transition>(transitions);
     }
-    
     
     
     /**
@@ -193,6 +225,9 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public Collection<T> getAssociations() {
+        if (associations.isEmpty()) {
+            return associations;
+        }
         return new ArrayList<T>(associations);
     }
 
@@ -202,6 +237,9 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public void addAssociation(final Object association) {
+        if (associations.isEmpty()) {
+            associations = new ArrayList<T>(1);
+        }
         associations.add((T) association);
     }
     
@@ -211,6 +249,9 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public void addAllAssociations(Collection<T> associations) {
+        if (associations.isEmpty()) {
+            associations = new ArrayList<T>(associations.size());
+        }
         this.associations.addAll(associations);
     }    
 
@@ -220,7 +261,11 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public boolean removeAssociation(final Object association) {
-        return associations.remove((T) association);
+        final boolean wasRemoved = associations.remove((T) association);
+        if (associations.isEmpty()) {
+            associations = Collections.EMPTY_LIST;
+        }
+        return wasRemoved;
     }
 
     
@@ -229,11 +274,22 @@ public class SimpleState<T> implements State<T> {
      */
     @Override
     public void setAssociations(final Collection<T> associations) {
-        this.associations.clear();
+        if (this.associations.isEmpty()) {
+            this.associations = new ArrayList<T>(associations.size());
+        }
         this.associations.addAll(associations);
     }
     
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearAssociations() {
+        associations = Collections.EMPTY_LIST;
+    }    
 
+    
     /**
      * This is a convenience method, providing the initial map to:
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
@@ -270,6 +326,8 @@ public class SimpleState<T> implements State<T> {
         }
         return stateCopy;
     }
+
+
 
 
 
