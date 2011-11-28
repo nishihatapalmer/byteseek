@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -37,10 +34,7 @@
 package net.domesdaybook.matcher.automata;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.collections.LastItemCollection;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
@@ -75,9 +69,8 @@ public class DfaMatcher implements Matcher {
         throws IOException {
         // Setup 
         long currentPosition = matchPosition;    
-        final LastItemCollection<State> nextState = new LastItemCollection<State>();
         Window window = reader.getWindow(currentPosition);
-        State currentState = firstState;
+        State state = firstState;
         //While we have a window on the data to match in:
         while (window != null) {
             final byte[] bytes = window.getArray();            
@@ -86,17 +79,16 @@ public class DfaMatcher implements Matcher {
             int windowPos = windowStart;
             
             // While we have states to match:
-            while (currentState != null && windowPos < windowLength) {
+            while (state != null && windowPos < windowLength) {
                 
                 // See if the active states is final (a match).
-                if (currentState.isFinal()) {
+                if (state.isFinal()) {
                     return true;
                 }
                 
                 // No match was found, find the next state to follow:
                 final byte currentByte = bytes[windowPos++];
-                currentState.appendNextStates(nextState, currentByte);
-                currentState = nextState.getItem();
+                state = state.getNextState(currentByte);
             }
             currentPosition += windowLength - windowStart;
             window = reader.getWindow(currentPosition);
@@ -117,7 +109,6 @@ public class DfaMatcher implements Matcher {
         final int length = bytes.length;
         if (matchPosition >= 0 && matchPosition < length) {
             int currentPosition = matchPosition;    
-            final LastItemCollection<State> nextState = new LastItemCollection<State>();
             State currentState = firstState;
 
             // While there is a state to process:
@@ -130,8 +121,7 @@ public class DfaMatcher implements Matcher {
 
                 // No match was found, find the next state to follow:
                 final byte currentByte = bytes[currentPosition++];
-                currentState.appendNextStates(nextState, currentByte);
-                currentState = nextState.getItem();
+                currentState = currentState.getNextState(currentByte);
             }
         }
         return false;
