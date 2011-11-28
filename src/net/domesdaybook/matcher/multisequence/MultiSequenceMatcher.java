@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -54,8 +53,9 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
+     * @throws IOException  
      */
-    public Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition)
+    public Collection<SequenceMatcher> allMatches(Reader reader, long matchPosition)
             throws IOException;
 
     
@@ -67,7 +67,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition);
+    public Collection<SequenceMatcher> allMatches(byte[] bytes, int matchPosition);
     
     
    
@@ -80,9 +80,10 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
+     * @throws IOException  
      */
-    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
-            final long matchPosition) throws IOException;
+    public Collection<SequenceMatcher> allMatchesBackwards(Reader reader, 
+            long matchPosition) throws IOException;
 
     
     /**
@@ -91,11 +92,11 @@ public interface MultiSequenceMatcher extends Matcher {
      * 
      * Should never return null - always returns a collection, even if empty.
      *
-     * @param reader The byte array to read from.
+     * @param bytes 
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
-    public Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, final int matchPosition);    
+    public Collection<SequenceMatcher> allMatchesBackwards(byte[] bytes, int matchPosition);    
         
      
     /**
@@ -104,8 +105,9 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
+     * @throws IOException  
      */
-    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition)
+    public SequenceMatcher firstMatch(Reader reader, long matchPosition)
        throws IOException;
   
     
@@ -117,7 +119,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition);   
+    public SequenceMatcher firstMatch(byte[] bytes, int matchPosition);   
     
     
     /**
@@ -127,8 +129,9 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
+     * @throws IOException  
      */
-    public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
+    public SequenceMatcher firstMatchBackwards(Reader reader, long matchPosition)
         throws IOException;
     
 
@@ -140,7 +143,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      */
-    public SequenceMatcher firstMatchBackwards(final byte[] bytes, final int matchPosition);       
+    public SequenceMatcher firstMatchBackwards(byte[] bytes, int matchPosition);       
     
     
     /**
@@ -149,23 +152,24 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
+     * @throws IOException  
      */    
-    public boolean matchesBackwards(final Reader reader, final long matchPosition)
+    public boolean matchesBackwards(Reader reader, long matchPosition)
          throws IOException;;
     
     
     /**
      * Returns whether or not there is a match backwards from the matchPosition
      * 
-     * @param reader The {@link Reader} to read from.
+     * @param bytes 
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    
-    public boolean matchesBackwards(final byte[] bytes, final int matchPosition);
+    public boolean matchesBackwards(byte[] bytes, int matchPosition);
     
     
     /**
-     * Returns the minimum length of the sequences that can matchl
+     * Returns the minimum length of the sequences that can match
      * 
      * @return int The minimum length of the sequences that can match.
      */
