@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -39,11 +36,11 @@ import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 
 /**
- * An interface for classes that search bytes provided by a {@link Reader}.
- * Searching can be forwards or backwards.
+ * An interface for classes that search bytes provided by a {@link Reader},
+ * or on a byte array.  Searching can be forwards or backwards.
  * <p>
  * Searching either returns the position at which a match was found,
- * or {@code NOT_FOUND (-1L)}.
+ * or a negative number indicates a match was not found.
  *
  * @author Matt Palmer
  */
@@ -62,6 +59,7 @@ public interface Searcher {
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search up to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @throws IOException  
      */
     public long searchForwards(final Reader reader, final long fromPosition, 
             final long toPosition) throws IOException;
@@ -74,6 +72,7 @@ public interface Searcher {
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @throws IOException  
      */
     public long searchForwards(final Reader reader, final long fromPosition)
              throws IOException;
@@ -85,6 +84,7 @@ public interface Searcher {
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @throws IOException  
      */
     public long searchForwards(final Reader reader) throws IOException;    
     
@@ -117,7 +117,8 @@ public interface Searcher {
      * Searches bytes forwards provided by a byte array
      *
      * @param bytes        The byte array giving access to the bytes being searched.
-\     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * \     * @return 
+     * @return             The position a match was found at, or NOT_FOUND (-1).
      */
     public int searchForwards(byte[] bytes);
     
@@ -130,6 +131,7 @@ public interface Searcher {
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search back to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @throws IOException  
      */
     public long searchBackwards(final Reader reader, final long fromPosition, 
             final long toPosition) throws IOException;
@@ -141,8 +143,8 @@ public interface Searcher {
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @param toPosition   The position to search back to.
      * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @throws IOException  
      */
     public long searchBackwards(final Reader reader, final long fromPosition)
              throws IOException;
@@ -154,6 +156,7 @@ public interface Searcher {
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @throws IOException  
      */
     public long searchBackwards(final Reader reader) throws IOException;    
     

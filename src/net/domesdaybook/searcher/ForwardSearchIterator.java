@@ -58,11 +58,24 @@ public class ForwardSearchIterator implements Iterator {
     private long matchPosition = Searcher.NOT_FOUND;
     
     
+    /**
+     * 
+     * @param searcher
+     * @param reader
+     * @throws IOException
+     */
     public ForwardSearchIterator(final Searcher searcher, final Reader reader) throws IOException {
         this(searcher, 0, Long.MAX_VALUE, reader);
     }
     
     
+    /**
+     * 
+     * @param searcher
+     * @param fromPosition
+     * @param toPosition
+     * @param reader
+     */
     public ForwardSearchIterator(final Searcher searcher, final long fromPosition, 
                                  final long toPosition, final Reader reader) {
         if (searcher == null || reader == null) {
@@ -77,11 +90,23 @@ public class ForwardSearchIterator implements Iterator {
    
     
     
+    /**
+     * 
+     * @param searcher
+     * @param bytes
+     */
     public ForwardSearchIterator(final Searcher searcher, final byte[] bytes) {
         this(searcher, 0, bytes.length - 1, bytes);
     }
     
     
+    /**
+     * 
+     * @param searcher
+     * @param fromPosition
+     * @param toPosition
+     * @param bytes
+     */
     public ForwardSearchIterator(final Searcher searcher, final long fromPosition, 
                                  final long toPosition, final byte[] bytes) {
         if (searcher == null || bytes == null) {

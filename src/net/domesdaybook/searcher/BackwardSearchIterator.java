@@ -58,11 +58,24 @@ public class BackwardSearchIterator implements Iterator {
     private long matchPosition = Searcher.NOT_FOUND;
    
     
+    /**
+     * 
+     * @param searcher
+     * @param reader
+     * @throws IOException
+     */
     public BackwardSearchIterator(final Searcher searcher, final Reader reader) throws IOException {
         this(searcher, reader.length() - 1, 0, reader);
     }
     
     
+    /**
+     * 
+     * @param searcher
+     * @param fromPosition
+     * @param toPosition
+     * @param reader
+     */
     public BackwardSearchIterator(final Searcher searcher, final long fromPosition, 
                                  final long toPosition, final Reader reader) {
         if (searcher == null || reader == null) {
@@ -77,11 +90,23 @@ public class BackwardSearchIterator implements Iterator {
    
     
     
+    /**
+     * 
+     * @param searcher
+     * @param bytes
+     */
     public BackwardSearchIterator(final Searcher searcher, final byte[] bytes) {
         this(searcher, bytes.length - 1, 0, bytes);
     }
     
     
+    /**
+     * 
+     * @param searcher
+     * @param fromPosition
+     * @param toPosition
+     * @param bytes
+     */
     public BackwardSearchIterator(final Searcher searcher, final long fromPosition, 
                                  final long toPosition, final byte[] bytes) {
         if (searcher == null || bytes == null) {
