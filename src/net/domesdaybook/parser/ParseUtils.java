@@ -48,7 +48,13 @@ import org.antlr.runtime.tree.Tree;
  */
 public class ParseUtils {
 
+    /**
+     * 
+     */
     public static final String TYPE_ERROR = "Type [%s] not supported by the compiler.";
+    /**
+     * 
+     */
     public static final String QUOTE = "\'";
 
     private ParseUtils() {
@@ -157,7 +163,8 @@ public class ParseUtils {
      * This can be recursive procedure if sets are nested within one another.
      *
      * @param node          The set node to calculate a set of byte values for.
-     * @param cumulativeSet The set of cumulative bytes so far.
+     * @return
+     * @throws ParseException  
      */
     public static Set<Byte> calculateSetValue(final CommonTree node) throws ParseException {
         final Set<Byte> setValues = new LinkedHashSet<Byte>(320);
