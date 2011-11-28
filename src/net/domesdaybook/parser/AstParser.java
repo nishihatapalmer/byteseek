@@ -65,6 +65,9 @@ import org.antlr.runtime.tree.Tree;
 public class AstParser {
 
     
+    /**
+     * 
+     */
     public AstParser() {
     }
 
@@ -103,6 +106,7 @@ public class AstParser {
      *
      * @param treeNode The abstract syntax tree root to optimise.
      * @return Tree an AST with the alternatives optimised.
+     * @throws ParseException  
      */
     public Tree optimiseAST(final Tree treeNode) throws ParseException {
         if (treeNode == null) {
