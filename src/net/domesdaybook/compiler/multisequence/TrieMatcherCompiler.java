@@ -100,7 +100,7 @@ public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher
     // Class variables and methods
     
     
-    private final ReversibleCompiler<Trie, SequenceMatcher> compiler;
+    private final ReversibleCompiler<Trie<SequenceMatcher>, SequenceMatcher> compiler;
   
     
     public TrieMatcherCompiler() {
@@ -108,7 +108,7 @@ public final class TrieMatcherCompiler implements ReversibleCompiler<TrieMatcher
     }
     
     
-    public TrieMatcherCompiler(final ReversibleCompiler<Trie, SequenceMatcher> trieCompiler) {
+    public TrieMatcherCompiler(final ReversibleCompiler<Trie<SequenceMatcher>, SequenceMatcher> trieCompiler) {
         if (trieCompiler == null) {
            throw new IllegalArgumentException("Null compiler passed in to TrieMatcherCompiler.");
         }
