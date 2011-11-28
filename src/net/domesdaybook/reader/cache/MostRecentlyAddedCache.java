@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -16,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -42,23 +39,36 @@ import net.domesdaybook.reader.Window;
 /**
  * @author matt
  */
-public final class MostRecentlyAddedCache extends AbstractObservableCache  {
+public final class MostRecentlyAddedCache extends AbstractCache  {
 
     private final static boolean INSERTION_ORDER = false;    
     
     private final Cache cache;
     
+    /**
+     * 
+     * @param capacity
+     */
     public MostRecentlyAddedCache(final int capacity) {
         cache = new Cache(capacity + 1, 1.1f, INSERTION_ORDER);
     }
     
     
+    /**
+     * 
+     * @param position
+     * @return
+     */
     @Override
     public Window getWindow(final long position) {
         return cache.get(position);
     }
 
     
+    /**
+     * 
+     * @param window
+     */
     @Override
     public void addWindow(final Window window) {
         final long windowPosition = window.getWindowPosition();
@@ -69,6 +79,9 @@ public final class MostRecentlyAddedCache extends AbstractObservableCache  {
     }
 
     
+    /**
+     * 
+     */
     @Override
     public void clear() {
         cache.clear();

@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -43,33 +40,57 @@ import net.domesdaybook.reader.Window;
  */
 public final class NoCache implements WindowCache {
 
+    /**
+     * 
+     */
     public static final NoCache NO_CACHE = new NoCache();
     
     
+    /**
+     * 
+     * @param position
+     * @return
+     */
     @Override
     public Window getWindow(long position) {
         return null;
     }
 
     
+    /**
+     * 
+     * @param window
+     */
     @Override
     public void addWindow(Window window) {
         // nothing to do
     }
 
     
+    /**
+     * 
+     */
     @Override
     public void clear() {
         // nothing to do
     }
     
 
+    /**
+     * 
+     * @param observer
+     */
     @Override
     public void subscribe(CacheObserver observer) {
         // nothing ever leaves or enters... so don't bother adding any observers.
     }
 
     
+    /**
+     * 
+     * @param observer
+     * @return
+     */
     @Override
     public boolean unsubscribe(CacheObserver observer) {
         return false;  // the observer was never present, following the contract

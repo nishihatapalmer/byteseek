@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -45,6 +42,12 @@ import net.domesdaybook.reader.cache.WindowCache.CacheObserver;
 
 public final class TwoLevelCache implements WindowCache, CacheObserver {
 
+    /**
+     * 
+     * @param primaryCache
+     * @param secondaryCache
+     * @return
+     */
     public static TwoLevelCache create(final WindowCache primaryCache, final WindowCache secondaryCache) {
         final TwoLevelCache twoLevels = new TwoLevelCache(primaryCache, secondaryCache);
         primaryCache.subscribe(twoLevels);
@@ -61,6 +64,11 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
     }
     
     
+    /**
+     * 
+     * @param position
+     * @return
+     */
     @Override
     public Window getWindow(final long position) {
         Window window = primaryCache.getWindow(position);
@@ -74,12 +82,19 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
     }
 
     
+    /**
+     * 
+     * @param window
+     */
     @Override
     public void addWindow(final Window window) {
         primaryCache.addWindow(window);
     }
 
     
+    /**
+     * 
+     */
     @Override
     public void clear() {
         primaryCache.clear();
@@ -87,6 +102,10 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
     }
 
     
+    /**
+     * 
+     * @param observer
+     */
     @Override
     public void subscribe(final CacheObserver observer) {
         primaryCache.subscribe(observer);
@@ -94,6 +113,11 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
     }
 
     
+    /**
+     * 
+     * @param observer
+     * @return
+     */
     @Override
     public boolean unsubscribe(final CacheObserver observer) {
         // Use of bitwise | OR here (not boolean ||) as we always 
@@ -103,6 +127,11 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
     }
     
     
+    /**
+     * 
+     * @param window
+     * @param fromCache
+     */
     @Override
     public void windowRemoved(final Window window, final WindowCache fromCache) {
         if (fromCache == primaryCache) {
@@ -111,17 +140,30 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
     }
     
     
+    /**
+     * 
+     * @param window
+     * @param toCache
+     */
     @Override
     public void windowAdded(final Window window, final WindowCache toCache) {
         // don't care about windows being added to our own caches.
     }
     
     
+    /**
+     * 
+     * @return
+     */
     public WindowCache getPrimaryCache() {
         return primaryCache;
     }
     
     
+    /**
+     * 
+     * @return
+     */
     public WindowCache getSecondaryCache() {
         return secondaryCache;
     }

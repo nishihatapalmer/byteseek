@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -44,23 +41,57 @@ import net.domesdaybook.reader.Window;
 public interface WindowCache {
     
     
+    /**
+     * 
+     * @param position
+     * @return
+     */
     public Window getWindow(final long position);
     
     
+    /**
+     * 
+     * @param window
+     */
     public void addWindow(final Window window);
     
     
+    /**
+     * 
+     */
     public void clear();
     
     
+    /**
+     * 
+     * @param observer
+     */
     public void subscribe(final CacheObserver observer);
     
     
+    /**
+     * 
+     * @param observer
+     * @return
+     */
     public boolean unsubscribe(final CacheObserver observer);
     
     
+    /**
+     * 
+     */
     public interface CacheObserver {
+        /**
+         * 
+         * @param window
+         * @param toCache
+         */
         void windowAdded(final Window window, final WindowCache toCache);
+        /**
+         * 
+         * @param window
+         * @param fromCache
+         */
         void windowRemoved(final Window window, final WindowCache fromCache);
     }
     

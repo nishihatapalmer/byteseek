@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -48,7 +45,7 @@ import net.domesdaybook.reader.Window;
  *
  * @author matt
  */
-public final class TempFileCache extends AbstractObservableCache {
+public final class TempFileCache extends AbstractCache {
 
     private final int windowSize;
     private final File tempFile;
@@ -56,6 +53,11 @@ public final class TempFileCache extends AbstractObservableCache {
     private final Set<Long> windowPositions;
    
     
+    /**
+     * 
+     * @param windowSize
+     * @throws IOException
+     */
     public TempFileCache(final int windowSize) throws IOException {
         this.windowSize = windowSize;
         tempFile = ReadUtils.createTempFile();
@@ -64,6 +66,11 @@ public final class TempFileCache extends AbstractObservableCache {
     }
     
     
+    /**
+     * 
+     * @param position
+     * @return
+     */
     @Override
     public Window getWindow(final long position) {
         Window window = null;
@@ -79,6 +86,10 @@ public final class TempFileCache extends AbstractObservableCache {
     }
 
     
+    /**
+     * 
+     * @param window
+     */
     @Override
     public void addWindow(final Window window) {
         final long windowPosition = window.getWindowPosition();
@@ -94,12 +105,19 @@ public final class TempFileCache extends AbstractObservableCache {
     }
 
     
+    /**
+     * 
+     */
     @Override
     public void clear() {
         windowPositions.clear();
     }
     
     
+    /**
+     * 
+     * @return
+     */
     public File getTempFile() {
         return tempFile;
     }
