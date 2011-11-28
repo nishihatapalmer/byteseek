@@ -33,7 +33,6 @@
 package net.domesdaybook.automata.wrapper;
 
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.State;
 
 /**
  * A simple immutable wrapper around a {@link State} for automata which are
@@ -50,9 +49,9 @@ import net.domesdaybook.automata.State;
  * @see net.domesdaybook.automata.State
  * @see <a href="http://en.wikipedia.org/wiki/Trie">Trie structures</a>
  */
-public final class Trie {
+public final class Trie<T> {
     
-    private final State initialState;
+    private final State<T> initialState;
     private final int maximumLength;
     private final int minimumLength;
     
@@ -64,7 +63,7 @@ public final class Trie {
      * @param minLength The minimum length of a sequence in the Trie.
      * @param maxLength The maximum length of a sequence in the Trie.
      */
-    public Trie(final State firstState, final int minLength, final int maxLength) {
+    public Trie(final State<T> firstState, final int minLength, final int maxLength) {
         this.initialState = firstState;
         this.minimumLength = minLength;
         this.maximumLength = maxLength;
