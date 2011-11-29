@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -130,8 +129,9 @@ public abstract class AbstractSearcher implements Searcher {
      */
     protected final long withinLength(final Reader reader, final long position) 
             throws IOException {
-        final long positionToTry = position < 0 ? 0 : position;
+        final long positionToTry = position > 0?
+                                   position : 0;
         return reader.getWindow(positionToTry) != null? 
-                positionToTry : reader.length() - 1;
+                                positionToTry : reader.length() - 1;
     }
 }
