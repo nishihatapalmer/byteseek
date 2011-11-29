@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -16,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -60,7 +57,7 @@ import net.domesdaybook.searcher.Searcher;
  * 
  * @author Matt Palmer
  */
-public class MatcherSearcher extends AbstractSearcher {
+public final class MatcherSearcher extends AbstractSearcher {
 
     private final Matcher matcher;
     
@@ -77,17 +74,19 @@ public class MatcherSearcher extends AbstractSearcher {
     public long searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         final Matcher localMatcher = matcher;  
-        long currentPosition = fromPosition > 0? fromPosition : 0;
+        long currentPosition = fromPosition > 0? 
+                               fromPosition : 0;
         Window window = reader.getWindow(currentPosition);
         while (window != null) {
             final int availableSpace = window.getLimit() - reader.getWindowOffset(currentPosition);
             final long endWindowPosition = currentPosition + availableSpace;
             final long lastPosition = endWindowPosition < toPosition?
                                       endWindowPosition : toPosition;
-            for (; currentPosition <= lastPosition; currentPosition++) {
+            while (currentPosition <= lastPosition) {
                 if (localMatcher.matches(reader, currentPosition)) {
                     return currentPosition;
                 }
+                currentPosition++;
             }
             window = reader.getWindow(currentPosition);
         }
@@ -102,7 +101,8 @@ public class MatcherSearcher extends AbstractSearcher {
     public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final Matcher localMatcher = matcher;
         final int lastPossiblePosition = bytes.length - 1;
-        final int upToPosition = toPosition < lastPossiblePosition? toPosition : lastPossiblePosition;
+        final int upToPosition = toPosition < lastPossiblePosition? 
+                                 toPosition : lastPossiblePosition;
         int currentPosition = fromPosition > 0? fromPosition : 0;
         while (currentPosition <= upToPosition) {
             if (localMatcher.matches(bytes, currentPosition)) {
@@ -129,26 +129,26 @@ public class MatcherSearcher extends AbstractSearcher {
     public long searchBackwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         final Matcher localMatcher = matcher;
-        final long upToPosition = toPosition > 0? toPosition : 0;
+        final long upToPosition = toPosition > 0? 
+                                  toPosition : 0;
         long currentPosition = withinLength(reader, fromPosition);
         Window window = reader.getWindow(currentPosition);
         while (window != null) {
             final int availableSpace = reader.getWindowOffset(currentPosition);
             final long startWindowPosition = currentPosition - availableSpace;
             final long finalPosition = startWindowPosition > upToPosition?
-                    startWindowPosition : upToPosition;
-            for (; currentPosition >= finalPosition; currentPosition--) {
+                                       startWindowPosition : upToPosition;
+            while (currentPosition >= finalPosition) {
                 if (localMatcher.matches(reader, currentPosition)) {
                     return currentPosition;
-                }                
+                }
+                currentPosition--;
             }
             window = reader.getWindow(currentPosition);
-            
         }
         return Searcher.NOT_FOUND;
     }
 
-    
     
     /**
      * @inheritDoc
@@ -157,9 +157,10 @@ public class MatcherSearcher extends AbstractSearcher {
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final Matcher localMatcher = matcher;
         final int lastPossiblePosition = bytes.length - 1;
-        final int upToPosition = toPosition > 0? toPosition : 0;
+        final int upToPosition = toPosition > 0? 
+                                 toPosition : 0;
         int currentPosition = fromPosition < lastPossiblePosition? 
-               fromPosition : lastPossiblePosition;
+                              fromPosition : lastPossiblePosition;
         while (currentPosition >= upToPosition) {
             if (localMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
