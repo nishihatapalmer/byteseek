@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -16,8 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
- *  
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -53,13 +50,19 @@ import net.domesdaybook.searcher.Searcher;
  * the bytes being searched.  It is sub-linear, in general needing to
  * examine less bytes than actually occur in the bytes being searched.
  * <p>
- * It proceeds by searching for the search pattern backwards, from the last byte
- * in the pattern to the first.  It pre-computes a table of minimum safe shifts
- * for the search pattern.  Given a byte in the bytes being searched,
- * the shift able tells us how many bytes we can safely shift ahead without
- * missing a possible match.  If the shift is zero, then we must validate that
- * the pattern actually occurs at this position (the last byte of pattern matches
- * the current position in the bytes being searched).
+ * It pre-computes a table of minimum safe shifts for the search pattern. 
+ * Given a byte in the bytes being searched, the shift tells us how many 
+ * bytes we can safely shift ahead without missing a possible match.  
+ * <p>
+ * It proceeds by searching for the search pattern backwards,
+ * from the last position in the pattern to the first.  The safe shift is looked 
+ * up in the table using the value of the byte in the search text at the current
+ * position.  If the shift is greater than zero, we know that we can move the
+ * current position along by that amount.  If the shift is zero, this means it
+ * is not safe to shift, and we must validate that the pattern actually occurs 
+ * at this position.  A zero shift just means that the last position of the
+ * pattern matches the search text at that point - so it is possible (but not
+ * by any means certain) that the rest of the pattern matches.
  * <p>
  * A simple example is looking for the bytes 'XYZ' in the sequence 'ABCDEFGXYZ'.
  * The first attempt is to match 'Z', and we find the byte 'C'.  Since 'C' does
@@ -92,7 +95,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
      * to search for.
      * 
-     * @param matcher A {@link SequenceMatcher} to search for.
+     * @param sequence 
      */
     public BoyerMooreHorspoolSearcher(final SequenceMatcher sequence) {
         if (sequence == null) {
@@ -103,6 +106,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
 
     
     /**
+     * @throws IOException 
      * @inheritDoc
      */
     @Override
@@ -250,6 +254,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
     
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
     public long searchBackwards(final Reader reader, 
@@ -377,7 +382,8 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
     
     /**
      * Uses Single-Check lazy initialisation.  This can result in the field
-     * being initialised more than once, but this doesn't really matter.
+     * being initialised more than once, but this doesn't really matter, as the
+     * result will be the same if it is recalculated (wasting some CPU cycles).
      * 
      * @return The last single byte matcher in the matcher sequence.
      */
@@ -393,7 +399,8 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSearcher {
     
     /**
      * Uses Single-Check lazy initialisation.  This can result in the field
-     * being initialised more than once, but this doesn't really matter.
+     * being initialised more than once, but this doesn't really matter, as the
+     * result will be the same if it is recalculated (wasting some CPU cycles).
      * 
      * @return The first single byte matcher in the matcher sequence.
      */
