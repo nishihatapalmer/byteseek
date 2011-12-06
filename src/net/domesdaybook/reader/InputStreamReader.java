@@ -34,9 +34,11 @@ package net.domesdaybook.reader;
 
 import net.domesdaybook.reader.cache.CacheFailureException;
 import net.domesdaybook.reader.cache.WindowCache;
-import net.domesdaybook.reader.cache.AllWindowsCache;
 import java.io.IOException;
 import java.io.InputStream;
+import net.domesdaybook.reader.cache.MostRecentlyUsedCache;
+import net.domesdaybook.reader.cache.TempFileCache;
+import net.domesdaybook.reader.cache.TwoLevelCache;
 
 /**
  *
@@ -54,7 +56,7 @@ public class InputStreamReader extends AbstractReader {
      * @param stream
      */
     public InputStreamReader(final InputStream stream) {
-        this(stream, DEFAULT_WINDOW_SIZE);
+        this(stream, DEFAULT_WINDOW_SIZE, DEFAULT_CAPACITY);
     }
     
     
@@ -74,9 +76,22 @@ public class InputStreamReader extends AbstractReader {
      * @param windowSize
      */
     public InputStreamReader(final InputStream stream, final int windowSize) {
-        this(stream, windowSize, new AllWindowsCache());
+        this(stream, windowSize, DEFAULT_CAPACITY);
     }
 
+    
+    /**
+     * 
+     * @param stream
+     * @param windowSize
+     * @param capacity 
+     */
+    public InputStreamReader(final InputStream stream, final int windowSize, final int capacity) {
+        this(stream, windowSize, 
+             TwoLevelCache.create(new MostRecentlyUsedCache(capacity),
+                                  new TempFileCache(windowSize)));
+    }
+    
     
     /**
      * 
@@ -100,10 +115,6 @@ public class InputStreamReader extends AbstractReader {
             // this reader cannot return an earlier position, and being a stream,
             // we can't rewind to read it again.  There is nothing which can be
             // done at this point other than to throw an exception.
-            // This runtime exception flags a programming error, in selecting an
-            // innapropriate cache algorithm to use for the access needed.
-            // A reader should always be able to return a window for a valid,
-            // requested position, setting aside genuine IO Exceptions.
             final String message = "Cache failed to provide a window at position: %d when we have already read past this position, currently at: %d";
             throw new CacheFailureException(String.format(message, position, streamPos));
         }
@@ -160,6 +171,7 @@ public class InputStreamReader extends AbstractReader {
     public void close() throws IOException {
         try {
             stream.close();
+            clearCache();
         } finally {
             super.close();
         }
