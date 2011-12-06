@@ -43,15 +43,9 @@ import java.util.NoSuchElementException;
  */
 public abstract class AbstractReader implements Reader, Iterable<Window> {
 
-    /**
-     * 
-     */
-    public final static int NO_BYTE_AT_POSITION = -1;
-    
-    /**
-     * 
-     */
+    protected final static int NO_BYTE_AT_POSITION = -1;
     protected final static int DEFAULT_WINDOW_SIZE = 4096;
+    protected final static int DEFAULT_CAPACITY = 32;
     
     /**
      * 
