@@ -32,6 +32,7 @@
 
 package net.domesdaybook.reader;
 
+import net.domesdaybook.reader.cache.CacheFailureException;
 import net.domesdaybook.reader.cache.WindowCache;
 import net.domesdaybook.reader.cache.AllWindowsCache;
 import java.io.IOException;

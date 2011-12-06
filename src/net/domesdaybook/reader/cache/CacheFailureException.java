@@ -30,7 +30,7 @@
  * 
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.reader.cache;
 
 /**
  * 
