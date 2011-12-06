@@ -35,22 +35,24 @@ package net.domesdaybook.reader.cache;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import net.domesdaybook.reader.ReadUtils;
 import net.domesdaybook.reader.Window;
 
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public final class TempFileCache extends AbstractCache {
 
     private final int windowSize;
-    private final File tempFile;
-    private final RandomAccessFile file;
-    private final Set<Long> windowPositions;
+    private final Map<Long, WindowInfo> windowPositions;
+    
+    private File tempFile;
+    private RandomAccessFile file;
+    private long nextFilePos;
    
     
     /**
@@ -58,11 +60,9 @@ public final class TempFileCache extends AbstractCache {
      * @param windowSize
      * @throws IOException
      */
-    public TempFileCache(final int windowSize) throws IOException {
+    public TempFileCache(final int windowSize) {
         this.windowSize = windowSize;
-        tempFile = ReadUtils.createTempFile();
-        file = new RandomAccessFile(tempFile, "rw");
-        windowPositions = new HashSet<Long>();
+        windowPositions = new HashMap<Long, WindowInfo>();
     }
     
     
@@ -74,11 +74,12 @@ public final class TempFileCache extends AbstractCache {
     @Override
     public Window getWindow(final long position) {
         Window window = null;
-        if (windowPositions.contains(position)) {
-            byte[] array = new byte[windowSize];
+        final WindowInfo info = windowPositions.get(position);
+        if (info != null) {
+            final byte[] array = new byte[windowSize];
             try {
-                final int limit = ReadUtils.readBytes(file, array, position);
-                window = new Window(array, position, limit);
+                ReadUtils.readBytes(file, array, info.filePosition);
+                window = new Window(array, position, info.limit);
             } catch (IOException justReturnNullWindow) {
             }
         }
@@ -93,11 +94,15 @@ public final class TempFileCache extends AbstractCache {
     @Override
     public void addWindow(final Window window) {
         final long windowPosition = window.getWindowPosition();
-        if (!windowPositions.contains(windowPosition)) {
+        final WindowInfo info = windowPositions.get(windowPosition);
+        if (info == null) {
             try {
-                file.seek(windowPosition);
+                createFileIfNotExists();
+                file.seek(nextFilePos);
                 file.write(window.getArray());
-                windowPositions.add(windowPosition);
+                windowPositions.put(windowPosition, 
+                                    new WindowInfo(window.getLimit(), nextFilePos));
+                nextFilePos += windowSize;
                 notifyWindowAdded(window, this);
             } catch (IOException justFailToAddTheWindow) {
             }
@@ -111,6 +116,7 @@ public final class TempFileCache extends AbstractCache {
     @Override
     public void clear() {
         windowPositions.clear();
+        deleteFileIfExists();
     }
     
     
@@ -121,7 +127,41 @@ public final class TempFileCache extends AbstractCache {
     public File getTempFile() {
         return tempFile;
     }
-
     
-     
+    
+    private void createFileIfNotExists() throws IOException {
+        if (tempFile == null) {
+            windowPositions.clear();
+            nextFilePos = 0;
+            tempFile = ReadUtils.createTempFile();
+            file = new RandomAccessFile(tempFile, "rw");
+        }
+    }
+    
+
+    private void deleteFileIfExists() {
+        if (tempFile != null) {
+            try {
+                file.close();
+            } catch (IOException ex) {
+            }
+            file = null;
+            tempFile.delete();
+            tempFile = null;
+            nextFilePos = 0;
+        }
+    }
+    
+    
+    private static class WindowInfo {
+        
+        final int limit;
+        final long filePosition;  
+        
+        public WindowInfo(final int limit, final long filePosition) {
+            this.limit = limit;
+            this.filePosition = filePosition;
+        }
+
+    } 
 }
