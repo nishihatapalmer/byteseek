@@ -37,7 +37,6 @@ import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
-import net.domesdaybook.searcher.Searcher;
 
 
 /**
@@ -90,7 +89,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             }
             window = reader.getWindow(currentPosition);
         }
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
     
     
@@ -103,14 +102,15 @@ public final class MatcherSearcher extends AbstractSearcher {
         final int lastPossiblePosition = bytes.length - 1;
         final int upToPosition = toPosition < lastPossiblePosition? 
                                  toPosition : lastPossiblePosition;
-        int currentPosition = fromPosition > 0? fromPosition : 0;
+        int currentPosition = fromPosition > 0?
+                              fromPosition : 0;
         while (currentPosition <= upToPosition) {
             if (localMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
             }
             currentPosition++;
         }
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
   
  
@@ -146,7 +146,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             }
             window = reader.getWindow(currentPosition);
         }
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
 
     
@@ -167,7 +167,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             }
             currentPosition--;
         }
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
 
     
