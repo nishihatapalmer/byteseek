@@ -119,10 +119,4 @@ public interface Reader extends Closeable {
     public long length() throws IOException;
     
     
-    /**
-     * Clears any cache associated with this Reader.
-     */
-    public void clearCache();
-    
-    
 }
