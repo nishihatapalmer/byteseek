@@ -37,10 +37,10 @@ import net.domesdaybook.reader.cache.WindowCache.CacheObserver;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 
-public final class TwoLevelCache implements WindowCache, CacheObserver {
+public final class TwoLevelCache extends AbstractCache implements CacheObserver {
 
     /**
      * 
@@ -104,31 +104,6 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
     
     /**
      * 
-     * @param observer
-     */
-    @Override
-    public void subscribe(final CacheObserver observer) {
-        primaryCache.subscribe(observer);
-        secondaryCache.subscribe(observer);
-    }
-
-    
-    /**
-     * 
-     * @param observer
-     * @return
-     */
-    @Override
-    public boolean unsubscribe(final CacheObserver observer) {
-        // Use of bitwise | OR here (not boolean ||) as we always 
-        // want to run both unsubscribe calls, but return true if the observer
-        // was subscribed to either of them.
-        return primaryCache.unsubscribe(observer) | secondaryCache.unsubscribe(observer);
-    }
-    
-    
-    /**
-     * 
      * @param window
      * @param fromCache
      */
@@ -137,6 +112,7 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
         if (fromCache == primaryCache) {
             secondaryCache.addWindow(window);
         }
+        notifyWindowRemoved(window, fromCache);
     }
     
     
@@ -147,7 +123,7 @@ public final class TwoLevelCache implements WindowCache, CacheObserver {
      */
     @Override
     public void windowAdded(final Window window, final WindowCache toCache) {
-        // don't care about windows being added to our own caches.
+        notifyWindowAdded(window, toCache);
     }
     
     
