@@ -34,6 +34,7 @@
 package net.domesdaybook.reader.cache;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.reader.Window;
 
@@ -43,15 +44,15 @@ import net.domesdaybook.reader.Window;
  */
 public abstract class AbstractCache implements WindowCache {
     
-    private final List<CacheObserver> observers; 
+    private List<CacheObserver> cacheObservers; 
     
     /**
      * 
      */
     public AbstractCache() {
-        // we assume very few people actually want to observe the caches.
-        observers = new ArrayList<CacheObserver>(1); 
+        cacheObservers = Collections.EMPTY_LIST; 
     }
+    
     
     /**
      * 
@@ -59,9 +60,12 @@ public abstract class AbstractCache implements WindowCache {
      */
     @Override
     public void subscribe(CacheObserver observer) {
-        observers.add(observer);
+        if (cacheObservers.isEmpty()) {
+            cacheObservers = new ArrayList<CacheObserver>(1);
+        }
+        cacheObservers.add(observer);
     }
-
+    
     
     /**
      * 
@@ -69,8 +73,12 @@ public abstract class AbstractCache implements WindowCache {
      * @return
      */
     @Override
-    public boolean unsubscribe(CacheObserver observer) {
-        return observers.remove(observer);
+    public boolean unsubscribe(final CacheObserver observer) {
+        boolean removed = cacheObservers.remove(observer);
+        if (cacheObservers.isEmpty()) {
+            cacheObservers = Collections.EMPTY_LIST;
+        }
+        return removed;
     }
     
     
@@ -80,10 +88,11 @@ public abstract class AbstractCache implements WindowCache {
      * @param fromCache
      */
     protected final void notifyWindowRemoved(final Window window, final WindowCache fromCache) {
-        for (final CacheObserver observer : observers) {
+        for (final CacheObserver observer : cacheObservers) {
             observer.windowRemoved(window, fromCache);
         }
     }
+    
     
     /**
      * 
@@ -91,7 +100,7 @@ public abstract class AbstractCache implements WindowCache {
      * @param toCache
      */
     protected final void notifyWindowAdded(final Window window, final WindowCache toCache) {
-        for (final CacheObserver observer : observers) {
+        for (final CacheObserver observer : cacheObservers) {
             observer.windowAdded(window, toCache);
         }
     }
