@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -45,6 +42,7 @@ import net.domesdaybook.reader.Reader;
  * @author matt
  */
 public class BackwardSearchIterator implements Iterator {
+    public static final int NOT_FOUND = -1;
     
     // immutable fields:
     private final byte[] bytes;
@@ -55,7 +53,7 @@ public class BackwardSearchIterator implements Iterator {
     // private state:
     private long searchPosition;
     private boolean searchedForNext = false;
-    private long matchPosition = Searcher.NOT_FOUND;
+    private long matchPosition = NOT_FOUND;
    
     
     /**
@@ -152,7 +150,7 @@ public class BackwardSearchIterator implements Iterator {
     
     
     private long getNextMatchPosition() throws IOException {
-        long nextMatchingPosition = Searcher.NOT_FOUND;
+        long nextMatchingPosition = NOT_FOUND;
         if (reader != null) {
             nextMatchingPosition = searcher.searchBackwards(reader, searchPosition, toPosition);
         } else if (bytes != null) {
