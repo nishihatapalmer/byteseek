@@ -81,18 +81,23 @@ public interface WindowCache {
      * 
      */
     public interface CacheObserver {
+        
+        
         /**
          * 
          * @param window
          * @param toCache
          */
-        void windowAdded(final Window window, final WindowCache toCache);
+        public void windowAdded(final Window window, final WindowCache toCache);
+        
+        
         /**
          * 
          * @param window
          * @param fromCache
          */
-        void windowRemoved(final Window window, final WindowCache fromCache);
+        public void windowRemoved(final Window window, final WindowCache fromCache);
+        
     }
     
     
