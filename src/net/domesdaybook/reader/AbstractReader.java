@@ -37,9 +37,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public abstract class AbstractReader implements Reader, Iterable<Window> {
 
@@ -147,23 +148,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     
     @Override
     public void close() throws IOException {
-        clearCache();     
-    }
-    
-    
-    @Override
-    public void finalize() throws Throwable {
-        try {
-            close();
-        } finally {
-            super.finalize();
-        }
-    }
-
-    
-    @Override
-    public void clearCache() {
-        cache.clear();
+        cache.clear();    
     }
     
     
