@@ -41,7 +41,7 @@ import java.io.InputStream;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public final class TempFileReader extends FileReader {
 
@@ -102,9 +102,9 @@ public final class TempFileReader extends FileReader {
     @Override
     public void close() throws IOException {
         try {
-            super.close();
+            super.close(); // ensure the inherited random access file is closed first
         } finally {
-            getFile().delete();
+            getFile().delete(); // before we attempt to delete the file.
         }
     }
     
