@@ -36,6 +36,7 @@ package net.domesdaybook.searcher;
 import java.io.IOException;
 import net.domesdaybook.reader.Reader;
 
+
 /**
  * An abstract searcher implementation which implements the common convenience
  * search methods, by providing default values to the real search methods.
@@ -44,6 +45,8 @@ import net.domesdaybook.reader.Reader;
  */
 public abstract class AbstractSearcher implements Searcher {
 
+    protected final static int NOT_FOUND = -1;
+    
     /**
      * {@inheritDoc}
      */

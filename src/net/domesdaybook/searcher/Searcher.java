@@ -46,10 +46,6 @@ import net.domesdaybook.reader.Reader;
  */
 public interface Searcher {
 
-    /**
-     * A constant indicating that a search was not successful.
-     */
-    public static final int NOT_FOUND = -1;
     
     /**
      * Searches bytes forwards provided by a {@link Reader} object,
@@ -58,7 +54,8 @@ public interface Searcher {
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search up to.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      * @throws IOException  
      */
     public long searchForwards(final Reader reader, final long fromPosition, 
@@ -71,7 +68,8 @@ public interface Searcher {
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      * @throws IOException  
      */
     public long searchForwards(final Reader reader, final long fromPosition)
@@ -83,7 +81,8 @@ public interface Searcher {
      * from the start of the {@link Reader} to the end, if a match is not found.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      * @throws IOException  
      */
     public long searchForwards(final Reader reader) throws IOException;    
@@ -96,7 +95,8 @@ public interface Searcher {
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search up to.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      */
     public int searchForwards(byte[] bytes, final int fromPosition, final int toPosition);
 
@@ -108,7 +108,8 @@ public interface Searcher {
      *
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      */
     public int searchForwards(byte[] bytes, final int fromPosition);
     
@@ -118,7 +119,8 @@ public interface Searcher {
      *
      * @param bytes        The byte array giving access to the bytes being searched.
      * \     * @return 
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      */
     public int searchForwards(byte[] bytes);
     
@@ -130,7 +132,8 @@ public interface Searcher {
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search back to.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      * @throws IOException  
      */
     public long searchBackwards(final Reader reader, final long fromPosition, 
@@ -143,7 +146,8 @@ public interface Searcher {
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      * @throws IOException  
      */
     public long searchBackwards(final Reader reader, final long fromPosition)
@@ -155,7 +159,8 @@ public interface Searcher {
      * from the end to the start.
      *
      * @param reader       The byte reader giving access to the bytes being searched.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      * @throws IOException  
      */
     public long searchBackwards(final Reader reader) throws IOException;    
@@ -167,7 +172,8 @@ public interface Searcher {
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search back to.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      */
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition);
     
@@ -178,7 +184,8 @@ public interface Searcher {
      *
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      */
     public int searchBackwards(final byte[] bytes, final int fromPosition);
     
@@ -187,7 +194,8 @@ public interface Searcher {
      * Searches a byte array backwards, from the end to the start.
      *
      * @param bytes        The byte array giving access to the bytes being searched.
-     * @return             The position a match was found at, or NOT_FOUND (-1).
+     * @return             The position a match was found at, or a negative number if
+     *                     no match was found.
      */
     public int searchBackwards(final byte[] bytes);    
     
