@@ -42,7 +42,7 @@ import net.domesdaybook.reader.cache.TwoLevelCache;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class InputStreamReader extends AbstractReader {
 
@@ -160,18 +160,9 @@ public class InputStreamReader extends AbstractReader {
 
     
     @Override
-    public void clearCache() {
-        cache.clear();
-        // The cache is the only representation of the stream we can replay,
-        // so clearing the cache would seem to be pretty final.
-    }
-
-    
-    @Override
     public void close() throws IOException {
         try {
             stream.close();
-            clearCache();
         } finally {
             super.close();
         }
