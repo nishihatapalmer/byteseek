@@ -144,11 +144,12 @@ public final class TempFileCache extends AbstractCache {
             try {
                 file.close();
             } catch (IOException ex) {
+            } finally {
+                file = null;
+                tempFile.delete();
+                tempFile = null;
+                nextFilePos = 0;
             }
-            file = null;
-            tempFile.delete();
-            tempFile = null;
-            nextFilePos = 0;
         }
     }
     
