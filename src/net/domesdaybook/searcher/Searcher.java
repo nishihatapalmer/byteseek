@@ -58,8 +58,8 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchForwards(final Reader reader, final long fromPosition, 
-            final long toPosition) throws IOException;
+    public long searchForwards(Reader reader, long fromPosition, long toPosition)
+            throws IOException;
 
 
     /**
@@ -72,7 +72,7 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchForwards(final Reader reader, final long fromPosition)
+    public long searchForwards(Reader reader, long fromPosition)
              throws IOException;
  
     
@@ -85,7 +85,8 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchForwards(final Reader reader) throws IOException;    
+    public long searchForwards(Reader reader) 
+            throws IOException;    
     
     
     /**
@@ -98,7 +99,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchForwards(byte[] bytes, final int fromPosition, final int toPosition);
+    public int searchForwards(byte[] bytes, int fromPosition, int toPosition);
 
    
     
@@ -111,7 +112,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchForwards(byte[] bytes, final int fromPosition);
+    public int searchForwards(byte[] bytes, int fromPosition);
     
     
     /**
@@ -136,8 +137,8 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchBackwards(final Reader reader, final long fromPosition, 
-            final long toPosition) throws IOException;
+    public long searchBackwards(Reader reader, long fromPosition, long toPosition) 
+            throws IOException;
     
     
     /**
@@ -150,8 +151,8 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchBackwards(final Reader reader, final long fromPosition)
-             throws IOException;
+    public long searchBackwards(Reader reader, long fromPosition) 
+            throws IOException;
         
     
     /**
@@ -163,7 +164,8 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchBackwards(final Reader reader) throws IOException;    
+    public long searchBackwards(Reader reader)
+            throws IOException;    
     
     /**
      * Searches bytes backwards provided by a byte array,
@@ -175,7 +177,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition);
+    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition);
     
 
     /**
@@ -187,7 +189,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchBackwards(final byte[] bytes, final int fromPosition);
+    public int searchBackwards(byte[] bytes, int fromPosition);
     
    
     /**
@@ -197,7 +199,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchBackwards(final byte[] bytes);    
+    public int searchBackwards(byte[] bytes);    
     
     
     /**
