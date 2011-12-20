@@ -200,14 +200,13 @@ public final class DfaSubsetCompiler implements Compiler<State, State> {
     private void createDfaTransitions(final Set<State> sourceStates, final State newState,
                                      final Map<Set<State>, State> StatesToDfa)  {
        // For each target nfa state set, add a transition on those bytes:
-       Map<Set<State>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(sourceStates);
-       for (Set<State> targetState : targetStatesToBytes.keySet()) {
-
+       final Map<Set<State>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(sourceStates);
+       for (final Map.Entry<Set<State>, Set<Byte>> targetEntry : targetStatesToBytes.entrySet()) {
             // Get the set of bytes to transition on:
-            Set<Byte> transitionBytes = targetStatesToBytes.get(targetState);
+            final Set<Byte> transitionBytes = targetEntry.getValue();
 
             // Recursive: get the target DFA state for this transition.
-            State targetDFAState = getState(targetState, StatesToDfa);
+            final State targetDFAState = getState(targetEntry.getKey(), StatesToDfa);
 
             // Create a transition to the target state using the bytes to transition on:
             // This places a burden on the implementor of createSetTransition to ensure it
