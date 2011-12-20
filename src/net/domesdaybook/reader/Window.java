@@ -71,11 +71,15 @@ public final class Window {
 
     
     /**
+     * Returns the array of bytes backing this Window.  It does not clone
+     * or return a copy of the bytes, as the entire goal is performance.
+     * Hence, it is possible to abuse this.  Clients should not alter the
+     * array returned by this method.
      * 
      * @return
      */
     public byte[] getArray() {
-        return bytes;
+        return bytes; 
     }
     
     
