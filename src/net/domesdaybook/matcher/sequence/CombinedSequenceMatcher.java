@@ -99,7 +99,7 @@ public final class CombinedSequenceMatcher implements SequenceMatcher {
         int matchIndex = 0;
         while (window != null) {
             final int offset = reader.getWindowOffset(matchPosition + checkPos);
-            final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
+            final int endPos = Math.min(window.length(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             while (offset + checkPos < endPos) {
                 final SequenceMatcher matcher = localList.get(matchIndex++);

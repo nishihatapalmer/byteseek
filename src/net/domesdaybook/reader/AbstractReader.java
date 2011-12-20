@@ -92,7 +92,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     public int readByte(final long position) throws IOException {
         final Window window = getWindow(position);
         final int offset = (int) position % windowSize;
-        if (window == null || offset >= window.getLimit()) {
+        if (window == null || offset >= window.length()) {
             return NO_BYTE_AT_POSITION;
         }
         return window.getByte(offset);
@@ -128,7 +128,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
             // Finally, if the position requested is outside the window limit,
             // don't return a window. The position itself is invalid, even though
             // that position is part of a window which has valid positions.
-            if (window != null && offset >= window.getLimit()) {
+            if (window != null && offset >= window.length()) {
                 window = null;
             }
             return window;

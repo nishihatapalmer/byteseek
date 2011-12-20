@@ -76,7 +76,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
         long currentPosition = matchPosition;
         Window window = reader.getWindow(matchPosition);
         while (window != null) {
-            final int windowLength = window.getLimit();
+            final int windowLength = window.length();
             final byte[] array = window.getArray();
             int windowPosition = reader.getWindowOffset(currentPosition);
             while (windowPosition < windowLength) {
@@ -133,7 +133,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
         long currentPosition = matchPosition;
         Window window = reader.getWindow(matchPosition);
         while (window != null) {
-            final int windowLength = window.getLimit();
+            final int windowLength = window.length();
             final byte[] array = window.getArray();
             int windowPosition = reader.getWindowOffset(currentPosition);
             while (windowPosition >= 0) {
@@ -190,7 +190,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
         long currentPosition = matchPosition;
         Window window = reader.getWindow(matchPosition);
         while (window != null) {
-            final int windowLength = window.getLimit();
+            final int windowLength = window.length();
             final byte[] array = window.getArray();
             int windowPosition = reader.getWindowOffset(currentPosition);
             while (windowPosition < windowLength) {
@@ -244,7 +244,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
         long currentPosition = matchPosition;
         Window window = reader.getWindow(matchPosition);
         while (window != null) {
-            final int windowLength = window.getLimit();
+            final int windowLength = window.length();
             final byte[] array = window.getArray();
             int windowPosition = reader.getWindowOffset(currentPosition);
             while (windowPosition >= 0) {

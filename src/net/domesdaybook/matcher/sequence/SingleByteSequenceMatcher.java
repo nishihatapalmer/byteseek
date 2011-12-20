@@ -116,7 +116,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         int checkPos = 0;
         while (window != null) {
             final int offset = reader.getWindowOffset(matchPosition + checkPos);
-            final int endPos = Math.min(window.getLimit(), offset + localLength - checkPos);
+            final int endPos = Math.min(window.length(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             for (int windowPos = offset; windowPos < endPos; windowPos++) {
                 final SingleByteMatcher byteMatcher = matchList.get(checkPos++);

@@ -79,7 +79,7 @@ public final class NfaMatcher implements Matcher {
         //While we have a window on the data to match in:
         while (window != null) {
             final byte[] bytes = window.getArray();            
-            final int windowLength = window.getLimit();
+            final int windowLength = window.length();
             final int windowStart = reader.getWindowOffset(currentPosition);            
             int windowPos = windowStart;
             

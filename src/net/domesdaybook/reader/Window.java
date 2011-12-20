@@ -40,22 +40,22 @@ public final class Window {
     
     private final byte[] bytes;
     private final long windowPosition;
-    private final int limit;
+    private final int length;
     
     /**
      * Constructs a Window using the byte array provided.
 =    * 
      * @param bytes  The byte array to wrap.
      * @param windowPosition The position at which the Window starts.
-     * @param limit  An ending position of a slice of the array.
+     * @param length  An ending position of a slice of the array.
      */
-    public Window(final byte[] bytes, final long windowPosition, final int limit) {
+    public Window(final byte[] bytes, final long windowPosition, final int length) {
         if (bytes == null) {
             throw new IllegalArgumentException("Null byte array passed in to Array.");
         }
         this.bytes = bytes;  
         this.windowPosition = windowPosition;
-        this.limit = limit;
+        this.length = length;
     }
     
     
@@ -92,7 +92,7 @@ public final class Window {
      * 
      * @return
      */
-    public int getLimit() {
-        return limit;
+    public int length() {
+        return length;
     }
 }

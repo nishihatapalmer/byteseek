@@ -96,15 +96,6 @@ public interface Reader extends Closeable {
     
     /**
      * Returns the offset into a {@link Window} for a given position.
-     * <p/>
-     * This allows the following access pattern  to read a byte at
-     * the absolute position 1234 in the reader:
-     * 
-     * <code>
-     * Window window = reader.getWindow(1234);
-     * int windowPos = reader.getWindowOffset(1234);
-     * byte byteAtPos1234 = window.getByte(windowPos);
-     * </code>
      * 
      * @param position The position which you want the Window offset of.
      * @return The offset into a Window matching the position given.
