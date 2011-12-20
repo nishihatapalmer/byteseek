@@ -216,7 +216,7 @@ public final class SimpleSingleByteMatcherFactory implements SingleByteMatcherFa
             int val1 = iterator.next() & 0xFF;
             int val2 = iterator.next() & 0xFF;
             if (isSameCharDifferentCase(val1, val2)) {
-                result = new Character((char) val1);
+                result = Character.valueOf((char) val1);
             }
         }
         return result;
