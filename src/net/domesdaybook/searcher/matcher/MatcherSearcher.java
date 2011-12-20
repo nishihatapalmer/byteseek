@@ -45,14 +45,15 @@ import net.domesdaybook.searcher.AbstractSearcher;
  * found or not.
  * <p/>
  * The performance of this Searcher is generally poor (although it may compare
- * favorably for very, very short searches due to its essential simplicity). 
+ * favorably for very short searches due to its essential simplicity).
+ * Combining this search with a fast multi-sequence matcher, for example, 
+ * a {@link TrieMatcher} may perform reasonably well where there are a very large
+ * number of sequences to find, or if there are very short sequences to match 
+ * (which can limit the advantage of more sophisticated shift-based searchers).
  * <p/>
- * Because it is not optimised for particular kinds of matcher, 
- * it can search for any matcher at all, with no knowledge of its implementation.
- * This also means that it can't directly use Window-based searching (although
- * it can use it to indicate there is no more data, when the Window is null.)
- * Without knowing the maximum length of a matcher, it must fall back on the 
- * underlying Matcher to interact with the Reader.
+ * It can search for any matcher at all, with no knowledge of its implementation,
+ * but consequently is less optimal than a searcher designed for a specific
+ * type of matcher.
  * 
  * @author Matt Palmer
  */
@@ -66,27 +67,59 @@ public final class MatcherSearcher extends AbstractSearcher {
     
     
     /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation of searchFowards is complicated by not knowing
+     * the length of the Matcher (some matchers may match variable lengths),
+     * and we avoid looking at the length of the reader in order to be 
+     * stream-friendly when processing (discovering the length of the stream 
+     * would necessitate reading in the entire stream before searching).
+     * <p>
+     * It uses the presence of a Window at a given position to indicate whether
+     * there is more to search, and searches within the limits of each window,
+     * the end of the final window, or up to the specified "to" position, 
+     * whichever comes first.  If there are more windows left, then they are
+     * searched in turn.  
+     * 
      * @throws IOException 
-     * @inheritDoc
      */
     @Override
     public long searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
-        final Matcher localMatcher = matcher;  
+        
+        // Use a local reference to the matcher for performance reasons:
+        final Matcher theMatcher = matcher;  
+        
+        // Initialise search:
         long currentPosition = fromPosition > 0? 
                                fromPosition : 0;
         Window window = reader.getWindow(currentPosition);
+        
+        // As long as there is more data to search in:
         while (window != null) {
-            final int availableSpace = window.getLimit() - reader.getWindowOffset(currentPosition);
-            final long endWindowPosition = currentPosition + availableSpace;
-            final long lastPosition = endWindowPosition < toPosition?
-                                      endWindowPosition : toPosition;
-            while (currentPosition <= lastPosition) {
-                if (localMatcher.matches(reader, currentPosition)) {
+            
+            // Calculate search bounds for searching in this window:
+            final int searchSpace = window.length() - reader.getWindowOffset(currentPosition);
+            final long windowEndPosition = currentPosition + searchSpace - 1;
+            final long searchEndPosition = toPosition < windowEndPosition?
+                                           toPosition : windowEndPosition;
+            
+            // Search forwards in the window:
+            while (currentPosition <= searchEndPosition) {
+                if (theMatcher.matches(reader, currentPosition)) {
                     return currentPosition;
                 }
                 currentPosition++;
             }
+            
+            // Did we finish the search?  If the final "to" position is within 
+            // the current window and we didn't find anything, then we are finished.
+            if (toPosition <= windowEndPosition) { 
+                return NOT_FOUND;
+            }
+            
+            // Otherwise, get the next window.
+            // The currentPosition is guaranteed to be in the next window by now.
             window = reader.getWindow(currentPosition);
         }
         return NOT_FOUND;
@@ -94,18 +127,24 @@ public final class MatcherSearcher extends AbstractSearcher {
     
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final Matcher localMatcher = matcher;
-        final int lastPossiblePosition = bytes.length - 1;
-        final int upToPosition = toPosition < lastPossiblePosition? 
-                                 toPosition : lastPossiblePosition;
+        
+        // Use a local reference to the matcher for performance reasons:
+        final Matcher theMatcher = matcher;
+        
+        // Calculate safe bounds for searching in the byte array:
+        final int arrayEndPosition = bytes.length - 1;
+        final int searchEndPosition = toPosition < arrayEndPosition? 
+                                      toPosition : arrayEndPosition;
+        
+        // Search forwards:
         int currentPosition = fromPosition > 0?
-                              fromPosition : 0;
-        while (currentPosition <= upToPosition) {
-            if (localMatcher.matches(bytes, currentPosition)) {
+                              fromPosition : 0;        
+        while (currentPosition <= searchEndPosition) {
+            if (theMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
             }
             currentPosition++;

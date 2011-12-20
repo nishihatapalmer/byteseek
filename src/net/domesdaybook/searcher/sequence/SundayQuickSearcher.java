@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -40,48 +37,39 @@ import java.util.Arrays;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Reader;
-import net.domesdaybook.searcher.AbstractSearcher;
-import net.domesdaybook.searcher.Searcher;
+import net.domesdaybook.searcher.ShiftInfo;
 
 /**
  *
  * @author matt
  */
-public class SundayQuickSearcher extends AbstractSearcher {
-    
-    // Volatile arrays are usually a bad idea, as volatile applies to the array
-    // reference, not to the contents of the array.  However, we will never change
-    // the array contents once it is initialised, so this is safe.
-    @SuppressWarnings("VolatileArrayField")
-    private volatile int[] shiftForwardFunction;
-    @SuppressWarnings("VolatileArrayField")
-    private volatile int[] shiftBackwardFunction;
-    private final SequenceMatcher matcher;
+public final class SundayQuickSearcher extends AbstractSequenceSearcher {
 
+    
+    private final ShiftInfo shiftInfo;
 
     /**
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
      * to search for.
      * 
-     * @param matcher A {@link SequenceMatcher} to search for.
+     * @param sequence 
      */
     public SundayQuickSearcher(final SequenceMatcher sequence) {
-        if (sequence == null) {
-            throw new IllegalArgumentException("Null sequence passed in to QuickSequenceMatcherSearcher.");
-        }        
-        this.matcher = sequence;
+        super(sequence);
+        shiftInfo = new SundayShiftInfo();
     }
 
 
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
-    public final long searchForwards(final Reader reader, 
+    public final long searchForwardsReader(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get the objects needed to search:
-        final int[] safeShifts = getForwardShifts();
+        final int[] safeShifts = shiftInfo.getForwardShifts();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -89,7 +77,7 @@ public class SundayQuickSearcher extends AbstractSearcher {
         final long finalPosition = reader.length() - length;
         final long lastPossibleLoopPosition = finalPosition - 1;
         final long lastPosition = toPosition < lastPossibleLoopPosition?
-                toPosition : lastPossibleLoopPosition;
+                                  toPosition : lastPossibleLoopPosition;
         long searchPosition = fromPosition < 0? 0 : fromPosition ;
         
         // Search forwards:
@@ -106,7 +94,7 @@ public class SundayQuickSearcher extends AbstractSearcher {
             return finalPosition;
         }
 
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
 
 
@@ -118,7 +106,7 @@ public class SundayQuickSearcher extends AbstractSearcher {
     public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get the objects needed to search:
-        final int[] safeShifts = getForwardShifts();
+        final int[] safeShifts = shiftInfo.getForwardShifts();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -143,19 +131,20 @@ public class SundayQuickSearcher extends AbstractSearcher {
             return finalPosition;
         }
 
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }    
 
     
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
-    public final long searchBackwards(final Reader reader, 
+    public final long searchBackwardsReader(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get objects needed to search:
-        final int[] safeShifts = getBackwardShifts();
+        final int[] safeShifts = shiftInfo.getBackwardShifts();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -178,7 +167,7 @@ public class SundayQuickSearcher extends AbstractSearcher {
             return 0;
         }
 
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
 
     
@@ -189,7 +178,7 @@ public class SundayQuickSearcher extends AbstractSearcher {
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get objects needed to search:
-        final int[] safeShifts = getBackwardShifts();
+        final int[] safeShifts = shiftInfo.getBackwardShifts();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -212,129 +201,89 @@ public class SundayQuickSearcher extends AbstractSearcher {
             return 0;
         }
 
-        return Searcher.NOT_FOUND;
-    }    
-
-    
-    /**
-     *
-     * Uses Single-Check lazy initialisation.  This can result in the field
-     * being initialised more than once, but this doesn't really matter.
-     * 
-     * @return A 256-element array of integers, giving the safe shift
-     * for a given byte when searching forwards.
-     */
-    private int[] getForwardShifts() {
-        int[] result = shiftForwardFunction;
-        if (result == null) {
-            shiftForwardFunction = result = createForwardShifts();
-        }
-        return result;
+        return NOT_FOUND;
     }
 
 
-    /**
-     *
-     * Uses Single-Check lazy initialisation.  This can result in the field
-     * being initialised more than once, but this doesn't really matter.
-     * 
-     * @return A 256-element array of integers, giving the safe shift
-     * for a given byte when searching backwards.
-     */
-    private int[] getBackwardShifts() {
-        int[] result = shiftBackwardFunction;
-        if (result == null) {
-            shiftBackwardFunction = result = createBackwardShifts();
-        }
-        return result;
-    }
-    
-    
-    
-    /**
-     * Calculates the safe shifts to use if searching backwards.
-     * A safe shift is either the length of the sequence, if the
-     * byte does not appear in the {@link SequenceMatcher}, or
-     * the shortest distance it appears from the beginning of the matcher.
-     */
-    private int[] createBackwardShifts() {
-        // First set the default shift to the length of the sequence
-        // (negative if search direction is reversed)
-        final int[] shifts = new int[256];
-        final SequenceMatcher theMatcher = getMatcher();
-        final int numBytes = theMatcher.length();
-        Arrays.fill(shifts, numBytes + 1);
-        
-        // Now set specific byte shifts for the bytes actually in
-        // the sequence itself.  The shift is the distance of each character
-        // from the start of the sequence, where the first position equals 1.
-        // Each position can match more than one byte (e.g. if a byte class appears).
-        for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex++) {
-            final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
-            final byte[] matchingBytes = aMatcher.getMatchingBytes();
-            final int distanceFromStart = sequenceByteIndex + 1;
-            for (final byte b : matchingBytes) {
-                shifts[b & 0xFF] = distanceFromStart;
-            }
-        }
-        
-        return shifts;
-    }
-
-
-    /**
-     * Calculates the safe shifts to use if searching forwards.
-     * A safe shift is either the length of the sequence plus one, if the
-     * byte does not appear in the {@link SequenceMatcher}, or
-     * the shortest distance it appears from the end of the matcher.
-     */
-    private int[] createForwardShifts() {
-        // First set the default shift to the length of the sequence plus one.
-        final int[] shifts = new int[256];
-        final SequenceMatcher theMatcher = getMatcher();
-        final int numBytes = theMatcher.length();
-        Arrays.fill(shifts, numBytes + 1);
-
-        // Now set specific byte shifts for the bytes actually in
-        // the sequence itself.  The shift is the distance of each character
-        // from the end of the sequence, where the last position equals 1.
-        // Each position can match more than one byte (e.g. if a byte class appears).
-        for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes; sequenceByteIndex++) {
-            final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
-            final byte[] matchingBytes = aMatcher.getMatchingBytes();
-            final int distanceFromEnd = numBytes - sequenceByteIndex;
-            for (final byte b : matchingBytes) {
-                shifts[b & 0xFF] = distanceFromEnd;
-            }
-        }
-        
-        return shifts;
-    }
-
-    /**
-     *
-     * @return The underlying {@link SequenceMatcher} to search for.
-     */
-    public final SequenceMatcher getMatcher() {
-        return matcher;
-    }
-    
-
-    /**
-     * @inheritDoc
-     */
     @Override
     public void prepareForwards() {
-        getForwardShifts();
+        shiftInfo.getForwardShifts();
     }
 
     
-    /**
-     * @inheritDoc
-     */
     @Override
     public void prepareBackwards() {
-        getBackwardShifts();
+        shiftInfo.getBackwardShifts();
+    }
+
+  
+    
+    private class SundayShiftInfo extends ShiftInfo {
+
+        public SundayShiftInfo() {
+        }
+
+        /**
+         * Calculates the safe shifts to use if searching forwards.
+         * A safe shift is either the length of the sequence plus one, if the
+         * byte does not appear in the {@link SequenceMatcher}, or
+         * the shortest distance it appears from the end of the matcher.
+         */
+        @Override
+        protected int[] createForwardShifts() {
+            // First set the default shift to the length of the sequence plus one.
+            final int[] shifts = new int[256];
+            final SequenceMatcher theMatcher = getMatcher();
+            final int numBytes = theMatcher.length();
+            Arrays.fill(shifts, numBytes + 1);
+
+            // Now set specific byte shifts for the bytes actually in
+            // the sequence itself.  The shift is the distance of each character
+            // from the end of the sequence, where the last position equals 1.
+            // Each position can match more than one byte (e.g. if a byte class appears).
+            for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes; sequenceByteIndex++) {
+                final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
+                final byte[] matchingBytes = aMatcher.getMatchingBytes();
+                final int distanceFromEnd = numBytes - sequenceByteIndex;
+                for (final byte b : matchingBytes) {
+                    shifts[b & 0xFF] = distanceFromEnd;
+                }
+            }
+
+            return shifts;
+        }
+
+
+        /**
+         * Calculates the safe shifts to use if searching backwards.
+         * A safe shift is either the length of the sequence, if the
+         * byte does not appear in the {@link SequenceMatcher}, or
+         * the shortest distance it appears from the beginning of the matcher.
+         */        
+        @Override
+        protected int[] createBackwardShifts() {
+            // First set the default shift to the length of the sequence
+            // (negative if search direction is reversed)
+            final int[] shifts = new int[256];
+            final SequenceMatcher theMatcher = getMatcher();
+            final int numBytes = theMatcher.length();
+            Arrays.fill(shifts, numBytes + 1);
+
+            // Now set specific byte shifts for the bytes actually in
+            // the sequence itself.  The shift is the distance of each character
+            // from the start of the sequence, where the first position equals 1.
+            // Each position can match more than one byte (e.g. if a byte class appears).
+            for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex++) {
+                final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
+                final byte[] matchingBytes = aMatcher.getMatchingBytes();
+                final int distanceFromStart = sequenceByteIndex + 1;
+                for (final byte b : matchingBytes) {
+                    shifts[b & 0xFF] = distanceFromStart;
+                }
+            }
+
+            return shifts;
+        }
     }
     
 }

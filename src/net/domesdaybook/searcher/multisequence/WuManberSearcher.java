@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -65,7 +62,7 @@ import net.domesdaybook.searcher.AbstractSearcher;
  * most cases - thus avoiding reading most of the bytes.  However, if shifts
  * are calculated for a large number of patterns (e.g. 1000 patterns), the
  * chances are that most shifts will tend towards one, losing the advantage
- * of this sort of searching.
+ * of this sort of searching. 
  * </p>The Wu Manber search gets around this limitation by matching on more than
  * one byte at a time.  It looks at blocks of bytes (effectively extending the 
  * available alphabet), and calculates a hash code for them.  It uses this hash
@@ -103,6 +100,9 @@ import net.domesdaybook.searcher.AbstractSearcher;
  */
 public class WuManberSearcher extends AbstractSearcher {
 
+    /**
+     * 
+     */
     public static final int ALPHABET_SIZE = 256;
     
     /**
@@ -153,17 +153,32 @@ public class WuManberSearcher extends AbstractSearcher {
     private final int blockSize;
     
     
+    /**
+     * 
+     * @param matchers
+     */
     public WuManberSearcher(final Collection<SequenceMatcher> matchers) {
         this(matchers, null, 0);
     }
     
     
+    /**
+     * 
+     * @param matchers
+     * @param compiler
+     */
     public WuManberSearcher(final Collection<SequenceMatcher> matchers, 
         final ReversibleCompiler<MultiSequenceMatcher, Collection<SequenceMatcher>> compiler) {
         this(matchers, compiler, 0);
     }
     
     
+    /**
+     * 
+     * @param matchers
+     * @param compiler
+     * @param blockSize
+     */
     public WuManberSearcher(final Collection<SequenceMatcher> matchers, 
             final ReversibleCompiler< MultiSequenceMatcher, Collection<SequenceMatcher>> compiler,
             final int blockSize) {

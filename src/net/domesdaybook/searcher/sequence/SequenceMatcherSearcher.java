@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -38,8 +35,7 @@ package net.domesdaybook.searcher.sequence;
 import java.io.IOException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
-import net.domesdaybook.searcher.AbstractSearcher;
-import net.domesdaybook.searcher.Searcher;
+import net.domesdaybook.reader.Window;
 
 /**
  * SequenceSearcher searches for a sequence by trying for a match in each position.
@@ -49,42 +45,46 @@ import net.domesdaybook.searcher.Searcher;
  *
  * @author Matt Palmer
  */
-public final class SequenceMatcherSearcher extends AbstractSearcher {
-    
-    private final SequenceMatcher matcher;
+public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
 
 
+    /**
+     * 
+     * @param sequence
+     */
     public SequenceMatcherSearcher(final SequenceMatcher sequence) {
-        if (sequence == null) {
-            throw new IllegalArgumentException("Null sequence passed in to SequenceMatcherSearcher.");
-        }        
-        this.matcher = sequence;
+        super(sequence);
     }
 
 
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
     public final long searchForwards(final Reader reader, final long fromPosition, 
             final long toPosition) throws IOException {
-        // Get objects needed for the search:
-        final SequenceMatcher theMatcher = getMatcher();
-        
-        // Calculate safe bounds for the search:
-        final long lastPossiblePosition = reader.length() - theMatcher.length();
-        final long lastPosition = toPosition < lastPossiblePosition?
-                toPosition : lastPossiblePosition;
-        long searchPosition = fromPosition < 0? 0 : fromPosition;
-        
-        // Search forwards
-        while (searchPosition <= lastPosition) {
-            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
-                return searchPosition;
+        final SequenceMatcher pattern = matcher;  
+        long currentPosition = fromPosition > 0? fromPosition : 0;
+        Window window = reader.getWindow(currentPosition);
+        while (window != null) {
+            final byte[] array = window.getArray();
+            
+            
+            
+            final int availableSpace = window.length() - reader.getWindowOffset(currentPosition);
+            final long endWindowPosition = currentPosition + availableSpace;
+            final long lastPosition = endWindowPosition < toPosition?
+                                      endWindowPosition : toPosition;
+            while (currentPosition <= lastPosition) {
+                if (pattern.matches(reader, currentPosition)) {
+                    return currentPosition;
+                }
+                currentPosition++;
             }
-            searchPosition++;
+            window = reader.getWindow(currentPosition);
         }
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
     
     
@@ -109,12 +109,13 @@ public final class SequenceMatcherSearcher extends AbstractSearcher {
             }
             searchPosition++;
         }
-        return Searcher.NOT_FOUND;    
+        return NOT_FOUND;    
     }    
 
     
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
     public final long searchBackwards(final Reader reader, final long fromPosition, 
@@ -135,7 +136,7 @@ public final class SequenceMatcherSearcher extends AbstractSearcher {
             }
             searchPosition--;
         }
-        return Searcher.NOT_FOUND;
+        return NOT_FOUND;
     }
 
 
@@ -160,19 +161,7 @@ public final class SequenceMatcherSearcher extends AbstractSearcher {
             }
             searchPosition--;
         }
-        return Searcher.NOT_FOUND;
-    }
-
-    /**
-     *
-     * @return The underlying {@link SequenceMatcher} to search for.
-     */
-    /**
-     *
-     * @return The underlying {@link SequenceMatcher} to search for.
-     */
-    public final SequenceMatcher getMatcher() {
-        return matcher;
+        return NOT_FOUND;
     }
 
     
