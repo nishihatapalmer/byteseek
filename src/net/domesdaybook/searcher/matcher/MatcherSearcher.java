@@ -62,6 +62,9 @@ public final class MatcherSearcher extends AbstractSearcher {
     private final Matcher matcher;
     
     MatcherSearcher(final Matcher matcher) {
+        if (matcher == null) {
+            throw new IllegalArgumentException("Null matcher passed in to MatcherSearcher.");
+        }
         this.matcher = matcher;
     }
     
