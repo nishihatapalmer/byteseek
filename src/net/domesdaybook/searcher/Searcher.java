@@ -101,7 +101,6 @@ public interface Searcher {
      */
     public int searchForwards(byte[] bytes, int fromPosition, int toPosition);
 
-   
     
     /**
      * Searches bytes forwards provided by a byte array
