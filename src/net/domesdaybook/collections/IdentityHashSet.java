@@ -130,4 +130,10 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
         return map.size();
     }
     
+    
+    @Override
+    public IdentityHashSet clone() {
+        return new IdentityHashSet(map.keySet());
+    }
+    
 }
