@@ -134,7 +134,7 @@ public final class ByteSetBinarySearchMatcher extends InvertibleMatcher {
             }
             return invertedValues;
         } else {
-            return bytes;
+            return bytes.clone();
         }
     }
 
