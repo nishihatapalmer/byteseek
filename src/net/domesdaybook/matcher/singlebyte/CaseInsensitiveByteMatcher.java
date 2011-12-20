@@ -132,12 +132,9 @@ public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence
         final byte firstByte = caseValues[0];
         final byte secondByte = caseValues[1];
         if (firstByte == secondByte) {
-            final byte[] singleValue = new byte[1];
-            singleValue[0] = firstByte;
-            return singleValue;
-        } else {
-            return caseValues;
+            return new byte[] {firstByte};
         }
+        return caseValues.clone();
     }
 
     
