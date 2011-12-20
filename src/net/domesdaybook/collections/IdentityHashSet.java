@@ -59,12 +59,6 @@ import java.util.Set;
  * @author Matt Palmer
  */
 public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, Cloneable {
-
-    /**
-     * Constant dummy object to put in the underlying IdentityHashMap, 
-     * because you have to put something in a map.
-     */
-    private static final Object IN_SET = new Object();
     
     private final Map<T, Object> map;
     
@@ -97,7 +91,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
      */
     @Override
     public boolean add(T object) {
-        return map.put(object, IN_SET) == object;
+        return map.put(object, object) == object;
     }
     
     
@@ -106,7 +100,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
      */
     @Override
     public boolean remove(final Object object) {
-        return map.remove((T)object) == object;
+        return map.remove((T)object) != null;
     }
     
     
