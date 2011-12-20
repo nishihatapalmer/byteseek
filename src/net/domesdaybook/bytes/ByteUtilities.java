@@ -355,7 +355,7 @@ public final class ByteUtilities {
         Byte allBitMask = null;
         final int setSize = bytes.size();
         if (setSize == 256) { // if we have all byte values, then a bitmask of zero matches all of them.
-            allBitMask = new Byte((byte) 0);
+            allBitMask = Byte.valueOf((byte)0);
         } else if (Arrays.binarySearch(VALID_ALL_BITMASK_SET_SIZES, setSize) >= 0) {
             // Build a candidate bitmask from the bits all the bytes have in common.
             final int bitsInCommon = getBitsInCommon(bytes);
@@ -385,7 +385,7 @@ public final class ByteUtilities {
         Byte anyBitMask = null;
         final int setSize = bytes.size();
         if (setSize == 0) {
-            anyBitMask = new Byte((byte) 0);
+            anyBitMask = Byte.valueOf((byte)0);
         } else if (Arrays.binarySearch(VALID_ANY_BITMASK_SET_SIZES, setSize) >= 0) {
             // Find which bits in the set are matched by 128 bytes in the set.
             // These bits might form a valid any bitmask.
