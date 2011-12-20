@@ -48,7 +48,7 @@ import net.domesdaybook.reader.Reader;
 public final class AnyMatcher extends AbstractSingleByteSequence {
 
     // A static 256-element array containing all the bytes.
-    private static final byte[] allBytes =  ByteUtilities.getAllByteValues();
+    private static final byte[] ALL_BYTES =  ByteUtilities.getAllByteValues();
 
 
     /**
@@ -73,10 +73,12 @@ public final class AnyMatcher extends AbstractSingleByteSequence {
      * {@inheritDoc}
      *
      * Returns a 256-element array of all the possible byte values.
+     * The array returned by this method MUST not be altered.  It is
+     * intended to be a constant array of all possible byte values.
      */
     @Override
     public byte[] getMatchingBytes() {
-        return allBytes;
+        return ALL_BYTES;
     }
 
 
