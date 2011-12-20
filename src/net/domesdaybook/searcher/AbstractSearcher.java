@@ -47,6 +47,7 @@ public abstract class AbstractSearcher implements Searcher {
 
     protected final static int NOT_FOUND = -1;
     
+    
     /**
      * {@inheritDoc}
      */
@@ -119,6 +120,7 @@ public abstract class AbstractSearcher implements Searcher {
     public int searchBackwards(final byte[] bytes) {
         return searchBackwards(bytes, bytes.length - 1, 0);
     }
+    
     
     /**
      * Returns a position guaranteed to be within the length of the reader,
