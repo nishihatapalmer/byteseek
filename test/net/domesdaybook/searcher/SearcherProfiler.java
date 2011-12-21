@@ -31,6 +31,13 @@ public final class SearcherProfiler {
     }
     
     
+    /**
+     * 
+     * @param searchers
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static Map<Searcher, ProfileResults> profile(final Collection<Searcher> searchers) throws FileNotFoundException, IOException {
         final Map<Searcher, ProfileResults> searcherResults 
                 = new IdentityHashMap<Searcher, ProfileResults>();
@@ -62,11 +69,18 @@ public final class SearcherProfiler {
     }  
     
     
+    /**
+     * 
+     */
     public static class ProfileResults {
         private Map<String, ProfileResult> results = new LinkedHashMap<String, ProfileResult>();
         private ProfileResult currentProfile;
         private String description;
         
+        /**
+         * 
+         * @return
+         */
         public Map<String, ProfileResult> getAllResults() {
             return results;
         }
@@ -99,18 +113,44 @@ public final class SearcherProfiler {
     }
     
     
+    /**
+     * 
+     */
     public static class ProfileResult {
+        /**
+         * 
+         */
         public static final int NO_OF_SEARCHES = 10;
         
+        /**
+         * 
+         */
         public ProfileStats forwardBytesStats = new ProfileStats();
+        /**
+         * 
+         */
         public ProfileStats forwardReaderStats = new ProfileStats();
+        /**
+         * 
+         */
         public ProfileStats backwardBytesStats = new ProfileStats();
+        /**
+         * 
+         */
         public ProfileStats backwardReaderStats = new ProfileStats();
 
+        /**
+         * 
+         */
         public ProfileResult() {
         }
         
 
+        /**
+         * 
+         * @param searcher
+         * @param bytes
+         */
         public void profile(Searcher searcher, byte[] bytes) {
             
             // Profile forwards statistics:
@@ -153,6 +193,12 @@ public final class SearcherProfiler {
         }
 
         
+        /**
+         * 
+         * @param searcher
+         * @param reader
+         * @throws IOException
+         */
         public void profile(Searcher searcher, Reader reader) throws IOException {
             
             // log forward preparation time.
@@ -230,9 +276,21 @@ public final class SearcherProfiler {
         
     }
     
+    /**
+     * 
+     */
     public static class ProfileStats {
+        /**
+         * 
+         */
         public long preparationTime;
+        /**
+         * 
+         */
         public long searchTime;
+        /**
+         * 
+         */
         public List<Long> searchMatches;
     }
     

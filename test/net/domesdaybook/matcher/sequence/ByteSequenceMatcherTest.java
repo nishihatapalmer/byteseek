@@ -30,10 +30,17 @@ public class ByteSequenceMatcherTest {
     
     private FileReader reader;
         
+    /**
+     * 
+     */
     public ByteSequenceMatcherTest() {
     }
   
     
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
         final long seed = System.currentTimeMillis();
@@ -44,6 +51,10 @@ public class ByteSequenceMatcherTest {
     }
     
     
+    /**
+     * 
+     * @throws Exception
+     */
     @Before
     public void setUp() throws Exception {
         reader = new FileReader(getFile("/TestASCII.txt"));
@@ -144,44 +155,67 @@ public class ByteSequenceMatcherTest {
     
     // Test expected construction failures:
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNoRepeats() {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x8f, 0);
+        new ByteSequenceMatcher((byte) 0x8f, 0);
     }
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullArray() {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte[]) null);
+        new ByteSequenceMatcher((byte[]) null);
     }
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyArray() {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher(new byte[0]);
+        new ByteSequenceMatcher(new byte[0]);
     }    
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullCollection() {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher((ArrayList<Byte>) null);
+        new ByteSequenceMatcher((ArrayList<Byte>) null);
     }   
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyCollection() {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher(new ArrayList<Byte>());
+        new ByteSequenceMatcher(new ArrayList<Byte>());
     }       
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullList() {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher((ArrayList<ByteSequenceMatcher>) null);
+        new ByteSequenceMatcher((ArrayList<ByteSequenceMatcher>) null);
     }        
 
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyList() {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher(new ArrayList<ByteSequenceMatcher>());
+        new ByteSequenceMatcher(new ArrayList<ByteSequenceMatcher>());
     }        
     
     
     /**
      * Test of matches method, of class ByteSequenceMatcher.
+     * @throws FileNotFoundException 
+     * @throws IOException 
      */
     @Test
     public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {

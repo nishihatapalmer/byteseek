@@ -21,28 +21,43 @@ public class ByteSetMatcherTest {
     
     Random randomGenerator = new Random();
     
+    /**
+     * 
+     */
     public ByteSetMatcherTest() {
     }
 
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testNullBitSetMatcher() {
-        ByteSetBitSetMatcher matcher = new ByteSetBitSetMatcher(null, false);
+        new ByteSetBitSetMatcher(null, false);
     }
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testNullBinarySearchMatcher() {
-        ByteSetBinarySearchMatcher matcher = new ByteSetBinarySearchMatcher(null, false);
+        new ByteSetBinarySearchMatcher(null, false);
     }
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyBitSetMatcher() {
-        ByteSetBitSetMatcher matcher = new ByteSetBitSetMatcher(new LinkedHashSet<Byte>(), false);
+        new ByteSetBitSetMatcher(new LinkedHashSet<Byte>(), false);
     }
     
+    /**
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyBinarySearchMatcher() {
-        ByteSetBinarySearchMatcher matcher = new ByteSetBinarySearchMatcher(new LinkedHashSet<Byte>(), false);
+        new ByteSetBinarySearchMatcher(new LinkedHashSet<Byte>(), false);
     }    
     
 
@@ -87,7 +102,7 @@ public class ByteSetMatcherTest {
         testMatcher("BinarySearchMatcher", matcher2NotInverted, testSet, otherBytes);
         
         ByteSetBinarySearchMatcher matcherInverted2 = new ByteSetBinarySearchMatcher(testSet, InvertibleMatcher.INVERTED);
-        testMatcher("BinarySearchMatcher", matcherInverted, otherBytes, testSet);
+        testMatcher("BinarySearchMatcher", matcherInverted2, otherBytes, testSet);
     }
     
     private void testMatcher(String description, SingleByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) {

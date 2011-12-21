@@ -14,6 +14,9 @@ import static org.junit.Assert.*;
  */
 public class ByteMatcherTest {
 
+    /**
+     * 
+     */
     public ByteMatcherTest() {
     }
 

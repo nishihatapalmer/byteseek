@@ -19,21 +19,38 @@ import static org.junit.Assert.*;
 public class ByteUtilitiesTest {
 
   
+    /**
+     * 
+     */
     public ByteUtilitiesTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
 
+    /**
+     * 
+     */
     @Before
     public void setUp() {
     }
 
+    /**
+     * 
+     */
     @After
     public void tearDown() {
     }
@@ -177,16 +194,19 @@ public class ByteUtilitiesTest {
     }
 
     
+    /**
+     * 
+     */
     @Test
     public void testGetAllBitmaskForBytes() {
         // only one byte mask matches 11111111 - the bitmask is the same as the byte:
         byte[] bytes = new byte[] {(byte) 0xFF};
-        Byte expectedValue = new Byte((byte) 0xFF);
+        Byte expectedValue = Byte.valueOf((byte) 0xFF);
         assertEquals("11111111", expectedValue, ByteUtilities.getAllBitMaskForBytes(bytes));
 
         // Find all bitmask for odd bytes:
         bytes = getOddBytes();
-        expectedValue = new Byte((byte) 0x01);
+        expectedValue = Byte.valueOf((byte) 0x01);
         assertEquals("Find all bitmask for odd bytes", expectedValue, ByteUtilities.getAllBitMaskForBytes(bytes));
 
         // no bitmask can match only the zero byte:
@@ -195,12 +215,12 @@ public class ByteUtilitiesTest {
 
         // the zero bitmask can match all byte values:
         bytes = ByteUtilities.getAllByteValues();
-        expectedValue = new Byte((byte) 0x00);
+        expectedValue = Byte.valueOf((byte) 0x00);
         assertEquals("00000000 to match all", expectedValue, ByteUtilities.getAllBitMaskForBytes(bytes));
 
         // 2 bytes match: mask 11111110:  11111110 and 11111111
         bytes = new byte[] {(byte) 0xFE, (byte) 0xFF};
-        expectedValue = new Byte((byte) 0xFE);
+        expectedValue = Byte.valueOf((byte) 0xFE);
         assertEquals("11111110", expectedValue,  ByteUtilities.getAllBitMaskForBytes(bytes));
 
         // no bitmask exists for only the 2 bytes: 11111110 and 01111111
@@ -209,7 +229,7 @@ public class ByteUtilitiesTest {
 
         // 4 bytes match: mask 01111110: 01111110 01111111 11111110 1111111
         bytes = new byte[] {(byte) 0xFF, (byte) 0xFE, (byte) 0x7F, (byte) 0x7E};
-        expectedValue = new Byte((byte) 0x7E);
+        expectedValue = Byte.valueOf((byte) 0x7E);
         assertEquals("01111110", expectedValue,  ByteUtilities.getAllBitMaskForBytes(bytes));
     }
 
@@ -225,7 +245,7 @@ public class ByteUtilitiesTest {
 
         // Get any bitmask for odd values:
         bytes = getOddBytes();
-        Byte expectedValue = new Byte((byte) 0x01);
+        Byte expectedValue = Byte.valueOf((byte) 0x01);
         assertEquals("Find any bitmask for odd values", expectedValue, ByteUtilities.getAnyBitMaskForBytes(bytes));
         
         // no any bit bitmask can match zero:
@@ -241,7 +261,7 @@ public class ByteUtilitiesTest {
         assertEquals("11111110 and 11111111 have no any bitmask.", null, ByteUtilities.getAnyBitMaskForBytes(bytes));
 
         // Match all values except zero: 0xFF
-        expectedValue = new Byte((byte) 0xFF);
+        expectedValue = Byte.valueOf((byte) 0xFF);
         bytes = ByteUtilities.getBytesInRange(1, 255);
         assertEquals("All bytes from 1 to 255 match with 0xFF any bitmask", expectedValue, ByteUtilities.getAnyBitMaskForBytes(bytes));
         
@@ -257,7 +277,7 @@ public class ByteUtilitiesTest {
                 bytes[position++] = (byte) value;
             }
         }
-        expectedValue = new Byte((byte) 0x7F);
+        expectedValue = Byte.valueOf((byte) 0x7F);
         assertEquals("01111111 matches all except zero and 0x80", expectedValue, ByteUtilities.getAnyBitMaskForBytes(bytes));
 
         // No any bitmask exists to match only: 01111110 01111111 11111110 1111111

@@ -20,19 +20,32 @@ import static org.junit.Assert.*;
  */
 public class FileReaderTest {
     
+    /**
+     * 
+     */
     public FileReaderTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
 
     /**
      * Test of readByte method, of class FileReader.
+     * @throws FileNotFoundException 
+     * @throws IOException 
      */
     @Test
     public void testReadByte() throws FileNotFoundException, IOException {
@@ -55,6 +68,7 @@ public class FileReaderTest {
     
     /**
      * Test of length method, of class FileReader.
+     * @throws FileNotFoundException 
      */
     @Test
     public void testLength() throws FileNotFoundException {

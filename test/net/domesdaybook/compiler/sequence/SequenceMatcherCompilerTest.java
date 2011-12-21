@@ -34,28 +34,51 @@ public class SequenceMatcherCompilerTest {
 
     private SequenceMatcherCompiler compiler = new SequenceMatcherCompiler();
 
+    /**
+     * 
+     */
     public SequenceMatcherCompilerTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
 
 
+    /**
+     * 
+     * @throws CompileException
+     */
     @Test(expected=CompileException.class)
     public void testCompileNullExpression() throws CompileException {
         compiler.compile((String) null);
     }
 
+    /**
+     * 
+     * @throws CompileException
+     */
     @Test(expected=CompileException.class)
     public void testCompileEmptyExpression() throws CompileException {
         compiler.compile("");
     }
     
+    /**
+     * 
+     * @throws CompileException
+     */
     @Test(expected=CompileException.class)
     public void testCompileNullAST() throws CompileException {
         compiler.compile((CommonTree) null);
@@ -64,6 +87,7 @@ public class SequenceMatcherCompilerTest {
 
     /**
      * Test of compile method, of class SequenceMatcherCompiler.
+     * @throws Exception 
      */
     @Test
     public void testBasicCompile() throws Exception {

@@ -16,11 +16,23 @@ public class Utilities {
     
 
     
+    /**
+     * 
+     * @param path
+     * @return
+     * @throws IOException
+     */
     public static byte[] getByteArray(final String path) throws IOException {
         return getByteArray(new File(path));
     }
                 
     
+    /**
+     * 
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public static byte[] getByteArray(final File file) throws IOException {
         final Reader reader = new FileReader(file);
         final Window window = reader.getWindow(0);

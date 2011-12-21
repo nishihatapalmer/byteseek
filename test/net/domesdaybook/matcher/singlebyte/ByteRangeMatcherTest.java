@@ -16,6 +16,9 @@ import static org.junit.Assert.*;
  */
 public class ByteRangeMatcherTest {
 
+    /**
+     * 
+     */
     public ByteRangeMatcherTest() {
     }
 

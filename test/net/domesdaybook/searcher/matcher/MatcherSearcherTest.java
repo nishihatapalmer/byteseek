@@ -17,19 +17,31 @@ import static org.junit.Assert.*;
  */
 public class MatcherSearcherTest {
     
+    /**
+     * 
+     */
     public MatcherSearcherTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
 
     /**
      * Test of searchForwards method, of class MatcherSearcher.
+     * @throws IOException 
      */
     @Test
     public void testSearchForwards_3args_1() throws IOException {
@@ -47,6 +59,7 @@ public class MatcherSearcherTest {
 
     /**
      * Test of searchForwards method, of class MatcherSearcher.
+     * @throws IOException 
      */
     @Test
     public void testSearchForwards_3args_2() throws IOException {
@@ -81,6 +94,7 @@ public class MatcherSearcherTest {
 
     /**
      * Test of searchBackwards method, of class MatcherSearcher.
+     * @throws IOException 
      */
     @Test
     public void testSearchBackwards_3args_1() throws IOException {
@@ -98,6 +112,7 @@ public class MatcherSearcherTest {
 
     /**
      * Test of searchBackwards method, of class MatcherSearcher.
+     * @throws IOException 
      */
     @Test
     public void testSearchBackwards_3args_2() throws IOException {

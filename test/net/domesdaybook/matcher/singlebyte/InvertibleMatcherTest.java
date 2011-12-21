@@ -17,13 +17,24 @@ import static org.junit.Assert.*;
  */
 public class InvertibleMatcherTest {
 
+    /**
+     * 
+     */
     public InvertibleMatcherTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
@@ -40,12 +51,24 @@ public class InvertibleMatcherTest {
         assertEquals(false, matcher.isInverted());
     }
 
-    public class InvertibleMatcherImpl extends InvertibleMatcher {
+    /**
+     * 
+     */
+    public static class InvertibleMatcherImpl extends InvertibleMatcher {
 
+        /**
+         * 
+         * @param inverted
+         */
         public InvertibleMatcherImpl(boolean inverted) {
             super(inverted);
         }
 
+        /**
+         * 
+         * @param theByte
+         * @return
+         */
         public boolean matches(byte theByte) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
@@ -70,6 +93,12 @@ public class InvertibleMatcherTest {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        /**
+         * 
+         * @param reader
+         * @param matchPosition
+         * @return
+         */
         public boolean matchesNoBoundsCheck(Reader reader, long matchPosition) {
             throw new UnsupportedOperationException("Not supported yet.");
         }

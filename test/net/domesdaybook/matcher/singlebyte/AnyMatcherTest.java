@@ -17,13 +17,24 @@ import static org.junit.Assert.*;
  */
 public class AnyMatcherTest {
 
+    /**
+     * 
+     */
     public AnyMatcherTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }

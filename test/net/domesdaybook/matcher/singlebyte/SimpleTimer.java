@@ -14,6 +14,11 @@ public class SimpleTimer {
     private static final String timingResults = "%d ms for total test\t%d average nanos per test\t%s";
     private static final int TIMES_TO_TEST = 1000;
 
+    /**
+     * 
+     * @param description
+     * @param matcher
+     */
     public static void timeMatcher(String description, SingleByteMatcher matcher) {
 
         long start = System.nanoTime();

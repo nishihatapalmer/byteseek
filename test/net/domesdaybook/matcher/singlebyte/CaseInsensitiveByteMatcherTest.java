@@ -16,13 +16,24 @@ import static org.junit.Assert.*;
  */
 public class CaseInsensitiveByteMatcherTest {
 
+    /**
+     * 
+     */
     public CaseInsensitiveByteMatcherTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
