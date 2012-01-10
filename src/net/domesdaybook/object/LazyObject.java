@@ -1,12 +1,11 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
- *
+ * Copyright Matt Palmer 2011, All rights reserved.
+ * 
  * This code is licensed under a standard 3-clause BSD license:
- *
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -16,9 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
  *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -31,32 +28,50 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  * 
+ * 
  */
-
-
-package net.domesdaybook.object.copy;
-
-import java.util.Map;
+package net.domesdaybook.object;
 
 /**
- * DeepCopy
- *
- * An interface for deep copying of objects.
- * Each object implementing this  interface must return a deep copy of itself
- * and any child objects that are not immutable.
- * It requires an initially empty map of old to new objects to be passed in.
- * This is forwarded to other child objects implementing DeepCopy, in order that
- * only one copy of the same object is ever created.
-
+ * This simple abstract class just wraps arrays of integers used for shift-based
+ * searching, both forwards and backwards.  It initialises the arrays using 
+ * single-check lazy initialisation with volatile array references.  This means
+ * that if two threads attempt to get the array at the same time before it has
+ * been fully initialised, it is quite possible for the array to be calculated 
+ * more than once.  This may waste some CPU cycles, but it is still safe to use,
+ * as the arrays will always be identical and do not change once calculated.
+ * 
+ * It provides two abstract methods:
+ * <ul>
+ * <li>{@link #create() }
+ * <li>{@link #createBackwardInfo() }
+ * </ul>
+ * which must be implemented to create the type of information required
+ * for a given search algorithm.
+ * 
  * @author Matt Palmer
  */
-public interface DeepCopy {
+public abstract class LazyObject<T> {
+    
+    protected volatile T object;
 
+    
+    protected abstract T create();
+    
+    
     /**
-     * deepCopy returns a deep copy of the object implementing this interface.
-     *
-     * @param oldToNewObjects a map of old objects to their copies.
-     * @return DeepCopy a deep copy of the object implementing this interface.
+     * Uses Single-Check lazy initialisation.  This can result in the field
+     * being initialised more than once, but this doesn't really matter.
+     * 
+     * @return An array of integers, giving the safe shift
+     * for a given byte when searching forwards.
      */
-    DeepCopy deepCopy(final Map<DeepCopy,DeepCopy> oldToNewObjects);
+    public T get() {
+        T result = object;
+        if (result == null) {
+            object = result = create();
+        }
+        return result;
+    }
+
 }

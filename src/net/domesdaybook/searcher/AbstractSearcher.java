@@ -27,7 +27,6 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 
@@ -38,8 +37,8 @@ import net.domesdaybook.reader.Reader;
 
 
 /**
- * An abstract searcher implementation which implements the common convenience
- * search methods, by providing default values to the real search methods.
+ * An abstract searcher implementation which only implements the common variations
+ * of the search methods, by providing default values to the real search methods.
  * 
  * @author Matt Palmer
  */
@@ -125,7 +124,22 @@ public abstract class AbstractSearcher implements Searcher {
     /**
      * Returns a position guaranteed to be within the length of the reader,
      * or -1 if the reader itself has a length of zero.
-     *
+     * <p>
+     * It is constructed to avoid determining the overall length of the reader,
+     * except as a last resort.  This is to be as stream-friendly as possible
+     * while guaranteeing that the position returned is within the reader (unless
+     * the reader itself has a length of zero, in which case -1 will be returned).
+     * <p>
+     * It achieves this function by trying to read data from the position given
+     * (adjusted to be zero if the position was negative).  If there is data there,
+     * then the position is returned.  If there is no data at that position, then
+     * the position is beyond the length of the data, hence the last position
+     * is returned (length - 1).  If this is a stream, then the act of determining
+     * that the position has no data has already read in the entire stream, so 
+     * accessing the length at this point makes no difference, as all that data
+     * would have to be loaded anyway in order to operate at the extreme end of
+     * the stream.
+     * 
      * @param reader The reader to acquire a valid position for.
      * @param position The position to try.
      * @return A position guaranteed to be a valid position in the reader, or -1 

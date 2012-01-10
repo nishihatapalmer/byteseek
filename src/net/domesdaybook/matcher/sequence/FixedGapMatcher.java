@@ -27,7 +27,6 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.matcher.sequence;
@@ -45,8 +44,7 @@ import net.domesdaybook.reader.Reader;
 public final class FixedGapMatcher implements SequenceMatcher {
 
     private static final SingleByteMatcher ANY_MATCHER = new AnyMatcher();
-
-    private final int gapLength;
+    private final int length;
 
    
     /**
@@ -59,7 +57,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
         if (gapLength < 1) {
             throw new IllegalArgumentException("FixedGapMatcher requires a gap greater than zero.");
         }
-        this.gapLength = gapLength;
+        this.length = gapLength;
     }
 
 
@@ -67,9 +65,9 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(final int position) {
-        if (position < 0 || position >= gapLength) {
-            final String message = String.format("Position %d out of bounds, length is %d", position, gapLength);
+    public SingleByteMatcher getMatcherForPosition(final int position) {
+        if (position < 0 || position >= length) {
+            final String message = String.format("Position %d out of bounds, length is %d", position, length);
             throw new IndexOutOfBoundsException(message);
         }
         return ANY_MATCHER;
@@ -81,7 +79,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public int length() {
-        return gapLength;
+        return length;
     }
 
 
@@ -90,7 +88,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return prettyPrint ? String.format(" .{%d} ", gapLength) : String.format(".{%d}", gapLength);
+        return prettyPrint ? String.format(" .{%d} ", length) : String.format(".{%d}", length);
     }
 
 
@@ -100,7 +98,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
     @Override
     public boolean matches(final Reader reader, final long matchPosition) throws IOException {
         return reader.getWindow(matchPosition) != null && 
-               reader.getWindow(matchPosition + gapLength) != null;
+               reader.getWindow(matchPosition + length - 1) != null;
     }
     
 
@@ -109,7 +107,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        return matchPosition + gapLength < bytes.length && matchPosition >= 0;
+        return matchPosition + length < bytes.length && matchPosition >= 0;
     }    
 
     
@@ -128,6 +126,37 @@ public final class FixedGapMatcher implements SequenceMatcher {
     @Override    
     public FixedGapMatcher reverse() {
         return this;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SequenceMatcher subsequence(int beginIndex, int endIndex) {
+       if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
+            final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
+            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
+        }
+        if (endIndex - beginIndex == 1) {
+            return ANY_MATCHER;
+        }
+        return new FixedGapMatcher(endIndex - beginIndex);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SequenceMatcher repeat(int numberOfRepeats) {
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        if (numberOfRepeats == 1) {
+            return this;
+        }        
+        return new FixedGapMatcher(length * numberOfRepeats);
     }
 
 }

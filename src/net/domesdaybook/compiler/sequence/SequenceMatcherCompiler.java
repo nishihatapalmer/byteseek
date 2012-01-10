@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -28,7 +27,6 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.compiler.sequence;
@@ -44,9 +42,8 @@ import net.domesdaybook.parser.ParseUtils;
 import net.domesdaybook.parser.regularExpressionParser;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
-import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
+import net.domesdaybook.matcher.sequence.SequenceOfSequencesMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
@@ -168,7 +165,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
         for (final String expression : expressions) {
             matchers.add(compile(expression));
         }
-        return new CombinedSequenceMatcher(matchers);
+        return new SequenceOfSequencesMatcher(matchers);
     }    
 
 
@@ -217,7 +214,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
                         case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            final String str = ParseUtils.trimString(child.getText());
+                            final String str = ParseUtils.unquoteString(child.getText());
                             for (int charIndex = 0, end = str.length(); charIndex < end; charIndex++) {
                                 final byte byteValue = (byte) str.charAt(charIndex);
                                 byteValuesToJoin.add((byte) byteValue);
@@ -291,17 +288,16 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
                         case (regularExpressionParser.REPEAT): {
                             SequenceMatcher sequence = getFixedRepeatMatcher(child);
-                            if (sequence instanceof ByteSequenceMatcher ||
-                                sequence instanceof CaseSensitiveStringMatcher) {
+                            if (sequence instanceof ByteSequenceMatcher) {
                                 addCollectedSingleByteMatchers(singleByteSequence, sequences);
                                 for (int position = 0; position < sequence.length(); position++) {
-                                    final byte value = sequence.getByteMatcherForPosition(position).getMatchingBytes()[0];
+                                    final byte value = sequence.getMatcherForPosition(position).getMatchingBytes()[0];
                                     byteValuesToJoin.add(value);
                                 }
                             } else if (sequence instanceof SingleByteSequenceMatcher) {
                                 addCollectedByteValues(byteValuesToJoin, sequences);
                                 for (int position = 0; position < sequence.length(); position++) {
-                                    final SingleByteMatcher aMatcher = sequence.getByteMatcherForPosition(position);
+                                    final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(position);
                                     singleByteSequence.add(aMatcher);
                                 }
                             } else {
@@ -330,7 +326,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                 // of different sequence matchers:
                 matcher = sequences.size() == 1
                         ? sequences.get(0)
-                        : new CombinedSequenceMatcher(sequences);
+                        : new SequenceOfSequencesMatcher(sequences);
                 break;
             }
 
@@ -381,14 +377,14 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = ParseUtils.trimString(ast.getText());
-                matcher = new CaseSensitiveStringMatcher(str);
+                final String str = ParseUtils.unquoteString(ast.getText());
+                matcher = new ByteSequenceMatcher(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = ParseUtils.trimString(ast.getText());
+                final String str = ParseUtils.unquoteString(ast.getText());
                 matcher = new CaseInsensitiveStringMatcher(str);
                 break;
             }
@@ -422,7 +418,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
     
     private SequenceMatcher getCaseInsensitiveStringMatcher(final CommonTree ast) {
-        final String str = ParseUtils.trimString(ast.getText());
+        final String str = ParseUtils.unquoteString(ast.getText());
         return new CaseInsensitiveStringMatcher(str);
     }
 
@@ -439,60 +435,14 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     }
 
 
-    private SingleByteMatcher getSetMatcher(final CommonTree ast, final boolean negated) throws ParseException {
+    private SingleByteMatcher getSetMatcher(final CommonTree ast, final boolean inverted) throws ParseException {
         final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-        return matcherFactory.create(byteSet, negated);
+        return matcherFactory.create(byteSet, inverted);
     }
 
     
     private SingleByteMatcher getAnyByteMatcher(final CommonTree ast) {
         return new AnyMatcher();
-    }
-
-    
-    //REVIEW: method of creating repeated sequences and fixed repeats.
-    //        does it work for single byte matchers?  Use of instanceof is
-    //        ugly and not easily extensible.
-    
-    //TODO: use of instanceof not very extensible.
-    //      should sequence matchers have a repeated() interface to allow construction
-    //      of repeated sequences of themselves?
-    private SequenceMatcher getRepeatedSequence(final SequenceMatcher sequence, final int numberOfRepeats) {
-        
-        if (sequence instanceof ByteSequenceMatcher) {
-            final List<ByteSequenceMatcher> byteSequences = new ArrayList<ByteSequenceMatcher>(numberOfRepeats);
-            for (int count = 0; count < numberOfRepeats; count++) {
-                byteSequences.add((ByteSequenceMatcher) sequence);
-            }
-            return new ByteSequenceMatcher(byteSequences);
-        } else if (sequence instanceof CaseInsensitiveStringMatcher) {
-            final StringBuilder builder = new StringBuilder();
-            for (int count = 0; count < numberOfRepeats; count++) {
-                builder.append(((CaseInsensitiveStringMatcher) sequence).getCaseInsensitiveString());
-            }
-            return new CaseSensitiveStringMatcher(builder.toString());
-        } else if (sequence instanceof CaseSensitiveStringMatcher) {
-            final StringBuilder builder = new StringBuilder();
-            for (int count = 0; count < numberOfRepeats; count++) {
-                builder.append(((CaseSensitiveStringMatcher) sequence).getCaseSensitiveString());
-            }
-            return new CaseSensitiveStringMatcher(builder.toString());
-        } else if (sequence instanceof CombinedSequenceMatcher) {
-            final CombinedSequenceMatcher combined = (CombinedSequenceMatcher) sequence;
-            final List<SequenceMatcher> internalMatchers = combined.getMatchers();
-            int numberOfMatchers = numberOfRepeats * internalMatchers.size();
-            final List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfMatchers);
-            for (int count = 0; count < numberOfRepeats; count++) {
-                repeats.addAll(internalMatchers);
-            }
-            return new CombinedSequenceMatcher(repeats);
-        } else {
-            final List<SequenceMatcher> repeats = new ArrayList<SequenceMatcher>(numberOfRepeats);
-            for (int count = 0; count < numberOfRepeats; count++) {
-                repeats.add(sequence);
-            }
-            return new CombinedSequenceMatcher(repeats);
-        }
     }
 
 
@@ -540,21 +490,21 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                 }
 
                 case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                    final String str = ParseUtils.trimString(repeatedNode.getText());
-                    matcher = new CaseSensitiveStringMatcher(str, maxRepeat);
+                    final String str = ParseUtils.unquoteString(repeatedNode.getText());
+                    matcher = new ByteSequenceMatcher(repeatString(str, maxRepeat));
                     break;
                 }
 
 
                 case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                    final String str = ParseUtils.trimString(repeatedNode.getText());
+                    final String str = ParseUtils.unquoteString(repeatedNode.getText());
                     matcher = new CaseInsensitiveStringMatcher(str, maxRepeat);
                     break;
                 }
 
 
                 case (regularExpressionParser.SEQUENCE): {
-                    matcher = getRepeatedSequence(buildSequence(repeatedNode), maxRepeat);
+                    matcher = buildSequence(repeatedNode).repeat(maxRepeat);
                     break;
                 }
 
@@ -569,5 +519,16 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
         }
     }
 
+    
+    private String repeatString(final String stringToRepeat, final int numberToRepeat) {
+        if (numberToRepeat == 1) {
+            return stringToRepeat;
+        }
+        final StringBuilder builder = new StringBuilder(stringToRepeat.length() * numberToRepeat);
+        for (int count = 0; count < numberToRepeat; count++) {
+            builder.append(stringToRepeat);
+        }
+        return builder.toString();
+    }        
 
 }

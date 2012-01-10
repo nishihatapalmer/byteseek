@@ -34,45 +34,31 @@
  */
 
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.object;
+
+import java.util.Map;
 
 /**
- * An abstract base class for SingleByteMatchers which can invert
- * the bytes the SingleByteMatcher is provided with.  For example,
- * if a SingleByteMatcher had a rule to match all the odd bytes, but
- * it was inverted, it would match all the even bytes.
+ * DeepCopy
  *
- * When extending this base class, careful attention must be paid to
- * the other interface methods, in particular getNumberOfMatchingBytes() and
- * getMatchingBytes(), as it is easy to forget to invert the number and set
- * of bytes returned by those methods, if the instance happens to be inverted.
+ * An interface for deep copying of objects.
+ * <p>
+ * Each object implementing this  interface must return a deep copy of itself
+ * and any child objects that also implement the DeepCopy interface.
+ * <p>
+ * It requires an initially empty map of old to new objects to be passed in.
+ * This is forwarded to other child objects implementing DeepCopy, in order that
+ * only one copy of the same object is ever created.
  *
  * @author Matt Palmer
  */
-public abstract class InvertibleMatcher extends AbstractSingleByteMatcher {
-
-    public static final boolean INVERTED = true;
-    public static final boolean NOT_INVERTED = false;
-    
-    protected final boolean inverted;
-
-    
-    /**
-     * Constructs an InvertibleMatcher.
-     * 
-     * @param inverted Whether the matcher bytes are inverted or not.
-     */
-    public InvertibleMatcher(final boolean inverted) {
-        this.inverted = inverted;
-    }
-
+public interface DeepCopy {
 
     /**
+     * deepCopy returns a deep copy of the object implementing this interface.
      *
-     * @return Whether the matcher bytes are inverted or not.
+     * @param oldToNewObjects a map of old objects to their copies.
+     * @return DeepCopy a deep copy of the object implementing this interface.
      */
-    public final boolean isInverted() {
-        return inverted;
-    }
-
+    DeepCopy deepCopy(final Map<DeepCopy,DeepCopy> oldToNewObjects);
 }

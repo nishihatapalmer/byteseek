@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -17,8 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  * 
- *  
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -30,14 +27,14 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
-
 
 package net.domesdaybook.matcher.singlebyte;
 
 import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.matcher.sequence.FixedGapMatcher;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 
 /**
@@ -45,7 +42,7 @@ import net.domesdaybook.reader.Reader;
  *
  * @author Matt Palmer
  */
-public final class AnyMatcher extends AbstractSingleByteSequence {
+public final class AnyMatcher extends AbstractSingleByteMatcher {
 
     // A static 256-element array containing all the bytes.
     private static final byte[] ALL_BYTES =  ByteUtilities.getAllByteValues();
@@ -128,6 +125,22 @@ public final class AnyMatcher extends AbstractSingleByteSequence {
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return true;
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     *
+     * Returns a FixedGapMatcher as long as the number of repeats.
+     */     
+    public SequenceMatcher repeat(int numberOfRepeats) {
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        if (numberOfRepeats == 1) {
+            return this;
+        }           
+        return new FixedGapMatcher(numberOfRepeats);
     }
 
 }

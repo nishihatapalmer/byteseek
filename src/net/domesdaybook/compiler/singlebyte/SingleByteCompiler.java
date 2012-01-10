@@ -277,7 +277,7 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = ParseUtils.trimString(ast.getText());
+                final String str = ParseUtils.unquoteString(ast.getText());
                 if (str.length() != 1) {
                     throw new ParseException("String must be one character to parse into a single byte matcher.");
                 }
@@ -288,7 +288,7 @@ public final class SingleByteCompiler extends AbstractAstCompiler<SingleByteMatc
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = ParseUtils.trimString(ast.getText());
+                final String str = ParseUtils.unquoteString(ast.getText());
                 if (str.length() != 1) {
                     throw new ParseException("String must be one character to parse into a single byte matcher.");
                 }

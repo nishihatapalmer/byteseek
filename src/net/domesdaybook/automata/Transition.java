@@ -33,7 +33,7 @@
 package net.domesdaybook.automata;
 
 import java.util.Map;
-import net.domesdaybook.object.copy.DeepCopy;
+import net.domesdaybook.object.DeepCopy;
 
 /**
  * A Transition is a link to a {@link State} which can be followed 

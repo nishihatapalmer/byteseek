@@ -32,12 +32,12 @@
 
 package net.domesdaybook.searcher.sequence;
 
+import net.domesdaybook.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Reader;
-import net.domesdaybook.searcher.ShiftInfo;
 
 /**
  *
@@ -46,7 +46,7 @@ import net.domesdaybook.searcher.ShiftInfo;
 public final class SundayQuickSearcher extends AbstractSequenceSearcher {
 
     
-    private final ShiftInfo shiftInfo;
+    private final LazyObject shiftInfo;
 
     /**
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
@@ -65,11 +65,11 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      * @throws IOException 
      */
     @Override
-    public final long searchForwardsReader(final Reader reader, 
+    public final long doSearchForwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get the objects needed to search:
-        final int[] safeShifts = shiftInfo.getForwardShifts();
+        final int[] safeShifts = shiftInfo.get();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -106,7 +106,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get the objects needed to search:
-        final int[] safeShifts = shiftInfo.getForwardShifts();
+        final int[] safeShifts = shiftInfo.get();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -140,11 +140,11 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      * @throws IOException 
      */
     @Override
-    public final long searchBackwardsReader(final Reader reader, 
+    public final long doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get objects needed to search:
-        final int[] safeShifts = shiftInfo.getBackwardShifts();
+        final int[] safeShifts = shiftInfo.getBackwardInfo();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -178,7 +178,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get objects needed to search:
-        final int[] safeShifts = shiftInfo.getBackwardShifts();
+        final int[] safeShifts = shiftInfo.getBackwardInfo();
         final SequenceMatcher theMatcher = getMatcher();
         
         // Calculate safe bounds for the search:
@@ -207,18 +207,18 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
 
     @Override
     public void prepareForwards() {
-        shiftInfo.getForwardShifts();
+        shiftInfo.get();
     }
 
     
     @Override
     public void prepareBackwards() {
-        shiftInfo.getBackwardShifts();
+        shiftInfo.getBackwardInfo();
     }
 
   
     
-    private class SundayShiftInfo extends ShiftInfo {
+    private class SundayShiftInfo extends LazyObject {
 
         public SundayShiftInfo() {
         }
@@ -230,7 +230,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
          * the shortest distance it appears from the end of the matcher.
          */
         @Override
-        protected int[] createForwardShifts() {
+        protected int[] create() {
             // First set the default shift to the length of the sequence plus one.
             final int[] shifts = new int[256];
             final SequenceMatcher theMatcher = getMatcher();
@@ -242,7 +242,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // from the end of the sequence, where the last position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
             for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes; sequenceByteIndex++) {
-                final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
+                final SingleByteMatcher aMatcher = theMatcher.getMatcherForPosition(sequenceByteIndex);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromEnd = numBytes - sequenceByteIndex;
                 for (final byte b : matchingBytes) {
@@ -261,7 +261,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
          * the shortest distance it appears from the beginning of the matcher.
          */        
         @Override
-        protected int[] createBackwardShifts() {
+        protected int[] createBackwardInfo() {
             // First set the default shift to the length of the sequence
             // (negative if search direction is reversed)
             final int[] shifts = new int[256];
@@ -274,7 +274,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // from the start of the sequence, where the first position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
             for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex++) {
-                final SingleByteMatcher aMatcher = theMatcher.getByteMatcherForPosition(sequenceByteIndex);
+                final SingleByteMatcher aMatcher = theMatcher.getMatcherForPosition(sequenceByteIndex);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromStart = sequenceByteIndex + 1;
                 for (final byte b : matchingBytes) {

@@ -27,7 +27,6 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.searcher.matcher;
@@ -43,17 +42,23 @@ import net.domesdaybook.searcher.AbstractSearcher;
  * A Searcher which looks for an underlying {@link Matcher} in the simplest manner
  * possible: by trying to match at every possible position until a match is 
  * found or not.
- * <p/>
+ * <p>
  * The performance of this Searcher is generally poor (although it may compare
  * favorably for very short searches due to its essential simplicity).
  * Combining this search with a fast multi-sequence matcher, for example, 
  * a {@link TrieMatcher} may perform reasonably well where there are a very large
  * number of sequences to find, or if there are very short sequences to match 
  * (which can limit the advantage of more sophisticated shift-based searchers).
- * <p/>
+ * <p>
  * It can search for any matcher at all, with no knowledge of its implementation,
  * but consequently is less optimal than a searcher designed for a specific
- * type of matcher.
+ * type of matcher, which can exploit knowledge of the structure of the matcher 
+ * to search more efficiently.
+ * <p>
+ * Thread safety: this class is immutable, so it is safe to use this
+ * searcher in multiple threads simultaneously. However, note that {@link Reader}
+ * implementations passed in to search methods may not be thread-safe.  If byte
+ * arrays are being searched, they must not be modified during searching.
  * 
  * @author Matt Palmer
  */
@@ -61,6 +66,12 @@ public final class MatcherSearcher extends AbstractSearcher {
 
     private final Matcher matcher;
     
+    /**
+     * Constructor for a MatcherSearcher, taking the matcher to be searched for
+     * as a parameter.
+     * 
+     * @param matcher The Matcher to search for.
+     */
     MatcherSearcher(final Matcher matcher) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to MatcherSearcher.");
@@ -102,8 +113,8 @@ public final class MatcherSearcher extends AbstractSearcher {
         while (window != null) {
             
             // Calculate search bounds for searching in this window:
-            final int searchSpace = window.length() - reader.getWindowOffset(currentPosition);
-            final long windowEndPosition = currentPosition + searchSpace - 1;
+            final int windowSpace = window.length() - reader.getWindowOffset(currentPosition);
+            final long windowEndPosition = currentPosition + windowSpace - 1;
             final long searchEndPosition = toPosition < windowEndPosition?
                                            toPosition : windowEndPosition;
             
@@ -142,10 +153,10 @@ public final class MatcherSearcher extends AbstractSearcher {
         final int arrayEndPosition = bytes.length - 1;
         final int searchEndPosition = toPosition < arrayEndPosition? 
                                       toPosition : arrayEndPosition;
+        int currentPosition = fromPosition > 0?
+                              fromPosition : 0;           
         
         // Search forwards:
-        int currentPosition = fromPosition > 0?
-                              fromPosition : 0;        
         while (currentPosition <= searchEndPosition) {
             if (theMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
@@ -155,37 +166,47 @@ public final class MatcherSearcher extends AbstractSearcher {
         return NOT_FOUND;
     }
   
- 
-    
-    //REVIEW:
-    
-    // is this vulnerable to fromPosition being smaller than toPosition?
-    // is the same true in reverse for searchForwards?
-  
-    
+   
     /**
-     * @throws IOException 
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public long searchBackwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
-        final Matcher localMatcher = matcher;
-        final long upToPosition = toPosition > 0? 
-                                  toPosition : 0;
+        
+        // Use a local reference to the matcher for performance reasons:
+        final Matcher theMatcher = matcher;
+        
+        // Initialise search:
+        final long endSearchPosition = toPosition > 0? 
+                                       toPosition : 0;
         long currentPosition = withinLength(reader, fromPosition);
         Window window = reader.getWindow(currentPosition);
+        
+        // While there is data to search in:
         while (window != null) {
-            final int availableSpace = reader.getWindowOffset(currentPosition);
-            final long startWindowPosition = currentPosition - availableSpace;
-            final long finalPosition = startWindowPosition > upToPosition?
-                                       startWindowPosition : upToPosition;
-            while (currentPosition >= finalPosition) {
-                if (localMatcher.matches(reader, currentPosition)) {
+            
+            // Calculate search bounds for searching in this window:
+            final long windowStartPosition = window.getWindowPosition();
+            final long windowEndSearchPosition = windowStartPosition > endSearchPosition?
+                                                 windowStartPosition : endSearchPosition;
+            
+            // Search backwards in this window:
+            while (currentPosition >= windowEndSearchPosition) {
+                if (theMatcher.matches(reader, currentPosition)) {
                     return currentPosition;
                 }
                 currentPosition--;
             }
+            
+            // Did we finish the search?  If the final "to" position is within 
+            // the current window and we didn't find anything, then we are finished.
+            if (endSearchPosition >= windowStartPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Otherwise, get the next window.
+            // The currentPosition is guaranteed to be in the next window by now.            
             window = reader.getWindow(currentPosition);
         }
         return NOT_FOUND;
@@ -193,18 +214,24 @@ public final class MatcherSearcher extends AbstractSearcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final Matcher localMatcher = matcher;
+        
+        // Use a local reference to the matcher for performance reasons:
+        final Matcher theMatcher = matcher;
+        
+        // Initialise search:
         final int lastPossiblePosition = bytes.length - 1;
-        final int upToPosition = toPosition > 0? 
-                                 toPosition : 0;
+        final int searchEndPosition = toPosition > 0? 
+                                      toPosition : 0;
         int currentPosition = fromPosition < lastPossiblePosition? 
                               fromPosition : lastPossiblePosition;
-        while (currentPosition >= upToPosition) {
-            if (localMatcher.matches(bytes, currentPosition)) {
+        
+        // Search backwards:
+        while (currentPosition >= searchEndPosition) {
+            if (theMatcher.matches(bytes, currentPosition)) {
                 return currentPosition;
             }
             currentPosition--;
@@ -214,7 +241,7 @@ public final class MatcherSearcher extends AbstractSearcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void prepareForwards() {
@@ -223,7 +250,7 @@ public final class MatcherSearcher extends AbstractSearcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void prepareBackwards() {

@@ -33,7 +33,7 @@
 package net.domesdaybook.automata;
 
 import java.util.Collection;
-import net.domesdaybook.object.copy.DeepCopy;
+import net.domesdaybook.object.DeepCopy;
 import java.util.List;
 import java.util.Map;
 

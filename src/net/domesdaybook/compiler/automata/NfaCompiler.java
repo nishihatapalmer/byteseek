@@ -260,14 +260,14 @@ public final class NfaCompiler extends AbstractAstCompiler<State> {
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = ParseUtils.trimString(ast.getText());
+                final String str = ParseUtils.unquoteString(ast.getText());
                 states = stateWrapperBuilder.buildCaseSensitiveStringStates(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = ParseUtils.trimString(ast.getText());
+                final String str = ParseUtils.unquoteString(ast.getText());
                 states = stateWrapperBuilder.buildCaseInsensitiveStringStates(str);
                 break;
             }

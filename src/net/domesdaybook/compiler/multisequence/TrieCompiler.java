@@ -224,7 +224,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie<SequenceMatch
         currentStates.add(initialState);
         final int lastPosition = sequence.length() - 1;
         for (int position = 0; position <= lastPosition; position++) {
-            final SingleByteMatcher byteMatcher = sequence.getByteMatcherForPosition(position);
+            final SingleByteMatcher byteMatcher = sequence.getMatcherForPosition(position);
             currentStates = nextStates(currentStates, byteMatcher, position == lastPosition);
         }
         for (final State<SequenceMatcher> finalState : currentStates) {
@@ -239,7 +239,7 @@ public final class TrieCompiler implements ReversibleCompiler<Trie<SequenceMatch
         currentStates.add(initialState);
         final int lastPosition = sequence.length() - 1;
         for (int position = lastPosition; position >= 0; position--) {
-            final SingleByteMatcher byteMatcher = sequence.getByteMatcherForPosition(position);
+            final SingleByteMatcher byteMatcher = sequence.getMatcherForPosition(position);
             currentStates = nextStates(currentStates, byteMatcher, position == 0);
         }
         for (final State<SequenceMatcher> finalState : currentStates) {

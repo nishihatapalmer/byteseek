@@ -26,8 +26,6 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.searcher.sequence;
@@ -38,10 +36,21 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
 /**
- * SequenceSearcher searches for a sequence by trying for a match in each position.
+ * SequenceMatcherSearcher searches for a sequence by trying for a match in each position.
  * In its worst case, where no match is found, if the sequence is m bytes long,
- * and the bytes being searched are n bytes long, it will take O(n * m) to
+ * and the bytes being searched are n bytes long, it can take O(n * m) to
  * determine there is no match.
+ * <p>
+ * The algorithm used by this search is exactly the same as that used for the
+ * {@link MatcherSearcher} searcher.  However, since we know that we are looking for
+ * a sequence with a defined length, the search can be more efficiently partitioned
+ * between searching directly in byte arrays when the sequence fits, only using
+ * the less efficient reader interface when the sequence crosses over windows.
+ * <p>
+ * Thread safety: this class is immutable, so it is safe to use this
+ * searcher in multiple threads simultaneously. However, note that {@link Reader}
+ * implementations passed in to search methods may not be thread-safe.  If byte
+ * arrays are being searched, they must not be modified during searching.
  *
  * @author Matt Palmer
  */
@@ -49,8 +58,9 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
 
 
     /**
+     * Constructs a SequenceMatcherSearcher given a {@link SequenceMatcher}.
      * 
-     * @param sequence
+     * @param sequence The SequenceMatcher to search for.
      */
     public SequenceMatcherSearcher(final SequenceMatcher sequence) {
         super(sequence);
@@ -59,114 +69,143 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
 
     /**
      * {@inheritDoc}
-     * @throws IOException 
-     */
-    @Override
-    public final long searchForwards(final Reader reader, final long fromPosition, 
-            final long toPosition) throws IOException {
-        final SequenceMatcher pattern = matcher;  
-        long currentPosition = fromPosition > 0? fromPosition : 0;
-        Window window = reader.getWindow(currentPosition);
-        while (window != null) {
-            final byte[] array = window.getArray();
-            
-            
-            
-            final int availableSpace = window.length() - reader.getWindowOffset(currentPosition);
-            final long endWindowPosition = currentPosition + availableSpace;
-            final long lastPosition = endWindowPosition < toPosition?
-                                      endWindowPosition : toPosition;
-            while (currentPosition <= lastPosition) {
-                if (pattern.matches(reader, currentPosition)) {
-                    return currentPosition;
-                }
-                currentPosition++;
-            }
-            window = reader.getWindow(currentPosition);
-        }
-        return NOT_FOUND;
-    }
-    
-    
-    /**
-     * {@inheritDoc}
      */    
     @Override
-    public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
-        // Get objects needed for the search:
-        final SequenceMatcher theMatcher = getMatcher();
+    public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        // Initialise:
+        final SequenceMatcher sequence = matcher;
         
         // Calculate safe bounds for the search:
-        final int lastPossiblePosition = bytes.length - theMatcher.length();
+        final int lastPossiblePosition = bytes.length - sequence.length();
         final int lastPosition = toPosition < lastPossiblePosition?
-                toPosition : lastPossiblePosition;
-        int searchPosition = fromPosition < 0? 0 : fromPosition;        
+                                 toPosition : lastPossiblePosition;
+        int searchPosition = fromPosition > 0?
+                             fromPosition : 0;
         
         // Search forwards
         while (searchPosition <= lastPosition) {
-            if (theMatcher.matchesNoBoundsCheck(bytes, searchPosition)) {
+            if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
             searchPosition++;
         }
         return NOT_FOUND;    
     }    
-
+    
     
     /**
      * {@inheritDoc}
-     * @throws IOException 
      */
     @Override
-    public final long searchBackwards(final Reader reader, final long fromPosition, 
+    public long doSearchForwards(final Reader reader, final long fromPosition, 
             final long toPosition) throws IOException {
-        // Get objects needed for the search:
-        final SequenceMatcher theMatcher = getMatcher();
+        // Initialise:
+        final SequenceMatcher sequence = matcher;  
+        long searchPosition = fromPosition > 0? 
+                              fromPosition : 0;
         
-        // Calculate safe bounds for the search:
-        final long lastPosition = toPosition < 0? 0 : toPosition;        
-        final long firstPossiblePosition = reader.length() - theMatcher.length();
-        long searchPosition = fromPosition < firstPossiblePosition?
-                fromPosition : firstPossiblePosition;
-        
-        // Search backwards:
-        while (searchPosition >= lastPosition) {
-            if (theMatcher.matchesNoBoundsCheck(reader, searchPosition)) {
-                return searchPosition;
+        // While there is data still to search in:
+        Window window = reader.getWindow(searchPosition);
+        while (window != null && searchPosition <= toPosition) {
+
+            // Calculate bounds for searching over this window:
+            final int availableSpace = window.length() - reader.getWindowOffset(searchPosition);
+            final long endWindowPosition = searchPosition + availableSpace;
+            final long lastPosition = endWindowPosition < toPosition?
+                                      endWindowPosition : toPosition;
+            
+            // Search forwards up to the end of this window:
+            while (searchPosition <= lastPosition) {
+                if (sequence.matches(reader, searchPosition)) {
+                    return searchPosition;
+                }
+                searchPosition++;
             }
-            searchPosition--;
+            
+            // Did we pass the end of the search space?
+            if (toPosition <= endWindowPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Get the next window to search across.
+            // The search position is guaranteed to be in the next window now.
+            window = reader.getWindow(searchPosition);
         }
         return NOT_FOUND;
     }
-
-
+    
+   
     /**
      * {@inheritDoc}
      */
     @Override
-    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
-        // Get objects needed for the search:
-        final SequenceMatcher theMatcher = getMatcher();
+    public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        // Initialise:
+        final SequenceMatcher sequence = matcher;
         
         // Calculate safe bounds for the search:
-        final int lastPosition = toPosition < 0? 0 : toPosition;
-        final int firstPossiblePosition = bytes.length - theMatcher.length();
+        final int lastPosition = toPosition > 0?
+                                 toPosition : 0;
+        final int firstPossiblePosition = bytes.length - sequence.length();
         int searchPosition = fromPosition < firstPossiblePosition?
-                fromPosition : firstPossiblePosition;
+                             fromPosition : firstPossiblePosition;
         
         // Search backwards:
         while (searchPosition >= lastPosition) {
-            if (theMatcher.matchesNoBoundsCheck(bytes, searchPosition)) {
+            if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
             searchPosition--;
         }
         return NOT_FOUND;
     }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long doSearchBackwards(final Reader reader, final long fromPosition, 
+            final long toPosition) throws IOException {
+        // Initialise:
+        final SequenceMatcher sequence = matcher;
+        long searchPosition = withinLength(reader, fromPosition);
+        Window window = reader.getWindow(searchPosition);
+        
+        // While there is data to search in:
+        while (window != null && searchPosition >= toPosition) {
+            
+            // Calculate bounds for searching back across this window:
+            final long windowStartPosition = window.getWindowPosition();
+            final long lastSearchPosition = toPosition > windowStartPosition?
+                                            toPosition : windowStartPosition;
+            
+            // Search backwards:
+            while (searchPosition >= lastSearchPosition) {
+                if (sequence.matches(reader, searchPosition)) {
+                    return searchPosition;
+                }
+                searchPosition--;
+            }
+            
+            // Did we pass the last search position?
+            if (toPosition >= windowStartPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Get the next window to search in.
+            // The search position is guaranteed to be in the next window now.
+            window = reader.getWindow(searchPosition);
+        }
+        return NOT_FOUND;
+    }
+
+
+
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void prepareForwards() {
@@ -175,7 +214,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void prepareBackwards() {

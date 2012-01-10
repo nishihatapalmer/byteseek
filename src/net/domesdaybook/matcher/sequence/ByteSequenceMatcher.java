@@ -27,13 +27,13 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 
 package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -67,10 +67,10 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("Null or empty byte array passed in to ByteSequenceMatcher");
         }
         this.byteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
-        length = byteArray.length;
+        this.length = byteArray.length;     
     }
 
-
+    
     /**
      * Constructs an immutable byte sequence matcher from a collection of Bytes.
      *
@@ -81,11 +81,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         if (byteList == null || byteList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty byte list passed in to ByteSequenceMatcher.");
         }
-        this.byteArray = new byte[byteList.size()];
-        int index = 0;
-        for (final Byte b : byteList) {
-            this.byteArray[index++] = b;
-        }
+        this.byteArray = ByteUtilities.toArray(byteList);
         length = byteArray.length;
     }
 
@@ -140,10 +136,59 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * @param byteValue The byte to match.
      */
     public ByteSequenceMatcher(final byte byteValue) {
-        this.byteArray = new byte[] {byteValue};
-        length = 1;
+        this(byteValue, 1);
     }
 
+    
+    
+    /**
+     * Constructs an immutable ByteSequenceMatcher from a string, encoding the
+     * bytes of the string using the system default Charset.
+     * 
+     * @param string The string whose bytes will be matched.
+     */
+    public ByteSequenceMatcher(final String string) {
+        this(string, Charset.defaultCharset());
+    }
+    
+
+    /**
+     * Constructs an immutable ByteSequenceMatcher from a repeated string, 
+     * encoding the bytes of the string using the default Charset.
+     * 
+     * @param string
+     * @param charsetName
+     * @param numberOfRepeats 
+     * @throws UnsupportedCharsetException
+     *         If no support for the named charset is available
+     *         in this instance of the Java virtual machine
+     */
+    public ByteSequenceMatcher(final String string, final String charsetName) {
+        this(string, Charset.forName(charsetName));
+    }
+    
+    
+    /**
+     * Constructs a ByteSequenceMatcher from a string and a Charset to use
+     * to encode the bytes in the string.
+     * 
+     * @param string The string whose bytes will be matched
+     * @param charset The charset to encode the strings bytes in.
+     * @param numberOfRepeats the number of times to repeat the string.
+     * @throws IllegalArgumentException if the string is null or empty, or the
+     *         Charset is null, or the numberOfRepeats is less than one.
+     */
+    public ByteSequenceMatcher(final String string, final Charset charset) {
+        if (string == null || string.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty string passed in to ByteSequenceMatcher constructor");
+        }
+        if (charset == null) {
+            throw new IllegalArgumentException("Null charset passed in to ByteSequenceMatcher constructor.");
+        }
+        this.byteArray = string.getBytes(charset);
+        this.length = byteArray.length;
+    }
+    
     
     /**
      * {@inheritDoc}
@@ -166,9 +211,8 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
             }
             if (checkPos == localLength) {
                 return true;
-            } else {
-                window = reader.getWindow(matchPosition + checkPos);
             }
+            window = reader.getWindow(matchPosition + checkPos);
         }
         return false;
     }
@@ -179,11 +223,11 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        final int localLength = length;
-        if (matchPosition + localLength <= bytes.length && matchPosition >= 0) {
+        if (matchPosition + length <= bytes.length && matchPosition >= 0) {
+            int position = matchPosition;
             final byte[] localArray = byteArray;
-            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                if (localArray[byteIndex] != bytes[matchPosition + byteIndex]) {
+            for (final byte value : localArray) {
+                if (value != bytes[position++]) {
                     return false;
                 }
             }
@@ -198,10 +242,10 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
-        final int localLength = length;
-        final byte[] localArray = byteArray;
-        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-            if (localArray[byteIndex] != bytes[matchPosition + byteIndex]) {
+        int position = matchPosition;
+        final byte[] localArray = byteArray;        
+        for (final byte value : localArray) {
+            if (value != bytes[position++]) {
                 return false;
             }
         }
@@ -231,7 +275,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(final int position) {
+    public SingleByteMatcher getMatcherForPosition(final int position) {
         return new ByteMatcher(byteArray[position]);
     }
 
@@ -244,6 +288,36 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         final byte[] reverseArray = ByteUtilities.reverseArray(byteArray);
         return new ByteSequenceMatcher(reverseArray);
     }
-    
 
+    
+    /**
+     * {@inheritDoc}
+     */    
+    @Override
+    public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
+        if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
+            final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
+            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
+        }
+        if (endIndex - beginIndex == 1) {
+            return new ByteMatcher(byteArray[beginIndex]);
+        }
+        return new ByteSequenceMatcher(Arrays.copyOfRange(byteArray, beginIndex, endIndex));
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */ 
+    @Override
+    public SequenceMatcher repeat(int numberOfRepeats) {
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        if (numberOfRepeats == 1) {
+            return this;
+        }
+        return new ByteSequenceMatcher(ByteUtilities.repeat(byteArray, numberOfRepeats));
+    }
+    
 }

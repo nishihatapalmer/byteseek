@@ -37,7 +37,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.object.copy.DeepCopy;
+import net.domesdaybook.object.DeepCopy;
 
 /**
  * A simple class which wraps the initial and final states of an automata.

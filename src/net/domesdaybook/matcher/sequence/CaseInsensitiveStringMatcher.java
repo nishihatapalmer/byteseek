@@ -27,12 +27,12 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
+import java.util.Arrays;
 import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
@@ -60,9 +60,37 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         this(caseInsensitiveASCIIString, 1);
     }
 
+    
+    public CaseInsensitiveStringMatcher(final CaseInsensitiveByteMatcher matcher) {
+        this(matcher, 1);
+    }
+    
+    
+    /**
+     * Constructs an immutable CaseInsensitiveStringMatcher from a repeated number
+     * of CaseInsensitiveByteMatchers.
+     * 
+     * @param matcher The CaseInsensitiveByteMatcher to build this matcher from.
+     * @param numberOfRepeats The number of times to repeat the matcher.
+     */
+    public CaseInsensitiveStringMatcher(final CaseInsensitiveByteMatcher matcher, final int numberOfRepeats) {
+        if (matcher == null) {
+            throw new IllegalArgumentException("Null matcher passed in.");
+        }
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        length = numberOfRepeats;
+        caseInsensitiveString = repeat(matcher, length);
+        charMatchList = new SingleByteMatcher[length];
+        for (int charIndex = 0; charIndex < length; charIndex++) {
+            charMatchList[charIndex] = matcher;
+        }
+    }
+    
 
     /**
-     * Constructs an immutable CaseSensitiveStringMatcher from a repeated
+     * Constructs an immutable CaseInsensitiveStringMatcher from a repeated
      * number of ASCII strings.
      *
      * @param caseInsensitiveASCIIString The (repeatable) string to match.
@@ -72,24 +100,15 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         if (caseInsensitiveASCIIString == null || caseInsensitiveASCIIString.isEmpty()) {
             throw new IllegalArgumentException("Null or empty string passed in to CaseInsensitiveStringMatcher.");
         }
+        if (numberToRepeat < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
         caseInsensitiveString = repeatString(caseInsensitiveASCIIString, numberToRepeat);
         length = caseInsensitiveString.length();
         charMatchList = new SingleByteMatcher[length];
         for (int charIndex = 0; charIndex < length; charIndex++) {
             charMatchList[charIndex] = getByteMatcherForChar(caseInsensitiveString.charAt(charIndex));
         }
-    }
-
-
-    private String repeatString(final String stringToRepeat, final int numberToRepeat) {
-        if (numberToRepeat == 1) {
-            return stringToRepeat;
-        }
-        final StringBuilder builder = new StringBuilder();
-        for (int count = 0; count < numberToRepeat; count++) {
-            builder.append(stringToRepeat);
-        }
-        return builder.toString();
     }
 
 
@@ -149,13 +168,11 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        final int localLength = length;
-        if (matchPosition + localLength < bytes.length && matchPosition >= 0) {
-            final SingleByteMatcher[] matchList = charMatchList;
-            for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-                final SingleByteMatcher charMatcher = matchList[byteIndex];
-                final byte theByte = bytes[matchPosition + byteIndex];
-                if (!charMatcher.matches(theByte)) {
+        if (matchPosition + length < bytes.length && matchPosition >= 0) {
+            int position = matchPosition;
+            final SingleByteMatcher[] localList = charMatchList;
+            for (final SingleByteMatcher charMatcher: localList) {
+                if (!charMatcher.matches(bytes[position++])) {
                     return false;
                 }
             }
@@ -171,12 +188,10 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
-        final int localLength = length;
-        final SingleByteMatcher[] matchList = charMatchList;
-        for (int byteIndex = 0; byteIndex < localLength; byteIndex++) {
-            final SingleByteMatcher charMatcher = matchList[byteIndex];
-            final byte theByte = bytes[matchPosition + byteIndex];
-            if (!charMatcher.matches(theByte)) {
+        int position = matchPosition;
+        final SingleByteMatcher[] localList = charMatchList;        
+        for (final SingleByteMatcher charMatcher : localList) {
+            if (!charMatcher.matches(bytes[position++])) {
                 return false;
             }
         }
@@ -188,7 +203,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(final int position) {
+    public SingleByteMatcher getMatcherForPosition(final int position) {
         return charMatchList[position];
     }
 
@@ -214,15 +229,13 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * @return A SingleByteMatcher optimised for the character.
      */
     private SingleByteMatcher getByteMatcherForChar(final char theChar) {
-        SingleByteMatcher result;
         if ((theChar >= 'a' && theChar <= 'z') ||
             (theChar >= 'A' && theChar <= 'Z')) {
-            result = new CaseInsensitiveByteMatcher(theChar);
+            return new CaseInsensitiveByteMatcher(theChar);
         } else {
             //FIXME: if the char is not an ASCII char, this will not be correct.
-            result = new ByteMatcher((byte) theChar);
+            return new ByteMatcher((byte) theChar);
         }
-        return result;
     }
 
     
@@ -231,9 +244,59 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      */
     @Override
     public CaseInsensitiveStringMatcher reverse() {
-        final String reversed = new StringBuffer(caseInsensitiveString).reverse().toString();
+        final String reversed = new StringBuilder(caseInsensitiveString).reverse().toString();
         return new CaseInsensitiveStringMatcher(reversed);
     }
 
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
+        if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
+            final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
+            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
+        }
+        if (endIndex - beginIndex == 1) {
+            return charMatchList[beginIndex];
+        }
+        return new CaseInsensitiveStringMatcher(caseInsensitiveString.substring(beginIndex, endIndex));
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SequenceMatcher repeat(final int numberOfRepeats) {
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        if (numberOfRepeats == 1) {
+            return this;
+        }        
+        return new CaseInsensitiveStringMatcher(repeatString(caseInsensitiveString, numberOfRepeats));
+    }
+
+    
+    private String repeat(CaseInsensitiveByteMatcher matcher, int numberOfRepeats) {
+        final char charToRepeat = (char) matcher.getMatchingBytes()[0];
+        final char[] repeated = new char[numberOfRepeats];
+        Arrays.fill(repeated, charToRepeat);
+        return new String(repeated);
+    }
+    
+
+    private String repeatString(final String stringToRepeat, final int numberToRepeat) {
+        if (numberToRepeat == 1) {
+            return stringToRepeat;
+        }
+        final StringBuilder builder = new StringBuilder(stringToRepeat.length() * numberToRepeat);
+        for (int count = 0; count < numberToRepeat; count++) {
+            builder.append(stringToRepeat);
+        }
+        return builder.toString();
+    }
 
 }

@@ -234,7 +234,7 @@ public class ParseUtils {
 
 
                 case regularExpressionParser.CASE_SENSITIVE_STRING: {
-                    final String stringValue = trimString(childNode.getText());
+                    final String stringValue = unquoteString(childNode.getText());
                     for (int charIndex = 0; charIndex < stringValue.length(); charIndex++ ) {
                         final char charAt = stringValue.charAt(charIndex);
                         setValues.add((byte) charAt);
@@ -244,7 +244,7 @@ public class ParseUtils {
 
 
                 case regularExpressionParser.CASE_INSENSITIVE_STRING: {
-                    final String stringValue = trimString(childNode.getText());
+                    final String stringValue = unquoteString(childNode.getText());
                     for (int charIndex = 0; charIndex < stringValue.length(); charIndex++ ) {
                         final char charAt = stringValue.charAt(charIndex);
                         if (charAt >= 'a' && charAt <= 'z') {
@@ -294,7 +294,7 @@ public class ParseUtils {
      * @param str The string to trim.
      * @return A string without the first and last character.
      */
-    public static String trimString(final String str) {
+    public static String unquoteString(final String str) {
         return str.substring(1, str.length() - 1);
     }
 

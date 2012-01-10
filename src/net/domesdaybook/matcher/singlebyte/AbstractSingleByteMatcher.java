@@ -3,7 +3,6 @@
  * 
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -28,12 +27,12 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.matcher.singlebyte;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
 
 /**
  * A simple abstract base class which implements most of the methods required
@@ -41,7 +40,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
+public abstract class AbstractSingleByteMatcher implements SingleByteMatcher {
     
     /**
      * {@inheritDoc}
@@ -49,7 +48,7 @@ public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
      * Returns this for position 0, or throws an IndexOutOfBoundsException.
      */
     @Override
-    public final SingleByteMatcher getByteMatcherForPosition(final int position) {
+    public final SingleByteMatcher getMatcherForPosition(final int position) {
         if (position != 0) {
             throw new IndexOutOfBoundsException("SingleByteMatchers only have a matcher at position 0.");
         }
@@ -77,6 +76,42 @@ public abstract class AbstractSingleByteSequence implements SingleByteMatcher {
     public final SequenceMatcher reverse() {
         return this;
     }    
+    
+    
+    /**
+     * Throws an IndexOutOfBoundsException if the begin index is not zero or
+     * the endIndex is not one, otherwise it returns this.
+     * SingleByteSequenceMatchers by definition only match one byte, 
+     * so there can be no other possible subsequences.
+     * 
+     * @param beginIndex The beginning index, inclusive.
+     * @param endIndex The ending index, exclusive.
+     * @return SequenceMatcher this sequence matcher.
+     * @throws IndexOutOfBoundsException if the begin index is not zero or the 
+     * end index is not one.
+     */
+    @Override
+    public final SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
+        if (beginIndex != 0 || endIndex != 1) {
+            throw new IndexOutOfBoundsException("SingleByteMatchers only support a sequence starting at zero with a length of one.");
+        }
+        return this;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
+    public SequenceMatcher repeat(int numberOfRepeats) {
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        if (numberOfRepeats == 1) {
+            return this;
+        }   
+        return new SingleByteSequenceMatcher(this, numberOfRepeats);
+    }     
     
     
 }

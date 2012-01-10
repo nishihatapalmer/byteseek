@@ -37,6 +37,10 @@
 package net.domesdaybook.matcher.singlebyte;
 
 import java.io.IOException;
+import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
+import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
@@ -49,7 +53,7 @@ import net.domesdaybook.reader.Window;
  *
  * @author Matt Palmer
  */
-public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence {
+public final class CaseInsensitiveByteMatcher extends AbstractSingleByteMatcher {
 
     private final static String ILLEGAL_ARGUMENTS = "Non-ASCII char passed in to CaseInsensitiveByteMatcher: %s";
 
@@ -155,6 +159,24 @@ public final class CaseInsensitiveByteMatcher extends AbstractSingleByteSequence
     public int getNumberOfMatchingBytes() {
         return caseValues[0] == caseValues[1] ? 1 : 2;
     }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
+    public SequenceMatcher repeat(int numberOfRepeats) {
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        if (numberOfRepeats == 1) {
+            return this;
+        }   
+        if (getNumberOfMatchingBytes() == 1) {
+            return new ByteSequenceMatcher(ByteUtilities.repeat(caseValues[0], numberOfRepeats));
+        }
+        return new CaseInsensitiveStringMatcher(this, numberOfRepeats);
+    }        
 
 
 }

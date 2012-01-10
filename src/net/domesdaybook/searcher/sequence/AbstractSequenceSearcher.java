@@ -27,8 +27,8 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
+
 package net.domesdaybook.searcher.sequence;
 
 import java.io.IOException;
@@ -44,17 +44,18 @@ import net.domesdaybook.searcher.AbstractSearcher;
  * <li>{@link #searchForwards(net.domesdaybook.reader.Reader, long, long)}
  * <li>{@link #searchBackwards(net.domesdaybook.reader.Reader, long, long)}
  * </ul>
- * These allocate searching for sequences efficiently between searching in
- * {@link Window}s when the sequence fits, and using the reader interface on the
- * sequence for times when the sequence crosses over Window boundaries.
+ * These allocate searching for sequences efficiently between searching in the
+ * byte arrays provided by {@link Window}s when the sequence fits in a single window,
+ * only using the less efficient reader interface on the sequence for times when
+ * the sequence crosses over Window boundaries.
  * <p>
  * It defines two new abstract methods:
  * <ul>
- * <li>{@link #searchForwardsReader(net.domesdaybook.reader.Reader, long, long) }
- * <li>{@link #searchBackwardsReader(net.domesdaybook.reader.Reader, long, long) }
+ * <li>{@link #doSearchForwards(net.domesdaybook.reader.Reader, long, long) }
+ * <li>{@link #doSearchBackwards(net.domesdaybook.reader.Reader, long, long) }
  * </ul>
  * which require the implementor to use the reader interface on the sequence for
- * matching (or otherwise provide for searching across window boundaries).
+ * matching (or otherwise provide for searching sequences which cross window boundaries).
  * 
  * @author Matt Palmer
  */
@@ -92,7 +93,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher {
      * This implementation of searchForwards allocates forward searching between
      * searching directly on a window byte array when the sequence fits inside
      * a window, and using the abstract search method:
-     * {@link #searchForwardsReader(net.domesdaybook.reader.Reader, long, long) }
+     * {@link #doSearchForwards(net.domesdaybook.reader.Reader, long, long) }
      * for searching across window boundaries.
      * <p>
      * This method does no searching itself - it simply calculates how to
@@ -106,8 +107,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher {
     public long searchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final SequenceMatcher sequence = matcher;
-        final int sequenceLength = sequence.length();
+        final int sequenceLength = matcher.length();
         final int lastSequencePosition = sequenceLength - 1;
         long searchPosition = fromPosition > 0?
                               fromPosition : 0;
@@ -161,10 +161,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher {
             final long lastWindowPosition = windowStartPosition + arrayLastPosition;
             final long lastSearchPosition = toPosition < lastWindowPosition?
                                             toPosition : lastWindowPosition;
-               
-            final long matchPosition = searchForwardsReader(reader, 
-                                                            searchPosition,
-                                                            lastSearchPosition);
+            final long matchPosition = doSearchForwards(reader, searchPosition, lastSearchPosition);
             
             // Did we find a match?
             if (matchPosition >= 0) {
@@ -187,23 +184,150 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher {
     }
 
     
-    protected abstract long searchForwardsReader(Reader reader, 
-                                                long searchPosition, 
-                                                long lastSearchPosition)
-            throws IOException;
+    /**
+     * This method searches forwards crossing window boundaries.  It is
+     * called by the {@link #searchForwards(net.domesdaybook.reader.Reader, long, long)}
+     * method when it encounters a sequence which crosses from one window to another.
+     * <p>
+     * A simple way to implement this method is to use the Reader interface on the
+     * matcher sequence. This at least removes window boundaries from validating
+     * that a match exists. It will still be necessary to deal with window management
+     * in the operation of the search algorithm itself.
+     * <p>
+     * Implementations of this method do not need to worry about whether the search
+     * position parameters are within the reader, as this bounds checking is done
+     * by the searchForwards method which calls it.
+     * 
+     * @param reader The reader providing bytes to search in.
+     * @param searchPosition The search position to search from.
+     * @param lastSearchPosition The search position to search to.
+     * @return The position of a match, or a negative number if no match was found.
+     * @throws IOException If the reader encounters difficulties reading bytes.
+     */
+    protected abstract long doSearchForwards(Reader reader, long searchPosition,
+            long lastSearchPosition) throws IOException;
 
     
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation of searchBackwards allocates backwards searching between
+     * searching directly on a window byte array when the sequence fits inside
+     * a window, and using the abstract search method:
+     * {@link #doSearchBackwards(net.domesdaybook.reader.Reader, long, long) }
+     * for searching across window boundaries.
+     * <p>
+     * This method does no searching itself - it simply calculates how to
+     * efficiently search using a sequence, and calls the appropriate search
+     * methods on the search implementation.  Therefore, this is entirely generic for
+     * any search algorithm that operates over sequences.
+     * 
+     * @throws IOException If the reader encounters a problem reading bytes.
+     */    
     @Override
     public long searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
-       //TODO: implement backwards searching.
+        // Initialise:
+        final int sequenceLength = matcher.length();
+        final int lastSequencePosition = sequenceLength - 1;
+        final long finalSearchPosition = toPosition > 0?
+                                         toPosition : 0;
+        long searchPosition = withinLength(reader, fromPosition);
+        
+        // While there is data to search in:
+        Window window = reader.getWindow(searchPosition);        
+        while (window != null && searchPosition >= finalSearchPosition) {
+            
+            // Does the sequence fit into the searchable bytes of this window?
+            // It may not if the start position of the window is already close
+            // to the end of the window, or the sequence is long (potentially
+            // could be longer than any single window - but mostly won't be):
+            final long windowStartPosition = window.getWindowPosition();
+            final int windowLength = window.length();
+            final int arrayStartPosition = reader.getWindowOffset(searchPosition);  
+            final int arrayLastPosition = windowLength - 1;             
+            if (arrayStartPosition + lastSequencePosition <= arrayLastPosition) {
+
+                // Find the last place in the array to search in (either zero, or
+                // the final search position, whichever is closer):
+                final long distanceToEnd = finalSearchPosition - windowStartPosition;                
+                final int arrayMinPosition = distanceToEnd > 0?
+                                       (int) distanceToEnd : 0; 
+                        
+                // Search backwards in the byte array of the window:
+                final int arrayMatchPosition = searchBackwards(window.getArray(),
+                                                               arrayStartPosition, 
+                                                               arrayMinPosition);
+                // Did we find a match?
+                if (arrayMatchPosition >= 0) {
+                    return searchPosition + arrayMatchPosition - arrayStartPosition;
+                }
+                
+                // Continue the search one on from where we last looked:
+                searchPosition -= (arrayStartPosition - arrayMinPosition + 1);
+
+                // Did we pass the final search position?  In which case, we're finished.
+                if (searchPosition < finalSearchPosition) {
+                    return NOT_FOUND;
+                }
+            }
+
+            // From the current search position, the sequence crosses over in to
+            // the next window, so we can't search directly in the window byte array.
+            // We must use the reader interface on the sequence to let it match
+            // over more bytes than this window has available.
+            
+            // Search back to the first position in the window where the sequence 
+            // would fit inside it, the window start, or the final search position, 
+            // whichever comes first (maning bigger as we search backwards):
+            final long firstFitPosition = windowStartPosition + arrayLastPosition - lastSequencePosition;
+            final long windowSearchPosition = firstFitPosition > windowStartPosition?
+                                              firstFitPosition : windowStartPosition;
+            final long lastSearchPosition = finalSearchPosition > windowSearchPosition?
+                                            finalSearchPosition : windowSearchPosition;
+            final long matchPosition =
+                    doSearchBackwards(reader, searchPosition, lastSearchPosition);
+            
+            // Did we find a match?
+            if (matchPosition >= 0) {
+                return matchPosition;
+            }
+            
+            // Continue the search one on from where we last looked:
+            searchPosition = lastSearchPosition - 1;
+            
+            // Did we pass the final toPosition?  In which case, we're finished.
+            if (searchPosition < finalSearchPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Get the next window of data to search:
+            window = reader.getWindow(searchPosition);
+        }
+        
+        return NOT_FOUND;
     }
     
-    
-    protected abstract long searchBackwardsReader(Reader reader,
-                                                  long searchPosition,
-                                                  long lastSearchPosition)
-            throws IOException;
+
+   /**
+     * This abstract method searches backwards crossing window boundaries.  It is
+     * called by the {@link #searchBackwards(net.domesdaybook.reader.Reader, long, long)}
+     * method when it encounters s sequence which crosses from one window to another.
+     * <p>
+     * A simple way to implement this method is to use the Reader interface on the
+     * matcher sequence.  This at least removes window boundaries from validating
+     * that a match exists.  It may still be necessary to deal with window management
+     * in the operation of the search algorithm itself.
+     * 
+     * @param reader The reader providing bytes to search in.
+     * @param searchPosition The search position to search from.
+     * @param lastSearchPosition The search position to search to.
+     * @return The position of a match, or a negative number if no match was found.
+     * @throws IOException If the reader encounters difficulties reading bytes.
+     */    
+    protected abstract long doSearchBackwards(Reader reader, long searchPosition,
+            long lastSearchPosition) throws IOException;
     
     
     

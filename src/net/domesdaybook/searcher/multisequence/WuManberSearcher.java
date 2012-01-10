@@ -562,7 +562,7 @@ public class WuManberSearcher extends AbstractSearcher {
     private List<byte[]> getBlockByteList(final int position, final SequenceMatcher matcher) {
         final List<byte[]> byteList = new ArrayList<byte[]>(blockSize);
         for (int blockIndex = position - blockSize + 1; blockIndex <= position; blockIndex++) {
-            final SingleByteMatcher byteMatcher = matcher.getByteMatcherForPosition(blockIndex);
+            final SingleByteMatcher byteMatcher = matcher.getMatcherForPosition(blockIndex);
             byteList.add(byteMatcher.getMatchingBytes());
         }
         return byteList;

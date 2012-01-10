@@ -250,6 +250,39 @@ public final class ByteUtilities {
     
     
     /**
+     * Returns a byte array containing the original array passed in repeated a 
+     * number of times.
+     * 
+     * @param array
+     * @param numberOfRepeats
+     * @return 
+     */
+    public static byte[] repeat(final byte[] array, final int numberOfRepeats) {
+        final int repeatLength = array.length;
+        final int size = repeatLength * numberOfRepeats;
+        final byte[] repeated = new byte[size];
+        for (int repeat = 0; repeat < numberOfRepeats; repeat++) {
+            System.arraycopy(array, 0, repeated, repeat * repeatLength, repeatLength);
+        }    
+        return repeated;
+    }
+    
+    
+    /**
+     * Returns a byte array filled with the value for the number of repeats.
+     * 
+     * @param value The value to repeat
+     * @param numberOfRepeats The number of times to repeat the value.
+     * @return A byte array sized to the number of repeats filled with the value.
+     */
+    public static byte[] repeat(final byte value, final int numberOfRepeats) {
+        final byte[] repeats = new byte[numberOfRepeats];
+        Arrays.fill(repeats, value);
+        return repeats;
+    }
+    
+    
+    /**
      * Converts an array of bytes to an array of ints.
      * 
      * @param bytes The byte array.

@@ -27,7 +27,6 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.matcher.sequence;
@@ -53,7 +52,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      *                                   for a position outside of the sequence.
      * 
      */
-    public SingleByteMatcher getByteMatcherForPosition(final int position);
+    public SingleByteMatcher getMatcherForPosition(int position);
 
     
     /**
@@ -76,7 +75,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      * @throws IndexOutOfBoundsException if a match is made outside the bounds of 
      *                                   the array.
      */
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition);    
+    public boolean matchesNoBoundsCheck(byte[] bytes, int matchPosition);    
     
     
     /**
@@ -88,11 +87,38 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 
     
     /**
-     * Returns a reversed SequenceMatcher
+     * Returns a new SequenceMatcher which matches the reverse sequence of the
+     * original sequence matcher.
      * 
      * @return A SequenceMatcher which matches the reverse sequence.
      */
     public SequenceMatcher reverse();
+    
+    
+    /**
+     * Returns a new SequenceMatcher which matches a sub-sequence of the 
+     * original sequence.  The subsequence returned must match at least one
+     * byte (an empty SequenceMatcher is prohibited).
+     * 
+     * @param beginIndex The beginning index, inclusive.
+     * @param endIndex The ending index, exclusive.
+     * @return SequenceMatcher the specified sub-sequence.
+     * @throws IndexOutOfBoundsException if the beginIndex is negative, 
+     * or the endIndex is greater than the length of the sequence,
+     * or the beginIndex is greater than or equal to the endIndex.
+     */
+    public SequenceMatcher subsequence(int beginIndex, int endIndex);
+    
+    
+    /**
+     * Returns a SequenceMatcher which matches this SequenceMatcher repeated
+     * a number of times.
+     * 
+     * @param numberOfRepeats The number of times to repeat this SequenceMatcher.
+     * @return A SequenceMatcher which matches the same as this sequence repeated
+     *         a number of times.
+     */
+    public SequenceMatcher repeat(final int numberOfRepeats);
     
     
     /**
@@ -101,6 +127,6 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
      * @param prettyPrint whether to pretty print the regular expression with spacing.
      * @return A string containing a regular expression of the byte matcher.
      */
-    public String toRegularExpression(final boolean prettyPrint);
+    public String toRegularExpression(boolean prettyPrint);
 
 }

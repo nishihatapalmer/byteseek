@@ -44,7 +44,7 @@ import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.collections.IdentityHashSet;
-import net.domesdaybook.object.copy.DeepCopy;
+import net.domesdaybook.object.DeepCopy;
 
 
 /**

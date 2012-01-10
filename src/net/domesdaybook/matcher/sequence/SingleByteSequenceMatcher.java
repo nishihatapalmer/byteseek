@@ -27,13 +27,12 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
  */
 
 package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +47,7 @@ import net.domesdaybook.reader.Window;
  */
 public final class SingleByteSequenceMatcher implements SequenceMatcher {
 
-    private final List<SingleByteMatcher> matcherSequence;
+    private final SingleByteMatcher[] matchers;
     private final int length;
 
 
@@ -62,11 +61,27 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         if (sequence == null || sequence.isEmpty()) {
             throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
         }
-        this.matcherSequence = new ArrayList<SingleByteMatcher>(sequence);
-        this.length = this.matcherSequence.size();
+        this.matchers = sequence.toArray(new SingleByteMatcher[0]);
+        this.length = this.matchers.length;
     }
 
-
+    
+    /**
+     * Constructs a SingleByteSequenceMatcher from an array of {@link SingleByteMatcher}
+     * objects.
+     * 
+     * @param sequence An array of SingleByteMatchers to construct this sequence matcher from.
+     * @throws IllegalArgumentException if the array is null or empty.
+     */
+    public SingleByteSequenceMatcher(final SingleByteMatcher[] sequence) {
+        if (sequence == null || sequence.length == 0) {
+            throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
+        }
+        this.matchers = sequence.clone();
+        this.length = this.matchers.length;
+    }
+    
+    
     /**
      * Constructs a SingleByteSequenceMatcher from a single {@link SingleByteMatcher} object.
      *
@@ -77,8 +92,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
         }
-        this.matcherSequence = new ArrayList<SingleByteMatcher>(1);
-        this.matcherSequence.add(matcher);
+        this.matchers = new SingleByteMatcher[] {matcher};
         this.length = 1;
     }
 
@@ -98,10 +112,8 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("SingleByteSequenceMatcher requires a positive number of matchers.");
         }
         length = numberOfMatchers;
-        this.matcherSequence = new ArrayList<SingleByteMatcher>(length);
-        for (int count = 0; count < numberOfMatchers; count++) {
-            this.matcherSequence.add(matcher);
-        }
+        this.matchers = new SingleByteMatcher[length];
+        Arrays.fill(this.matchers, matcher);
     }
 
 
@@ -111,7 +123,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     @Override
     public boolean matches(final Reader reader, final long matchPosition) throws IOException {
         final int localLength = length;
-        final List<SingleByteMatcher> matchList = this.matcherSequence;        
+        final SingleByteMatcher[] matchList = this.matchers;        
         Window window = reader.getWindow(matchPosition);
         int checkPos = 0;
         while (window != null) {
@@ -119,7 +131,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
             final int endPos = Math.min(window.length(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             for (int windowPos = offset; windowPos < endPos; windowPos++) {
-                final SingleByteMatcher byteMatcher = matchList.get(checkPos++);
+                final SingleByteMatcher byteMatcher = matchList[checkPos++];
                 if (!byteMatcher.matches(array[windowPos])) {
                     return false;
                 }
@@ -139,19 +151,18 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        final int localStop = length;
-        if (matchPosition + localStop < bytes.length && matchPosition >= 0) {
-            final List<SingleByteMatcher> matchList = this.matcherSequence;
-            for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-                final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-                if (!byteMatcher.matches(bytes[matchPosition + byteIndex])) {
+        if (matchPosition + length < bytes.length && matchPosition >= 0) {
+            int position = matchPosition;
+            final SingleByteMatcher[] localMatchers = matchers;
+            for (final SingleByteMatcher matcher : localMatchers) {
+                if (!matcher.matches(bytes[position++])) {
                     return false;
                 }
             }
             return true;
         }
         return false;
-    }    
+    }
 
     
     /**
@@ -159,16 +170,14 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
-        final List<SingleByteMatcher> matchList = this.matcherSequence;
-        final int localStop = length;
-        for (int byteIndex = 0; byteIndex < localStop; byteIndex++) {
-            final SingleByteMatcher byteMatcher = matchList.get(byteIndex);
-            final byte byteRead = bytes[matchPosition + byteIndex];
-            if (!byteMatcher.matches(byteRead)) {
+        int position = matchPosition;
+        final SingleByteMatcher[] localMatchers = matchers;
+        for (final SingleByteMatcher matcher : localMatchers) {
+            if (!matcher.matches(bytes[position++])) {
                 return false;
             }
         }
-        return true;        
+        return true;
     }
     
 
@@ -176,8 +185,8 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getByteMatcherForPosition(final int position) {
-        return matcherSequence.get(position);
+    public SingleByteMatcher getMatcherForPosition(final int position) {
+        return matchers[position];
     }
 
 
@@ -195,7 +204,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public SingleByteSequenceMatcher reverse() {
-        final List<SingleByteMatcher> newList = new ArrayList<SingleByteMatcher>(matcherSequence);
+        final List<SingleByteMatcher> newList = Arrays.asList(matchers);
         Collections.reverse(newList);
         return new SingleByteSequenceMatcher(newList);
     }
@@ -206,11 +215,53 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final StringBuilder builder = new StringBuilder();
-        for (final SingleByteMatcher matcher : matcherSequence) {
+        final StringBuilder builder = new StringBuilder(length * 4);
+        for (final SingleByteMatcher matcher : matchers) {
             builder.append(matcher.toRegularExpression(prettyPrint));
         }
         return builder.toString();
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
+        if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
+            final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
+            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
+        }
+        if (endIndex - beginIndex == 1) {
+            return matchers[beginIndex];
+        }
+        return new SingleByteSequenceMatcher(Arrays.copyOfRange(matchers, beginIndex, endIndex));
+    }
+
+    
+        
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SequenceMatcher repeat(int numberOfRepeats) {
+        if (numberOfRepeats < 1) {
+            throw new IllegalArgumentException("Number of repeats must be at least one.");
+        }
+        if (numberOfRepeats == 1) {
+            return this;
+        }
+        return new SingleByteSequenceMatcher(repeatMatchers(numberOfRepeats));
+    }
+    
+    
+    private SingleByteMatcher[] repeatMatchers(final int numberOfRepeats) {
+        final int repeatSize = matchers.length;
+        final SingleByteMatcher[] repeated = new SingleByteMatcher[repeatSize * numberOfRepeats];
+        for (int repeat = 0; repeat < numberOfRepeats; repeat++) {
+            System.arraycopy(matchers, 0, repeated, repeat * repeatSize, repeatSize);
+        }
+        return repeated;
     }
 
 
