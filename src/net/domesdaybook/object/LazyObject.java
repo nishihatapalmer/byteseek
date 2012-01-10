@@ -27,27 +27,16 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
- * 
  */
+
 package net.domesdaybook.object;
 
 /**
- * This simple abstract class just wraps arrays of integers used for shift-based
- * searching, both forwards and backwards.  It initialises the arrays using 
- * single-check lazy initialisation with volatile array references.  This means
- * that if two threads attempt to get the array at the same time before it has
- * been fully initialised, it is quite possible for the array to be calculated 
- * more than once.  This may waste some CPU cycles, but it is still safe to use,
- * as the arrays will always be identical and do not change once calculated.
- * 
- * It provides two abstract methods:
- * <ul>
- * <li>{@link #create() }
- * <li>{@link #createBackwardInfo() }
- * </ul>
- * which must be implemented to create the type of information required
- * for a given search algorithm.
+ * This simple abstract class creates objects using single-check
+ * lazy initialisation, with volatile references.  This means that
+ * if two threads attempt to get the object at the same time before it has
+ * been fully initialised, it is possible for the object to be created 
+ * more than once.  
  * 
  * @author Matt Palmer
  */
@@ -61,10 +50,9 @@ public abstract class LazyObject<T> {
     
     /**
      * Uses Single-Check lazy initialisation.  This can result in the field
-     * being initialised more than once, but this doesn't really matter.
+     * being initialised more than once.
      * 
-     * @return An array of integers, giving the safe shift
-     * for a given byte when searching forwards.
+     * @return An object of type T.
      */
     public T get() {
         T result = object;
