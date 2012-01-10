@@ -3,7 +3,6 @@
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
- * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -28,10 +27,26 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ */
+
+
+package net.domesdaybook.compiler.automata;
+
+import net.domesdaybook.automata.wrapper.InitialFinalStates;
+import net.domesdaybook.automata.TransitionFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.Transition;
+import net.domesdaybook.automata.state.SimpleStateFactory;
+import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.transition.SimpleTransitionFactory;
+
+/**
  * ----------------------------------------------------------------------------
  * 
- * What is a Champarnaud-Glushkov builder?
+ * What is a Glushkov builder?
  * 
  * This class builds an automata as it is invoked for each node of the regular 
  * expression parse-tree.  It builds a particular kind of automata as it goes,
@@ -69,23 +84,6 @@
  *   "A reexamination of the Glushkov and Thompson Constructions"
  *
  *    by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
- *
- */
-
-package net.domesdaybook.compiler.automata;
-
-import net.domesdaybook.automata.wrapper.InitialFinalStates;
-import net.domesdaybook.automata.TransitionFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.state.SimpleStateFactory;
-import net.domesdaybook.automata.StateFactory;
-import net.domesdaybook.automata.transition.SimpleTransitionFactory;
-
-/**
  *
  * @author Matt Palmer
  */
