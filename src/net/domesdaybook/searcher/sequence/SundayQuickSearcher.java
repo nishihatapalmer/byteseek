@@ -73,13 +73,14 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         // Calculate safe bounds for the search:
         final int length = sequence.length();
         final int finalPosition = bytes.length - length;
-        final int lastPossiblePosition = finalPosition - 1;
-        final int lastPosition = toPosition < lastPossiblePosition?
-                                 toPosition : lastPossiblePosition;
+        final int lastLoopPosition = finalPosition - 1;
+        final int lastPosition = toPosition < lastLoopPosition?
+                                 toPosition : lastLoopPosition;
         int searchPosition = fromPosition > 0?
                              fromPosition : 0;
 
-        // Search forwards:
+        // Search forwards.  The loop does not check for the final
+        // position, as we shift on the byte after the sequence.
         while (searchPosition <= lastPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
@@ -148,14 +149,16 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         final SequenceMatcher sequence = getMatcher();
         
         // Calculate safe bounds for the search:
-        final int lastPosition = toPosition > 0?
-                                 toPosition : 1;
+        final int lastLoopPosition = toPosition > 1?
+                                     toPosition : 1;
         final int firstPossiblePosition = bytes.length - sequence.length();
         int searchPosition = fromPosition < firstPossiblePosition ?
                              fromPosition : firstPossiblePosition;
         
-        // Search backwards:
-        while (searchPosition >= lastPosition) {
+        // Search backwards.  The loop does not check the
+        // first position in the array, because we shift on the byte
+        // immediately before the current search position.
+        while (searchPosition >= lastLoopPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
