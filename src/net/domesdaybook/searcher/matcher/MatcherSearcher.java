@@ -105,25 +105,25 @@ public final class MatcherSearcher extends AbstractSearcher {
         final Matcher theMatcher = matcher;  
         
         // Initialise search:
-        long currentPosition = fromPosition > 0? 
+        long searchPosition = fromPosition > 0? 
                                fromPosition : 0;
-        Window window = reader.getWindow(currentPosition);
+        Window window = reader.getWindow(searchPosition);
         
         // As long as there is more data to search in:
         while (window != null) {
             
             // Calculate search bounds for searching in this window:
-            final int windowSpace = window.length() - reader.getWindowOffset(currentPosition);
-            final long windowEndPosition = currentPosition + windowSpace - 1;
+            final int windowSpace = window.length() - reader.getWindowOffset(searchPosition);
+            final long windowEndPosition = searchPosition + windowSpace - 1;
             final long searchEndPosition = toPosition < windowEndPosition?
                                            toPosition : windowEndPosition;
             
             // Search forwards in the window:
-            while (currentPosition <= searchEndPosition) {
-                if (theMatcher.matches(reader, currentPosition)) {
-                    return currentPosition;
+            while (searchPosition <= searchEndPosition) {
+                if (theMatcher.matches(reader, searchPosition)) {
+                    return searchPosition;
                 }
-                currentPosition++;
+                searchPosition++;
             }
             
             // Did we finish the search?  If the final "to" position is within 
@@ -134,7 +134,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             
             // Otherwise, get the next window.
             // The currentPosition is guaranteed to be in the next window by now.
-            window = reader.getWindow(currentPosition);
+            window = reader.getWindow(searchPosition);
         }
         return NOT_FOUND;
     }
@@ -153,15 +153,15 @@ public final class MatcherSearcher extends AbstractSearcher {
         final int arrayEndPosition = bytes.length - 1;
         final int searchEndPosition = toPosition < arrayEndPosition? 
                                       toPosition : arrayEndPosition;
-        int currentPosition = fromPosition > 0?
+        int searchPosition = fromPosition > 0?
                               fromPosition : 0;           
         
         // Search forwards:
-        while (currentPosition <= searchEndPosition) {
-            if (theMatcher.matches(bytes, currentPosition)) {
-                return currentPosition;
+        while (searchPosition <= searchEndPosition) {
+            if (theMatcher.matches(bytes, searchPosition)) {
+                return searchPosition;
             }
-            currentPosition++;
+            searchPosition++;
         }
         return NOT_FOUND;
     }
@@ -180,8 +180,8 @@ public final class MatcherSearcher extends AbstractSearcher {
         // Initialise search:
         final long endSearchPosition = toPosition > 0? 
                                        toPosition : 0;
-        long currentPosition = withinLength(reader, fromPosition);
-        Window window = reader.getWindow(currentPosition);
+        long searchPosition = withinLength(reader, fromPosition);
+        Window window = reader.getWindow(searchPosition);
         
         // While there is data to search in:
         while (window != null) {
@@ -192,11 +192,11 @@ public final class MatcherSearcher extends AbstractSearcher {
                                                  windowStartPosition : endSearchPosition;
             
             // Search backwards in this window:
-            while (currentPosition >= windowEndSearchPosition) {
-                if (theMatcher.matches(reader, currentPosition)) {
-                    return currentPosition;
+            while (searchPosition >= windowEndSearchPosition) {
+                if (theMatcher.matches(reader, searchPosition)) {
+                    return searchPosition;
                 }
-                currentPosition--;
+                searchPosition--;
             }
             
             // Did we finish the search?  If the final "to" position is within 
@@ -207,7 +207,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             
             // Otherwise, get the next window.
             // The currentPosition is guaranteed to be in the next window by now.            
-            window = reader.getWindow(currentPosition);
+            window = reader.getWindow(searchPosition);
         }
         return NOT_FOUND;
     }
@@ -226,15 +226,15 @@ public final class MatcherSearcher extends AbstractSearcher {
         final int lastPossiblePosition = bytes.length - 1;
         final int searchEndPosition = toPosition > 0? 
                                       toPosition : 0;
-        int currentPosition = fromPosition < lastPossiblePosition? 
+        int searchPosition = fromPosition < lastPossiblePosition? 
                               fromPosition : lastPossiblePosition;
         
         // Search backwards:
-        while (currentPosition >= searchEndPosition) {
-            if (theMatcher.matches(bytes, currentPosition)) {
-                return currentPosition;
+        while (searchPosition >= searchEndPosition) {
+            if (theMatcher.matches(bytes, searchPosition)) {
+                return searchPosition;
             }
-            currentPosition--;
+            searchPosition--;
         }
         return NOT_FOUND;
     }
