@@ -37,6 +37,7 @@ import java.util.Arrays;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  *
@@ -51,7 +52,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      * Constructs a Sunday Quick searcher given a {@link SequenceMatcher}
      * to search for.
      * 
-     * @param sequence 
+     * @param sequence The sequence to search for.
      */
     public SundayQuickSearcher(final SequenceMatcher sequence) {
         super(sequence);
@@ -101,7 +102,6 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     
     /**
      * {@inheritDoc}
-     * @throws IOException 
      */
     @Override
     public final long doSearchForwards(final Reader reader, 
@@ -109,34 +109,61 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         
         // Get the objects needed to search:
         final int[] safeShifts = forwardInfo.get();
-        final SequenceMatcher theMatcher = getMatcher();
+        final SequenceMatcher sequence = getMatcher();
         
-        // Calculate safe bounds for the search:
-        final int length = theMatcher.length();
-        final long finalPosition = reader.length() - length;
-        final long lastPossibleLoopPosition = finalPosition - 1;
-        final long lastPosition = toPosition < lastPossibleLoopPosition?
-                                  toPosition : lastPossibleLoopPosition;
-        long searchPosition = fromPosition > 0?
-                              fromPosition : 0;
+        // Initialise window search.
+        // If there is no window immediately after the sequence,
+        // then there is no match, since this is only invoked if the 
+        // sequence is already crossing into another window.        
+        final int length = sequence.length();
+        long searchPosition = fromPosition;
+        Window window = reader.getWindow(searchPosition + length);
         
-        // Search forwards:
-        while (searchPosition <= lastPosition) {
-            if (theMatcher.matches(reader, searchPosition)) {
+        // While there is a window to search in:
+        while (window != null) {
+            
+            // Initialise array search:
+            final byte[] array = window.getArray();
+            final int arrayStartPosition = reader.getWindowOffset(searchPosition + length);
+            final int arrayEndPosition = window.length() - 1;
+            final long distanceToEnd = toPosition - window.getWindowPosition();
+            final int finalPosition = distanceToEnd < arrayEndPosition?
+                                (int) distanceToEnd : arrayEndPosition;
+            int arraySearchPosition = arrayStartPosition;
+            
+            // Search fowards in the array using the reader interface to match.
+            // The loop does not check the final position, as we shift on the byte
+            // after it.
+            while (arraySearchPosition < finalPosition) {
+                if (sequence.matches(reader, searchPosition)) {
+                    return searchPosition;
+                }
+                final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
+                searchPosition += shift;
+                arraySearchPosition += shift;
+            }
+
+            // Check final position if necessary:
+            if (arraySearchPosition == finalPosition &&
+                toPosition          >= searchPosition &&
+                sequence.matches(reader, searchPosition)) {
                 return searchPosition;
             }
-            searchPosition += safeShifts[reader.readByte(searchPosition + length) & 0xFF];
+            
+            // If the search position is now past the last search position, we're finished:
+            if (searchPosition > toPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Otherwise, get the next window.  The search position plus the 
+            // length is guaranteed to be in another window at this point.            
+            window = reader.getWindow(searchPosition + length);
         }
         
-        // Check the final position if necessary:
-        if (searchPosition == finalPosition && toPosition >= finalPosition &&
-            theMatcher.matches(reader, finalPosition)) {
-            return finalPosition;
-        }
 
         return NOT_FOUND;
     }
-
+    
 
     /**
      * {@inheritDoc}
