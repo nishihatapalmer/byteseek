@@ -5,16 +5,13 @@
 
 package net.domesdaybook.compiler.sequence;
 
+import net.domesdaybook.matcher.sequence.SequenceOfSequencesMatcher;
 import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteRangeMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteSetBinarySearchMatcher;
 import net.domesdaybook.matcher.singlebyte.ByteMatcher;
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
-import net.domesdaybook.matcher.sequence.CaseSensitiveStringMatcher;
-import net.domesdaybook.matcher.sequence.CombinedSequenceMatcher;
-import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -102,7 +99,7 @@ public class SequenceMatcherCompilerTest {
         basicTests("[807f]", 1, ByteRangeMatcher.class);
         basicTests(" [0102]", 1, ByteRangeMatcher.class);
         
-        basicTests("'a string'", 8, CaseSensitiveStringMatcher.class);
+        basicTests("'a string'", 8, ByteSequenceMatcher.class);
         basicTests("`a string`", 8, CaseInsensitiveStringMatcher.class);
         basicTests("01 'a string' 02", 10, ByteSequenceMatcher.class);
 
@@ -119,7 +116,7 @@ public class SequenceMatcherCompilerTest {
 
         basicTests("01fd [ef]   de", 4, ByteSequenceMatcher.class);
         
-        basicTests("01fd [ef fe]   de", 4, CombinedSequenceMatcher.class);
+        basicTests("01fd [ef fe]   de", 4, SequenceOfSequencesMatcher.class);
 
         basicTests("01{4}", 4, ByteSequenceMatcher.class);
 
@@ -129,8 +126,8 @@ public class SequenceMatcherCompilerTest {
         basicTests("[fffe]{5}", 5, SingleByteSequenceMatcher.class);
         
         basicTests("(0102){2}", 4, ByteSequenceMatcher.class);
-        basicTests("(dd[ff03]){3}", 6, CombinedSequenceMatcher.class);
-        basicTests("'start'(dd[ff03]){3}", 11, CombinedSequenceMatcher.class);
+        basicTests("(dd[ff03]){3}", 6, SequenceOfSequencesMatcher.class);
+        basicTests("'start'(dd[ff03]){3}", 11, SequenceOfSequencesMatcher.class);
 
         basicTests(".{1000}", 1000, FixedGapMatcher.class);
     }
