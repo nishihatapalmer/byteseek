@@ -65,7 +65,7 @@ public interface WindowCache {
      * 
      * @param observer
      */
-    public void subscribe(final CacheObserver observer);
+    public void subscribe(final WindowObserver observer);
     
     
     /**
@@ -73,29 +73,20 @@ public interface WindowCache {
      * @param observer
      * @return
      */
-    public boolean unsubscribe(final CacheObserver observer);
+    public boolean unsubscribe(final WindowObserver observer);
     
     
     /**
      * 
      */
-    public interface CacheObserver {
-        
-        
-        /**
-         * 
-         * @param window
-         * @param toCache
-         */
-        public void windowAdded(final Window window, final WindowCache toCache);
-        
+    public interface WindowObserver {
         
         /**
          * 
          * @param window
-         * @param fromCache
+         * 
          */
-        public void windowRemoved(final Window window, final WindowCache fromCache);
+        public void windowFree(final Window window, WindowCache fromCache);
         
     }
     

@@ -61,7 +61,6 @@ public final class AllWindowsCache extends AbstractCache {
     @Override
     public void addWindow(final Window window) {
         cache.put(window.getWindowPosition(), window);
-        notifyWindowAdded(window, this);
     }
 
     

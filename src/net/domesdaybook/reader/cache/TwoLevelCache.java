@@ -32,14 +32,14 @@
 package net.domesdaybook.reader.cache;
 
 import net.domesdaybook.reader.Window;
-import net.domesdaybook.reader.cache.WindowCache.CacheObserver;
+import net.domesdaybook.reader.cache.WindowCache.WindowObserver;
 
 /**
  *
  * @author Matt Palmer
  */
 
-public final class TwoLevelCache extends AbstractCache implements CacheObserver {
+public final class TwoLevelCache extends AbstractCache implements WindowObserver {
 
     /**
      * 
@@ -104,25 +104,15 @@ public final class TwoLevelCache extends AbstractCache implements CacheObserver 
     /**
      * 
      * @param window
-     * @param fromCache
+     * 
      */
     @Override
-    public void windowRemoved(final Window window, final WindowCache fromCache) {
+    public void windowFree(final Window window, final WindowCache fromCache) {
         if (fromCache == primaryCache) {
             secondaryCache.addWindow(window);
+        } else if (fromCache == secondaryCache) {
+            notifyWindowFree(window, fromCache);
         }
-        notifyWindowRemoved(window, fromCache);
-    }
-    
-    
-    /**
-     * 
-     * @param window
-     * @param toCache
-     */
-    @Override
-    public void windowAdded(final Window window, final WindowCache toCache) {
-        notifyWindowAdded(window, toCache);
     }
     
     

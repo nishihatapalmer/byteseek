@@ -73,7 +73,6 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
         final long windowPosition = window.getWindowPosition();
         if (!cache.containsKey(windowPosition)) {
             cache.put(windowPosition, window);
-            notifyWindowAdded(window, this);
         }
     }
 
@@ -100,7 +99,7 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
         protected boolean removeEldestEntry(final Map.Entry eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
-                notifyWindowRemoved((Window) eldest.getValue(), MostRecentlyAddedCache.this);
+                notifyWindowFree((Window) eldest.getValue(), MostRecentlyAddedCache.this);
             }
             return remove;
         }   

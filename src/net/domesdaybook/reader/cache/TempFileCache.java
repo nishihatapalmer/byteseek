@@ -102,7 +102,7 @@ public final class TempFileCache extends AbstractCache {
                 windowPositions.put(windowPosition, 
                                     new WindowInfo(window.length(), nextFilePos));
                 nextFilePos += windowSize;
-                notifyWindowAdded(window, this);
+                notifyWindowFree(window, this);
             } catch (IOException justFailToAddTheWindow) {
             }
         }

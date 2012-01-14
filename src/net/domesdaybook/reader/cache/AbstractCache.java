@@ -43,13 +43,13 @@ import net.domesdaybook.reader.Window;
  */
 public abstract class AbstractCache implements WindowCache {
     
-    private List<CacheObserver> cacheObservers; 
+    private List<WindowObserver> windowObservers; 
     
     /**
      * 
      */
     public AbstractCache() {
-        cacheObservers = Collections.EMPTY_LIST; 
+        windowObservers = Collections.EMPTY_LIST; 
     }
     
     
@@ -58,11 +58,11 @@ public abstract class AbstractCache implements WindowCache {
      * @param observer
      */
     @Override
-    public void subscribe(CacheObserver observer) {
-        if (cacheObservers.isEmpty()) {
-            cacheObservers = new ArrayList<CacheObserver>(1);
+    public void subscribe(WindowObserver observer) {
+        if (windowObservers.isEmpty()) {
+            windowObservers = new ArrayList<WindowObserver>(1);
         }
-        cacheObservers.add(observer);
+        windowObservers.add(observer);
     }
     
     
@@ -72,10 +72,10 @@ public abstract class AbstractCache implements WindowCache {
      * @return
      */
     @Override
-    public boolean unsubscribe(final CacheObserver observer) {
-        boolean removed = cacheObservers.remove(observer);
-        if (cacheObservers.isEmpty()) {
-            cacheObservers = Collections.EMPTY_LIST;
+    public boolean unsubscribe(final WindowObserver observer) {
+        boolean removed = windowObservers.remove(observer);
+        if (windowObservers.isEmpty()) {
+            windowObservers = Collections.EMPTY_LIST;
         }
         return removed;
     }
@@ -86,23 +86,11 @@ public abstract class AbstractCache implements WindowCache {
      * @param window
      * @param fromCache
      */
-    protected final void notifyWindowRemoved(final Window window, final WindowCache fromCache) {
-        for (final CacheObserver observer : cacheObservers) {
-            observer.windowRemoved(window, fromCache);
+    protected final void notifyWindowFree(final Window window, final WindowCache fromCache) {
+        for (final WindowObserver observer : windowObservers) {
+            observer.windowFree(window, fromCache);
         }
     }
     
-    
-    /**
-     * 
-     * @param window
-     * @param toCache
-     */
-    protected final void notifyWindowAdded(final Window window, final WindowCache toCache) {
-        for (final CacheObserver observer : cacheObservers) {
-            observer.windowAdded(window, toCache);
-        }
-    }
-    
-    
+
 }

@@ -37,7 +37,7 @@ import net.domesdaybook.reader.Window;
  *
  * @author matt
  */
-public final class NoCache implements WindowCache {
+public final class NoCache extends AbstractCache {
 
     /**
      * 
@@ -62,7 +62,7 @@ public final class NoCache implements WindowCache {
      */
     @Override
     public void addWindow(Window window) {
-        // nothing to do
+        notifyWindowFree(window, this);
     }
 
     
@@ -74,27 +74,5 @@ public final class NoCache implements WindowCache {
         // nothing to do
     }
     
-
-    /**
-     * 
-     * @param observer
-     */
-    @Override
-    public void subscribe(CacheObserver observer) {
-        // nothing ever leaves or enters... so don't bother adding any observers.
-    }
-
-    
-    /**
-     * 
-     * @param observer
-     * @return
-     */
-    @Override
-    public boolean unsubscribe(CacheObserver observer) {
-        return false;  // the observer was never present, following the contract
-        // used by List, where remove() returns true if the item was present.
-    }
-
     
 }
