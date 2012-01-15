@@ -159,7 +159,6 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // length is guaranteed to be in another window at this point.            
             window = reader.getWindow(searchPosition + length);
         }
-        
 
         return NOT_FOUND;
     }
@@ -210,30 +209,57 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     public final long doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
-        // Get objects needed to search:
-        final int[] safeShifts = backwardInfo.get();
-        final SequenceMatcher theMatcher = getMatcher();
+        // Get the objects needed to search:
+        final int[] safeShifts = forwardInfo.get();
+        final SequenceMatcher sequence = getMatcher();
         
-        // Calculate safe bounds for the search:
-        final long lastLoopPosition = toPosition > 0 ? toPosition : 1;
-        final long firstPossiblePosition = reader.length() - theMatcher.length();
-        long searchPosition = fromPosition < firstPossiblePosition ?
-                fromPosition : firstPossiblePosition;
+        // Initialise window search.
+        // If there is no window immediately before the sequence,
+        // then there is no match, since this is only invoked if the 
+        // sequence is already crossing into another window.        
+        long searchPosition = fromPosition;
+        Window window = reader.getWindow(searchPosition - 1);
         
-        // Search backwards:
-        while (searchPosition >= lastLoopPosition) {
-            if (theMatcher.matches(reader, searchPosition)) {
+        // While there is a window to search in:
+        while (window != null) {
+            
+            // Initialise array search:
+            final byte[] array = window.getArray();
+            final int arrayStartPosition = reader.getWindowOffset(searchPosition - 1);
+            final long distanceToEnd = toPosition - window.getWindowPosition();
+            final int finalPosition = distanceToEnd > 0?
+                                (int) distanceToEnd : 0;
+            int arraySearchPosition = arrayStartPosition;
+            
+            // Search backwards in the array using the reader interface to match.
+            // The loop does not check the final position, as we shift on the byte
+            // before it.
+            while (arraySearchPosition > finalPosition) {
+                if (sequence.matches(reader, searchPosition)) {
+                    return searchPosition;
+                }
+                final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
+                searchPosition -= shift;
+                arraySearchPosition -= shift;
+            }
+
+            // Check final position if necessary:
+            if (arraySearchPosition == finalPosition &&
+                toPosition          <= searchPosition &&
+                sequence.matches(reader, searchPosition)) {
                 return searchPosition;
             }
-            searchPosition -= safeShifts[reader.readByte(searchPosition - 1) & 0xFF];             
+            
+            // If the search position is now past the last search position, we're finished:
+            if (searchPosition < toPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Otherwise, get the next window.  The search position minus one 
+            // is guaranteed to be in another window at this point.            
+            window = reader.getWindow(searchPosition - 1);
         }
         
-        // Check for first position if necessary:
-        if (searchPosition == 0 && toPosition < 1 &&
-            theMatcher.matches(reader, 0)) {
-            return 0;
-        }
-
         return NOT_FOUND;
     }
 
