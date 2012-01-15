@@ -33,7 +33,7 @@ package net.domesdaybook.reader;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import net.domesdaybook.reader.cache.NoCache;
+import net.domesdaybook.reader.windowcache.NoCache;
 
 /**
  *
