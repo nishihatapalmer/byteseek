@@ -31,13 +31,13 @@
 
 package net.domesdaybook.reader;
 
-import net.domesdaybook.reader.cache.CacheFailureException;
-import net.domesdaybook.reader.cache.WindowCache;
+import net.domesdaybook.reader.windowcache.CacheFailureException;
+import net.domesdaybook.reader.windowcache.WindowCache;
 import java.io.IOException;
 import java.io.InputStream;
-import net.domesdaybook.reader.cache.MostRecentlyUsedCache;
-import net.domesdaybook.reader.cache.TempFileCache;
-import net.domesdaybook.reader.cache.TwoLevelCache;
+import net.domesdaybook.reader.windowcache.MostRecentlyUsedCache;
+import net.domesdaybook.reader.windowcache.TempFileCache;
+import net.domesdaybook.reader.windowcache.TwoLevelCache;
 
 /**
  *
@@ -122,7 +122,7 @@ public class InputStreamReader extends AbstractReader {
  
     
     @Override
-    Window createWindow(final long readPos) throws IOException {
+    protected Window createWindow(final long readPos) throws IOException {
         Window lastWindow = null;
         while (readPos > streamPos && length == UNKNOWN_LENGTH) {
             final byte[] bytes = new byte[windowSize];
@@ -130,10 +130,12 @@ public class InputStreamReader extends AbstractReader {
             if (totalRead > 0) {
                 lastWindow = new Window(bytes, streamPos, totalRead);  
                 streamPos += totalRead;                                        
-                cache.addWindow(lastWindow);
             }
             if (totalRead < windowSize) { // If we read less than the available array:
-                length = streamPos; // then the length is whatever the streampos is now.
+                length = streamPos;       // then the length is whatever the streampos is now.
+            }
+            if (readPos <= streamPos) {      // If we still haven't reached the window
+                cache.addWindow(lastWindow); // for the requested position, cache it.
             }
         }
         return lastWindow;
