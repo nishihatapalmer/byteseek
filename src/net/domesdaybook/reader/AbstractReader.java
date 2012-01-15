@@ -31,10 +31,11 @@
 
 package net.domesdaybook.reader;
 
-import net.domesdaybook.reader.cache.WindowCache;
+import net.domesdaybook.reader.windowcache.WindowCache;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import net.domesdaybook.reader.windowcache.WindowCache.WindowObserver;
 
 
 /**
@@ -51,13 +52,9 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      * 
      */
     protected final int windowSize;
-    /**
-     * 
-     */
     protected final WindowCache cache;
-    private Window lastWindow = null;
+    private Window lastWindow;
     
-
     
     /**
      * 
@@ -67,13 +64,19 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
         this(DEFAULT_WINDOW_SIZE, cache);
     }
     
-
+    
     /**
      * 
      * @param windowSize
      * @param cache
      */
     public AbstractReader(final int windowSize, final WindowCache cache) {
+        if (windowSize < 1) {
+            throw new IllegalArgumentException("Window size must be at least one.");
+        }
+        if (cache == null) {
+            throw new IllegalArgumentException("Window cache cannot be null.");
+        }
         this.windowSize = windowSize;
         this.cache = cache;
     }
@@ -136,9 +139,6 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     }
     
     
-    abstract Window createWindow(final long windowStart) throws IOException;
-    
-
     @Override
     public Iterator<Window> iterator() {
         return new WindowIterator();
@@ -155,6 +155,9 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
     public int getWindowOffset(final long position) {
         return (int) position % windowSize;
     }
+    
+    
+    abstract Window createWindow(final long windowStart) throws IOException;
     
     
     private class WindowIterator implements Iterator<Window> {
