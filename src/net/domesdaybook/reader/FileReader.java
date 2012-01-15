@@ -31,8 +31,8 @@
 
 package net.domesdaybook.reader;
 
-import net.domesdaybook.reader.cache.WindowCache;
-import net.domesdaybook.reader.cache.MostRecentlyUsedCache;
+import net.domesdaybook.reader.windowcache.WindowCache;
+import net.domesdaybook.reader.windowcache.MostRecentlyUsedCache;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,7 +48,6 @@ import java.io.RandomAccessFile;
  */
 public class FileReader extends AbstractReader {
 
-    private final static int DEFAULT_CAPACITY = 8;
     private final static String READ_ONLY = "r";
     private final static String NULL_ARGUMENTS = "Null file passed to FileReader";
     
