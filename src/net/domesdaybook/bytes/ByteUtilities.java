@@ -376,6 +376,11 @@ public final class ByteUtilities {
     }
 
     
+    public static int powerOfTwo(final int i) {
+        return 32 - Integer.numberOfLeadingZeros(i);
+    }
+    
+    
     /**
      * Calculates a bitmask for which the set of bytes provided would match all of
      * the bits in the bitmask, and for which there are no other bytes it would match.
