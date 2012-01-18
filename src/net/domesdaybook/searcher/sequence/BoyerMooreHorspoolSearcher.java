@@ -378,17 +378,17 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         @Override
         protected SearchInfo create() {
             // Get info about the matcher:
-            final SequenceMatcher theMatcher = getMatcher();            
-            final int sequenceLength = theMatcher.length();            
+            final SequenceMatcher sequence = getMatcher();            
+            final int sequenceLength = sequence.length();            
             
             // Create the search info object:
             final SearchInfo info = new SearchInfo();
             final int lastPosition = sequenceLength - 1;
-            info.matcher = theMatcher.getMatcherForPosition(lastPosition);
+            info.matcher = sequence.getMatcherForPosition(lastPosition);
             if (lastPosition == 0) {
                 info.verifier = info.matcher;
             } else {
-                info.verifier = theMatcher.subsequence(0, lastPosition);
+                info.verifier = sequence.subsequence(0, lastPosition);
             }
             info.shifts = new int[256];            
 
@@ -400,7 +400,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             // from the end of the sequence, but we do not create a shift for
             // the very last position.
             for (int sequencePos = 0; sequencePos < lastPosition; sequencePos++) {
-                final SingleByteMatcher aMatcher = theMatcher.getMatcherForPosition(sequencePos);
+                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromEnd = sequenceLength - sequencePos - 1;
                 for (final byte b : matchingBytes) {
@@ -428,17 +428,17 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         @Override
         protected SearchInfo create() {
             // Get info about the matcher:
-            final SequenceMatcher theMatcher = getMatcher();            
-            final int sequenceLength = theMatcher.length();            
+            final SequenceMatcher sequence = getMatcher();            
+            final int sequenceLength = sequence.length();            
             
             // Create the search info object:
             final SearchInfo info = new SearchInfo();
             final int lastPosition = sequenceLength - 1;
-            info.matcher = theMatcher.getMatcherForPosition(lastPosition);
+            info.matcher = sequence.getMatcherForPosition(lastPosition);
             if (lastPosition == 0) {
                 info.verifier = info.matcher;
             } else {
-                info.verifier = theMatcher.subsequence(1, sequenceLength);
+                info.verifier = sequence.subsequence(1, sequenceLength);
             }
             info.shifts = new int[256];            
 
@@ -449,7 +449,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             // the sequence itself.  The shift is the position in the sequence,
             // but we do not create a shift for the first position 0.
             for (int sequencePos = lastPosition; sequencePos > 0; sequencePos--) {
-                final SingleByteMatcher aMatcher = theMatcher.getMatcherForPosition(sequencePos);
+                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 for (final byte b : matchingBytes) {
                     info.shifts[b & 0xFF] = sequencePos;
