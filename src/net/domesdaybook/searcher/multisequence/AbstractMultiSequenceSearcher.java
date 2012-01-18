@@ -32,6 +32,7 @@
 package net.domesdaybook.searcher.multisequence;
 
 import java.io.IOException;
+import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
@@ -59,9 +60,9 @@ import net.domesdaybook.searcher.AbstractSearcher;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractMultisequenceSearcher extends AbstractSearcher {
+public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
     
-    protected final SequenceMatcher matcher;
+    protected final MultiSequenceMatcher matcher;
     
     /**
      * Constructs a sequence searcher given a {@link SequenceMatcher}
@@ -69,11 +70,11 @@ public abstract class AbstractMultisequenceSearcher extends AbstractSearcher {
      * 
      * @param sequence 
      */
-    public AbstractMultisequenceSearcher(final SequenceMatcher sequence) {
-        if (sequence == null) {
-            throw new IllegalArgumentException("Null sequence passed in to searcher.");
+    public AbstractMultiSequenceSearcher(final MultiSequenceMatcher sequences) {
+        if (sequences == null) {
+            throw new IllegalArgumentException("Null sequences passed in to searcher.");
         }        
-        this.matcher = sequence;
+        this.matcher = sequences;
     }    
     
     
@@ -82,7 +83,7 @@ public abstract class AbstractMultisequenceSearcher extends AbstractSearcher {
      * 
      * @return SequenceMatcher the sequence matcher to be searched for.
      */
-    public SequenceMatcher getMatcher() {
+    public MultiSequenceMatcher getMatcher() {
         return matcher;
     }
     
