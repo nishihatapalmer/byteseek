@@ -31,7 +31,6 @@
 
 package net.domesdaybook.reader;
 
-import net.domesdaybook.reader.windowcache.CacheFailureException;
 import net.domesdaybook.reader.windowcache.WindowCache;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,7 +105,7 @@ public class InputStreamReader extends AbstractReader {
     
     @Override
     public final Window getWindow(final long position) 
-            throws IOException, CacheFailureException {
+            throws IOException, WindowMissingException {
         final Window window = super.getWindow(position);
         if (window == null && position < streamPos && position >= 0) {
             // No window was returned, but the position requested has already
@@ -114,8 +113,8 @@ public class InputStreamReader extends AbstractReader {
             // this reader cannot return an earlier position, and being a stream,
             // we can't rewind to read it again.  There is nothing which can be
             // done at this point other than to throw an exception.
-            final String message = "Cache failed to provide a window at position: %d when we have already read past this position, currently at: %d";
-            throw new CacheFailureException(String.format(message, position, streamPos));
+            final String message = "Cache failed to provide a window at position: %d but we have already read up to: %d";
+            throw new WindowMissingException(String.format(message, position, streamPos));
         }
         return window;
     }

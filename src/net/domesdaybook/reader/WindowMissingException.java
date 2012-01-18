@@ -29,19 +29,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader.windowcache;
+package net.domesdaybook.reader;
+
+import java.io.IOException;
 
 /**
  * 
  * @author Matt Palmer.
  */
-public class CacheFailureException extends RuntimeException {
+public class WindowMissingException extends IOException {
 
     /**
      * 
      * @param message
      */
-    public CacheFailureException(String message) {
+    public WindowMissingException(String message) {
         super(message);
     }
 
@@ -49,7 +51,7 @@ public class CacheFailureException extends RuntimeException {
      * 
      * @param cause
      */
-    public CacheFailureException(Throwable cause) {
+    public WindowMissingException(Throwable cause) {
         super(cause);
     }
 
@@ -58,7 +60,7 @@ public class CacheFailureException extends RuntimeException {
      * @param message
      * @param cause
      */
-    public CacheFailureException(String message, Throwable cause) {
+    public WindowMissingException(String message, Throwable cause) {
         super(message, cause);
     }
     
