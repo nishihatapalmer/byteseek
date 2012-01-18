@@ -297,8 +297,8 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         protected int[] create() {
             // First set the default shift to the length of the sequence plus one.
             final int[] shifts = new int[256];
-            final SequenceMatcher theMatcher = getMatcher();
-            final int numBytes = theMatcher.length();
+            final SequenceMatcher sequence = getMatcher();
+            final int numBytes = sequence.length();
             Arrays.fill(shifts, numBytes + 1);
 
             // Now set specific byte shifts for the bytes actually in
@@ -306,7 +306,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // from the end of the sequence, where the last position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
             for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes; sequenceByteIndex++) {
-                final SingleByteMatcher aMatcher = theMatcher.getMatcherForPosition(sequenceByteIndex);
+                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromEnd = numBytes - sequenceByteIndex;
                 for (final byte b : matchingBytes) {
@@ -335,8 +335,8 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // First set the default shift to the length of the sequence
             // (negative if search direction is reversed)
             final int[] shifts = new int[256];
-            final SequenceMatcher theMatcher = getMatcher();
-            final int numBytes = theMatcher.length();
+            final SequenceMatcher sequence = getMatcher();
+            final int numBytes = sequence.length();
             Arrays.fill(shifts, numBytes + 1);
 
             // Now set specific byte shifts for the bytes actually in
@@ -344,7 +344,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // from the start of the sequence, where the first position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
             for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex++) {
-                final SingleByteMatcher aMatcher = theMatcher.getMatcherForPosition(sequenceByteIndex);
+                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromStart = sequenceByteIndex + 1;
                 for (final byte b : matchingBytes) {
