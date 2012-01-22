@@ -31,7 +31,6 @@
 
 package net.domesdaybook.automata.transition;
 
-import net.domesdaybook.automata.TransitionFactory;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
@@ -45,7 +44,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
 
 /**
  * An implementation of {@link TransitionFactory} which creates 
- * {@link SimpleTransition}s.
+ * {@link SingleByteMatcherTransition}s.
  * <p>
  * Where the requirement for a matcher is unambiguous, the factory will
  * create an appropriate underlying {@link SingleByteMatcher} directly.
@@ -56,7 +55,7 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
  * 
  * @author Matt Palmer
  */
-public class SimpleTransitionFactory implements TransitionFactory {
+public class SingleByteMatcherTransitionFactory implements TransitionFactory {
 
     private final SingleByteMatcherFactory matcherFactory;
 
@@ -65,7 +64,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      * Default constructor which used an underlying {@link SimpleSingleByteMatcherFactory}
      * to create {@link SingleByteMatcher}s based on sets of bytes.
      */
-    public SimpleTransitionFactory() {
+    public SingleByteMatcherTransitionFactory() {
         matcherFactory = new SimpleSingleByteMatcherFactory();
     }
 
@@ -76,7 +75,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      * 
      * @param factoryToUse The factory to create transitions based on sets of bytes.
      */
-    public SimpleTransitionFactory(final SingleByteMatcherFactory factoryToUse) {
+    public SingleByteMatcherTransitionFactory(final SingleByteMatcherFactory factoryToUse) {
         matcherFactory = factoryToUse;
     }
 
@@ -90,7 +89,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      */
     @Override
     public final Transition createByteTransition(final byte theByte, final State toState) {
-        return new SimpleTransition(new ByteMatcher(theByte), toState);
+        return new SingleByteMatcherTransition(new ByteMatcher(theByte), toState);
     }
 
     
@@ -108,7 +107,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      */
     @Override
     public final Transition createAllBitmaskTransition(final byte bitMask, final State toState) {
-        return new SimpleTransition(new BitMaskAllBitsMatcher(bitMask), toState);
+        return new SingleByteMatcherTransition(new BitMaskAllBitsMatcher(bitMask), toState);
     }
 
     
@@ -126,7 +125,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      */
     @Override
     public final Transition createAnyBitmaskTransition(final byte bitMask, final State toState) {
-        return new SimpleTransition(new BitMaskAnyBitsMatcher(bitMask), toState);
+        return new SingleByteMatcherTransition(new BitMaskAnyBitsMatcher(bitMask), toState);
     }
     
     
@@ -146,7 +145,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      */
     @Override
     public final Transition createSetTransition(final Set<Byte> byteSet, final boolean inverted, final State toState) {
-        return new SimpleTransition(matcherFactory.create(byteSet, inverted), toState);
+        return new SingleByteMatcherTransition(matcherFactory.create(byteSet, inverted), toState);
     }
 
     
@@ -158,7 +157,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      */
     @Override
     public final Transition createAnyByteTransition(State toState) {
-        return new SimpleTransition(new AnyMatcher(), toState);
+        return new SingleByteMatcherTransition(new AnyMatcher(), toState);
     }
 
     
@@ -173,7 +172,7 @@ public class SimpleTransitionFactory implements TransitionFactory {
      */
     @Override
     public final Transition createCaseInsensitiveByteTransition(final char Char, final State toState) {
-        return new SimpleTransition(new CaseInsensitiveByteMatcher(Char), toState);
+        return new SingleByteMatcherTransition(new CaseInsensitiveByteMatcher(Char), toState);
     }
 
 }

@@ -51,42 +51,42 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  * 
  * @author Matt Palmer
  */
-public class SimpleTransition implements Transition {
+public class SingleByteMatcherTransition implements Transition {
 
     private final SingleByteMatcher matcher;
     private State toState;
 
 
     /**
-     * Constructor for the SimpleTransition taking the {@link SingleByteMatcher}
+     * Constructor for the SingleByteMatcherTransition taking the {@link SingleByteMatcher}
      * to use and the {@link State} this transition links to.
      * 
      * @param matcher The SingleByteMatcher to use to match bytes for this transition.
      * @param toState The state this transition links to.
      */
-    public SimpleTransition(final SingleByteMatcher matcher, final State toState) {
+    public SingleByteMatcherTransition(final SingleByteMatcher matcher, final State toState) {
         this.matcher = matcher;
         this.toState = toState;
     }
    
     
     /**
-     * Copy constructor for the SimpleTransition, taking another
-     * SimpleTransition to copy from, and another {@link State} to link to.
+     * Copy constructor for the SingleByteMatcherTransition, taking another
+     * SingleByteMatcherTransition to copy from, and another {@link State} to link to.
      * <p>
      * Since instances of this class are immutable, an identical copy of an instance
      * of this class will always be identical to the original, making a copy constructor
      * essentially useless.
      * <p>
      * This is really a convenience constructor, which copies the matcher out of 
-     * an existing SimpleTransition, but specifies a different State to 
+     * an existing SingleByteMatcherTransition, but specifies a different State to 
      * link to.  It is equivalent to:
-     * <code>SimpleTransition(other.getMatcher(), someState);</code>
+     * <code>SingleByteMatcherTransition(other.getMatcher(), someState);</code>
      * 
-     * @param other The SimpleTransition to copy the matcher from.
+     * @param other The SingleByteMatcherTransition to copy the matcher from.
      * @param toState The State that this transition links to.
      */
-    public SimpleTransition(final SimpleTransition other, final State toState) {
+    public SingleByteMatcherTransition(final SingleByteMatcherTransition other, final State toState) {
         this.matcher = other.matcher;
         this.toState = toState;
     }
@@ -121,21 +121,21 @@ public class SimpleTransition implements Transition {
 
     /**
      * This method is inherited from the {@link DeepCopy} interface,
-     * and is redeclared here with a return type of SimpleTransition
+     * and is redeclared here with a return type of SingleByteMatcherTransition
      * (rather than DeepCopy), to make using the method easier.
      *
      * @param oldToNewObjects A map of the original objects to their new deep copies.
-     * @return Transition A deep copy of this SimpleTransition and any 
+     * @return Transition A deep copy of this SingleByteMatcherTransition and any 
      *                    States and Transitions reachable from this Transition.
      */
 
     @Override
-    public SimpleTransition deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        SimpleTransition transitionCopy = (SimpleTransition) oldToNewObjects.get(this);
+    public SingleByteMatcherTransition deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        SingleByteMatcherTransition transitionCopy = (SingleByteMatcherTransition) oldToNewObjects.get(this);
         if (transitionCopy == null) {
             oldToNewObjects.put(this, this); // put in a placeholder mapping to prevent an infinite loop.
             final State copyState = (State) toState.deepCopy(oldToNewObjects);
-            transitionCopy = new SimpleTransition(this, copyState);
+            transitionCopy = new SingleByteMatcherTransition(this, copyState);
             oldToNewObjects.put(this, transitionCopy); // now put the real transition in.
         }
         return transitionCopy;
