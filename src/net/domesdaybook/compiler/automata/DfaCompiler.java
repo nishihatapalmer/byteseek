@@ -42,7 +42,7 @@ import net.domesdaybook.compiler.Compiler;
  * 
  * @author Matt Palmer
  */
-public class DfaCompiler implements Compiler<State, String> {
+public class DfaCompiler implements Compiler<State<?>, String> {
 
     private static DfaCompiler defaultCompiler;
     
@@ -57,8 +57,8 @@ public class DfaCompiler implements Compiler<State, String> {
         return defaultCompiler.compile(expression);
     }
     
-    private final Compiler<State, String> nfaCompiler;
-    private final Compiler<State, State> dfaFromNfaCompiler;
+    private final Compiler<State<?>, String> nfaCompiler;
+    private final Compiler<State<?>, State<?>> dfaFromNfaCompiler;
     
     /**
      * 
@@ -73,7 +73,7 @@ public class DfaCompiler implements Compiler<State, String> {
      * 
      * @param dfaFromNfaCompilerToUse
      */
-    public DfaCompiler(final Compiler<State, State> dfaFromNfaCompilerToUse) {
+    public DfaCompiler(final Compiler<State<?>, State<?>> dfaFromNfaCompilerToUse) {
         this(null, dfaFromNfaCompilerToUse);
     }    
     
@@ -83,7 +83,7 @@ public class DfaCompiler implements Compiler<State, String> {
      * @param nfaCompilerToUse
      * @param dfaFromNfaCompilerToUse
      */
-    public DfaCompiler(final Compiler<State, String> nfaCompilerToUse, final Compiler<State, State> dfaFromNfaCompilerToUse) {
+    public DfaCompiler(final Compiler<State<?>, String> nfaCompilerToUse, final Compiler<State<?>, State<?>> dfaFromNfaCompilerToUse) {
         if (nfaCompilerToUse == null) {
             this.nfaCompiler = new NfaCompiler();
         } else {

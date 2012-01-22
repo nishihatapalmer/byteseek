@@ -33,15 +33,15 @@ package net.domesdaybook.compiler.automata;
 
 import java.util.Collection;
 import net.domesdaybook.automata.wrapper.InitialFinalStates;
-import net.domesdaybook.automata.transition.SimpleTransitionFactory;
-import net.domesdaybook.automata.TransitionFactory;
+import net.domesdaybook.automata.transition.SingleByteMatcherTransitionFactory;
+import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.AutomataUtils;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.StateFactory;
-import net.domesdaybook.automata.state.SimpleStateFactory;
+import net.domesdaybook.automata.state.StateFactory;
+import net.domesdaybook.automata.state.BaseStateFactory;
 import net.domesdaybook.compiler.AbstractAstCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
@@ -59,7 +59,7 @@ import org.antlr.runtime.tree.CommonTree;
  * 
  * @author Matt Palmer
  */
-public final class NfaCompiler extends AbstractAstCompiler<State> {
+public final class NfaCompiler extends AbstractAstCompiler<State<?>> {
 
     private static NfaCompiler defaultCompiler;
     /**
@@ -81,7 +81,7 @@ public final class NfaCompiler extends AbstractAstCompiler<State> {
      * Constructs an NfaCompiler, using default {@link TransitionFactory},
      * {@link StateBuilder} and {@link StatesBuilder} objects.
      *
-     * By default, it uses the {@link SimpleTransitionFactory} and
+     * By default, it uses the {@link SingleByteMatcherTransitionFactory} and
      * the {@link StateBuilder} to make a {@link GlushkovStatesBuilder} to
      * produce the NFA.
      */
@@ -129,7 +129,7 @@ public final class NfaCompiler extends AbstractAstCompiler<State> {
     
     @Override
     public State compile(Collection<String> expressions) throws CompileException {
-        final List<State> automataFirstStates = new ArrayList<State>();
+        final List<State<?>> automataFirstStates = new ArrayList<State<?>>();
         for (final String expression : expressions) {
             automataFirstStates.add(compile(expression));
         }

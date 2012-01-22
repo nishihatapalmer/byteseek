@@ -33,15 +33,15 @@
 package net.domesdaybook.compiler.automata;
 
 import net.domesdaybook.automata.wrapper.InitialFinalStates;
-import net.domesdaybook.automata.TransitionFactory;
+import net.domesdaybook.automata.transition.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.state.SimpleStateFactory;
-import net.domesdaybook.automata.StateFactory;
-import net.domesdaybook.automata.transition.SimpleTransitionFactory;
+import net.domesdaybook.automata.state.BaseStateFactory;
+import net.domesdaybook.automata.state.StateFactory;
+import net.domesdaybook.automata.transition.SingleByteMatcherTransitionFactory;
 
 /**
  * ----------------------------------------------------------------------------
@@ -123,12 +123,12 @@ public final class GlushkovStatesBuilder implements StatesBuilder {
       */
      public GlushkovStatesBuilder(final TransitionFactory transitionFactory, final StateFactory stateFactory) {
          if (transitionFactory == null) {
-             this.transitionFactory = new SimpleTransitionFactory();
+             this.transitionFactory = new SingleByteMatcherTransitionFactory();
          } else {
              this.transitionFactory = transitionFactory;
          }
          if (stateFactory == null) {
-             this.stateFactory = new SimpleStateFactory();
+             this.stateFactory = new BaseStateFactory();
          } else {
             this.stateFactory = stateFactory;   
          }
