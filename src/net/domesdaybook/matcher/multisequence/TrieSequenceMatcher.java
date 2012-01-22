@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.wrapper.Trie;
+import net.domesdaybook.automata.trie.Trie;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
@@ -46,7 +46,7 @@ import net.domesdaybook.reader.Window;
  *
  * @author matt
  */
-public final class TrieMatcher implements MultiSequenceMatcher {
+public final class TrieSequenceMatcher implements MultiSequenceMatcher {
 
     private final Trie<SequenceMatcher> trie;
 
@@ -55,7 +55,7 @@ public final class TrieMatcher implements MultiSequenceMatcher {
      * 
      * @param trie
      */
-    public TrieMatcher(final Trie<SequenceMatcher> trie) {
+    public TrieSequenceMatcher(final Trie<SequenceMatcher> trie) {
         if (trie == null) {
             throw new IllegalArgumentException("Null Trie passed in to TrieMatcher.");
         }
