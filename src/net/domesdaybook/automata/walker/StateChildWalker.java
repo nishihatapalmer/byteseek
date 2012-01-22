@@ -51,14 +51,14 @@ import net.domesdaybook.collections.IdentityHashSet;
  */
 public final class StateChildWalker implements Walker {
 
-    public static void walkAutomata(final State startState, final StepTaker taker) {
+    public static void walkAutomata(final State startState, final StepAction taker) {
         final Walker walker = new StateChildWalker();
         walker.walk(startState, taker);
     }
     
     
     /**
-     * Walks an automata from the startState, invoking the {@link StepTaker} for
+     * Walks an automata from the startState, invoking the {@link StepAction} for
      * each step of the walk.  This method will visit each State reachable from the 
      * start State only once, in a child-first (i.e. depth-first) order.
      * 
@@ -66,7 +66,7 @@ public final class StateChildWalker implements Walker {
      * @param observer The observer to invoke for each step of the walk.
      */
     @Override
-    public void walk(final State startState, final StepTaker taker) {
+    public void walk(final State startState, final StepAction taker) {
         final Set<State> visitedStates = new IdentityHashSet<State>();
         final Deque<Step> walkSteps = new ArrayDeque<Step>();
         walkSteps.addFirst(new Step(null, null, startState));

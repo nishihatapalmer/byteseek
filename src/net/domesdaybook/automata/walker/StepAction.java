@@ -41,7 +41,7 @@ package net.domesdaybook.automata.walker;
  * 
  * @author Matt Palmer
  */
-public interface StepTaker {
+public interface StepAction {
     
     /**
      * Takes a step of the walk of an automata.
