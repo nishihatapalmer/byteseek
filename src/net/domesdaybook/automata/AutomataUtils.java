@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
-import net.domesdaybook.automata.walker.StepTaker;
+import net.domesdaybook.automata.walker.StepAction;
 import net.domesdaybook.collections.IdentityHashSet;
 
 /**
@@ -54,6 +54,8 @@ public final class AutomataUtils {
 
     private AutomataUtils() {
     };
+
+    
 
 
     /**
@@ -68,9 +70,21 @@ public final class AutomataUtils {
         List<State> finalStates = new ArrayList<State>();
         getAllFinalStates(initialState, visitedStates, finalStates);
         return finalStates;
-    }
+    }    
     
-
+    private static void getAllFinalStates(final State state, final Set<State> visitedStates, final List<State> finalStates) {
+        if (!visitedStates.contains(state)) {
+            visitedStates.add(state);
+            if (state.isFinal()) {
+                finalStates.add(state);
+            }
+            final List<Transition> transitions = state.getTransitions();
+            for (Transition transition: transitions) {
+                getAllFinalStates(transition.getToState(), visitedStates, finalStates);
+            }
+        }
+    }        
+    
     
     /**
      * This function joins all the automata into a single automata,
@@ -85,13 +99,13 @@ public final class AutomataUtils {
      * @param automata
      * @return 
      */
-    public static State join(final Collection<State> automata) {
-        final Iterator<State> automataFirstStates = automata.iterator();
+    public static State join(final Collection<State<?>> automata) {
+        final Iterator<State<?>> automataFirstStates = automata.iterator();
         if (automataFirstStates.hasNext()) {
             final State root = automataFirstStates.next();
             boolean isFinal = root.isFinal();            
             while (automataFirstStates.hasNext()) {
-                final State automataFirstState = automataFirstStates.next();
+                final State<?> automataFirstState = automataFirstStates.next();
                 isFinal |= automataFirstState.isFinal();
                 replaceState(automataFirstState, root);
                 root.addAllTransitions(automataFirstState.getTransitions());
@@ -113,8 +127,8 @@ public final class AutomataUtils {
      * @param newState
      * @return 
      */
-    public static void replaceState(final State oldState, final State newState) {
-        final StepTaker replaceWithNewState = new StepTaker() {
+    public static void replaceState(final State<?> oldState, final State<?> newState) {
+        final StepAction replaceWithNewState = new StepAction() {
             @Override
             public void take(final Step step) {
                 final State<?> stateToUpdate = step.currentState;
@@ -129,20 +143,6 @@ public final class AutomataUtils {
     }
     
 
-    private static void getAllFinalStates(final State state, final Set<State> visitedStates, final List<State> finalStates) {
-        if (!visitedStates.contains(state)) {
-            visitedStates.add(state);
-            if (state.isFinal()) {
-                finalStates.add(state);
-            }
-            final List<Transition> transitions = state.getTransitions();
-            for (Transition transition: transitions) {
-                getAllFinalStates(transition.getToState(), visitedStates, finalStates);
-            }
-        }
-    }
-
-    
     /**
      * Builds a map of bytes to the states which can be reached by them from a
      * given state.
@@ -150,15 +150,15 @@ public final class AutomataUtils {
      * @param state The state to build the map from.
      * @param byteToTargetStates The map of byte to states in which the results are placed.
      */
-    public static void buildByteToStates(final State<?> state, Map<Byte, Set<State>> byteToTargetStates) {
+    public static void buildByteToStates(final State<?> state, Map<Byte, Set<State<?>>> byteToTargetStates) {
         for (final Transition transition : state.getTransitions()) {
-            final State transitionToState = (State) transition.getToState();
+            final State<?> transitionToState = (State<?>) transition.getToState();
             final byte[] transitionBytes = transition.getBytes();
             for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
                 final Byte transitionByte = transitionBytes[index];
-                Set<State> states = byteToTargetStates.get(transitionByte);
+                Set<State<?>> states = byteToTargetStates.get(transitionByte);
                 if (states == null) {
-                    states = new IdentityHashSet<State>();
+                    states = new IdentityHashSet<State<?>>();
                     byteToTargetStates.put(transitionByte, states);
                 }
                 states.add(transitionToState);
@@ -176,14 +176,14 @@ public final class AutomataUtils {
      * @param bytesToTargetStates The map of bytes to states reachable by them.
      * @return A map of the set of states to the set of bytes required to reach that set of states.
      */
-    public static Map<Set<State>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State>> bytesToTargetStates) {
-        Map<Set<State>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State>, Set<Byte>>();
+    public static Map<Set<State<?>>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State<?>>> bytesToTargetStates) {
+        Map<Set<State<?>>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State<?>>, Set<Byte>>();
 
         // For each byte there is a transition on:
-        for (final Map.Entry<Byte, Set<State>> transitionByte : bytesToTargetStates.entrySet()) {
+        for (final Map.Entry<Byte, Set<State<?>>> transitionByte : bytesToTargetStates.entrySet()) {
 
             // Get the target states for that byte:
-            Set<State> targetStates = transitionByte.getValue();
+            Set<State<?>> targetStates = transitionByte.getValue();
 
             // Get the set of bytes so far for those target states:
             Set<Byte> targetStateBytes = statesToBytes.get(targetStates);
@@ -211,19 +211,19 @@ public final class AutomataUtils {
      * @param title
      * @return
      */
-    public static String toDot(final State initialState, final String title) {
+    public static String toDot(final State<?> initialState, final String title) {
         final StringBuilder builder = new StringBuilder();
         builder.append("digraph {\n");
         String onelineTitle = title.replaceAll("\\s", " ");
         builder.append(String.format("label=\"%s\"\n", onelineTitle));
-        Map<State,Integer> visitedStates = new IdentityHashMap<State,Integer>();
+        Map<State<?>,Integer> visitedStates = new IdentityHashMap<State<?>,Integer>();
         buildDot(initialState, visitedStates, 0, builder);
         builder.append("\n}");
         return builder.toString();
     }
 
 
-    private static int buildDot(State state, Map<State,Integer> visitedStates, int nextStateNumber, StringBuilder builder) {
+    private static int buildDot(State<?> state, Map<State<?>,Integer> visitedStates, int nextStateNumber, StringBuilder builder) {
         if (!visitedStates.containsKey(state)) {
             visitedStates.put(state, nextStateNumber);
             final String label = Integer.toString(nextStateNumber);
