@@ -31,28 +31,24 @@
 
 package net.domesdaybook.automata.state;
 
-import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.State;
 
 /**
- * A factory which creates {@link SimpleState} objects.
+ * An abstract factory for State objects.
+ * <p>
+ * Implementations of this interface should create the particular type of State
+ * required.
  * 
  * @author Matt Palmer
  */
-public final class SimpleStateFactory<T> implements StateFactory<T> {
-
+public interface StateFactory<T> {
     
     /**
-     * Creates an instance of a {@link SimpleState}.
-     * 
-     * @param isFinal Whether the SimpleState is final or not.
-     * @return A SimpleState object.
-     * @see SimpleState
+     * Builds an {@link State} object.
+     *
+     * @param isFinal Whether the state is final or not.
+     * @return An object implementing the State interface.
      */
-    @Override
-    public State<T> create(boolean isFinal) {
-        return new SimpleState<T>(isFinal);
-    }
+    public State<T> create(boolean isFinal);    
     
 }
-

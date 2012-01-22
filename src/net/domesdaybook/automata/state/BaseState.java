@@ -55,7 +55,7 @@ import net.domesdaybook.object.DeepCopy;
  * @see net.domesdaybook.automata.Transition
  * @author Matt Palmer
  */
-public class SimpleState<T> implements State<T> {
+public class BaseState<T> implements State<T> {
     
     
     private List<Transition> transitions;
@@ -66,20 +66,20 @@ public class SimpleState<T> implements State<T> {
     // Constructors
     
     /**
-     * The default constructor for SimpleState, as a non-final state.
+     * The default constructor for BaseState, as a non-final state.
      */
-    public SimpleState() {
+    public BaseState() {
         this(State.NON_FINAL);
     }
     
     
     /**
-     * A constructor for SimpleState taking a parameter determining whether the
+     * A constructor for BaseState taking a parameter determining whether the
      * state is final or not.
      * 
      * @param isFinal Whether the state is final or not.
      */
-    public SimpleState(final boolean isFinal) {
+    public BaseState(final boolean isFinal) {
         this.isFinal = isFinal;
         this.transitions = Collections.EMPTY_LIST; // new ArrayList<Transition>(1);
         this.associations = Collections.EMPTY_LIST; // = new ArrayList<T>(0);
@@ -87,12 +87,12 @@ public class SimpleState<T> implements State<T> {
 
     
     /**
-     * A copy constructor for SimpleState from another state.
+     * A copy constructor for BaseState from another state.
      * 
      * @param other The other State to copy from.
      * @throws NullPointerException if the State passed in is null.
      */
-    public SimpleState(final State<T> other) {
+    public BaseState(final State<T> other) {
         this.isFinal = other.isFinal();
         final List<Transition> otherTransitions = other.getTransitions();
         if (otherTransitions != null && otherTransitions.size() > 0) {
@@ -291,11 +291,11 @@ public class SimpleState<T> implements State<T> {
      * This is a convenience method, providing the initial map to:
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
      *
-     * @return SimpleState a deep copy of this object.
+     * @return BaseState a deep copy of this object.
      * @see #deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)
      */
     @Override
-    public SimpleState<T> deepCopy() {
+    public BaseState<T> deepCopy() {
         final Map<DeepCopy, DeepCopy> oldToNewObjects = new IdentityHashMap<DeepCopy,DeepCopy>();
         return deepCopy(oldToNewObjects);
     }
@@ -303,18 +303,18 @@ public class SimpleState<T> implements State<T> {
     
     /**
      * This method is inherited from the {@link DeepCopy} interface,
-     * and is redeclared here with a return type of SimpleState (rather than DeepCopy),
+     * and is redeclared here with a return type of BaseState (rather than DeepCopy),
      * to make using the method easier.
      *
      * @param oldToNewObjects A map of the original objects to their new deep copies.
-     * @return SimpleState A deep copy of this SimpleState and any Transitions and States
+     * @return BaseState A deep copy of this BaseState and any Transitions and States
      *         reachable from this State.
      */
     @Override
-    public SimpleState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        SimpleState<T> stateCopy = (SimpleState<T>)oldToNewObjects.get(this);
+    public BaseState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        BaseState<T> stateCopy = (BaseState<T>)oldToNewObjects.get(this);
         if (stateCopy == null) {
-            stateCopy = new SimpleState(this.isFinal);
+            stateCopy = new BaseState(this.isFinal);
             oldToNewObjects.put(this, stateCopy);
             for (Transition transition : transitions) {
                 final Transition transitionCopy = transition.deepCopy(oldToNewObjects);
