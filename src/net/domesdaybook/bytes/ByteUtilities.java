@@ -153,7 +153,7 @@ public final class ByteUtilities {
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) == bitMask) {
-                bytes.add((byte) byteIndex);
+                bytes.add(Byte.valueOf((byte) byteIndex));
             }
         }
         return bytes;
@@ -196,7 +196,7 @@ public final class ByteUtilities {
     public static Collection<? extends Byte> toList(byte[] bytes) {
         final List<Byte> listOfBytes = new ArrayList<Byte>(bytes.length);
         for (final byte b : bytes) {
-            listOfBytes.add(b);
+            listOfBytes.add(Byte.valueOf(b));
         }
         return listOfBytes;
     }    
@@ -211,7 +211,7 @@ public final class ByteUtilities {
     public static void addAll(final byte[] bytes, final Collection<Byte> toCollection) {
         final int size = bytes.length;
         for (int count = 0; count < size; count++) {
-            toCollection.add(bytes[count]);
+            toCollection.add(Byte.valueOf(bytes[count]));
         }
     }
     
@@ -349,7 +349,7 @@ public final class ByteUtilities {
     public static void buildInvertedSet(final Set<Byte> bytes, final Set<Byte> invertedSet) {
         for (int value = 0; value < 256; value++) {
             if (!bytes.contains((byte) value)) {
-                invertedSet.add((byte) value);
+                invertedSet.add(Byte.valueOf((byte) value));
             }
         }
     }    
@@ -559,7 +559,7 @@ public final class ByteUtilities {
         for (int byteIndex = 1; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) != 0) {
-                bytes.add((byte) byteIndex);
+                bytes.add(Byte.valueOf((byte) byteIndex));
             }
         }
         return bytes;
