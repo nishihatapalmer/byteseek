@@ -48,12 +48,13 @@ import net.domesdaybook.object.DeepCopy;
  */
 public class BaseAutomata<T> implements Automata<T>{
 
-    private final State<T> initialState;
+    protected final State<T> initialState;
+   
     
     public BaseAutomata(final State<T> initialState) {
         this.initialState = initialState;
     }
-    
+
     
     public State<T> getInitialState() {
         return initialState;
