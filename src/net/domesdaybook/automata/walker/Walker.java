@@ -52,7 +52,7 @@ public interface Walker {
      * is invoked for each step of the walk.
      * 
      * @param startState The state to begin walking at.
-     * @param observer The class which observes each step of the walk.
+     * @param observer The class which takes action for each step of the walk.
      */
     void walk(final State startState, final StepAction observer);
     
