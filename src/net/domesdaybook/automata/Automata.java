@@ -43,4 +43,6 @@ public interface Automata<T> extends DeepCopy {
     
     public Collection<State<T>> getFinalStates();
     
+    public Automata<T> deepCopy();
+    
 }

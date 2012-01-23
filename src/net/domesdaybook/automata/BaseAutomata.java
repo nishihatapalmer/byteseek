@@ -35,6 +35,7 @@
 package net.domesdaybook.automata;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.domesdaybook.automata.walker.StateChildWalker;
@@ -76,8 +77,14 @@ public class BaseAutomata<T> implements Automata<T>{
     }
     
 
-    public DeepCopy deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Automata<T> deepCopy() {
+        final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
+        return deepCopy(oldToNew);
+    }
+    
+    
+    public Automata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        return new BaseAutomata(initialState.deepCopy(oldToNewObjects));
     }
     
 }
