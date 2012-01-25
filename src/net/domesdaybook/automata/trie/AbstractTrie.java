@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.automata.BaseAutomata;
+import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.state.BaseStateFactory;
