@@ -33,9 +33,11 @@ package net.domesdaybook.compiler.automata;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.AutomataUtils;
@@ -43,6 +45,9 @@ import net.domesdaybook.automata.state.StateFactory;
 import net.domesdaybook.automata.state.BaseStateFactory;
 import net.domesdaybook.automata.transition.TransitionFactory;
 import net.domesdaybook.automata.transition.SingleByteMatcherTransitionFactory;
+import net.domesdaybook.automata.walker.StateChildWalker;
+import net.domesdaybook.automata.walker.Step;
+import net.domesdaybook.automata.walker.StepAction;
 import net.domesdaybook.collections.IdentityHashSet;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.compiler.Compiler;
@@ -163,7 +168,7 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
     
     @Override
     public State compile(final Collection<State<?>> automata) throws CompileException {
-        return compile(AutomataUtils.join(automata));
+        return compile(join(automata));
     }    
 
 
@@ -222,18 +227,132 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
         Map<Byte, Set<State<?>>> byteToStates = buildByteToStates(sourceStates);
 
         // Return a map of target nfa states to the bytes they each transition on:
-        return AutomataUtils.getStatesToBytes(byteToStates);
+        return getStatesToBytes(byteToStates);
    }
    
 
    private Map<Byte, Set<State<?>>> buildByteToStates(final Set<State<?>> states) {
         Map<Byte, Set<State<?>>> byteToTargetStates = new LinkedHashMap<Byte, Set<State<?>>>();
         for (final State<?> state : states) {
-            AutomataUtils.buildByteToStates(state, byteToTargetStates);
+            buildByteToStates(state, byteToTargetStates);
         }
         return byteToTargetStates;
     }
+   
+   
+    /**
+     * This function joins all the automata into a single automata,
+     * by adding all the transitions and associations of all the states after 
+     * the first in to the first state in the collection, and ensuring that
+     * any references to the other states are updated to point to the
+     * first state.
+     * <o>
+     * If any of the first states are final, then the state returned will
+     * also be final.
+     * 
+     * @param automata
+     * @return 
+     */
+    public static State join(final Collection<State<?>> automata) {
+        final Iterator<State<?>> automataFirstStates = automata.iterator();
+        if (automataFirstStates.hasNext()) {
+            final State root = automataFirstStates.next();
+            boolean isFinal = root.isFinal();            
+            while (automataFirstStates.hasNext()) {
+                final State<?> automataFirstState = automataFirstStates.next();
+                isFinal |= automataFirstState.isFinal();
+                replaceReachableReferences(automataFirstState, root);
+                root.addAllTransitions(automataFirstState.getTransitions());
+                root.addAllAssociations(automataFirstState.getAssociations());
+            }
+            root.setIsFinal(isFinal);
+            return root;
+        }
+        return null;
+    }
+    
+    
+    /**
+     * This function replaces all references to an old State with references 
+     * to the new state in the entire automata reachable from the oldState 
+     * passed in.
+     * 
+     * @param oldState
+     * @param newState
+     * @return 
+     */
+    private static void replaceReachableReferences(final State<?> oldState, final State<?> newState) {
+        final StepAction replaceWithNewState = new StepAction() {
+            @Override
+            public void take(final Step step) {
+                final State<?> stateToUpdate = step.currentState;
+                for (final Transition transition : stateToUpdate.getTransitions()) {
+                    if (transition.getToState() == oldState) {
+                        transition.setToState(newState);
+                    }
+                }
+            }
+        };
+        StateChildWalker.walkAutomata(oldState, replaceWithNewState);
+    }
+    
+   
+    /**
+     * Builds a map of bytes to the states which can be reached by them from a
+     * given state.
+     * 
+     * @param state The state to build the map from.
+     * @param byteToTargetStates The map of byte to states in which the results are placed.
+     */
+    private static void buildByteToStates(final State<?> state, Map<Byte, Set<State<?>>> byteToTargetStates) {
+        for (final Transition transition : state.getTransitions()) {
+            final State<?> transitionToState = (State<?>) transition.getToState();
+            final byte[] transitionBytes = transition.getBytes();
+            for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
+                final Byte transitionByte = transitionBytes[index];
+                Set<State<?>> states = byteToTargetStates.get(transitionByte);
+                if (states == null) {
+                    states = new IdentityHashSet<State<?>>();
+                    byteToTargetStates.put(transitionByte, states);
+                }
+                states.add(transitionToState);
+            }
+        }
+    }
 
+       
+    /**
+     * Given a map of the bytes to the states which can be reached by them, this
+     * method returns the reversed map of the sets of states to the sets of bytes 
+     * required to reach them.  The map is many-to-many (sets of states to sets of
+     * bytes) because a set of states can be reached by more than one byte.
+     * 
+     * @param bytesToTargetStates The map of bytes to states reachable by them.
+     * @return A map of the set of states to the set of bytes required to reach that set of states.
+     */
+    public static Map<Set<State<?>>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State<?>>> bytesToTargetStates) {
+        Map<Set<State<?>>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State<?>>, Set<Byte>>();
+
+        // For each byte there is a transition on:
+        for (final Map.Entry<Byte, Set<State<?>>> transitionByte : bytesToTargetStates.entrySet()) {
+
+            // Get the target states for that byte:
+            Set<State<?>> targetStates = transitionByte.getValue();
+
+            // Get the set of bytes so far for those target states:
+            Set<Byte> targetStateBytes = statesToBytes.get(targetStates);
+            if (targetStateBytes == null) {
+                targetStateBytes = new TreeSet<Byte>();
+                statesToBytes.put(targetStates, targetStateBytes);
+            }
+            
+            // Add the transition byte to that set of bytes:
+            targetStateBytes.add(transitionByte.getKey());
+        }
+
+        return statesToBytes;
+    }
+    
 
     private boolean anyStatesAreFinal(final Set<State<?>> sourceStates) {
         for (final State<?> state : sourceStates) {
