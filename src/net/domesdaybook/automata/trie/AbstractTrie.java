@@ -36,13 +36,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.automata.BaseAutomata;
+import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.state.BaseStateFactory;
-import net.domesdaybook.automata.state.StateFactory;
-import net.domesdaybook.automata.transition.SingleByteMatcherTransitionFactory;
-import net.domesdaybook.automata.transition.TransitionFactory;
+import net.domesdaybook.automata.base.BaseStateFactory;
+import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.bytes.ByteUtilities;
 
 /**
@@ -79,7 +79,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
         super(stateFactory.create(State.NON_FINAL));
         this.stateFactory = stateFactory;
         if (transitionFactory == null) {
-            this.transitionFactory = new SingleByteMatcherTransitionFactory();
+            this.transitionFactory = new ByteMatcherTransitionFactory();
         } else {
             this.transitionFactory = transitionFactory;
         }
