@@ -35,30 +35,30 @@ import java.util.Collection;
 
 
 /**
- * An interface for compilers which compile an expression of some type E
+ * An interface for compilers which compile an expression written as a string
  * into an object of type T.
  *
  * @author Matt Palmer
  */
-public interface Compiler<T, E> {
+public interface Compiler<T> {
 
     /**
-     * Compiles an expression of type E into an object of type T.
+     * Compiles an expression into an object of type T.
      *
-     * @param expression The expression of type E to compile.
+     * @param expression The expression to compile.
      * @return A compiled object of type T.
      * @throws CompileException if an object could not be compiled.
      */
-    public T compile(E expression) throws CompileException;
+    public T compile(String expression) throws CompileException;
     
     
     /**
      * Compiles a collection of expressions into a single object of type T.
      * 
-     * @param expressions A collection of expressions of type E to compile.
+     * @param expressions A collection of expressions to compile.
      * @return A compiled object of type T
      * @throws CompileException if an object could not be compiled.
      */
-    public T compile(Collection<E> expressions) throws CompileException;
+    public T compile(Collection<String> expressions) throws CompileException;
     
 }

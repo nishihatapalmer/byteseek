@@ -44,7 +44,7 @@ import org.antlr.runtime.tree.Tree;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractAstCompiler<T> implements Compiler<T, String> {
+public abstract class AbstractAstCompiler<T> implements Compiler<T> {
 
     /**
      * Turns an expression into a parse tree using an
