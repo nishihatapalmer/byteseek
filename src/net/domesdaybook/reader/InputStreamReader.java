@@ -31,12 +31,12 @@
 
 package net.domesdaybook.reader;
 
-import net.domesdaybook.reader.windowcache.WindowCache;
+import net.domesdaybook.reader.cache.WindowCache;
 import java.io.IOException;
 import java.io.InputStream;
-import net.domesdaybook.reader.windowcache.MostRecentlyUsedCache;
-import net.domesdaybook.reader.windowcache.TempFileCache;
-import net.domesdaybook.reader.windowcache.TwoLevelCache;
+import net.domesdaybook.reader.cache.MostRecentlyUsedCache;
+import net.domesdaybook.reader.cache.TempFileCache;
+import net.domesdaybook.reader.cache.TwoLevelCache;
 
 /**
  *

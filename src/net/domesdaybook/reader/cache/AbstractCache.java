@@ -29,92 +29,68 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import net.domesdaybook.reader.cache.NoCache;
+package net.domesdaybook.reader.cache;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import net.domesdaybook.reader.Window;
 
 /**
  *
- * @author Matt Palmer
+ * @author matt
  */
-public class StringReader extends AbstractReader {
-
-    private final byte[] bytes;
-    private final Charset charset;
+public abstract class AbstractCache implements WindowCache {
     
-    
+    private List<WindowObserver> windowObservers; 
     
     /**
      * 
-     * @param string
      */
-    public StringReader(final String string) {
-        this(string, Charset.defaultCharset());
-    }
-
-    
-    
-    /**
-     * 
-     * @param string
-     * @param charsetName
-     */
-    public StringReader(final String string, final String charsetName) {
-        this(string, Charset.forName(charsetName));
+    public AbstractCache() {
+        windowObservers = Collections.EMPTY_LIST; 
     }
     
     
     /**
-     * Does not need a cache, as we will create a single window large enough to
-     * store the entire string.  The AbstractReader already holds on to the last
-     * Window created, or creates it if it's not already there.  So no further
-     * caching is required.
      * 
-     * @param string
-     * @param charset 
+     * @param observer
      */
-    public StringReader(final String string, final Charset charset) {
-        super(string == null? 0 : string.length(), NoCache.NO_CACHE);        
-        if (string == null) {
-            throw new IllegalArgumentException("Null string passed in to StringReader.");
-        }
-        if (charset == null) {
-            throw new IllegalArgumentException("Null charset passed in to StringReader.");
-        }
-        this.bytes = string.getBytes(charset);
-        this.charset = charset;
-    }
-    
-    
     @Override
-    Window createWindow(final long windowStart) throws IOException {
-        return new Window(bytes, 0, bytes.length);
-    }
-
-    
-    @Override
-    public long length() throws IOException {
-        return bytes.length;
+    public void subscribe(WindowObserver observer) {
+        if (windowObservers.isEmpty()) {
+            windowObservers = new ArrayList<WindowObserver>(1);
+        }
+        windowObservers.add(observer);
     }
     
     
     /**
      * 
+     * @param observer
      * @return
      */
-    public String getString() {
-        return new String(bytes, charset);
+    @Override
+    public boolean unsubscribe(final WindowObserver observer) {
+        boolean removed = windowObservers.remove(observer);
+        if (windowObservers.isEmpty()) {
+            windowObservers = Collections.EMPTY_LIST;
+        }
+        return removed;
     }
     
     
     /**
      * 
-     * @return
+     * @param window
+     * @param fromCache
      */
-    public Charset getCharset() {
-        return charset;
+    protected final void notifyWindowFree(final Window window, final WindowCache fromCache) {
+        for (final WindowObserver observer : windowObservers) {
+            observer.windowFree(window, fromCache);
+        }
     }
     
+
 }
