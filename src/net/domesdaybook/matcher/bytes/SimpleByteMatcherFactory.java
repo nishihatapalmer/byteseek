@@ -110,41 +110,40 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
         ByteMatcher result = null;
         switch (values.size()) {
             case 0: {
+                // TODO: review whether a match that matches nothing should be allowed...?
                 // matches no bytes at all - AnyBitmaskMatcher with a mask of zero never matches anything.
                 // Or: should throw exception - matcher can never match anything.
                 result = new AnyBitmaskMatcher((byte) 0, false);
                 break;
             }
 
-            case 1: {
-                for (Byte byteToMatch : values) {
-                    result = new OneByteMatcher(byteToMatch);
-                    break;
-                }
+            case 1: { // just one byte matches:
+                final Iterator<Byte> byteValue = values.iterator();
+                result = new OneByteMatcher(byteValue.next());
                 break;
             }
 
-            case 2: {
+            case 2: { // there is a slim possibility it might be case insensitive...
                 result = getCaseInsensitiveMatcher(values);
                 break;
             }
 
-            case 255: {
-                for (byte byteValue = Byte.MIN_VALUE; byteValue < Byte.MAX_VALUE; byteValue++) {
-                    if (!values.contains(byteValue)) {
-                        result = new InvertedByteMatcher(byteValue);
+            case 255: { // all but one byte matches - find the one that doesn't match:
+                for (int byteValue = 0; byteValue < 256; byteValue++) {
+                    if (!values.contains((byte) byteValue)) {
+                        result = new InvertedByteMatcher((byte) byteValue);
                         break;
                     }
                 }
                 break;
             }
             
-            case 256: {
+            case 256: { // all the bytes match:
                 result = new AnyByteMatcher();
                 break;
             }
 
-            default: {
+            default: { // no simple match available.
                 result = null;
             }
         }
@@ -232,7 +231,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
 
     private static List<Integer> getSortedByteValues(Set<Byte> byteSet) {
         final List<Integer> sortedByteValues = new ArrayList<Integer>();
-        for (Byte b : byteSet) {
+        for (final Byte b : byteSet) {
             sortedByteValues.add(Integer.valueOf(b.byteValue() & 0xFF));
         }
         Collections.sort(sortedByteValues);
