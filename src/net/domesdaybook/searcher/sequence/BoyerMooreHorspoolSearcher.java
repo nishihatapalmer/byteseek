@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Window;
 
 
@@ -102,7 +102,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
         final int[] safeShifts = info.shifts;
-        final SingleByteMatcher endOfSequence = info.matcher;      
+        final ByteMatcher endOfSequence = info.matcher;      
         final SequenceMatcher verifier = info.verifier;
         
         // Calculate safe bounds for the start of the search:
@@ -157,7 +157,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
         final int[] safeShifts = info.shifts;
-        final SingleByteMatcher endOfSequence = info.matcher;      
+        final ByteMatcher endOfSequence = info.matcher;      
         final SequenceMatcher verifier = info.verifier;
         
         // Initialise window search:
@@ -228,7 +228,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         // Get objects needed for the search:
         final SearchInfo info = backwardInfo.get();
         final int[] safeShifts = info.shifts;
-        final SingleByteMatcher startOfSequence = info.matcher;
+        final ByteMatcher startOfSequence = info.matcher;
         final SequenceMatcher verifier = info.verifier;
         
         // Calculate safe bounds for the start of the search:
@@ -278,7 +278,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         // Get the objects needed to search:
         final SearchInfo info = backwardInfo.get();
         final int[] safeShifts = info.shifts;
-        final SingleByteMatcher startOfSequence = info.matcher;
+        final ByteMatcher startOfSequence = info.matcher;
         final SequenceMatcher verifier = info.verifier;        
         
         // Initialise window search:
@@ -359,7 +359,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
     
     private static class SearchInfo {
         public int[] shifts;
-        public SingleByteMatcher matcher;
+        public ByteMatcher matcher;
         public SequenceMatcher verifier;
     }
     
@@ -400,7 +400,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             // from the end of the sequence, but we do not create a shift for
             // the very last position.
             for (int sequencePos = 0; sequencePos < lastPosition; sequencePos++) {
-                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
+                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromEnd = sequenceLength - sequencePos - 1;
                 for (final byte b : matchingBytes) {
@@ -449,7 +449,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             // the sequence itself.  The shift is the position in the sequence,
             // but we do not create a shift for the first position 0.
             for (int sequencePos = lastPosition; sequencePos > 0; sequencePos--) {
-                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
+                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 for (final byte b : matchingBytes) {
                     info.shifts[b & 0xFF] = sequencePos;

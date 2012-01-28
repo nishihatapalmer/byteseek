@@ -35,7 +35,7 @@ import net.domesdaybook.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
@@ -306,7 +306,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // from the end of the sequence, where the last position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
             for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes; sequenceByteIndex++) {
-                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
+                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromEnd = numBytes - sequenceByteIndex;
                 for (final byte b : matchingBytes) {
@@ -344,7 +344,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // from the start of the sequence, where the first position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
             for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex++) {
-                final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
+                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromStart = sequenceByteIndex + 1;
                 for (final byte b : matchingBytes) {
