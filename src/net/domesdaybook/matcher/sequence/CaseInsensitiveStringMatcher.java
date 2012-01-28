@@ -33,9 +33,9 @@ package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
 import java.util.Arrays;
-import net.domesdaybook.matcher.singlebyte.CaseInsensitiveByteMatcher;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteMatcher;
+import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
@@ -48,7 +48,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
 
     private final int length;
     private final String caseInsensitiveString;
-    private final SingleByteMatcher[] charMatchList;
+    private final ByteMatcher[] charMatchList;
 
 
     /**
@@ -82,7 +82,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         }
         length = numberOfRepeats;
         caseInsensitiveString = repeat(matcher, length);
-        charMatchList = new SingleByteMatcher[length];
+        charMatchList = new ByteMatcher[length];
         for (int charIndex = 0; charIndex < length; charIndex++) {
             charMatchList[charIndex] = matcher;
         }
@@ -105,7 +105,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         }
         caseInsensitiveString = repeatString(caseInsensitiveASCIIString, numberToRepeat);
         length = caseInsensitiveString.length();
-        charMatchList = new SingleByteMatcher[length];
+        charMatchList = new ByteMatcher[length];
         for (int charIndex = 0; charIndex < length; charIndex++) {
             charMatchList[charIndex] = getByteMatcherForChar(caseInsensitiveString.charAt(charIndex));
         }
@@ -140,7 +140,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     @Override
     public boolean matches(final Reader reader, final long matchPosition) throws IOException {
         final int localLength = length;
-        final SingleByteMatcher[] matchList = charMatchList;   
+        final ByteMatcher[] matchList = charMatchList;   
         Window window = reader.getWindow(matchPosition);
         int checkPos = 0;
         while (window != null) {
@@ -148,7 +148,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
             final int endPos = Math.min(window.length(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             for (int windowPos = offset; windowPos < endPos; windowPos++) {
-                final SingleByteMatcher byteMatcher = matchList[checkPos++];
+                final ByteMatcher byteMatcher = matchList[checkPos++];
                 if (!byteMatcher.matches(array[windowPos])) {
                     return false;
                 }
@@ -170,8 +170,8 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     public boolean matches(final byte[] bytes, final int matchPosition) {
         if (matchPosition + length < bytes.length && matchPosition >= 0) {
             int position = matchPosition;
-            final SingleByteMatcher[] localList = charMatchList;
-            for (final SingleByteMatcher charMatcher: localList) {
+            final ByteMatcher[] localList = charMatchList;
+            for (final ByteMatcher charMatcher: localList) {
                 if (!charMatcher.matches(bytes[position++])) {
                     return false;
                 }
@@ -189,8 +189,8 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         int position = matchPosition;
-        final SingleByteMatcher[] localList = charMatchList;        
-        for (final SingleByteMatcher charMatcher : localList) {
+        final ByteMatcher[] localList = charMatchList;        
+        for (final ByteMatcher charMatcher : localList) {
             if (!charMatcher.matches(bytes[position++])) {
                 return false;
             }
@@ -203,7 +203,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getMatcherForPosition(final int position) {
+    public ByteMatcher getMatcherForPosition(final int position) {
         return charMatchList[position];
     }
 
@@ -222,19 +222,19 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     
 
     /**
-     * Returns a ByteMatcher for bytes which are not alphabetic characters,
+     * Returns a OneByteMatcher for bytes which are not alphabetic characters,
      * and a CaseInsensitiveByteMatcher for alphabetic characters.
      * 
      * @param theChar the character to get a byte matcher for.
-     * @return A SingleByteMatcher optimised for the character.
+     * @return A ByteMatcher optimised for the character.
      */
-    private SingleByteMatcher getByteMatcherForChar(final char theChar) {
+    private ByteMatcher getByteMatcherForChar(final char theChar) {
         if ((theChar >= 'a' && theChar <= 'z') ||
             (theChar >= 'A' && theChar <= 'Z')) {
             return new CaseInsensitiveByteMatcher(theChar);
         } else {
             //FIXME: if the char is not an ASCII char, this will not be correct.
-            return new ByteMatcher((byte) theChar);
+            return new OneByteMatcher((byte) theChar);
         }
     }
 

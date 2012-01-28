@@ -36,44 +36,44 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
 /**
- * An immutable class which matches a sequence of {@link SingleByteMatcher} objects.
+ * An immutable class which matches a sequence of {@link ByteMatcher} objects.
  *
  * @author Matt Palmer
  */
 public final class SingleByteSequenceMatcher implements SequenceMatcher {
 
-    private final SingleByteMatcher[] matchers;
+    private final ByteMatcher[] matchers;
     private final int length;
 
 
     /**
-     * Constructs a SingleByteSequenceMatcher from a list of {@link SingleByteMatcher} objects.
+     * Constructs a SingleByteSequenceMatcher from a list of {@link ByteMatcher} objects.
      *
      * @param sequence A list of SingleByteMatchers to construct this sequence matcher from.
      * @throws IllegalArgumentException if the list is null or empty.
      */
-    public SingleByteSequenceMatcher(final Collection<SingleByteMatcher> sequence) {
+    public SingleByteSequenceMatcher(final Collection<ByteMatcher> sequence) {
         if (sequence == null || sequence.isEmpty()) {
             throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
         }
-        this.matchers = sequence.toArray(new SingleByteMatcher[0]);
+        this.matchers = sequence.toArray(new ByteMatcher[0]);
         this.length = this.matchers.length;
     }
 
     
     /**
-     * Constructs a SingleByteSequenceMatcher from an array of {@link SingleByteMatcher}
+     * Constructs a SingleByteSequenceMatcher from an array of {@link ByteMatcher}
      * objects.
      * 
      * @param sequence An array of SingleByteMatchers to construct this sequence matcher from.
      * @throws IllegalArgumentException if the array is null or empty.
      */
-    public SingleByteSequenceMatcher(final SingleByteMatcher[] sequence) {
+    public SingleByteSequenceMatcher(final ByteMatcher[] sequence) {
         if (sequence == null || sequence.length == 0) {
             throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
         }
@@ -83,28 +83,28 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     
     
     /**
-     * Constructs a SingleByteSequenceMatcher from a single {@link SingleByteMatcher} object.
+     * Constructs a SingleByteSequenceMatcher from a single {@link ByteMatcher} object.
      *
-     * @param matcher The SingleByteMatcher to construct this sequence matcher from.
+     * @param matcher The ByteMatcher to construct this sequence matcher from.
      * @throws IllegalArgumentException if the matcher is null.
      */
-    public SingleByteSequenceMatcher(final SingleByteMatcher matcher) {
+    public SingleByteSequenceMatcher(final ByteMatcher matcher) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
         }
-        this.matchers = new SingleByteMatcher[] {matcher};
+        this.matchers = new ByteMatcher[] {matcher};
         this.length = 1;
     }
 
 
     /**
-     * Constructs a SingleByteSequenceMatcher from a repeated {@link SingleByteMatcher} object.
+     * Constructs a SingleByteSequenceMatcher from a repeated {@link ByteMatcher} object.
      *
-     * @param matcher The SingleByteMatcher to construct this sequence matcher from.
+     * @param matcher The ByteMatcher to construct this sequence matcher from.
      * @param numberOfMatchers 
      * @throws IllegalArgumentException if the matcher is null or the number of repeats is less than one.
      */
-    public SingleByteSequenceMatcher(final SingleByteMatcher matcher, final int numberOfMatchers) {
+    public SingleByteSequenceMatcher(final ByteMatcher matcher, final int numberOfMatchers) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
         }
@@ -112,7 +112,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("SingleByteSequenceMatcher requires a positive number of matchers.");
         }
         length = numberOfMatchers;
-        this.matchers = new SingleByteMatcher[length];
+        this.matchers = new ByteMatcher[length];
         Arrays.fill(this.matchers, matcher);
     }
 
@@ -123,7 +123,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     @Override
     public boolean matches(final Reader reader, final long matchPosition) throws IOException {
         final int localLength = length;
-        final SingleByteMatcher[] matchList = this.matchers;        
+        final ByteMatcher[] matchList = this.matchers;        
         Window window = reader.getWindow(matchPosition);
         int checkPos = 0;
         while (window != null) {
@@ -131,7 +131,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
             final int endPos = Math.min(window.length(), offset + localLength - checkPos);
             final byte[] array = window.getArray();
             for (int windowPos = offset; windowPos < endPos; windowPos++) {
-                final SingleByteMatcher byteMatcher = matchList[checkPos++];
+                final ByteMatcher byteMatcher = matchList[checkPos++];
                 if (!byteMatcher.matches(array[windowPos])) {
                     return false;
                 }
@@ -153,8 +153,8 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     public boolean matches(final byte[] bytes, final int matchPosition) {
         if (matchPosition + length < bytes.length && matchPosition >= 0) {
             int position = matchPosition;
-            final SingleByteMatcher[] localMatchers = matchers;
-            for (final SingleByteMatcher matcher : localMatchers) {
+            final ByteMatcher[] localMatchers = matchers;
+            for (final ByteMatcher matcher : localMatchers) {
                 if (!matcher.matches(bytes[position++])) {
                     return false;
                 }
@@ -171,8 +171,8 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         int position = matchPosition;
-        final SingleByteMatcher[] localMatchers = matchers;
-        for (final SingleByteMatcher matcher : localMatchers) {
+        final ByteMatcher[] localMatchers = matchers;
+        for (final ByteMatcher matcher : localMatchers) {
             if (!matcher.matches(bytes[position++])) {
                 return false;
             }
@@ -185,7 +185,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getMatcherForPosition(final int position) {
+    public ByteMatcher getMatcherForPosition(final int position) {
         return matchers[position];
     }
 
@@ -204,7 +204,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public SingleByteSequenceMatcher reverse() {
-        final List<SingleByteMatcher> newList = Arrays.asList(matchers);
+        final List<ByteMatcher> newList = Arrays.asList(matchers);
         Collections.reverse(newList);
         return new SingleByteSequenceMatcher(newList);
     }
@@ -216,7 +216,7 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         final StringBuilder builder = new StringBuilder(length * 4);
-        for (final SingleByteMatcher matcher : matchers) {
+        for (final ByteMatcher matcher : matchers) {
             builder.append(matcher.toRegularExpression(prettyPrint));
         }
         return builder.toString();
@@ -255,9 +255,9 @@ public final class SingleByteSequenceMatcher implements SequenceMatcher {
     }
     
     
-    private SingleByteMatcher[] repeatMatchers(final int numberOfRepeats) {
+    private ByteMatcher[] repeatMatchers(final int numberOfRepeats) {
         final int repeatSize = matchers.length;
-        final SingleByteMatcher[] repeated = new SingleByteMatcher[repeatSize * numberOfRepeats];
+        final ByteMatcher[] repeated = new ByteMatcher[repeatSize * numberOfRepeats];
         for (int repeat = 0; repeat < numberOfRepeats; repeat++) {
             System.arraycopy(matchers, 0, repeated, repeat * repeatSize, repeatSize);
         }

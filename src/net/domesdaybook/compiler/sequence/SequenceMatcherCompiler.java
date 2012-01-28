@@ -46,13 +46,13 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceOfSequencesMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SingleByteSequenceMatcher;
-import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
-import net.domesdaybook.matcher.singlebyte.BitMaskAnyBitsMatcher;
-import net.domesdaybook.matcher.singlebyte.AnyMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteMatcher;
-import net.domesdaybook.matcher.singlebyte.SimpleSingleByteMatcherFactory;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcherFactory;
+import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
+import net.domesdaybook.matcher.bytes.AnyBitmaskMatcher;
+import net.domesdaybook.matcher.bytes.AnyByteMatcher;
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
+import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import org.antlr.runtime.tree.CommonTree;
 
 /**
@@ -90,7 +90,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     /**
      * Compiles a SequenceMatcher from a byteSeek regular expression (limited to
      * syntax which produces fixed-length sequences).  It will use the default
-     * {@link SimpleSingleByteMatcherFactory} to produce matchers for sets of bytes.
+     * {@link SimpleByteMatcherFactory} to produce matchers for sets of bytes.
      * 
      * @param expression The regular expression to compile
      * @return SequenceMatcher a SequenceMatcher matching the regular expression.
@@ -113,26 +113,26 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     }
     
     
-    private final SingleByteMatcherFactory matcherFactory;
+    private final ByteMatcherFactory matcherFactory;
 
     
     /**
-     * Default constructor which uses the {@link SimpleSingleByteMatcherFactory}
+     * Default constructor which uses the {@link SimpleByteMatcherFactory}
      * to produce matchers for sets of bytes.
      * 
      */
     public SequenceMatcherCompiler() {
-        matcherFactory = new SimpleSingleByteMatcherFactory();
+        matcherFactory = new SimpleByteMatcherFactory();
     }
 
     /**
-     * Constructor which uses the provided {@link SingleByteMatcherFactory} to
+     * Constructor which uses the provided {@link ByteMatcherFactory} to
      * produce matchers for sets of bytes
      * 
-     * @param factoryToUse The SingleByteMatcherFactory used to produce matchers
+     * @param factoryToUse The ByteMatcherFactory used to produce matchers
      * for sets of bytes.
      */
-    public SequenceMatcherCompiler(final SingleByteMatcherFactory factoryToUse) {
+    public SequenceMatcherCompiler(final ByteMatcherFactory factoryToUse) {
         matcherFactory = factoryToUse;
     }
 
@@ -193,7 +193,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
             case (regularExpressionParser.SEQUENCE): {
 
                 final List<Byte> byteValuesToJoin = new ArrayList<Byte>();
-                final List<SingleByteMatcher> singleByteSequence = new ArrayList<SingleByteMatcher>();
+                final List<ByteMatcher> singleByteSequence = new ArrayList<ByteMatcher>();
                 final List<SequenceMatcher> sequences = new ArrayList<SequenceMatcher>();
 
                 for (int childIndex = 0, stop = ast.getChildCount(); childIndex < stop; childIndex++) {
@@ -240,8 +240,8 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
                         case (regularExpressionParser.SET): {
-                            final SingleByteMatcher bytematch = getSetMatcher(child, false);
-                            if (bytematch instanceof ByteMatcher) {
+                            final ByteMatcher bytematch = getSetMatcher(child, false);
+                            if (bytematch instanceof OneByteMatcher) {
                                 addCollectedSingleByteMatchers(singleByteSequence, sequences);
                                 byteValuesToJoin.add(bytematch.getMatchingBytes()[0]);
                             } else {
@@ -253,8 +253,8 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
                         case (regularExpressionParser.INVERTED_SET): {
-                            final SingleByteMatcher bytematch = getSetMatcher(child, true);
-                            if (bytematch instanceof ByteMatcher) {
+                            final ByteMatcher bytematch = getSetMatcher(child, true);
+                            if (bytematch instanceof OneByteMatcher) {
                                 addCollectedSingleByteMatchers(singleByteSequence, sequences);
                                 byteValuesToJoin.add(bytematch.getMatchingBytes()[0]);
                             } else {
@@ -297,7 +297,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                             } else if (sequence instanceof SingleByteSequenceMatcher) {
                                 addCollectedByteValues(byteValuesToJoin, sequences);
                                 for (int position = 0; position < sequence.length(); position++) {
-                                    final SingleByteMatcher aMatcher = sequence.getMatcherForPosition(position);
+                                    final ByteMatcher aMatcher = sequence.getMatcherForPosition(position);
                                     singleByteSequence.add(aMatcher);
                                 }
                             } else {
@@ -335,7 +335,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
             // where there is not a parent Sequence node.
 
             case (regularExpressionParser.BYTE): {
-                matcher = new ByteMatcher(ParseUtils.getHexByteValue(ast));
+                matcher = new OneByteMatcher(ParseUtils.getHexByteValue(ast));
                 break;
             }
 
@@ -406,7 +406,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     }
 
     
-    private void addCollectedSingleByteMatchers(final List<SingleByteMatcher> matchers, final List<SequenceMatcher> sequences) {
+    private void addCollectedSingleByteMatchers(final List<ByteMatcher> matchers, final List<SequenceMatcher> sequences) {
         if (matchers.size() == 1) {
             sequences.add(matchers.get(0));
         } else if (matchers.size() > 0) {
@@ -423,26 +423,26 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
     }
 
 
-    private SingleByteMatcher getAllBitmaskMatcher(final CommonTree ast) {
+    private ByteMatcher getAllBitmaskMatcher(final CommonTree ast) {
         final byte bitmask = ParseUtils.getBitMaskValue(ast);
-        return new BitMaskAllBitsMatcher(bitmask);
+        return new AllBitmaskMatcher(bitmask);
     }
 
     
-    private SingleByteMatcher getAnyBitmaskMatcher(final CommonTree ast) {
+    private ByteMatcher getAnyBitmaskMatcher(final CommonTree ast) {
         final byte bitmask = ParseUtils.getBitMaskValue(ast);
-        return new BitMaskAnyBitsMatcher(bitmask);
+        return new AnyBitmaskMatcher(bitmask);
     }
 
 
-    private SingleByteMatcher getSetMatcher(final CommonTree ast, final boolean inverted) throws ParseException {
+    private ByteMatcher getSetMatcher(final CommonTree ast, final boolean inverted) throws ParseException {
         final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
         return matcherFactory.create(byteSet, inverted);
     }
 
     
-    private SingleByteMatcher getAnyByteMatcher(final CommonTree ast) {
-        return new AnyMatcher();
+    private ByteMatcher getAnyByteMatcher(final CommonTree ast) {
+        return new AnyByteMatcher();
     }
 
 

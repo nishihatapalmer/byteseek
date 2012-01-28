@@ -32,7 +32,7 @@
 package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -220,7 +220,7 @@ public final class SequenceOfSequencesMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getMatcherForPosition(final int position) {
+    public ByteMatcher getMatcherForPosition(final int position) {
         if (position < 0 || position >= length) {
             throw new IndexOutOfBoundsException(
                     String.format("Position %d out of bounds in sequence of length %d",

@@ -2,7 +2,7 @@
  * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,57 +29,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.matcher.sequence;
+package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
-import net.domesdaybook.matcher.bytes.AnyByteMatcher;
-import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.matcher.sequence.FixedGapMatcher;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 
 /**
- * An immutable object which matches a gap of unknown bytes.
- * 
- * @author matt
+ * A {@link SingleByteMatcher} which matches any byte at all.
+ *
+ * @author Matt Palmer
  */
-public final class FixedGapMatcher implements SequenceMatcher {
+public final class AnyByteMatcher extends AbstractByteMatcher {
 
-    private static final ByteMatcher ANY_MATCHER = new AnyByteMatcher();
-    private final int length;
+    // A static 256-element array containing all the bytes.
+    private static final byte[] ALL_BYTES =  ByteUtilities.getAllByteValues();
 
-   
+
     /**
-     * Constructs a FixedGapMatcher of a given length.
+     * Constructs an immutable AnyByteMatcher.
+     */
+    public AnyByteMatcher() {
+    }
+
+
+    /**
+     * {@inheritDoc}
      *
-     * @param gapLength The length of the gap to match.
-     * @throws IllegalArgumentException if the gap is less than one.
+     * Always returns true.
      */
-    public FixedGapMatcher(final int gapLength) {
-        if (gapLength < 1) {
-            throw new IllegalArgumentException("FixedGapMatcher requires a gap greater than zero.");
-        }
-        this.length = gapLength;
+    @Override
+    public boolean matches(final byte theByte) {
+        return true;
     }
-
+    
 
     /**
      * {@inheritDoc}
+     *
+     * Returns a 256-element array of all the possible byte values.
+     * The array returned by this method MUST not be altered.  It is
+     * intended to be a constant array of all possible byte values.
      */
     @Override
-    public ByteMatcher getMatcherForPosition(final int position) {
-        if (position < 0 || position >= length) {
-            final String message = String.format("Position %d out of bounds, length is %d", position, length);
-            throw new IndexOutOfBoundsException(message);
-        }
-        return ANY_MATCHER;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int length() {
-        return length;
+    public byte[] getMatchingBytes() {
+        return ALL_BYTES;
     }
 
 
@@ -88,7 +84,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return prettyPrint ? String.format(" .{%d} ", length) : String.format(".{%d}", length);
+        return prettyPrint ? " . " : ".";
     }
 
 
@@ -97,66 +93,54 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final Reader reader, final long matchPosition) throws IOException {
-        return reader.getWindow(matchPosition) != null && 
-               reader.getWindow(matchPosition + length - 1) != null;
+        return reader.readByte(matchPosition) >= 0;
     }
     
-
+    
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchPosition) {
-        return matchPosition + length < bytes.length && matchPosition >= 0;
+    public boolean matches(final byte[] bytes, final int matchFrom) {
+        return matchFrom >= 0 && matchFrom < bytes.length;
     }    
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * Always returns 256.
+     */
+    @Override
+    public int getNumberOfMatchingBytes() {
+        return 256;
+    }
 
     
     /**
      * {@inheritDoc}
-     */
+     *
+     * Always true
+     */ 
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return true;
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override    
-    public FixedGapMatcher reverse() {
-        return this;
-    }
 
     
     /**
      * {@inheritDoc}
-     */
-    @Override
-    public SequenceMatcher subsequence(int beginIndex, int endIndex) {
-       if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
-            final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
-            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
-        }
-        if (endIndex - beginIndex == 1) {
-            return ANY_MATCHER;
-        }
-        return new FixedGapMatcher(endIndex - beginIndex);
-    }
-
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+     *
+     * Returns a FixedGapMatcher as long as the number of repeats.
+     */     
     public SequenceMatcher repeat(int numberOfRepeats) {
         if (numberOfRepeats < 1) {
             throw new IllegalArgumentException("Number of repeats must be at least one.");
         }
         if (numberOfRepeats == 1) {
             return this;
-        }        
-        return new FixedGapMatcher(length * numberOfRepeats);
+        }           
+        return new FixedGapMatcher(numberOfRepeats);
     }
 
 }

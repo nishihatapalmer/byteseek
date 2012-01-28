@@ -37,8 +37,8 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
 import net.domesdaybook.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
@@ -275,8 +275,8 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SingleByteMatcher getMatcherForPosition(final int position) {
-        return new ByteMatcher(byteArray[position]);
+    public ByteMatcher getMatcherForPosition(final int position) {
+        return new OneByteMatcher(byteArray[position]);
     }
 
     
@@ -300,7 +300,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
             throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
         }
         if (endIndex - beginIndex == 1) {
-            return new ByteMatcher(byteArray[beginIndex]);
+            return new OneByteMatcher(byteArray[beginIndex]);
         }
         return new ByteSequenceMatcher(Arrays.copyOfRange(byteArray, beginIndex, endIndex));
     }

@@ -32,7 +32,7 @@
 package net.domesdaybook.matcher.sequence;
 
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
 
 /**
  * An extension to the {@link Matcher} interface to support sequences of 
@@ -43,16 +43,16 @@ import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
  public interface SequenceMatcher extends Matcher {
 
     /**
-     * Returns a {@link SingleByteMatcher} which matches all the bytes at
+     * Returns a {@link ByteMatcher} which matches all the bytes at
      * the requested position in the sequence.
      *
      * @param position The position in the byte matcher to return a dedicated byte matcher for.
-     * @return A SingleByteMatcher for the position in the sequence provided.
-     * @throws IndexOutOfBoundsException if an attempt is made to get a SingleByteMatcher
+     * @return A ByteMatcher for the position in the sequence provided.
+     * @throws IndexOutOfBoundsException if an attempt is made to get a ByteMatcher
      *                                   for a position outside of the sequence.
      * 
      */
-    public SingleByteMatcher getMatcherForPosition(int position);
+    public ByteMatcher getMatcherForPosition(int position);
 
     
     /**
