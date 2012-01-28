@@ -6,10 +6,10 @@
 package net.domesdaybook.compiler.sequence;
 
 import net.domesdaybook.matcher.sequence.SequenceOfSequencesMatcher;
-import net.domesdaybook.matcher.singlebyte.BitMaskAllBitsMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteRangeMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteSetBinarySearchMatcher;
-import net.domesdaybook.matcher.singlebyte.ByteMatcher;
+import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
+import net.domesdaybook.matcher.bytes.ByteRangeMatcher;
+import net.domesdaybook.matcher.bytes.SetBinarySearchMatcher;
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
 import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
@@ -89,12 +89,12 @@ public class SequenceMatcherCompilerTest {
     @Test
     public void testBasicCompile() throws Exception {
         SequenceMatcher matcher;
-        basicTests("00", 1, ByteMatcher.class);
-        basicTests("01", 1, ByteMatcher.class);
-        basicTests("fF", 1, ByteMatcher.class);
+        basicTests("00", 1, OneByteMatcher.class);
+        basicTests("01", 1, OneByteMatcher.class);
+        basicTests("fF", 1, OneByteMatcher.class);
 
-        basicTests("[00ff]", 1, ByteSetBinarySearchMatcher.class);
-        basicTests("[ff00]", 1, ByteSetBinarySearchMatcher.class);
+        basicTests("[00ff]", 1, SetBinarySearchMatcher.class);
+        basicTests("[ff00]", 1, SetBinarySearchMatcher.class);
         basicTests("[7f80]", 1, ByteRangeMatcher.class);
         basicTests("[807f]", 1, ByteRangeMatcher.class);
         basicTests(" [0102]", 1, ByteRangeMatcher.class);
@@ -122,7 +122,7 @@ public class SequenceMatcherCompilerTest {
 
         basicTests("010203{6}", 8, ByteSequenceMatcher.class);
 
-        basicTests("[fffe]", 1, BitMaskAllBitsMatcher.class);
+        basicTests("[fffe]", 1, AllBitmaskMatcher.class);
         basicTests("[fffe]{5}", 5, SingleByteSequenceMatcher.class);
         
         basicTests("(0102){2}", 4, ByteSequenceMatcher.class);

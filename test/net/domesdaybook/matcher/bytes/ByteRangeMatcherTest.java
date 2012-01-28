@@ -3,8 +3,10 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
 
+import net.domesdaybook.matcher.bytes.ByteRangeMatcher;
+import net.domesdaybook.matcher.bytes.InvertibleMatcher;
 import java.util.List;
 import java.util.ArrayList;
 import org.junit.Test;

@@ -3,8 +3,9 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
 
+import net.domesdaybook.matcher.bytes.InvertedByteMatcher;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

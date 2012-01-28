@@ -3,8 +3,9 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
 
+import net.domesdaybook.matcher.bytes.AnyByteMatcher;
 import net.domesdaybook.bytes.ByteUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -40,44 +41,44 @@ public class AnyMatcherTest {
     }
 
     /**
-     * Test of matches method, of class AnyMatcher.
+     * Test of matches method, of class AnyByteMatcher.
      */
     @Test
     public void testMatches_byte() {
         for (int count = 0; count < 256; count++) {
-            AnyMatcher matcher = new AnyMatcher();
+            AnyByteMatcher matcher = new AnyByteMatcher();
             String description = String.format("matches: 0x%02x", count);
             assertEquals(description, true, matcher.matches(b(count)));
         }
-        SimpleTimer.timeMatcher("AnyMatcher", new AnyMatcher());
+        SimpleTimer.timeMatcher("AnyMatcher", new AnyByteMatcher());
     }
 
     /**
-     * Test of getMatchingBytes method, of class AnyMatcher.
+     * Test of getMatchingBytes method, of class AnyByteMatcher.
      */
     @Test
     public void testGetMatchingBytes() {
-       AnyMatcher matcher = new AnyMatcher();
+       AnyByteMatcher matcher = new AnyByteMatcher();
        byte[] allBytes = ByteUtilities.getAllByteValues();
        assertArrayEquals(allBytes, matcher.getMatchingBytes());
     }
 
     /**
-     * Test of toRegularExpression method, of class AnyMatcher.
+     * Test of toRegularExpression method, of class AnyByteMatcher.
      */
     @Test
     public void testToRegularExpression() {
-        AnyMatcher matcher = new AnyMatcher();
+        AnyByteMatcher matcher = new AnyByteMatcher();
         assertEquals(".", matcher.toRegularExpression(false));
     }
 
 
     /**
-     * Test of getNumberOfMatchingBytes method, of class AnyMatcher.
+     * Test of getNumberOfMatchingBytes method, of class AnyByteMatcher.
      */
     @Test
     public void testGetNumberOfMatchingBytes() {
-        AnyMatcher matcher = new AnyMatcher();
+        AnyByteMatcher matcher = new AnyByteMatcher();
         assertEquals(256, matcher.getNumberOfMatchingBytes());
     }
 

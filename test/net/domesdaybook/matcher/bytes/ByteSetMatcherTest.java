@@ -3,8 +3,12 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
 
+import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.matcher.bytes.InvertibleMatcher;
+import net.domesdaybook.matcher.bytes.SetBitsetMatcher;
+import net.domesdaybook.matcher.bytes.SetBinarySearchMatcher;
 import net.domesdaybook.bytes.ByteUtilities;
 import java.util.LinkedHashSet;
 import java.util.Random;
@@ -33,7 +37,7 @@ public class ByteSetMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testNullBitSetMatcher() {
-        new ByteSetBitSetMatcher(null, false);
+        new SetBitsetMatcher(null, false);
     }
     
     /**
@@ -41,7 +45,7 @@ public class ByteSetMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testNullBinarySearchMatcher() {
-        new ByteSetBinarySearchMatcher(null, false);
+        new SetBinarySearchMatcher(null, false);
     }
     
     /**
@@ -49,7 +53,7 @@ public class ByteSetMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyBitSetMatcher() {
-        new ByteSetBitSetMatcher(new LinkedHashSet<Byte>(), false);
+        new SetBitsetMatcher(new LinkedHashSet<Byte>(), false);
     }
     
     /**
@@ -57,12 +61,12 @@ public class ByteSetMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyBinarySearchMatcher() {
-        new ByteSetBinarySearchMatcher(new LinkedHashSet<Byte>(), false);
+        new SetBinarySearchMatcher(new LinkedHashSet<Byte>(), false);
     }    
     
 
     /**
-     * Test of matches method, of class ByteSetBitSetMatcher.
+     * Test of matches method, of class SetBitsetMatcher.
      * 
      * Can't build all possible subsets of a byte set = 2^256 possible sets,
      * so generates a large number of random byte sets and tests them.
@@ -92,20 +96,20 @@ public class ByteSetMatcherTest {
     private void testSet(Set<Byte> testSet) {
         Set<Byte> otherBytes = ByteUtilities.invertedSet(testSet);
         
-        ByteSetBitSetMatcher matcherNotInverted = new ByteSetBitSetMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
+        SetBitsetMatcher matcherNotInverted = new SetBitsetMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
         testMatcher("BitSetMatcher", matcherNotInverted, testSet, otherBytes);
         
-        ByteSetBitSetMatcher matcherInverted = new ByteSetBitSetMatcher(testSet, InvertibleMatcher.INVERTED);
+        SetBitsetMatcher matcherInverted = new SetBitsetMatcher(testSet, InvertibleMatcher.INVERTED);
         testMatcher("BitSetMatcher", matcherInverted, otherBytes, testSet);
         
-        ByteSetBinarySearchMatcher matcher2NotInverted = new ByteSetBinarySearchMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
+        SetBinarySearchMatcher matcher2NotInverted = new SetBinarySearchMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
         testMatcher("BinarySearchMatcher", matcher2NotInverted, testSet, otherBytes);
         
-        ByteSetBinarySearchMatcher matcherInverted2 = new ByteSetBinarySearchMatcher(testSet, InvertibleMatcher.INVERTED);
+        SetBinarySearchMatcher matcherInverted2 = new SetBinarySearchMatcher(testSet, InvertibleMatcher.INVERTED);
         testMatcher("BinarySearchMatcher", matcherInverted2, otherBytes, testSet);
     }
     
-    private void testMatcher(String description, SingleByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) {
+    private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) {
         assertEquals("Matches correct number of bytes", bytesMatched.size(), matcher.getNumberOfMatchingBytes());
         for (Byte byteShouldMatch : bytesMatched) {
             assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(byteShouldMatch));

@@ -3,8 +3,9 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
 
+import net.domesdaybook.matcher.bytes.InvertibleMatcher;
 import net.domesdaybook.reader.Reader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

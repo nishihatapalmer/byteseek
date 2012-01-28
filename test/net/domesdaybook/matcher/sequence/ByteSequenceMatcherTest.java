@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.net.URL;
 import java.io.File;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Reader;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -71,7 +71,7 @@ public class ByteSequenceMatcherTest {
         for (int byteValue = 0; byteValue < 256; byteValue++) {
             final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue);
             assertEquals("length:1, byte value:" + Integer.toString(byteValue), 1, matcher.length());
-            final SingleByteMatcher sbm = matcher.getMatcherForPosition(0);
+            final ByteMatcher sbm = matcher.getMatcherForPosition(0);
             final byte[] matchingBytes = sbm.getMatchingBytes();
             assertEquals("number of bytes matched=1", 1, matchingBytes.length);
             assertEquals("byte value:" + Integer.toString(byteValue), byteValue, matchingBytes[0] & 0xFF);
@@ -89,7 +89,7 @@ public class ByteSequenceMatcherTest {
             final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue, repeats);
             assertEquals("length:" + Integer.toString(repeats) + ", byte value:" + Integer.toString(byteValue), repeats, matcher.length());
             for (int pos = 0; pos < repeats; pos++) {
-                final SingleByteMatcher sbm = matcher.getMatcherForPosition(pos);
+                final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
                 final byte[] matchingBytes = sbm.getMatchingBytes();
                 assertEquals("number of bytes matched=1", 1, matchingBytes.length);
                 assertEquals("byte value:" + Integer.toString(byteValue), byteValue, matchingBytes[0] & 0xFF);
@@ -108,7 +108,7 @@ public class ByteSequenceMatcherTest {
             final ByteSequenceMatcher matcher = new ByteSequenceMatcher(array);
             assertEquals("length:" + Integer.toString(array.length), array.length, matcher.length());
             for (int pos = 0; pos < array.length; pos++) {
-                final SingleByteMatcher sbm = matcher.getMatcherForPosition(pos);
+                final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
                 final byte[] matchingBytes = sbm.getMatchingBytes();
                 final byte matchingValue = array[pos];
                 assertEquals("number of bytes matched=1", 1, matchingBytes.length);
@@ -135,7 +135,7 @@ public class ByteSequenceMatcherTest {
             int matchIndex = 0;
             SequenceMatcher currentMatcher = list.get(matchIndex);
             for (int pos = 0; pos < totalLength; pos++) {
-                final SingleByteMatcher sbm = matcher.getMatcherForPosition(pos);
+                final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
                 final byte[] matchingBytes = sbm.getMatchingBytes();
                 localPos++;
                 if (localPos == currentMatcher.length()) {
@@ -143,7 +143,7 @@ public class ByteSequenceMatcherTest {
                     currentMatcher = list.get(matchIndex);
                     localPos = 0;
                 }
-                final SingleByteMatcher sbm2 = currentMatcher.getMatcherForPosition(localPos);
+                final ByteMatcher sbm2 = currentMatcher.getMatcherForPosition(localPos);
                 final byte[] matchingBytes2 = sbm2.getMatchingBytes();
                 assertEquals("number of bytes matched source=1", 1, matchingBytes2.length);
                 assertEquals("number of bytes matched=1", 1, matchingBytes.length);
@@ -302,8 +302,8 @@ public class ByteSequenceMatcherTest {
         System.out.println("getByteMatcherForPosition");
         int position = 0;
         ByteSequenceMatcher instance = null;
-        SingleByteMatcher expResult = null;
-        SingleByteMatcher result = instance.getMatcherForPosition(position);
+        ByteMatcher expResult = null;
+        ByteMatcher result = instance.getMatcherForPosition(position);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

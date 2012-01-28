@@ -3,7 +3,9 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
+
+import net.domesdaybook.matcher.bytes.ByteMatcher;
 
 /**
  *
@@ -19,7 +21,7 @@ public class SimpleTimer {
      * @param description
      * @param matcher
      */
-    public static void timeMatcher(String description, SingleByteMatcher matcher) {
+    public static void timeMatcher(String description, ByteMatcher matcher) {
 
         long start = System.nanoTime();
 

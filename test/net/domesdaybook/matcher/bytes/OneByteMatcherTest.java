@@ -3,8 +3,9 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
 
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -12,12 +13,12 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class ByteMatcherTest {
+public class OneByteMatcherTest {
 
     /**
      * 
      */
-    public ByteMatcherTest() {
+    public OneByteMatcherTest() {
     }
 
 
@@ -29,7 +30,7 @@ public class ByteMatcherTest {
     public void testMatcher() {
         for (int i = 0; i < 256; i++) {
             final byte theByte = (byte) i;
-            final ByteMatcher matcher = new ByteMatcher(theByte);
+            final OneByteMatcher matcher = new OneByteMatcher(theByte);
             assertEquals("matches", true, matcher.matches(theByte));
             assertEquals("1 byte matches", 1, matcher.getNumberOfMatchingBytes());
             assertArrayEquals("matching bytes", new byte[] {theByte}, matcher.getMatchingBytes());

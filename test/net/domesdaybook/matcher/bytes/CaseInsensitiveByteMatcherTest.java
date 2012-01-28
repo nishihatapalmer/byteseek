@@ -3,8 +3,10 @@
  *
  */
 
-package net.domesdaybook.matcher.singlebyte;
+package net.domesdaybook.matcher.bytes;
 
+import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -59,7 +61,7 @@ public class CaseInsensitiveByteMatcherTest {
         }
     }
 
-    private void validateOnlyMatches(SingleByteMatcher matcher, char value) {
+    private void validateOnlyMatches(ByteMatcher matcher, char value) {
         assertEquals(true, matcher.matches((byte) value));
         for (char noMatch = 0; noMatch < value; noMatch++) {
             assertEquals(false, matcher.matches((byte) noMatch));
@@ -70,7 +72,7 @@ public class CaseInsensitiveByteMatcherTest {
         }
     }
 
-    private void validateMatchesCase(SingleByteMatcher matcher, char value) {
+    private void validateMatchesCase(ByteMatcher matcher, char value) {
         char lowerCaseValue = Character.toLowerCase(value);
         char upperCaseValue = Character.toUpperCase(value);
         assertEquals(true, matcher.matches((byte) lowerCaseValue));
