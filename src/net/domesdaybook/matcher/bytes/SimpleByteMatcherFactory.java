@@ -63,7 +63,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
      * @throws {@link IllegalArgumentException} if the set is null or empty.
      */
     @Override
-    public ByteMatcher create(Set<Byte> bytes, boolean matchInverse) {
+    public ByteMatcher create(final Set<Byte> bytes, final boolean matchInverse) {
         if (bytes == null || bytes.isEmpty()) {
             throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
@@ -94,7 +94,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
     
-    private ByteMatcher getInvertibleCases(Set<Byte> bytes, boolean isInverted) {
+    private ByteMatcher getInvertibleCases(final Set<Byte> bytes, final boolean isInverted) {
         ByteMatcher result = getBitmaskMatchers(bytes, isInverted);
         if (result == null) {
             result = getRangeMatchers(bytes, isInverted);
@@ -106,7 +106,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
 
-    private ByteMatcher getSimpleCases(Set<Byte> values) {
+    private ByteMatcher getSimpleCases(final Set<Byte> values) {
         ByteMatcher result = null;
         switch (values.size()) {
             case 0: {
@@ -151,7 +151,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
 
-    private ByteMatcher getBitmaskMatchers(Set<Byte> values, boolean isInverted) {
+    private ByteMatcher getBitmaskMatchers(final Set<Byte> values, final boolean isInverted) {
         ByteMatcher result = null;
         // Determine if the bytes in the set can be matched by a bitmask:
         Byte bitmask = ByteUtilities.getAllBitMaskForBytes(values);
@@ -167,7 +167,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
 
-    private ByteMatcher getRangeMatchers(Set<Byte> values, boolean isInverted) {
+    private ByteMatcher getRangeMatchers(final Set<Byte> values, boolean isInverted) {
         ByteMatcher result = null;
         // Determine if all the values lie in a single range:
         List<Integer> byteValues = getSortedByteValues(values);
@@ -181,7 +181,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
     
-    private ByteMatcher getBinarySearchMatcher(Set<Byte> values, boolean isInverted) {
+    private ByteMatcher getBinarySearchMatcher(final Set<Byte> values, final boolean isInverted) {
         ByteMatcher result = null;
         // if there aren't very many values, use a BinarySearchMatcher:
         if (values.size() < BINARY_SEARCH_THRESHOLD) { // small number of bytes in set - use binary searcher:
@@ -191,7 +191,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
 
-    private ByteMatcher getCaseInsensitiveMatcher(Set<Byte> values) {
+    private ByteMatcher getCaseInsensitiveMatcher(final Set<Byte> values) {
         ByteMatcher result = null;
         Character caseChar = getCaseChar(values);
         if (caseChar != null) {
@@ -201,7 +201,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
     
-    private Character getCaseChar(Set<Byte> values) {
+    private Character getCaseChar(final Set<Byte> values) {
         Character result = null;
         final int size = values.size();
         if (size == 2) {
@@ -216,7 +216,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
     
-    private boolean isSameCharDifferentCase(int val1, int val2) {
+    private boolean isSameCharDifferentCase(final int val1, final int val2) {
         boolean result = false;
         if (isAlphaChar(val1) && isAlphaChar(val2)) {
             result = Math.abs(val1-val2) == 32;
@@ -225,11 +225,11 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     }
 
     
-    private boolean isAlphaChar(int val) {
+    private boolean isAlphaChar(final int val) {
         return ((val >= 65 && val <= 90) || (val >= 97 && val <= 122));
     }
 
-    private static List<Integer> getSortedByteValues(Set<Byte> byteSet) {
+    private static List<Integer> getSortedByteValues(final Set<Byte> byteSet) {
         final List<Integer> sortedByteValues = new ArrayList<Integer>();
         for (final Byte b : byteSet) {
             sortedByteValues.add(Integer.valueOf(b.byteValue() & 0xFF));
