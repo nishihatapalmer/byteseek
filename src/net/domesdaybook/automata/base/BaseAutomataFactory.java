@@ -32,10 +32,10 @@
 package net.domesdaybook.automata.base;
 
 import net.domesdaybook.automata.base.BaseAutomata;
-import net.domesdaybook.automata.AutomataFactory;
+import net.domesdaybook.automata.factory.AutomataFactory;
 import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.AutomataFactory;
+import net.domesdaybook.automata.factory.AutomataFactory;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.State;
 

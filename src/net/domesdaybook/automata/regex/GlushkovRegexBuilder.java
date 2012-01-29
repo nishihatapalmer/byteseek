@@ -32,7 +32,7 @@
 
 package net.domesdaybook.automata.regex;
 
-import net.domesdaybook.automata.TransitionFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +42,7 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 
 /**
@@ -85,6 +85,8 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      private final TransitionFactory transitionFactory;
      private final StateFactory<T> stateFactory;
 
+     //TODO: add AutomataFactory.
+     
      /**
       * 
       */
@@ -246,12 +248,13 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      * we must transition each final state on the left to its neighbour states on the right.
      *<p>
      * We can achieve this by copying all of the transitions of the right hand initial
-     * state back to the final states of the automata that preceded it.
+     * state back to the final states of the automata on the left hand side.
      * Each final state effectively becomes an initial state of the
-     * automata to its right.  
+     * automata to its right. The original initial state of the right hand automata
+     * is effectively "cut out of the loop" and does not form part of the sequence.
      *<p>
      * The left hand side final states all become as final as the initial state
-     * they end up replacing.
+     * they end up bypassing - or as non-final as that state.
      *
      * @param automataSequence A list of automata to be joined as a sequence.
      * @return An automata which is a sequence of the automata in the list.

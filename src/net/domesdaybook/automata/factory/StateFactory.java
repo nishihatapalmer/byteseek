@@ -1,12 +1,11 @@
 /*
- * 
- * Copyright Matt Palmer 2011, All rights reserved.
- * 
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -16,7 +15,6 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *  
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -29,63 +27,29 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
- * 
  */
-package net.domesdaybook.automata;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import net.domesdaybook.automata.Automata;
+package net.domesdaybook.automata.factory;
+
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.walker.StateChildWalker;
-import net.domesdaybook.automata.walker.Step;
-import net.domesdaybook.automata.walker.StepAction;
-import net.domesdaybook.object.DeepCopy;
+import net.domesdaybook.automata.State;
 
 /**
- *
+ * An abstract factory for State objects.
+ * <p>
+ * Implementations of this interface should create the particular type of State
+ * required.
+ * 
  * @author Matt Palmer
  */
-public class BaseAutomata<T> implements Automata<T>{
-
-    protected final State<T> initialState;
+public interface StateFactory<T> {
     
-    public BaseAutomata(final State<T> initialState) {
-        this.initialState = initialState;
-    }
-
-    
-    public State<T> getInitialState() {
-        return initialState;
-    }
-
-    
-    public List<State<T>> getFinalStates() {
-        final List<State<T>> finalStates = new ArrayList<State<T>>();
-        final StepAction findFinalStates = new StepAction() {
-            @Override
-            public void take(final Step step) {
-                if (step.currentState.isFinal()) {
-                    finalStates.add(step.currentState);
-                }
-            }
-        };
-        StateChildWalker.walkAutomata(initialState, findFinalStates);
-        return finalStates;
-    }
-    
-
-    public Automata<T> deepCopy() {
-        final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
-        return deepCopy(oldToNew);
-    }
-    
-    
-    public Automata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        return new BaseAutomata(initialState.deepCopy(oldToNewObjects));
-    }
+    /**
+     * Builds an {@link State} object.
+     *
+     * @param isFinal Whether the state is final or not.
+     * @return An object implementing the State interface.
+     */
+    public State<T> create(boolean isFinal);    
     
 }

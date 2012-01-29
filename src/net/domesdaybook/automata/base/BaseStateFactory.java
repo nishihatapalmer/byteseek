@@ -32,7 +32,7 @@
 package net.domesdaybook.automata.base;
 
 import net.domesdaybook.automata.base.BaseState;
-import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.State;
 
 /**

@@ -29,9 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata;
+package net.domesdaybook.automata.factory;
 
 import net.domesdaybook.automata.Automata;
+import net.domesdaybook.automata.Automata;
+import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.State;
 
 /**
