@@ -38,9 +38,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.AutomataUtils;
 import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.base.BaseStateFactory;
 import net.domesdaybook.automata.factory.TransitionFactory;
@@ -49,40 +46,21 @@ import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
 import net.domesdaybook.automata.walker.StepAction;
 import net.domesdaybook.collections.IdentityHashSet;
-import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.compiler.Compiler;
-import net.domesdaybook.compiler.regex.RegexCompiler;
 
 /**
  *
  * @author Matt Palmer
  */
-public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
+public final class DfaBuilder<T> {
 
-    private static DfaSubsetCompiler defaultCompiler;
-    
-    /**
-     * 
-     * @param nfaInitialState
-     * @return
-     * @throws CompileException
-     */
-    public static State dfaFromNfa(State nfaInitialState) throws CompileException {
-        defaultCompiler = new DfaSubsetCompiler();
-        return defaultCompiler.compile(nfaInitialState);
-    }
-    
-    
-    private final Compiler<State<?>, String> nfaCompiler;
-    private final StateFactory StateFactory;
+    private final StateFactory<T> stateFactory;
     private final TransitionFactory transitionFactory;
     
-    
     /**
      * 
      */
-    public DfaSubsetCompiler() {
-        this(null, null, null);
+    public DfaBuilder() {
+        this(null, null);
     }
 
     
@@ -90,8 +68,8 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
      * 
      * @param stateFactory
      */
-    public DfaSubsetCompiler(final StateFactory stateFactory) {
-        this(null, stateFactory, null);
+    public DfaBuilder(final StateFactory<T> stateFactory) {
+        this(stateFactory, null);
     }
 
     
@@ -99,17 +77,8 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
      * 
      * @param transitionFactory
      */
-    public DfaSubsetCompiler(final TransitionFactory transitionFactory) {
-        this(null, null, transitionFactory);
-    }
-    
-    
-    /**
-     * 
-     * @param nfaCompilerToUse
-     */
-    public DfaSubsetCompiler(final Compiler<State<?>, String> nfaCompilerToUse) {
-        this(nfaCompilerToUse, null, null);
+    public DfaBuilder(final TransitionFactory transitionFactory) {
+        this(null, transitionFactory);
     }
     
     
@@ -117,100 +86,73 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
      * 
      * @param nfaCompilerToUse
      * @param stateFactory
-     */
-    public DfaSubsetCompiler(final Compiler<State<?>, String> nfaCompilerToUse, final StateFactory stateFactory) { 
-        this(nfaCompilerToUse, stateFactory, null);
-    }
-    
-    
-    /**
-     * 
-     * @param nfaCompilerToUse
      * @param transitionFactory
      */
-    public DfaSubsetCompiler(final Compiler<State<?>, String> nfaCompilerToUse, final TransitionFactory transitionFactory) {
-        this(nfaCompilerToUse, null, transitionFactory);
-    }
-
-    
-    /**
-     * 
-     * @param nfaCompilerToUse
-     * @param StateFactoryToUse
-     * @param factoryToUse
-     */
-    public DfaSubsetCompiler(Compiler<State<?>, String> nfaCompilerToUse, StateFactory StateFactoryToUse, TransitionFactory factoryToUse) {
-        if (nfaCompilerToUse == null) {
-            nfaCompiler = new RegexCompiler();
-        } else {
-            nfaCompiler = nfaCompilerToUse;
-        }
-        if (StateFactoryToUse == null) {
-            StateFactory = new BaseStateFactory();
-        } else {
-            StateFactory = StateFactoryToUse;
-        }
-        if (factoryToUse == null) {
-            transitionFactory = new ByteMatcherTransitionFactory();
-        } else {
-            transitionFactory = factoryToUse;
-        }
+    public DfaBuilder(final StateFactory<T> stateFactory, 
+                      final TransitionFactory transitionFactory) {
+        this.stateFactory      = stateFactory == null
+                               ? new BaseStateFactory<T>()
+                               : stateFactory;
+        this.transitionFactory = transitionFactory == null
+                               ? new ByteMatcherTransitionFactory()
+                               : transitionFactory;
     }
 
 
-    @Override
-    public State compile(final State<?> nfaToTransform) {
-        final Map<Set<State<?>>, State<?>> nfaToDfa = new IdentityHashMap<Set<State<?>>, State<?>>();
-        final Set<State<?>> initialState = new IdentityHashSet<State<?>>();
-        initialState.add(nfaToTransform);
-        return getState(initialState, nfaToDfa);
+    public State<T> build(final State<T> initialState) {
+        final Set<State<T>> stateSet = new IdentityHashSet<State<T>>();
+        stateSet.add(initialState);
+        final Map<Set<State<T>>, State<T>> nfaToDfa = new IdentityHashMap<Set<State<T>>, State<T>>();        
+        return getState(stateSet, nfaToDfa);
     }
     
     
-    @Override
-    public State compile(final Collection<State<?>> automata) throws CompileException {
-        return compile(join(automata));
+    public State build(final Collection<State<T>> initialStates) {
+        return build(join(initialStates));
     }    
 
 
-    private State<?> getState(final Set<State<?>> states, final Map<Set<State<?>>, State<?>> statesToDfa) {
+    private State<T> getState(final Set<State<T>> stateSet, final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
         // This method is called recursively -
         // if we have already built this dfa state, just return it:
-        
-        if (statesToDfa.containsKey(states)) {
-            return statesToDfa.get(states);
+        if (stateSetsSeenSoFar.containsKey(stateSet)) {
+            return stateSetsSeenSoFar.get(stateSet);
         } else {
-            return createState(states, statesToDfa);
+            return createState(stateSet, stateSetsSeenSoFar);
         }
     }
 
 
-    private State<?> createState(final Set<State<?>> sourceStates, final Map<Set<State<?>>, State<?>> StatesToDfa) {
-
+    private State<T> createState(final Set<State<T>> sourceStates, final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
         // Determine if the new Dfa state should be final:
         boolean isFinal = anyStatesAreFinal(sourceStates);
 
         // Create the new state and register it in our map of nfa states to dfa state.
-        State<?> newState = StateFactory.create(isFinal);
-        StatesToDfa.put(sourceStates, newState);
+        State<T> newState = stateFactory.create(isFinal);
+        stateSetsSeenSoFar.put(sourceStates, newState);
 
+        // Append all associations of the sourceStates to the new state.
+        for (final State<T> state : sourceStates) {
+            newState.addAllAssociations(state.getAssociations());
+        }
+        
         // Create transitions to all the new dfa states this one points to:
-        createDfaTransitions(sourceStates, newState, StatesToDfa);
-
+        createDfaTransitions(sourceStates, newState, stateSetsSeenSoFar);
+        
         return newState;
     }
 
 
-    private void createDfaTransitions(final Set<State<?>> sourceStates, final State<?> newState,
-                                     final Map<Set<State<?>>, State<?>> StatesToDfa)  {
+    private void createDfaTransitions(final Set<State<T>> stateSet, final State<T> newState,
+                                     final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar)  {
        // For each target nfa state set, add a transition on those bytes:
-       final Map<Set<State<?>>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(sourceStates);
-       for (final Map.Entry<Set<State<?>>, Set<Byte>> targetEntry : targetStatesToBytes.entrySet()) {
+       final Map<Set<State<T>>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(stateSet);
+       for (final Map.Entry<Set<State<T>>, Set<Byte>> targetEntry : targetStatesToBytes.entrySet()) {
             // Get the set of bytes to transition on:
             final Set<Byte> transitionBytes = targetEntry.getValue();
 
             // Recursive: get the target DFA state for this transition.
-            final State<?> targetDFAState = getState(targetEntry.getKey(), StatesToDfa);
+            final State<T> targetDFAState = getState(targetEntry.getKey(), stateSetsSeenSoFar);
 
             // Create a transition to the target state using the bytes to transition on:
             // This places a burden on the implementor of createSetTransition to ensure it
@@ -224,18 +166,18 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
     }
 
    
-   private Map<Set<State<?>>, Set<Byte>> getDfaTransitionInfo(final Set<State<?>> sourceStates) {
+   private Map<Set<State<T>>, Set<Byte>> getDfaTransitionInfo(final Set<State<T>> sourceStates) {
         // Build a map of bytes to the target nfa states each points to:
-        Map<Byte, Set<State<?>>> byteToStates = buildByteToStates(sourceStates);
+        Map<Byte, Set<State<T>>> byteToStates = buildByteToStates(sourceStates);
 
         // Return a map of target nfa states to the bytes they each transition on:
         return getStatesToBytes(byteToStates);
    }
    
 
-   private Map<Byte, Set<State<?>>> buildByteToStates(final Set<State<?>> states) {
-        Map<Byte, Set<State<?>>> byteToTargetStates = new LinkedHashMap<Byte, Set<State<?>>>();
-        for (final State<?> state : states) {
+   private Map<Byte, Set<State<T>>> buildByteToStates(final Set<State<T>> states) {
+        Map<Byte, Set<State<T>>> byteToTargetStates = new LinkedHashMap<Byte, Set<State<T>>>();
+        for (final State<T> state : states) {
             buildByteToStates(state, byteToTargetStates);
         }
         return byteToTargetStates;
@@ -255,13 +197,13 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
      * @param automata
      * @return 
      */
-    public static State join(final Collection<State<?>> automata) {
-        final Iterator<State<?>> automataFirstStates = automata.iterator();
+    public State join(final Collection<State<T>> automata) {
+        final Iterator<State<T>> automataFirstStates = automata.iterator();
         if (automataFirstStates.hasNext()) {
             final State root = automataFirstStates.next();
             boolean isFinal = root.isFinal();            
             while (automataFirstStates.hasNext()) {
-                final State<?> automataFirstState = automataFirstStates.next();
+                final State<T> automataFirstState = automataFirstStates.next();
                 isFinal |= automataFirstState.isFinal();
                 replaceReachableReferences(automataFirstState, root);
                 root.addAllTransitions(automataFirstState.getTransitions());
@@ -283,11 +225,11 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
      * @param newState
      * @return 
      */
-    private static void replaceReachableReferences(final State<?> oldState, final State<?> newState) {
+    private void replaceReachableReferences(final State<T> oldState, final State<T> newState) {
         final StepAction replaceWithNewState = new StepAction() {
             @Override
             public void take(final Step step) {
-                final State<?> stateToUpdate = step.currentState;
+                final State<T> stateToUpdate = step.currentState;
                 for (final Transition transition : stateToUpdate.getTransitions()) {
                     if (transition.getToState() == oldState) {
                         transition.setToState(newState);
@@ -306,15 +248,15 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
      * @param state The state to build the map from.
      * @param byteToTargetStates The map of byte to states in which the results are placed.
      */
-    private static void buildByteToStates(final State<?> state, Map<Byte, Set<State<?>>> byteToTargetStates) {
+    private void buildByteToStates(final State<T> state, Map<Byte, Set<State<T>>> byteToTargetStates) {
         for (final Transition transition : state.getTransitions()) {
-            final State<?> transitionToState = (State<?>) transition.getToState();
+            final State<T> transitionToState = (State<T>) transition.getToState();
             final byte[] transitionBytes = transition.getBytes();
             for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
                 final Byte transitionByte = transitionBytes[index];
-                Set<State<?>> states = byteToTargetStates.get(transitionByte);
+                Set<State<T>> states = byteToTargetStates.get(transitionByte);
                 if (states == null) {
-                    states = new IdentityHashSet<State<?>>();
+                    states = new IdentityHashSet<State<T>>();
                     byteToTargetStates.put(transitionByte, states);
                 }
                 states.add(transitionToState);
@@ -332,14 +274,14 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
      * @param bytesToTargetStates The map of bytes to states reachable by them.
      * @return A map of the set of states to the set of bytes required to reach that set of states.
      */
-    public static Map<Set<State<?>>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State<?>>> bytesToTargetStates) {
-        Map<Set<State<?>>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State<?>>, Set<Byte>>();
+    public Map<Set<State<T>>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State<T>>> bytesToTargetStates) {
+        Map<Set<State<T>>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State<T>>, Set<Byte>>();
 
         // For each byte there is a transition on:
-        for (final Map.Entry<Byte, Set<State<?>>> transitionByte : bytesToTargetStates.entrySet()) {
+        for (final Map.Entry<Byte, Set<State<T>>> transitionByte : bytesToTargetStates.entrySet()) {
 
             // Get the target states for that byte:
-            Set<State<?>> targetStates = transitionByte.getValue();
+            Set<State<T>> targetStates = transitionByte.getValue();
 
             // Get the set of bytes so far for those target states:
             Set<Byte> targetStateBytes = statesToBytes.get(targetStates);
@@ -356,8 +298,8 @@ public final class DfaSubsetCompiler implements Compiler<State<?>, State<?>> {
     }
     
 
-    private boolean anyStatesAreFinal(final Set<State<?>> sourceStates) {
-        for (final State<?> state : sourceStates) {
+    private boolean anyStatesAreFinal(final Set<State<T>> sourceStates) {
+        for (final State<T> state : sourceStates) {
             if (state.isFinal()) {
                 return true;
             }
