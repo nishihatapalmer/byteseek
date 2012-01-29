@@ -53,7 +53,7 @@ public final class AutomataUtils {
     private AutomataUtils() {
     };
 
-
+    
     /**
      * Builds a text representation of the automata in Graphviz dot format.
      * http://www.graphviz.org/
