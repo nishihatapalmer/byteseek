@@ -35,7 +35,7 @@ import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
 import net.domesdaybook.automata.regex.RegexBuilder;
 import java.util.Collection;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
-import net.domesdaybook.automata.TransitionFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +61,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
 
     private static final String MANY = "*";
     
-    private final RegexBuilder<T> automataBuilder;
+    private final RegexBuilder<T> regexBuilder;
 
     /**
      * Constructs an RegexCompiler, using default {@link TransitionFactory},
@@ -72,7 +72,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
      * produce the NFA.
      */
     public RegexCompiler() {
-        automataBuilder = new GlushkovRegexBuilder<T>();
+        regexBuilder = new GlushkovRegexBuilder<T>();
     }
 
     
@@ -83,7 +83,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
      * @param stateWrapperBuilder
      */
     public RegexCompiler(final RegexBuilder<T> stateWrapperBuilder) {
-        this.automataBuilder = stateWrapperBuilder;
+        this.regexBuilder = stateWrapperBuilder;
     }
 
     
@@ -119,7 +119,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
         for (final String expression : expressions) {
             automataList.add(compile(expression));
         }
-        return automataBuilder.buildAlternativesAutomata(automataList);
+        return regexBuilder.buildAlternativesAutomata(automataList);
     }    
     
     
@@ -138,7 +138,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
                     final Automata<T> childAutomata = buildAutomata(child);
                     sequenceStates.add(childAutomata);
                 }
-                automata = automataBuilder.buildSequenceAutomata(sequenceStates);
+                automata = regexBuilder.buildSequenceAutomata(sequenceStates);
                 break;
             }
 
@@ -150,7 +150,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
                     final Automata<T> childAutomata = buildAutomata(child);
                     alternateStates.add(childAutomata);
                 }
-                automata = automataBuilder.buildAlternativesAutomata(alternateStates);
+                automata = regexBuilder.buildAlternativesAutomata(alternateStates);
                 break;
             }
 
@@ -160,10 +160,10 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
                 final Automata<T> repeatedAutomata = buildAutomata(nodeToRepeat);
                 final int minRepeat = ParseUtils.getChildIntValue(ast, 0);
                 if (MANY.equals(ParseUtils.getChildStringValue(ast,1))) {
-                    automata = automataBuilder.buildMinToManyAutomata(minRepeat, repeatedAutomata);
+                    automata = regexBuilder.buildMinToManyAutomata(minRepeat, repeatedAutomata);
                 } else {
                     final int maxRepeat = ParseUtils.getChildIntValue(ast, 1);
-                    automata = automataBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, repeatedAutomata);
+                    automata = regexBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, repeatedAutomata);
                 }
                 break;
             }
@@ -172,7 +172,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
             case (regularExpressionParser.MANY): {
                 final CommonTree zeroToManyNode = (CommonTree) ast.getChild(0);
                 final Automata<T> zeroToManyStates = buildAutomata(zeroToManyNode);
-                automata = automataBuilder.buildZeroToManyAutomata(zeroToManyStates);
+                automata = regexBuilder.buildZeroToManyAutomata(zeroToManyStates);
                 break;
             }
 
@@ -180,7 +180,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
             case (regularExpressionParser.PLUS): {
                 final CommonTree oneToManyNode = (CommonTree) ast.getChild(0);
                 final Automata<T> oneToManyStates = buildAutomata(oneToManyNode);
-                automata = automataBuilder.buildOneToManyAutomata(oneToManyStates);
+                automata = regexBuilder.buildOneToManyAutomata(oneToManyStates);
                 break;
             }
 
@@ -188,7 +188,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
             case (regularExpressionParser.QUESTION_MARK): {
                 final CommonTree optionalNode = (CommonTree) ast.getChild(0);
                 final Automata<T> optionalStates = buildAutomata(optionalNode);
-                automata = automataBuilder.buildOptionalAutomata(optionalStates);
+                automata = regexBuilder.buildOptionalAutomata(optionalStates);
                 break;
             }
 
@@ -198,20 +198,20 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
 
             case (regularExpressionParser.BYTE): {
                 final byte transitionByte = ParseUtils.getHexByteValue(ast);
-                automata = automataBuilder.buildSingleByteAutomata(transitionByte);
+                automata = regexBuilder.buildSingleByteAutomata(transitionByte);
                 break;
             }
 
 
             case (regularExpressionParser.ALL_BITMASK): {
                 final byte transitionByte = ParseUtils.getBitMaskValue(ast);
-                automata = automataBuilder.buildAllBitmaskAutomata(transitionByte);
+                automata = regexBuilder.buildAllBitmaskAutomata(transitionByte);
                 break;
             }
 
             case (regularExpressionParser.ANY_BITMASK): {
                 final byte transitionByte = ParseUtils.getBitMaskValue(ast);
-                automata = automataBuilder.buildAnyBitmaskAutomata(transitionByte);
+                automata = regexBuilder.buildAnyBitmaskAutomata(transitionByte);
                 break;
             }
 
@@ -219,7 +219,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
             case (regularExpressionParser.SET): {
                 try {
                     final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-                    automata = automataBuilder.buildSetAutomata(byteSet,false);
+                    automata = regexBuilder.buildSetAutomata(byteSet,false);
                     break;
                 } catch (ParseException ex) {
                     throw new CompileException(ex);
@@ -230,7 +230,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
             case (regularExpressionParser.INVERTED_SET): {
                 try {
                     final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
-                    automata = automataBuilder.buildSetAutomata(byteSet, true);
+                    automata = regexBuilder.buildSetAutomata(byteSet, true);
                     break;
                 } catch (ParseException ex) {
                     throw new CompileException(ex);
@@ -238,21 +238,21 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
             }
 
             case (regularExpressionParser.ANY): {
-                automata = automataBuilder.buildAnyByteAutomata();
+                automata = regexBuilder.buildAnyByteAutomata();
                 break;
             }
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                 final String str = ParseUtils.unquoteString(ast.getText());
-                automata = automataBuilder.buildCaseSensitiveStringAutomata(str);
+                automata = regexBuilder.buildCaseSensitiveStringAutomata(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
                 final String str = ParseUtils.unquoteString(ast.getText());
-                automata = automataBuilder.buildCaseInsensitiveStringAutomata(str);
+                automata = regexBuilder.buildCaseInsensitiveStringAutomata(str);
                 break;
             }
 

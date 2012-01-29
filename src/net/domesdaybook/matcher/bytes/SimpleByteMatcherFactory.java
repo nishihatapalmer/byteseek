@@ -50,8 +50,8 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     
     /**
      * Builds an optimal matcher from a set of bytes.
-     *
-     * <p>If the set is a single, non-inverted byte, then a {@link OneByteMatcher}
+     *<p>
+     * If the set is a single, non-inverted byte, then a {@link OneByteMatcher}
      * is returned. If the values lie in a contiguous range, then a
      * {@link ByteRangeMatcher} is returned.  If the number of bytes in the
      * set are below a threshold value (16), then a {@link SetBinarySearchMatcher}
