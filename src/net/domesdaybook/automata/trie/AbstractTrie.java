@@ -40,9 +40,9 @@ import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
-import net.domesdaybook.automata.TransitionFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
 import net.domesdaybook.bytes.ByteUtilities;
 
 /**
