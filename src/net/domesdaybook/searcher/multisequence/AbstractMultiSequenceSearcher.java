@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-12, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -92,15 +92,15 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
      * {@inheritDoc}
      * <p>
      * This implementation of searchForwards allocates forward searching between
-     * searching directly on a window byte array when the sequence fits inside
+     * searching directly on a window byte array when the multi-sequence fits inside
      * a window, and using the abstract search method:
      * {@link #doSearchForwards(net.domesdaybook.reader.Reader, long, long) }
      * for searching across window boundaries.
      * <p>
      * This method does no searching itself - it simply calculates how to
-     * efficiently search using a sequence, and calls the appropriate search
+     * efficiently search using a multi-sequence, and calls the appropriate search
      * methods on the search implementation.  Therefore, this is entirely generic for
-     * any search algorithm that operates over sequences.
+     * any search algorithm that operates over multi-sequences.
      * 
      * @throws IOException If the reader encounters a problem reading bytes.
      */
@@ -108,8 +108,8 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
     public long searchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int sequenceLength = matcher.length();
-        final int lastSequencePosition = sequenceLength - 1;
+        final int maxLength = matcher.getMaximumLength();
+        final int lastSequencePosition = maxLength - 1;
         long searchPosition = fromPosition > 0?
                               fromPosition : 0;
         
@@ -188,10 +188,10 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
     /**
      * This method searches forwards crossing window boundaries.  It is
      * called by the {@link #searchForwards(net.domesdaybook.reader.Reader, long, long)}
-     * method when it encounters a sequence which crosses from one window to another.
+     * method when it encounters a multi-sequence which crosses from one window to another.
      * <p>
      * A simple way to implement this method is to use the Reader interface on the
-     * matcher sequence. This at least removes window boundaries from validating
+     * matcher multi-sequence. This at least removes window boundaries from validating
      * that a match exists. It will still be necessary to deal with window management
      * in the operation of the search algorithm itself.
      * <p>
@@ -214,13 +214,13 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
      * {@inheritDoc}
      * <p>
      * This implementation of searchBackwards allocates backwards searching between
-     * searching directly on a window byte array when the sequence fits inside
+     * searching directly on a window byte array when the multi-sequence fits inside
      * a window, and using the abstract search method:
      * {@link #doSearchBackwards(net.domesdaybook.reader.Reader, long, long) }
      * for searching across window boundaries.
      * <p>
      * This method does no searching itself - it simply calculates how to
-     * efficiently search using a sequence, and calls the appropriate search
+     * efficiently search using a multi-sequence, and calls the appropriate search
      * methods on the search implementation.  Therefore, this is entirely generic for
      * any search algorithm that operates over sequences.
      * 
@@ -230,8 +230,8 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
     public long searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int sequenceLength = matcher.length();
-        final int lastSequencePosition = sequenceLength - 1;
+        final int maxLength = matcher.getMaximumLength();
+        final int lastSequencePosition = maxLength - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
         long searchPosition = withinLength(reader, fromPosition);
@@ -240,7 +240,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
         Window window = reader.getWindow(searchPosition);        
         while (window != null && searchPosition >= finalSearchPosition) {
             
-            // Does the sequence fit into the searchable bytes of this window?
+            // Does the multi-sequence fit into the searchable bytes of this window?
             // It may not if the start position of the window is already close
             // to the end of the window, or the sequence is long (potentially
             // could be longer than any single window - but mostly won't be):
@@ -274,7 +274,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
                 }
             }
 
-            // From the current search position, the sequence crosses over in to
+            // From the current search position, the multi-sequence crosses over in to
             // the next window, so we can't search directly in the window byte array.
             // We must use the reader interface on the sequence to let it match
             // over more bytes than this window has available.
@@ -314,10 +314,10 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
    /**
      * This abstract method searches backwards crossing window boundaries.  It is
      * called by the {@link #searchBackwards(net.domesdaybook.reader.Reader, long, long)}
-     * method when it encounters s sequence which crosses from one window to another.
+     * method when it encounters a multi-sequence which crosses from one window to another.
      * <p>
      * A simple way to implement this method is to use the Reader interface on the
-     * matcher sequence.  This at least removes window boundaries from validating
+     * matcher multi-sequence.  This at least removes window boundaries from validating
      * that a match exists.  It may still be necessary to deal with window management
      * in the operation of the search algorithm itself.
      * 
