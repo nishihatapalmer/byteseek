@@ -34,6 +34,7 @@ package net.domesdaybook.searcher.multisequence;
 import java.io.IOException;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
 
 /**
  *
@@ -47,36 +48,136 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     
     
     @Override
-    protected long doSearchForwards(final Reader reader, final long searchPosition, 
-                                    final long lastSearchPosition) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    protected long doSearchForwards(final Reader reader, final long fromPosition, 
+                                    final long toPosition) throws IOException {
+        // Initialise:
+        final MultiSequenceMatcher sequences = matcher;  
+        long searchPosition = fromPosition > 0? 
+                              fromPosition : 0;
+        
+        // While there is data still to search in:
+        Window window = reader.getWindow(searchPosition);
+        while (window != null && searchPosition <= toPosition) {
+
+            // Calculate bounds for searching over this window:
+            final int availableSpace = window.length() - reader.getWindowOffset(searchPosition);
+            final long endWindowPosition = searchPosition + availableSpace;
+            final long lastPosition = endWindowPosition < toPosition?
+                                      endWindowPosition : toPosition;
+            
+            // Search forwards up to the end of this window:
+            while (searchPosition <= lastPosition) {
+                if (sequences.matches(reader, searchPosition)) {
+                    return searchPosition;
+                }
+                searchPosition++;
+            }
+            
+            // Did we pass the end of the search space?
+            if (toPosition <= endWindowPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Get the next window to search across.
+            // The search position is guaranteed to be in the next window now.
+            window = reader.getWindow(searchPosition);
+        }
+        return NOT_FOUND;
     }
 
     
     @Override
-    protected long doSearchBackwards(final Reader reader, final long searchPosition,
-                                     final long lastSearchPosition) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    
     public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Initialise:
+        final MultiSequenceMatcher sequences = matcher;
+        
+        // Calculate bounds for the search:
+        final int lastPossiblePosition = bytes.length - sequences.getMinimumLength();
+        final int lastPosition = toPosition < lastPossiblePosition?
+                                 toPosition : lastPossiblePosition;
+        int searchPosition = fromPosition > 0?
+                             fromPosition : 0;
+        
+        // Search forwards up to the last possible position:
+        while (searchPosition <= lastPosition) {
+            if (sequences.matches(bytes, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition++;
+        }
+        return NOT_FOUND;           
     }
 
     
+    @Override
+    protected long doSearchBackwards(final Reader reader, final long fromPosition,
+                                     final long toPosition) throws IOException {
+        // Initialise:
+        final MultiSequenceMatcher sequences = matcher;
+        long searchPosition = withinLength(reader, fromPosition);
+        Window window = reader.getWindow(searchPosition);
+        
+        // While there is data to search in:
+        while (window != null && searchPosition >= toPosition) {
+            
+            // Calculate bounds for searching back across this window:
+            final long windowStartPosition = window.getWindowPosition();
+            final long lastSearchPosition = toPosition > windowStartPosition?
+                                            toPosition : windowStartPosition;
+            
+            // Search backwards:
+            while (searchPosition >= lastSearchPosition) {
+                if (sequences.matches(reader, searchPosition)) {
+                    return searchPosition;
+                }
+                searchPosition--;
+            }
+            
+            // Did we pass the last search position?
+            if (toPosition >= windowStartPosition) {
+                return NOT_FOUND;
+            }
+            
+            // Get the next window to search in.
+            // The search position is guaranteed to be in the next window now.
+            window = reader.getWindow(searchPosition);
+        }
+        return NOT_FOUND;
+    }
+
+
+    @Override
     public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Initialise:
+        final MultiSequenceMatcher sequences = matcher;
+        
+        // Calculate safe bounds for the search:
+        final int lastPosition = toPosition > 0?
+                                 toPosition : 0;
+        final int firstPossiblePosition = bytes.length - sequences.getMinimumLength();
+        int searchPosition = fromPosition < firstPossiblePosition?
+                             fromPosition : firstPossiblePosition;
+        
+        // Search backwards:
+        while (searchPosition >= lastPosition) {
+            if (sequences.matches(bytes, searchPosition)) {
+                return searchPosition;
+            }
+            searchPosition--;
+        }
+        return NOT_FOUND;
     }
 
     
+    @Override
     public void prepareForwards() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //  nothing to prepare.
     }
 
     
+    @Override
     public void prepareBackwards() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // nothing to prepare.
     }
     
 }
