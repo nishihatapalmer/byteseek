@@ -49,7 +49,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     }
     
     
-    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences) {
+    public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences) {
         this(sequences, null, null);
     }        
     
@@ -59,7 +59,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     }
     
     
-    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences,
+    public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences,
                                final StateFactory<SequenceMatcher> stateFactory) {
         this(sequences, stateFactory, null);
     }    
@@ -70,7 +70,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     }
 
     
-    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences,
+    public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences,
                               final TransitionFactory transitionFactory) {
         this(sequences, null, transitionFactory);
     }
@@ -82,7 +82,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     }
     
     
-    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences, 
+    public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences, 
                                final StateFactory<SequenceMatcher> stateFactory, 
                                final TransitionFactory transitionFactory) {
         super(stateFactory, transitionFactory);
