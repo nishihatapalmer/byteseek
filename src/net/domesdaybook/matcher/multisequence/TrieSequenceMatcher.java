@@ -312,7 +312,7 @@ public final class TrieSequenceMatcher implements MultiSequenceMatcher {
      * 
      */
     @Override 
-    public boolean matchesBackwards(Reader reader, long matchPosition) 
+    public boolean matchesBackwards(final Reader reader, final long matchPosition) 
             throws IOException {
         return firstMatchBackwards(reader, matchPosition) != null;
     }
