@@ -31,6 +31,9 @@
 
 package net.domesdaybook.automata.trie;
 
+import java.util.Collection;
+import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
@@ -40,6 +43,55 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  */
 public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
 
+
+    public SequenceMatcherTrie() {
+        this(null, null, null);
+    }
+    
+    
+    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences) {
+        this(sequences, null, null);
+    }        
+    
+    
+    public SequenceMatcherTrie(final StateFactory<SequenceMatcher> stateFactory) {
+        this(null, stateFactory, null);
+    }
+    
+    
+    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences,
+                               final StateFactory<SequenceMatcher> stateFactory) {
+        this(sequences, stateFactory, null);
+    }    
+    
+    
+    public SequenceMatcherTrie(final TransitionFactory transitionFactory) {
+        this(null, null, transitionFactory);
+    }
+
+    
+    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences,
+                              final TransitionFactory transitionFactory) {
+        this(sequences, null, transitionFactory);
+    }
+        
+    
+    public SequenceMatcherTrie(final StateFactory<SequenceMatcher> stateFactory, 
+                               final TransitionFactory transitionFactory) {
+        this(null, stateFactory, transitionFactory);
+    }
+    
+    
+    public SequenceMatcherTrie(final Collection<SequenceMatcher> sequences, 
+                               final StateFactory<SequenceMatcher> stateFactory, 
+                               final TransitionFactory transitionFactory) {
+        super(stateFactory, transitionFactory);
+        if (sequences != null) {
+            addAll(sequences);
+        }
+    }    
+    
+    
     @Override
     protected int getSequenceLength(final SequenceMatcher sequence) {
         return sequence.length();

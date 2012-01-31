@@ -30,6 +30,10 @@
  */
 package net.domesdaybook.automata.trie;
 
+import java.util.Collection;
+import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
+
 
 /**
  *
@@ -37,6 +41,54 @@ package net.domesdaybook.automata.trie;
  */
 public class ByteArrayTrie extends AbstractTrie<byte[]> {
 
+    
+    public ByteArrayTrie() {
+        this(null, null, null);
+    }
+    
+    
+    public ByteArrayTrie(final Collection<byte[]> sequences) {
+        this(sequences, null, null);
+    }        
+    
+    
+    public ByteArrayTrie(final StateFactory<byte[]> stateFactory) {
+        this(null, stateFactory, null);
+    }
+    
+    
+    public ByteArrayTrie(final Collection<byte[]> sequences,
+                         final StateFactory<byte[]> stateFactory) {
+        this(sequences, stateFactory, null);
+    }    
+    
+    
+    public ByteArrayTrie(final TransitionFactory transitionFactory) {
+        this(null, null, transitionFactory);
+    }
+    
+    
+    public ByteArrayTrie(final Collection<byte[]> sequences,
+                         final TransitionFactory transitionFactory) {
+        this(sequences, null, transitionFactory);
+    }    
+    
+    
+    public ByteArrayTrie(final StateFactory<byte[]> stateFactory, 
+                         final TransitionFactory transitionFactory) {
+        this(null, stateFactory, transitionFactory);
+    }
+    
+    
+    public ByteArrayTrie(final Collection<byte[]> sequences, 
+                         final StateFactory<byte[]> stateFactory, 
+                         final TransitionFactory transitionFactory) {
+        super(stateFactory, transitionFactory);
+        if (sequences != null) {
+            addAll(sequences);
+        }
+    }
+    
     
     @Override
     protected int getSequenceLength(final byte[] sequence) {
