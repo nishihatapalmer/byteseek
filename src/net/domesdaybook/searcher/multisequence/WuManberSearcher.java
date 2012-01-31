@@ -41,11 +41,9 @@ import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.searcher.Searcher;
-import net.domesdaybook.compiler.ReversibleCompiler;
-import net.domesdaybook.compiler.ReversibleCompiler.Direction;
-import net.domesdaybook.compiler.multisequence.TrieMatcherCompiler;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
-import net.domesdaybook.matcher.singlebyte.SingleByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.object.LazyObject;
 import net.domesdaybook.searcher.AbstractSearcher;
 
 /**
@@ -95,10 +93,14 @@ import net.domesdaybook.searcher.AbstractSearcher;
  * effects of the ever reducing safe shift when multiple patterns map to the same
  * single byte block.  
  * 
- * @author matt
+ * @author Matt Palmer
  */
+
 public class WuManberSearcher extends AbstractSearcher {
 
+    private final LazyObject<SearchInfo> forwardInfo;
+    private final LazyObject<SearchInfo> backwardInfo;    
+    
     /**
      * 
      */
@@ -561,7 +563,7 @@ public class WuManberSearcher extends AbstractSearcher {
     private List<byte[]> getBlockByteList(final int position, final SequenceMatcher matcher) {
         final List<byte[]> byteList = new ArrayList<byte[]>(blockSize);
         for (int blockIndex = position - blockSize + 1; blockIndex <= position; blockIndex++) {
-            final SingleByteMatcher byteMatcher = matcher.getMatcherForPosition(blockIndex);
+            final ByteMatcher byteMatcher = matcher.getMatcherForPosition(blockIndex);
             byteList.add(byteMatcher.getMatchingBytes());
         }
         return byteList;
