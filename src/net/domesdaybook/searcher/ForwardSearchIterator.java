@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-12, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,19 +40,18 @@ import net.domesdaybook.reader.Reader;
  *
  * @author matt
  */
-public class ForwardSearchIterator implements Iterator {
-    public static final int NOT_FOUND = -1;
+public class ForwardSearchIterator<T> implements Iterator<SearchResult<T>> {
     
     // immutable fields:
     private final byte[] bytes;
     private final Reader reader;
     private final long toPosition;
-    private final Searcher searcher;
+    private final Searcher<T> searcher;
     
     // private state:
     private long searchPosition;
     private boolean searchedForNext;
-    private long matchPosition = NOT_FOUND;
+    private SearchResult<T> matchResult = SearchResult.noMatch();
     
     
     /**
@@ -61,7 +60,7 @@ public class ForwardSearchIterator implements Iterator {
      * @param reader
      * @throws IOException
      */
-    public ForwardSearchIterator(final Searcher searcher, final Reader reader) throws IOException {
+    public ForwardSearchIterator(final Searcher<T> searcher, final Reader reader) throws IOException {
         this(searcher, 0, Long.MAX_VALUE, reader);
     }
     
@@ -73,7 +72,7 @@ public class ForwardSearchIterator implements Iterator {
      * @param toPosition
      * @param reader
      */
-    public ForwardSearchIterator(final Searcher searcher, final long fromPosition, 
+    public ForwardSearchIterator(final Searcher<T> searcher, final long fromPosition, 
                                  final long toPosition, final Reader reader) {
         if (searcher == null || reader == null) {
             throw new IllegalArgumentException("Null searcher or byte reader.");
@@ -121,22 +120,22 @@ public class ForwardSearchIterator implements Iterator {
     public boolean hasNext() {
         if (!searchedForNext) {
             try {
-                matchPosition = getNextMatchPosition();
+                matchResult = getNextMatchPosition();
                 searchedForNext = true;
             } catch (IOException ex) {
                 return false;
             }
         }
-        return matchPosition >= 0;
+        return matchResult.matched();
     }
 
     
     @Override
-    public Long next() {
+    public SearchResult<T> next() {
         if (hasNext()) {
-            searchPosition = matchPosition + 1;
+            searchPosition = matchResult.getMatchPosition() + 1;
             searchedForNext = false;
-            return matchPosition;
+            return matchResult;
         }
         throw new NoSuchElementException();
     }
@@ -148,8 +147,8 @@ public class ForwardSearchIterator implements Iterator {
     }
     
     
-    private long getNextMatchPosition() throws IOException {
-        long nextMatchingPosition = NOT_FOUND;
+    private SearchResult<T> getNextMatchPosition() throws IOException {
+        SearchResult<T> nextMatchingPosition = SearchResult.noMatch();
         if (reader != null) {
             nextMatchingPosition = searcher.searchForwards(reader, searchPosition, toPosition);
         } else if (bytes != null) {

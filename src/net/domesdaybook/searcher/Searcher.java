@@ -43,7 +43,7 @@ import net.domesdaybook.reader.Reader;
  *
  * @author Matt Palmer
  */
-public interface Searcher {
+public interface Searcher<T> {
 
     
     /**
@@ -57,7 +57,7 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchForwards(Reader reader, long fromPosition, long toPosition)
+    public SearchResult<T> searchForwards(Reader reader, long fromPosition, long toPosition)
             throws IOException;
 
 
@@ -71,7 +71,7 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchForwards(Reader reader, long fromPosition)
+    public SearchResult<T> searchForwards(Reader reader, long fromPosition)
              throws IOException;
  
     
@@ -84,7 +84,7 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchForwards(Reader reader) 
+    public SearchResult<T> searchForwards(Reader reader) 
             throws IOException;    
     
     
@@ -98,7 +98,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchForwards(byte[] bytes, int fromPosition, int toPosition);
+    public SearchResult<T> searchForwards(byte[] bytes, int fromPosition, int toPosition);
 
     
     /**
@@ -110,7 +110,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchForwards(byte[] bytes, int fromPosition);
+    public SearchResult<T> searchForwards(byte[] bytes, int fromPosition);
     
     
     /**
@@ -121,7 +121,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchForwards(byte[] bytes);
+    public SearchResult<T> searchForwards(byte[] bytes);
     
     
     /**
@@ -135,7 +135,7 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchBackwards(Reader reader, long fromPosition, long toPosition) 
+    public SearchResult<T> searchBackwards(Reader reader, long fromPosition, long toPosition) 
             throws IOException;
     
     
@@ -149,7 +149,7 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchBackwards(Reader reader, long fromPosition) 
+    public SearchResult<T> searchBackwards(Reader reader, long fromPosition) 
             throws IOException;
         
     
@@ -162,7 +162,7 @@ public interface Searcher {
      *                     no match was found.
      * @throws IOException  
      */
-    public long searchBackwards(Reader reader)
+    public SearchResult<T> searchBackwards(Reader reader)
             throws IOException;    
     
     /**
@@ -175,7 +175,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition);
+    public SearchResult<T> searchBackwards(byte[] bytes, int fromPosition, int toPosition);
     
 
     /**
@@ -187,7 +187,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchBackwards(byte[] bytes, int fromPosition);
+    public SearchResult<T> searchBackwards(byte[] bytes, int fromPosition);
     
    
     /**
@@ -197,7 +197,7 @@ public interface Searcher {
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
-    public int searchBackwards(byte[] bytes);    
+    public SearchResult<T> searchBackwards(byte[] bytes);    
     
     
     /**

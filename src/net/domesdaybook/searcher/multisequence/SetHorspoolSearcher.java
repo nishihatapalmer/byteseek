@@ -31,10 +31,13 @@
 
 package net.domesdaybook.searcher.multisequence;
 
+import java.io.IOException;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.object.LazyObject;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.searcher.SearchResult;
 
 /**
  *
@@ -54,23 +57,23 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     
     
     @Override
-    protected long doSearchForwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
+    protected SearchResult<SequenceMatcher> doSearchForwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     
     @Override
-    protected long doSearchBackwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
+    protected SearchResult<SequenceMatcher> doSearchBackwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     
-    public int searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+    public SearchResult<SequenceMatcher> searchForwards(byte[] bytes, int fromPosition, int toPosition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     
-    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    public SearchResult<SequenceMatcher> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
