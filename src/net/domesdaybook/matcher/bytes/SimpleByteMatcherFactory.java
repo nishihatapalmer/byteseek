@@ -48,6 +48,12 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     private static final int BINARY_SEARCH_THRESHOLD = 16;
 
     
+    @Override
+    public ByteMatcher create(final Set<Byte> bytes) {
+        return create(bytes, ByteMatcherFactory.NOT_INVERTED);
+    }
+    
+    
     /**
      * Builds an optimal matcher from a set of bytes.
      *<p>

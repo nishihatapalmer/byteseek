@@ -43,6 +43,8 @@ public interface ByteMatcherFactory {
     public final static boolean INVERTED = true;
     public final static boolean NOT_INVERTED = false;
     
+    ByteMatcher create(Set<Byte> bytes);
+    
     ByteMatcher create(Set<Byte> bytes, boolean inverted);
 
 }
