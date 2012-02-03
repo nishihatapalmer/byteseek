@@ -409,8 +409,8 @@ public final class ListSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc 
      */ 
     @Override  
-    public Collection<SequenceMatcher> getSequenceMatchers() {
-        return matchers;
+    public List<SequenceMatcher> getSequenceMatchers() {
+        return new ArrayList<SequenceMatcher>(matchers);
     }
 
 }

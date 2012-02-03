@@ -353,8 +353,8 @@ public final class TrieSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc 
      */ 
     @Override  
-    public Collection<SequenceMatcher> getSequenceMatchers() {
-        return trie.getSequences();
+    public List<SequenceMatcher> getSequenceMatchers() {
+        return new ArrayList<SequenceMatcher>(trie.getSequences());
     }
     
     

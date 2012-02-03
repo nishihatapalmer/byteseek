@@ -33,6 +33,7 @@ package net.domesdaybook.matcher.multisequence;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
@@ -189,5 +190,5 @@ public interface MultiSequenceMatcher extends Matcher {
      * 
      * @return A collection of the sequence matchers this multi sequence matcher matches.
      */
-    public Collection<SequenceMatcher> getSequenceMatchers();
+    public List<SequenceMatcher> getSequenceMatchers();
 }
