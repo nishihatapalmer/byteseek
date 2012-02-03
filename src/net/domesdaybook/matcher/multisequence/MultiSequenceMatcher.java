@@ -182,4 +182,12 @@ public interface MultiSequenceMatcher extends Matcher {
      * @return int The maximum length of the sequences that can match.
      */
     public int getMaximumLength();
+    
+    
+    /**
+     * Returns a collection of all the sequences matched by this matcher.
+     * 
+     * @return A collection of the sequence matchers this multi sequence matcher matches.
+     */
+    public Collection<SequenceMatcher> getSequenceMatchers();
 }

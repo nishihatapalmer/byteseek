@@ -349,6 +349,15 @@ public final class TrieSequenceMatcher implements MultiSequenceMatcher {
     }
     
     
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override  
+    public Collection<SequenceMatcher> getSequenceMatchers() {
+        return trie.getSequences();
+    }
+    
+    
     private SequenceMatcher getFirstAssociation(final State<SequenceMatcher> state) {
         final Collection<SequenceMatcher> associations = state.getAssociations();
         if (associations != null) {

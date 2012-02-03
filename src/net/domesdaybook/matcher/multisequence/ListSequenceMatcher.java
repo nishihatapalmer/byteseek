@@ -404,4 +404,13 @@ public final class ListSequenceMatcher implements MultiSequenceMatcher {
         return maximumLength;
     }
 
+    
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override  
+    public Collection<SequenceMatcher> getSequenceMatchers() {
+        return matchers;
+    }
+
 }
