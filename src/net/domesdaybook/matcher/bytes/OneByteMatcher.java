@@ -34,7 +34,7 @@ package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
-import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
+import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
@@ -151,7 +151,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }   
-        return new ByteArrayMatcher(byteToMatch, numberOfRepeats);
+        return new ByteSequenceMatcher(byteToMatch, numberOfRepeats);
     }    
 
 
