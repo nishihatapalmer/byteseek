@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import net.domesdaybook.matcher.sequence.ByteArraySequenceMatcher;
+import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 
@@ -62,7 +62,7 @@ public final class ListSequenceMatcher implements MultiSequenceMatcher {
         }
         matchers = new ArrayList<SequenceMatcher>(bytesToMatch.size());
         for (final byte[] bytes : bytesToMatch) {
-            final SequenceMatcher sequence = new ByteArraySequenceMatcher(bytes);
+            final SequenceMatcher sequence = new ByteArrayMatcher(bytes);
             matchers.add(sequence);
         }
         if (matchers.isEmpty()) {

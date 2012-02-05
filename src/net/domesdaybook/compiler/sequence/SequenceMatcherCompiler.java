@@ -40,7 +40,7 @@ import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseUtils;
 import net.domesdaybook.parser.regularExpressionParser;
-import net.domesdaybook.matcher.sequence.ByteArraySequenceMatcher;
+import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceOfSequencesMatcher;
@@ -109,7 +109,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
      * @return SequenceMatcher a SequenceMatcher matching the bytes.
      */
     public static SequenceMatcher sequenceMatcherFrom(final byte[] bytes) {
-        return new ByteArraySequenceMatcher(bytes);
+        return new ByteArrayMatcher(bytes);
     }
     
     
@@ -288,7 +288,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
                         case (regularExpressionParser.REPEAT): {
                             SequenceMatcher sequence = getFixedRepeatMatcher(child);
-                            if (sequence instanceof ByteArraySequenceMatcher) {
+                            if (sequence instanceof ByteArrayMatcher) {
                                 addCollectedSingleByteMatchers(singleByteSequence, sequences);
                                 for (int position = 0; position < sequence.length(); position++) {
                                     final byte value = sequence.getMatcherForPosition(position).getMatchingBytes()[0];
@@ -378,7 +378,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                 final String str = ParseUtils.unquoteString(ast.getText());
-                matcher = new ByteArraySequenceMatcher(str);
+                matcher = new ByteArrayMatcher(str);
                 break;
             }
 
@@ -399,7 +399,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
     private void addCollectedByteValues(final List<Byte> byteValuesToJoin, final List<SequenceMatcher> sequences) {
         if (byteValuesToJoin.size() > 0) {
-            final ByteArraySequenceMatcher byteMatcher = new ByteArraySequenceMatcher(byteValuesToJoin);
+            final ByteArrayMatcher byteMatcher = new ByteArrayMatcher(byteValuesToJoin);
             sequences.add(byteMatcher);
             byteValuesToJoin.clear();
         }
@@ -461,7 +461,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
                 case (regularExpressionParser.BYTE): {
-                    matcher = new ByteArraySequenceMatcher(ParseUtils.getHexByteValue(repeatedNode), maxRepeat);
+                    matcher = new ByteArrayMatcher(ParseUtils.getHexByteValue(repeatedNode), maxRepeat);
                     break;
                 }
 
@@ -491,7 +491,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
                 case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                     final String str = ParseUtils.unquoteString(repeatedNode.getText());
-                    matcher = new ByteArraySequenceMatcher(repeatString(str, maxRepeat));
+                    matcher = new ByteArrayMatcher(repeatString(str, maxRepeat));
                     break;
                 }
 
