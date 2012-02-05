@@ -57,7 +57,7 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
      * @param sequence A list of SingleByteMatchers to construct this sequence matcher from.
      * @throws IllegalArgumentException if the list is null or empty.
      */
-    public ByteMatcherArrayMatcher(final Collection<ByteMatcher> sequence) {
+    public ByteMatcherArrayMatcher(final Collection<? extends ByteMatcher> sequence) {
         if (sequence == null || sequence.isEmpty()) {
             throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
         }
