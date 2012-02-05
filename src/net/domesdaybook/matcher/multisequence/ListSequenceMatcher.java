@@ -86,7 +86,7 @@ public final class ListSequenceMatcher implements MultiSequenceMatcher {
      * 
      * @param matchersToUse
      */
-    public ListSequenceMatcher(final Collection<SequenceMatcher> matchersToUse) {
+    public ListSequenceMatcher(final Collection<? extends SequenceMatcher> matchersToUse) {
         if (matchersToUse == null) {
             throw new IllegalArgumentException("Null collection of matchers passed in.");
         }
