@@ -43,7 +43,7 @@ import net.domesdaybook.parser.regularExpressionParser;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.sequence.SequenceOfSequencesMatcher;
+import net.domesdaybook.matcher.sequence.SequenceArrayMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.BytesSequenceMatcher;
 import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
@@ -165,7 +165,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
         for (final String expression : expressions) {
             matchers.add(compile(expression));
         }
-        return new SequenceOfSequencesMatcher(matchers);
+        return new SequenceArrayMatcher(matchers);
     }    
 
 
@@ -326,7 +326,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                 // of different sequence matchers:
                 matcher = sequences.size() == 1
                         ? sequences.get(0)
-                        : new SequenceOfSequencesMatcher(sequences);
+                        : new SequenceArrayMatcher(sequences);
                 break;
             }
 

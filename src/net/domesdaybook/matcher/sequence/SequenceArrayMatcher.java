@@ -46,30 +46,30 @@ import net.domesdaybook.reader.Window;
  * 
  * @author Matt Palmer
  */
-public final class SequenceOfSequencesMatcher implements SequenceMatcher {
+public final class SequenceArrayMatcher implements SequenceMatcher {
 
     private final SequenceMatcher[] matchers;
     private final int length;
 
     
     /**
-     * Constructs a SequenceOfSequencesMatcher from a list of {@link SequenceMatcher} objects.
+     * Constructs a SequenceArrayMatcher from a list of {@link SequenceMatcher} objects.
      *
-     * @param matchList A list of SequenceMatchers from which to construct this SequenceOfSequencesMatcher.
+     * @param matchList A list of SequenceMatchers from which to construct this SequenceArrayMatcher.
      */
-    public SequenceOfSequencesMatcher(final Collection<SequenceMatcher> matchList) {
+    public SequenceArrayMatcher(final Collection<SequenceMatcher> matchList) {
         this(matchList, 1);
     }
 
 
     /**
-     * Constructs a SequenceOfSequencesMatcher from a repeated list of {@link SequenceMatcher} objects.
+     * Constructs a SequenceArrayMatcher from a repeated list of {@link SequenceMatcher} objects.
      * 
-     * @param matchList  A list of (repeated) SequenceMatchers from which to construct this SequenceOfSequencesMatcher.
+     * @param matchList  A list of (repeated) SequenceMatchers from which to construct this SequenceArrayMatcher.
      * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
      * @throws IllegalArgumentException if the list is null or empty, or the number to repeat is less than one.
      */
-    public SequenceOfSequencesMatcher(final Collection<SequenceMatcher> matchList, final int numberOfRepeats) {
+    public SequenceArrayMatcher(final Collection<SequenceMatcher> matchList, final int numberOfRepeats) {
         if (matchList == null || matchList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
         }
@@ -90,12 +90,12 @@ public final class SequenceOfSequencesMatcher implements SequenceMatcher {
     }
     
     
-    public SequenceOfSequencesMatcher(final SequenceMatcher[] matchArray) {
+    public SequenceArrayMatcher(final SequenceMatcher[] matchArray) {
         this(matchArray, 1);
     }
     
     
-    public SequenceOfSequencesMatcher(final SequenceMatcher[] matchArray, final int numberOfRepeats) {
+    public SequenceArrayMatcher(final SequenceMatcher[] matchArray, final int numberOfRepeats) {
         if (matchArray == null || matchArray.length == 0) {
             throw new IllegalArgumentException("Null or empty match array passed in to CombinedSequenceMatcher.");
         }
@@ -253,13 +253,13 @@ public final class SequenceOfSequencesMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SequenceOfSequencesMatcher reverse() {
+    public SequenceArrayMatcher reverse() {
         final SequenceMatcher[] reversed = new SequenceMatcher[matchers.length];
         int position = matchers.length - 1;
         for (final SequenceMatcher matcher : matchers) {
             reversed[position--] = matcher.reverse();
         }
-        return new SequenceOfSequencesMatcher(reversed);
+        return new SequenceArrayMatcher(reversed);
     }
 
     
@@ -316,7 +316,7 @@ public final class SequenceOfSequencesMatcher implements SequenceMatcher {
         }
         
         // Forming the new combined sequence matcher:
-        return new SequenceOfSequencesMatcher(newSequence);
+        return new SequenceArrayMatcher(newSequence);
     }
 
     
@@ -331,7 +331,7 @@ public final class SequenceOfSequencesMatcher implements SequenceMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }        
-        return new SequenceOfSequencesMatcher(matchers, numberOfRepeats);
+        return new SequenceArrayMatcher(matchers, numberOfRepeats);
     }
 
 }
