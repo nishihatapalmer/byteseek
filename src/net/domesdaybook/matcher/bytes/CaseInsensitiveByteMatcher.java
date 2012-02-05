@@ -34,8 +34,8 @@ package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
-import net.domesdaybook.matcher.sequence.ByteSequenceMatcher;
-import net.domesdaybook.matcher.sequence.CaseInsensitiveStringMatcher;
+import net.domesdaybook.matcher.sequence.ByteArraySequenceMatcher;
+import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
@@ -169,9 +169,9 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
             return this;
         }   
         if (getNumberOfMatchingBytes() == 1) {
-            return new ByteSequenceMatcher(ByteUtilities.repeat(caseValues[0], numberOfRepeats));
+            return new ByteArraySequenceMatcher(ByteUtilities.repeat(caseValues[0], numberOfRepeats));
         }
-        return new CaseInsensitiveStringMatcher(this, numberOfRepeats);
+        return new CaseInsensitiveSequenceMatcher(this, numberOfRepeats);
     }        
 
 

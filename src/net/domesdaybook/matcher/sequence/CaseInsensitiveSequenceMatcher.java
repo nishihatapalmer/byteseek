@@ -44,7 +44,7 @@ import net.domesdaybook.reader.Window;
  * 
  * @author Matt Palmer
  */
-public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
+public final class CaseInsensitiveSequenceMatcher implements SequenceMatcher {
 
     private final int length;
     private final String caseInsensitiveString;
@@ -56,24 +56,24 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      *
      * @param caseInsensitiveASCIIString The string to match.
      */
-    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString) {
+    public CaseInsensitiveSequenceMatcher(final String caseInsensitiveASCIIString) {
         this(caseInsensitiveASCIIString, 1);
     }
 
     
-    public CaseInsensitiveStringMatcher(final CaseInsensitiveByteMatcher matcher) {
+    public CaseInsensitiveSequenceMatcher(final CaseInsensitiveByteMatcher matcher) {
         this(matcher, 1);
     }
     
     
     /**
-     * Constructs an immutable CaseInsensitiveStringMatcher from a repeated number
+     * Constructs an immutable CaseInsensitiveSequenceMatcher from a repeated number
      * of CaseInsensitiveByteMatchers.
      * 
      * @param matcher The CaseInsensitiveByteMatcher to build this matcher from.
      * @param numberOfRepeats The number of times to repeat the matcher.
      */
-    public CaseInsensitiveStringMatcher(final CaseInsensitiveByteMatcher matcher, final int numberOfRepeats) {
+    public CaseInsensitiveSequenceMatcher(final CaseInsensitiveByteMatcher matcher, final int numberOfRepeats) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in.");
         }
@@ -90,13 +90,13 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
     
 
     /**
-     * Constructs an immutable CaseInsensitiveStringMatcher from a repeated
+     * Constructs an immutable CaseInsensitiveSequenceMatcher from a repeated
      * number of ASCII strings.
      *
      * @param caseInsensitiveASCIIString The (repeatable) string to match.
      * @param numberToRepeat The number of repeats.
      */
-    public CaseInsensitiveStringMatcher(final String caseInsensitiveASCIIString, final int numberToRepeat) {
+    public CaseInsensitiveSequenceMatcher(final String caseInsensitiveASCIIString, final int numberToRepeat) {
         if (caseInsensitiveASCIIString == null || caseInsensitiveASCIIString.isEmpty()) {
             throw new IllegalArgumentException("Null or empty string passed in to CaseInsensitiveStringMatcher.");
         }
@@ -243,9 +243,9 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public CaseInsensitiveStringMatcher reverse() {
+    public CaseInsensitiveSequenceMatcher reverse() {
         final String reversed = new StringBuilder(caseInsensitiveString).reverse().toString();
-        return new CaseInsensitiveStringMatcher(reversed);
+        return new CaseInsensitiveSequenceMatcher(reversed);
     }
 
     
@@ -261,7 +261,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         if (endIndex - beginIndex == 1) {
             return charMatchList[beginIndex];
         }
-        return new CaseInsensitiveStringMatcher(caseInsensitiveString.substring(beginIndex, endIndex));
+        return new CaseInsensitiveSequenceMatcher(caseInsensitiveString.substring(beginIndex, endIndex));
     }
 
     
@@ -276,7 +276,7 @@ public final class CaseInsensitiveStringMatcher implements SequenceMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }        
-        return new CaseInsensitiveStringMatcher(repeatString(caseInsensitiveString, numberOfRepeats));
+        return new CaseInsensitiveSequenceMatcher(repeatString(caseInsensitiveString, numberOfRepeats));
     }
 
     
