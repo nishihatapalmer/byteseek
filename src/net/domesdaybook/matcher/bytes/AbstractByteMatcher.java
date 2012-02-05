@@ -32,7 +32,7 @@
 package net.domesdaybook.matcher.bytes;
 
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.sequence.ByteMatcherSequenceMatcher;
+import net.domesdaybook.matcher.sequence.ByteMatcherArrayMatcher;
 
 /**
  * A simple abstract base class which implements most of the methods required
@@ -110,7 +110,7 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }   
-        return new ByteMatcherSequenceMatcher(this, numberOfRepeats);
+        return new ByteMatcherArrayMatcher(this, numberOfRepeats);
     }     
     
     

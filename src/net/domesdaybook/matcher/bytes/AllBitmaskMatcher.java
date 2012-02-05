@@ -36,7 +36,7 @@ import java.io.IOException;
 import net.domesdaybook.bytes.ByteUtilities;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.sequence.ByteMatcherSequenceMatcher;
+import net.domesdaybook.matcher.sequence.ByteMatcherArrayMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 

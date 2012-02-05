@@ -45,19 +45,19 @@ import net.domesdaybook.reader.Window;
  *
  * @author Matt Palmer
  */
-public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
+public final class ByteMatcherArrayMatcher implements SequenceMatcher {
 
     private final ByteMatcher[] matchers;
     private final int length;
 
 
     /**
-     * Constructs a ByteMatcherSequenceMatcher from a list of {@link ByteMatcher} objects.
+     * Constructs a ByteMatcherArrayMatcher from a list of {@link ByteMatcher} objects.
      *
      * @param sequence A list of SingleByteMatchers to construct this sequence matcher from.
      * @throws IllegalArgumentException if the list is null or empty.
      */
-    public ByteMatcherSequenceMatcher(final Collection<ByteMatcher> sequence) {
+    public ByteMatcherArrayMatcher(final Collection<ByteMatcher> sequence) {
         if (sequence == null || sequence.isEmpty()) {
             throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
         }
@@ -67,13 +67,13 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 
     
     /**
-     * Constructs a ByteMatcherSequenceMatcher from an array of {@link ByteMatcher}
+     * Constructs a ByteMatcherArrayMatcher from an array of {@link ByteMatcher}
      * objects.
      * 
      * @param sequence An array of SingleByteMatchers to construct this sequence matcher from.
      * @throws IllegalArgumentException if the array is null or empty.
      */
-    public ByteMatcherSequenceMatcher(final ByteMatcher[] sequence) {
+    public ByteMatcherArrayMatcher(final ByteMatcher[] sequence) {
         if (sequence == null || sequence.length == 0) {
             throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
         }
@@ -83,12 +83,12 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
     
     
     /**
-     * Constructs a ByteMatcherSequenceMatcher from a single {@link ByteMatcher} object.
+     * Constructs a ByteMatcherArrayMatcher from a single {@link ByteMatcher} object.
      *
      * @param matcher The ByteMatcher to construct this sequence matcher from.
      * @throws IllegalArgumentException if the matcher is null.
      */
-    public ByteMatcherSequenceMatcher(final ByteMatcher matcher) {
+    public ByteMatcherArrayMatcher(final ByteMatcher matcher) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
         }
@@ -98,13 +98,13 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 
 
     /**
-     * Constructs a ByteMatcherSequenceMatcher from a repeated {@link ByteMatcher} object.
+     * Constructs a ByteMatcherArrayMatcher from a repeated {@link ByteMatcher} object.
      *
      * @param matcher The ByteMatcher to construct this sequence matcher from.
      * @param numberOfMatchers 
      * @throws IllegalArgumentException if the matcher is null or the number of repeats is less than one.
      */
-    public ByteMatcherSequenceMatcher(final ByteMatcher matcher, final int numberOfMatchers) {
+    public ByteMatcherArrayMatcher(final ByteMatcher matcher, final int numberOfMatchers) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
         }
@@ -203,10 +203,10 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public ByteMatcherSequenceMatcher reverse() {
+    public ByteMatcherArrayMatcher reverse() {
         final List<ByteMatcher> newList = Arrays.asList(matchers);
         Collections.reverse(newList);
-        return new ByteMatcherSequenceMatcher(newList);
+        return new ByteMatcherArrayMatcher(newList);
     }
     
     
@@ -235,7 +235,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         if (endIndex - beginIndex == 1) {
             return matchers[beginIndex];
         }
-        return new ByteMatcherSequenceMatcher(Arrays.copyOfRange(matchers, beginIndex, endIndex));
+        return new ByteMatcherArrayMatcher(Arrays.copyOfRange(matchers, beginIndex, endIndex));
     }
 
     
@@ -251,7 +251,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }
-        return new ByteMatcherSequenceMatcher(repeatMatchers(numberOfRepeats));
+        return new ByteMatcherArrayMatcher(repeatMatchers(numberOfRepeats));
     }
     
     
