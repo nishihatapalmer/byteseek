@@ -57,7 +57,7 @@ public final class SequenceMatcherArrayMatcher implements SequenceMatcher {
      *
      * @param matchList A list of SequenceMatchers from which to construct this SequenceMatcherArrayMatcher.
      */
-    public SequenceMatcherArrayMatcher(final Collection<SequenceMatcher> matchList) {
+    public SequenceMatcherArrayMatcher(final Collection<? extends SequenceMatcher> matchList) {
         this(matchList, 1);
     }
 
@@ -69,7 +69,7 @@ public final class SequenceMatcherArrayMatcher implements SequenceMatcher {
      * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
      * @throws IllegalArgumentException if the list is null or empty, or the number to repeat is less than one.
      */
-    public SequenceMatcherArrayMatcher(final Collection<SequenceMatcher> matchList, final int numberOfRepeats) {
+    public SequenceMatcherArrayMatcher(final Collection<? extends SequenceMatcher> matchList, final int numberOfRepeats) {
         if (matchList == null || matchList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
         }
