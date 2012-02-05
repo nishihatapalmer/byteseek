@@ -45,7 +45,7 @@ import net.domesdaybook.reader.Reader;
  *
  * @author Matt Palmer.
  */
-public final class ListSequenceMatcher implements MultiSequenceMatcher {
+public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
     private final List<SequenceMatcher> matchers;
     private final int minimumLength;
@@ -56,7 +56,7 @@ public final class ListSequenceMatcher implements MultiSequenceMatcher {
      * 
      * @param bytesToMatch
      */
-    public ListSequenceMatcher(final List<byte[]> bytesToMatch) {
+    public ListMultiSequenceMatcher(final List<byte[]> bytesToMatch) {
         if (bytesToMatch == null) {
             throw new IllegalArgumentException("Null collection of bytes passed in.");
         }
@@ -86,7 +86,7 @@ public final class ListSequenceMatcher implements MultiSequenceMatcher {
      * 
      * @param matchersToUse
      */
-    public ListSequenceMatcher(final Collection<? extends SequenceMatcher> matchersToUse) {
+    public ListMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchersToUse) {
         if (matchersToUse == null) {
             throw new IllegalArgumentException("Null collection of matchers passed in.");
         }

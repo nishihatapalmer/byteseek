@@ -46,7 +46,7 @@ import net.domesdaybook.reader.Window;
  *
  * @author matt
  */
-public final class TrieSequenceMatcher implements MultiSequenceMatcher {
+public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
     private final Trie<SequenceMatcher> trie;
 
@@ -54,7 +54,7 @@ public final class TrieSequenceMatcher implements MultiSequenceMatcher {
      * 
      * @param trie
      */
-    public TrieSequenceMatcher(final Trie<SequenceMatcher> trie) {
+    public TrieMultiSequenceMatcher(final Trie<SequenceMatcher> trie) {
         if (trie == null) {
             throw new IllegalArgumentException("Null Trie passed in to TrieMatcher.");
         }
