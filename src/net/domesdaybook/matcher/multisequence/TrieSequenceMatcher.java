@@ -50,7 +50,6 @@ public final class TrieSequenceMatcher implements MultiSequenceMatcher {
 
     private final Trie<SequenceMatcher> trie;
 
-    
     /**
      * 
      * @param trie
