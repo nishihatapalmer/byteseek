@@ -69,7 +69,7 @@ public class ByteSequenceMatcherTest {
     @Test
     public void testConstructSingleByte() {
         for (int byteValue = 0; byteValue < 256; byteValue++) {
-            final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue);
+            final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue);
             assertEquals("length:1, byte value:" + Integer.toString(byteValue), 1, matcher.length());
             final ByteMatcher sbm = matcher.getMatcherForPosition(0);
             final byte[] matchingBytes = sbm.getMatchingBytes();
@@ -86,7 +86,7 @@ public class ByteSequenceMatcherTest {
     public void testConstructRepeatedBytes() {
         for (int byteValue = 0; byteValue < 256; byteValue++) {
             final int repeats = rand.nextInt(1024) + 1;
-            final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue, repeats);
+            final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue, repeats);
             assertEquals("length:" + Integer.toString(repeats) + ", byte value:" + Integer.toString(byteValue), repeats, matcher.length());
             for (int pos = 0; pos < repeats; pos++) {
                 final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
@@ -105,7 +105,7 @@ public class ByteSequenceMatcherTest {
     public void testConstructByteArray() {
         for (int testNo = 0; testNo < 1000; testNo++) {
             final byte[] array = createRandomArray(1024);
-            final ByteSequenceMatcher matcher = new ByteSequenceMatcher(array);
+            final ByteArrayMatcher matcher = new ByteArrayMatcher(array);
             assertEquals("length:" + Integer.toString(array.length), array.length, matcher.length());
             for (int pos = 0; pos < array.length; pos++) {
                 final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
@@ -124,12 +124,12 @@ public class ByteSequenceMatcherTest {
     @Test
     public void testConstructByteSequenceMatcherList() {
         for (int testNo = 0; testNo < 1000; testNo++) {
-            final List<ByteSequenceMatcher> list = createRandomList(32);
+            final List<ByteArrayMatcher> list = createRandomList(32);
             int totalLength = 0;
             for (final SequenceMatcher matcher : list) {
                 totalLength += matcher.length();
             }
-            final ByteSequenceMatcher matcher = new ByteSequenceMatcher(list);
+            final ByteArrayMatcher matcher = new ByteArrayMatcher(list);
             assertEquals("length:" + Integer.toString(totalLength), totalLength, matcher.length());
             int localPos = -1;
             int matchIndex = 0;
@@ -160,7 +160,7 @@ public class ByteSequenceMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNoRepeats() {
-        new ByteSequenceMatcher((byte) 0x8f, 0);
+        new ByteArrayMatcher((byte) 0x8f, 0);
     }
     
     /**
@@ -168,7 +168,7 @@ public class ByteSequenceMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullArray() {
-        new ByteSequenceMatcher((byte[]) null);
+        new ByteArrayMatcher((byte[]) null);
     }
     
     /**
@@ -176,7 +176,7 @@ public class ByteSequenceMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyArray() {
-        new ByteSequenceMatcher(new byte[0]);
+        new ByteArrayMatcher(new byte[0]);
     }    
     
     /**
@@ -184,7 +184,7 @@ public class ByteSequenceMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullCollection() {
-        new ByteSequenceMatcher((ArrayList<Byte>) null);
+        new ByteArrayMatcher((ArrayList<Byte>) null);
     }   
     
     /**
@@ -192,7 +192,7 @@ public class ByteSequenceMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyCollection() {
-        new ByteSequenceMatcher(new ArrayList<Byte>());
+        new ByteArrayMatcher(new ArrayList<Byte>());
     }       
     
     /**
@@ -200,7 +200,7 @@ public class ByteSequenceMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullList() {
-        new ByteSequenceMatcher((ArrayList<ByteSequenceMatcher>) null);
+        new ByteArrayMatcher((ArrayList<ByteArrayMatcher>) null);
     }        
 
     /**
@@ -208,35 +208,35 @@ public class ByteSequenceMatcherTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyList() {
-        new ByteSequenceMatcher(new ArrayList<ByteSequenceMatcher>());
+        new ByteArrayMatcher(new ArrayList<ByteArrayMatcher>());
     }        
     
     
     /**
-     * Test of matches method, of class ByteSequenceMatcher.
+     * Test of matches method, of class ByteArrayMatcher.
      * @throws FileNotFoundException 
      * @throws IOException 
      */
     @Test
     public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {
-        ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x2A, 3); // ***
+        ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); // ***
         testMatchesAround(matcher, 0);
         testMatchesAround(matcher, 61);
         testMatchesAround(matcher, 1017);
         
-        matcher = new ByteSequenceMatcher(new byte[] {0x48, 0x65, 0x72, 0x65}); // Here
+        matcher = new ByteArrayMatcher(new byte[] {0x48, 0x65, 0x72, 0x65}); // Here
         testMatchesAround(matcher, 28200);
         testMatchesAround(matcher, 60836);
         testMatchesAround(matcher, 64481);
         
-        matcher = new ByteSequenceMatcher(new byte[] {0x2e, 0x0d, 0x0a}); // . <LF> <CR>
+        matcher = new ByteArrayMatcher(new byte[] {0x2e, 0x0d, 0x0a}); // . <LF> <CR>
         testMatchesAround(matcher, 196);
         testMatchesAround(matcher, 42004);
         testMatchesAround(matcher, 112277);
     }
 
     
-    private void testMatchesAround(ByteSequenceMatcher matcher, long pos) throws IOException {
+    private void testMatchesAround(ByteArrayMatcher matcher, long pos) throws IOException {
         String matchDesc = matcher.toRegularExpression(true);
         assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
         assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
@@ -244,14 +244,14 @@ public class ByteSequenceMatcherTest {
     }
     
     /**
-     * Test of matches method, of class ByteSequenceMatcher.
+     * Test of matches method, of class ByteArrayMatcher.
      */
     @Test
     public void testMatches_byteArr_int() {
         System.out.println("matches");
         byte[] bytes = null;
         int matchFrom = 0;
-        ByteSequenceMatcher instance = null;
+        ByteArrayMatcher instance = null;
         boolean expResult = false;
         boolean result = instance.matches(bytes, matchFrom);
         assertEquals(expResult, result);
@@ -262,14 +262,14 @@ public class ByteSequenceMatcherTest {
 
 
     /**
-     * Test of matchesNoBoundsCheck method, of class ByteSequenceMatcher.
+     * Test of matchesNoBoundsCheck method, of class ByteArrayMatcher.
      */
     @Test
     public void testMatchesNoBoundsCheck_byteArr_int() {
         System.out.println("matchesNoBoundsCheck");
         byte[] bytes = null;
         int matchPosition = 0;
-        ByteSequenceMatcher instance = null;
+        ByteArrayMatcher instance = null;
         boolean expResult = false;
         boolean result = instance.matchesNoBoundsCheck(bytes, matchPosition);
         assertEquals(expResult, result);
@@ -280,13 +280,13 @@ public class ByteSequenceMatcherTest {
 
 
     /**
-     * Test of toRegularExpression method, of class ByteSequenceMatcher.
+     * Test of toRegularExpression method, of class ByteArrayMatcher.
      */
     @Test
     public void testToRegularExpression() {
         System.out.println("toRegularExpression");
         boolean prettyPrint = false;
-        ByteSequenceMatcher instance = null;
+        ByteArrayMatcher instance = null;
         String expResult = "";
         String result = instance.toRegularExpression(prettyPrint);
         assertEquals(expResult, result);
@@ -295,13 +295,13 @@ public class ByteSequenceMatcherTest {
     }
 
     /**
-     * Test of getByteMatcherForPosition method, of class ByteSequenceMatcher.
+     * Test of getByteMatcherForPosition method, of class ByteArrayMatcher.
      */
     @Test
     public void testGetByteMatcherForPosition() {
         System.out.println("getByteMatcherForPosition");
         int position = 0;
-        ByteSequenceMatcher instance = null;
+        ByteArrayMatcher instance = null;
         ByteMatcher expResult = null;
         ByteMatcher result = instance.getMatcherForPosition(position);
         assertEquals(expResult, result);
@@ -310,14 +310,14 @@ public class ByteSequenceMatcherTest {
     }
 
     /**
-     * Test of reverse method, of class ByteSequenceMatcher.
+     * Test of reverse method, of class ByteArrayMatcher.
      */
     @Test
     public void testReverse() {
         System.out.println("reverse");
-        ByteSequenceMatcher instance = null;
-        ByteSequenceMatcher expResult = null;
-        ByteSequenceMatcher result = instance.reverse();
+        ByteArrayMatcher instance = null;
+        ByteArrayMatcher expResult = null;
+        ByteArrayMatcher result = instance.reverse();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -339,27 +339,27 @@ public class ByteSequenceMatcherTest {
         return array;
     }
 
-    private List<ByteSequenceMatcher> createRandomList(final int maxNum) {
+    private List<ByteArrayMatcher> createRandomList(final int maxNum) {
         final int noOfMatchers = rand.nextInt(maxNum) + 1;
-        final List<ByteSequenceMatcher> matchers = new ArrayList<ByteSequenceMatcher>();
+        final List<ByteArrayMatcher> matchers = new ArrayList<ByteArrayMatcher>();
         for (int num = 0; num < noOfMatchers; num++) {
             final int matchType = rand.nextInt(3);
-            ByteSequenceMatcher matcher;
+            ByteArrayMatcher matcher;
             switch (matchType) {
                 case 0: {
                     final int byteValue = rand.nextInt(256);
-                    matcher = new ByteSequenceMatcher((byte) byteValue);
+                    matcher = new ByteArrayMatcher((byte) byteValue);
                     break;
                 }
                 case 1: {
                     final byte[] values = createRandomArray(256);
-                    matcher = new ByteSequenceMatcher(values);
+                    matcher = new ByteArrayMatcher(values);
                     break;
                 }
                 case 2: {
                     final int byteValue = rand.nextInt(256);
                     final int repeats = rand.nextInt(256) + 1;
-                    matcher = new ByteSequenceMatcher((byte) byteValue, repeats);
+                    matcher = new ByteArrayMatcher((byte) byteValue, repeats);
                     break;
                 }
                 default: {
