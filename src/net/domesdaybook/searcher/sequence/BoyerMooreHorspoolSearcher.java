@@ -34,7 +34,6 @@ package net.domesdaybook.searcher.sequence;
 import net.domesdaybook.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -147,7 +146,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         return ResultUtils.noResults();
     }    
         
-        
+    
     /**
      * Searches forward using the Boyer Moore Horspool algorithm, using 
      * byte arrays from Windows to handle shifting, and the Reader interface
