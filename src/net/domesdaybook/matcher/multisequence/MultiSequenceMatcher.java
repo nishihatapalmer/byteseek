@@ -186,6 +186,18 @@ public interface MultiSequenceMatcher extends Matcher {
     
     
     /**
+     * Returns a multi sequence matcher which matches the reversed
+     * sequences used to construct this MultiSequenceMatcher.
+     * 
+     * @return A MultiSequenceMatcher which recognises the reversed sequences.
+     */
+    public MultiSequenceMatcher reverse();
+    
+    
+    public MultiSequenceMatcher newInstance(Collection<? extends SequenceMatcher> sequences);
+
+    
+    /**
      * Returns a collection of all the sequences matched by this matcher.
      * 
      * @return A collection of the sequence matchers this multi sequence matcher matches.

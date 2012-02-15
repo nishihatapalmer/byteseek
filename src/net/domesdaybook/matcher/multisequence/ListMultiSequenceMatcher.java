@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -34,6 +34,7 @@ package net.domesdaybook.matcher.multisequence;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -116,10 +117,13 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override
     public List<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) 
         throws IOException {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
+        List<SequenceMatcher> result = Collections.emptyList();         
         final List<SequenceMatcher> localMatchers = matchers;
         for (final SequenceMatcher sequence : localMatchers) {
             if (sequence.matches(reader, matchPosition)) {
+                if (result.isEmpty()) {
+                    result = new ArrayList<SequenceMatcher>(2);
+                }
                 result.add(sequence);
             }
         }
@@ -132,20 +136,27 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */ 
     @Override   
-    public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
+    public Collection<SequenceMatcher> allMatches(final byte[] bytes, 
+            final int matchPosition) {
+        List<SequenceMatcher> result = Collections.emptyList();         
         final long noOfBytes = bytes.length;
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
             final List<SequenceMatcher> localMatchers = matchers;
             if (matchPosition + maximumLength < noOfBytes) {
                 for (final SequenceMatcher sequence : localMatchers) {
                     if (sequence.matchesNoBoundsCheck(bytes, matchPosition)) {
+                        if (result.isEmpty()) {
+                            result = new ArrayList<SequenceMatcher>(2);
+                        }
                         result.add(sequence);
                     }
                 }
             } else {
                 for (final SequenceMatcher sequence : localMatchers) {
                     if (sequence.matches(bytes, matchPosition)) {
+                        if (result.isEmpty()) {
+                            result = new ArrayList<SequenceMatcher>(2);
+                        }
                         result.add(sequence);
                     }
                 }            
@@ -163,11 +174,14 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override
     public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
             final long matchPosition) throws IOException {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
+        List<SequenceMatcher> result = Collections.emptyList();         
         final List<SequenceMatcher> localMatchers = matchers;
         final long onePastMatchPosition = matchPosition + 1;
         for (final SequenceMatcher sequence : localMatchers) {
             if (sequence.matches(reader, onePastMatchPosition - sequence.length())) {
+                if (result.isEmpty()) {
+                    result = new ArrayList<SequenceMatcher>(2);
+                }
                 result.add(sequence);
             }
         }            
@@ -182,8 +196,9 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * @inheritDoc
      */    
     @Override
-    public Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, final int matchPosition) {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();         
+    public Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, 
+            final int matchPosition) {
+        List<SequenceMatcher> result = Collections.emptyList();         
         final int noOfBytes = bytes.length;
         if (matchPosition >= minimumLength - 1 && matchPosition < noOfBytes) {
             final List<SequenceMatcher> localMatchers = matchers;
@@ -191,12 +206,18 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
             if (onePastMatchPosition >= maximumLength) {
                 for (final SequenceMatcher sequence : localMatchers) {
                     if (sequence.matchesNoBoundsCheck(bytes, onePastMatchPosition - sequence.length())) {
+                        if (result.isEmpty()) {
+                            result = new ArrayList<SequenceMatcher>(2);
+                        }
                         result.add(sequence);
                     }
                 }
             } else {
                 for (final SequenceMatcher sequence : localMatchers) {
                     if (sequence.matches(bytes, onePastMatchPosition - sequence.length())) {
+                        if (result.isEmpty()) {
+                            result = new ArrayList<SequenceMatcher>(2);
+                        }
                         result.add(sequence);
                     }
                 }            
@@ -404,6 +425,25 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
         return maximumLength;
     }
 
+    
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override  
+    public MultiSequenceMatcher reverse() {
+        return new ListMultiSequenceMatcher(
+                MultiSequenceUtils.reverseMatchers(matchers));
+    }
+    
+    
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override 
+    public MultiSequenceMatcher newInstance(Collection<? extends SequenceMatcher> sequences) {
+        return new ListMultiSequenceMatcher(sequences);
+    }
+    
     
     /**    
      * @inheritDoc 

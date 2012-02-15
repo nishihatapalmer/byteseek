@@ -34,9 +34,11 @@ package net.domesdaybook.matcher.multisequence;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.trie.SequenceMatcherTrie;
 import net.domesdaybook.automata.trie.Trie;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
@@ -60,6 +62,14 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
         }
         this.trie = trie;
     }
+    
+    
+    public TrieMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchers) {
+        if (matchers == null || matchers.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty list of sequence matchers passed in.");
+        }
+        this.trie = new SequenceMatcherTrie(matchers);
+    }
 
 
     /**
@@ -69,7 +79,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override
     public Collection<SequenceMatcher> allMatches(final Reader reader, 
             final long matchPosition) throws IOException {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
+        List<SequenceMatcher> result = Collections.emptyList();
         State<SequenceMatcher> state = trie.getInitialState();
         long currentPosition = matchPosition;
         Window window = reader.getWindow(matchPosition);
@@ -84,7 +94,11 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
                     return result;
                 }
                 if (state.isFinal()) {
-                    result.addAll(state.getAssociations());
+                    final Collection<SequenceMatcher> matching = state.getAssociations();
+                    if (result.isEmpty()) {
+                        result = new ArrayList<SequenceMatcher>(matching.size() * 2);
+                    }
+                    result.addAll(matching);
                 }
             }
             currentPosition += windowLength;
@@ -100,7 +114,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
      */
     @Override    
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();        
+        List<SequenceMatcher> result = Collections.emptyList();        
         final int noOfBytes = bytes.length;
         final int minimumLength = trie.getMinimumLength();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
@@ -110,7 +124,11 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
                 final byte currentByte = bytes[currentPosition++];
                 state = state.getNextState(currentByte);
                 if (state != null && state.isFinal()) {
-                    result.addAll(state.getAssociations());
+                    final Collection<SequenceMatcher> matching = state.getAssociations();
+                    if (result.isEmpty()) {
+                        result = new ArrayList<SequenceMatcher>(matching.size() * 2);
+                    }
+                    result.addAll(matching);
                 }
             }
         }
@@ -126,7 +144,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override  
     public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
             final long matchPosition) throws IOException {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();
+        List<SequenceMatcher> result = Collections.emptyList();
         State<SequenceMatcher> state = trie.getInitialState();
         long currentPosition = matchPosition;
         Window window = reader.getWindow(matchPosition);
@@ -141,7 +159,11 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
                     return result;
                 }
                 if (state.isFinal()) {
-                    result.addAll(state.getAssociations());
+                    final Collection<SequenceMatcher> matching = state.getAssociations();
+                    if (result.isEmpty()) {
+                        result = new ArrayList<SequenceMatcher>(matching.size() * 2);
+                    }
+                    result.addAll(matching);
                 }
             }
             currentPosition -= windowLength;
@@ -158,7 +180,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
      */
     @Override  
     public Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, final int matchPosition) {
-        final List<SequenceMatcher> result = new ArrayList<SequenceMatcher>();        
+        List<SequenceMatcher> result = Collections.emptyList();        
         final int noOfBytes = bytes.length;
         final int minimumLength = trie.getMinimumLength();
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
@@ -168,7 +190,11 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
                 final byte currentByte = bytes[currentPosition--];
                 state = state.getNextState(currentByte);
                 if (state != null && state.isFinal()) {
-                    result.addAll(state.getAssociations());
+                    final Collection<SequenceMatcher> matching = state.getAssociations();
+                    if (result.isEmpty()) {
+                        result = new ArrayList<SequenceMatcher>(matching.size() * 2);
+                    }
+                    result.addAll(matching);
                 }
             }
         }
@@ -346,6 +372,26 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     public int getMaximumLength() {
         return trie.getMaximumLength();
     }
+    
+    
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override  
+    public MultiSequenceMatcher reverse() {
+        return new TrieMultiSequenceMatcher(
+                MultiSequenceUtils.reverseMatchers(trie.getSequences()));
+    }
+    
+    
+    
+    /**    
+     * @inheritDoc 
+     */ 
+    @Override 
+    public MultiSequenceMatcher newInstance(Collection<? extends SequenceMatcher> sequences) {
+        return new TrieMultiSequenceMatcher(sequences);
+    }    
     
     
     /**    
