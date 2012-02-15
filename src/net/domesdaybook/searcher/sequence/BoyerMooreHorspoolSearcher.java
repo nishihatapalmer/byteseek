@@ -318,7 +318,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 }
                 
                 // No match was found - shift backward by the shift for the current byte:
-                arraySearchPosition += safeShifts[currentByte & 0xff];                
+                arraySearchPosition -= safeShifts[currentByte & 0xff];                
             }
             
             // No match was found in this array - calculate the current search position:
