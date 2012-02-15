@@ -33,6 +33,7 @@
 package net.domesdaybook.searcher;
 
 import java.io.IOException;
+import java.util.List;
 import net.domesdaybook.reader.Reader;
 
 
@@ -49,7 +50,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchForwards(final Reader reader, final long fromPosition) 
+    public List<SearchResult<T>> searchForwards(final Reader reader, final long fromPosition) 
             throws IOException {
         return searchForwards(reader, fromPosition, Long.MAX_VALUE);
     }
@@ -59,7 +60,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchForwards(final Reader reader) throws IOException {
+    public List<SearchResult<T>> searchForwards(final Reader reader) throws IOException {
         return searchForwards(reader, 0, Long.MAX_VALUE);
     }
 
@@ -68,7 +69,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchForwards(final byte[] bytes, final int fromPosition) {
+    public List<SearchResult<T>> searchForwards(final byte[] bytes, final int fromPosition) {
         return searchForwards(bytes, fromPosition, bytes.length - 1);
     }
 
@@ -77,7 +78,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchForwards(final byte[] bytes) {
+    public List<SearchResult<T>> searchForwards(final byte[] bytes) {
         return searchForwards(bytes, 0, bytes.length - 1);
     }
 
@@ -86,7 +87,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchBackwards(final Reader reader, final long fromPosition) 
+    public List<SearchResult<T>> searchBackwards(final Reader reader, final long fromPosition) 
             throws IOException {
         return searchBackwards(reader, fromPosition, 0);
     }
@@ -96,7 +97,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchBackwards(final Reader reader) throws IOException {
+    public List<SearchResult<T>> searchBackwards(final Reader reader) throws IOException {
         return searchBackwards(reader, reader.length() - 1, 0);
     }
 
@@ -105,7 +106,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchBackwards(final byte[] bytes, final int fromPosition) {
+    public List<SearchResult<T>> searchBackwards(final byte[] bytes, final int fromPosition) {
         return searchBackwards(bytes, fromPosition, 0);
     }
 
@@ -114,7 +115,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<T> searchBackwards(final byte[] bytes) {
+    public List<SearchResult<T>> searchBackwards(final byte[] bytes) {
         return searchBackwards(bytes, bytes.length - 1, 0);
     }
     

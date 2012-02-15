@@ -30,64 +30,26 @@
  */
 package net.domesdaybook.searcher;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 /**
  *
  * @author Matt Palmer
  */
 public final class SearchResult<T> {
     
-    public static final SearchResult NO_MATCH = new SearchResult();
-    
-    public static <T> SearchResult<T> noMatch() {
-        return (SearchResult<T>) NO_MATCH;
-    }
-    
     private final long matchPosition;
-    private final List<T> matchingObjects;
-    
-    public SearchResult() {
-        this.matchPosition = -1;
-        this.matchingObjects = Collections.emptyList();
-    }
-    
-    public SearchResult(final long matchPosition) {
-        this.matchPosition = matchPosition;
-        this.matchingObjects = Collections.emptyList();
-    }
+    private final T matchingObject;
     
     public SearchResult(final long matchPosition, final T matchingObject) {
         this.matchPosition = matchPosition;
-        this.matchingObjects = new ArrayList<T>(1);
-        this.matchingObjects.add(matchingObject);
-    }
-    
-    public SearchResult(final long matchPosition, final Collection<? extends T> matchingObjects) {
-        this.matchPosition = matchPosition;
-        this.matchingObjects = new ArrayList<T>(matchingObjects);
-    }
-    
-    public SearchResult(final long matchPosition, final SearchResult<T> previousResult) {
-        this.matchPosition = matchPosition;
-        this.matchingObjects = previousResult.matchingObjects;
+        this.matchingObject = matchingObject;
     }
     
     public long getMatchPosition() {
         return matchPosition;
     }
     
-    
-    public List<T> getMatchingObjects() {
-        return matchingObjects;
-    }
-    
-    
-    public boolean matched() {
-        return matchPosition >= 0;
+    public T getMatchingObject() {
+        return matchingObject;
     }
     
 }

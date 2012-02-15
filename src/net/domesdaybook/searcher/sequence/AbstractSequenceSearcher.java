@@ -32,10 +32,13 @@
 package net.domesdaybook.searcher.sequence;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
+import net.domesdaybook.searcher.ResultUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
@@ -105,7 +108,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * @throws IOException If the reader encounters a problem reading bytes.
      */
     @Override
-    public SearchResult<SequenceMatcher> searchForwards(final Reader reader, 
+    public List<SearchResult<SequenceMatcher>> searchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final int sequenceLength = matcher.length();
@@ -135,14 +138,13 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
                                        (int) distanceToEnd : lastMatchingPosition; 
                         
                 // Search forwards in the byte array of the window:
-                final SearchResult<SequenceMatcher> arrayResult = 
+                final List<SearchResult<SequenceMatcher>> arrayResult = 
                     searchForwards(window.getArray(), arrayStartPosition, arrayMaxPosition);
 
                 // Did we find a match?
-                if (arrayResult.matched()) {
-                    final long matchPosition = searchPosition + 
-                            arrayResult.getMatchPosition() - arrayStartPosition;
-                    return new SearchResult<SequenceMatcher>(matchPosition, matcher);
+                if (!arrayResult.isEmpty()) {
+                    final long readerPositionOffset = searchPosition - arrayStartPosition;
+                    return ResultUtils.addPositionToResults(arrayResult, readerPositionOffset);
                 }
                 
                 // Continue the search one on from where we last looked:
@@ -150,7 +152,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
 
                 // Did we pass the final toPosition?  In which case, we're finished.
                 if (searchPosition > toPosition) {
-                    return SearchResult.noMatch();
+                    return ResultUtils.noResults();
                 }
             }
 
@@ -164,11 +166,11 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
             final long lastWindowPosition = windowStartPosition + arrayLastPosition;
             final long lastSearchPosition = toPosition < lastWindowPosition?
                                             toPosition : lastWindowPosition;
-            final SearchResult<SequenceMatcher> readerResult = 
+            final List<SearchResult<SequenceMatcher>> readerResult = 
                     doSearchForwards(reader, searchPosition, lastSearchPosition);
             
             // Did we find a match?
-            if (readerResult.matched()) {
+            if (!readerResult.isEmpty()) {
                 return readerResult;
             }
             
@@ -177,14 +179,14 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
             
             // Did we pass the final toPosition?  In which case, we're finished.
             if (searchPosition > toPosition) {
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }
             
             // Get the next window of data to search:
             window = reader.getWindow(searchPosition);
         }
         
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
     
@@ -208,7 +210,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * @return The position of a match, or a negative number if no match was found.
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
-    protected abstract SearchResult<SequenceMatcher> doSearchForwards(Reader reader, 
+    protected abstract List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, 
             long searchPosition, long lastSearchPosition) throws IOException;
 
     
@@ -230,7 +232,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * @throws IOException If the reader encounters a problem reading bytes.
      */    
     @Override
-    public SearchResult<SequenceMatcher> searchBackwards(final Reader reader, 
+    public List<SearchResult<SequenceMatcher>> searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final int sequenceLength = matcher.length();
@@ -260,14 +262,13 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
                                        (int) distanceToEnd : 0; 
                         
                 // Search backwards in the byte array of the window:
-                final SearchResult<SequenceMatcher> arrayResult = 
+                final List<SearchResult<SequenceMatcher>> arrayResult = 
                         searchBackwards(window.getArray(), arrayStartPosition, arrayMinPosition);
                 
                 // Did we find a match?
-                if (arrayResult.matched()) {
-                    final long matchPosition = searchPosition + 
-                            arrayResult.getMatchPosition() - arrayStartPosition;
-                    return new SearchResult<SequenceMatcher>(matchPosition, matcher);
+                if (!arrayResult.isEmpty()) {
+                    final long readerOffset = searchPosition - arrayStartPosition;
+                    return ResultUtils.addPositionToResults(arrayResult, readerOffset);
                 }
                 
                 // Continue the search one on from where we last looked:
@@ -275,7 +276,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
 
                 // Did we pass the final search position?  In which case, we're finished.
                 if (searchPosition < finalSearchPosition) {
-                    return SearchResult.noMatch();
+                    return ResultUtils.noResults();
                 }
             }
 
@@ -292,11 +293,11 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
                                               firstFitPosition : windowStartPosition;
             final long lastSearchPosition = finalSearchPosition > windowSearchPosition?
                                             finalSearchPosition : windowSearchPosition;
-            final SearchResult<SequenceMatcher> readerResult =
+            final List<SearchResult<SequenceMatcher>> readerResult =
                     doSearchBackwards(reader, searchPosition, lastSearchPosition);
             
             // Did we find a match?
-            if (readerResult.matched()) {
+            if (!readerResult.isEmpty()) {
                 return readerResult;
             }
             
@@ -305,14 +306,14 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
             
             // Did we pass the final toPosition?  In which case, we're finished.
             if (searchPosition < finalSearchPosition) {
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }
             
             // Get the next window of data to search:
             window = reader.getWindow(searchPosition);
         }
         
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
     
 
@@ -332,7 +333,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * @return The position of a match, or a negative number if no match was found.
      * @throws IOException If the reader encounters difficulties reading bytes.
      */    
-    protected abstract SearchResult<SequenceMatcher> doSearchBackwards(Reader reader,
+    protected abstract List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader,
             long searchPosition, long lastSearchPosition) throws IOException;
     
     

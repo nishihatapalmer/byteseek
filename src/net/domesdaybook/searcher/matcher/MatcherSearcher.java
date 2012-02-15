@@ -32,10 +32,13 @@
 package net.domesdaybook.searcher.matcher;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
+import net.domesdaybook.searcher.ResultUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 
@@ -101,7 +104,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * @throws IOException 
      */
     @Override
-    public SearchResult<Matcher> searchForwards(final Reader reader, final long fromPosition, 
+    public List<SearchResult<Matcher>> searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         
         // Use a local reference to the matcher for performance reasons:
@@ -124,7 +127,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Search forwards in the window:
             while (searchPosition <= searchEndPosition) {
                 if (theMatcher.matches(reader, searchPosition)) {
-                    return new SearchResult<Matcher>(searchPosition, theMatcher);
+                    return ResultUtils.singleResult(searchPosition, theMatcher);
                 }
                 searchPosition++;
             }
@@ -132,14 +135,14 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Did we finish the search?  If the final "to" position is within 
             // the current window and we didn't find anything, then we are finished.
             if (toPosition <= windowEndPosition) { 
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }
             
             // Otherwise, get the next window.
             // The currentPosition is guaranteed to be in the next window by now.
             window = reader.getWindow(searchPosition);
         }
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
     
     
@@ -147,7 +150,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<Matcher> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public List<SearchResult<Matcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Use a local reference to the matcher for performance reasons:
         final Matcher theMatcher = matcher;
@@ -162,11 +165,11 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         // Search forwards:
         while (searchPosition <= searchEndPosition) {
             if (theMatcher.matches(bytes, searchPosition)) {
-                return new SearchResult<Matcher>(searchPosition, theMatcher);
+                return ResultUtils.singleResult(searchPosition, theMatcher);
             }
             searchPosition++;
         }
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
   
    
@@ -174,7 +177,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<Matcher> searchBackwards(final Reader reader, final long fromPosition, 
+    public List<SearchResult<Matcher>> searchBackwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         
         // Use a local reference to the matcher for performance reasons:
@@ -197,7 +200,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Search backwards in this window:
             while (searchPosition >= windowEndSearchPosition) {
                 if (theMatcher.matches(reader, searchPosition)) {
-                    return new SearchResult<Matcher>(searchPosition, theMatcher);
+                    return ResultUtils.singleResult(searchPosition, theMatcher);
                 }
                 searchPosition--;
             }
@@ -205,14 +208,14 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Did we finish the search?  If the final "to" position is within 
             // the current window and we didn't find anything, then we are finished.
             if (endSearchPosition >= windowStartPosition) {
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }
             
             // Otherwise, get the next window.
             // The currentPosition is guaranteed to be in the next window by now.            
             window = reader.getWindow(searchPosition);
         }
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
     
@@ -220,7 +223,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<Matcher> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public List<SearchResult<Matcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Use a local reference to the matcher for performance reasons:
         final Matcher theMatcher = matcher;
@@ -235,11 +238,11 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         // Search backwards:
         while (searchPosition >= searchEndPosition) {
             if (theMatcher.matches(bytes, searchPosition)) {
-                return new SearchResult<Matcher>(searchPosition, theMatcher);
+                return ResultUtils.singleResult(searchPosition, theMatcher);
             }
             searchPosition--;
         }
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
     

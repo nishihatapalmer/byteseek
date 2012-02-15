@@ -34,10 +34,13 @@ package net.domesdaybook.searcher.sequence;
 import net.domesdaybook.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Window;
+import net.domesdaybook.searcher.ResultUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 
@@ -98,7 +101,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */    
     @Override
-    public SearchResult<SequenceMatcher> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
@@ -125,24 +128,23 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             while (!endOfSequence.matches(currentByte)) {
                 searchPosition += safeShifts[currentByte & 0xff];
                 if (searchPosition > finalPosition) {
-                    return SearchResult.noMatch();
+                    return ResultUtils.noResults();
                 }
                 currentByte = bytes[searchPosition];                
             }
             
-            // The last byte matched - verify the rest of the sequence.
-            // In the special case that the sequence only has a length of one
-            // this still works, but we re-match the same byte we matched above.
+            // The last byte matched - verify the rest of the sequence,
+            // if there is more to verify.
             final int startMatchPosition = searchPosition - lastMatcherPosition;
-            if (verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
-                return new SearchResult<SequenceMatcher>(startMatchPosition, matcher); // match found.
+            if (verifier == null || verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
+                return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
             }
             
             // No match was found - shift forward by the shift for the current byte:
             searchPosition += safeShifts[currentByte & 0xff];
         }
         
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }    
         
         
@@ -152,7 +154,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
      * on the SequenceMatcher to verify whether a match exists.
      */
     @Override
-    protected SearchResult<SequenceMatcher> doSearchForwards(final Reader reader, final long fromPosition, 
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, final long fromPosition, 
         final long toPosition) throws IOException {
             
         // Get the objects needed to search:
@@ -191,12 +193,11 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                     currentByte = array[arraySearchPosition];                
                 }
 
-                // The last byte matched - verify the rest of the sequence.
-                // In the special case that the sequence only has a length of one
-                // this still works, but we re-match the same byte we matched above.
+                // The last byte matched - verify the rest of the sequence,
+                // if there is more to verify.
                 final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
-                if (verifier.matches(reader, startMatchPosition)) {
-                    return new SearchResult<SequenceMatcher>(startMatchPosition, matcher); // match found.
+                if (verifier == null || verifier.matches(reader, startMatchPosition)) {
+                    return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
                 }
                 
                 // No match was found - shift forward by the shift for the current byte:
@@ -208,7 +209,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             
             // If the search position is now past the last search position, we're finished:
             if (searchPosition > toPosition) {
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }
             
             // Otherwise, get the next window.  The search position is 
@@ -216,7 +217,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             window = reader.getWindow(searchPosition);
         }
 
-        return SearchResult.noMatch();        
+        return ResultUtils.noResults();        
     }
 
     
@@ -224,7 +225,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public SearchResult<SequenceMatcher> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get objects needed for the search:
         final SearchInfo info = backwardInfo.get();
@@ -250,22 +251,21 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             while (!startOfSequence.matches(currentByte)) {
                 searchPosition -= safeShifts[currentByte & 0xFF];
                 if (searchPosition < lastPosition) {
-                    return SearchResult.noMatch();
+                    return ResultUtils.noResults();
                 }
             }
             
-            // The first byte matched - verify the rest of the sequence.
-            // In the special case that the sequence only has a length of one
-            // this still works, but we re-match the same byte we matched above.
-            if (verifier.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return new SearchResult<SequenceMatcher>(searchPosition, matcher); // match found.
+            // The first byte matched - verify the rest of the sequence,
+            // if there is more to verify.
+            if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition)) {
+                return ResultUtils.singleResult(searchPosition, matcher); // match found.
             }
 
             // No match was found - shift backward by the shift for the current byte:
             searchPosition -= safeShifts[currentByte & 0xff];            
         }
         
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
     
@@ -273,7 +273,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected SearchResult<SequenceMatcher> doSearchBackwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get the objects needed to search:
@@ -311,12 +311,11 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                     }
                 }
                 
-                // The first byte matched - verify the rest of the sequence.
-                // In the special case that the sequence only has a length of one
-                // this still works, but we re-match the same byte we matched above.
+                // The first byte matched - verify the rest of the sequence,
+                // if there is more to verify.
                 final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
-                if (verifier.matches(reader, startMatchPosition)) {
-                    return new SearchResult<SequenceMatcher>(startMatchPosition, matcher); // match found.
+                if (verifier == null || verifier.matches(reader, startMatchPosition)) {
+                    return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
                 }
                 
                 // No match was found - shift backward by the shift for the current byte:
@@ -328,7 +327,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             
             // If the search position is now past the last search position, we're finished:
             if (searchPosition < toPosition) {
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }            
             
             // Otherwise, get the next window.  The search position is 
@@ -336,7 +335,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             window = reader.getWindow(searchPosition);
         }
 
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
     
@@ -387,7 +386,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             final int lastPosition = sequenceLength - 1;
             info.matcher = sequence.getMatcherForPosition(lastPosition);
             if (lastPosition == 0) {
-                info.verifier = info.matcher;
+                info.verifier = null;
             } else {
                 info.verifier = sequence.subsequence(0, lastPosition);
             }
@@ -437,7 +436,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             final int lastPosition = sequenceLength - 1;
             info.matcher = sequence.getMatcherForPosition(lastPosition);
             if (lastPosition == 0) {
-                info.verifier = info.matcher;
+                info.verifier = null;
             } else {
                 info.verifier = sequence.subsequence(1, sequenceLength);
             }

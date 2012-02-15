@@ -32,7 +32,9 @@
 package net.domesdaybook.searcher;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import net.domesdaybook.reader.Reader;
 
@@ -40,7 +42,7 @@ import net.domesdaybook.reader.Reader;
  *
  * @author matt
  */
-public class ForwardSearchIterator<T> implements Iterator<SearchResult<T>> {
+public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>> {
     
     // immutable fields:
     private final byte[] bytes;
@@ -51,7 +53,7 @@ public class ForwardSearchIterator<T> implements Iterator<SearchResult<T>> {
     // private state:
     private long searchPosition;
     private boolean searchedForNext;
-    private SearchResult<T> matchResult = SearchResult.noMatch();
+    private List<SearchResult<T>> searchResults = Collections.emptyList();
     
     
     /**
@@ -91,7 +93,7 @@ public class ForwardSearchIterator<T> implements Iterator<SearchResult<T>> {
      * @param searcher
      * @param bytes
      */
-    public ForwardSearchIterator(final Searcher searcher, final byte[] bytes) {
+    public ForwardSearchIterator(final Searcher<T> searcher, final byte[] bytes) {
         this(searcher, 0, bytes.length - 1, bytes);
     }
     
@@ -103,7 +105,7 @@ public class ForwardSearchIterator<T> implements Iterator<SearchResult<T>> {
      * @param toPosition
      * @param bytes
      */
-    public ForwardSearchIterator(final Searcher searcher, final long fromPosition, 
+    public ForwardSearchIterator(final Searcher<T> searcher, final long fromPosition, 
                                  final long toPosition, final byte[] bytes) {
         if (searcher == null || bytes == null) {
             throw new IllegalArgumentException("Null searcher or byte array.");
@@ -120,41 +122,53 @@ public class ForwardSearchIterator<T> implements Iterator<SearchResult<T>> {
     public boolean hasNext() {
         if (!searchedForNext) {
             try {
-                matchResult = getNextMatchPosition();
+                searchResults = getNextSearchResults();
                 searchedForNext = true;
             } catch (IOException ex) {
                 return false;
             }
         }
-        return matchResult.matched();
+        return !searchResults.isEmpty();
     }
 
     
     @Override
-    public SearchResult<T> next() {
+    public List<SearchResult<T>> next() {
         if (hasNext()) {
-            searchPosition = matchResult.getMatchPosition() + 1;
+            searchPosition = getNextSearchPosition();
             searchedForNext = false;
-            return matchResult;
+            return searchResults;
         }
         throw new NoSuchElementException();
     }
-
+    
     
     @Override
     public void remove() {
         throw new UnsupportedOperationException("Cannot remove search results.");
     }
     
-    
-    private SearchResult<T> getNextMatchPosition() throws IOException {
-        SearchResult<T> nextMatchingPosition = SearchResult.noMatch();
+
+    private List<SearchResult<T>> getNextSearchResults() throws IOException {
+        List<SearchResult<T>> nextResults = Collections.emptyList();
         if (reader != null) {
-            nextMatchingPosition = searcher.searchForwards(reader, searchPosition, toPosition);
+            nextResults = searcher.searchForwards(reader, searchPosition, toPosition);
         } else if (bytes != null) {
-            nextMatchingPosition = searcher.searchForwards(bytes, (int) searchPosition, (int) toPosition);
+            nextResults = searcher.searchForwards(bytes, (int) searchPosition, (int) toPosition);
         }
-        return nextMatchingPosition;
+        return nextResults;
+    }
+    
+    
+    private long getNextSearchPosition() {
+        long furthestPosition = Long.MIN_VALUE;
+        for (final SearchResult<T> result : searchResults) {
+            final long resultPosition = result.getMatchPosition();
+            if (resultPosition > furthestPosition) {
+                furthestPosition = resultPosition;
+            }
+        }
+        return furthestPosition + 1;
     }
     
 }

@@ -33,10 +33,12 @@ package net.domesdaybook.searcher.multisequence;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
+import net.domesdaybook.searcher.ResultUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
@@ -51,7 +53,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     
     
     @Override
-    protected SearchResult<SequenceMatcher> doSearchForwards(final Reader reader,
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader,
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final MultiSequenceMatcher sequences = matcher;  
@@ -72,26 +74,26 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             while (searchPosition <= lastPosition) {
                 final Collection<SequenceMatcher> matches = sequences.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
-                    return new SearchResult(searchPosition, matches);
+                    return ResultUtils.resultsAtPosition(searchPosition, matches);
                 }
                 searchPosition++;
             }
             
             // Did we pass the end of the search space?
             if (toPosition <= endWindowPosition) {
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }
             
             // Get the next window to search across.
             // The search position is guaranteed to be in the next window now.
             window = reader.getWindow(searchPosition);
         }
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
-    
+
     @Override
-    public SearchResult<SequenceMatcher> searchForwards(final byte[] bytes, 
+    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
         final int fromPosition, final int toPosition) {
         
         // Initialise:
@@ -108,16 +110,16 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         while (searchPosition <= lastPosition) {
             final Collection<SequenceMatcher> matches = sequences.allMatches(bytes, searchPosition);
             if (!matches.isEmpty()) {
-                return new SearchResult(searchPosition, matches);
+                return ResultUtils.resultsAtPosition(searchPosition, matches);
             }
             searchPosition++;
         }
-        return SearchResult.noMatch();           
+        return ResultUtils.noResults();           
     }
 
-    
+
     @Override
-    protected SearchResult<SequenceMatcher> doSearchBackwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final MultiSequenceMatcher sequences = matcher;
@@ -137,26 +139,26 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
                 final Collection<SequenceMatcher> matches = 
                         sequences.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
-                    return new SearchResult(searchPosition, matches);
+                    return ResultUtils.resultsAtPosition(searchPosition, matches);
                 }
                 searchPosition--;
             }
             
             // Did we pass the last search position?
             if (toPosition >= windowStartPosition) {
-                return SearchResult.noMatch();
+                return ResultUtils.noResults();
             }
             
             // Get the next window to search in.
             // The search position is guaranteed to be in the next window now.
             window = reader.getWindow(searchPosition);
         }
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
 
     @Override
-    public SearchResult<SequenceMatcher> searchBackwards(final byte[] bytes, 
+    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
         final int fromPosition, final int toPosition) {
         
         // Initialise:
@@ -174,11 +176,11 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             final Collection<SequenceMatcher> matches = 
                         sequences.allMatches(bytes, searchPosition);            
             if (!matches.isEmpty()) {
-                return new SearchResult(searchPosition, matches);
+                return ResultUtils.resultsAtPosition(searchPosition, matches);
             }
             searchPosition--;
         }
-        return SearchResult.noMatch();
+        return ResultUtils.noResults();
     }
 
     

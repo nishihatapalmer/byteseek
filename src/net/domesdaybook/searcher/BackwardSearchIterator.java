@@ -32,7 +32,9 @@
 package net.domesdaybook.searcher;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import net.domesdaybook.reader.Reader;
 
@@ -40,7 +42,7 @@ import net.domesdaybook.reader.Reader;
  *
  * @author matt
  */
-public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
+public class BackwardSearchIterator<T> implements Iterator<List<SearchResult<T>>> {
     
     // immutable fields:
     private final byte[] bytes;
@@ -51,7 +53,7 @@ public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
     // private state:
     private long searchPosition;
     private boolean searchedForNext = false;
-    private SearchResult<T> matchResult = SearchResult.noMatch();
+    private List<SearchResult<T>> searchResults = Collections.emptyList();
    
     
     /**
@@ -60,7 +62,7 @@ public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
      * @param reader
      * @throws IOException
      */
-    public BackwardSearchIterator(final Searcher searcher, final Reader reader) throws IOException {
+    public BackwardSearchIterator(final Searcher<T> searcher, final Reader reader) throws IOException {
         this(searcher, reader.length() - 1, 0, reader);
     }
     
@@ -91,7 +93,7 @@ public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
      * @param searcher
      * @param bytes
      */
-    public BackwardSearchIterator(final Searcher searcher, final byte[] bytes) {
+    public BackwardSearchIterator(final Searcher<T> searcher, final byte[] bytes) {
         this(searcher, bytes.length - 1, 0, bytes);
     }
     
@@ -103,7 +105,7 @@ public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
      * @param toPosition
      * @param bytes
      */
-    public BackwardSearchIterator(final Searcher searcher, final long fromPosition, 
+    public BackwardSearchIterator(final Searcher<T> searcher, final long fromPosition, 
                                  final long toPosition, final byte[] bytes) {
         if (searcher == null || bytes == null) {
             throw new IllegalArgumentException("Null searcher or byte array.");
@@ -120,22 +122,22 @@ public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
     public boolean hasNext() {
         if (!searchedForNext) {
             try {
-                matchResult = getNextMatchPosition();
+                searchResults = getNextSearchResults();
                 searchedForNext = true;
             } catch (IOException ex) {
                 return false;
             }
         }
-        return matchResult.matched();
+        return !searchResults.isEmpty();
     }
 
     
     @Override
-    public SearchResult<T> next() {
+    public List<SearchResult<T>> next() {
         if (hasNext()) {
-            searchPosition = matchResult.getMatchPosition() - 1;
+            searchPosition = getNextSearchPosition();
             searchedForNext = false;
-            return matchResult;
+            return searchResults;
         }
         throw new NoSuchElementException();
     }
@@ -147,8 +149,8 @@ public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
     }
     
     
-    private SearchResult<T> getNextMatchPosition() throws IOException {
-        SearchResult<T> nextMatchingPosition = SearchResult.noMatch();
+    private List<SearchResult<T>> getNextSearchResults() throws IOException {
+        List<SearchResult<T>> nextMatchingPosition = Collections.emptyList();
         if (reader != null) {
             nextMatchingPosition = searcher.searchBackwards(reader, searchPosition, toPosition);
         } else if (bytes != null) {
@@ -156,5 +158,17 @@ public class BackwardSearchIterator<T> implements Iterator<SearchResult<T>> {
         }
         return nextMatchingPosition;
     }
+    
+    
+    private long getNextSearchPosition() {
+        long furthestPosition = Long.MAX_VALUE;
+        for (final SearchResult<T> result : searchResults) {
+            final long resultPosition = result.getMatchPosition();
+            if (resultPosition < furthestPosition) {
+                furthestPosition = resultPosition;
+            }
+        }
+        return furthestPosition - 1;
+    }    
     
 }

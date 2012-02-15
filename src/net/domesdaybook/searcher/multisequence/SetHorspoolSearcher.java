@@ -32,19 +32,30 @@
 package net.domesdaybook.searcher.multisequence;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
+import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
+import net.domesdaybook.matcher.multisequence.MultiSequenceUtils;
+import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.object.LazyObject;
 import net.domesdaybook.reader.Reader;
+import net.domesdaybook.reader.Window;
+import net.domesdaybook.searcher.ResultUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
  *
- * @author matt
+ * @author Matt Palmer
  */
 public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
 
+    private final ByteMatcherFactory byteMatcherFactory;
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
     
@@ -53,28 +64,260 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         super(sequences);
         forwardInfo = new ForwardSearchInfo();
         backwardInfo = new BackwardSearchInfo();
+        
+        //TODO: provide constructors to allow different byte matcher factories.
+        byteMatcherFactory = new SimpleByteMatcherFactory();
     }
     
     
+    /**
+     * {@inheritDoc}
+     */    
     @Override
-    protected SearchResult<SequenceMatcher> doSearchForwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        
+        // Get the objects needed to search:
+        final SearchInfo info = forwardInfo.get();
+        final int[] safeShifts = info.shifts;
+        final ByteMatcher endOfSequence = info.matcher;      
+        final MultiSequenceMatcher verifier = info.verifier;
+        
+        // Calculate safe bounds for the start of the search:
+        final int minimumSearchPosition = getMatcher().getMinimumLength() - 1;
+        final int positiveStartPosition = fromPosition > 0? 
+                                          fromPosition : 0;
+        int searchPosition = positiveStartPosition + minimumSearchPosition;
+        
+        // Calculate safe bounds for the end of the search:
+        final int lastPossiblePosition = bytes.length - 1;
+        final int finalPosition = toPosition < lastPossiblePosition?
+                                  toPosition : lastPossiblePosition;
+        
+        // Search forwards:
+        while (searchPosition <= finalPosition) {
+            
+            // Shift forwards until we match the last position in the sequence,
+            // or we run out of search space (in which case just return not found).
+            byte currentByte = bytes[searchPosition];
+            while (!endOfSequence.matches(currentByte)) {
+                searchPosition += safeShifts[currentByte & 0xff];
+                if (searchPosition > finalPosition) {
+                    return ResultUtils.noResults();
+                }
+                currentByte = bytes[searchPosition];                
+            }
+            
+            // The last bytes matched - verify the rest of the sequences.
+            final Collection<SequenceMatcher> matches = verifier.allMatchesBackwards(bytes, searchPosition);
+            if (!matches.isEmpty()) {
+                final List<SearchResult<SequenceMatcher>> results = 
+                    ResultUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                if (!results.isEmpty()) {
+                    return results;
+                }
+            }
+            
+            // No match was found - shift forward by the shift for the current byte:
+            searchPosition += safeShifts[currentByte & 0xff];
+        }
+        
+        return ResultUtils.noResults();
+    }    
+        
     
+    /**
+     * Searches forward using the Boyer Moore Horspool algorithm, using 
+     * byte arrays from Windows to handle shifting, and the Reader interface
+     * on the SequenceMatcher to verify whether a match exists.
+     */
     @Override
-    protected SearchResult<SequenceMatcher> doSearchBackwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, final long fromPosition, 
+        final long toPosition) throws IOException {
+            
+        // Get the objects needed to search:
+        final SearchInfo info = forwardInfo.get();
+        final int[] safeShifts = info.shifts;
+        final ByteMatcher endOfSequence = info.matcher;      
+        final MultiSequenceMatcher verifier = info.verifier;
+        
+        // Initialise window search:
+        long searchPosition = fromPosition + getMatcher().getMinimumLength() - 1;        
+        Window window = reader.getWindow(searchPosition);        
+        
+        // While there is a window to search in:
+        while (window != null) {
+            
+            // Initialise array search:
+            final byte[] array = window.getArray();
+            final int arrayStartPosition = reader.getWindowOffset(searchPosition);
+            final int arrayEndPosition = window.length() - 1;
+            final long distanceToEnd = toPosition - window.getWindowPosition();     
+            final int lastSearchPosition = distanceToEnd < arrayEndPosition?
+                                     (int) distanceToEnd : arrayEndPosition;
+            int arraySearchPosition = arrayStartPosition;            
+                        
+            // Search forwards in this array:
+            ARRAY_SEARCH: while (arraySearchPosition <= lastSearchPosition) {
+
+                // Shift forwards until we match the last position in the sequence,
+                // or we run out of search space.
+                byte currentByte = array[arraySearchPosition];
+                while (!endOfSequence.matches(currentByte)) {
+                    arraySearchPosition += safeShifts[currentByte & 0xff];
+                    if (arraySearchPosition > lastSearchPosition) {
+                        break ARRAY_SEARCH; // outside the array, move on.
+                    }
+                    currentByte = array[arraySearchPosition];                
+                }
+
+                // The last bytes matched - verify the rest of the sequences.
+                final long endMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
+                final Collection<SequenceMatcher> matches = 
+                        verifier.allMatchesBackwards(reader, endMatchPosition);
+                if (!matches.isEmpty()) {
+                    final List<SearchResult<SequenceMatcher>> results = 
+                        ResultUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                    if (!results.isEmpty()) {
+                        return results;
+                    }
+                }
+                
+                // No match was found - shift forward by the shift for the current byte:
+                arraySearchPosition += safeShifts[currentByte & 0xff];
+            } 
+            
+            // No match was found in this array - calculate the current search position:
+            searchPosition += arraySearchPosition - arrayStartPosition;
+            
+            // If the search position is now past the last search position, we're finished:
+            if (searchPosition > toPosition) {
+                return ResultUtils.noResults();
+            }
+            
+            // Otherwise, get the next window.  The search position is 
+            // guaranteed to be in another window at this point.
+            window = reader.getWindow(searchPosition);
+        }
+
+        return ResultUtils.noResults();        
     }
 
     
-    public SearchResult<SequenceMatcher> searchForwards(byte[] bytes, int fromPosition, int toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        
+        // Get objects needed for the search:
+        final SearchInfo info = backwardInfo.get();
+        final int[] safeShifts = info.shifts;
+        final ByteMatcher startOfSequence = info.matcher;
+        final MultiSequenceMatcher verifier = info.verifier;
+        
+        // Calculate safe bounds for the start of the search:
+        final int firstPossiblePosition = bytes.length - getMatcher().getMinimumLength();        
+        int searchPosition = fromPosition < firstPossiblePosition?
+                             fromPosition : firstPossiblePosition;
+        
+        // Calculate safe bounds for the end of the search:
+        final int lastPosition = toPosition > 0?
+                                 toPosition : 0;
+        
+        // Search backwards:
+        while (searchPosition >= lastPosition) {
+            
+            // Shift backwards until we match the first position in the
+            // sequence, or we run out of search space:
+            byte currentByte = bytes[searchPosition];
+            while (!startOfSequence.matches(currentByte)) {
+                searchPosition -= safeShifts[currentByte & 0xFF];
+                if (searchPosition < lastPosition) {
+                    return ResultUtils.noResults();
+                }
+            }
+            
+            // The first bytes matched - verify the rest of the sequences:
+            final Collection<SequenceMatcher> matches = verifier.allMatches(bytes, searchPosition);
+            if (!matches.isEmpty()) {
+                return ResultUtils.resultsAtPosition(searchPosition, matches);
+            }
+
+            // No match was found - shift backward by the shift for the current byte:
+            searchPosition -= safeShifts[currentByte & 0xff];            
+        }
+        
+        return ResultUtils.noResults();
     }
 
     
-    public SearchResult<SequenceMatcher> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
+            final long fromPosition, final long toPosition ) throws IOException {
+        
+        // Get the objects needed to search:
+        final SearchInfo info = backwardInfo.get();
+        final int[] safeShifts = info.shifts;
+        final ByteMatcher startOfSequence = info.matcher;
+        final MultiSequenceMatcher verifier = info.verifier;        
+        
+        // Initialise window search:
+        long searchPosition = fromPosition;
+        Window window = reader.getWindow(searchPosition);
+        
+        // Search backwards across the windows:
+        while (window != null) {
+            
+            // Initialise the window search:
+            final byte[] array = window.getArray();
+            final int arrayStartPosition = reader.getWindowOffset(searchPosition);   
+            final long distanceToEnd = toPosition - window.getWindowPosition();
+            final int lastSearchPosition = distanceToEnd > 0?
+                                     (int) distanceToEnd : 0;
+            int arraySearchPosition = arrayStartPosition;
+            
+            // Search using the byte array for shifts, using the Reader
+            // for verifiying the sequence with the matcher:          
+            ARRAY_SEARCH: while (arraySearchPosition >= lastSearchPosition) {
+                
+                // Shift backwards until we match the first position in the sequence,
+                // or we run out of search space.
+                byte currentByte = array[arraySearchPosition];
+                while (!startOfSequence.matches(currentByte)) {
+                    arraySearchPosition -= safeShifts[currentByte & 0xff];
+                    if (arraySearchPosition < lastSearchPosition) {
+                        break ARRAY_SEARCH;
+                    }
+                }
+                
+                // The first byte matched - verify the rest of the sequences.
+                final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
+                final Collection<SequenceMatcher> matches = verifier.allMatches(reader, startMatchPosition);
+                if (!matches.isEmpty()) {
+                    return ResultUtils.resultsAtPosition(startMatchPosition, matches); // match found.
+                }
+                
+                // No match was found - shift backward by the shift for the current byte:
+                arraySearchPosition += safeShifts[currentByte & 0xff];                
+            }
+            
+            // No match was found in this array - calculate the current search position:
+            searchPosition -= (arrayStartPosition - arraySearchPosition);
+            
+            // If the search position is now past the last search position, we're finished:
+            if (searchPosition < toPosition) {
+                return ResultUtils.noResults();
+            }            
+            
+            // Otherwise, get the next window.  The search position is 
+            // guaranteed to be in another window at this point.            
+            window = reader.getWindow(searchPosition);
+        }
+
+        return ResultUtils.noResults();
     }
 
     
@@ -89,10 +332,11 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         backwardInfo.get();
     }
     
-    
+
     private static class SearchInfo {
         public int[] shifts;
         public ByteMatcher matcher;
+        public MultiSequenceMatcher verifier;
     }    
     
     
@@ -109,33 +353,40 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
          */        
         @Override
         protected SearchInfo create() {
-            // Get info about the matcher:
-            final SequenceMatcher sequence = getMatcher();            
-            final int sequenceLength = sequence.length();            
+            // Get info about the multi sequence matcher:
+            final MultiSequenceMatcher sequences = getMatcher();            
+            final int minLength = sequences.getMinimumLength();            
             
             // Create the search info object:
             final SearchInfo info = new SearchInfo();
-            final int lastPosition = sequenceLength - 1;
-            info.matcher = sequence.getMatcherForPosition(lastPosition);
-            if (lastPosition == 0) {
-                info.verifier = info.matcher;
-            } else {
-                info.verifier = sequence.subsequence(0, lastPosition);
-            }
+            
+            // Create a byte matcher for the last position of all the sequences:
+            final Set<Byte> allLastBytes =
+                    MultiSequenceUtils.bytesAlignedRight(0, sequences);
+            info.matcher = byteMatcherFactory.create(allLastBytes);
+            
+            // Create a verifier which works on the reverse sequences of the
+            // multi sequence matcher (they will be matched backwards from the 
+            // end of the sequences - if they are also reversed they will match
+            // the original sequences).
+            info.verifier = new MultiSequenceReverseMatcher(sequences);
+            
+            // Create the array of shifts and set the default shift to the
+            // minimum length of all the sequences:
             info.shifts = new int[256];            
-
-            // Set the default shift to the length of the sequence
-            Arrays.fill(info.shifts, sequenceLength);
+            Arrays.fill(info.shifts, minLength);
 
             // Now set specific shifts for the bytes actually in
-            // the sequence itself.  The shift is the distance of a position
+            // the sequences.  The shift is the distance of a position
             // from the end of the sequence, but we do not create a shift for
-            // the very last position.
-            for (int sequencePos = 0; sequencePos < lastPosition; sequencePos++) {
-                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
-                final byte[] matchingBytes = aMatcher.getMatchingBytes();
-                final int distanceFromEnd = sequenceLength - sequencePos - 1;
-                for (final byte b : matchingBytes) {
+            // the very last position (which would have been zero).  
+            // We only create shifts of a distance less than the minimum length
+            // of all the sequences to be matched (as we cannot have a shift 
+            // bigger than that, or we might miss a smaller sequence).
+            for (int distanceFromEnd = minLength - 1; distanceFromEnd > 0; distanceFromEnd--) {
+                final Set<Byte> bytesForPosition =
+                        MultiSequenceUtils.bytesAlignedRight(distanceFromEnd, sequences);
+                for (final byte b : bytesForPosition) {
                     info.shifts[b & 0xFF] = distanceFromEnd;
                 }
             }
@@ -145,6 +396,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     }
     
     
+    
     private class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
         public BackwardSearchInfo() {
@@ -152,41 +404,49 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         
         /**
          * Calculates the safe shifts to use if searching backwards.
-         * A safe shift is either the length of the sequence, if the
-         * byte does not appear in the {@link SequenceMatcher}, or
+         * A safe shift is either the minimum length of all the sequences, if the
+         * byte does not appear in the {@link MultiSequenceMatcher}, or
          * the shortest distance it appears from the beginning of the matcher, with
          * zero being the value of the first position in the sequence.
          */        
         @Override
         protected SearchInfo create() {
-            // Get info about the matcher:
-            final SequenceMatcher sequence = getMatcher();            
-            final int sequenceLength = sequence.length();            
+            // Get info about the multi sequence matcher:
+            final MultiSequenceMatcher sequences = getMatcher();            
+            final int minLength = sequences.getMinimumLength();            
             
             // Create the search info object:
             final SearchInfo info = new SearchInfo();
-            final int lastPosition = sequenceLength - 1;
-            info.matcher = sequence.getMatcherForPosition(lastPosition);
-            if (lastPosition == 0) {
-                info.verifier = info.matcher;
-            } else {
-                info.verifier = sequence.subsequence(1, sequenceLength);
-            }
+            
+            // Create a byte matcher for the last position of all the sequences:
+            final Set<Byte> allLastBytes =
+                    MultiSequenceUtils.bytesAlignedLeft(0, sequences);
+            info.matcher = byteMatcherFactory.create(allLastBytes);
+            
+            info.verifier = sequences;
+            
+            // Create the array of shifts and set the default shift to the
+            // minimum length of all the sequences:
             info.shifts = new int[256];            
+            Arrays.fill(info.shifts, minLength);
 
-            // Set the default shift to the length of the sequence
-            Arrays.fill(info.shifts, sequenceLength);
-
-            // Now set specific byte shifts for the bytes actually in
-            // the sequence itself.  The shift is the position in the sequence,
-            // but we do not create a shift for the first position 0.
-            for (int sequencePos = lastPosition; sequencePos > 0; sequencePos--) {
-                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
-                final byte[] matchingBytes = aMatcher.getMatchingBytes();
-                for (final byte b : matchingBytes) {
-                    info.shifts[b & 0xFF] = sequencePos;
+            // Now set specific shifts for the bytes actually in
+            // the sequences.  The shift is the distance of a position
+            // from the start of the sequence as measured from the minimum
+            // length of all the sequences, but we do not create a shift for
+            // the very first position (which would have a distance of zero).
+            // We only create shifts of a distance less than the minimum length
+            // of all the sequences to be matched (as we cannot have a shift 
+            // bigger than that, or we might miss a smaller sequence).
+            for (int sequencePos = 1; sequencePos < minLength; sequencePos++) {
+                final Set<Byte> bytesForPosition =
+                        MultiSequenceUtils.bytesAlignedLeft(sequencePos, sequences);
+                final int distanceFromMinPosition = minLength - sequencePos; 
+                for (final byte b : bytesForPosition) {
+                    info.shifts[b & 0xFF] = distanceFromMinPosition;
                 }
             }
+
             return info;
         }
         
