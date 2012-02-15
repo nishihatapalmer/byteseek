@@ -31,7 +31,6 @@
 package net.domesdaybook.searcher.sequence;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
@@ -40,7 +39,7 @@ import net.domesdaybook.searcher.ResultUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
- * SequenceSearcher searches for a sequence by trying for a match in each position.
+ * SequenceMatcherSearcher searches for a sequence by trying for a match in each position.
  * In its worst case, where no match is found, if the sequence is m bytes long,
  * and the bytes being searched are n bytes long, it can take O(n * m) to
  * determine there is no match.
@@ -58,15 +57,15 @@ import net.domesdaybook.searcher.SearchResult;
  *
  * @author Matt Palmer
  */
-public final class SequenceSearcher extends AbstractSequenceSearcher {
+public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
 
 
     /**
-     * Constructs a SequenceSearcher given a {@link SequenceMatcher}.
+     * Constructs a SequenceMatcherSearcher given a {@link SequenceMatcher}.
      * 
      * @param sequence The SequenceMatcher to search for.
      */
-    public SequenceSearcher(final SequenceMatcher sequence) {
+    public SequenceMatcherSearcher(final SequenceMatcher sequence) {
         super(sequence);
     }
 
