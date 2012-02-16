@@ -35,6 +35,7 @@ import net.domesdaybook.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import net.domesdaybook.matcher.bytes.AnyByteMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
@@ -132,10 +133,9 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 currentByte = bytes[searchPosition];                
             }
             
-            // The last byte matched - verify the rest of the sequence,
-            // if there is more to verify.
+            // The last byte matched - verify there is a complete match:
             final int startMatchPosition = searchPosition - lastMatcherPosition;
-            if (verifier == null || verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
+            if (verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
                 return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
             }
             
@@ -192,10 +192,9 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                     currentByte = array[arraySearchPosition];                
                 }
 
-                // The last byte matched - verify the rest of the sequence,
-                // if there is more to verify.
+                // The last byte matched - verify there is a complete match:
                 final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
-                if (verifier == null || verifier.matches(reader, startMatchPosition)) {
+                if (verifier.matches(reader, startMatchPosition)) {
                     return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
                 }
                 
@@ -254,9 +253,8 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 }
             }
             
-            // The first byte matched - verify the rest of the sequence,
-            // if there is more to verify.
-            if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition)) {
+            // The first byte matched - verify there is a complete match.
+            if (verifier.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return ResultUtils.singleResult(searchPosition, matcher); // match found.
             }
 
@@ -310,10 +308,9 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                     }
                 }
                 
-                // The first byte matched - verify the rest of the sequence,
-                // if there is more to verify.
+                // The first byte matched - verify there is a complete match.
                 final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
-                if (verifier == null || verifier.matches(reader, startMatchPosition)) {
+                if (verifier.matches(reader, startMatchPosition)) {
                     return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
                 }
                 
@@ -385,7 +382,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             final int lastPosition = sequenceLength - 1;
             info.matcher = sequence.getMatcherForPosition(lastPosition);
             if (lastPosition == 0) {
-                info.verifier = null;
+                info.verifier = AnyByteMatcher.ANY_BYTE_MATCHER;
             } else {
                 info.verifier = sequence.subsequence(0, lastPosition);
             }
@@ -435,7 +432,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             final int lastPosition = sequenceLength - 1;
             info.matcher = sequence.getMatcherForPosition(lastPosition);
             if (lastPosition == 0) {
-                info.verifier = null;
+                info.verifier = AnyByteMatcher.ANY_BYTE_MATCHER;
             } else {
                 info.verifier = sequence.subsequence(1, sequenceLength);
             }
