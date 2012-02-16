@@ -44,6 +44,8 @@ import net.domesdaybook.reader.Reader;
  */
 public final class AnyByteMatcher extends AbstractByteMatcher {
 
+    public static final AnyByteMatcher ANY_BYTE_MATCHER = new AnyByteMatcher();
+    
     // A static 256-element array containing all the bytes.
     private static final byte[] ALL_BYTES =  ByteUtilities.getAllByteValues();
 

@@ -43,7 +43,6 @@ import net.domesdaybook.reader.Reader;
  */
 public final class FixedGapMatcher implements SequenceMatcher {
 
-    private static final ByteMatcher ANY_MATCHER = new AnyByteMatcher();
     private final int length;
 
    
@@ -70,7 +69,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
             final String message = String.format("Position %d out of bounds, length is %d", position, length);
             throw new IndexOutOfBoundsException(message);
         }
-        return ANY_MATCHER;
+        return AnyByteMatcher.ANY_BYTE_MATCHER;
     }
 
 
@@ -139,7 +138,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
             throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
         }
         if (endIndex - beginIndex == 1) {
-            return ANY_MATCHER;
+            return AnyByteMatcher.ANY_BYTE_MATCHER;
         }
         return new FixedGapMatcher(endIndex - beginIndex);
     }
