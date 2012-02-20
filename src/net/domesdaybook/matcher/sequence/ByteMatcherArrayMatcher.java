@@ -255,6 +255,20 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     }
     
     
+    /**
+     * Returns a string representation of this matcher.  The format is subject
+     * to change, but it will generally return the name of the matching class
+     * and a regular expression defining the bytes matched by the matcher.
+     * 
+     * @return A string representing this matcher.
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + toRegularExpression(true) + ")";
+    }
+    
+    
+    
     private ByteMatcher[] repeatMatchers(final int numberOfRepeats) {
         final int repeatSize = matchers.length;
         final ByteMatcher[] repeated = new ByteMatcher[repeatSize * numberOfRepeats];
