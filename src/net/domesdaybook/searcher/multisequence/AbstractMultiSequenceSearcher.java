@@ -38,7 +38,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
-import net.domesdaybook.searcher.ResultUtils;
+import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
@@ -143,7 +143,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
                 // Did we find a match?
                 if (!arrayResult.isEmpty()) {
                     final long readerOffset = searchPosition - arrayStartPosition;
-                    return ResultUtils.addPositionToResults(arrayResult, readerOffset);
+                    return SearchUtils.addPositionToResults(arrayResult, readerOffset);
                 }
                 
                 // Continue the search one on from where we last looked:
@@ -151,7 +151,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
 
                 // Did we pass the final toPosition?  In which case, we're finished.
                 if (searchPosition > toPosition) {
-                    return ResultUtils.noResults();
+                    return SearchUtils.noResults();
                 }
             }
 
@@ -178,14 +178,14 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             
             // Did we pass the final toPosition?  In which case, we're finished.
             if (searchPosition > toPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Get the next window of data to search:
             window = reader.getWindow(searchPosition);
         }
         
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
     
@@ -267,7 +267,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
                 // Did we find a match?
                 if (!arrayResult.isEmpty()) {
                     final long readerOffset = searchPosition - arrayStartPosition;
-                    return ResultUtils.addPositionToResults(arrayResult, readerOffset);
+                    return SearchUtils.addPositionToResults(arrayResult, readerOffset);
                 }
                 
                 // Continue the search one on from where we last looked:
@@ -275,7 +275,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
 
                 // Did we pass the final search position?  In which case, we're finished.
                 if (searchPosition < finalSearchPosition) {
-                    return ResultUtils.noResults();
+                    return SearchUtils.noResults();
                 }
             }
 
@@ -305,14 +305,14 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             
             // Did we pass the final toPosition?  In which case, we're finished.
             if (searchPosition < finalSearchPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Get the next window of data to search:
             window = reader.getWindow(searchPosition);
         }
         
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
     
 
