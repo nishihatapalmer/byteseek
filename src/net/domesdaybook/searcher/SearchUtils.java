@@ -30,21 +30,63 @@
  */
 package net.domesdaybook.searcher;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.reader.Reader;
 
 /**
  *
  * @author Matt Palmer
  */
-public final class ResultUtils {
+public final class SearchUtils {
 
 
     
-    private ResultUtils() {
+    private SearchUtils() {
+    }
+    
+    
+    public static List<SearchResult> searchAllForwards(final Searcher searcher, final byte[] bytes) {
+        final List<SearchResult> results = new ArrayList<SearchResult>();
+        final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, bytes);
+        while (iterator.hasNext()) {
+            results.addAll(iterator.next());
+        }
+        return results;
+    }
+
+
+    public static List<SearchResult> searchAllForwards(final Searcher searcher, final Reader reader) throws IOException {
+        final List<SearchResult> results = new ArrayList<SearchResult>();
+        final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, reader);
+        while (iterator.hasNext()) {
+            results.addAll(iterator.next());
+        }
+        return results;
+    }
+
+
+    public static List<SearchResult> searchAllBackwards(final Searcher searcher, final byte[] bytes) {
+        final List<SearchResult> results = new ArrayList<SearchResult>();
+        final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, bytes);
+        while (iterator.hasNext()) {
+            results.addAll(iterator.next());
+        }
+        return results;
+    }
+
+
+    public static List<SearchResult> searchAllBackwards(final Searcher searcher, final Reader reader) throws IOException {
+        final List<SearchResult> results = new ArrayList<SearchResult>();
+        final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, reader);
+        while (iterator.hasNext()) {
+            results.addAll(iterator.next());
+        }          
+        return results;
     }
     
     
