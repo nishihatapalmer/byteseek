@@ -44,7 +44,7 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.object.LazyObject;
 import net.domesdaybook.searcher.AbstractSearcher;
-import net.domesdaybook.searcher.ResultUtils;
+import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.Searcher;
 
@@ -100,6 +100,26 @@ import net.domesdaybook.searcher.Searcher;
 
 public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
    
+    /*
+     * IDEAS:
+     * 
+     * instead of having zero in the shift table, build the shifts as normal
+     * but instead of setting a zero, or the existing value with 2^31, 
+     * setting the high bit to indicate that these byte values could match at an end, 
+     * and making the overall value negative.  Keep building the shifts (ensuring 
+     * we are always comparing the the minimum of the anded value.  
+     * 
+     * The idea is that we can detect the need for a match (high bit is 0x80000000,
+     * or alternatively that the value is less than zero).
+     * If there is no match at that position, we can use the anded value as the
+     * next shift, instead of just shifting one on.  The positive anded value may
+     * still be bigger than one (the next closest distance to the end for that value).
+     * 
+     * We could use the same technique in Boyer Moore Horspool to avoid the need
+     * for a dedicated ByteMatcher for the end of sequence matching.  Just verify
+     * when the shift is negative, otherwise keep going.  If verification fails,
+     * shift by the anded version of the shift (to get the next closest shift value).
+     */
     
     public static int getBlockSize(final MultiSequenceMatcher matcher) {
         return getBlockSize(matcher, 256);
@@ -469,7 +489,7 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
                         
                         // See if any of the matches are within the bounds of the search:
                         final List<SearchResult<SequenceMatcher>> results = 
-                            ResultUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                            SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
                         if (!results.isEmpty()) {
                             return results;
                         }
@@ -481,12 +501,54 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
                 }
             }
             
-            return ResultUtils.noResults();
+            return SearchUtils.noResults();
         }
         
-
+        
+        //FIXME: just copied from search forwards at present.
         public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // Get info needed to search with:
+            final SearchInfo info = forwardInfo.get();
+            final int[] safeShifts = info.shifts;
+            final MultiSequenceMatcher backMatcher = info.matcher;
+            
+            // Calculate safe bounds for the search:
+            final int lastPossiblePosition = bytes.length - 1;
+            final int lastPosition = toPosition < lastPossiblePosition ?
+                                     toPosition : lastPossiblePosition;
+            final int lastMinimumPosition = matcher.getMinimumLength() - 1;
+            int searchPosition = fromPosition > 0 ?
+                                 fromPosition + lastMinimumPosition : lastMinimumPosition;
+            
+            // Search forwards:
+            while (searchPosition <= lastPosition) {
+
+                // Get the safe shift for this byte:
+                final int safeShift = safeShifts[bytes[searchPosition] & 0xFF];
+
+                // Can we shift safely?
+                if (safeShift == 0) {
+                    
+                    // No safe shift - see if we have any matches:
+                    final Collection<SequenceMatcher> matches =
+                            backMatcher.allMatchesBackwards(bytes, searchPosition);
+                    if (!matches.isEmpty()) {
+                        
+                        // See if any of the matches are within the bounds of the search:
+                        final List<SearchResult<SequenceMatcher>> results = 
+                            SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                        if (!results.isEmpty()) {
+                            return results;
+                        }
+                    }
+                    searchPosition++; // no safe shift other than to advance one on.
+                    
+                } else { // we have a safe shift, move on:
+                    searchPosition += safeShift; 
+                }
+            }
+            
+            return SearchUtils.noResults();
         }
         
     }
@@ -550,7 +612,7 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
                         
                         // See if any of the matches are within the bounds of the search:
                         final List<SearchResult<SequenceMatcher>> results = 
-                            ResultUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                            SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
                         if (!results.isEmpty()) {
                             return results;
                         }
@@ -561,7 +623,7 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
                     searchPosition += safeShift; 
                 }
             }
-            return ResultUtils.noResults();
+            return SearchUtils.noResults();
         }
 
         
@@ -577,6 +639,12 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
         private WuManberMultiByteSearcher(final MultiSequenceMatcher matcher,
                                           final int blockSize) {
             super(matcher, blockSize);
+            if (matcher.getMinimumLength() < blockSize) {
+                final String message = String.format(
+                        "Minimum sequence length (%d) cannot be smaller than the block size: %d",
+                         matcher.getMinimumLength(), blockSize);
+                throw new IllegalArgumentException(message);
+            }            
         }        
         
         @Override
@@ -629,7 +697,7 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
                         
                         // See if any of the matches are within the bounds of the search:
                         final List<SearchResult<SequenceMatcher>> results = 
-                            ResultUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                            SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
                         if (!results.isEmpty()) {
                             return results;
                         }
@@ -640,7 +708,7 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
                     searchPosition += safeShift; 
                 }
             }
-            return ResultUtils.noResults();
+            return SearchUtils.noResults();
         }
 
         public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
