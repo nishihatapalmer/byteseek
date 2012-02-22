@@ -39,7 +39,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
-import net.domesdaybook.searcher.ResultUtils;
+import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
@@ -87,7 +87,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         // position, as we shift on the byte after the sequence.
         while (searchPosition <= lastPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, sequence);
+                return SearchUtils.singleResult(searchPosition, sequence);
             }
             searchPosition += safeShifts[bytes[searchPosition + length] & 0xFF];
         }
@@ -96,10 +96,10 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         if (searchPosition == finalPosition && 
             toPosition     >= finalPosition &&
             sequence.matches(bytes, finalPosition)) {
-            return ResultUtils.singleResult(finalPosition, sequence);
+            return SearchUtils.singleResult(finalPosition, sequence);
         }
 
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }        
     
     
@@ -129,7 +129,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition + length);
             final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = toPosition - window.getWindowPosition();
+            final long distanceToEnd = toPosition - window.getWindowPosition() + length ;
             final int finalPosition = distanceToEnd < arrayEndPosition?
                                 (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;
@@ -139,7 +139,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // after it.
             while (arraySearchPosition < finalPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return ResultUtils.singleResult(searchPosition, sequence);
+                    return SearchUtils.singleResult(searchPosition, sequence);
                 }
                 final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 searchPosition += shift;
@@ -147,15 +147,18 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             }
 
             // Check final position if necessary:
-            if (arraySearchPosition == finalPosition &&
-                toPosition          >= searchPosition &&
-                sequence.matches(reader, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, sequence);
+            if (arraySearchPosition == finalPosition) {
+                if (sequence.matches(reader, searchPosition)) {
+                    return SearchUtils.singleResult(searchPosition, sequence);
+                }
+                if (searchPosition >= toPosition) {
+                    return SearchUtils.noResults();
+                }
             }
             
             // If the search position is now past the last search position, we're finished:
             if (searchPosition > toPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Otherwise, get the next window.  The search position plus the 
@@ -163,7 +166,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             window = reader.getWindow(searchPosition + length);
         }
 
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
     
 
@@ -189,7 +192,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         // immediately before the current search position.
         while (searchPosition >= lastLoopPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, sequence);
+                return SearchUtils.singleResult(searchPosition, sequence);
             }
             searchPosition -= safeShifts[bytes[searchPosition - 1] & 0xFF];             
         }
@@ -198,10 +201,10 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         if (searchPosition == 0 &&
             toPosition < 1 &&
             sequence.matches(bytes, 0)) {
-            return ResultUtils.singleResult(0, sequence);
+            return SearchUtils.singleResult(0, sequence);
         }
 
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
     
     
@@ -239,7 +242,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // before it.
             while (arraySearchPosition > finalPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return ResultUtils.singleResult(searchPosition, sequence);
+                    return SearchUtils.singleResult(searchPosition, sequence);
                 }
                 final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 searchPosition -= shift;
@@ -247,15 +250,18 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             }
 
             // Check final position if necessary:
-            if (arraySearchPosition == finalPosition &&
-                toPosition          <= searchPosition &&
-                sequence.matches(reader, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, sequence);
+            if (arraySearchPosition == finalPosition) {
+                if (sequence.matches(reader, searchPosition)) {
+                    return SearchUtils.singleResult(searchPosition, sequence);
+                }
+                if (searchPosition <= toPosition) {
+                    return SearchUtils.noResults();
+                }
             }
             
             // If the search position is now past the last search position, we're finished:
             if (searchPosition < toPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Otherwise, get the next window.  The search position minus one 
@@ -263,7 +269,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             window = reader.getWindow(searchPosition - 1);
         }
         
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
 
@@ -283,8 +289,8 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     public void prepareBackwards() {
         backwardInfo.get();
     }
-
-  
+    
+    
     private class ForwardSearchInfo extends LazyObject<int[]> {
 
         public ForwardSearchInfo() {
@@ -346,7 +352,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // the sequence itself.  The shift is the distance of each character
             // from the start of the sequence, where the first position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
-            for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex++) {
+            for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex--) {
                 final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromStart = sequenceByteIndex + 1;
