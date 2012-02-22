@@ -70,6 +70,18 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     /**
      * 
      * @param searcher
+     * @param reader
+     * @throws IOException
+     */
+    public ForwardSearchIterator(final Searcher<T> searcher, final Reader reader,
+                                 final long fromPosition) throws IOException {
+        this(searcher, fromPosition, Long.MAX_VALUE, reader);
+    }
+        
+    
+    /**
+     * 
+     * @param searcher
      * @param fromPosition
      * @param toPosition
      * @param reader
@@ -95,6 +107,12 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
      */
     public ForwardSearchIterator(final Searcher<T> searcher, final byte[] bytes) {
         this(searcher, 0, bytes.length - 1, bytes);
+    }
+    
+
+    public ForwardSearchIterator(final Searcher<T> searcher, final byte[] bytes,
+                                 final long fromPosition) {
+        this(searcher, fromPosition, bytes.length - 1, bytes);
     }
     
     
@@ -146,6 +164,17 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     @Override
     public void remove() {
         throw new UnsupportedOperationException("Cannot remove search results.");
+    }
+    
+    
+    public long getSearchPosition() {
+        return searchPosition;
+    }
+    
+    
+    public void setSearchPosition(final long searchPosition) {
+        this.searchPosition = searchPosition;
+        searchedForNext = false;
     }
     
 

@@ -66,6 +66,13 @@ public class BackwardSearchIterator<T> implements Iterator<List<SearchResult<T>>
         this(searcher, reader.length() - 1, 0, reader);
     }
     
+   
+    
+    public BackwardSearchIterator(final Searcher<T> searcher, final Reader reader,
+                                  final long fromPosition) throws IOException {
+        this(searcher, fromPosition, 0, reader);
+    }
+    
     
     /**
      * 
@@ -98,6 +105,13 @@ public class BackwardSearchIterator<T> implements Iterator<List<SearchResult<T>>
     }
     
     
+    
+    public BackwardSearchIterator(final Searcher<T> searcher, final byte[] bytes,
+                                  final int fromPosition) {
+        this(searcher, fromPosition, 0, bytes);
+    }
+    
+    
     /**
      * 
      * @param searcher
@@ -105,8 +119,8 @@ public class BackwardSearchIterator<T> implements Iterator<List<SearchResult<T>>
      * @param toPosition
      * @param bytes
      */
-    public BackwardSearchIterator(final Searcher<T> searcher, final long fromPosition, 
-                                 final long toPosition, final byte[] bytes) {
+    public BackwardSearchIterator(final Searcher<T> searcher, final int fromPosition, 
+                                 final int toPosition, final byte[] bytes) {
         if (searcher == null || bytes == null) {
             throw new IllegalArgumentException("Null searcher or byte array.");
         }
@@ -146,6 +160,17 @@ public class BackwardSearchIterator<T> implements Iterator<List<SearchResult<T>>
     @Override
     public void remove() {
         throw new UnsupportedOperationException("Cannot remove search results.");
+    }
+    
+    
+    public long getSearchPosition() {
+        return searchPosition;
+    }
+    
+    
+    public void setSearchPosition(final long searchPosition) {
+        this.searchPosition = searchPosition;
+        searchedForNext = false;
     }
     
     
