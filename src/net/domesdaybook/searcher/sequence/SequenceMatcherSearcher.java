@@ -35,7 +35,7 @@ import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
-import net.domesdaybook.searcher.ResultUtils;
+import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
@@ -88,11 +88,11 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
         // Search forwards
         while (searchPosition <= lastPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, sequence);
+                return SearchUtils.singleResult(searchPosition, sequence);
             }
             searchPosition++;
         }
-        return ResultUtils.noResults();    
+        return SearchUtils.noResults();    
     }    
     
     
@@ -120,21 +120,21 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
             // Search forwards up to the end of this window:
             while (searchPosition <= lastPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return ResultUtils.singleResult(searchPosition, sequence);
+                    return SearchUtils.singleResult(searchPosition, sequence);
                 }
                 searchPosition++;
             }
             
             // Did we pass the end of the search space?
             if (toPosition <= endWindowPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Get the next window to search across.
             // The search position is guaranteed to be in the next window now.
             window = reader.getWindow(searchPosition);
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
     
    
@@ -156,11 +156,11 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
         // Search backwards:
         while (searchPosition >= lastPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return  ResultUtils.singleResult(searchPosition, sequence);
+                return  SearchUtils.singleResult(searchPosition, sequence);
             }
             searchPosition--;
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
     
     
@@ -186,21 +186,21 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
             // Search backwards:
             while (searchPosition >= lastSearchPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return ResultUtils.singleResult(searchPosition, sequence);
+                    return SearchUtils.singleResult(searchPosition, sequence);
                 }
                 searchPosition--;
             }
             
             // Did we pass the last search position?
             if (toPosition >= windowStartPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Get the next window to search in.
             // The search position is guaranteed to be in the next window now.
             window = reader.getWindow(searchPosition);
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
    
@@ -220,5 +220,5 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
     public void prepareBackwards() {
         // no preparation necessary.
     }
-
+    
 }
