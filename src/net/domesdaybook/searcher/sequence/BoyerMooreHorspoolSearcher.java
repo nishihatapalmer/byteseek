@@ -40,7 +40,7 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.Window;
-import net.domesdaybook.searcher.ResultUtils;
+import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 
@@ -56,22 +56,19 @@ import net.domesdaybook.searcher.SearchResult;
  * Given a byte in the bytes being searched, the shift tells us how many 
  * bytes we can safely shift ahead without missing a possible match.  
  * <p>
- * It proceeds by searching for the search pattern backwards,
- * from the last position in the pattern to the first.  The safe shift is looked 
- * up in the table using the value of the byte in the search text at the current
- * position.  If the shift is greater than zero, we know that we can move the
- * current position along by that amount.  If the shift is zero, this means it
- * is not safe to shift, and we must validate that the pattern actually occurs 
- * at this position.  A zero shift just means that the last position of the
- * pattern matches the search text at that point - so it is possible (but not
- * by any means certain) that the rest of the pattern matches.
+ * It proceeds by looking for a match of a byte in the text with the last position
+ * in the pattern (or the first, if searching backwards).  If there is no match, 
+ * then a safe shift is found by looking up the byte in the safe shift table.
+ * If there is a match to the last character, then the rest of the sequence
+ * is verified.  If this does not match, then again we shift by the safe shift
+ * for the byte at the end of the pattern.
  * <p>
  * A simple example is looking for the bytes 'XYZ' in the sequence 'ABCDEFGXYZ'.
- * The first attempt is to match 'Z', and we find the byte 'C'.  Since 'C' does
- * not appear anywhere in 'XYZ', we can safely shift 3 bytes ahead and not risk
- * missing a possible match.  In general, the safe shift is either the length of
- * the pattern, if that byte does not appear in the pattern, or the shortest 
- * distance from the end of the pattern where that byte appears.
+ * The first attempt is to match 'Z', and we find the byte 'C'.  
+ * Since 'C' does  not appear anywhere in 'XYZ', we can safely shift 3 bytes ahead
+ * and not risk missing a possible match.  In general, the safe shift is either 
+ * the length of the pattern, if that byte does not appear in the pattern, 
+ * or the shortest distance from the end of the pattern where that byte appears.
  * <p>
  * One initially counter-intuitive consequence of this type of search is that
  * the longer the pattern you are searching for, the better the performance
@@ -116,8 +113,9 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
-        final int finalPosition = toPosition < lastPossiblePosition?
-                                  toPosition : lastPossiblePosition;
+        final int lastPossibleSearchPosition = toPosition + lastMatcherPosition;
+        final int finalPosition = lastPossibleSearchPosition < lastPossiblePosition?
+                                  lastPossibleSearchPosition : lastPossiblePosition;
         
         // Search forwards:
         while (searchPosition <= finalPosition) {
@@ -128,7 +126,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             while (!endOfSequence.matches(currentByte)) {
                 searchPosition += safeShifts[currentByte & 0xff];
                 if (searchPosition > finalPosition) {
-                    return ResultUtils.noResults();
+                    return SearchUtils.noResults();
                 }
                 currentByte = bytes[searchPosition];                
             }
@@ -136,14 +134,14 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             // The last byte matched - verify there is a complete match:
             final int startMatchPosition = searchPosition - lastMatcherPosition;
             if (verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
-                return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
+                return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
             }
             
             // No match was found - shift forward by the shift for the current byte:
             searchPosition += safeShifts[currentByte & 0xff];
         }
         
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }    
         
     
@@ -173,7 +171,8 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = toPosition - window.getWindowPosition();     
+            final int lastMatcherPosition = matcher.length() - 1;
+            final long distanceToEnd = toPosition - window.getWindowPosition() + lastMatcherPosition;     
             final int lastSearchPosition = distanceToEnd < arrayEndPosition?
                                      (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;            
@@ -195,7 +194,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 // The last byte matched - verify there is a complete match:
                 final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                 if (verifier.matches(reader, startMatchPosition)) {
-                    return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
+                    return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
                 }
                 
                 // No match was found - shift forward by the shift for the current byte:
@@ -207,7 +206,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             
             // If the search position is now past the last search position, we're finished:
             if (searchPosition > toPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Otherwise, get the next window.  The search position is 
@@ -215,7 +214,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             window = reader.getWindow(searchPosition);
         }
 
-        return ResultUtils.noResults();        
+        return SearchUtils.noResults();        
     }
 
     
@@ -249,20 +248,20 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             while (!startOfSequence.matches(currentByte)) {
                 searchPosition -= safeShifts[currentByte & 0xFF];
                 if (searchPosition < lastPosition) {
-                    return ResultUtils.noResults();
+                    return SearchUtils.noResults();
                 }
             }
             
             // The first byte matched - verify there is a complete match.
             if (verifier.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, matcher); // match found.
+                return SearchUtils.singleResult(searchPosition, matcher); // match found.
             }
 
             // No match was found - shift backward by the shift for the current byte:
             searchPosition -= safeShifts[currentByte & 0xff];            
         }
         
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
     
@@ -311,7 +310,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 // The first byte matched - verify there is a complete match.
                 final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
                 if (verifier.matches(reader, startMatchPosition)) {
-                    return ResultUtils.singleResult(startMatchPosition, matcher); // match found.
+                    return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
                 }
                 
                 // No match was found - shift backward by the shift for the current byte:
@@ -323,7 +322,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             
             // If the search position is now past the last search position, we're finished:
             if (searchPosition < toPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }            
             
             // Otherwise, get the next window.  The search position is 
@@ -331,7 +330,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             window = reader.getWindow(searchPosition);
         }
 
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
     
