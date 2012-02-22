@@ -38,7 +38,7 @@ import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
-import net.domesdaybook.searcher.ResultUtils;
+import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
@@ -74,21 +74,21 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             while (searchPosition <= lastPosition) {
                 final Collection<SequenceMatcher> matches = sequences.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
-                    return ResultUtils.resultsAtPosition(searchPosition, matches);
+                    return SearchUtils.resultsAtPosition(searchPosition, matches);
                 }
                 searchPosition++;
             }
             
             // Did we pass the end of the search space?
             if (toPosition <= endWindowPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Get the next window to search across.
             // The search position is guaranteed to be in the next window now.
             window = reader.getWindow(searchPosition);
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
 
@@ -110,11 +110,11 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         while (searchPosition <= lastPosition) {
             final Collection<SequenceMatcher> matches = sequences.allMatches(bytes, searchPosition);
             if (!matches.isEmpty()) {
-                return ResultUtils.resultsAtPosition(searchPosition, matches);
+                return SearchUtils.resultsAtPosition(searchPosition, matches);
             }
             searchPosition++;
         }
-        return ResultUtils.noResults();           
+        return SearchUtils.noResults();           
     }
 
 
@@ -139,21 +139,21 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
                 final Collection<SequenceMatcher> matches = 
                         sequences.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
-                    return ResultUtils.resultsAtPosition(searchPosition, matches);
+                    return SearchUtils.resultsAtPosition(searchPosition, matches);
                 }
                 searchPosition--;
             }
             
             // Did we pass the last search position?
             if (toPosition >= windowStartPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Get the next window to search in.
             // The search position is guaranteed to be in the next window now.
             window = reader.getWindow(searchPosition);
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
 
@@ -176,11 +176,11 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             final Collection<SequenceMatcher> matches = 
                         sequences.allMatches(bytes, searchPosition);            
             if (!matches.isEmpty()) {
-                return ResultUtils.resultsAtPosition(searchPosition, matches);
+                return SearchUtils.resultsAtPosition(searchPosition, matches);
             }
             searchPosition--;
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
     
