@@ -38,7 +38,7 @@ import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
-import net.domesdaybook.searcher.ResultUtils;
+import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 
@@ -78,7 +78,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * 
      * @param matcher The Matcher to search for.
      */
-    MatcherSearcher(final Matcher matcher) {
+    public MatcherSearcher(final Matcher matcher) {
         if (matcher == null) {
             throw new IllegalArgumentException("Null matcher passed in to MatcherSearcher.");
         }
@@ -127,7 +127,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Search forwards in the window:
             while (searchPosition <= searchEndPosition) {
                 if (theMatcher.matches(reader, searchPosition)) {
-                    return ResultUtils.singleResult(searchPosition, theMatcher);
+                    return SearchUtils.singleResult(searchPosition, theMatcher);
                 }
                 searchPosition++;
             }
@@ -135,14 +135,14 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Did we finish the search?  If the final "to" position is within 
             // the current window and we didn't find anything, then we are finished.
             if (toPosition <= windowEndPosition) { 
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Otherwise, get the next window.
             // The currentPosition is guaranteed to be in the next window by now.
             window = reader.getWindow(searchPosition);
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
     
     
@@ -165,11 +165,11 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         // Search forwards:
         while (searchPosition <= searchEndPosition) {
             if (theMatcher.matches(bytes, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, theMatcher);
+                return SearchUtils.singleResult(searchPosition, theMatcher);
             }
             searchPosition++;
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
   
    
@@ -200,7 +200,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Search backwards in this window:
             while (searchPosition >= windowEndSearchPosition) {
                 if (theMatcher.matches(reader, searchPosition)) {
-                    return ResultUtils.singleResult(searchPosition, theMatcher);
+                    return SearchUtils.singleResult(searchPosition, theMatcher);
                 }
                 searchPosition--;
             }
@@ -208,14 +208,14 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             // Did we finish the search?  If the final "to" position is within 
             // the current window and we didn't find anything, then we are finished.
             if (endSearchPosition >= windowStartPosition) {
-                return ResultUtils.noResults();
+                return SearchUtils.noResults();
             }
             
             // Otherwise, get the next window.
             // The currentPosition is guaranteed to be in the next window by now.            
             window = reader.getWindow(searchPosition);
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
     
@@ -238,11 +238,11 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         // Search backwards:
         while (searchPosition >= searchEndPosition) {
             if (theMatcher.matches(bytes, searchPosition)) {
-                return ResultUtils.singleResult(searchPosition, theMatcher);
+                return SearchUtils.singleResult(searchPosition, theMatcher);
             }
             searchPosition--;
         }
-        return ResultUtils.noResults();
+        return SearchUtils.noResults();
     }
 
     
@@ -262,6 +262,19 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
     public void prepareBackwards() {
         // no preparation necessary.
     }
+    
+    
+    /**
+     * Returns a string representation of this searcher.
+     * The precise format returned is subject to change, but in general it will
+     * return the type of searcher and the sequence being searched for.
+     * 
+     * @return String a representation of the searcher.
+     */
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '(' + matcher + ')';
+    }        
 
     
 }
