@@ -41,28 +41,30 @@ public final class SearcherProfiler {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public Map<Searcher, ProfileResults> profile(final Collection<Searcher> searchers) throws FileNotFoundException, IOException {
+    public Map<Searcher, ProfileResults> profile(final Collection<Searcher> searchers,
+                                                 final int numberOfSearches) throws FileNotFoundException, IOException {
         final Map<Searcher, ProfileResults> searcherResults 
                 = new IdentityHashMap<Searcher, ProfileResults>();
   
         for (final Searcher searcher : searchers) {
-            searcherResults.put(searcher, getProfileResults(searcher));
+            searcherResults.put(searcher, getProfileResults(searcher, numberOfSearches));
         }
         
         return searcherResults;
     }
     
     
-    private ProfileResults getProfileResults(final Searcher searcher) throws FileNotFoundException, IOException {
+    private ProfileResults getProfileResults(final Searcher searcher,
+                                             final int numberOfSearches) throws FileNotFoundException, IOException {
         final ProfileResults results = new ProfileResults();
         
         //System.out.println("Profiling " + searcher + " over ASCII file.");
         FileReader reader = new FileReader(getFile("/TestASCII.txt"));
-        results.profile("ASCII file", reader, searcher);
+        results.profile("ASCII file", reader, searcher, numberOfSearches);
 
         //System.out.println("Profiling " + searcher + " over ZIP file.");
         reader = new FileReader(getFile("/TestASCII.zip"));
-        results.profile("ZIP file", reader, searcher);        
+        results.profile("ZIP file", reader, searcher, numberOfSearches);        
         
         return results;
     }  
@@ -91,9 +93,9 @@ public final class SearcherProfiler {
         }
 
 
-        private void profile(String description, Reader reader, Searcher searcher) throws IOException {
+        private void profile(String description, Reader reader, Searcher searcher, int numberOfSearches) throws IOException {
             startProfiling(description);
-            currentProfile.profile(searcher, reader);
+            currentProfile.profile(searcher, reader, numberOfSearches);
             logProfileResults();
         }
         
@@ -115,10 +117,6 @@ public final class SearcherProfiler {
      * 
      */
     public static class ProfileResult {
-        /**
-         * 
-         */
-        public static final int NO_OF_SEARCHES = 100;
         
         /**
          * 
@@ -149,7 +147,7 @@ public final class SearcherProfiler {
          * @param searcher
          * @param bytes
          */
-        public void profile(Searcher searcher, byte[] bytes) {
+        public void profile(Searcher searcher, byte[] bytes, int numberOfSearches) {
             
             // Profile forwards statistics:
             
@@ -161,10 +159,10 @@ public final class SearcherProfiler {
             // time repeated forward searches:
             List<SearchResult> positions = Collections.emptyList();
             startNano = System.nanoTime();
-            for (int repeat = 0; repeat < NO_OF_SEARCHES; repeat++) {
+            for (int repeat = 0; repeat < numberOfSearches; repeat++) {
                 positions = searchEntireArrayForwards(searcher, bytes);
             }
-            forwardBytesStats.searchTime = (long)((System.nanoTime() - startNano) / NO_OF_SEARCHES);
+            forwardBytesStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
             
             
             // Record forward matching positions;
@@ -180,10 +178,10 @@ public final class SearcherProfiler {
             // time repeated forward searches:
             positions = Collections.emptyList();
             startNano = System.nanoTime();
-            for (int repeat = 0; repeat < NO_OF_SEARCHES; repeat++) {
+            for (int repeat = 0; repeat < numberOfSearches; repeat++) {
                 positions = searchEntireArrayBackwards(searcher, bytes);
             }
-            backwardBytesStats.searchTime = (long)((System.nanoTime() - startNano) / NO_OF_SEARCHES);
+            backwardBytesStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
             
             
             // Record backward matching positions;
@@ -197,7 +195,7 @@ public final class SearcherProfiler {
          * @param reader
          * @throws IOException
          */
-        public void profile(Searcher searcher, Reader reader) throws IOException {
+        public void profile(Searcher searcher, Reader reader, int numberOfSearches) throws IOException {
             
             // log forward preparation time.
             long startNano = System.nanoTime();
@@ -207,10 +205,10 @@ public final class SearcherProfiler {
             // time repeated forward searches:
             List<SearchResult> positions = Collections.emptyList();
             startNano = System.nanoTime();
-            for (int repeat = 0; repeat < NO_OF_SEARCHES; repeat++) {
+            for (int repeat = 0; repeat < numberOfSearches; repeat++) {
                 positions = searchEntireReaderForwards(searcher, reader);
             }
-            forwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / NO_OF_SEARCHES);
+            forwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
             
             // Record forward matching positions;
             forwardReaderStats.searchMatches = positions;
@@ -223,17 +221,17 @@ public final class SearcherProfiler {
             // time repeated forward searches:
             positions = Collections.emptyList();
             startNano = System.nanoTime();
-            for (int repeat = 0; repeat < NO_OF_SEARCHES; repeat++) {
+            for (int repeat = 0; repeat < numberOfSearches; repeat++) {
                 //FIXME: bug in backwards sequence searching - commenting out test for now.
                 // positions = searchEntireReaderBackwards(searcher, reader);
             }
-            backwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / NO_OF_SEARCHES);
+            backwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
             
             // Record backward matching positions;
             backwardReaderStats.searchMatches = positions; 
             
             byte[] bytes = reader.getWindow(0).getArray();
-            profile(searcher, bytes);
+            profile(searcher, bytes, numberOfSearches);
       }
 
         
