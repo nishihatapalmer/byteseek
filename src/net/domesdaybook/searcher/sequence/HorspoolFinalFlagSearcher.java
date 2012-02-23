@@ -216,7 +216,7 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
                     }
                     shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 }
-
+                 
                 // The last byte matched - verify there is a complete match:
                 final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                 if (verifier.matches(reader, startMatchPosition)) {
