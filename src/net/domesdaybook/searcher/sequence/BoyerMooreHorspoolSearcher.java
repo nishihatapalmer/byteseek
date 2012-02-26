@@ -250,10 +250,11 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 if (searchPosition < lastPosition) {
                     return SearchUtils.noResults();
                 }
+                currentByte = bytes[searchPosition];
             }
             
             // The first byte matched - verify there is a complete match.
-            if (verifier.matchesNoBoundsCheck(bytes, searchPosition)) {
+            if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
                 return SearchUtils.singleResult(searchPosition, matcher); // match found.
             }
 
@@ -277,6 +278,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         final int[] safeShifts = info.shifts;
         final ByteMatcher startOfSequence = info.matcher;
         final SequenceMatcher verifier = info.verifier;        
+        final int sequenceLength = matcher.length();
         
         // Initialise window search:
         long searchPosition = fromPosition;
@@ -305,12 +307,14 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                     if (arraySearchPosition < lastSearchPosition) {
                         break ARRAY_SEARCH;
                     }
+                    currentByte = array[arraySearchPosition];
                 }
                 
                 // The first byte matched - verify there is a complete match.
-                final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
-                if (verifier.matches(reader, startMatchPosition)) {
-                    return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
+                final int totalShift = arrayStartPosition - arraySearchPosition;
+                final long sequencePosition = searchPosition - totalShift;
+                if (verifier == null || verifier.matches(reader, sequencePosition + 1)) {
+                    return SearchUtils.singleResult(sequencePosition, matcher); // match found.
                 }
                 
                 // No match was found - shift backward by the shift for the current byte:
@@ -429,9 +433,9 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             // Create the search info object:
             final SearchInfo info = new SearchInfo();
             final int lastPosition = sequenceLength - 1;
-            info.matcher = sequence.getMatcherForPosition(lastPosition);
+            info.matcher = sequence.getMatcherForPosition(0);
             if (lastPosition == 0) {
-                info.verifier = AnyByteMatcher.ANY_BYTE_MATCHER;
+                info.verifier = null;
             } else {
                 info.verifier = sequence.subsequence(1, sequenceLength);
             }

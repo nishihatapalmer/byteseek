@@ -280,7 +280,7 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
             }
             
             // The first byte matched - verify there is a complete match:
-            if (verifier.matchesNoBoundsCheck(bytes, searchPosition)) {
+            if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
                 return SearchUtils.singleResult(searchPosition, matcher); // match found.
             }
 
@@ -336,8 +336,9 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
                 }
                 
                 // The first byte matched - verify there is a complete match:
-                final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
-                if (verifier.matches(reader, startMatchPosition)) {
+                final int totalShift = arrayStartPosition - arraySearchPosition;
+                final long startMatchPosition = searchPosition - totalShift;
+                if (verifier == null || verifier.matches(reader, startMatchPosition + 1)) {
                     return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
                 }
                 
@@ -468,7 +469,7 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
             final SearchInfo info = new SearchInfo();
             final int lastPosition = sequenceLength - 1;
             if (lastPosition == 0) {
-                info.verifier = AnyByteMatcher.ANY_BYTE_MATCHER;
+                info.verifier = null;
             } else {
                 info.verifier = sequence.subsequence(1, sequenceLength);
             }
