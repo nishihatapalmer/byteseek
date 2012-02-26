@@ -47,6 +47,7 @@ public final class SearcherProfiler {
                 = new IdentityHashMap<Searcher, ProfileResults>();
   
         for (final Searcher searcher : searchers) {
+            //System.out.println("Running: " + searcher + " number of times: " + numberOfSearches);
             searcherResults.put(searcher, getProfileResults(searcher, numberOfSearches));
         }
         
@@ -223,7 +224,7 @@ public final class SearcherProfiler {
             startNano = System.nanoTime();
             for (int repeat = 0; repeat < numberOfSearches; repeat++) {
                 //FIXME: bug in backwards sequence searching - commenting out test for now.
-                // positions = searchEntireReaderBackwards(searcher, reader);
+                positions = searchEntireReaderBackwards(searcher, reader);
             }
             backwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
             

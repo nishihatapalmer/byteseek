@@ -99,14 +99,14 @@ public class SearcherPerformanceTests {
         Collection<Searcher> searchers = getSearchers(warmup);
         SearcherProfiler profiler = new SearcherProfiler();
         System.out.println("warming up...");
-        profiler.profile(searchers, 10100);
+        profiler.profile(searchers, 100 / searchers.size());
         System.out.println("finished warming up...");
     }
     
     
     private void profileSearchers(Collection<Searcher> searchers) throws FileNotFoundException, IOException {
         SearcherProfiler profiler = new SearcherProfiler();        
-        Map<Searcher, ProfileResults> results = profiler.profile(searchers, 1000);
+        Map<Searcher, ProfileResults> results = profiler.profile(searchers, 100);
         writeResults(results);              
     }
     
@@ -114,11 +114,11 @@ public class SearcherPerformanceTests {
     // bug in backwards searching for sequencesearcher (probably abstract) - infinite loop.
     private Collection<Searcher> getSearchers(SequenceMatcher sequence) {
         List<Searcher> searchers = new ArrayList<Searcher>();
-//        searchers.add(new MatcherSearcher(sequence));
-//        searchers.add(new SequenceMatcherSearcher(sequence));
-//        searchers.add(new BoyerMooreHorspoolSearcher(sequence));
+        searchers.add(new MatcherSearcher(sequence));
+        searchers.add(new SequenceMatcherSearcher(sequence));
+        searchers.add(new BoyerMooreHorspoolSearcher(sequence));
         searchers.add(new HorspoolFinalFlagSearcher(sequence));
-//        searchers.add(new SundayQuickSearcher(sequence)); 
+        searchers.add(new SundayQuickSearcher(sequence)); 
         return searchers;
     }
     
