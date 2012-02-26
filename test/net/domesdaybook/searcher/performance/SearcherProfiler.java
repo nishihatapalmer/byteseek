@@ -223,7 +223,6 @@ public final class SearcherProfiler {
             positions = Collections.emptyList();
             startNano = System.nanoTime();
             for (int repeat = 0; repeat < numberOfSearches; repeat++) {
-                //FIXME: bug in backwards sequence searching - commenting out test for now.
                 positions = searchEntireReaderBackwards(searcher, reader);
             }
             backwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);

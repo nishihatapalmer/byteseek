@@ -99,7 +99,7 @@ public class SearcherPerformanceTests {
         Collection<Searcher> searchers = getSearchers(warmup);
         SearcherProfiler profiler = new SearcherProfiler();
         System.out.println("warming up...");
-        profiler.profile(searchers, 100 / searchers.size());
+        profiler.profile(searchers, 11000 / searchers.size());
         System.out.println("finished warming up...");
     }
     
