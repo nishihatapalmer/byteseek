@@ -235,8 +235,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
     public List<SearchResult<SequenceMatcher>> searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int sequenceLength = matcher.length();
-        final int lastSequencePosition = sequenceLength - 1;
+        final int lastSequencePosition = matcher.length() - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
         long searchPosition = withinLength(reader, fromPosition);
@@ -244,37 +243,39 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
         // While there is data to search in:
         Window window = reader.getWindow(searchPosition);        
         while (window != null && searchPosition >= finalSearchPosition) {
-            
-            // Does the sequence fit into the searchable bytes of this window?
-            // It may not if the start position of the window is already close
-            // to the end of the window, or the sequence is long (potentially
-            // could be longer than any single window - but mostly won't be):
+            // Get some info about the window:
             final long windowStartPosition = window.getWindowPosition();
-            final int windowLength = window.length();
-            final int arrayStartPosition = reader.getWindowOffset(searchPosition);  
-            final int arrayLastPosition = windowLength - 1;             
-            if (arrayStartPosition + lastSequencePosition <= arrayLastPosition) {
+            final int arrayStartSearchPosition = reader.getWindowOffset(searchPosition);              
+            final int arrayLastPosition = window.length() - 1;                         
+            
+            // Does the sequence fit into the searchable bytes of this window 
+            // from the current search position?  If it does, we can search
+            // directly on the byte array of this window, which is faster:
+            if (arrayStartSearchPosition + lastSequencePosition <= arrayLastPosition) {
 
-                // Find the last place in the array to search in (either zero, or
-                // the final search position, whichever is closer):
-                final long distanceToEnd = finalSearchPosition - windowStartPosition;                
-                final int arrayMinPosition = distanceToEnd > 0?
-                                       (int) distanceToEnd : 0; 
+                // Search either up to the beginning of the array, or the final
+                // search position, if it happens to fall past the start of this window:
+                final long endOfSearchRelativeToWindow = finalSearchPosition - windowStartPosition;                
+                final int arrayEndSearchPosition = endOfSearchRelativeToWindow > 0?
+                                             (int) endOfSearchRelativeToWindow : 0; 
                         
                 // Search backwards in the byte array of the window:
-                final List<SearchResult<SequenceMatcher>> arrayResult = 
-                        searchBackwards(window.getArray(), arrayStartPosition, arrayMinPosition);
+                final List<SearchResult<SequenceMatcher>> arrayResults = 
+                        searchBackwards(window.getArray(), 
+                                        arrayStartSearchPosition, 
+                                        arrayEndSearchPosition);
                 
-                // Did we find a match?
-                if (!arrayResult.isEmpty()) {
-                    final long readerOffset = searchPosition - arrayStartPosition;
-                    return SearchUtils.addPositionToResults(arrayResult, readerOffset);
+                // Did we find any matches?
+                if (!arrayResults.isEmpty()) {
+                    final long readerOffset = searchPosition - arrayStartSearchPosition;
+                    return SearchUtils.addPositionToResults(arrayResults, readerOffset);
                 }
                 
-                // Continue the search one on from where we last looked:
-                searchPosition -= (arrayStartPosition - arrayMinPosition + 1);
+                // Calculate the search position for one behind where we've looked in the array:
+                final int arrayBytesSearched = arrayStartSearchPosition - arrayEndSearchPosition + 1;
+                searchPosition -= arrayBytesSearched;
 
-                // Did we pass the final search position?  In which case, we're finished.
+                // Did we pass the final search position already?
                 if (searchPosition < finalSearchPosition) {
                     return SearchUtils.noResults();
                 }
@@ -285,16 +286,22 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
             // We must use the reader interface on the sequence to let it match
             // over more bytes than this window has available.
             
-            // Search back to the first position in the window where the sequence 
-            // would fit inside it, the window start, or the final search position, 
-            // whichever comes first (maning bigger as we search backwards):
-            final long firstFitPosition = windowStartPosition + arrayLastPosition - lastSequencePosition;
-            final long windowSearchPosition = firstFitPosition > windowStartPosition?
-                                              firstFitPosition : windowStartPosition;
-            final long lastSearchPosition = finalSearchPosition > windowSearchPosition?
-                                            finalSearchPosition : windowSearchPosition;
+            // Search back to the first position in this window where the sequence 
+            // would fit inside it (so we can use the array search on the next
+            // loop around), or the beginning of this window.  Windows may not always
+            // have the same length (in particular, the last window), so just because
+            // the sequence is too big to fit into one window doesn't mean we can
+            // infer it won't fit into subsequent windows.  Therefore, we proceed on
+            // a window by window basis.
+            final long firstPossibleFitPosition =
+                    windowStartPosition + arrayLastPosition - lastSequencePosition;
+            final long firstFitPosition = firstPossibleFitPosition < searchPosition?
+                                          firstPossibleFitPosition : searchPosition;
+            final long searchToPosition = firstFitPosition > windowStartPosition?
+                                          firstFitPosition : windowStartPosition;
+            
             final List<SearchResult<SequenceMatcher>> readerResult =
-                    doSearchBackwards(reader, searchPosition, lastSearchPosition);
+                    doSearchBackwards(reader, searchPosition, searchToPosition);
             
             // Did we find a match?
             if (!readerResult.isEmpty()) {
@@ -302,9 +309,9 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
             }
             
             // Continue the search one on from where we last looked:
-            searchPosition = lastSearchPosition - 1;
+            searchPosition = searchToPosition - 1;
             
-            // Did we pass the final toPosition?  In which case, we're finished.
+            // Did we pass the final position?  In which case, we're finished.
             if (searchPosition < finalSearchPosition) {
                 return SearchUtils.noResults();
             }
