@@ -36,8 +36,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
-import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceUtils;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
