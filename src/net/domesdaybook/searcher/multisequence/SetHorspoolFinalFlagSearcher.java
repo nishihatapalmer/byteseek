@@ -54,7 +54,6 @@ import net.domesdaybook.searcher.SearchResult;
  */
 public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher {
 
-    private final ByteMatcherFactory byteMatcherFactory;
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
     
@@ -63,9 +62,6 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
         super(sequences);
         forwardInfo = new ForwardSearchInfo();
         backwardInfo = new BackwardSearchInfo();
-        
-        //TODO: provide constructors to allow different byte matcher factories.
-        byteMatcherFactory = new SimpleByteMatcherFactory();
     }
     
     
