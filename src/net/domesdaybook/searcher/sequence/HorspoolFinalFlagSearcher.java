@@ -280,6 +280,8 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
             }
             
             // The first byte matched - verify there is a complete match:
+            // A null verifier means we don't need a verifier, as the sequence
+            // is only one byte long - which we have just matched above.
             if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
                 return SearchUtils.singleResult(searchPosition, matcher); // match found.
             }
@@ -336,6 +338,8 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
                 }
                 
                 // The first byte matched - verify there is a complete match:
+                // A null verifier means we don't need a verifier, as the sequence
+                // is only one byte long - which we have just matched above.
                 final int totalShift = arrayStartPosition - arraySearchPosition;
                 final long startMatchPosition = searchPosition - totalShift;
                 if (verifier == null || verifier.matches(reader, startMatchPosition + 1)) {
