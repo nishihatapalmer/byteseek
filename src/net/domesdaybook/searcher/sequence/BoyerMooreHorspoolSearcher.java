@@ -278,7 +278,6 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         final int[] safeShifts = info.shifts;
         final ByteMatcher startOfSequence = info.matcher;
         final SequenceMatcher verifier = info.verifier;        
-        final int sequenceLength = matcher.length();
         
         // Initialise window search:
         long searchPosition = fromPosition;
