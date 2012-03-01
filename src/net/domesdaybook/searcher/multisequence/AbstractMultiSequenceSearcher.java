@@ -336,6 +336,18 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             long searchPosition, long lastSearchPosition) throws IOException;
     
     
+    /**
+     * Returns a string representation of this searcher.  The format is subject
+     * to change, but it will generally return the name of the searcher class,
+     * the matcher class used in the search algorithm, and regular expressions
+     * defining the sequences matched by the searcher.
+     * 
+     * @return A string representing this searcher.
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + matcher + ")";
+    }        
     
 }
 
