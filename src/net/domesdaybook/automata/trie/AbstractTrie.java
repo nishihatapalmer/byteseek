@@ -60,7 +60,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     private int maximumLength = 0;
     
     public AbstractTrie() {
-        this(new BaseStateFactory<T>(), null);
+        this(null, null);
     }
     
     
@@ -70,20 +70,18 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     
     
     public AbstractTrie(final TransitionFactory transitionFactory) {
-        this(new BaseStateFactory(), transitionFactory);
+        this(null, transitionFactory);
     }
     
     
     public AbstractTrie(final StateFactory<T> stateFactory, 
                         final TransitionFactory transitionFactory) {
-        super(stateFactory.create(State.NON_FINAL));
-        this.stateFactory = stateFactory;
-        if (transitionFactory == null) {
-            this.transitionFactory = new ByteMatcherTransitionFactory();
-        } else {
-            this.transitionFactory = transitionFactory;
-        }
+        this.stateFactory = stateFactory != null?
+                            stateFactory : new  BaseStateFactory<T>();
+        this.transitionFactory = transitionFactory != null?
+                                 transitionFactory : new ByteMatcherTransitionFactory();
         this.sequences = new ArrayList<T>();
+        setInitialState(this.stateFactory.create(State.NON_FINAL));
     }
     
     
