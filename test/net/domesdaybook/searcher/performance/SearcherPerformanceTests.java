@@ -30,6 +30,13 @@
  */
 package net.domesdaybook.searcher.performance;
 
+import net.domesdaybook.matcher.multisequence.ListMultiSequenceMatcher;
+import net.domesdaybook.searcher.multisequence.WuManberSearcher;
+import net.domesdaybook.searcher.multisequence.SetHorspoolFinalFlagSearcher;
+import net.domesdaybook.searcher.multisequence.SetHorspoolSearcher;
+import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
+import net.domesdaybook.searcher.multisequence.MultiSequenceMatcherSearcher;
+import net.domesdaybook.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.domesdaybook.searcher.performance.SearcherProfiler.ProfileResult;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -79,28 +86,68 @@ public class SearcherPerformanceTests {
     public void profileSequenceSearchers() throws FileNotFoundException, IOException {
 
         // warm up search classes:
-        warmup();
+        //warmupSequence();
         
         // Test of uncommon matching string in ascii text:
-        SequenceMatcher matcher = new ByteArrayMatcher("Midsommer");
-        Collection<Searcher> searchers = getSearchers(matcher);
-        profileSearchers(searchers);
+        //SequenceMatcher matcher = new ByteArrayMatcher("Midsommer");
+        //Collection<Searcher> searchers = getSequenceSearchers(matcher);
+        //profileSearchers(searchers);
 
         // Test of common short word in ascii text:
-        matcher = new ByteArrayMatcher("and");
-        searchers = getSearchers(matcher);
-        profileSearchers(searchers);
+       // matcher = new ByteArrayMatcher("and");
+        //searchers = getSequenceSearchers(matcher);
+        //profileSearchers(searchers);
     }
     
-    private void warmup() throws IOException {
+    
+    @Test
+    public void profileMultiSequenceSearchers() throws IOException {
+        
+        warmupMultiSequence();
+        
+        SequenceMatcher word1 = new ByteArrayMatcher("Midsommer");
+        SequenceMatcher word2 = new ByteArrayMatcher("and");
+        List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
+        matchers.add(word1);
+        matchers.add(word2);
+        
+        MultiSequenceMatcher matcher = new TrieMultiSequenceMatcher(matchers);
+        //MultiSequenceMatcher matcher = new ListMultiSequenceMatcher(matchers);
+        
+        Collection<Searcher> searchers = getMultiSequenceSearchers(matcher);
+        profileSearchers(searchers);
+        
+        
+    }
+    
+    
+    private void warmupSequence() throws IOException {
         
         // warmup searchers:
         SequenceMatcher warmup = new ByteArrayMatcher("warmup");
-        Collection<Searcher> searchers = getSearchers(warmup);
+        Collection<Searcher> searchers = getSequenceSearchers(warmup);
         SearcherProfiler profiler = new SearcherProfiler();
         System.out.println("warming up...");
         profiler.profile(searchers, 11000 / searchers.size());
         System.out.println("finished warming up...");
+    }
+    
+    private void warmupMultiSequence() throws IOException {
+        SequenceMatcher word1 = new ByteArrayMatcher("Midsommer");
+        SequenceMatcher word2 = new ByteArrayMatcher("and");
+        List<SequenceMatcher> matchers = new ArrayList<SequenceMatcher>();
+        matchers.add(word1);
+        matchers.add(word2);
+        
+        MultiSequenceMatcher matcher = new TrieMultiSequenceMatcher(matchers);
+        //MultiSequenceMatcher matcher = new ListMultiSequenceMatcher(matchers);
+        
+        Collection<Searcher> searchers = getMultiSequenceSearchers(matcher);
+        
+        SearcherProfiler profiler = new SearcherProfiler();
+        System.out.println("warming up...");
+        profiler.profile(searchers, 11000 / searchers.size());
+        System.out.println("finished warming up...");     
     }
     
     
@@ -112,7 +159,7 @@ public class SearcherPerformanceTests {
     
     
     // bug in backwards searching for sequencesearcher (probably abstract) - infinite loop.
-    private Collection<Searcher> getSearchers(SequenceMatcher sequence) {
+    private Collection<Searcher> getSequenceSearchers(SequenceMatcher sequence) {
         List<Searcher> searchers = new ArrayList<Searcher>();
         searchers.add(new MatcherSearcher(sequence));
         searchers.add(new SequenceMatcherSearcher(sequence));
@@ -121,6 +168,18 @@ public class SearcherPerformanceTests {
         searchers.add(new SundayQuickSearcher(sequence)); 
         return searchers;
     }
+    
+    
+    private Collection<Searcher> getMultiSequenceSearchers(MultiSequenceMatcher multisequence) {
+        List<Searcher> searchers = new ArrayList<Searcher>();
+        searchers.add(new MatcherSearcher(multisequence));
+        searchers.add(new MultiSequenceMatcherSearcher(multisequence));
+        searchers.add(new SetHorspoolSearcher(multisequence));
+        searchers.add(new SetHorspoolFinalFlagSearcher(multisequence));
+        searchers.add(new WuManberSearcher(multisequence));
+        return searchers;
+    }
+    
     
     private void writeResults(Map<Searcher, ProfileResults> results) {
         String message = "%s\t%s\tForward reader:\t%d\t%d\tForward bytes:\t%d\t%d\tBack reader:\t%d\t%d\tBack bytes:\t%d\t%d";
