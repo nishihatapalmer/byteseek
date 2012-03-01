@@ -717,5 +717,10 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
         
     }
     
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + realSearcher.toString() + ')';
+    }
+    
 
 }

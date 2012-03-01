@@ -221,13 +221,13 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             
             // Shift backwards until we match the first position in the
             // sequence, or we run out of search space:
-            int shift = safeShifts[bytes[searchPosition]];
+            int shift = safeShifts[bytes[searchPosition] & 0xFF];
             while (shift > 0) {
                 searchPosition -= shift;
                 if (searchPosition < lastPosition) {
                     return SearchUtils.noResults();
                 }
-                shift = safeShifts[bytes[searchPosition]];
+                shift = safeShifts[bytes[searchPosition] & 0xFF];
             }
             
             // The first bytes matched - verify the rest of the sequences:
@@ -278,13 +278,13 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
                 
                 // Shift backwards until we match the first position in the sequence,
                 // or we run out of search space.
-                int shift = safeShifts[array[arraySearchPosition]];
+                int shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 while (shift > 0) {
                     arraySearchPosition -= shift;
                     if (arraySearchPosition < lastSearchPosition) {
                         break ARRAY_SEARCH;
                     }
-                    shift = safeShifts[array[arraySearchPosition]];
+                    shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 }
                 
                 // The first byte matched - verify the rest of the sequences.
@@ -422,18 +422,16 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
 
             // Now set specific shifts for the bytes actually in
             // the sequences.  The shift is the distance of a position
-            // from the start of the sequence as measured from the minimum
-            // length of all the sequences, but we do not create a shift for
+            // from the start of the sequence, but we do not create a shift for
             // the very first position (which would have a distance of zero).
             // We only create shifts of a distance less than the minimum length
             // of all the sequences to be matched (as we cannot have a shift 
             // bigger than that, or we might miss a smaller sequence).
-            for (int sequencePos = 1; sequencePos < minLength; sequencePos++) {
+            for (int distanceFromStart = minLength - 1; distanceFromStart > 0; distanceFromStart--) {
                 final Set<Byte> bytesForPosition =
-                        MultiSequenceUtils.bytesAlignedLeft(sequencePos, sequences);
-                final int distanceFromMinPosition = minLength - sequencePos; 
+                        MultiSequenceUtils.bytesAlignedLeft(distanceFromStart, sequences);
                 for (final byte b : bytesForPosition) {
-                    info.shifts[b & 0xFF] = distanceFromMinPosition;
+                    info.shifts[b & 0xFF] = distanceFromStart;
                 }
             }
             
