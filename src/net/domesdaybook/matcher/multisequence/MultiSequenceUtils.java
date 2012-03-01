@@ -95,8 +95,8 @@ public final class MultiSequenceUtils {
         final Set<Byte> bytes = new HashSet<Byte>();
         if (atPosition >= 0 && atPosition < matcher.getMaximumLength()) {
             for (final SequenceMatcher sequence : matcher.getSequenceMatchers()) {
-                final int sequencePosition = sequence.length() - atPosition;
-                if (sequencePosition > 0) {
+                final int sequencePosition = sequence.length() - atPosition - 1;
+                if (sequencePosition >= 0) {
                     final ByteMatcher lastMatcher = sequence.getMatcherForPosition(sequencePosition);
                     final byte[] bytesForPosition = lastMatcher.getMatchingBytes();
                     ByteUtilities.addAll(bytesForPosition, bytes);
