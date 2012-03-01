@@ -39,8 +39,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
@@ -53,7 +51,12 @@ import net.domesdaybook.object.DeepCopy;
  */
 public class BaseAutomata<T> implements Automata<T>{
 
-    protected final State<T> initialState;
+    protected State<T> initialState;
+    
+    
+    public BaseAutomata() {
+    }
+    
     
     public BaseAutomata(final State<T> initialState) {
         this.initialState = initialState;
@@ -62,6 +65,11 @@ public class BaseAutomata<T> implements Automata<T>{
     
     public State<T> getInitialState() {
         return initialState;
+    }
+    
+    
+    public void setInitialState(final State<T> initialState) {
+        this.initialState = initialState;
     }
 
     
