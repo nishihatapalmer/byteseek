@@ -48,24 +48,6 @@ public class ProxySearcher<T> extends AbstractSearcher<T> {
     }
     
     
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void prepareForwards() {
-        realSearcher.prepareForwards();
-    }
-
-    
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void prepareBackwards() {
-        realSearcher.prepareBackwards();
-    }
-
-    
     @Override
     public List<SearchResult<T>> searchForwards(final Reader reader, 
                                                 final long searchPosition, 
@@ -99,7 +81,25 @@ public class ProxySearcher<T> extends AbstractSearcher<T> {
         return realSearcher.searchBackwards(bytes, fromPosition, toPosition);
     }
     
-        
+       
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareForwards() {
+        realSearcher.prepareForwards();
+    }
+
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void prepareBackwards() {
+        realSearcher.prepareBackwards();
+    }
+    
+    
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + realSearcher.toString() + ')';
