@@ -44,6 +44,7 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.object.LazyObject;
 import net.domesdaybook.searcher.AbstractSearcher;
+import net.domesdaybook.searcher.ProxySearcher;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.Searcher;
@@ -98,29 +99,9 @@ import net.domesdaybook.searcher.Searcher;
  * @author Matt Palmer
  */
 
-public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
+public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
    
-    /*
-     * IDEAS:
-     * 
-     * instead of having zero in the shift table, build the shifts as normal
-     * but instead of setting a zero, or the existing value with 2^31, 
-     * setting the high bit to indicate that these byte values could match at an end, 
-     * and making the overall value negative.  Keep building the shifts (ensuring 
-     * we are always comparing the the minimum of the anded value.  
-     * 
-     * The idea is that we can detect the need for a match (high bit is 0x80000000,
-     * or alternatively that the value is less than zero).
-     * If there is no match at that position, we can use the anded value as the
-     * next shift, instead of just shifting one on.  The positive anded value may
-     * still be bigger than one (the next closest distance to the end for that value).
-     * 
-     * We could use the same technique in Boyer Moore Horspool to avoid the need
-     * for a dedicated ByteMatcher for the end of sequence matching.  Just verify
-     * when the shift is negative, otherwise keep going.  If verification fails,
-     * shift by the anded version of the shift (to get the next closest shift value).
-     */
-    
+
     public static int getBlockSize(final MultiSequenceMatcher matcher) {
         return getBlockSize(matcher, 256);
     }
@@ -163,10 +144,17 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
     
     private static double logOfBase(final int base, final int number) {
         return Math.log(number) / Math.log(base);
-    }       
+    }    
     
-
-    private final Searcher<SequenceMatcher> realSearcher;
+    
+    private static Searcher<SequenceMatcher> createSearchInstance(
+            final MultiSequenceMatcher matcher, final int blockSize) {
+        switch (blockSize) {
+            case 1:  return new OneByteBlockSearcher(matcher);
+            case 2:  return new TwoByteBlockSearcher(matcher);
+            default: return new ManyByteBlockSearcher(matcher, blockSize);
+        }
+    }    
     
     
     /**
@@ -184,81 +172,43 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
      * @param blockSize 
      */
     public WuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
-        realSearcher = createSearchInstance(matcher, blockSize);
+        super(createSearchInstance(matcher, blockSize));
     }
     
     
-    private Searcher<SequenceMatcher> createSearchInstance(
-            final MultiSequenceMatcher matcher, final int blockSize) {
-        switch (blockSize) {
-            case 1:  return new WuManberOneByteSearcher(matcher);
-            case 2:  return new WuManberTwoByteSearcher(matcher);
-            default: return new WuManberMultiByteSearcher(matcher, blockSize);
+    public static final class SearchInfo {
+        public int[] shifts;
+        public MultiSequenceMatcher matcher;
+        
+        public SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
+            this.shifts = shifts;
+            this.matcher = matcher;
         }
-    }
-    
-    
-   /**
-     * @inheritDoc
-     */
-    @Override
-    public void prepareForwards() {
-        realSearcher.prepareForwards();
-    }
-
-    
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void prepareBackwards() {
-        realSearcher.prepareBackwards();
-    }
-
-    
-    @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
-        return realSearcher.searchForwards(reader, searchPosition, lastSearchPosition);
-    }
-    
-
-    @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
-        return realSearcher.searchBackwards(reader, searchPosition, lastSearchPosition);
-    }
-    
-
-    @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(byte[] bytes, int fromPosition, int toPosition) {
-        return realSearcher.searchForwards(bytes, fromPosition, toPosition);
-    }
-    
-
-    @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
-        return realSearcher.searchBackwards(bytes, fromPosition, toPosition);
     }
     
     
     /**
      * 
      */
-    public static abstract class WuManberBase extends AbstractMultiSequenceSearcher {
+    public static abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSearcher {
         
         protected final int blockSize;
         protected final LazyObject<SearchInfo> forwardInfo;
         protected final LazyObject<SearchInfo> backwardInfo;
         
-        public WuManberBase(final MultiSequenceMatcher matcher, final int blockSize) {
+        
+        public AbstractWuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
             super(matcher);
             this.blockSize = blockSize;
             forwardInfo = new ForwardSearchInfo();
             backwardInfo = new BackwardSearchInfo();
         }
 
+        
         public void prepareForwards() {
             forwardInfo.get();
         }
+        
         
         public void prepareBackwards() {
             backwardInfo.get();
@@ -431,20 +381,9 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
     }
     
     
-    public static final class SearchInfo {
-        public int[] shifts;
-        public MultiSequenceMatcher matcher;
-        
-        public SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
-            this.shifts = shifts;
-            this.matcher = matcher;
-        }
-    }
-    
-    
-    public static final class WuManberOneByteSearcher extends WuManberBase {
+    public static final class OneByteBlockSearcher extends AbstractWuManberSearcher {
 
-        private WuManberOneByteSearcher(final MultiSequenceMatcher matcher) {
+        private OneByteBlockSearcher(final MultiSequenceMatcher matcher) {
             super(matcher, 1);
         }
         
@@ -554,9 +493,9 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
     }
     
     
-    public static final class WuManberTwoByteSearcher extends WuManberBase {
+    public static final class TwoByteBlockSearcher extends AbstractWuManberSearcher {
 
-        private WuManberTwoByteSearcher(final MultiSequenceMatcher matcher) {
+        private TwoByteBlockSearcher(final MultiSequenceMatcher matcher) {
             super(matcher, 2);
             if (matcher.getMinimumLength() < 2) {
                 throw new IllegalArgumentException("A minimum sequence length of at least two is required.");
@@ -634,9 +573,9 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
     }
     
     
-    public static final class WuManberMultiByteSearcher extends WuManberBase {
+    public static final class ManyByteBlockSearcher extends AbstractWuManberSearcher {
 
-        private WuManberMultiByteSearcher(final MultiSequenceMatcher matcher,
+        private ManyByteBlockSearcher(final MultiSequenceMatcher matcher,
                                           final int blockSize) {
             super(matcher, blockSize);
             if (matcher.getMinimumLength() < blockSize) {
@@ -716,11 +655,7 @@ public class WuManberSearcher extends AbstractSearcher<SequenceMatcher> {
         }
         
     }
-    
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + '(' + realSearcher.toString() + ')';
-    }
+
     
 
 }
