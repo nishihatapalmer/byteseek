@@ -452,5 +452,19 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     public List<SequenceMatcher> getSequenceMatchers() {
         return new ArrayList<SequenceMatcher>(matchers);
     }
+    
+    
+    /**
+     * Returns a string representation of this matcher.  The format is subject
+     * to change, but it will generally return the name of the matching class
+     * and regular expressions defining the sequences matched by the matcher.
+     * 
+     * @return A string representing this matcher.
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + matchers + ")";
+    }    
+        
 
 }

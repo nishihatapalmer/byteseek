@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -401,6 +401,19 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     public List<SequenceMatcher> getSequenceMatchers() {
         return new ArrayList<SequenceMatcher>(trie.getSequences());
     }
+    
+    
+    /**
+     * Returns a string representation of this matcher.  The format is subject
+     * to change, but it will generally return the name of the matching class
+     * and regular expressions defining the sequences matched by the matcher.
+     * 
+     * @return A string representing this matcher.
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + trie.getSequences() + ")";
+    }    
     
     
     private SequenceMatcher getFirstAssociation(final State<SequenceMatcher> state) {
