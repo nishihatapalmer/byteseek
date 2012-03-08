@@ -43,7 +43,6 @@ import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.object.LazyObject;
-import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.ProxySearcher;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
@@ -62,30 +61,20 @@ import net.domesdaybook.searcher.Searcher;
  * most cases - thus avoiding reading most of the bytes.  However, if shifts
  * are calculated for a large number of patterns (e.g. 1000 patterns), the
  * chances are that most shifts will tend towards one, losing the advantage
- * of this sort of searching. 
- * </p>The Wu Manber search gets around this limitation by matching on more than
+ * of this sort of searching - and probably slower than just naively searching
+ * one byte at a time, due to the additional overhead of finding the shifts.
+ * </p>
+ * The Wu Manber search gets around this limitation by matching on more than
  * one byte at a time.  It looks at blocks of bytes (effectively extending the 
  * available alphabet), and calculates a hash code for them.  It uses this hash
- * code to look up a safe shift in a limited size table.  E.g. for a two bytes block,
- * the table isn't 65536 in size (a direct 16 bit look up ) - we could have a 
- * smaller table, with some collisions.  The smaller the table, the greater the
- * number of collisions, and the worse performance the algorithm will probably have.
- * However, we can tune the table size to fit our requirements - the table does
- * not have to be as big as the possible permutations of a block, and we will
- * still get good performance.
- * <p/>
- * This version of the Wu Manber algorithm is simplified from the original 
- * description.  In the original, there is a hash table to give the safe shifts
- * which we also have.  However, there were additional tables also defined to
- * define for a given possible match, which of the patterns needed to be validated.
- * This is clearly an optimisation by Wu and Manber - you only need to validate a 
- * small subset of the patterns being matched at any one time.  However, it is the
- * default of this searcher to use a backwards Trie structure to validate the patterns.
- * This structure is a deterministic finite state automata, and it takes no more
- * time to validate all the patterns than it does to validate one of them.  Hence,
- * since our validator can validate all patterns in constant time, we do not need
- * the additional complexity of sub-pattern lookup tables.
- * </p>
+ * code to look up a safe shift in a limited size table.  For example, for a two-byte ,
+ * block the table doesn't have to be 65536 in size (a direct 16 bit look up ) -
+ * we could have a smaller table, with some collisions.  The smaller the table, 
+ * the greater the number of collisions, and the worse performance the algorithm 
+ * will probably have.  However, we can tune the table size to fit our requirements - 
+ * the table does not have to be as big as the possible permutations of a block,
+ * and we will still get good performance on average.
+ *  * </p>
  * If a block size of one is chosen, this algorithm is broadly the same as running
  * the BoyerMooreHorspoolSearcher (using only one pattern, of course).  With multiple
  * patterns, and a block size of one, it is equivalent to the SetHorspoolSearcher 
@@ -94,7 +83,16 @@ import net.domesdaybook.searcher.Searcher;
  * There seems little point in having a block size greater than one if you are only 
  * searching a single pattern, as a higher block size is intended to mitigate the 
  * effects of the ever reducing safe shift when multiple patterns map to the same
- * single byte block.  
+ * single byte block.  With only one pattern (or even just a few patterns)
+ * no additional benefit is gained by extending the alphabet into hash blocks.
+ * <p/>
+ * This version of Wu Manber is only a partial implementation of the algorithm
+ * described in the original paper, which specifies a particular method of verifying
+ * whether a sequence has actually matched.  Byteseek allows any form of 
+ * MultiSequenceMatcher to be plugged in for the verification stage.  If the 
+ * {@link HashMultiSequenceMatcher} is used with this searcher, then the combination
+ * is comparable to the entire original algorithm.  In practice, other matchers can
+ * provide better performance or use less memory, depending on requirements.
  * 
  * @author Matt Palmer
  */
@@ -196,7 +194,6 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
         protected final LazyObject<SearchInfo> forwardInfo;
         protected final LazyObject<SearchInfo> backwardInfo;
         
-        
         public AbstractWuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
             super(matcher);
             this.blockSize = blockSize;
@@ -204,11 +201,9 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
             backwardInfo = new BackwardSearchInfo();
         }
 
-        
         public void prepareForwards() {
             forwardInfo.get();
         }
-        
         
         public void prepareBackwards() {
             backwardInfo.get();
@@ -229,7 +224,7 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
             int hashCode = 0;
             for (final byte b : block) {
                 // left shift 5 - original value = (x * 32) - x = x * 31.
-                hashCode = (hashCode << 5) - hashCode + ((int) b & 0xFF);
+                hashCode = (hashCode << 5) - hashCode + (b & 0xFF);
             }
             return hashCode;
         }
@@ -305,12 +300,12 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
 
                     // For each block up to the end of the sequence, starting
                     // the minimum length of all sequences back from the end.
-                    final int startPos = matcherLength - defaultShift + 1;  
-                    for (int position = startPos; position < matcherLength; position++) {
-                        final int distanceFromEnd = matcherLength - position - 1;
+                    final int firstBlockEndPosition = matcherLength - matcher.getMinimumLength() + blockSize - 1; 
+                    for (int blockEndPosition = firstBlockEndPosition; blockEndPosition < matcherLength; blockEndPosition++) {
+                        final int distanceFromEnd = matcherLength - blockEndPosition - 1;
 
                         // For each possible permutation of bytes in a block:
-                        final List<byte[]> blockBytes = getBlockByteList(position, sequence);
+                        final List<byte[]> blockBytes = getBlockByteList(blockEndPosition, sequence);
                         final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                         while (permutation.hasNext()) {
 
@@ -353,10 +348,11 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                 for (final SequenceMatcher sequence : matcher.getSequenceMatchers()) {
 
                     // For each block up to the minimum length of all sequences:
-                    for (int position = blockSize - 1; position < minLength; position++) {
+                    for (int blockEndPosition = blockSize - 1; blockEndPosition < minLength; blockEndPosition++) {
 
+                        final int distanceToStart = blockEndPosition - blockSize + 1;
                         // For each possible permutation of bytes in a block:
-                        final List<byte[]> blockBytes = getBlockByteList(position, sequence);
+                        final List<byte[]> blockBytes = getBlockByteList(blockEndPosition, sequence);
                         final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                         while (permutation.hasNext()) {
 
@@ -364,8 +360,8 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                             // the smaller of the current shift and the distance from the end:
                             final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
                             final int currentShift = shifts[hashPos];
-                            if (position < currentShift) {
-                                shifts[hashPos] = position;
+                            if (distanceToStart < currentShift) {
+                                shifts[hashPos] = distanceToStart;
                             }
                         }
                     }
@@ -419,7 +415,9 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                 final int safeShift = safeShifts[bytes[searchPosition] & 0xFF];
 
                 // Can we shift safely?
-                if (safeShift == 0) {
+                if (safeShift > 0) {
+                    searchPosition += safeShift;
+                } else {
                     
                     // No safe shift - see if we have any matches:
                     final Collection<SequenceMatcher> matches =
@@ -434,9 +432,6 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                         }
                     }
                     searchPosition++; // no safe shift other than to advance one on.
-                    
-                } else { // we have a safe shift, move on:
-                    searchPosition += safeShift; 
                 }
             }
             
@@ -444,23 +439,21 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
         }
         
         
-        //FIXME: just copied from search forwards at present.
         public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
             // Get info needed to search with:
-            final SearchInfo info = forwardInfo.get();
+            final SearchInfo info = backwardInfo.get();
             final int[] safeShifts = info.shifts;
-            final MultiSequenceMatcher backMatcher = info.matcher;
+            final MultiSequenceMatcher verifier = info.matcher;
             
             // Calculate safe bounds for the search:
-            final int lastPossiblePosition = bytes.length - 1;
-            final int lastPosition = toPosition < lastPossiblePosition ?
-                                     toPosition : lastPossiblePosition;
-            final int lastMinimumPosition = matcher.getMinimumLength() - 1;
-            int searchPosition = fromPosition > 0 ?
-                                 fromPosition + lastMinimumPosition : lastMinimumPosition;
+            final int lastPosition = toPosition > 0 ?
+                                     toPosition : 0;
+            final int firstPossiblePosition = bytes.length - verifier.getMinimumLength();
+            int searchPosition = fromPosition < firstPossiblePosition ?
+                                 fromPosition : firstPossiblePosition;
             
             // Search forwards:
-            while (searchPosition <= lastPosition) {
+            while (searchPosition >= lastPosition) {
 
                 // Get the safe shift for this byte:
                 final int safeShift = safeShifts[bytes[searchPosition] & 0xFF];
@@ -470,26 +463,18 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                     
                     // No safe shift - see if we have any matches:
                     final Collection<SequenceMatcher> matches =
-                            backMatcher.allMatchesBackwards(bytes, searchPosition);
+                            verifier.allMatches(bytes, searchPosition);
                     if (!matches.isEmpty()) {
-                        
-                        // See if any of the matches are within the bounds of the search:
-                        final List<SearchResult<SequenceMatcher>> results = 
-                            SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
-                        if (!results.isEmpty()) {
-                            return results;
-                        }
+                        return SearchUtils.resultsAtPosition(searchPosition, matches);
                     }
-                    searchPosition++; // no safe shift other than to advance one on.
+                    searchPosition--; // no safe shift other than to advance one on.
                     
                 } else { // we have a safe shift, move on:
-                    searchPosition += safeShift; 
+                    searchPosition -= safeShift; 
                 }
             }
-            
             return SearchUtils.noResults();
         }
-        
     }
     
     
