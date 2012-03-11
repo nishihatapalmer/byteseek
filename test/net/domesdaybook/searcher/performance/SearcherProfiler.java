@@ -29,6 +29,13 @@ import net.domesdaybook.searcher.Searcher;
  */
 public final class SearcherProfiler {
 
+    
+    public static void tryToFreeGarbage() {
+        System.gc(); System.runFinalization();
+        System.gc(); System.runFinalization();
+        System.gc(); System.runFinalization();
+    }        
+    
     public SearcherProfiler() {
         // static utility class - no public constructor.
     }
@@ -150,20 +157,27 @@ public final class SearcherProfiler {
          */
         public void profile(Searcher searcher, byte[] bytes, int numberOfSearches) {
             
+            
+            
             // Profile forwards statistics:
             
             // log forward preparation time.
+            tryToFreeGarbage();
             long startNano = System.nanoTime();
             searcher.prepareForwards();
             forwardBytesStats.preparationTime = System.nanoTime() - startNano;
             
             // time repeated forward searches:
             List<SearchResult> positions = Collections.emptyList();
-            startNano = System.nanoTime();
+            long totalTime = 0;
+            tryToFreeGarbage();
             for (int repeat = 0; repeat < numberOfSearches; repeat++) {
+
+                startNano = System.nanoTime();
                 positions = searchEntireArrayForwards(searcher, bytes);
+                totalTime += (System.nanoTime() - startNano);
             }
-            forwardBytesStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
+            forwardBytesStats.searchTime = (long)(totalTime / numberOfSearches);
             
             
             // Record forward matching positions;
@@ -171,19 +185,22 @@ public final class SearcherProfiler {
             
             // Profile backwards statistics:
             
-            // log forward preparation time.
+            // log backward preparation time.
+            tryToFreeGarbage();
             startNano = System.nanoTime();
             searcher.prepareBackwards();
             backwardBytesStats.preparationTime = System.nanoTime() - startNano;
             
-            // time repeated forward searches:
+            // time repeated backward searches:
             positions = Collections.emptyList();
-            startNano = System.nanoTime();
+            totalTime = 0;
+            tryToFreeGarbage();
             for (int repeat = 0; repeat < numberOfSearches; repeat++) {
+                startNano = System.nanoTime();
                 positions = searchEntireArrayBackwards(searcher, bytes);
+                totalTime += (System.nanoTime() - startNano);
             }
-            backwardBytesStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
-            
+            backwardBytesStats.searchTime = (long)(totalTime / numberOfSearches);
             
             // Record backward matching positions;
             backwardBytesStats.searchMatches = positions;            
@@ -199,35 +216,42 @@ public final class SearcherProfiler {
         public void profile(Searcher searcher, Reader reader, int numberOfSearches) throws IOException {
             
             /*
-            
+             
             // log forward preparation time.
+            tryToFreeGarbage();
             long startNano = System.nanoTime();
             searcher.prepareForwards();
             forwardReaderStats.preparationTime = System.nanoTime() - startNano;
             
             // time repeated forward searches:
             List<SearchResult> positions = Collections.emptyList();
-            startNano = System.nanoTime();
+            long totalTime = 0;
             for (int repeat = 0; repeat < numberOfSearches; repeat++) {
+                tryToFreeGarbage();
+                startNano = System.nanoTime();
                 positions = searchEntireReaderForwards(searcher, reader);
+                totalTime += (System.nanoTime() - startNano);
             }
-            forwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
+            forwardReaderStats.searchTime = (long)(totalTime / numberOfSearches);
             
             // Record forward matching positions;
             forwardReaderStats.searchMatches = positions;
             
             // log backwards preparation time.
+            tryToFreeGarbage();
             startNano = System.nanoTime();
             searcher.prepareBackwards();
             backwardReaderStats.preparationTime = System.nanoTime() - startNano;
             
             // time repeated forward searches:
             positions = Collections.emptyList();
-            startNano = System.nanoTime();
+            totalTime = 0;
             for (int repeat = 0; repeat < numberOfSearches; repeat++) {
+                startNano = System.nanoTime();
                 positions = searchEntireReaderBackwards(searcher, reader);
+                totalTime += (System.nanoTime() - startNano);
             }
-            backwardReaderStats.searchTime = (long)((System.nanoTime() - startNano) / numberOfSearches);
+            backwardReaderStats.searchTime = (long)(totalTime / numberOfSearches);
             
             // Record backward matching positions;
             backwardReaderStats.searchMatches = positions; 
