@@ -280,20 +280,20 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             }
 
             // From the current search position, the multi-sequence crosses over in to
-            // the next window, so we can't search directly in the window byte array.
+            // the previous window, so we can't search directly in the window byte array.
             // We must use the reader interface on the sequence to let it match
             // over more bytes than this window has available.
             
             // Search back to the first position in the window where the sequence 
             // would fit inside it, the window start, or the final search position, 
             // whichever comes first:
-            final long firstFitPosition = windowStartPosition + arrayLastPosition - lastSequencePosition;
-            final long windowSearchPosition = firstFitPosition > windowStartPosition?
-                                              firstFitPosition : windowStartPosition;
-            final long lastSearchPosition = finalSearchPosition > windowSearchPosition?
-                                            finalSearchPosition : windowSearchPosition;
+            
+            //FIXME: this isn't right - lastSearchPosition is greater than searchPosition,
+            //       then search position ends up being bigger than when it started.
+            
+            final long lastCrossingPosition = windowStartPosition - lastSequencePosition;
             final List<SearchResult<SequenceMatcher>> readerResult =
-                    doSearchBackwards(reader, searchPosition, lastSearchPosition);
+                    doSearchBackwards(reader, searchPosition, lastCrossingPosition);
             
             // Did we find a match?
             if (!readerResult.isEmpty()) {
@@ -301,7 +301,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             }
             
             // Continue the search one on from where we last looked:
-            searchPosition = lastSearchPosition - 1;
+            searchPosition = lastCrossingPosition - 1;
             
             // Did we pass the final toPosition?  In which case, we're finished.
             if (searchPosition < finalSearchPosition) {

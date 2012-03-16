@@ -43,6 +43,7 @@ import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.object.LazyObject;
+import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.ProxySearcher;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
@@ -414,13 +415,124 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
         }
         
         @Override
-        protected List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        protected List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, 
+                long toPosition, long fromPosition) throws IOException {
+            // Get info needed to search with:
+            final SearchInfo info = forwardInfo.get();
+            final int[] safeShifts = info.shifts;
+            final MultiSequenceMatcher backMatcher = info.matcher;
+
+            // Initialise window search:
+            long searchPosition = fromPosition + getMatcher().getMinimumLength() - 1;        
+            Window window = reader.getWindow(searchPosition); 
+            
+            // While there is a window to search in:
+            while (window != null) {
+
+                // Initialise array search:
+                final byte[] array = window.getArray();
+                final int arrayStartPosition = reader.getWindowOffset(searchPosition);
+                final int arrayEndPosition = window.length() - 1;
+                final long distanceToEnd = toPosition - window.getWindowPosition();     
+                final int lastSearchPosition = distanceToEnd < arrayEndPosition?
+                                         (int) distanceToEnd : arrayEndPosition;
+                int arraySearchPosition = arrayStartPosition;            
+
+                // Search forwards in this array:
+                while (arraySearchPosition <= lastSearchPosition) {
+
+                    final int safeShift = safeShifts[array[arraySearchPosition] & 0xFF];
+                    if (safeShift < 0) {
+                        // see if we have a match:
+                        final long possibleMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
+                        final Collection<SequenceMatcher> matches =
+                                backMatcher.allMatchesBackwards(reader, possibleMatchPosition);
+                        if (!matches.isEmpty()) {
+                            // See if any of the matches are within the bounds of the search:
+                            final List<SearchResult<SequenceMatcher>> results = 
+                                SearchUtils.resultsBackFromPosition(possibleMatchPosition, matches, fromPosition);
+                            if (!results.isEmpty()) {
+                                return results;
+                            }
+                        }
+                        arraySearchPosition -= safeShift;
+                    } else {
+                        arraySearchPosition += safeShift;
+                    } 
+                } 
+
+                // No match was found in this array - calculate the current search position:
+                searchPosition += arraySearchPosition - arrayStartPosition;
+
+                // If the search position is now past the last search position, we're finished:
+                if (searchPosition > toPosition) {
+                    return SearchUtils.noResults();
+                }
+
+                // Otherwise, get the next window.  The search position is 
+                // guaranteed to be in another window at this point.
+                window = reader.getWindow(searchPosition);
+            }
+
+            return SearchUtils.noResults();   
         }
 
         @Override
-        protected List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        protected List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader, 
+                long toPosition, long fromPosition) throws IOException {
+            // Get the objects needed to search:
+            final SearchInfo info = backwardInfo.get();
+            final int[] safeShifts = info.shifts;
+            final MultiSequenceMatcher verifier = info.matcher;        
+
+            // Initialise window search:
+            long searchPosition = fromPosition;
+            Window window = reader.getWindow(searchPosition);
+
+            // Search backwards across the windows:
+            while (window != null) {
+
+                // Initialise the window search:
+                final byte[] array = window.getArray();
+                final int arrayStartPosition = reader.getWindowOffset(searchPosition);   
+                final long distanceToEnd = toPosition - window.getWindowPosition();
+                final int lastSearchPosition = distanceToEnd > 0?
+                                         (int) distanceToEnd : 0;
+                int arraySearchPosition = arrayStartPosition;
+
+                // Search using the byte array for shifts, using the Reader
+                // for verifiying the sequence with the matcher:          
+                while (arraySearchPosition >= lastSearchPosition) {
+
+                    final int safeShift = safeShifts[array[arraySearchPosition] & 0xFF];
+                    if (safeShift < 0) {
+
+                        // The first byte matched - verify the rest of the sequences.
+                        final long startMatchPosition = searchPosition + arrayStartPosition - arraySearchPosition;
+                        final Collection<SequenceMatcher> matches = verifier.allMatches(reader, startMatchPosition);
+                        if (!matches.isEmpty()) {
+                            return SearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
+                        }
+                        arraySearchPosition += safeShift; // no match, shift back.
+                    } else { // No match was found - shift backward by the shift for the current byte:
+                        arraySearchPosition -= safeShift;
+                    }
+                }
+
+                // No match was found in this array - calculate the current search position:
+                searchPosition -= (arrayStartPosition - arraySearchPosition);
+
+                // If the search position is now past the last search position, we're finished:
+                if (searchPosition < toPosition) {
+                    return SearchUtils.noResults();
+                }            
+
+                // Otherwise, get the next window.  The search position is 
+                // guaranteed to be in another window at this point.            
+                window = reader.getWindow(searchPosition);
+            }
+
+            return SearchUtils.noResults();
         }
 
         public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
