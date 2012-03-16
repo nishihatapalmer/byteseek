@@ -156,9 +156,6 @@ public final class SearcherProfiler {
          * @param bytes
          */
         public void profile(Searcher searcher, byte[] bytes, int numberOfSearches) {
-            
-            
-            
             // Profile forwards statistics:
             
             // log forward preparation time.
@@ -215,8 +212,6 @@ public final class SearcherProfiler {
          */
         public void profile(Searcher searcher, Reader reader, int numberOfSearches) throws IOException {
             
-            /*
-             
             // log forward preparation time.
             tryToFreeGarbage();
             long startNano = System.nanoTime();
@@ -245,6 +240,7 @@ public final class SearcherProfiler {
             
             // time repeated forward searches:
             positions = Collections.emptyList();
+            
             totalTime = 0;
             for (int repeat = 0; repeat < numberOfSearches; repeat++) {
                 startNano = System.nanoTime();
@@ -253,9 +249,9 @@ public final class SearcherProfiler {
             }
             backwardReaderStats.searchTime = (long)(totalTime / numberOfSearches);
             
+            
             // Record backward matching positions;
             backwardReaderStats.searchMatches = positions; 
-            */
             
             byte[] bytes = reader.getWindow(0).getArray();
             profile(searcher, bytes, numberOfSearches);

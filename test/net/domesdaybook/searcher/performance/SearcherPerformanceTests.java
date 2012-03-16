@@ -81,9 +81,9 @@ import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
  */
 public class SearcherPerformanceTests {
     
-    public final static int FIRST_WARMUP_TIMES = 5000;
-    public final static int SECOND_WARMUP_TIMES = 5000;
-    public final static int CYCLE_WARMUP_TIMES = 10;
+    public final static int FIRST_WARMUP_TIMES = 10;
+    public final static int SECOND_WARMUP_TIMES = 10;
+    public final static int CYCLE_WARMUP_TIMES = 5;
     public final static int TEST_TIMES = 100;
     
     public static void main(String[] args) throws InterruptedException {
@@ -108,18 +108,24 @@ public class SearcherPerformanceTests {
         Thread.sleep(250);
         
         System.out.println("Ending profiling");
+        System.out.println("Prevent optimising away results...." + tests.getLastResultCount());
     }
     
     private static void cycleWarmup(SearcherPerformanceTests tests) {
-        for (int cycle = 0; cycle < CYCLE_WARMUP_TIMES; cycle++) {
+        for (int cycle = 1; cycle <= CYCLE_WARMUP_TIMES; cycle++) {
             System.out.println("Cycling warmup " +cycle + " of "+ CYCLE_WARMUP_TIMES + " times.");            
-            tests.profile(10);
+            tests.profile(2);
         }
     }
+    
+    private int lastResultCount; // attempt to stop optimiser erroneously getting rid of methods.
     
     public SearcherPerformanceTests() {
     }
     
+    public int getLastResultCount() {
+        return lastResultCount;
+    }
     
     public void profile(int numberOfTimes) {
         try {
@@ -158,6 +164,13 @@ public class SearcherPerformanceTests {
     public void profileMultiSequenceSearchers(int numberOfTimes) throws IOException {
         
         profileMultiSequence(numberOfTimes, "Midsommer", "and");
+        
+        profileMultiSequence(numberOfTimes, "Midsommer ", "and");
+        
+        profileMultiSequence(numberOfTimes, 
+                "Midsommer", "Oberon", "Titania", "Dreame", "heere",
+                "nothing", "perchance", "discretion", "smallest",
+                "through", "enough", "Gentleman", "friends");
     }    
     
     
@@ -167,7 +180,7 @@ public class SearcherPerformanceTests {
     }
     
     private void profileSequence(String description, int numberOfTimes, SequenceMatcher matcher) throws FileNotFoundException, IOException {
-        profileSearchers(description, numberOfTimes, getSequenceSearchers(matcher));
+        lastResultCount = profileSearchers(description, numberOfTimes, getSequenceSearchers(matcher));
     }
     
 
@@ -176,7 +189,7 @@ public class SearcherPerformanceTests {
     private void profileMultiSequence(String description, 
                                       int numberOfTimes,
                                       SequenceMatcher... matcherArgs) throws IOException {
-        profileSearchers(description, numberOfTimes, getMultiSequenceSearchers(getMultiSequenceMatcher(matcherArgs)));
+        lastResultCount = profileSearchers(description, numberOfTimes, getMultiSequenceSearchers(getMultiSequenceMatcher(matcherArgs)));
     }
     
     private void profileMultiSequence(int numberOfTimes, String... matcherArgs) throws IOException {
@@ -191,8 +204,8 @@ public class SearcherPerformanceTests {
             first = false;
         }
         description.append(']');
-        profileSearchers(description.toString(), numberOfTimes, 
-                         getMultiSequenceSearchers(getMultiSequenceMatcher(matchers)));
+        lastResultCount = profileSearchers(description.toString(), numberOfTimes, 
+                                           getMultiSequenceSearchers(getMultiSequenceMatcher(matchers)));
     }
     
     
@@ -205,10 +218,10 @@ public class SearcherPerformanceTests {
     }    
     
     
-    private void profileSearchers(String description, int numberOfTimes, Collection<Searcher> searchers) throws FileNotFoundException, IOException {
+    private int profileSearchers(String description, int numberOfTimes, Collection<Searcher> searchers) throws FileNotFoundException, IOException {
         SearcherProfiler profiler = new SearcherProfiler();        
         Map<Searcher, ProfileResults> results = profiler.profile(searchers, numberOfTimes);
-        writeResults(description, results);              
+        return writeResults(description, results);              
     }
     
     
@@ -236,12 +249,13 @@ public class SearcherPerformanceTests {
     }
     
     
-    private void writeResults(String description, Map<Searcher, ProfileResults> results) {
+    private int writeResults(String description, Map<Searcher, ProfileResults> results) {
         try {
             Thread.sleep(500); // just so console mode output doesn't get mixed up.
         } catch (InterruptedException ex) {
             Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
         }
+        int resultCount = 0;
         String message = "%s\t%s\t%s\t%s\tForward reader:\t%d\t%d\tForward bytes:\t%d\t%d\tBack reader:\t%d\t%d\tBack bytes:\t%d\t%d";
         for (Map.Entry<Searcher, ProfileResults> entry : results.entrySet()) {
             Searcher searcher = entry.getKey();
@@ -261,8 +275,10 @@ public class SearcherPerformanceTests {
                                               testInfo.backwardBytesStats.searchTime,
                                               testInfo.backwardBytesStats.searchMatches.size() );
                System.out.println(output);
+               resultCount++;
             }
         }
+        return resultCount;
     }
     
  
