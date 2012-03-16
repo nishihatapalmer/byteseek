@@ -36,7 +36,7 @@ import java.util.Deque;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.collections.IdentityHashSet;
+import net.domesdaybook.util.collections.IdentityHashSet;
 
 /**
  * Walks an automata from an initial {@link State}, visiting each one in the automata

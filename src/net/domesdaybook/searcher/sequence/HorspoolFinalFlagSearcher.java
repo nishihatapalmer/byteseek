@@ -31,7 +31,7 @@
 
 package net.domesdaybook.searcher.sequence;
 
-import net.domesdaybook.object.LazyObject;
+import net.domesdaybook.util.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

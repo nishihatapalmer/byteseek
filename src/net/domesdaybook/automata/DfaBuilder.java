@@ -45,7 +45,7 @@ import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
 import net.domesdaybook.automata.walker.StepAction;
-import net.domesdaybook.collections.IdentityHashSet;
+import net.domesdaybook.util.collections.IdentityHashSet;
 
 /**
  *

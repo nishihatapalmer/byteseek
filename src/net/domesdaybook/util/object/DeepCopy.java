@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.object;
+package net.domesdaybook.util.object;
 
 import java.util.Map;
 

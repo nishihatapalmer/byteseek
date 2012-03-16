@@ -32,7 +32,7 @@
 package net.domesdaybook.automata.base;
 
 import java.util.Map;
-import net.domesdaybook.object.DeepCopy;
+import net.domesdaybook.util.object.DeepCopy;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.matcher.bytes.ByteMatcher;

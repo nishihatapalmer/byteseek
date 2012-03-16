@@ -43,7 +43,7 @@ import net.domesdaybook.automata.base.BaseStateFactory;
 import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.factory.TransitionFactory;
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
  *

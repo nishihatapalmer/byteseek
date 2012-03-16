@@ -31,7 +31,7 @@
 package net.domesdaybook.automata;
 
 import java.util.Collection;
-import net.domesdaybook.object.DeepCopy;
+import net.domesdaybook.util.object.DeepCopy;
 
 /**
  *

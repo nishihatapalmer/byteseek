@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.bytes;
+package net.domesdaybook.util.bytes;
 
 import java.util.ArrayList;
 import java.util.Iterator;

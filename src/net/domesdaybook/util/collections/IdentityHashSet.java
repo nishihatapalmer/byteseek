@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.collections;
+package net.domesdaybook.util.collections;
 
 import java.util.AbstractSet;
 import java.util.Collection;

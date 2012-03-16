@@ -33,7 +33,7 @@ package net.domesdaybook.parser;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 

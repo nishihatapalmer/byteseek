@@ -32,7 +32,7 @@
 package net.domesdaybook.searcher.multisequence;
 
 import java.io.IOException;
-import net.domesdaybook.bytes.BytePermutationIterator;
+import net.domesdaybook.util.bytes.BytePermutationIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
-import net.domesdaybook.object.LazyObject;
+import net.domesdaybook.util.object.LazyObject;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.ProxySearcher;
 import net.domesdaybook.searcher.SearchUtils;

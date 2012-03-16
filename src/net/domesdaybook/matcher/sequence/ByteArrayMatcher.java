@@ -39,7 +39,7 @@ import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 

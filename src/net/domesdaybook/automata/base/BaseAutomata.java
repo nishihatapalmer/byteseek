@@ -43,7 +43,7 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
 import net.domesdaybook.automata.walker.StepAction;
-import net.domesdaybook.object.DeepCopy;
+import net.domesdaybook.util.object.DeepCopy;
 
 /**
  *

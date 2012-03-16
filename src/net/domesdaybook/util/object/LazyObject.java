@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.object;
+package net.domesdaybook.util.object;
 
 /**
  * This simple abstract class creates objects using single-check

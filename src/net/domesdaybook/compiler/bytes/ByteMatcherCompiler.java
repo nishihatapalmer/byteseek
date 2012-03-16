@@ -43,7 +43,7 @@ import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.AnyBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.AnyByteMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.bytes.InvertedByteMatcher;
 import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;

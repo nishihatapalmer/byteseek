@@ -31,7 +31,7 @@
 
 package net.domesdaybook.matcher.bytes;
 
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

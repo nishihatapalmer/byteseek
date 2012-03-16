@@ -32,7 +32,7 @@
 package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 import java.util.Arrays;
 import java.util.Set;
 import net.domesdaybook.reader.Reader;

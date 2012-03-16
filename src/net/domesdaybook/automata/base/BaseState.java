@@ -40,8 +40,8 @@ import java.util.Map;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.collections.IdentityHashSet;
-import net.domesdaybook.object.DeepCopy;
+import net.domesdaybook.util.collections.IdentityHashSet;
+import net.domesdaybook.util.object.DeepCopy;
 
 
 /**
