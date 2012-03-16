@@ -42,7 +42,7 @@ package net.domesdaybook.util.object;
  */
 public abstract class LazyObject<T> {
     
-    protected volatile T object;
+    private volatile T object;
 
     
     protected abstract T create();
@@ -54,7 +54,7 @@ public abstract class LazyObject<T> {
      * 
      * @return An object of type T.
      */
-    public T get() {
+    public final T get() {
         T result = object;
         if (result == null) {
             object = result = create();
