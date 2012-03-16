@@ -9,7 +9,7 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.InvertibleMatcher;
 import net.domesdaybook.matcher.bytes.SetBitsetMatcher;
 import net.domesdaybook.matcher.bytes.SetBinarySearchMatcher;
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;

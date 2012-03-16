@@ -6,7 +6,7 @@
 package net.domesdaybook.matcher.bytes;
 
 import net.domesdaybook.matcher.bytes.AnyBitmaskMatcher;
-import net.domesdaybook.bytes.ByteUtilities;
+import net.domesdaybook.util.bytes.ByteUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
