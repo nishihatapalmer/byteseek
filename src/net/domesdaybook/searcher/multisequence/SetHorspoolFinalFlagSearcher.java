@@ -82,8 +82,9 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
         
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
-        final int finalPosition = toPosition < lastPossiblePosition?
-                                  toPosition : lastPossiblePosition;
+        final int lastToPosition = toPosition + matcher.getMaximumLength() - 1;
+        final int finalPosition = lastToPosition < lastPossiblePosition?
+                                  lastToPosition : lastPossiblePosition;
         
         // Search forwards:
         while (searchPosition <= finalPosition) {
