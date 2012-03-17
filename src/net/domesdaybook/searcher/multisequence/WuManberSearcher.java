@@ -516,8 +516,9 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
             
             // Calculate safe bounds for the search:
             final int lastPossiblePosition = bytes.length - 1;
-            final int lastPosition = toPosition < lastPossiblePosition ?
-                                     toPosition : lastPossiblePosition;
+            final int lastToPosition = toPosition + matcher.getMaximumLength() - 1;
+            final int lastPosition = lastToPosition < lastPossiblePosition ?
+                                     lastToPosition : lastPossiblePosition;
             final int lastMinimumPosition = matcher.getMinimumLength() - 1;
             int searchPosition = fromPosition > 0 ?
                                  fromPosition + lastMinimumPosition : lastMinimumPosition;
