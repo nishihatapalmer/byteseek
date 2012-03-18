@@ -136,7 +136,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             
             // Search fowards in the array using the reader interface to match.
             // The loop does not check the final position, as we shift on the byte
-            // after it.
+            // after the sequence (so would get an IndexOutOfBoundsException in the final position).
             while (arraySearchPosition < finalPosition) {
                 if (sequence.matches(reader, searchPosition)) {
                     return SearchUtils.singleResult(searchPosition, sequence);
