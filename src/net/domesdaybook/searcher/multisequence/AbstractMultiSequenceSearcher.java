@@ -65,7 +65,7 @@ import net.domesdaybook.searcher.SearchResult;
  */
 public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<SequenceMatcher> {
     
-    protected final MultiSequenceMatcher matcher;
+    protected final MultiSequenceMatcher sequences;
     
     /**
      * Constructs a sequence searcher given a {@link SequenceMatcher}
@@ -77,17 +77,17 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
         if (sequences == null) {
             throw new IllegalArgumentException("Null sequences passed in to searcher.");
         }        
-        this.matcher = sequences;
+        this.sequences = sequences;
     }    
     
     
     /**
      * Returns the {@link SequenceMatcher} to be searched for.
      * 
-     * @return SequenceMatcher the sequence matcher to be searched for.
+     * @return SequenceMatcher the sequence sequences to be searched for.
      */
     public MultiSequenceMatcher getMatcher() {
-        return matcher;
+        return sequences;
     }
     
     
@@ -111,7 +111,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
     public List<SearchResult<SequenceMatcher>> searchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int maxLength = matcher.getMaximumLength();
+        final int maxLength = sequences.getMaximumLength();
         final int lastSequencePosition = maxLength - 1;
         long searchPosition = fromPosition > 0?
                               fromPosition : 0;
@@ -195,7 +195,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * method when it encounters a multi-sequence which crosses from one window to another.
      * <p>
      * A simple way to implement this method is to use the Reader interface on the
-     * matcher multi-sequence. This at least removes window boundaries from validating
+     * sequences multi-sequence. This at least removes window boundaries from validating
      * that a match exists. It will still be necessary to deal with window management
      * in the operation of the search algorithm itself.
      * <p>
@@ -234,7 +234,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
     public List<SearchResult<SequenceMatcher>> searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int maxLength = matcher.getMaximumLength();
+        final int maxLength = sequences.getMaximumLength();
         final int lastSequencePosition = maxLength - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
@@ -322,7 +322,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * method when it encounters a multi-sequence which crosses from one window to another.
      * <p>
      * A simple way to implement this method is to use the Reader interface on the
-     * matcher multi-sequence.  This at least removes window boundaries from validating
+     * sequences multi-sequence.  This at least removes window boundaries from validating
      * that a match exists.  It may still be necessary to deal with window management
      * in the operation of the search algorithm itself.
      * 
@@ -339,14 +339,14 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
     /**
      * Returns a string representation of this searcher.  The format is subject
      * to change, but it will generally return the name of the searcher class,
-     * the matcher class used in the search algorithm, and regular expressions
+     * the sequences class used in the search algorithm, and regular expressions
      * defining the sequences matched by the searcher.
      * 
      * @return A string representing this searcher.
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + matcher + ")";
+        return getClass().getSimpleName() + "(" + sequences + ")";
     }        
     
 }

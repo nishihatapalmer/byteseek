@@ -124,15 +124,15 @@ public final class SearchUtils {
     
     
     public static List<SearchResult<SequenceMatcher>> resultsBackFromPosition(
-            final long endPosition,
+            final long backFromPosition,
             final Collection<? extends SequenceMatcher> matchingSequences,
-            final long furthestLimit) {
+            final long searchStart, final long searchEnd) {
         final List<SearchResult<SequenceMatcher>> results = new ArrayList<SearchResult<SequenceMatcher>>(matchingSequences.size());
-        final long onePastEndPosition = endPosition + 1;
+        final long onePastBackFrom = backFromPosition + 1;
         for (final SequenceMatcher sequence : matchingSequences) {
-            final long matchingPosition = onePastEndPosition - sequence.length();
-            if (matchingPosition >= furthestLimit) {
-                results.add(new SearchResult<SequenceMatcher>(matchingPosition, sequence));
+            final long sequenceStartPosition = onePastBackFrom - sequence.length();
+            if (sequenceStartPosition >= searchStart && sequenceStartPosition <= searchEnd) {
+                results.add(new SearchResult<SequenceMatcher>(sequenceStartPosition, sequence));
             }
         }
         return results;

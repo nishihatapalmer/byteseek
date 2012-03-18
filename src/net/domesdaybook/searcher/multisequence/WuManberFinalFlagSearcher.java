@@ -151,9 +151,9 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
         return new OneByteBlockSearcher(matcher);
         /*
         switch (blockSize) {
-            case 1:  return new OneByteBlockSearcher(matcher);
-            case 2:  return new TwoByteBlockSearcher(matcher);
-            default: return new ManyByteBlockSearcher(matcher, blockSize);
+            case 1:  return new OneByteBlockSearcher(sequences);
+            case 2:  return new TwoByteBlockSearcher(sequences);
+            default: return new ManyByteBlockSearcher(sequences, blockSize);
         }
          * 
          */
@@ -162,7 +162,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
     
     /**
      * 
-     * @param matcher 
+     * @param sequences 
      */
     public WuManberFinalFlagSearcher(final MultiSequenceMatcher matcher) {
         this(matcher, getBlockSize(matcher));
@@ -171,7 +171,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
     
     /**
      * 
-     * @param matcher
+     * @param sequences
      * @param blockSize 
      */
     public WuManberFinalFlagSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
@@ -279,7 +279,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             }
             // Otherwise, take a guess - we probably don't want a table of 65,536 values
             // or greater under normal circumstances...
-            final int numberOfSequences = matcher.getSequenceMatchers().size();
+            final int numberOfSequences = sequences.getSequenceMatchers().size();
             final int smallestTableSize = 192 + (numberOfSequences * 16);
             final int powerOfTwo = Integer.highestOneBit(smallestTableSize);
             return 1 << (powerOfTwo + 1);
@@ -294,18 +294,18 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             }
             
             private int[] getShifts() {
-                final int defaultShift = matcher.getMinimumLength() - blockSize + 1;        
+                final int defaultShift = sequences.getMinimumLength() - blockSize + 1;        
                 final int[] shifts = createShiftHashTable(defaultShift);
                 // (relies on shifts being a size which is a power of two):
                 final int hashBitMask = shifts.length - 1; 
 
                 // For each sequence in our list, find the safe shifts:
-                for (final SequenceMatcher sequence : matcher.getSequenceMatchers()) {
+                for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
                     final int matcherLength = sequence.length();
 
                     // For each block from the minimum length of all sequences from the end of this sequence,
                     // up to the second to last position in the sequence:
-                    final int firstBlockEndPosition = matcherLength - matcher.getMinimumLength() + blockSize - 1; 
+                    final int firstBlockEndPosition = matcherLength - sequences.getMinimumLength() + blockSize - 1; 
                     for (int blockEndPosition = firstBlockEndPosition; blockEndPosition < matcherLength - 1; blockEndPosition++) {
                         final int distanceFromEnd = matcherLength - blockEndPosition - 1;
 
@@ -327,7 +327,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                 
                 // For each sequence in the list, flag the last position bytes
                 // by making the shift negative for each permutation of them:
-                for (final SequenceMatcher sequence : matcher.getSequenceMatchers()) {
+                for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
                     final List<byte[]> blockBytes = getBlockByteList(sequence.length() - 1, sequence);
                     final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                     while (permutation.hasNext()) {
@@ -340,7 +340,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             }
             
             private MultiSequenceMatcher getMatcher() {
-                return new MultiSequenceReverseMatcher(matcher);
+                return new MultiSequenceReverseMatcher(sequences);
             }
 
         }
@@ -355,14 +355,14 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             }
             
             private int[] getShifts() {
-                final int minLength = matcher.getMinimumLength();
+                final int minLength = sequences.getMinimumLength();
                 final int defaultShift = minLength - blockSize + 1;        
                 final int[] shifts = createShiftHashTable(defaultShift);
                 // (relies on shifts being a size which is a power of two):
                 final int hashBitMask = shifts.length - 1; 
 
                 // For each sequence in our list:
-                for (final SequenceMatcher sequence : matcher.getSequenceMatchers()) {
+                for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
 
                     // For each block up to the minimum length of all sequences,
                     // from the second position (the first will be flagged separately):
@@ -388,7 +388,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                 
                 // For each sequence in the list, flag the first position bytes
                 // by making the shift negative for each permutation of them:
-                for (final SequenceMatcher sequence : matcher.getSequenceMatchers()) {
+                for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
                     final List<byte[]> blockBytes = getBlockByteList(0, sequence);
                     final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                     while (permutation.hasNext()) {
@@ -401,7 +401,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             }
             
             private MultiSequenceMatcher getMatcher() {
-                return matcher;
+                return sequences;
             }
         }
         
@@ -414,9 +414,59 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             super(matcher, 1);
         }
         
+        public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
+                final int fromPosition, final int toPosition) {
+            // Get info needed to search with:
+            final SearchInfo info = forwardInfo.get();
+            final int[] safeShifts = info.shifts;
+            final MultiSequenceMatcher backMatcher = info.matcher;
+            
+            // Calculate safe bounds for the search:
+            final int lastPossiblePosition = bytes.length - 1;
+            final int lastToPosition = toPosition + sequences.getMaximumLength() - 1;
+            final int lastPosition = lastToPosition < lastPossiblePosition ?
+                                     lastToPosition : lastPossiblePosition;
+            final int minimumPosition = sequences.getMinimumLength() - 1;
+            int searchPosition = fromPosition > 0 ?
+                                 fromPosition + minimumPosition : minimumPosition;
+            
+            // Search forwards:
+            while (searchPosition <= lastPosition) {
+
+                // Get the safe shift for this byte:
+                final int safeShift = safeShifts[bytes[searchPosition] & 0xFF];
+
+                // Is there a possible match?
+                if (safeShift < 0) {
+
+                    // A negative shift - see if we have any matches:
+                    final Collection<SequenceMatcher> matches =
+                            backMatcher.allMatchesBackwards(bytes, searchPosition);
+                    if (!matches.isEmpty()) {
+                        
+                        // See if any of the matches are within the bounds of the search:
+                        final List<SearchResult<SequenceMatcher>> results = 
+                            SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                                                                fromPosition, toPosition);
+                        if (!results.isEmpty()) {
+                            return results;
+                        }
+                    }
+                    
+                    // Shift forwards by the shift.  
+                    searchPosition -= safeShift; // subtract, as the shift is negative.                  
+                } else {
+                    searchPosition += safeShift; // add, as the shift is positive.
+                } 
+            }
+            
+            return SearchUtils.noResults();
+        }
+        
+        
         @Override
-        protected List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, 
-                long toPosition, long fromPosition) throws IOException {
+        protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
+                final long fromPosition, final long toPosition) throws IOException {
             // Get info needed to search with:
             final SearchInfo info = forwardInfo.get();
             final int[] safeShifts = info.shifts;
@@ -450,7 +500,8 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                         if (!matches.isEmpty()) {
                             // See if any of the matches are within the bounds of the search:
                             final List<SearchResult<SequenceMatcher>> results = 
-                                SearchUtils.resultsBackFromPosition(possibleMatchPosition, matches, fromPosition);
+                                SearchUtils.resultsBackFromPosition(possibleMatchPosition, matches, 
+                                                                    fromPosition, toPosition);
                             if (!results.isEmpty()) {
                                 return results;
                             }
@@ -478,8 +529,8 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
         }
 
         @Override
-        protected List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader, 
-                long toPosition, long fromPosition) throws IOException {
+        protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
+                final long fromPosition, final long toPosition) throws IOException {
             // Get the objects needed to search:
             final SearchInfo info = backwardInfo.get();
             final int[] safeShifts = info.shifts;
@@ -501,7 +552,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                 int arraySearchPosition = arrayStartPosition;
 
                 // Search using the byte array for shifts, using the Reader
-                // for verifiying the sequence with the matcher:          
+                // for verifiying the sequence with the sequences:          
                 while (arraySearchPosition >= lastSearchPosition) {
 
                     final int safeShift = safeShifts[array[arraySearchPosition] & 0xFF];
@@ -535,56 +586,9 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             return SearchUtils.noResults();
         }
 
-        public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
+        
+        public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
                 final int fromPosition, final int toPosition) {
-            // Get info needed to search with:
-            final SearchInfo info = forwardInfo.get();
-            final int[] safeShifts = info.shifts;
-            final MultiSequenceMatcher backMatcher = info.matcher;
-            
-            // Calculate safe bounds for the search:
-            final int lastPossiblePosition = bytes.length - 1;
-            final int lastToPosition = toPosition + matcher.getMaximumLength() - 1;
-            final int lastPosition = lastToPosition < lastPossiblePosition ?
-                                     lastToPosition : lastPossiblePosition;
-            final int lastMinimumPosition = matcher.getMinimumLength() - 1;
-            int searchPosition = fromPosition > 0 ?
-                                 fromPosition + lastMinimumPosition : lastMinimumPosition;
-            
-            // Search forwards:
-            while (searchPosition <= lastPosition) {
-
-                // Get the safe shift for this byte:
-                final int safeShift = safeShifts[bytes[searchPosition] & 0xFF];
-
-                // Is there a possible match?
-                if (safeShift < 0) {
-
-                    // A negative shift - see if we have any matches:
-                    final Collection<SequenceMatcher> matches =
-                            backMatcher.allMatchesBackwards(bytes, searchPosition);
-                    if (!matches.isEmpty()) {
-                        
-                        // See if any of the matches are within the bounds of the search:
-                        final List<SearchResult<SequenceMatcher>> results = 
-                            SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
-                        if (!results.isEmpty()) {
-                            return results;
-                        }
-                    }
-                    
-                    // Shift forwards by the shift.  
-                    searchPosition -= safeShift; // subtract, as the shift is negative.                  
-                } else {
-                    searchPosition += safeShift; // add, as the shift is positive.
-                } 
-            }
-            
-            return SearchUtils.noResults();
-        }
-        
-        
-        public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
             // Get info needed to search with:
             final SearchInfo info = backwardInfo.get();
             final int[] safeShifts = info.shifts;
@@ -593,7 +597,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             // Calculate safe bounds for the search:
             final int lastPosition = toPosition > 0 ?
                                      toPosition : 0;
-            final int firstPossiblePosition = bytes.length - verifier.getMinimumLength();
+            final int firstPossiblePosition = bytes.length - 1;
             int searchPosition = fromPosition < firstPossiblePosition ?
                                  fromPosition : firstPossiblePosition;
             

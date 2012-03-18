@@ -56,7 +56,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader,
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final MultiSequenceMatcher sequences = matcher;  
+        final MultiSequenceMatcher matcher = sequences;  
         long searchPosition = fromPosition > 0? 
                               fromPosition : 0;
         
@@ -72,7 +72,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             
             // Search forwards up to the end of this window:
             while (searchPosition <= lastPosition) {
-                final Collection<SequenceMatcher> matches = sequences.allMatches(reader, searchPosition);
+                final Collection<SequenceMatcher> matches = matcher.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
                     return SearchUtils.resultsAtPosition(searchPosition, matches);
                 }
@@ -97,7 +97,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         final int fromPosition, final int toPosition) {
         
         // Initialise:
-        final MultiSequenceMatcher sequences = matcher;
+        final MultiSequenceMatcher matcher = sequences;
         
         // Calculate bounds for the search:
         final int lastPossiblePosition = bytes.length - sequences.getMinimumLength();
@@ -108,7 +108,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         
         // Search forwards up to the last possible position:
         while (searchPosition <= lastPosition) {
-            final Collection<SequenceMatcher> matches = sequences.allMatches(bytes, searchPosition);
+            final Collection<SequenceMatcher> matches = matcher.allMatches(bytes, searchPosition);
             if (!matches.isEmpty()) {
                 return SearchUtils.resultsAtPosition(searchPosition, matches);
             }
@@ -122,7 +122,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final MultiSequenceMatcher sequences = matcher;
+        final MultiSequenceMatcher matcher = sequences;
         long searchPosition = withinLength(reader, fromPosition);
         Window window = reader.getWindow(searchPosition);
         
@@ -136,8 +136,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             
             // Search backwards:
             while (searchPosition >= lastSearchPosition) {
-                final Collection<SequenceMatcher> matches = 
-                        sequences.allMatches(reader, searchPosition);
+                final Collection<SequenceMatcher> matches = matcher.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
                     return SearchUtils.resultsAtPosition(searchPosition, matches);
                 }
@@ -162,7 +161,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         final int fromPosition, final int toPosition) {
         
         // Initialise:
-        final MultiSequenceMatcher sequences = matcher;
+        final MultiSequenceMatcher matcher = sequences;
         
         // Calculate safe bounds for the search:
         final int lastPosition = toPosition > 0?
@@ -173,8 +172,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         
         // Search backwards:
         while (searchPosition >= lastPosition) {
-            final Collection<SequenceMatcher> matches = 
-                        sequences.allMatches(bytes, searchPosition);            
+            final Collection<SequenceMatcher> matches = matcher.allMatches(bytes, searchPosition);            
             if (!matches.isEmpty()) {
                 return SearchUtils.resultsAtPosition(searchPosition, matches);
             }

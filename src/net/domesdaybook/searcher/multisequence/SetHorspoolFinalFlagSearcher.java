@@ -75,14 +75,13 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
         final MultiSequenceMatcher verifier = info.verifier;
         
         // Calculate safe bounds for the start of the search:
-        final int minimumSearchPosition = getMatcher().getMinimumLength() - 1;
-        final int positiveStartPosition = fromPosition > 0? 
+        final int safeStartPosition = fromPosition > 0? 
                                           fromPosition : 0;
-        int searchPosition = positiveStartPosition + minimumSearchPosition;
+        int searchPosition = safeStartPosition + sequences.getMinimumLength() - 1;
         
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
-        final int lastToPosition = toPosition + matcher.getMaximumLength() - 1;
+        final int lastToPosition = toPosition + sequences.getMaximumLength() - 1;
         final int finalPosition = lastToPosition < lastPossiblePosition?
                                   lastToPosition : lastPossiblePosition;
         
@@ -104,7 +103,8 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             final Collection<SequenceMatcher> matches = verifier.allMatchesBackwards(bytes, searchPosition);
             if (!matches.isEmpty()) {
                 final List<SearchResult<SequenceMatcher>> results = 
-                    SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                    SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                                                       fromPosition, toPosition);
                 if (!results.isEmpty()) {
                     return results;
                 }
@@ -169,7 +169,8 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
                         verifier.allMatchesBackwards(reader, endMatchPosition);
                 if (!matches.isEmpty()) {
                     final List<SearchResult<SequenceMatcher>> results = 
-                        SearchUtils.resultsBackFromPosition(searchPosition, matches, fromPosition);
+                        SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                                                            fromPosition, toPosition);
                     if (!results.isEmpty()) {
                         return results;
                     }
@@ -274,7 +275,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             int arraySearchPosition = arrayStartPosition;
             
             // Search using the byte array for shifts, using the Reader
-            // for verifiying the sequence with the matcher:          
+            // for verifiying the sequence with the sequences:          
             ARRAY_SEARCH: while (arraySearchPosition >= lastSearchPosition) {
                 
                 // Shift backwards until we match the first position in the sequence,
@@ -344,11 +345,11 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
          * Calculates the safe shifts to use if searching forwards.
          * A safe shift is either the length of the sequence, if the
          * byte does not appear in the {@link SequenceMatcher}, or
-         * the shortest distance it appears from the end of the matcher.
+         * the shortest distance it appears from the end of the sequences.
          */        
         @Override
         protected SearchInfo create() {
-            // Get info about the multi sequence matcher:
+            // Get info about the multi sequence sequences:
             final MultiSequenceMatcher sequences = getMatcher();            
             final int minLength = sequences.getMinimumLength();            
             
@@ -356,7 +357,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             final SearchInfo info = new SearchInfo();
             
             // Create a verifier which works on the reverse sequences of the
-            // multi sequence matcher (they will be matched backwards from the 
+            // multi sequence sequences (they will be matched backwards from the 
             // end of the sequences - if they are also reversed they will match
             // the original sequences).
             info.verifier = new MultiSequenceReverseMatcher(sequences);
@@ -403,12 +404,12 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
          * Calculates the safe shifts to use if searching backwards.
          * A safe shift is either the minimum length of all the sequences, if the
          * byte does not appear in the {@link MultiSequenceMatcher}, or
-         * the shortest distance it appears from the beginning of the matcher, with
+         * the shortest distance it appears from the beginning of the sequences, with
          * zero being the value of the first position in the sequence.
          */        
         @Override
         protected SearchInfo create() {
-            // Get info about the multi sequence matcher:
+            // Get info about the multi sequence sequences:
             final MultiSequenceMatcher sequences = getMatcher();            
             final int minLength = sequences.getMinimumLength();            
             
