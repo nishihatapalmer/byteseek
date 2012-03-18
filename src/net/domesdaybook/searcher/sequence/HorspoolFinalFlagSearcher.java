@@ -50,7 +50,7 @@ import net.domesdaybook.searcher.SearchResult;
  * <p>
  * The basic idea consists of flagging the bytes which appear at the end of 
  * a pattern in the shift table, while preserving the shift values of the 
- * penultimate byte values, without needing additional storage.  It does this by
+ * existing byte values, without needing additional storage.  It does this by
  * making any shift values that exist for bytes of the final pattern position
  * negative.  Other methods of flagging the final bytes could also be used,
  * (e.g. using bit masking) but making a signed integer negative is quite natural
@@ -187,7 +187,9 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
         final SequenceMatcher verifier = info.verifier;
         
         // Initialise window search:
-        long searchPosition = fromPosition + getMatcher().length() - 1;        
+        final long endSequencePosition = matcher.length() - 1;
+        final long finalPosition = toPosition + endSequencePosition;
+        long searchPosition = fromPosition + endSequencePosition;        
         Window window = reader.getWindow(searchPosition);        
         
         // While there is a window to search in:
@@ -198,7 +200,7 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
             final int lastMatcherPosition = matcher.length() - 1;
-            final long distanceToEnd = toPosition - window.getWindowPosition() + lastMatcherPosition;     
+            final long distanceToEnd = finalPosition - window.getWindowPosition() + lastMatcherPosition;     
             final int lastSearchPosition = distanceToEnd < arrayEndPosition?
                                      (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;            
@@ -218,9 +220,10 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
                 }
                  
                 // The last byte matched - verify there is a complete match:
-                final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
-                if (verifier.matches(reader, startMatchPosition)) {
-                    return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
+                final long totalShift = arraySearchPosition - arrayStartPosition;
+                final long matchPosition = searchPosition + totalShift - endSequencePosition;
+                if (verifier.matches(reader, matchPosition)) {
+                    return SearchUtils.singleResult(matchPosition, matcher); // match found.
                 }
                 
                 // No match was found - shift forward by the next closest shift for
@@ -232,7 +235,7 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
             searchPosition += arraySearchPosition - arrayStartPosition;
             
             // If the search position is now past the last search position, we're finished:
-            if (searchPosition > toPosition) {
+            if (searchPosition > finalPosition) {
                 return SearchUtils.noResults();
             }
             
