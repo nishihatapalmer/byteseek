@@ -348,7 +348,8 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                 for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
 
                     // For each block up to the minimum length of all sequences:
-                    for (int blockEndPosition = blockSize - 1; blockEndPosition < minLength; blockEndPosition++) {
+                    for (int blockEndPosition = blockSize - 1; 
+                             blockEndPosition < minLength; blockEndPosition++) {
 
                         final int distanceToStart = blockEndPosition - blockSize + 1;
                         // For each possible permutation of bytes in a block:
@@ -443,6 +444,7 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
             final MultiSequenceMatcher backMatcher = info.matcher;
 
             // Initialise window search:
+            final long finalPosition = toPosition + sequences.getMaximumLength() - 1;
             long searchPosition = fromPosition + sequences.getMinimumLength() - 1;       
             Window window = reader.getWindow(searchPosition); 
             
@@ -453,7 +455,7 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                 final byte[] array = window.getArray();
                 final int arrayStartPosition = reader.getWindowOffset(searchPosition);
                 final int arrayEndPosition = window.length() - 1;
-                final long distanceToEnd = toPosition - window.getWindowPosition();     
+                final long distanceToEnd = finalPosition - window.getWindowPosition();     
                 final int lastSearchPosition = distanceToEnd < arrayEndPosition?
                                          (int) distanceToEnd : arrayEndPosition;
                 int arraySearchPosition = arrayStartPosition;            
@@ -464,13 +466,13 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                     final int safeShift = safeShifts[array[arraySearchPosition] & 0xFF];
                     if (safeShift == 0) {
                         // see if we have a match:
-                        final long possibleMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
+                        final long matchEndPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                         final Collection<SequenceMatcher> matches =
-                                backMatcher.allMatchesBackwards(reader, possibleMatchPosition);
+                                backMatcher.allMatchesBackwards(reader, matchEndPosition);
                         if (!matches.isEmpty()) {
                             // See if any of the matches are within the bounds of the search:
                             final List<SearchResult<SequenceMatcher>> results = 
-                                SearchUtils.resultsBackFromPosition(possibleMatchPosition, matches,
+                                SearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                                     fromPosition, toPosition);
                             if (!results.isEmpty()) {
                                 return results;
@@ -486,7 +488,7 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                 searchPosition += arraySearchPosition - arrayStartPosition;
 
                 // If the search position is now past the last search position, we're finished:
-                if (searchPosition > toPosition) {
+                if (searchPosition > finalPosition) {
                     return SearchUtils.noResults();
                 }
 
@@ -726,7 +728,7 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
 
                 // Calculate the hash of the current block:
                 int blockHash = 0;
-                for (int blockPosition =  searchPosition - blockSize + 1; 
+                for (int blockPosition = searchPosition - blockSize + 1; 
                          blockPosition <= searchPosition; blockPosition++) {
                     final int value = bytes[blockPosition] & 0xFF;
                     blockHash = ((blockHash << 5) - blockHash) * value;

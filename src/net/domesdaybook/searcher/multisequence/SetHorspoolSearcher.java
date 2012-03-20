@@ -157,7 +157,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = toPosition - window.getWindowPosition();     
+            final long distanceToEnd = finalPosition - window.getWindowPosition();     
             final int lastSearchPosition = distanceToEnd < arrayEndPosition?
                                      (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;            
@@ -177,12 +177,12 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                 }
 
                 // The last bytes matched - verify the rest of the sequences.
-                final long endMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
+                final long matchEndPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                 final Collection<SequenceMatcher> matches = 
-                        verifier.allMatchesBackwards(reader, endMatchPosition);
+                        verifier.allMatchesBackwards(reader, matchEndPosition);
                 if (!matches.isEmpty()) {
                     final List<SearchResult<SequenceMatcher>> results = 
-                        SearchUtils.resultsBackFromPosition(searchPosition, matches,
+                        SearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
                         return results;
@@ -197,7 +197,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             searchPosition += arraySearchPosition - arrayStartPosition;
             
             // If the search position is now past the last search position, we're finished:
-            if (searchPosition > toPosition) {
+            if (searchPosition > finalPosition) {
                 return SearchUtils.noResults();
             }
             

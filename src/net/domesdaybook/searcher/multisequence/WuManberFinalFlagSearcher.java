@@ -410,7 +410,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
     
     public static final class OneByteBlockSearcher extends AbstractWuManberSearcher {
 
-        private OneByteBlockSearcher(final MultiSequenceMatcher matcher) {
+        public OneByteBlockSearcher(final MultiSequenceMatcher matcher) {
             super(matcher, 1);
         }
         
@@ -473,7 +473,8 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             final MultiSequenceMatcher backMatcher = info.matcher;
 
             // Initialise window search:
-            long searchPosition = fromPosition + getMatcher().getMinimumLength() - 1;        
+            final long finalPosition = toPosition + sequences.getMaximumLength() - 1;
+            long searchPosition = fromPosition + sequences.getMinimumLength() - 1;        
             Window window = reader.getWindow(searchPosition); 
             
             // While there is a window to search in:
@@ -483,7 +484,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                 final byte[] array = window.getArray();
                 final int arrayStartPosition = reader.getWindowOffset(searchPosition);
                 final int arrayEndPosition = window.length() - 1;
-                final long distanceToEnd = toPosition - window.getWindowPosition();     
+                final long distanceToEnd = finalPosition - window.getWindowPosition();     
                 final int lastSearchPosition = distanceToEnd < arrayEndPosition?
                                          (int) distanceToEnd : arrayEndPosition;
                 int arraySearchPosition = arrayStartPosition;            
@@ -494,13 +495,13 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                     final int safeShift = safeShifts[array[arraySearchPosition] & 0xFF];
                     if (safeShift < 0) {
                         // see if we have a match:
-                        final long possibleMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
+                        final long matchEndPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                         final Collection<SequenceMatcher> matches =
-                                backMatcher.allMatchesBackwards(reader, possibleMatchPosition);
+                                backMatcher.allMatchesBackwards(reader, matchEndPosition);
                         if (!matches.isEmpty()) {
                             // See if any of the matches are within the bounds of the search:
                             final List<SearchResult<SequenceMatcher>> results = 
-                                SearchUtils.resultsBackFromPosition(possibleMatchPosition, matches, 
+                                SearchUtils.resultsBackFromPosition(matchEndPosition, matches, 
                                                                     fromPosition, toPosition);
                             if (!results.isEmpty()) {
                                 return results;
@@ -516,7 +517,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                 searchPosition += arraySearchPosition - arrayStartPosition;
 
                 // If the search position is now past the last search position, we're finished:
-                if (searchPosition > toPosition) {
+                if (searchPosition > finalPosition) {
                     return SearchUtils.noResults();
                 }
 

@@ -134,6 +134,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
         final MultiSequenceMatcher verifier = info.verifier;
         
         // Initialise window search:
+        final long finalPosition = toPosition + sequences.getMaximumLength() - 1;
         long searchPosition = fromPosition + getMatcher().getMinimumLength() - 1;        
         Window window = reader.getWindow(searchPosition);        
         
@@ -144,7 +145,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = toPosition - window.getWindowPosition();     
+            final long distanceToEnd = finalPosition - window.getWindowPosition();     
             final int lastSearchPosition = distanceToEnd < arrayEndPosition?
                                      (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;            
@@ -164,12 +165,13 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
                 }
 
                 // The last bytes matched - verify the rest of the sequences.
-                final long endMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
+                final long totalShift = arraySearchPosition - arrayStartPosition;
+                final long matchEndPosition = searchPosition + totalShift;
                 final Collection<SequenceMatcher> matches = 
-                        verifier.allMatchesBackwards(reader, endMatchPosition);
+                        verifier.allMatchesBackwards(reader, matchEndPosition);
                 if (!matches.isEmpty()) {
                     final List<SearchResult<SequenceMatcher>> results = 
-                        SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                        SearchUtils.resultsBackFromPosition(matchEndPosition, matches, 
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
                         return results;
@@ -184,8 +186,8 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
             
-            // If the search position is now past the last search position, we're finished:
-            if (searchPosition > toPosition) {
+            // If the search position is now past the last possible search position, we're finished:
+            if (searchPosition > finalPosition) {
                 return SearchUtils.noResults();
             }
             
