@@ -111,8 +111,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
     public List<SearchResult<SequenceMatcher>> searchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int maxLength = sequences.getMaximumLength();
-        final int lastSequencePosition = maxLength - 1;
+        final int smallestMatchEndPosition = sequences.getMinimumLength() - 1;
         long searchPosition = fromPosition > 0?
                               fromPosition : 0;
         
@@ -128,11 +127,11 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             final int windowLength = window.length();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);  
             final int arrayLastPosition = windowLength - 1;             
-            if (arrayStartPosition + lastSequencePosition <= arrayLastPosition) {
+            if (arrayStartPosition + smallestMatchEndPosition <= arrayLastPosition) {
 
                 // Find the last point in the array where the sequence still fits
                 // inside the array, or the toPosition if it is smaller.
-                final int lastMatchingPosition = arrayLastPosition - lastSequencePosition;
+                final int lastMatchingPosition = arrayLastPosition - smallestMatchEndPosition;
                 final long distanceToEnd = toPosition - windowStartPosition;                
                 final int arrayMaxPosition = distanceToEnd < lastMatchingPosition?
                                        (int) distanceToEnd : lastMatchingPosition; 
@@ -206,7 +205,8 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * @param reader The reader providing bytes to search in.
      * @param searchPosition The search position to search from.
      * @param lastSearchPosition The search position to search to.
-     * @return The position of a match, or a negative number if no match was found.
+     * @return A list of search results.  
+     *         If there are no results, then the list is empty (not null).
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
     protected abstract List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, 
@@ -234,8 +234,8 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
     public List<SearchResult<SequenceMatcher>> searchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int maxLength = sequences.getMaximumLength();
-        final int lastSequencePosition = maxLength - 1;
+        final int smallestMatchEndPosition = sequences.getMinimumLength() - 1;
+        final int longestMatchEndPosition = sequences.getMaximumLength() - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
         long searchPosition = withinLength(reader, fromPosition);
@@ -250,28 +250,30 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             // could be longer than any single window - but mostly won't be):
             final long windowStartPosition = window.getWindowPosition();
             final int windowLength = window.length();
-            final int arrayStartPosition = reader.getWindowOffset(searchPosition);  
+            final int searchStartPosition = reader.getWindowOffset(searchPosition);  
             final int arrayLastPosition = windowLength - 1;             
-            if (arrayStartPosition + lastSequencePosition <= arrayLastPosition) {
+            if (searchStartPosition + smallestMatchEndPosition <= arrayLastPosition) {
 
                 // Find the last place in the array to search in (either zero, or
                 // the final search position, whichever is closer):
                 final long distanceToEnd = finalSearchPosition - windowStartPosition;                
-                final int arrayMinPosition = distanceToEnd > 0?
-                                       (int) distanceToEnd : 0; 
+                final int searchEndPosition = distanceToEnd > 0?
+                                        (int) distanceToEnd : 0; 
                         
                 // Search backwards in the byte array of the window:
+                final byte[] array = window.getArray();
                 final List<SearchResult<SequenceMatcher>> arrayResult = 
-                        searchBackwards(window.getArray(), arrayStartPosition, arrayMinPosition);
+                        searchBackwards(array, searchStartPosition, searchEndPosition);
                 
                 // Did we find a match?
                 if (!arrayResult.isEmpty()) {
-                    final long readerOffset = searchPosition - arrayStartPosition;
+                    final long readerOffset = searchPosition - searchStartPosition;
                     return SearchUtils.addPositionToResults(arrayResult, readerOffset);
                 }
                 
                 // Continue the search one on from where we last looked:
-                searchPosition -= (arrayStartPosition - arrayMinPosition + 1);
+                final int bytesSearched = searchStartPosition - searchEndPosition;
+                searchPosition -= (bytesSearched + 1);
 
                 // Did we pass the final search position?  In which case, we're finished.
                 if (searchPosition < finalSearchPosition) {
@@ -284,14 +286,9 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             // We must use the reader interface on the sequence to let it match
             // over more bytes than this window has available.
             
-            // Search back to the first position in the window where the sequence 
-            // would fit inside it, the window start, or the final search position, 
-            // whichever comes first:
-            
-            //FIXME: this isn't right - lastSearchPosition is greater than searchPosition,
-            //       then search position ends up being bigger than when it started.
-            
-            final long lastCrossingPosition = windowStartPosition - lastSequencePosition;
+            // Search back to the first position in the previous window where any 
+            // of the sequences might still cross over into the current window.
+            final long lastCrossingPosition = windowStartPosition - longestMatchEndPosition;
             final List<SearchResult<SequenceMatcher>> readerResult =
                     doSearchBackwards(reader, searchPosition, lastCrossingPosition);
             
@@ -329,7 +326,8 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * @param reader The reader providing bytes to search in.
      * @param searchPosition The search position to search from.
      * @param lastSearchPosition The search position to search to.
-     * @return The position of a match, or a negative number if no match was found.
+     * @return A list of search results.
+     *         If there are no results, the list is empty (not null).
      * @throws IOException If the reader encounters difficulties reading bytes.
      */    
     protected abstract List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader,

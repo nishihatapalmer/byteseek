@@ -572,11 +572,12 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                     if (safeShift == 0) {
 
                         // The first byte matched - verify the rest of the sequences.
-                        final long startMatchPosition = searchPosition + arrayStartPosition - arraySearchPosition;
+                        final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                         final Collection<SequenceMatcher> matches = verifier.allMatches(reader, startMatchPosition);
                         if (!matches.isEmpty()) {
                             return SearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
                         }
+                        
                         arraySearchPosition--; // no match, shift back one.
                     } else { // No match was found - shift backward by the shift for the current byte:
                         arraySearchPosition -= safeShift;

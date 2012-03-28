@@ -332,7 +332,10 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                     final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                     while (permutation.hasNext()) {
                         final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
-                        shifts[hashPos] = -shifts[hashPos];
+                        int currentShift = shifts[hashPos];
+                        if (currentShift > 0) {
+                            shifts[hashPos] = -currentShift;
+                        }
                     }
                 }
                 
@@ -393,7 +396,10 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                     final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                     while (permutation.hasNext()) {
                         final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
-                        shifts[hashPos] = -shifts[hashPos];
+                        int currentShift = shifts[hashPos];
+                        if (currentShift > 0) {
+                            shifts[hashPos] = -currentShift;
+                        }
                     }
                 }
                 
@@ -489,6 +495,8 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                                          (int) distanceToEnd : arrayEndPosition;
                 int arraySearchPosition = arrayStartPosition;            
 
+                long DEBUG_SEARCH = searchPosition;
+                
                 // Search forwards in this array:
                 while (arraySearchPosition <= lastSearchPosition) {
 
@@ -499,7 +507,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                         final Collection<SequenceMatcher> matches =
                                 backMatcher.allMatchesBackwards(reader, matchEndPosition);
                         if (!matches.isEmpty()) {
-                            // See if any of the matches are within the bounds of the search:
+                            // Convert the matches into search results, filtering on the ends of the search:
                             final List<SearchResult<SequenceMatcher>> results = 
                                 SearchUtils.resultsBackFromPosition(matchEndPosition, matches, 
                                                                     fromPosition, toPosition);
@@ -508,8 +516,10 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                             }
                         }
                         arraySearchPosition -= safeShift;
+                        DEBUG_SEARCH -= safeShift;
                     } else {
                         arraySearchPosition += safeShift;
+                        DEBUG_SEARCH += safeShift;
                     } 
                 } 
 
@@ -560,7 +570,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
                     if (safeShift < 0) {
 
                         // The first byte matched - verify the rest of the sequences.
-                        final long startMatchPosition = searchPosition + arrayStartPosition - arraySearchPosition;
+                        final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                         final Collection<SequenceMatcher> matches = verifier.allMatches(reader, startMatchPosition);
                         if (!matches.isEmpty()) {
                             return SearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
