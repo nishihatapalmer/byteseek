@@ -107,40 +107,30 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
     public List<SearchResult<Matcher>> searchForwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         
-        // Use a local reference to the matcher for performance reasons:
-        final Matcher theMatcher = matcher;  
-        
         // Initialise search:
+        final Matcher theMatcher = matcher;    
         long searchPosition = fromPosition > 0? 
-                               fromPosition : 0;
-        Window window = reader.getWindow(searchPosition);
+                              fromPosition : 0;
         
         // As long as there is more data to search in:
-        while (window != null) {
+        Window window;        
+        while (searchPosition <= toPosition && 
+               (window = reader.getWindow(searchPosition))!= null) {
             
             // Calculate search bounds for searching in this window:
-            final int windowSpace = window.length() - reader.getWindowOffset(searchPosition);
-            final long windowEndPosition = searchPosition + windowSpace - 1;
-            final long searchEndPosition = toPosition < windowEndPosition?
-                                           toPosition : windowEndPosition;
+            final int searchLength = window.length() - reader.getWindowOffset(searchPosition);
+            final long searchEndPosition = searchPosition + searchLength - 1;
+            final long finalPosition = toPosition < searchEndPosition?
+                                       toPosition : searchEndPosition;
             
             // Search forwards in the window:
-            while (searchPosition <= searchEndPosition) {
+            while (searchPosition <= finalPosition) {
                 if (theMatcher.matches(reader, searchPosition)) {
                     return SearchUtils.singleResult(searchPosition, theMatcher);
                 }
                 searchPosition++;
             }
             
-            // Did we finish the search?  If the final "to" position is within 
-            // the current window and we didn't find anything, then we are finished.
-            if (toPosition <= windowEndPosition) { 
-                return SearchUtils.noResults();
-            }
-            
-            // Otherwise, get the next window.
-            // The currentPosition is guaranteed to be in the next window by now.
-            window = reader.getWindow(searchPosition);
         }
         return SearchUtils.noResults();
     }
@@ -180,40 +170,18 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
     public List<SearchResult<Matcher>> searchBackwards(final Reader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         
-        // Use a local reference to the matcher for performance reasons:
-        final Matcher theMatcher = matcher;
-        
         // Initialise search:
+        final Matcher theMatcher = matcher;        
         final long endSearchPosition = toPosition > 0? 
                                        toPosition : 0;
         long searchPosition = withinLength(reader, fromPosition);
-        Window window = reader.getWindow(searchPosition);
         
-        // While there is data to search in:
-        while (window != null) {
-            
-            // Calculate search bounds for searching in this window:
-            final long windowStartPosition = window.getWindowPosition();
-            final long windowEndSearchPosition = windowStartPosition > endSearchPosition?
-                                                 windowStartPosition : endSearchPosition;
-            
-            // Search backwards in this window:
-            while (searchPosition >= windowEndSearchPosition) {
-                if (theMatcher.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, theMatcher);
-                }
-                searchPosition--;
+        // Search backwards:
+        while (searchPosition >= endSearchPosition) {
+            if (theMatcher.matches(reader, searchPosition)) {
+                return SearchUtils.singleResult(searchPosition, theMatcher);
             }
-            
-            // Did we finish the search?  If the final "to" position is within 
-            // the current window and we didn't find anything, then we are finished.
-            if (endSearchPosition >= windowStartPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Otherwise, get the next window.
-            // The currentPosition is guaranteed to be in the next window by now.            
-            window = reader.getWindow(searchPosition);
+            searchPosition--;
         }
         return SearchUtils.noResults();
     }
@@ -224,19 +192,16 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      */
     @Override
     public List<SearchResult<Matcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        
-        // Use a local reference to the matcher for performance reasons:
-        final Matcher theMatcher = matcher;
-        
         // Initialise search:
+        final Matcher theMatcher = matcher;
         final int lastPossiblePosition = bytes.length - 1;
-        final int searchEndPosition = toPosition > 0? 
+        final int endSearchPosition = toPosition > 0? 
                                       toPosition : 0;
         int searchPosition = fromPosition < lastPossiblePosition? 
-                              fromPosition : lastPossiblePosition;
+                             fromPosition : lastPossiblePosition;
         
         // Search backwards:
-        while (searchPosition >= searchEndPosition) {
+        while (searchPosition >= endSearchPosition) {
             if (theMatcher.matches(bytes, searchPosition)) {
                 return SearchUtils.singleResult(searchPosition, theMatcher);
             }

@@ -117,8 +117,9 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
                               fromPosition : 0;
         
         // While there is data to search in:
-        Window window = reader.getWindow(searchPosition);        
-        while (window != null && searchPosition <= toPosition) {
+        Window window;        
+        while (searchPosition <= toPosition &&
+               (window = reader.getWindow(searchPosition)) != null) {
             
             // Does the sequence fit into the searchable bytes of this window?
             // It may not if the start position of the window is already close
@@ -176,14 +177,6 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
             
             // Continue the search one on from where we last looked:
             searchPosition = lastSearchPosition + 1;
-            
-            // Did we pass the final toPosition?  In which case, we're finished.
-            if (searchPosition > toPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Get the next window of data to search:
-            window = reader.getWindow(searchPosition);
         }
         
         return SearchUtils.noResults();
@@ -241,8 +234,9 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
         long searchPosition = withinLength(reader, fromPosition);
         
         // While there is data to search in:
-        Window window = reader.getWindow(searchPosition);        
-        while (window != null && searchPosition >= finalSearchPosition) {
+        Window window;        
+        while (searchPosition >= finalSearchPosition &&
+               (window = reader.getWindow(searchPosition)) != null) {
             // Get some info about the window:
             final long windowStartPosition = window.getWindowPosition();
             final int arrayStartSearchPosition = reader.getWindowOffset(searchPosition);              
@@ -310,14 +304,6 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
             
             // Continue the search one on from where we last looked:
             searchPosition = searchToPosition - 1;
-            
-            // Did we pass the final position?  In which case, we're finished.
-            if (searchPosition < finalSearchPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Get the next window of data to search:
-            window = reader.getWindow(searchPosition);
         }
         
         return SearchUtils.noResults();

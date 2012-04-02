@@ -136,10 +136,11 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
         // Initialise window search:
         final long finalPosition = toPosition + sequences.getMaximumLength() - 1;
         long searchPosition = fromPosition + getMatcher().getMinimumLength() - 1;        
-        Window window = reader.getWindow(searchPosition);        
         
         // While there is a window to search in:
-        while (window != null) {
+        Window window;
+        while (searchPosition <= finalPosition &&
+               (window = reader.getWindow(searchPosition))!= null) {
             
             // Initialise array search:
             final byte[] array = window.getArray();
@@ -185,15 +186,6 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
-            
-            // If the search position is now past the last possible search position, we're finished:
-            if (searchPosition > finalPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Otherwise, get the next window.  The search position is 
-            // guaranteed to be in another window at this point.
-            window = reader.getWindow(searchPosition);
         }
 
         return SearchUtils.noResults();        
@@ -263,10 +255,11 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
         
         // Initialise window search:
         long searchPosition = fromPosition;
-        Window window = reader.getWindow(searchPosition);
         
         // Search backwards across the windows:
-        while (window != null) {
+        Window window;        
+        while (searchPosition >= toPosition &&
+               (window = reader.getWindow(searchPosition)) != null) {
             
             // Initialise the window search:
             final byte[] array = window.getArray();
@@ -305,15 +298,6 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             
             // No match was found in this array - calculate the current search position:
             searchPosition -= (arrayStartPosition - arraySearchPosition);
-            
-            // If the search position is now past the last search position, we're finished:
-            if (searchPosition < toPosition) {
-                return SearchUtils.noResults();
-            }            
-            
-            // Otherwise, get the next window.  The search position is 
-            // guaranteed to be in another window at this point.            
-            window = reader.getWindow(searchPosition);
         }
 
         return SearchUtils.noResults();
@@ -388,7 +372,10 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             final Set<Byte> bytesForPosition =
                     MultiSequenceUtils.bytesAlignedRight(0, sequences);
             for (final byte b: bytesForPosition) {
-                info.shifts[b & 0xFF] = -info.shifts[b & 0xFF];
+                int currentShift = info.shifts[b & 0xFF];
+                if (currentShift > 0) {
+                    info.shifts[b & 0xFF] = -currentShift;
+                }
             }
 
             return info;
@@ -443,7 +430,10 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             final Set<Byte> bytesForPosition =
                     MultiSequenceUtils.bytesAlignedLeft(0, sequences);
             for (final byte b: bytesForPosition) {
-                info.shifts[b & 0xFF] = -info.shifts[b & 0xFF];
+                int currentShift = info.shifts[b & 0xFF];
+                if (currentShift > 0) {
+                    info.shifts[b & 0xFF] = -currentShift;
+                }                
             }
 
             return info;

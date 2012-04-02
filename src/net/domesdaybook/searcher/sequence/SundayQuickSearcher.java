@@ -110,20 +110,19 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     public List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
-        // Get the objects needed to search:
+        // Initialise
         final int[] safeShifts = forwardInfo.get();
         final SequenceMatcher sequence = getMatcher();
-        
-        // Initialise window search.
-        // If there is no window immediately after the sequence,
-        // then there is no match, since this is only invoked if the 
-        // sequence is already crossing into another window.        
         final int length = sequence.length();
         long searchPosition = fromPosition;
-        Window window = reader.getWindow(searchPosition + length);
         
-        // While there is a window to search in:
-        while (window != null) {
+        // While there is a window to search in...
+        // If there is no window immediately after the sequence,
+        // then there is no match, since this is only invoked if the 
+        // sequence is already crossing into another window.         
+        Window window;
+        while (searchPosition <= toPosition &&
+               (window = reader.getWindow(searchPosition + length)) != null) {
             
             // Initialise array search:
             final byte[] array = window.getArray();
@@ -154,15 +153,6 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
                 }
                 searchPosition += safeShifts[array[arraySearchPosition] & 0xFF];
             }
-            
-            // If the search position is now past the last search position, we're finished:
-            if (searchPosition > toPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Otherwise, get the next window.  The search position plus the 
-            // length is guaranteed to be in another window at this point.            
-            window = reader.getWindow(searchPosition + length);
         }
 
         return SearchUtils.noResults();
@@ -214,19 +204,18 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     public List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
-        // Get the objects needed to search:
+         // Initialise 
         final int[] safeShifts = forwardInfo.get();
         final SequenceMatcher sequence = getMatcher();
+        long searchPosition = fromPosition;
         
-        // Initialise window search.
+        // While there is a window to search in...
         // If there is no window immediately before the sequence,
         // then there is no match, since this is only invoked if the 
         // sequence is already crossing into another window.        
-        long searchPosition = fromPosition;
-        Window window = reader.getWindow(searchPosition - 1);
-        
-        // While there is a window to search in:
-        while (window != null) {
+        Window window;
+        while (searchPosition >= toPosition &&
+               (window = reader.getWindow(searchPosition - 1)) != null) {
             
             // Initialise array search:
             final byte[] array = window.getArray();
@@ -259,15 +248,6 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
                 }
                 searchPosition -= safeShifts[array[arraySearchPosition] & 0xFF];
             }
-            
-            // If the search position is now past the last search position, we're finished:
-            if (searchPosition < toPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Otherwise, we searched up to the beginning of this window.
-            // The search position minus one is guaranteed to be in another window.  
-            window = reader.getWindow(searchPosition - 1);
         }
         
         return SearchUtils.noResults();

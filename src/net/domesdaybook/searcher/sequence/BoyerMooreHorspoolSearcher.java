@@ -164,10 +164,11 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
         final long endSequencePosition = matcher.length() - 1;
         final long finalPosition = toPosition + endSequencePosition;
         long searchPosition = fromPosition + endSequencePosition;
-        Window window = reader.getWindow(searchPosition);        
-        
+            
         // While there is a window to search in:
-        while (window != null) {
+        Window window;            
+        while (searchPosition <= finalPosition &&
+               (window = reader.getWindow(searchPosition)) != null) {
             
             // Initialise array search:
             final byte[] array = window.getArray();
@@ -206,15 +207,6 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
-            
-            // If the search position is now past the last search position, we're finished:
-            if (searchPosition > finalPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Otherwise, get the next window.  The search position is 
-            // guaranteed to be in another window at this point.
-            window = reader.getWindow(searchPosition);
         }
 
         return SearchUtils.noResults();        
@@ -278,18 +270,17 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
     protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
-        // Get the objects needed to search:
+        // Initialise:
         final SearchInfo info = backwardInfo.get();
         final int[] safeShifts = info.shifts;
         final ByteMatcher startOfSequence = info.matcher;
         final SequenceMatcher verifier = info.verifier;        
-        
-        // Initialise window search:
         long searchPosition = fromPosition;
-        Window window = reader.getWindow(searchPosition);
         
         // Search backwards across the windows:
-        while (window != null) {
+        Window window;        
+        while (searchPosition >= toPosition && 
+               (window = reader.getWindow(searchPosition))!= null) {
             
             // Initialise the window search:
             final byte[] array = window.getArray();
@@ -327,15 +318,6 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             
             // No match was found in this array - calculate the current search position:
             searchPosition -= (arrayStartPosition - arraySearchPosition);
-            
-            // If the search position is now past the last search position, we're finished:
-            if (searchPosition < toPosition) {
-                return SearchUtils.noResults();
-            }            
-            
-            // Otherwise, get the next window.  The search position is 
-            // guaranteed to be in another window at this point.            
-            window = reader.getWindow(searchPosition);
         }
 
         return SearchUtils.noResults();

@@ -61,8 +61,9 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
                               fromPosition : 0;
         
         // While there is data still to search in:
-        Window window = reader.getWindow(searchPosition);
-        while (window != null && searchPosition <= toPosition) {
+        Window window;
+        while (searchPosition <= toPosition &&
+               (window = reader.getWindow(searchPosition)) != null) {
 
             // Calculate bounds for searching over this window:
             final int availableSpace = window.length() - reader.getWindowOffset(searchPosition);
@@ -79,14 +80,6 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
                 searchPosition++;
             }
             
-            // Did we pass the end of the search space?
-            if (toPosition <= endWindowPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Get the next window to search across.
-            // The search position is guaranteed to be in the next window now.
-            window = reader.getWindow(searchPosition);
         }
         return SearchUtils.noResults();
     }
@@ -124,10 +117,11 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         // Initialise:
         final MultiSequenceMatcher matcher = sequences;
         long searchPosition = withinLength(reader, fromPosition);
-        Window window = reader.getWindow(searchPosition);
         
         // While there is data to search in:
-        while (window != null && searchPosition >= toPosition) {
+        Window window;
+        while (searchPosition >= toPosition &&
+               (window = reader.getWindow(searchPosition)) != null) {
             
             // Calculate bounds for searching back across this window:
             final long windowStartPosition = window.getWindowPosition();
@@ -142,16 +136,8 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
                 }
                 searchPosition--;
             }
-            
-            // Did we pass the last search position?
-            if (toPosition >= windowStartPosition) {
-                return SearchUtils.noResults();
-            }
-            
-            // Get the next window to search in.
-            // The search position is guaranteed to be in the next window now.
-            window = reader.getWindow(searchPosition);
         }
+        
         return SearchUtils.noResults();
     }
 

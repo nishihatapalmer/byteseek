@@ -481,10 +481,11 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
             // Initialise window search:
             final long finalPosition = toPosition + sequences.getMaximumLength() - 1;
             long searchPosition = fromPosition + sequences.getMinimumLength() - 1;        
-            Window window = reader.getWindow(searchPosition); 
             
             // While there is a window to search in:
-            while (window != null) {
+            Window window;            
+            while (searchPosition <= finalPosition &&
+                   (window = reader.getWindow(searchPosition)) != null) {
 
                 // Initialise array search:
                 final byte[] array = window.getArray();
@@ -525,15 +526,6 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
 
                 // No match was found in this array - calculate the current search position:
                 searchPosition += arraySearchPosition - arrayStartPosition;
-
-                // If the search position is now past the last search position, we're finished:
-                if (searchPosition > finalPosition) {
-                    return SearchUtils.noResults();
-                }
-
-                // Otherwise, get the next window.  The search position is 
-                // guaranteed to be in another window at this point.
-                window = reader.getWindow(searchPosition);
             }
 
             return SearchUtils.noResults();   
@@ -549,10 +541,11 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
 
             // Initialise window search:
             long searchPosition = fromPosition;
-            Window window = reader.getWindow(searchPosition);
 
             // Search backwards across the windows:
-            while (window != null) {
+            Window window;            
+            while (searchPosition >= toPosition &&
+                   (window = reader.getWindow(searchPosition)) != null) {
 
                 // Initialise the window search:
                 final byte[] array = window.getArray();
@@ -583,15 +576,6 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
 
                 // No match was found in this array - calculate the current search position:
                 searchPosition -= (arrayStartPosition - arraySearchPosition);
-
-                // If the search position is now past the last search position, we're finished:
-                if (searchPosition < toPosition) {
-                    return SearchUtils.noResults();
-                }            
-
-                // Otherwise, get the next window.  The search position is 
-                // guaranteed to be in another window at this point.            
-                window = reader.getWindow(searchPosition);
             }
 
             return SearchUtils.noResults();
