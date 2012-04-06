@@ -257,13 +257,11 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
-        // Get the objects needed to search:
+        // Initialise
         final SearchInfo info = backwardInfo.get();
         final int[] safeShifts = info.shifts;
         final ByteMatcher startOfSequence = info.matcher;
         final MultiSequenceMatcher verifier = info.verifier;        
-        
-        // Initialise window search:
         long searchPosition = fromPosition;
         
         // Search backwards across the windows:
