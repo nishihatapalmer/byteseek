@@ -376,8 +376,23 @@ public final class ByteUtilities {
     }
 
     
-    public static int powerOfTwo(final int i) {
-        return 32 - Integer.numberOfLeadingZeros(i);
+    public static int floorLogBaseTwo(final int i) {
+        return 31 - Integer.numberOfLeadingZeros(i);
+    }
+    
+    
+    public static int ceilLogBaseTwo(final int i) {
+        return 32 - Integer.numberOfLeadingZeros(i - 1);
+    }    
+    
+    
+    public static boolean isPowerOfTwo(final int i) {
+        return i > 0? (i & (i - 1)) == 0 : false;
+    }
+    
+    
+    public static int nextHighestPowerOfTwo(final int i) {
+        return Integer.highestOneBit(i) << 1;
     }
     
     
