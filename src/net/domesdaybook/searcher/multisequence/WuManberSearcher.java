@@ -805,7 +805,7 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
 
                     if (safeShift == 0) {
                         // see if we have a match:
-                        final long startMatchPosition = searchPosition - arrayStartPosition + arraySearchPosition;
+                        final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
                         final Collection<SequenceMatcher> matches =
                                 matcher.allMatches(reader, startMatchPosition);
                         if (!matches.isEmpty()) {
@@ -826,7 +826,7 @@ public class WuManberSearcher extends ProxySearcher<SequenceMatcher> {
                 } 
 
                 // No match was found in this array - calculate the current search position:
-                searchPosition -= (arrayStartPosition - arrayStartPosition);
+                searchPosition -= (arrayStartPosition - arraySearchPosition);
             }
 
             return SearchUtils.noResults();                    
