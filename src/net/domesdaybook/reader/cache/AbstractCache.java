@@ -49,7 +49,7 @@ public abstract class AbstractCache implements WindowCache {
      * 
      */
     public AbstractCache() {
-        windowObservers = Collections.EMPTY_LIST; 
+        windowObservers = Collections.emptyList(); 
     }
     
     
@@ -75,7 +75,7 @@ public abstract class AbstractCache implements WindowCache {
     public boolean unsubscribe(final WindowObserver observer) {
         boolean removed = windowObservers.remove(observer);
         if (windowObservers.isEmpty()) {
-            windowObservers = Collections.EMPTY_LIST;
+            windowObservers = Collections.emptyList();
         }
         return removed;
     }

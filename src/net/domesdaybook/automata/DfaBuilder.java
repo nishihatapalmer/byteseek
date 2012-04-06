@@ -107,7 +107,7 @@ public final class DfaBuilder<T> {
     }
     
     
-    public State build(final Collection<State<T>> initialStates) {
+    public State<T> build(final Collection<State<T>> initialStates) {
         return build(join(initialStates));
     }    
 
@@ -197,10 +197,10 @@ public final class DfaBuilder<T> {
      * @param automata
      * @return 
      */
-    public State join(final Collection<State<T>> automata) {
+    public State<T> join(final Collection<State<T>> automata) {
         final Iterator<State<T>> automataFirstStates = automata.iterator();
         if (automataFirstStates.hasNext()) {
-            final State root = automataFirstStates.next();
+            final State<T> root = automataFirstStates.next();
             boolean isFinal = root.isFinal();            
             while (automataFirstStates.hasNext()) {
                 final State<T> automataFirstState = automataFirstStates.next();

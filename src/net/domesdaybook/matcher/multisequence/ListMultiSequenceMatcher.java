@@ -91,7 +91,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
         if (matchersToUse == null) {
             throw new IllegalArgumentException("Null collection of matchers passed in.");
         }
-        matchers = new ArrayList(matchersToUse);
+        matchers = new ArrayList<SequenceMatcher>(matchersToUse);
         if (matchers.isEmpty()) {
             minimumLength = 0;
             maximumLength = 0;
@@ -140,6 +140,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
             final int matchPosition) {
         List<SequenceMatcher> result = Collections.emptyList();         
         final long noOfBytes = bytes.length;
+        //FIXME: bounds checking doesn't look right.
         if (matchPosition >= minimumLength - 1 && matchPosition + minimumLength < noOfBytes) {
             final List<SequenceMatcher> localMatchers = matchers;
             if (matchPosition + maximumLength < noOfBytes) {

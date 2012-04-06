@@ -98,7 +98,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
       * 
       * @param stateFactory
       */
-     public GlushkovRegexBuilder(final StateFactory stateFactory) {
+     public GlushkovRegexBuilder(final StateFactory<T> stateFactory) {
          this(null, stateFactory);
      }
          
@@ -123,7 +123,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
              this.transitionFactory = transitionFactory;
          }
          if (stateFactory == null) {
-             this.stateFactory = new BaseStateFactory();
+             this.stateFactory = new BaseStateFactory<T>();
          } else {
             this.stateFactory = stateFactory;   
          }

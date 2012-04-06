@@ -50,9 +50,9 @@ public final class SearchUtils {
     }
     
     
-    public static List<SearchResult> searchAllForwards(final Searcher searcher, final byte[] bytes) {
-        final List<SearchResult> results = new ArrayList<SearchResult>();
-        final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, bytes);
+    public static <T> List<SearchResult<T>> searchAllForwards(final Searcher<T> searcher, final byte[] bytes) {
+        final List<SearchResult<T>> results = new ArrayList<SearchResult<T>>();
+        final ForwardSearchIterator<T> iterator = new ForwardSearchIterator<T>(searcher, bytes);
         while (iterator.hasNext()) {
             results.addAll(iterator.next());
         }
@@ -60,9 +60,9 @@ public final class SearchUtils {
     }
 
 
-    public static List<SearchResult> searchAllForwards(final Searcher searcher, final Reader reader) throws IOException {
-        final List<SearchResult> results = new ArrayList<SearchResult>();
-        final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, reader);
+    public static <T> List<SearchResult<T>> searchAllForwards(final Searcher<T> searcher, final Reader reader) throws IOException {
+        final List<SearchResult<T>> results = new ArrayList<SearchResult<T>>();
+        final ForwardSearchIterator<T> iterator = new ForwardSearchIterator<T>(searcher, reader);
         while (iterator.hasNext()) {
             results.addAll(iterator.next());
         }
@@ -70,9 +70,9 @@ public final class SearchUtils {
     }
 
 
-    public static List<SearchResult> searchAllBackwards(final Searcher searcher, final byte[] bytes) {
-        final List<SearchResult> results = new ArrayList<SearchResult>();
-        final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, bytes);
+    public static <T> List<SearchResult<T>> searchAllBackwards(final Searcher<T> searcher, final byte[] bytes) {
+        final List<SearchResult<T>> results = new ArrayList<SearchResult<T>>();
+        final BackwardSearchIterator<T> iterator = new BackwardSearchIterator<T>(searcher, bytes);
         while (iterator.hasNext()) {
             results.addAll(iterator.next());
         }
@@ -80,9 +80,9 @@ public final class SearchUtils {
     }
 
 
-    public static List<SearchResult> searchAllBackwards(final Searcher searcher, final Reader reader) throws IOException {
-        final List<SearchResult> results = new ArrayList<SearchResult>();
-        final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, reader);
+    public static <T> List<SearchResult<T>> searchAllBackwards(final Searcher<T> searcher, final Reader reader) throws IOException {
+        final List<SearchResult<T>> results = new ArrayList<SearchResult<T>>();
+        final BackwardSearchIterator<T> iterator = new BackwardSearchIterator<T>(searcher, reader);
         while (iterator.hasNext()) {
             results.addAll(iterator.next());
         }          
@@ -93,7 +93,7 @@ public final class SearchUtils {
     public static <T> List<SearchResult<T>> singleResult(final long matchPosition,
         final T matchingObject) {
         final List<SearchResult<T>> result = new ArrayList<SearchResult<T>>(1);
-        result.add(new SearchResult(matchPosition, matchingObject));
+        result.add(new SearchResult<T>(matchPosition, matchingObject));
         return result;
     }
     

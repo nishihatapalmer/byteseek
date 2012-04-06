@@ -88,14 +88,14 @@ public class BaseAutomata<T> implements Automata<T>{
     }
     
 
-    public Automata<T> deepCopy() {
+    public BaseAutomata<T> deepCopy() {
         final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
         return deepCopy(oldToNew);
     }
     
     
-    public Automata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        return new BaseAutomata(initialState.deepCopy(oldToNewObjects));
+    public BaseAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        return new BaseAutomata<T>(initialState.deepCopy(oldToNewObjects));
     }
     
 }

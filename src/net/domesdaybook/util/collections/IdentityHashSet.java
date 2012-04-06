@@ -116,7 +116,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
      * {@inheritDoc}
      */
     @Override
-    public Iterator iterator() {
+    public Iterator<T> iterator() {
         return map.keySet().iterator();
     }
     
@@ -131,8 +131,8 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
     
     
     @Override
-    public IdentityHashSet clone() {
-        return new IdentityHashSet(map.keySet());
+    public IdentityHashSet<T> clone() {
+        return new IdentityHashSet<T>(map.keySet());
     }
     
 }

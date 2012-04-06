@@ -191,7 +191,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
                 final int numberOfBytesInCommon = bytesInCommon.size();
                 if (numberOfBytesInCommon == originalTransitionBytesSize) {
                     
-                    final State toState = transition.getToState();
+                    final State<T> toState = transition.getToState();
                     
                     // Ensure that the state is final if necessary:
                     if (isFinal) {
@@ -199,17 +199,17 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
                     }
                     
                     // Add this state to the states we have to process next.
-                    nextStates.add((State<T>) toState);
+                    nextStates.add(toState);
                     
                 } else if (numberOfBytesInCommon > 0) {
                     // Only some bytes are in common.  
                     // We will have to split the existing transition to
                     // two states, and recreate the transitions to them:
-                    final State originalToState = transition.getToState();
+                    final State<T> originalToState = transition.getToState();
                     if (isFinal) {
                         originalToState.setIsFinal(true);
                     }
-                    final State newToState = originalToState.deepCopy();                    
+                    final State<T> newToState = originalToState.deepCopy();                    
                     
                     // Add a transition to the bytes which are not in common:
                     final Transition bytesNotInCommonTransition = transitionFactory.createSetTransition(originalTransitionBytes, false, originalToState);
@@ -220,7 +220,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
                     currentState.addTransition(bytesInCommonTransition);
                    
                     // Add the bytes in common state to the next states to process:
-                    nextStates.add((State<T>) newToState);
+                    nextStates.add(newToState);
                     
                     // Remove the original transition from the current state:
                     currentState.removeTransition(transition);

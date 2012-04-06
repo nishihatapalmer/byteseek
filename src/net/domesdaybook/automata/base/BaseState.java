@@ -81,8 +81,8 @@ public class BaseState<T> implements State<T> {
      */
     public BaseState(final boolean isFinal) {
         this.isFinal = isFinal;
-        this.transitions = Collections.EMPTY_LIST; // new ArrayList<Transition>(1);
-        this.associations = Collections.EMPTY_LIST; // = new ArrayList<T>(0);
+        this.transitions = Collections.emptyList(); // new ArrayList<Transition>(1);
+        this.associations = Collections.emptyList(); // = new ArrayList<T>(0);
     }
 
     
@@ -98,13 +98,13 @@ public class BaseState<T> implements State<T> {
         if (otherTransitions != null && otherTransitions.size() > 0) {
             this.transitions = new ArrayList<Transition>(otherTransitions);
         } else {
-            this.transitions = Collections.EMPTY_LIST;
+            this.transitions = Collections.emptyList();
         }
         final Collection<T> otherAssoc = other.getAssociations();
         if (otherAssoc != null) {
             this.associations = new ArrayList<T>(otherAssoc);
         } else {
-            this.associations = Collections.EMPTY_LIST;
+            this.associations = Collections.emptyList();
         }
     }
 
@@ -142,7 +142,7 @@ public class BaseState<T> implements State<T> {
     public final boolean removeTransition(final Transition transition) {
         boolean wasRemoved = transitions.remove(transition);
         if (transitions.isEmpty()) {
-            transitions = Collections.EMPTY_LIST;
+            transitions = Collections.emptyList();
         }
         return wasRemoved;
     }
@@ -153,7 +153,7 @@ public class BaseState<T> implements State<T> {
      */
     @Override        
     public void clearTransitions() {
-        transitions = Collections.EMPTY_LIST;
+        transitions = Collections.emptyList();
     }
     
     
@@ -260,7 +260,7 @@ public class BaseState<T> implements State<T> {
     public boolean removeAssociation(final Object association) {
         final boolean wasRemoved = associations.remove((T) association);
         if (associations.isEmpty()) {
-            associations = Collections.EMPTY_LIST;
+            associations = Collections.emptyList();
         }
         return wasRemoved;
     }
@@ -283,7 +283,7 @@ public class BaseState<T> implements State<T> {
      */
     @Override
     public void clearAssociations() {
-        associations = Collections.EMPTY_LIST;
+        associations = Collections.emptyList();
     }    
 
     
@@ -296,8 +296,7 @@ public class BaseState<T> implements State<T> {
      */
     @Override
     public BaseState<T> deepCopy() {
-        final Map<DeepCopy, DeepCopy> oldToNewObjects = new IdentityHashMap<DeepCopy,DeepCopy>();
-        return deepCopy(oldToNewObjects);
+        return deepCopy(new IdentityHashMap<DeepCopy,DeepCopy>());
     }
 
     
@@ -314,7 +313,7 @@ public class BaseState<T> implements State<T> {
     public BaseState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
         BaseState<T> stateCopy = (BaseState<T>)oldToNewObjects.get(this);
         if (stateCopy == null) {
-            stateCopy = new BaseState(this.isFinal);
+            stateCopy = new BaseState<T>(this.isFinal);
             oldToNewObjects.put(this, stateCopy);
             for (Transition transition : transitions) {
                 final Transition transitionCopy = transition.deepCopy(oldToNewObjects);

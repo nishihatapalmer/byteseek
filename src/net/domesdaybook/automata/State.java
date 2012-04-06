@@ -242,7 +242,7 @@ public interface State<T> extends DeepCopy {
      * @return State a deep copy of this object.
      * @see #deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)
      */
-    public State deepCopy();
+    public State<T> deepCopy();
 
 
     /**

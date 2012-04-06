@@ -242,7 +242,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition) {
         if (matchPosition >= 0) {
             final int noOfBytes = bytes.length;
-            State state = trie.getInitialState();
+            State<SequenceMatcher> state = trie.getInitialState();
             int currentPosition = matchPosition;
             while (state != null && currentPosition < noOfBytes) {
                 final byte currentByte = bytes[currentPosition++];
@@ -264,7 +264,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     @Override  
     public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
             throws IOException {
-        State state = trie.getInitialState();
+        State<SequenceMatcher> state = trie.getInitialState();
         long currentPosition = matchPosition;
         Window window = reader.getWindow(matchPosition);
         while (window != null) {
@@ -296,7 +296,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     public SequenceMatcher firstMatchBackwards(final byte[] bytes, final int matchPosition) {
         final int noOfBytes = bytes.length;
         if (matchPosition < noOfBytes) {
-            State state = trie.getInitialState();
+            State<SequenceMatcher> state = trie.getInitialState();
             int currentPosition = matchPosition;
             while (state != null && currentPosition >= 0) {
                 final byte currentByte = bytes[currentPosition--];
