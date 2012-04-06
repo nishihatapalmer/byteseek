@@ -48,6 +48,7 @@ import net.domesdaybook.searcher.ProxySearcher;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.Searcher;
+import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
  * WuManberSearcher implements a variation of the classic multi-pattern
@@ -195,6 +196,8 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
      */
     public static abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSearcher {
         
+        private static int HIGHEST_POWER_OF_TWO = 1073741824;
+        
         protected final int blockSize;
         protected final LazyObject<SearchInfo> forwardInfo;
         protected final LazyObject<SearchInfo> backwardInfo;
@@ -235,8 +238,11 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
         }
         
         
+                
+        
         private int[] createShiftHashTable(final int defaultShift) {
-            final int optimumTableSize = guessOptimalTablePowerOfTwoSize();
+            final int possibleTableSize = guessTableSize();
+            final int optimumTableSize = chooseOptimumSize(possibleTableSize);
             final int[] shifts = new int[optimumTableSize];
             Arrays.fill(shifts, defaultShift);  
             return shifts;
@@ -268,22 +274,52 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
          * Need to profile performance given different table sizes and investigate
          * hash functions.
          * 
-         * @return a pure guess at an optimal table size, an exact power of two, or
-         *         256 if the block size is one.
+         * @return a pure guess at an optimal table size,
          */
-        private int guessOptimalTablePowerOfTwoSize() {
-            // with a block size of 1, we only have a single byte value, with 256
-            // distinct values.  
-            if (blockSize == 1) {
-                return 256; 
-            }
-            // Otherwise, take a guess - we probably don't want a table of 65,536 values
+        private int guessTableSize() {
+            // Take a guess - we probably don't want a table of 65,536 values
             // or greater under normal circumstances...
-            final int numberOfSequences = sequences.getSequenceMatchers().size();
-            final int smallestTableSize = 192 + (numberOfSequences * 16);
-            final int powerOfTwo = Integer.highestOneBit(smallestTableSize);
-            return 1 << (powerOfTwo + 1);
-        } 
+            // It's not really the number of sequences... it's the number of permutations
+            // of the end byte blocks which affect how many hash table entries you 
+            // really want. Using the number of sequences is a sort of proxy for this
+            // as most sequences *probably* won't have large byte classes at their end.
+            // Probably.
+            return 128 + (sequences.getSequenceMatchers().size() * 16);
+        }
+        
+             
+        /**
+         * Picks a hash table size which is a power of two. 
+         * <p>
+         * Ensures that the hash table is at least 1 in size, and that it is 
+         * not higher than a hash table containing all possible byte values for
+         * the number of bytes in a block.  For example, if the block size is 2,
+         * there is no point having a hash table size greater than 65536, as that
+         * has an entry for each unique value of a block.
+         * 
+         * @param suggestedSize The size of hash table suggested.
+         * @return An optimum hash table size for the suggested size.
+         */
+        private int chooseOptimumSize(final int suggestedSize) {
+            final int positiveSize = suggestedSize > 1?
+                                     suggestedSize : 1;
+            final int possibleSize = ByteUtilities.isPowerOfTwo(positiveSize)?
+                      positiveSize : ByteUtilities.nextHighestPowerOfTwo(positiveSize);
+            final int maxSize = getMaxTableSize();
+            return possibleSize < maxSize?
+                   possibleSize : maxSize;
+        }
+        
+        
+        private int getMaxTableSize() {
+            switch (blockSize) {
+                case 1: return 256;
+                case 2: return 65536;   
+                case 3: return 16777216;
+            }
+            return HIGHEST_POWER_OF_TWO;
+        }
+
 
         
         protected class ForwardSearchInfo extends LazyObject<SearchInfo> {
