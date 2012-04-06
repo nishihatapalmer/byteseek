@@ -97,7 +97,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
         if (window == null || offset >= window.length()) {
             return NO_BYTE_AT_POSITION;
         }
-        return window.getByte(offset);
+        return window.getByte(offset) & 0xFF;
     }
     
     
