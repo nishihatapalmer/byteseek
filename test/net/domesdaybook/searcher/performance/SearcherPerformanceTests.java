@@ -55,9 +55,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import net.domesdaybook.searcher.Searcher;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
+import net.domesdaybook.searcher.SearchResult;
 
 /**
  * Runs the searchers against different files and inputs to search for,
@@ -76,20 +80,36 @@ import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
  * <p>
  * Use the command line option -XX:+UseSerialGC to force the use of the
  * serial garbage collector.  This may be better for micro-benchmarks like this.
+ * <p>
+ * -XX:+PrintCompilation -XX:+UseSerialGC
  * 
  * @author Matt Palmer
  */
 public class SearcherPerformanceTests {
     
-    public final static int FIRST_WARMUP_TIMES = 10;
-    public final static int SECOND_WARMUP_TIMES = 10;
-    public final static int CYCLE_WARMUP_TIMES = 5;
-    public final static int TEST_TIMES = 100;
+    public final static int FIRST_WARMUP_TIMES = 3;
+    public final static int SECOND_WARMUP_TIMES = 3;
+    public final static int CYCLE_WARMUP_TIMES = 3;
+    public final static int TEST_TIMES = 100; 
     
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Starting profiling");
         SearcherPerformanceTests tests = new SearcherPerformanceTests();
         
+        //warmup(tests);
+        
+        Thread.sleep(250); 
+        System.out.println("Running performance tests " + TEST_TIMES);
+        
+        Thread.sleep(250); // just let things settle down before running actual tests.        
+        tests.profile(TEST_TIMES);
+        Thread.sleep(250);
+        
+        System.out.println("Ending profiling");
+        System.out.println("Prevent optimising away results...." + tests.getLastResultCount());
+    }
+    
+    private static void warmup(SearcherPerformanceTests tests) {
         System.out.println("First warm up " + FIRST_WARMUP_TIMES + " times to provoke initial JIT compilation.");
         tests.profile(FIRST_WARMUP_TIMES);
         System.out.println("Ending first warmup.");
@@ -98,17 +118,7 @@ public class SearcherPerformanceTests {
         tests.profile(SECOND_WARMUP_TIMES);
         System.out.println("Ending second warmup.");
         
-        cycleWarmup(tests);
-        
-        Thread.sleep(250); 
-        System.out.println("Running performance tests " + TEST_TIMES);
-        
-        Thread.sleep(250); // just let things settle down before running axtual tests.        
-        tests.profile(TEST_TIMES);
-        Thread.sleep(250);
-        
-        System.out.println("Ending profiling");
-        System.out.println("Prevent optimising away results...." + tests.getLastResultCount());
+        cycleWarmup(tests);        
     }
     
     private static void cycleWarmup(SearcherPerformanceTests tests) {
@@ -129,7 +139,7 @@ public class SearcherPerformanceTests {
     
     public void profile(int numberOfTimes) {
         try {
-            profileSequenceSearchers(numberOfTimes);
+            //profileSequenceSearchers(numberOfTimes);
             profileMultiSequenceSearchers(numberOfTimes);      
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
@@ -145,6 +155,9 @@ public class SearcherPerformanceTests {
         
         // Single long phrase in ascii text first 4096 bytes:
         profileSequence("Information about Project Gutenberg", numberOfTimes);
+        
+        // String which crosses a 4096-length window boundary:
+        profileSequence("Gutenberg", numberOfTimes);
         
         // Uncommon string in ascii text:
         profileSequence("Midsommer", numberOfTimes);
@@ -164,8 +177,8 @@ public class SearcherPerformanceTests {
     public void profileMultiSequenceSearchers(int numberOfTimes) throws IOException {
         
         profileMultiSequence(numberOfTimes, "Midsommer", "and");
-        
         profileMultiSequence(numberOfTimes, "Midsommer ", "and");
+        
         
         profileMultiSequence(numberOfTimes, 
                 "Midsommer", "Oberon", "Titania", "Dreame", "heere",
@@ -244,6 +257,7 @@ public class SearcherPerformanceTests {
         searchers.add(new SetHorspoolSearcher(multisequence));
         searchers.add(new SetHorspoolFinalFlagSearcher(multisequence));
         searchers.add(new WuManberSearcher(multisequence));
+        searchers.add(new WuManberSearcher(multisequence, 2));
         searchers.add(new WuManberFinalFlagSearcher(multisequence));
         return searchers;
     }
@@ -255,6 +269,13 @@ public class SearcherPerformanceTests {
         } catch (InterruptedException ex) {
             Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        // work out which results are common to all searchers:
+        Map<Long, List<Searcher>> forwardReaderAnalysis = new HashMap<Long, List<Searcher>>();
+        Map<Long, List<Searcher>> backReaderAnalysis = new HashMap<Long, List<Searcher>>();
+        Map<Long, List<Searcher>> forwardBytesAnalysis = new HashMap<Long, List<Searcher>>();
+        Map<Long, List<Searcher>> backBytesAnalysis = new HashMap<Long, List<Searcher>>();
+        
         int resultCount = 0;
         String message = "%s\t%s\t%s\t%s\tForward reader:\t%d\t%d\tForward bytes:\t%d\t%d\tBack reader:\t%d\t%d\tBack bytes:\t%d\t%d";
         for (Map.Entry<Searcher, ProfileResults> entry : results.entrySet()) {
@@ -274,14 +295,59 @@ public class SearcherPerformanceTests {
                                               testInfo.backwardReaderStats.searchMatches.size(),
                                               testInfo.backwardBytesStats.searchTime,
                                               testInfo.backwardBytesStats.searchMatches.size() );
-               System.out.println(output);
+                // add results to analysis:
+                addAnalysis(searcher, testInfo.forwardReaderStats.searchMatches, forwardReaderAnalysis);
+                addAnalysis(searcher, testInfo.backwardReaderStats.searchMatches, backReaderAnalysis);
+                addAnalysis(searcher, testInfo.forwardBytesStats.searchMatches, forwardBytesAnalysis);
+                addAnalysis(searcher, testInfo.backwardBytesStats.searchMatches, backBytesAnalysis);
+                
+                System.out.println(output);
                resultCount++;
             }
         }
+        
+        System.out.println("Mismatch analysis starting:");
+        
+        writeAnalysis("Forward reader", forwardReaderAnalysis, results.keySet());
+        writeAnalysis("Forward bytes", forwardBytesAnalysis, results.keySet());        
+        writeAnalysis("Backward reader", backReaderAnalysis, results.keySet());
+        writeAnalysis("Backward bytes", backBytesAnalysis, results.keySet());
+        
+        System.out.println("Mismatch analysis finished.");
+        
         return resultCount;
     }
     
- 
+    private void writeAnalysis(String description, Map<Long, List<Searcher>> analysis, 
+                               Set<Searcher> searcherSet) {
+        for (Map.Entry<Long, List<Searcher>> entry : analysis.entrySet()) {
+            List<Searcher> searchers = entry.getValue();
+            if (searchers.size() != searcherSet.size()) {
+                String message = description + "\tmatch at\t" + entry.getKey() + "\tnot found by\t";
+                Set<Searcher> newSet = new HashSet<Searcher>(searcherSet);
+                for (Searcher searcher : searchers) {
+                    newSet.remove(searcher);
+                }
+                for (Searcher searcher : newSet) {
+                    message += searcher.getClass().getSimpleName() + " ";
+                }
+                System.out.println(message);
+            }
+        }
+    }
+    
+    private void addAnalysis(Searcher searcher, List<SearchResult> results, Map<Long, List<Searcher>> analysis) { 
+        for (SearchResult result : results) {
+            List<Searcher> searchers = analysis.get(result.getMatchPosition());
+            if (searchers == null) {
+                searchers = new ArrayList<Searcher>();
+                analysis.put(result.getMatchPosition(), searchers);
+            }
+            searchers.add(searcher);
+        }
+    }
+    
+    
     
     
 }
