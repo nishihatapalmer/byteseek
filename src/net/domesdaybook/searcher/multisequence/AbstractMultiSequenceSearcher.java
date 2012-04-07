@@ -238,22 +238,19 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
         while (searchPosition >= finalSearchPosition &&
                (window = reader.getWindow(searchPosition)) != null) {
             
-            // Does the multi-sequence fit into the searchable bytes of this window?
+            // Calculate first search start position
+            final int searchStartPosition = reader.getWindowOffset(searchPosition);
+            final long windowStartPosition = window.getWindowPosition();
+            final long distanceToEnd = finalSearchPosition - windowStartPosition;                
+            final int searchEndPosition = distanceToEnd > 0?
+                                    (int) distanceToEnd : 0;             
+            
+            // Can the multi-sequence fit into the searchable bytes of this window?
             // It may not if the start position of the window is already close
             // to the end of the window, or the sequence is long (potentially
             // could be longer than any single window - but mostly won't be):
-            final long windowStartPosition = window.getWindowPosition();
-            final int windowLength = window.length();
-            final int searchStartPosition = reader.getWindowOffset(searchPosition);  
-            final int arrayLastPosition = windowLength - 1;             
-            if (searchStartPosition + smallestMatchEndPosition <= arrayLastPosition) {
+            if (searchStartPosition - smallestMatchEndPosition >= searchEndPosition) {
 
-                // Find the last place in the array to search in (either zero, or
-                // the final search position, whichever is closer):
-                final long distanceToEnd = finalSearchPosition - windowStartPosition;                
-                final int searchEndPosition = distanceToEnd > 0?
-                                        (int) distanceToEnd : 0; 
-                        
                 // Search backwards in the byte array of the window:
                 final byte[] array = window.getArray();
                 final List<SearchResult<SequenceMatcher>> arrayResult = 
