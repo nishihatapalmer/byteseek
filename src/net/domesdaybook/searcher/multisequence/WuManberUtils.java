@@ -31,24 +31,7 @@
 
 package net.domesdaybook.searcher.multisequence;
 
-import java.io.IOException;
-import net.domesdaybook.util.bytes.BytePermutationIterator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
-import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
-import net.domesdaybook.util.object.LazyObject;
-import net.domesdaybook.reader.Window;
-import net.domesdaybook.searcher.ProxySearcher;
-import net.domesdaybook.searcher.SearchUtils;
-import net.domesdaybook.searcher.SearchResult;
-import net.domesdaybook.searcher.Searcher;
-import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
  * WuManberUtils implements a variation of the classic multi-pattern
@@ -103,41 +86,46 @@ public class WuManberUtils {
    
 
     public static int suggestBlockSize(final MultiSequenceMatcher matcher) {
-        return suggestBlockSize(matcher, 256);
+        return suggestBlockSize(256, matcher);
     }
     
     
-    public static int suggestBlockSize(final MultiSequenceMatcher matcher,
-                                   final int alphabetSize) {
-        final int minLength = matcher.getMinimumLength();
-        final int numberOfSequences = matcher.getSequenceMatchers().size();
-        return suggestBlockSize(minLength, numberOfSequences, alphabetSize);
+    public static int suggestBlockSize(final int alphabetSize,
+                                       final MultiSequenceMatcher matcher) {
+        return suggestBlockSize(alphabetSize,
+                                matcher.getMinimumLength(),
+                                matcher.getSequenceMatchers().size());
     }
     
     
-    public static int suggestBlockSize(final int minimumLength, 
-                                       final int numberOfSequences,
-                                       final int alphabetSize) {
-        final double optimumBlockSize = 
-                getWuManberRecommendedBlockSize(alphabetSize, minimumLength, numberOfSequences);
-        final int possibleBlockSize = (int) Math.ceil(optimumBlockSize);
-        final int notGreaterThanMinimumLength = minimumLength < possibleBlockSize?
-                                                minimumLength : possibleBlockSize;
-        return notGreaterThanMinimumLength > 1 ? notGreaterThanMinimumLength : 1;
+    public static int suggestBlockSize(final int alphabetSize,
+                                       final int minimumLength, 
+                                       final int numberOfSequences) {
+        return getSafeBlockSize(minimumLength, (int) Math.ceil(
+                calculatePossibleBlockSize(alphabetSize,
+                                           minimumLength, 
+                                           numberOfSequences)));
     }    
     
     
+    public static int getSafeBlockSize(final int minimumLength, final int possibleBlockSize) {
+        final int notGreaterThanMinimumLength = minimumLength < possibleBlockSize?
+                                                minimumLength : possibleBlockSize;
+        return notGreaterThanMinimumLength > 1 ? notGreaterThanMinimumLength : 1;        
+    }
+    
+    
     /**
-     * This formulae to suggest the optimum block size is suggested by
+     * This formulae to calculate the optimum block size is suggested by
      * Wu and Manber.
      * 
      * @param minimumLength The minimum length of all sequences to be matched.
      * @param numberOfSequences The number of sequences to be matched.
      * @return The suggested block size for an efficient Wu Manber search.
      */
-    public static double getWuManberRecommendedBlockSize(final int alphabetSize,
-                                                         final int minimumLength, 
-                                                         final int numberOfSequences) {
+    public static double calculatePossibleBlockSize(final int alphabetSize,
+                                                    final int minimumLength, 
+                                                    final int numberOfSequences) {
         return logOfBase(alphabetSize, 2 * minimumLength * numberOfSequences);
     }    
     

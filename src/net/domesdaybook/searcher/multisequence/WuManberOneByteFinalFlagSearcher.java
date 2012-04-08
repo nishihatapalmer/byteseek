@@ -99,7 +99,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * @author Matt Palmer
  */
 
-public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
+public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
    
 
     public static int getBlockSize(final MultiSequenceMatcher matcher) {
@@ -165,7 +165,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
      * 
      * @param sequences 
      */
-    public WuManberFinalFlagSearcher(final MultiSequenceMatcher matcher) {
+    public WuManberOneByteFinalFlagSearcher(final MultiSequenceMatcher matcher) {
         this(matcher, getBlockSize(matcher));
     }    
     
@@ -175,7 +175,7 @@ public class WuManberFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
      * @param sequences
      * @param blockSize 
      */
-    public WuManberFinalFlagSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
+    public WuManberOneByteFinalFlagSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
         super(createSearchInstance(matcher, blockSize));
     }
     
