@@ -32,9 +32,9 @@ package net.domesdaybook.searcher.performance;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.domesdaybook.searcher.multisequence.WuManberFinalFlagSearcher;
+import net.domesdaybook.searcher.multisequence.WuManberOneByteFinalFlagSearcher;
 import net.domesdaybook.matcher.multisequence.ListMultiSequenceMatcher;
-import net.domesdaybook.searcher.multisequence.WuManberSearcher;
+import net.domesdaybook.searcher.multisequence.WuManberUtils;
 import net.domesdaybook.searcher.multisequence.SetHorspoolFinalFlagSearcher;
 import net.domesdaybook.searcher.multisequence.SetHorspoolSearcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
@@ -62,6 +62,9 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
 import net.domesdaybook.searcher.SearchResult;
+import net.domesdaybook.searcher.multisequence.WuManberOneByteSearcher;
+import net.domesdaybook.searcher.multisequence.WuManberOneByteTunedSearcher;
+import net.domesdaybook.searcher.multisequence.WuManberTwoByteSearcher;
 
 /**
  * Runs the searchers against different files and inputs to search for,
@@ -109,6 +112,40 @@ public class SearcherPerformanceTests {
         System.out.println("Prevent optimising away results...." + tests.getLastResultCount());
     }
     
+    public void profile(int numberOfTimes) {
+        try {
+            //profileSequenceSearchers(numberOfTimes);
+            profileMultiSequenceSearchers(numberOfTimes);      
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private Collection<Searcher> getSequenceSearchers(SequenceMatcher sequence) {
+        List<Searcher> searchers = new ArrayList<Searcher>();
+        searchers.add(new MatcherSearcher(sequence));
+        searchers.add(new SequenceMatcherSearcher(sequence));
+        searchers.add(new BoyerMooreHorspoolSearcher(sequence));
+        searchers.add(new HorspoolFinalFlagSearcher(sequence));
+        searchers.add(new SundayQuickSearcher(sequence)); 
+        return searchers;
+    }
+    
+    private Collection<Searcher> getMultiSequenceSearchers(MultiSequenceMatcher multisequence) {
+        List<Searcher> searchers = new ArrayList<Searcher>();
+        searchers.add(new MatcherSearcher(multisequence));
+        searchers.add(new MultiSequenceMatcherSearcher(multisequence));
+        searchers.add(new SetHorspoolSearcher(multisequence));
+        searchers.add(new SetHorspoolFinalFlagSearcher(multisequence));
+        searchers.add(new WuManberOneByteSearcher(multisequence));
+        searchers.add(new WuManberOneByteTunedSearcher(multisequence));
+        searchers.add(new WuManberTwoByteSearcher(multisequence));
+        searchers.add(new WuManberOneByteFinalFlagSearcher(multisequence));
+        return searchers;
+    }    
+    
     private static void warmup(SearcherPerformanceTests tests) {
         System.out.println("First warm up " + FIRST_WARMUP_TIMES + " times to provoke initial JIT compilation.");
         tests.profile(FIRST_WARMUP_TIMES);
@@ -137,16 +174,7 @@ public class SearcherPerformanceTests {
         return lastResultCount;
     }
     
-    public void profile(int numberOfTimes) {
-        try {
-            //profileSequenceSearchers(numberOfTimes);
-            profileMultiSequenceSearchers(numberOfTimes);      
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+
     
     public void profileSequenceSearchers(int numberOfTimes) throws FileNotFoundException, IOException {
 
@@ -235,31 +263,6 @@ public class SearcherPerformanceTests {
         SearcherProfiler profiler = new SearcherProfiler();        
         Map<Searcher, ProfileResults> results = profiler.profile(searchers, numberOfTimes);
         return writeResults(description, results);              
-    }
-    
-    
-    // bug in backwards searching for sequencesearcher (probably abstract) - infinite loop.
-    private Collection<Searcher> getSequenceSearchers(SequenceMatcher sequence) {
-        List<Searcher> searchers = new ArrayList<Searcher>();
-        searchers.add(new MatcherSearcher(sequence));
-        searchers.add(new SequenceMatcherSearcher(sequence));
-        searchers.add(new BoyerMooreHorspoolSearcher(sequence));
-        searchers.add(new HorspoolFinalFlagSearcher(sequence));
-        searchers.add(new SundayQuickSearcher(sequence)); 
-        return searchers;
-    }
-    
-    
-    private Collection<Searcher> getMultiSequenceSearchers(MultiSequenceMatcher multisequence) {
-        List<Searcher> searchers = new ArrayList<Searcher>();
-        searchers.add(new MatcherSearcher(multisequence));
-        searchers.add(new MultiSequenceMatcherSearcher(multisequence));
-        searchers.add(new SetHorspoolSearcher(multisequence));
-        searchers.add(new SetHorspoolFinalFlagSearcher(multisequence));
-        searchers.add(new WuManberSearcher(multisequence));
-        searchers.add(new WuManberSearcher(multisequence, 2));
-        searchers.add(new WuManberFinalFlagSearcher(multisequence));
-        return searchers;
     }
     
     
