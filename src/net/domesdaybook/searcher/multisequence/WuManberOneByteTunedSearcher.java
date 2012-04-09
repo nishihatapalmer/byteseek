@@ -66,6 +66,7 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
         final int minimumLength = sequences.getMinimumLength();
         final int minimumPosition = minimumLength - 1;        
         final int lastPossiblePosition = bytes.length - 1;
+        //FIXME: is minimum length the correct distznce - isn't it default shift?
         final int lastPossibleUnrolledPosition = lastPossiblePosition - 3 * minimumLength;
         final int lastToPosition = toPosition + sequences.getMaximumLength() - 1;
         final int lastUnrolledPosition = lastToPosition < lastPossibleUnrolledPosition?
@@ -117,7 +118,7 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
         final int lastPosition = lastToPosition < lastPossiblePosition ?
                                  lastToPosition : lastPossiblePosition;
         while (searchPosition <= lastPosition) {
-            final int lastByteValue = bytes[searchPosition & 0xFF];
+            final int lastByteValue = bytes[searchPosition] & 0xFF;
             int safeShift = safeShifts[lastByteValue];   
             if (safeShift > 0) {
                 searchPosition += safeShift;

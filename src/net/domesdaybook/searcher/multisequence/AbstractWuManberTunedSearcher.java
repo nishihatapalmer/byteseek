@@ -205,11 +205,12 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
             // For each sequence in our list:
             for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
                 final int matcherLength = sequence.length();
+                final int lastMatcherPosition = matcherLength - 1;
 
                 // For each block up to the end of the sequence, starting
                 // the minimum length of all sequences back from the end.
                 final int firstBlockEndPosition = matcherLength - sequences.getMinimumLength() + blockSize - 1; 
-                for (int blockEndPosition = firstBlockEndPosition; blockEndPosition < matcherLength; blockEndPosition++) {
+                for (int blockEndPosition = firstBlockEndPosition; blockEndPosition < lastMatcherPosition; blockEndPosition++) {
                     final int distanceFromEnd = matcherLength - blockEndPosition - 1;
 
                     // For each possible permutation of bytes in a block:
@@ -220,15 +221,6 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
                         final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
                         final int currentShift = shifts[hashPos];
                         
-                        // If we're at the end, record the current shift in a smaller
-                        // hash table, if it is smaller than the current entry:
-                        if (distanceFromEnd == 0) {
-                            int finalShift = finalShifts[hashPos & finalHashBitMask];
-                            if (currentShift < finalShift) {
-                                finalShifts[hashPos & finalHashBitMask] = currentShift;
-                            }
-                        }
-                        
                         // Set the shift for the hash position of this permutation to be 
                         // the smaller of the existing shift and current distance from the end:
                         if (distanceFromEnd < currentShift) {
@@ -237,6 +229,47 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
                     }
                 }
             }
+            
+            // Get the last shifts and map them to a smaller final shift hash table:
+            for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
+                final int matcherLength = sequence.length();
+                final int lastMatcherPosition = matcherLength - 1;
+                
+                // For each possible permutation of bytes in a block:
+                final List<byte[]> blockBytes = getBlockByteList(lastMatcherPosition, sequence);
+                final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
+                while (permutation.hasNext()) {
+                    // Get the shift for the hash position of this permutation:
+                    final int hashValue = getBlockHash(permutation.next());
+                    final int currentShift = shifts[hashValue & hashBitMask];
+                    // If not already reset to zero, see if its smaller than the 
+                    // final shift entry we have for this hash value.
+                    if (currentShift > 0) {
+                        final int finalShift = finalShifts[hashValue & finalHashBitMask];
+                        if (currentShift < finalShift) {
+                            finalShifts[hashValue & finalHashBitMask] = currentShift;
+                        }
+                    }
+                }           
+            }
+            
+            // Zero out the main shifts for the last bytes: 
+            for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
+                final int matcherLength = sequence.length();
+                final int lastMatcherPosition = matcherLength - 1;
+                
+                // For each possible permutation of bytes in a block:
+                final List<byte[]> blockBytes = getBlockByteList(lastMatcherPosition, sequence);
+                final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
+                while (permutation.hasNext()) {
+                    
+                    // Zero the shift for the last matcher position.
+                    final int hashValue = getBlockHash(permutation.next());
+                    shifts[hashValue & hashBitMask] = 0;
+                }           
+            }
+                
+            
             return new SearchInfo(shifts, 
                                   finalShifts, 
                                   new MultiSequenceReverseMatcher(sequences));
