@@ -93,7 +93,7 @@ public class SearcherPerformanceTests {
     public final static int FIRST_WARMUP_TIMES = 3;
     public final static int SECOND_WARMUP_TIMES = 3;
     public final static int CYCLE_WARMUP_TIMES = 3;
-    public final static int TEST_TIMES = 100; 
+    public final static int TEST_TIMES = 1;//100; 
     
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Starting profiling");
@@ -204,8 +204,8 @@ public class SearcherPerformanceTests {
     
     public void profileMultiSequenceSearchers(int numberOfTimes) throws IOException {
         
-        profileMultiSequence(numberOfTimes, "Midsommer", "and");
-        profileMultiSequence(numberOfTimes, "Midsommer ", "and");
+        //profileMultiSequence(numberOfTimes, "Midsommer", "and");
+        //profileMultiSequence(numberOfTimes, "Midsommer ", "and");
         
         
         profileMultiSequence(numberOfTimes, 
