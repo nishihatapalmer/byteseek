@@ -227,7 +227,7 @@ public class ByteArrayMatcherTest {
         testMatchesAroundReader(matcher, 61);
         testMatchesAroundReader(matcher, 1017);
         
-        matcher = new ByteArrayMatcher(new byte[] {0x48, 0x65, 0x72, 0x65}); // Here
+        matcher = new ByteArrayMatcher("Here"); // Here
         testMatchesAroundReader(matcher, 28200);
         testMatchesAroundReader(matcher, 60836);
         testMatchesAroundReader(matcher, 64481);
@@ -236,6 +236,12 @@ public class ByteArrayMatcherTest {
         testMatchesAroundReader(matcher, 196);
         testMatchesAroundReader(matcher, 42004);
         testMatchesAroundReader(matcher, 112277);
+        
+        // Test around a window boundary at 4096
+        matcher = new ByteArrayMatcher("be");
+        testMatchesAroundReader(matcher, 4095);
+        matcher = new ByteArrayMatcher("Gutenberg");
+        testMatchesAroundReader(matcher, 4090);
     }
 
     
