@@ -627,6 +627,12 @@ public final class ByteUtilities {
         return result;
     }
     
+    
+    public static String bytesToString(final boolean prettyPrint, final byte[] bytes) {
+        return bytesToString(prettyPrint, bytes, 0, bytes.length);
+    }
+    
+    
     /**
      * Returns a byte array as a String.  If not pretty printed, the bytes
      * are presented as 2 digit hex numbers.  If pretty printed, then bytes
@@ -637,11 +643,12 @@ public final class ByteUtilities {
      * @param bytes The bytes to render as a String.
      * @return A string containing a representation of the byte array.
      */
-    public static String bytesToString(final boolean prettyPrint, final byte[] bytes) {
+    public static String bytesToString(final boolean prettyPrint, final byte[] bytes,
+                                       final int startIndex, final int length) {
         final StringBuilder hexString = new StringBuilder();
         boolean inString = false;
-        for (int byteIndex = 0, byteLength = bytes.length;
-            byteIndex < byteLength; byteIndex++) {
+        for (int byteIndex = startIndex, endIndex = startIndex + length;
+            byteIndex < endIndex; byteIndex++) {
             final int byteValue = 0xFF & bytes[byteIndex];
             if (prettyPrint &&
                     byteValue >= START_PRINTABLE_ASCII &&
