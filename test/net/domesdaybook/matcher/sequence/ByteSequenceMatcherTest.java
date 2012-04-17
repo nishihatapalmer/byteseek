@@ -5,6 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
 import java.io.IOException;
 import org.junit.BeforeClass;
 import java.io.FileNotFoundException;
@@ -29,6 +30,7 @@ public class ByteSequenceMatcherTest {
     private final static Random rand = new Random();   
     
     private FileReader reader;
+    private byte[] bytes;
         
     /**
      * 
@@ -58,6 +60,7 @@ public class ByteSequenceMatcherTest {
     @Before
     public void setUp() throws Exception {
         reader = new FileReader(getFile("/TestASCII.txt"));
+        bytes = reader.getWindow(0).getArray();
     }
     
     
@@ -220,43 +223,33 @@ public class ByteSequenceMatcherTest {
     @Test
     public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {
         ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); // ***
-        testMatchesAround(matcher, 0);
-        testMatchesAround(matcher, 61);
-        testMatchesAround(matcher, 1017);
+        testMatchesAroundReader(matcher, 0);
+        testMatchesAroundReader(matcher, 61);
+        testMatchesAroundReader(matcher, 1017);
         
         matcher = new ByteArrayMatcher(new byte[] {0x48, 0x65, 0x72, 0x65}); // Here
-        testMatchesAround(matcher, 28200);
-        testMatchesAround(matcher, 60836);
-        testMatchesAround(matcher, 64481);
+        testMatchesAroundReader(matcher, 28200);
+        testMatchesAroundReader(matcher, 60836);
+        testMatchesAroundReader(matcher, 64481);
         
         matcher = new ByteArrayMatcher(new byte[] {0x2e, 0x0d, 0x0a}); // . <LF> <CR>
-        testMatchesAround(matcher, 196);
-        testMatchesAround(matcher, 42004);
-        testMatchesAround(matcher, 112277);
+        testMatchesAroundReader(matcher, 196);
+        testMatchesAroundReader(matcher, 42004);
+        testMatchesAroundReader(matcher, 112277);
     }
 
     
-    private void testMatchesAround(ByteArrayMatcher matcher, long pos) throws IOException {
-        String matchDesc = matcher.toRegularExpression(true);
-        assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
-        assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
-        assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
-    }
     
     /**
      * Test of matches method, of class ByteArrayMatcher.
      */
     @Test
     public void testMatches_byteArr_int() {
-        System.out.println("matches");
-        byte[] bytes = null;
-        int matchFrom = 0;
-        ByteArrayMatcher instance = null;
-        boolean expResult = false;
-        boolean result = instance.matches(bytes, matchFrom);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); // ***
+        testMatchesAroundArray(matcher, 0);
+        testMatchesAroundArray(matcher, 61);
+        testMatchesAroundArray(matcher, 1017);
+
     }
 
 
@@ -266,32 +259,43 @@ public class ByteSequenceMatcherTest {
      */
     @Test
     public void testMatchesNoBoundsCheck_byteArr_int() {
-        System.out.println("matchesNoBoundsCheck");
-        byte[] bytes = null;
-        int matchPosition = 0;
-        ByteArrayMatcher instance = null;
-        boolean expResult = false;
-        boolean result = instance.matchesNoBoundsCheck(bytes, matchPosition);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); // ***
+        testMatchesAroundArrayNoCheck(matcher, 61);
+        testMatchesAroundArrayNoCheck(matcher, 1017);
     }
 
 
+    private void testMatchesAroundReader(ByteArrayMatcher matcher, long pos) throws IOException {
+        String matchDesc = matcher.toRegularExpression(true);
+        assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
+    }
+
+    
+    private void testMatchesAroundArray(ByteArrayMatcher matcher, int pos) {
+        String matchDesc = matcher.toRegularExpression(true);
+        assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(bytes, pos));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(bytes, pos - 1));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(bytes, pos + 1));
+    }
+    
+    
+    private void testMatchesAroundArrayNoCheck(ByteArrayMatcher matcher, int pos) {
+        String matchDesc = matcher.toRegularExpression(true);
+        assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matchesNoBoundsCheck(bytes, pos));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matchesNoBoundsCheck(bytes, pos - 1));
+        assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matchesNoBoundsCheck(bytes, pos + 1));
+    }    
+    
 
     /**
      * Test of toRegularExpression method, of class ByteArrayMatcher.
      */
     @Test
     public void testToRegularExpression() {
-        System.out.println("toRegularExpression");
-        boolean prettyPrint = false;
-        ByteArrayMatcher instance = null;
-        String expResult = "";
-        String result = instance.toRegularExpression(prettyPrint);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
+        assertEquals("reg ex abc", " 'abc' ", matcher.toRegularExpression(true));
     }
 
     /**
@@ -299,14 +303,10 @@ public class ByteSequenceMatcherTest {
      */
     @Test
     public void testGetByteMatcherForPosition() {
-        System.out.println("getByteMatcherForPosition");
-        int position = 0;
-        ByteArrayMatcher instance = null;
-        ByteMatcher expResult = null;
-        ByteMatcher result = instance.getMatcherForPosition(position);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
+        byte[] onebytes = matcher.getMatcherForPosition(0).getMatchingBytes();
+        assertEquals("abc1 length", 1, onebytes.length);
+        assertEquals("abc1 value", 'a', onebytes[0]);
     }
 
     /**
@@ -314,13 +314,9 @@ public class ByteSequenceMatcherTest {
      */
     @Test
     public void testReverse() {
-        System.out.println("reverse");
-        ByteArrayMatcher instance = null;
-        ByteArrayMatcher expResult = null;
-        ByteArrayMatcher result = instance.reverse();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
+        ByteArrayMatcher reversed = matcher.reverse();
+        
     }
     
     
