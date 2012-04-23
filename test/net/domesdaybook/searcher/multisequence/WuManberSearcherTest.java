@@ -55,7 +55,7 @@ public class WuManberSearcherTest {
     }
 
     /**
-     * Test of getWuManberRecommendedBlockSize method, of class WuManberSearcher.
+     * Test of calculatePossibleBlockSize method, of class WuManberUtils.
      */
     @Test
     public void testGetWuManberRecommendedBlockSize() {
@@ -63,7 +63,7 @@ public class WuManberSearcherTest {
         /* test what block sizes we get:
         for (int numSeqs = 1; numSeqs < 1000; numSeqs += 25) {
             for (int minLength = 1; minLength < 100; minLength += 5) {
-                final int blockSize = getBlockSize(minLength, numSeqs);
+                final int blockSize = suggestBlockSize(minLength, numSeqs);
                 String message = String.format("Num seqs:%d\tMin length:%d\tBlocksize:%d", numSeqs, minLength, blockSize);
                 System.out.println(message);
             }
@@ -77,7 +77,7 @@ public class WuManberSearcherTest {
     }
     
     private int getBlockSize(final int minimumLength, final int numberOfSequences) {
-        final double optimumBlockSize = WuManberSearcher.getWuManberRecommendedBlockSize(256, minimumLength, numberOfSequences);
+        final double optimumBlockSize = WuManberUtils.calculatePossibleBlockSize(256, minimumLength, numberOfSequences);
         final int possibleBlockSize = (int) Math.ceil(optimumBlockSize);
         final int notGreaterThanMinimumLength = minimumLength < possibleBlockSize?
                                                 minimumLength : possibleBlockSize;
