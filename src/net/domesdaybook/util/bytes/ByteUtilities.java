@@ -249,6 +249,25 @@ public final class ByteUtilities {
     
     
     /**
+     * Reverses a subsequence of an array.
+     * 
+     * @param array
+     * @param startIndex
+     * @param endIndex
+     * @return 
+     */
+    public static byte[] reverseArraySubsequence(final byte[] array, final int startIndex, final int endIndex) {
+        final int length = endIndex - startIndex;
+        final int endPos = endIndex - 1;
+        final byte[] reversed = new byte[length];
+        for (int i = 0; i < length; i++) {
+            reversed[i] = array[endPos - i];
+        }
+        return reversed;        
+    }
+    
+    
+    /**
      * Returns a byte array containing the original array passed in repeated a 
      * number of times.
      * 
@@ -265,6 +284,26 @@ public final class ByteUtilities {
         }    
         return repeated;
     }
+    
+    
+    /**
+     * Returns a byte array containing the original array passed in repeated a 
+     * number of times.
+     * 
+     * @param array
+     * @param numberOfRepeats
+     * @return 
+     */
+    public static byte[] repeat(final byte[] array, final int numberOfRepeats,
+                                final int startIndex, final int endIndex) {
+        final int repeatLength = endIndex - startIndex;
+        final int size = repeatLength * numberOfRepeats;
+        final byte[] repeated = new byte[size];
+        for (int repeat = 0; repeat < numberOfRepeats; repeat++) {
+            System.arraycopy(array, startIndex, repeated, repeat * repeatLength, repeatLength);
+        }    
+        return repeated;
+    }    
     
     
     /**

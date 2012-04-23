@@ -51,8 +51,12 @@ import net.domesdaybook.reader.Window;
 public final class ByteArrayMatcher implements SequenceMatcher {
 
     private final byte[] byteArray;
-    private final int length;
+    private final int startIndex;
+    private final int endIndex;
 
+    /****************
+     * Constructors *
+     ***************/
 
     /**
      * Constructs an immutable byte sequence matcher from an array of bytes.
@@ -64,12 +68,86 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     public ByteArrayMatcher(final byte[] byteArray) {
         if (byteArray == null || byteArray.length == 0) {
-            throw new IllegalArgumentException("Null or empty byte array passed in to ByteSequenceMatcher");
+            throw new IllegalArgumentException("Null or empty byte array passed in to ByteArrayMatcher constructor.");
         }
         this.byteArray = byteArray.clone(); // avoid mutability issues - clone byte array.
-        this.length = byteArray.length;     
+        this.startIndex = 0;
+        this.endIndex = byteArray.length;   
     }
 
+    
+    /**
+     * Copy constructor creating an immutable sub-sequence of another ByteArrayMatcher, 
+     * backed by the original byte array.
+     * 
+     * @param source The ByteArrayMatcher to create a subsequence from.
+     * @param startIndex The start position of the source to begin from.
+     * @param endIndex The end position of the source, which is one greater than
+     *                 the last position to match in the source array.
+     */
+    public ByteArrayMatcher(final ByteArrayMatcher source, 
+                            final int startIndex, final int endIndex) {
+        if (source == null) {
+            throw new IllegalArgumentException("Null ByteArrayMatcher source passed in to ByteArrayMatcher constructor.");
+        }
+        if (startIndex > endIndex) {
+            final String message = "The start %d is past the end %d for source %s";
+            throw new IllegalArgumentException(String.format(message, startIndex, endIndex, source));
+        }
+        if (startIndex > source.length() - 1) {
+            final String message = "Start position %d is past the end of the source %s, length = %d.";
+            throw new IllegalArgumentException(String.format(message, startIndex, source, source.length()));
+        }
+        if (endIndex > source.length()) {
+            final String message = "The end %d is past the end the source %s, length = %d";
+            throw new IllegalArgumentException(String.format(message, endIndex, source, source.length()));
+        }
+        this.byteArray = source.byteArray;
+        this.startIndex = source.startIndex + startIndex;
+        this.endIndex = source.startIndex + endIndex;
+    }
+    
+
+    /**
+     * Constructor creating an immutable ByteArrayMatcher from another ByteArrayMatcher,
+     * backed by a new byte array containing the subsequence defined by the start
+     * and end indexes, repeated a number of times.
+     * 
+     * @param source The ByteArrayMatcher to create a subsequence from.
+     * @param startIndex The start position of the source to begin from.
+     * @param endIndex The end position of the source, which is one greater than
+     *                 the last position to match in the source array.
+     */
+    public ByteArrayMatcher(final byte[] source, 
+                            final int startIndex, final int endIndex,
+                            final int numberOfRepeats) {
+        if (source == null) {
+            throw new IllegalArgumentException("Null ByteArrayMatcher source passed in to ByteArrayMatcher constructor.");
+        }
+        if (startIndex > endIndex) {
+            final String message = "The start %d is past the end %d for source";
+            throw new IllegalArgumentException(String.format(message, startIndex, endIndex));
+        }
+        if (startIndex > source.length - 1) {
+            final String message = "Start position %d is past the end of the source, length = %d.";
+            throw new IllegalArgumentException(String.format(message, startIndex, source.length));
+        }
+        if (endIndex > source.length) {
+            final String message = "The end %d is past the end the source, length = %d";
+            throw new IllegalArgumentException(String.format(message, endIndex, source.length));
+        }
+        this.byteArray = ByteUtilities.repeat(source, startIndex, endIndex, numberOfRepeats);
+        this.startIndex = 0;
+        this.endIndex = this.byteArray.length;
+    }    
+                    
+    
+    public ByteArrayMatcher(final ReverseMatcher toReverse) {
+        this.byteArray= toReverse.byteArray;
+        this.startIndex = toReverse.startIndex;
+        this.endIndex = toReverse.endIndex;
+    }
+    
     
     /**
      * Constructs an immutable byte sequence matcher from a collection of Bytes.
@@ -82,7 +160,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("Null or empty byte list passed in to ByteSequenceMatcher.");
         }
         this.byteArray = ByteUtilities.toArray(byteList);
-        length = byteArray.length;
+        this.startIndex = 0;
+        this.endIndex = byteArray.length;
     }
 
 
@@ -101,15 +180,16 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         }
         int totalLength = 0;
         for (final ByteArrayMatcher matcher : matchers) {
-            totalLength += matcher.length;
+            totalLength += matcher.endIndex;
         }
         this.byteArray = new byte[totalLength];
         int position = 0;
         for (final ByteArrayMatcher matcher : matchers) {
-            System.arraycopy(matcher.byteArray, 0, this.byteArray, position, matcher.length);
-            position += matcher.length;
+            System.arraycopy(matcher.byteArray, 0, this.byteArray, position, matcher.endIndex);
+            position += matcher.endIndex;
         }
-        length = totalLength;
+        this.startIndex = 0;
+        this.endIndex = totalLength;
     }
 
 
@@ -124,9 +204,10 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         if (numberOfBytes < 1) {
             throw new IllegalArgumentException("ByteSequenceMatcher requires a positive number of bytes.");
         }
-        length = numberOfBytes;
         this.byteArray = new byte[numberOfBytes];
         Arrays.fill(this.byteArray, byteValue);
+        this.startIndex = 0;
+        this.endIndex = numberOfBytes;
     }
 
 
@@ -173,7 +254,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * to encode the bytes in the string.
      * 
      * @param string The string whose bytes will be matched
-     * @param charset The charset to encode the strings bytes in.
+     * @param charset The Charset to encode the strings bytes in.
      * @param numberOfRepeats the number of times to repeat the string.
      * @throws IllegalArgumentException if the string is null or empty, or the
      *         Charset is null, or the numberOfRepeats is less than one.
@@ -186,8 +267,14 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("Null charset passed in to ByteSequenceMatcher constructor.");
         }
         this.byteArray = string.getBytes(charset);
-        this.length = byteArray.length;
+        this.startIndex = 0;
+        this.endIndex = byteArray.length;
     }
+    
+    
+    /***********
+     * Methods *
+     **********/
     
     
     /**
@@ -196,23 +283,30 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     @Override
     public boolean matches(final Reader reader, final long matchPosition)
             throws IOException {
-        final int localLength = length;
-        final byte[] localArray = byteArray;          
+        final byte[] matchArray = byteArray;          
+        final int matchStart = startIndex;
+        final int matchEnd = endIndex;
+        final int matchLength = matchEnd - matchStart;
         Window window = reader.getWindow(matchPosition);
-        int checkPos = 0;
+        int matchPos = matchStart;
+        int bytesMatchedSoFar = 0;
         while (window != null) {
-            final int offset = reader.getWindowOffset(matchPosition + checkPos);
-            final int endPos = Math.min(window.length(), offset + localLength - checkPos);
-            final byte[] array = window.getArray();
-            for (int windowPos = offset; windowPos < endPos; windowPos++) {
-                if (array[windowPos] != localArray[checkPos++]) {
+            final byte[] source = window.getArray();    
+            final int offset = reader.getWindowOffset(matchPosition + bytesMatchedSoFar);
+            final int finalWindowIndex = window.length();
+            final int finalMatchIndex = offset + matchLength - bytesMatchedSoFar;
+            final int sourceEnd = finalWindowIndex < finalMatchIndex?
+                                  finalWindowIndex : finalMatchIndex;
+            for (int sourcePos = offset; sourcePos < sourceEnd; sourcePos++) {
+                if (source[sourcePos] != matchArray[matchPos++]) {
                     return false;
                 }
             }
-            if (checkPos == localLength) {
+            if (matchPos >= matchEnd) {
                 return true;
             }
-            window = reader.getWindow(matchPosition + checkPos);
+            bytesMatchedSoFar = matchPos - matchStart;
+            window = reader.getWindow(matchPosition + bytesMatchedSoFar);
         }
         return false;
     }
@@ -223,11 +317,12 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        if (matchPosition + length <= bytes.length && matchPosition >= 0) {
-            int position = matchPosition;
-            final byte[] localArray = byteArray;
-            for (final byte value : localArray) {
-                if (value != bytes[position++]) {
+        if (matchPosition + endIndex - startIndex <= bytes.length && matchPosition >= 0) {
+            final byte[] matchArray = byteArray;
+            final int endingIndex = endIndex;
+            int position = matchPosition;            
+            for (int matchIndex = startIndex; matchIndex < endingIndex; matchIndex++) {
+                if (matchArray[matchIndex] != bytes[position++]) {
                     return false;
                 }
             }
@@ -243,9 +338,10 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         int position = matchPosition;
-        final byte[] localArray = byteArray;        
-        for (final byte value : localArray) {
-            if (value != bytes[position++]) {
+        final byte[] matchArray = byteArray;   
+        final int endingIndex = endIndex;
+        for (int matchIndex = startIndex; matchIndex < endingIndex; matchIndex++) {
+            if (matchArray[matchIndex] != bytes[position++]) {
                 return false;
             }
         }
@@ -258,7 +354,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     @Override
     public int length() {
-        return length;
+        return endIndex - startIndex;
     }
 
     
@@ -280,7 +376,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return ByteUtilities.bytesToString(prettyPrint, byteArray);
+        return ByteUtilities.bytesToString(prettyPrint, byteArray, startIndex, endIndex);
     }
 
 
@@ -289,7 +385,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     @Override
     public ByteMatcher getMatcherForPosition(final int position) {
-        return new OneByteMatcher(byteArray[position]);
+        return new OneByteMatcher(byteArray[position + startIndex]);
     }
 
     
@@ -297,9 +393,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override    
-    public ByteArrayMatcher reverse() {
-        final byte[] reverseArray = ByteUtilities.reverseArray(byteArray);
-        return new ByteArrayMatcher(reverseArray);
+    public SequenceMatcher reverse() {
+        return new ReverseMatcher(this);
     }
 
     
@@ -308,14 +403,18 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */    
     @Override
     public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
-        if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
+        if (beginIndex < 0 || endIndex > length() || beginIndex >= endIndex) {
             final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
-            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
+            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length()));
         }
-        if (endIndex - beginIndex == 1) {
+        final int subsequenceLength = endIndex - beginIndex;
+        if (subsequenceLength == 1) {
             return new OneByteMatcher(byteArray[beginIndex]);
         }
-        return new ByteArrayMatcher(Arrays.copyOfRange(byteArray, beginIndex, endIndex));
+        if (subsequenceLength == length()) {
+            return this;
+        }
+        return new ByteArrayMatcher(this, beginIndex, endIndex);
     }
 
     
@@ -323,14 +422,271 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */ 
     @Override
-    public SequenceMatcher repeat(int numberOfRepeats) {
+    public SequenceMatcher repeat(final int numberOfRepeats) {
         if (numberOfRepeats < 1) {
             throw new IllegalArgumentException("Number of repeats must be at least one.");
         }
         if (numberOfRepeats == 1) {
             return this;
         }
-        return new ByteArrayMatcher(ByteUtilities.repeat(byteArray, numberOfRepeats));
+        return new ByteArrayMatcher(byteArray, startIndex, endIndex, numberOfRepeats);
+    }
+    
+    
+    
+    ///////////////////////////////////////////////////////////////////////////////////
+    //                                   ReverseMatcher
+    ///////////////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    public static final class ReverseMatcher implements SequenceMatcher {
+         
+         private final byte[] byteArray;
+         private final int startIndex;
+         private final int endIndex;
+         
+         
+         public ReverseMatcher(final ByteArrayMatcher toReverse) {
+             this.byteArray = toReverse.byteArray;
+             this.startIndex = toReverse.startIndex;
+             this.endIndex = toReverse.endIndex;
+         }
+         
+         
+         public ReverseMatcher(final byte[] array) {
+             if (array == null) {
+                 throw new IllegalArgumentException("Null array passed in to constructor.");
+             }
+             this.byteArray = array.clone();
+             this.startIndex = 0;
+             this.endIndex = array.length;
+         }
+         
+         
+        /**
+         * Copy constructor creating an immutable sub-sequence of another ReverseMatcher, 
+         * backed by the original byte array, but otherwise behaving as if the array
+         * had been reversed.  In particular, start indexes and end indexes should be
+         * interpreted with that in mind.  All translation of the indexes so they work
+         * with the original array is done internally.
+         * 
+         * @param source The ByteArrayMatcher to create a subsequence from.
+         * @param startIndex The start position of the source to begin from.
+         * @param endIndex The end position of the source, which is one greater than
+         *                 the last position to match in the source array.
+         */
+        public ReverseMatcher(final ReverseMatcher source, 
+                              final int startIndex, final int endIndex) {
+            if (source == null) {
+                throw new IllegalArgumentException("Null ReverseMatcher passed in to constructor.");
+            }
+            if (startIndex > endIndex) {
+                final String message = "The start %d is past the end %d for source %s";
+                throw new IllegalArgumentException(String.format(message, startIndex, endIndex, source));
+            }
+            if (startIndex > source.length() - 1) {
+                final String message = "Start position %d is past the end of the source %s, length = %d.";
+                throw new IllegalArgumentException(String.format(message, startIndex, source, source.length()));
+            }
+            if (endIndex > source.length()) {
+                final String message = "The endIndex %d is past the end of the source %s, length = %d";
+                throw new IllegalArgumentException(String.format(message, endIndex, source, source.length()));
+            }
+            this.byteArray = source.byteArray;
+            final int newLength = endIndex - startIndex;
+            this.startIndex = source.endIndex - newLength + 1;
+            this.endIndex = source.endIndex - startIndex;
+        }         
+               
+        
+        public ReverseMatcher(final byte[] source,
+                              final int startIndex, final int endIndex,
+                              final int numberOfRepeats) {
+            if (source == null) {
+                throw new IllegalArgumentException("Null ReverseMatcher passed in to constructor.");
+            }
+            if (startIndex > endIndex) {
+                final String message = "The start %d is past the end %d for source";
+                throw new IllegalArgumentException(String.format(message, startIndex, endIndex));
+            }
+            if (startIndex > source.length - 1) {
+                final String message = "Start position %d is past the end of the source, length = %d.";
+                throw new IllegalArgumentException(String.format(message, startIndex, source.length));
+            }
+            if (endIndex > source.length) {
+                final String message = "The endIndex %d is past the end of the source, length = %d";
+                throw new IllegalArgumentException(String.format(message, endIndex, source.length));
+            }
+            this.byteArray = ByteUtilities.repeat(source, startIndex, endIndex,
+                                                  numberOfRepeats);
+            this.startIndex = 0;
+            this.endIndex = this.byteArray.length;            
+        }
+        
+        //FIXME: infinite loop when crossing windows.
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean matches(final Reader reader, final long matchPosition)
+                throws IOException {
+            final int matchStart = startIndex;
+            final int matchLength = endIndex - startIndex;
+            final int matchEnd = endIndex - 1;
+            final byte[] matchArray = byteArray;          
+            Window window = reader.getWindow(matchPosition);
+            int matchPos = matchEnd;
+            int bytesMatchedSoFar = 0;
+            while (window != null) {
+                final byte[] source = window.getArray();            
+                final int offset = reader.getWindowOffset(matchPosition + bytesMatchedSoFar);
+                final int finalWindowIndex = window.length();
+                final int finalMatchIndex = offset + matchLength - bytesMatchedSoFar;
+                final int sourceEnd = finalWindowIndex < finalMatchIndex?
+                                      finalWindowIndex : finalMatchIndex;
+                for (int sourcePos = offset; sourcePos < sourceEnd; sourcePos++) {
+                    if (source[sourcePos] != matchArray[matchPos--]) {
+                        return false;
+                    }
+                }
+                if (matchPos < matchStart) {
+                    return true;
+                }
+                bytesMatchedSoFar = matchEnd - matchPos;
+                window = reader.getWindow(matchPosition + bytesMatchedSoFar);
+            }
+            return false;
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean matches(final byte[] bytes, final int matchPosition) {
+            if (matchPosition + length() <= bytes.length && matchPosition >= 0) {
+                final byte[] matchArray = byteArray;
+                final int endingIndex = startIndex;
+                int position = matchPosition;            
+                for (int matchIndex = endIndex - 1; matchIndex >= endingIndex; matchIndex--) {
+                    if (matchArray[matchIndex] != bytes[position++]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }    
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+            int position = matchPosition;
+            final byte[] matchArray = byteArray;   
+            final int endingIndex = startIndex;
+            for (int matchIndex = endIndex - 1; matchIndex >= endingIndex; matchIndex--) {
+                if (matchArray[matchIndex] != bytes[position++]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int length() {
+            return endIndex - startIndex;
+        }
+
+
+        /**
+         * Returns a string representation of this matcher.  The format is subject
+         * to change, but it will generally return the name of the matching class
+         * and a regular expression defining the bytes matched by the matcher.
+         * 
+         * @return A string representing this matcher.
+         */
+        @Override
+        public String toString() {
+            return "ByteArrayMatcher$" + getClass().getSimpleName() + "(" + toRegularExpression(true) + ")";
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toRegularExpression(final boolean prettyPrint) {
+            //FIXME: can we have a reverseBytesToString method instead...?
+            //       current method creates a new byte array just to print the bytes out.
+            return ByteUtilities.bytesToString(prettyPrint, 
+                    ByteUtilities.reverseArraySubsequence(byteArray, startIndex, endIndex));
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ByteMatcher getMatcherForPosition(final int position) {
+            if (position < 0 || position >= length()) {
+                final String message = "Position %d is out of bounds in matcher of length %d";
+                throw new ArrayIndexOutOfBoundsException(String.format(message, position, length()));
+            }
+            return new OneByteMatcher(byteArray[endIndex - 1 - position]);
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override    
+        public SequenceMatcher reverse() {
+            return new ByteArrayMatcher(this);
+        }
+
+        
+        /**
+         * {@inheritDoc}
+         */    
+        @Override
+        public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
+            if (beginIndex < 0 || endIndex > length() || beginIndex >= endIndex) {
+                final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
+                throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length()));
+            }
+            final int subsequenceLength = endIndex - beginIndex;
+            if (subsequenceLength == 1) {
+                return new OneByteMatcher(byteArray[beginIndex]);
+            }
+            if (subsequenceLength == length()) {
+                return this;
+            }
+            return new ReverseMatcher(this, beginIndex, endIndex);
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */ 
+        @Override
+        public SequenceMatcher repeat(final int numberOfRepeats) {
+            if (numberOfRepeats < 1) {
+                throw new IllegalArgumentException("Number of repeats must be at least one.");
+            }
+            if (numberOfRepeats == 1) {
+                return this;
+            }
+            return new ReverseMatcher(byteArray, startIndex, endIndex, numberOfRepeats);
+        }
+         
     }
     
 }
