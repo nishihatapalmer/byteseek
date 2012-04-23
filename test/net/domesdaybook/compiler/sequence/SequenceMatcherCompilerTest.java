@@ -5,7 +5,7 @@
 
 package net.domesdaybook.compiler.sequence;
 
-import net.domesdaybook.matcher.sequence.SequenceMatcherArrayMatcher;
+import net.domesdaybook.matcher.sequence.SequenceArrayMatcher;
 import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.ByteRangeMatcher;
 import net.domesdaybook.matcher.bytes.SetBinarySearchMatcher;
@@ -116,7 +116,7 @@ public class SequenceMatcherCompilerTest {
 
         basicTests("01fd [ef]   de", 4, ByteArrayMatcher.class);
         
-        basicTests("01fd [ef fe]   de", 4, SequenceMatcherArrayMatcher.class);
+        basicTests("01fd [ef fe]   de", 4, SequenceArrayMatcher.class);
 
         basicTests("01{4}", 4, ByteArrayMatcher.class);
 
@@ -126,8 +126,8 @@ public class SequenceMatcherCompilerTest {
         basicTests("[fffe]{5}", 5, ByteMatcherArrayMatcher.class);
         
         basicTests("(0102){2}", 4, ByteArrayMatcher.class);
-        basicTests("(dd[ff03]){3}", 6, SequenceMatcherArrayMatcher.class);
-        basicTests("'start'(dd[ff03]){3}", 11, SequenceMatcherArrayMatcher.class);
+        basicTests("(dd[ff03]){3}", 6, SequenceArrayMatcher.class);
+        basicTests("'start'(dd[ff03]){3}", 11, SequenceArrayMatcher.class);
 
         basicTests(".{1000}", 1000, FixedGapMatcher.class);
     }
