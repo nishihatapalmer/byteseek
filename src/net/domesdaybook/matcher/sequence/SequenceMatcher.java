@@ -100,14 +100,28 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
      * original sequence.  The subsequence returned must match at least one
      * byte (an empty SequenceMatcher is prohibited).
      * 
-     * @param beginIndex The beginning index, inclusive.
+     * @param beginIndex The beginning index, starting at zero, inclusive.
      * @param endIndex The ending index, exclusive.
      * @return SequenceMatcher the specified sub-sequence.
      * @throws IndexOutOfBoundsException if the beginIndex is negative, 
-     * or the endIndex is greater than the length of the sequence,
-     * or the beginIndex is greater than or equal to the endIndex.
+     *         or the endIndex is greater than the length of the sequence,
+     *         or the beginIndex is greater than or equal to the endIndex.
      */
     public SequenceMatcher subsequence(int beginIndex, int endIndex);
+    
+    
+    /**
+     * Returns a new SequenceMatcher which matches a sub-sequence of the original
+     * sequence starting from the begin index.  The subsequence returned must match
+     * at least one byte (and empty SequenceMatcher is prohibited).
+     * 
+     * @param beginIndex The beginning index, starting at zero.
+     * @return SequenceMatcher the specified sub-sequence.
+     * @throws IndexOutOfBoundsException if the beginIndex is negative, 
+     *         or the endIndex is greater than the length of the sequence,
+     *         or the beginIndex is greater than or equal to the endIndex.
+     */
+    public SequenceMatcher subsequence(int beginIndex);
     
     
     /**

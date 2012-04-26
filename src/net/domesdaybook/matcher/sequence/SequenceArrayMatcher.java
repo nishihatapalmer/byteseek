@@ -322,6 +322,15 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
+     */  
+    @Override
+    public SequenceMatcher subsequence(final int beginIndex) {
+        return subsequence(beginIndex, length());
+    }    
+    
+    
+    /**
+     * {@inheritDoc}
      */
     @Override    
     public SequenceMatcher repeat(int numberOfRepeats) {

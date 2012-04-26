@@ -81,18 +81,37 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
     /**
      * Throws an IndexOutOfBoundsException if the begin index is not zero or
      * the endIndex is not one, otherwise it returns this.
-     * SingleByteSequenceMatchers by definition only match one byte, 
+     * ByteMatchers by definition only match one byte, 
      * so there can be no other possible subsequences.
      * 
-     * @param beginIndex The beginning index, inclusive.
-     * @param endIndex The ending index, exclusive.
+     * @param beginIndex The beginning index, which must be 0.
+     * @param endIndex The ending index, which must be 1.
      * @return SequenceMatcher this sequence matcher.
      * @throws IndexOutOfBoundsException if the begin index is not zero or the 
-     * end index is not one.
+     *         end index is not one.
      */
     @Override
     public final SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
         if (beginIndex != 0 || endIndex != 1) {
+            throw new IndexOutOfBoundsException("SingleByteMatchers only support a sequence starting at zero with a length of one.");
+        }
+        return this;
+    }
+    
+    
+    /**
+     * Throws an IndexOutOfBoundsException if the begin index is not zero,
+     * otherwise it returns this.
+     * ByteMatcher by definition only match one byte, 
+     * so there can be no other possible subsequences.
+     * 
+     * @param beginIndex The beginning index, which must be 0.
+     * @return SequenceMatcher this sequence matcher.
+     * @throws IndexOutOfBoundsException if the begin index is not zero 
+     */    
+    @Override
+    public final SequenceMatcher subsequence(final int beginIndex) {
+        if (beginIndex != 0) {
             throw new IndexOutOfBoundsException("SingleByteMatchers only support a sequence starting at zero with a length of one.");
         }
         return this;

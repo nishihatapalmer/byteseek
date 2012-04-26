@@ -239,7 +239,15 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     }
 
     
-        
+    /**
+     * {@inheritDoc}
+     */  
+    @Override
+    public SequenceMatcher subsequence(final int beginIndex) {
+        return subsequence(beginIndex, length());
+    }            
+    
+    
     /**
      * {@inheritDoc}
      */

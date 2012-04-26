@@ -416,6 +416,15 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         }
         return new ByteArrayMatcher(this, beginIndex, endIndex);
     }
+    
+    
+    /**
+     * {@inheritDoc}
+     */  
+    @Override
+    public SequenceMatcher subsequence(final int beginIndex) {
+        return subsequence(beginIndex, length());
+    }    
 
     
     /**
@@ -670,6 +679,15 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                 return this;
             }
             return new ReverseMatcher(this, beginIndex, endIndex);
+        }
+        
+        
+        /**
+         * {@inheritDoc}
+         */  
+        @Override
+        public SequenceMatcher subsequence(final int beginIndex) {
+            return subsequence(beginIndex, length());
         }
 
 

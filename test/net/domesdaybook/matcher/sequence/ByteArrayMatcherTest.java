@@ -363,7 +363,8 @@ public class ByteArrayMatcherTest {
      */
     @Test
     public void testSubsequence() {
-        
+         ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
+         ByteArrayMatcher sub = matcher.subsequence(1);
     }    
     
 
