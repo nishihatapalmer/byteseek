@@ -90,11 +90,11 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         if (source == null) {
             throw new IllegalArgumentException("Null ByteArrayMatcher source passed in to ByteArrayMatcher constructor.");
         }
-        if (startIndex > endIndex) {
+        if (startIndex >= endIndex) {
             final String message = "The start %d is past the end %d for source %s";
-            throw new IllegalArgumentException(String.format(message, startIndex, endIndex, source));
+            throw new IllegalArgumentException(String.format(message, startIndex, endIndex - 1, source));
         }
-        if (startIndex > source.length() - 1) {
+        if (startIndex >= source.length()) {
             final String message = "Start position %d is past the end of the source %s, length = %d.";
             throw new IllegalArgumentException(String.format(message, startIndex, source, source.length()));
         }
@@ -491,11 +491,11 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             if (source == null) {
                 throw new IllegalArgumentException("Null ReverseMatcher passed in to constructor.");
             }
-            if (startIndex > endIndex) {
+            if (startIndex >= endIndex) {
                 final String message = "The start %d is past the end %d for source %s";
-                throw new IllegalArgumentException(String.format(message, startIndex, endIndex, source));
+                throw new IllegalArgumentException(String.format(message, startIndex, endIndex - 1, source));
             }
-            if (startIndex > source.length() - 1) {
+            if (startIndex >= source.length()) {
                 final String message = "Start position %d is past the end of the source %s, length = %d.";
                 throw new IllegalArgumentException(String.format(message, startIndex, source, source.length()));
             }
