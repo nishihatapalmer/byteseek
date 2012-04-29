@@ -5,7 +5,7 @@
 
 package net.domesdaybook.matcher.sequence;
 
-import net.domesdaybook.matcher.bytes.OneByteMatcher;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import java.io.IOException;
 import org.junit.BeforeClass;
 import java.io.FileNotFoundException;
@@ -17,7 +17,6 @@ import java.util.Random;
 import java.net.URL;
 import java.io.File;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.reader.Reader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -222,38 +221,76 @@ public class ByteArrayMatcherTest {
      */
     @Test
     public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {
-        SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); // ***
+        SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
         testMatchesAroundReader(matcher, 0);
         testMatchesAroundReader(matcher, 61);
         testMatchesAroundReader(matcher, 1017);
         
-        matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse(); // ***
+        matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse(); 
         testMatchesAroundReader(matcher, 0);
         testMatchesAroundReader(matcher, 61);
         testMatchesAroundReader(matcher, 1017);
         
-        matcher = new ByteArrayMatcher("Here"); // Here
+        matcher = new ByteArrayMatcher("Here"); 
         testMatchesAroundReader(matcher, 28200);
         testMatchesAroundReader(matcher, 60836);
         testMatchesAroundReader(matcher, 64481);
+        
+        matcher = matcher.subsequence(1, 4);
+        testMatchesAroundReader(matcher, 28201);
+        testMatchesAroundReader(matcher, 60837);
+        testMatchesAroundReader(matcher, 64482);
         
         matcher = new ByteArrayMatcher("ereH").reverse();
         testMatchesAroundReader(matcher, 28200);
         testMatchesAroundReader(matcher, 60836);
         testMatchesAroundReader(matcher, 64481);
         
-        matcher = new ByteArrayMatcher(new byte[] {0x2e, 0x0d, 0x0a}); // . <LF> <CR>
+        matcher = matcher.subsequence(1, 3);
+        testMatchesAroundReader(matcher, 28201);
+        testMatchesAroundReader(matcher, 60837);
+        testMatchesAroundReader(matcher, 64482);        
+        
+        matcher = new ByteArrayMatcher(new byte[] {0x2e, 0x0d, 0x0a});
         testMatchesAroundReader(matcher, 196);
         testMatchesAroundReader(matcher, 42004);
         testMatchesAroundReader(matcher, 112277);
+        
+        matcher = matcher.subsequence(1);
+        testMatchesAroundReader(matcher, 197);
+        testMatchesAroundReader(matcher, 42005);
+        testMatchesAroundReader(matcher, 112278);
         
         matcher = new ByteArrayMatcher(new byte[] {0x0a, 0x0d, 0x2e}).reverse();
         testMatchesAroundReader(matcher, 196);
         testMatchesAroundReader(matcher, 42004);
         testMatchesAroundReader(matcher, 112277);
+        
+        matcher = matcher.subsequence(1);
+        testMatchesAroundReader(matcher, 197);
+        testMatchesAroundReader(matcher, 42005);
+        testMatchesAroundReader(matcher, 112278);        
     }
     
+    
+    @Test
+    public void testMatchesReaderOutOfBounds() throws IOException {
+        SequenceMatcher matcher = new ByteArrayMatcher("xxx");
+        assertFalse("negative position", matcher.matches(reader, -1));
+        assertFalse("past end", matcher.matches(reader, 10000000));
+        
+        matcher = matcher.reverse();
+        assertFalse("reverse negative position", matcher.matches(reader, -1));
+        assertFalse("reverse past end", matcher.matches(reader, 10000000));
+        
+        matcher = new  ByteArrayMatcher(new byte[] {0x65, 0x2e, 0x0d, 0x0a, 0x00});
+        assertFalse("longer than end", matcher.matches(reader, 112276));
+        
+        matcher = new ByteArrayMatcher(new byte[] {0x00, 0x0a, 0x0d, 0x2e, 0x65}).reverse();
+        assertFalse("reverse longer than end", matcher.matches(reader, 112276));
+    }
    
+    
     /**
      * Test of matches reader method, of class ByteArrayMatcher, matching over
      * a window boundary.
@@ -283,11 +320,15 @@ public class ByteArrayMatcherTest {
      */
     @Test
     public void testMatches_byteArr_int() {
-        ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
+        SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
         testMatchesAroundArray(matcher, 0);
         testMatchesAroundArray(matcher, 61);
         testMatchesAroundArray(matcher, 1017);
 
+        matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse(); 
+        testMatchesAroundArray(matcher, 0);
+        testMatchesAroundArray(matcher, 61);
+        testMatchesAroundArray(matcher, 1017);        
     }
 
 
@@ -367,9 +408,6 @@ public class ByteArrayMatcherTest {
          SequenceMatcher sub = matcher.subsequence(1);
          assertEquals("abc length", 2, sub.length());
     }    
-    
-    
-    
 
     
     //--------------------------------
