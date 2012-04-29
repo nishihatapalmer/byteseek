@@ -680,14 +680,15 @@ public final class ByteUtilities {
      * 
      * @param prettyPrint Whether to pretty print the byte array.
      * @param bytes The bytes to render as a String.
+     * @param startIndex the start index to start at, inclusive
+     * @param endIndex the end index to stop at, exclusive.
      * @return A string containing a representation of the byte array.
      */
     public static String bytesToString(final boolean prettyPrint, final byte[] bytes,
-                                       final int startIndex, final int length) {
+                                       final int startIndex, final int endIndex) {
         final StringBuilder hexString = new StringBuilder();
         boolean inString = false;
-        for (int byteIndex = startIndex, endIndex = startIndex + length;
-            byteIndex < endIndex; byteIndex++) {
+        for (int byteIndex = startIndex; byteIndex < endIndex; byteIndex++) {
             final int byteValue = 0xFF & bytes[byteIndex];
             if (prettyPrint &&
                     byteValue >= START_PRINTABLE_ASCII &&
