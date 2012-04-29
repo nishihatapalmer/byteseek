@@ -50,9 +50,9 @@ import net.domesdaybook.reader.Window;
  */
 public final class ByteArrayMatcher implements SequenceMatcher {
     
-    private static final String END_PAST_LENGTH_ERROR = "The end %d is past the end the source %s, length = %d";
-    private static final String START_PAST_END_ERROR = "The start %d is past the end %d for source %s";
-    private static final String START_PAST_LENGTH_ERROR = "Start position %d is past the end of the source %s, length = %d.";
+    private static final String END_PAST_LENGTH_ERROR = "The end %d is past the end, length = %d";
+    private static final String START_PAST_END_ERROR = "The start %d is past the end %d";
+    private static final String START_PAST_LENGTH_ERROR = "Start position %d is past the end, length = %d.";
 
     private final byte[] byteArray;
     private final int startIndex;
@@ -95,13 +95,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("Null ByteArrayMatcher source passed in to ByteArrayMatcher constructor.");
         }
         if (startIndex >= endIndex) {
-            throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1, source));
+            throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1));
         }
         if (startIndex >= source.length()) {
-            throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, source, source.length()));
+            throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, source.length()));
         }
         if (endIndex > source.length()) {
-            throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source, source.length()));
+            throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source.length()));
         }
         this.byteArray = source.byteArray;
         this.startIndex = source.startIndex + startIndex;
@@ -493,13 +493,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                 throw new IllegalArgumentException("Null ReverseMatcher passed in to constructor.");
             }
             if (startIndex >= endIndex) {
-                throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1, source));
+                throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1));
             }
             if (startIndex >= source.length()) {
-                throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, source, source.length()));
+                throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, source.length()));
             }
             if (endIndex > source.length()) {
-                throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source, source.length()));
+                throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source.length()));
             }
             this.byteArray = source.byteArray;
             this.startIndex = source.startIndex + endIndex - startIndex - 1;
@@ -511,19 +511,16 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                               final int startIndex, final int endIndex,
                               final int numberOfRepeats) {
             if (source == null) {
-                throw new IllegalArgumentException("Null ReverseMatcher passed in to constructor.");
+                throw new IllegalArgumentException("Null byte array passed in to constructor.");
             }
             if (startIndex > endIndex) {
-                final String message = "The start %d is past the end %d for source";
-                throw new IllegalArgumentException(String.format(message, startIndex, endIndex));
+                throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1));
             }
             if (startIndex > source.length - 1) {
-                final String message = "Start position %d is past the end of the source, length = %d.";
-                throw new IllegalArgumentException(String.format(message, startIndex, source.length));
+                throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, source.length));
             }
             if (endIndex > source.length) {
-                final String message = "The endIndex %d is past the end of the source, length = %d";
-                throw new IllegalArgumentException(String.format(message, endIndex, source.length));
+                throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source.length));
             }
             this.byteArray = ByteUtilities.repeat(source, startIndex, endIndex,
                                                   numberOfRepeats);
