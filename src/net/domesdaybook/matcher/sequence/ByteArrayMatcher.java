@@ -477,8 +477,9 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          * Copy constructor creating an immutable sub-sequence of another ReverseMatcher, 
          * backed by the original byte array, but otherwise behaving as if the array
          * had been reversed.  In particular, start indexes and end indexes should be
-         * interpreted with that in mind.  All translation of the indexes so they work
-         * with the original array is done internally.
+         * interpreted with that in mind - they reference the byte array as if it
+         * was actually reversed.  Translation to the underlying byte array indexes
+         * is done automatically and transparently.
          * 
          * @param source The ByteArrayMatcher to create a subsequence from.
          * @param startIndex The start position of the source to begin from.
@@ -503,8 +504,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                 throw new IllegalArgumentException(String.format(message, endIndex, source, source.length()));
             }
             this.byteArray = source.byteArray;
-            final int newLength = endIndex - startIndex;
-            this.startIndex = source.endIndex - newLength + 1;
+            this.startIndex = source.startIndex + endIndex - startIndex - 1;
             this.endIndex = source.endIndex - startIndex;
         }         
                
