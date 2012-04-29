@@ -3,9 +3,8 @@
  *
  */
 
-package net.domesdaybook.bytes;
+package net.domesdaybook.util.bytes;
 
-import net.domesdaybook.util.bytes.ByteUtilities;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
