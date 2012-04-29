@@ -49,6 +49,10 @@ import net.domesdaybook.reader.Window;
  * @author Matt Palmer
  */
 public final class ByteArrayMatcher implements SequenceMatcher {
+    
+    private static final String END_PAST_LENGTH_ERROR = "The end %d is past the end the source %s, length = %d";
+    private static final String START_PAST_END_ERROR = "The start %d is past the end %d for source %s";
+    private static final String START_PAST_LENGTH_ERROR = "Start position %d is past the end of the source %s, length = %d.";
 
     private final byte[] byteArray;
     private final int startIndex;
@@ -91,16 +95,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             throw new IllegalArgumentException("Null ByteArrayMatcher source passed in to ByteArrayMatcher constructor.");
         }
         if (startIndex >= endIndex) {
-            final String message = "The start %d is past the end %d for source %s";
-            throw new IllegalArgumentException(String.format(message, startIndex, endIndex - 1, source));
+            throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1, source));
         }
         if (startIndex >= source.length()) {
-            final String message = "Start position %d is past the end of the source %s, length = %d.";
-            throw new IllegalArgumentException(String.format(message, startIndex, source, source.length()));
+            throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, source, source.length()));
         }
         if (endIndex > source.length()) {
-            final String message = "The end %d is past the end the source %s, length = %d";
-            throw new IllegalArgumentException(String.format(message, endIndex, source, source.length()));
+            throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source, source.length()));
         }
         this.byteArray = source.byteArray;
         this.startIndex = source.startIndex + startIndex;
@@ -492,16 +493,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                 throw new IllegalArgumentException("Null ReverseMatcher passed in to constructor.");
             }
             if (startIndex >= endIndex) {
-                final String message = "The start %d is past the end %d for source %s";
-                throw new IllegalArgumentException(String.format(message, startIndex, endIndex - 1, source));
+                throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1, source));
             }
             if (startIndex >= source.length()) {
-                final String message = "Start position %d is past the end of the source %s, length = %d.";
-                throw new IllegalArgumentException(String.format(message, startIndex, source, source.length()));
+                throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, source, source.length()));
             }
             if (endIndex > source.length()) {
-                final String message = "The endIndex %d is past the end of the source %s, length = %d";
-                throw new IllegalArgumentException(String.format(message, endIndex, source, source.length()));
+                throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source, source.length()));
             }
             this.byteArray = source.byteArray;
             this.startIndex = source.startIndex + endIndex - startIndex - 1;
