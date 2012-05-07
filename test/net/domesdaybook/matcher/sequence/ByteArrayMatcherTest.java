@@ -222,59 +222,57 @@ public class ByteArrayMatcherTest {
     @Test
     public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {
         SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
-        testMatchesAroundReader(matcher, 0);
-        testMatchesAroundReader(matcher, 61);
-        testMatchesAroundReader(matcher, 1017);
+        runTestMatchesAround(matcher, 0, 61, 1017);
         
         matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse(); 
-        testMatchesAroundReader(matcher, 0);
-        testMatchesAroundReader(matcher, 61);
-        testMatchesAroundReader(matcher, 1017);
+        runTestMatchesAround(matcher, 0, 61, 1017);
         
         matcher = new ByteArrayMatcher("Here"); 
-        testMatchesAroundReader(matcher, 28200);
-        testMatchesAroundReader(matcher, 60836);
-        testMatchesAroundReader(matcher, 64481);
+        runTestMatchesAround(matcher, 28200, 60836, 64481);
         
         matcher = matcher.subsequence(1, 4);
-        testMatchesAroundReader(matcher, 28201);
-        testMatchesAroundReader(matcher, 60837);
-        testMatchesAroundReader(matcher, 64482);
+        runTestMatchesAround(matcher, 28201, 60837, 64482);
         
         matcher = new ByteArrayMatcher("ereH").reverse();
-        testMatchesAroundReader(matcher, 28200);
-        testMatchesAroundReader(matcher, 60836);
-        testMatchesAroundReader(matcher, 64481);
+        runTestMatchesAround(matcher, 28200, 60836, 64481);
         
         matcher = matcher.subsequence(1, 3);
-        testMatchesAroundReader(matcher, 28201);
-        testMatchesAroundReader(matcher, 60837);
-        testMatchesAroundReader(matcher, 64482);        
+        runTestMatchesAround(matcher, 28201, 60837, 64482);        
         
         matcher = new ByteArrayMatcher(new byte[] {0x2e, 0x0d, 0x0a});
-        testMatchesAroundReader(matcher, 196);
-        testMatchesAroundReader(matcher, 42004);
-        testMatchesAroundReader(matcher, 112277);
+        runTestMatchesAround(matcher, 196, 42004, 112277);
         
         matcher = matcher.subsequence(1);
-        testMatchesAroundReader(matcher, 197);
-        testMatchesAroundReader(matcher, 42005);
-        testMatchesAroundReader(matcher, 112278);
+        runTestMatchesAround(matcher, 197, 42005, 112278);
         
         matcher = new ByteArrayMatcher(new byte[] {0x0a, 0x0d, 0x2e}).reverse();
-        testMatchesAroundReader(matcher, 196);
-        testMatchesAroundReader(matcher, 42004);
-        testMatchesAroundReader(matcher, 112277);
+        runTestMatchesAround(matcher, 196, 42004, 112277);
         
         matcher = matcher.subsequence(1);
-        testMatchesAroundReader(matcher, 197);
-        testMatchesAroundReader(matcher, 42005);
-        testMatchesAroundReader(matcher, 112278);        
+        runTestMatchesAround(matcher, 197, 42005, 112278);
     }
+    
+    private void runTestMatchesAround(SequenceMatcher matcher, long... positions) throws IOException {
+        runTestMatchesAroundOriginal(matcher, positions);
+        runTestMatchesAroundDoubleReversed(matcher, positions);
+    }
+    
+    private void runTestMatchesAroundOriginal(SequenceMatcher matcher, long... positions) throws IOException {
+        for (long position : positions) {
+            testMatchesAroundReader(matcher, position);
+        }
+    }
+    
+    private void runTestMatchesAroundDoubleReversed(SequenceMatcher matcher, long... positions) throws IOException {
+        SequenceMatcher doubleReversed = matcher.reverse().reverse();
+        for (long position : positions) {
+            testMatchesAroundReader(doubleReversed, position);
+        }
+    }    
     
     
     @Test
-    public void testMatchesReaderOutOfBounds() throws IOException {
+    public void testMatchesReaderOutOfBoundsNegative() throws IOException {
         SequenceMatcher matcher = new ByteArrayMatcher("xxx");
         assertFalse("negative position", matcher.matches(reader, -1));
         assertFalse("past end", matcher.matches(reader, 10000000));
@@ -282,12 +280,16 @@ public class ByteArrayMatcherTest {
         matcher = matcher.reverse();
         assertFalse("reverse negative position", matcher.matches(reader, -1));
         assertFalse("reverse past end", matcher.matches(reader, 10000000));
-        
-        matcher = new  ByteArrayMatcher(new byte[] {0x65, 0x2e, 0x0d, 0x0a, 0x00});
+    }
+    
+    
+    @Test
+    public void testMatchesReaderOutOfBoundsCrossingEnd() throws IOException {
+        SequenceMatcher matcher = new  ByteArrayMatcher(new byte[] {0x65, 0x2e, 0x0d, 0x0a, 0x00});
         assertFalse("longer than end", matcher.matches(reader, 112276));
         
         matcher = new ByteArrayMatcher(new byte[] {0x00, 0x0a, 0x0d, 0x2e, 0x65}).reverse();
-        assertFalse("reverse longer than end", matcher.matches(reader, 112276));
+        assertFalse("reverse longer than end", matcher.matches(reader, 112276));        
     }
    
     
@@ -302,16 +304,16 @@ public class ByteArrayMatcherTest {
     public void testMatchesOverBoundary_ByteReader_long() throws FileNotFoundException, IOException {
         // Test around a window boundary at 4096
         SequenceMatcher matcher = new ByteArrayMatcher("be");
-        testMatchesAroundReader(matcher, 4095);
+        runTestMatchesAround(matcher, 4095);
         
         matcher = new ByteArrayMatcher("eb").reverse();
-        testMatchesAroundReader(matcher, 4095);
+        runTestMatchesAround(matcher, 4095);
         
         matcher = new ByteArrayMatcher("Gutenberg");
-        testMatchesAroundReader(matcher, 4090);
+        runTestMatchesAround(matcher, 4090);
         
         matcher = new ByteArrayMatcher("grebnetuG").reverse();
-        testMatchesAroundReader(matcher, 4090);
+        runTestMatchesAround(matcher, 4090);
     }    
     
     
@@ -321,14 +323,28 @@ public class ByteArrayMatcherTest {
     @Test
     public void testMatches_byteArr_int() {
         SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
-        testMatchesAroundArray(matcher, 0);
-        testMatchesAroundArray(matcher, 61);
-        testMatchesAroundArray(matcher, 1017);
+        runTestMatchesAroundArray(matcher, 0, 61, 1017);
 
         matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse(); 
-        testMatchesAroundArray(matcher, 0);
-        testMatchesAroundArray(matcher, 61);
-        testMatchesAroundArray(matcher, 1017);        
+        runTestMatchesAroundArray(matcher, 0, 61, 1017);  
+    }
+    
+    private void runTestMatchesAroundArray(SequenceMatcher matcher, int... positions) {
+        runTestMatchesAroundOriginalArray(matcher, positions);
+        runTestMatchesAroundDoubleReversedArray(matcher, positions);
+    }
+    
+    private void runTestMatchesAroundOriginalArray(SequenceMatcher matcher, int... positions) {
+        for (int position : positions) {
+            testMatchesAroundArray(matcher, position);
+        }
+    }
+    
+    private void runTestMatchesAroundDoubleReversedArray(SequenceMatcher matcher, int... positions) {
+        SequenceMatcher doubleReversed = matcher.reverse().reverse();
+        for (int position : positions) {
+            testMatchesAroundArray(doubleReversed, position);
+        }
     }
 
 
@@ -345,21 +361,21 @@ public class ByteArrayMatcherTest {
     
     
     @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void testMatchesNoBoundsCheck_outOfBounds1() {
+    public void testMatchesNoBoundsCheck_outOfBoundsNegative() {
         ByteArrayMatcher matcher = new  ByteArrayMatcher("xxxxxxxx");
         matcher.matchesNoBoundsCheck(bytes, -1);
     }
     
     
     @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void testMatchesNoBoundsCheck_outOfBounds2() {
+    public void testMatchesNoBoundsCheck_outOfBoundsPastEnd() {
         ByteArrayMatcher matcher = new  ByteArrayMatcher("x");
         matcher.matchesNoBoundsCheck(bytes, 4096);
     }   
     
     
     @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void testMatchesNoBoundsCheck_outOfBounds3() {
+    public void testMatchesNoBoundsCheck_outOfBoundsCrossingEnd() {
         ByteArrayMatcher matcher = new  ByteArrayMatcher("be");
         matcher.matchesNoBoundsCheck(bytes, 4095);
     }      
@@ -521,6 +537,8 @@ public class ByteArrayMatcherTest {
         }
         return matchers;
     }
+
+
 
    
 }
