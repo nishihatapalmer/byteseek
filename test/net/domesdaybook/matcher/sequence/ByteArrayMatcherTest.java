@@ -110,24 +110,35 @@ public class ByteArrayMatcherTest {
      * - the length is one.
      * - the number of bytes matched by it is one.
      * - the value of the byte matcher is the one it was constructed with.
-     * - the matcher matches that byte in a byte array and a reader.
+     * - the matcher matches that byte in a byte array and reader.
+     * - the matcher does not match a different byte value in a byte array and reader.
      */
     @Test
     public void testConstructSingleByte() throws IOException {
         for (int byteValue = 0; byteValue < 256; byteValue++) {
             
-            final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue);
+            ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue);
             assertEquals("length:1, byte value:" + Integer.toString(byteValue), 1, matcher.length());
             
-            final byte[] matchingBytes = matcher.getMatcherForPosition(0).getMatchingBytes();
+            byte[] matchingBytes = matcher.getMatcherForPosition(0).getMatchingBytes();
             assertEquals("number of bytes matched=1", 1, matchingBytes.length);
             assertEquals("byte value:" + Integer.toString(byteValue), byteValue, matchingBytes[0] & 0xFF);
             
-            final byte[] testArray = new byte[] {(byte) byteValue};
+            byte[] testArray = new byte[] {(byte) byteValue};
             assertTrue("matches that byte value in an array", matcher.matches(testArray, 0));
-            
-            final ByteArrayReader reader = new ByteArrayReader(testArray);
+
+            ByteArrayReader reader = new ByteArrayReader(testArray);
             assertTrue("matches that byte value in a reader", matcher.matches(reader, 0));
+            
+            int differentValue = rand.nextInt(256);
+            while (differentValue == byteValue) {
+                differentValue = rand.nextInt(256);
+            }
+            byte[] different = new byte[] {(byte) differentValue};
+            assertFalse("does not match a different byte value in an array", matcher.matches(different, 0));
+            
+            reader = new ByteArrayReader(different);
+            assertFalse("does not match a different byte value in a reader", matcher.matches(reader, 0));
         }
     }
     
