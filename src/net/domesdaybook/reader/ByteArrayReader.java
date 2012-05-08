@@ -36,7 +36,8 @@ import net.domesdaybook.reader.cache.NoCache;
 /**
  * Provides a reader interface over an array of bytes.
  * 
- * The byte array is not copied - the reader just wraps the byte array.
+ * If constructed from a byte array, the source array is not copied - 
+ * the reader just wraps the byte array passed in.
  * 
  * @author Matt Palmer
  */
@@ -44,6 +45,14 @@ public class ByteArrayReader extends AbstractReader {
 
     private final byte[] bytes;
     
+    
+    /**
+     * Constructs a ByteArrayReader from an array of bytes.  The array passed
+     * in is not copied - the reader just wraps them to provide a reader interface
+     * over them.
+     * 
+     * @param bytes 
+     */
     public ByteArrayReader(final byte[] bytes) {
         super(bytes == null? 0 : bytes.length, NoCache.NO_CACHE);  
         if (bytes == null) {
@@ -51,6 +60,20 @@ public class ByteArrayReader extends AbstractReader {
         }        
         this.bytes = bytes;
     }
+    
+    
+    /**
+     * Constructs a ByteArrayReader from a single byte value.
+     * 
+     * A new array is created containing a single byte.
+     * 
+     * @param byteValue 
+     */
+    public ByteArrayReader(final byte byteValue) {
+        super(1, NoCache.NO_CACHE);
+        this.bytes = new byte[] {byteValue};
+    }
+    
     
     
     @Override
