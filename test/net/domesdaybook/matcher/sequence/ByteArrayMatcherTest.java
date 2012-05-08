@@ -127,8 +127,8 @@ public class ByteArrayMatcherTest {
             byte[] testArray = new byte[] {(byte) byteValue};
             assertTrue("matches that byte value in an array", matcher.matches(testArray, 0));
 
-            ByteArrayReader reader = new ByteArrayReader(testArray);
-            assertTrue("matches that byte value in a reader", matcher.matches(reader, 0));
+            ByteArrayReader wrapped = new ByteArrayReader(testArray);
+            assertTrue("matches that byte value in a reader", matcher.matches(wrapped, 0));
             
             int differentValue = rand.nextInt(256);
             while (differentValue == byteValue) {
@@ -137,8 +137,8 @@ public class ByteArrayMatcherTest {
             byte[] different = new byte[] {(byte) differentValue};
             assertFalse("does not match a different byte value in an array", matcher.matches(different, 0));
             
-            reader = new ByteArrayReader(different);
-            assertFalse("does not match a different byte value in a reader", matcher.matches(reader, 0));
+            wrapped = new ByteArrayReader(different);
+            assertFalse("does not match a different byte value in a reader", matcher.matches(wrapped, 0));
         }
     }
     
