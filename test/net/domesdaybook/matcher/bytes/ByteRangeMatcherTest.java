@@ -5,6 +5,8 @@
 
 package net.domesdaybook.matcher.bytes;
 
+import org.junit.BeforeClass;
+import java.util.Random;
 import net.domesdaybook.matcher.bytes.ByteRangeMatcher;
 import net.domesdaybook.matcher.bytes.InvertibleMatcher;
 import java.util.List;
@@ -18,6 +20,21 @@ import static org.junit.Assert.*;
  */
 public class ByteRangeMatcherTest {
 
+     private final static Random rand = new Random();   
+     
+    /**
+     * 
+     * @throws Exception
+     */
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        final long seed = System.currentTimeMillis();
+        // final long seed = ?
+        rand.setSeed(seed);
+        System.out.println("Seeding random number generator with: " + Long.toString(seed));
+        System.out.println("To repeat these exact tests, set the seed to the value above.");
+    }     
+    
     /**
      * 
      */
@@ -30,8 +47,10 @@ public class ByteRangeMatcherTest {
      */
     @Test
     public void testByteRange() {
-        for (int start = 0; start < 256; start++) {
-            System.out.println(String.format("Testing byte ranges starting with %d", start));
+        
+        for (int testRun = 1; testRun <= 5; testRun++) {
+            int start = rand.nextInt(256);
+            System.out.println(String.format("%d of 5\tTesting byte ranges starting with %d", testRun, start));
             for (int end = 0; end < 256; end++) {
                 ByteRangeMatcher matcherNotInverted = new ByteRangeMatcher(start, end, InvertibleMatcher.NOT_INVERTED);
                 ByteRangeMatcher matcherInverted = new ByteRangeMatcher(start, end, InvertibleMatcher.INVERTED);

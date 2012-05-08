@@ -73,7 +73,7 @@ public class ByteSetMatcherTest {
      */
     @Test
     public void testByteSet() {
-        int numberOfTests = 4096;
+        int numberOfTests = 100;
         for (int testnum = 0; testnum <= numberOfTests; testnum++) {
             Set<Byte> bytesToTest = buildRandomByteSet();
             writeTestDefinition(testnum, numberOfTests, bytesToTest);
