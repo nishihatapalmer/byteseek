@@ -1,11 +1,37 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
+ * This code is licensed under a standard 3-clause BSD license:
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright notice, 
+ *    this list of conditions and the following disclaimer in the documentation 
+ *    and/or other materials provided with the distribution.
+ * 
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package net.domesdaybook.matcher.sequence;
 
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.reader.ByteArrayReader;
 import java.io.IOException;
 import org.junit.BeforeClass;
 import java.io.FileNotFoundException;
@@ -21,24 +47,31 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author matt
+ * Tests all the constructors and public methods of the ByteArrayMatcher class.
+ * 
+ * @author Matt Palmer
  */
 public class ByteArrayMatcherTest {
+    
+    //////////////////
+    // test setup   //
+    //////////////////
     
     private final static Random rand = new Random();   
     
     private FileReader reader;
     private byte[] bytes;
-        
-    /**
-     * 
-     */
+    
     public ByteArrayMatcherTest() {
     }
   
     
     /**
+     * Generates a random number to use in randomising tests where complete
+     * coverage takes too long.  The seed is output to the console to give a
+     * fighting chance of replicating a failing test - but I'm not really 
+     * convinced this is a very pleasant way of testing.  Still, it gives more
+     * complete coverage of the code than purely fixed tests.
      * 
      * @throws Exception
      */
@@ -53,6 +86,7 @@ public class ByteArrayMatcherTest {
     
     
     /**
+     * Creates a file reader and a byte array from an ASCII test file.
      * 
      * @throws Exception
      */
@@ -63,26 +97,44 @@ public class ByteArrayMatcherTest {
     }
     
     
+        
+    ///////////////////////////
+    //   constructor tests   //
+    ///////////////////////////
+    
+    
     /**
      * 
-     * Construct all possible single byte value sequences.
+     * Construct all possible single byte value sequences.  Tests are:
      * 
+     * - the length is one.
+     * - the number of bytes matched by it is one.
+     * - the value of the byte matcher is the one it was constructed with.
+     * - the matcher matches that byte in a byte array and a reader.
      */
     @Test
-    public void testConstructSingleByte() {
+    public void testConstructSingleByte() throws IOException {
         for (int byteValue = 0; byteValue < 256; byteValue++) {
+            
             final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue);
             assertEquals("length:1, byte value:" + Integer.toString(byteValue), 1, matcher.length());
-            final ByteMatcher sbm = matcher.getMatcherForPosition(0);
-            final byte[] matchingBytes = sbm.getMatchingBytes();
+            
+            final byte[] matchingBytes = matcher.getMatcherForPosition(0).getMatchingBytes();
             assertEquals("number of bytes matched=1", 1, matchingBytes.length);
             assertEquals("byte value:" + Integer.toString(byteValue), byteValue, matchingBytes[0] & 0xFF);
+            
+            final byte[] testArray = new byte[] {(byte) byteValue};
+            assertTrue("matches that byte value in an array", matcher.matches(testArray, 0));
+            
+            final ByteArrayReader reader = new ByteArrayReader(testArray);
+            assertTrue("matches that byte value in a reader", matcher.matches(reader, 0));
         }
     }
     
     
     /**
-     * Construct using random repeated byte values for all byte values.
+     * Construct using random repeated byte values for all byte values.  Tests are:
+     * 
      */
     @Test
     public void testConstructRepeatedBytes() {
@@ -121,7 +173,11 @@ public class ByteArrayMatcherTest {
  
 
     /**
-     * Construct using random lists of byte sequence matchers:
+     * Construct using random lists of byte sequence matchers.  Tests are:
+     * 
+     * - the length of an assembled matcher is correct.
+     * - each position in the assembled matcher matches only one byte.
+     * - each byte in the assembled matcher is correct.
      */
     @Test
     public void testConstructByteSequenceMatcherList() {
@@ -155,7 +211,10 @@ public class ByteArrayMatcherTest {
     }
     
     
-    // Test expected construction failures:
+    //////////////////////////////////
+    //  construction failure tests  //
+    //////////////////////////////////
+
     
     /**
      * 
@@ -214,6 +273,11 @@ public class ByteArrayMatcherTest {
     }        
     
     
+    ///////////////////////////////
+    //   reader matching tests   //
+    ///////////////////////////////
+    
+    
     /**
      * Test of matches method, of class ByteArrayMatcher.
      * @throws FileNotFoundException 
@@ -252,46 +316,6 @@ public class ByteArrayMatcherTest {
         runTestMatchesAround(matcher, 197, 42005, 112278);
     }
     
-    private void runTestMatchesAround(SequenceMatcher matcher, long... positions) throws IOException {
-        runTestMatchesAroundOriginal(matcher, positions);
-        runTestMatchesAroundDoubleReversed(matcher, positions);
-    }
-    
-    private void runTestMatchesAroundOriginal(SequenceMatcher matcher, long... positions) throws IOException {
-        for (long position : positions) {
-            testMatchesAroundReader(matcher, position);
-        }
-    }
-    
-    private void runTestMatchesAroundDoubleReversed(SequenceMatcher matcher, long... positions) throws IOException {
-        SequenceMatcher doubleReversed = matcher.reverse().reverse();
-        for (long position : positions) {
-            testMatchesAroundReader(doubleReversed, position);
-        }
-    }    
-    
-    
-    @Test
-    public void testMatchesReaderOutOfBoundsNegative() throws IOException {
-        SequenceMatcher matcher = new ByteArrayMatcher("xxx");
-        assertFalse("negative position", matcher.matches(reader, -1));
-        assertFalse("past end", matcher.matches(reader, 10000000));
-        
-        matcher = matcher.reverse();
-        assertFalse("reverse negative position", matcher.matches(reader, -1));
-        assertFalse("reverse past end", matcher.matches(reader, 10000000));
-    }
-    
-    
-    @Test
-    public void testMatchesReaderOutOfBoundsCrossingEnd() throws IOException {
-        SequenceMatcher matcher = new  ByteArrayMatcher(new byte[] {0x65, 0x2e, 0x0d, 0x0a, 0x00});
-        assertFalse("longer than end", matcher.matches(reader, 112276));
-        
-        matcher = new ByteArrayMatcher(new byte[] {0x00, 0x0a, 0x0d, 0x2e, 0x65}).reverse();
-        assertFalse("reverse longer than end", matcher.matches(reader, 112276));        
-    }
-   
     
     /**
      * Test of matches reader method, of class ByteArrayMatcher, matching over
@@ -314,7 +338,39 @@ public class ByteArrayMatcherTest {
         
         matcher = new ByteArrayMatcher("grebnetuG").reverse();
         runTestMatchesAround(matcher, 4090);
-    }    
+    }        
+    
+    
+    ////////////////////////////////////
+    //   reader out of bounds tests   //
+    ////////////////////////////////////    
+    
+    
+    @Test
+    public void testMatchesReaderOutOfBoundsNegative() throws IOException {
+        SequenceMatcher matcher = new ByteArrayMatcher("xxx");
+        assertFalse("negative position", matcher.matches(reader, -1));
+        assertFalse("past end", matcher.matches(reader, 10000000));
+        
+        matcher = matcher.reverse();
+        assertFalse("reverse negative position", matcher.matches(reader, -1));
+        assertFalse("reverse past end", matcher.matches(reader, 10000000));
+    }
+    
+
+    @Test
+    public void testMatchesReaderOutOfBoundsCrossingEnd() throws IOException {
+        SequenceMatcher matcher = new  ByteArrayMatcher(new byte[] {0x65, 0x2e, 0x0d, 0x0a, 0x00});
+        assertFalse("longer than end", matcher.matches(reader, 112276));
+        
+        matcher = new ByteArrayMatcher(new byte[] {0x00, 0x0a, 0x0d, 0x2e, 0x65}).reverse();
+        assertFalse("reverse longer than end", matcher.matches(reader, 112276));        
+    }
+   
+    
+    /////////////////////////////////
+    //   byte array matches tests  //
+    /////////////////////////////////      
     
     
     /**
@@ -326,28 +382,11 @@ public class ByteArrayMatcherTest {
         runTestMatchesAroundArray(matcher, 0, 61, 1017);
 
         matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse(); 
-        runTestMatchesAroundArray(matcher, 0, 61, 1017);  
+        runTestMatchesAroundArray(matcher, 0, 61, 1017); 
+        
+        //TODO: more byte array matching tests.
     }
     
-    private void runTestMatchesAroundArray(SequenceMatcher matcher, int... positions) {
-        runTestMatchesAroundOriginalArray(matcher, positions);
-        runTestMatchesAroundDoubleReversedArray(matcher, positions);
-    }
-    
-    private void runTestMatchesAroundOriginalArray(SequenceMatcher matcher, int... positions) {
-        for (int position : positions) {
-            testMatchesAroundArray(matcher, position);
-        }
-    }
-    
-    private void runTestMatchesAroundDoubleReversedArray(SequenceMatcher matcher, int... positions) {
-        SequenceMatcher doubleReversed = matcher.reverse().reverse();
-        for (int position : positions) {
-            testMatchesAroundArray(doubleReversed, position);
-        }
-    }
-
-
 
     /**
      * Test of matchesNoBoundsCheck byte array method, of class ByteArrayMatcher.
@@ -357,21 +396,50 @@ public class ByteArrayMatcherTest {
         ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
         testMatchesAroundArrayNoCheck(matcher, 61);
         testMatchesAroundArrayNoCheck(matcher, 1017);
+        
+        //TODO: more no bounds check byte array matching tests.
+    }    
+    
+    
+    
+    ////////////////////////////////////////
+    //   byte array out of bounds tests   //
+    ////////////////////////////////////////  
+    
+    
+    @Test
+    public void testMatches_outOfBoundsNegative() {
+        ByteArrayMatcher matcher = new ByteArrayMatcher("Titania");
+        assertFalse("matches at negative pos", matcher.matches(bytes, -1));
     }
     
     
     @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void testMatchesNoBoundsCheck_outOfBoundsNegative() {
-        ByteArrayMatcher matcher = new  ByteArrayMatcher("xxxxxxxx");
+        ByteArrayMatcher matcher = new  ByteArrayMatcher("Oberon");
         matcher.matchesNoBoundsCheck(bytes, -1);
     }
     
     
+    @Test
+    public void testMatches_outOfBoundsPastEnd() {
+        ByteArrayMatcher matcher = new ByteArrayMatcher("Bottom");
+        assertFalse("matches past end", matcher.matches(bytes, 4096));
+    }    
+    
+    
     @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void testMatchesNoBoundsCheck_outOfBoundsPastEnd() {
-        ByteArrayMatcher matcher = new  ByteArrayMatcher("x");
+        ByteArrayMatcher matcher = new  ByteArrayMatcher("Puck");
         matcher.matchesNoBoundsCheck(bytes, 4096);
     }   
+    
+    
+    @Test
+    public void testMatches_outOfBoundsCrossingEnd() {
+        ByteArrayMatcher matcher = new  ByteArrayMatcher("be");
+        assertFalse("matches crossing end", matcher.matches(bytes, 4095));
+    }
     
     
     @Test(expected = ArrayIndexOutOfBoundsException.class)
@@ -381,6 +449,11 @@ public class ByteArrayMatcherTest {
     }      
     
     
+    ///////////////////////////////////
+    //  representation test methods  //
+    ///////////////////////////////////   
+    
+    
     /**
      * Test of toRegularExpression method, of class ByteArrayMatcher.
      */
@@ -388,6 +461,8 @@ public class ByteArrayMatcherTest {
     public void testToRegularExpression() {
         ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
         assertEquals("reg ex abc", " 'abc' ", matcher.toRegularExpression(true));
+        
+        //TODO: more reg ex tests.
     }
 
     
@@ -401,6 +476,11 @@ public class ByteArrayMatcherTest {
         testMatchersForSequence("Midsommer");
         testMatchersForSequence("testGetByteMatcherForPosition");
     }
+    
+    
+    /////////////////////////
+    //  view test methods  //
+    /////////////////////////    
     
     
     /**
@@ -423,12 +503,56 @@ public class ByteArrayMatcherTest {
          ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
          SequenceMatcher sub = matcher.subsequence(1);
          assertEquals("abc length", 2, sub.length());
+         
+         //TODO: lots more subsequence tests.
     }    
 
     
-    //--------------------------------
-    // private methods
-    // --------------------------------
+    ////////////////////////////
+    //  private test methods  //
+    ////////////////////////////
+    
+
+    private void runTestMatchesAround(SequenceMatcher matcher, long... positions) throws IOException {
+        runTestMatchesAroundOriginal(matcher, positions);
+        runTestMatchesAroundDoubleReversed(matcher, positions);
+    }
+    
+    
+    private void runTestMatchesAroundOriginal(SequenceMatcher matcher, long... positions) throws IOException {
+        for (long position : positions) {
+            testMatchesAroundReader(matcher, position);
+        }
+    }
+    
+    
+    private void runTestMatchesAroundDoubleReversed(SequenceMatcher matcher, long... positions) throws IOException {
+        SequenceMatcher doubleReversed = matcher.reverse().reverse();
+        for (long position : positions) {
+            testMatchesAroundReader(doubleReversed, position);
+        }
+    }  
+    
+    
+    private void runTestMatchesAroundArray(SequenceMatcher matcher, int... positions) {
+        runTestMatchesAroundOriginalArray(matcher, positions);
+        runTestMatchesAroundDoubleReversedArray(matcher, positions);
+    }
+    
+    
+    private void runTestMatchesAroundOriginalArray(SequenceMatcher matcher, int... positions) {
+        for (int position : positions) {
+            testMatchesAroundArray(matcher, position);
+        }
+    }
+    
+    
+    private void runTestMatchesAroundDoubleReversedArray(SequenceMatcher matcher, int... positions) {
+        SequenceMatcher doubleReversed = matcher.reverse().reverse();
+        for (int position : positions) {
+            testMatchesAroundArray(doubleReversed, position);
+        }
+    }
 
     
     private void testReversed(String sequence) {
