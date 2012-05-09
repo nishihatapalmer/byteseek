@@ -718,6 +718,12 @@ public class ByteArrayMatcherTest {
     }
         
     
+    
+    ///////////////////////////////
+    //  private utility methods  //
+    /////////////////////////////// 
+    
+    
     /**
      * Returns a file given a resource name of a file in the test packages.
      * 
