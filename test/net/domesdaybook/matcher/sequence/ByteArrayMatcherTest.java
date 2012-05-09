@@ -146,6 +146,10 @@ public class ByteArrayMatcherTest {
     /**
      * Construct using random repeated byte values for all byte values.  Tests are:
      * 
+     * - length is correct
+     * - each position in the matcher only matches one byte.
+     * - each byte in the matcher is correct.
+     * 
      */
     @Test
     public void testConstructRepeatedBytes() {
@@ -153,6 +157,7 @@ public class ByteArrayMatcherTest {
             final int repeats = rand.nextInt(1024) + 1;
             final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue, repeats);
             assertEquals("length:" + Integer.toString(repeats) + ", byte value:" + Integer.toString(byteValue), repeats, matcher.length());
+            
             for (int pos = 0; pos < repeats; pos++) {
                 final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
                 final byte[] matchingBytes = sbm.getMatchingBytes();
@@ -164,14 +169,19 @@ public class ByteArrayMatcherTest {
     
         
     /**
-     * Construct using random arrays of bytes.
+     * Construct using random arrays of bytes, 100 times.  Tests are:
+     * 
+     * - the length is correct.
+     * - each position in the matcher only matches one byte.
+     * - each byte in the matcher is correct.
      */
     @Test
     public void testConstructByteArray() {
-        for (int testNo = 0; testNo < 1000; testNo++) {
+        for (int testNo = 0; testNo < 100; testNo++) {
             final byte[] array = createRandomArray(1024);
             final ByteArrayMatcher matcher = new ByteArrayMatcher(array);
             assertEquals("length:" + Integer.toString(array.length), array.length, matcher.length());
+            
             for (int pos = 0; pos < array.length; pos++) {
                 final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
                 final byte[] matchingBytes = sbm.getMatchingBytes();
@@ -184,15 +194,17 @@ public class ByteArrayMatcherTest {
  
 
     /**
-     * Construct using random lists of byte sequence matchers.  Tests are:
+     * Construct using random lists of byte sequence matchers, 100 times.
+     * Tests are:
      * 
      * - the length of an assembled matcher is correct.
+     * - each position in the list of matchers matches only one byte.
      * - each position in the assembled matcher matches only one byte.
      * - each byte in the assembled matcher is correct.
      */
     @Test
     public void testConstructByteSequenceMatcherList() {
-        for (int testNo = 0; testNo < 1000; testNo++) {
+        for (int testNo = 0; testNo < 100; testNo++) {
             final List<ByteArrayMatcher> list = createRandomList(32);
             int totalLength = 0;
             for (final SequenceMatcher matcher : list) {
@@ -200,6 +212,7 @@ public class ByteArrayMatcherTest {
             }
             final ByteArrayMatcher matcher = new ByteArrayMatcher(list);
             assertEquals("length:" + Integer.toString(totalLength), totalLength, matcher.length());
+            
             int localPos = -1;
             int matchIndex = 0;
             SequenceMatcher currentMatcher = list.get(matchIndex);
@@ -227,57 +240,42 @@ public class ByteArrayMatcherTest {
     //////////////////////////////////
 
     
-    /**
-     * 
-     */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNoRepeats() {
         new ByteArrayMatcher((byte) 0x8f, 0);
     }
     
-    /**
-     * 
-     */
+
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullArray() {
         new ByteArrayMatcher((byte[]) null);
     }
     
-    /**
-     * 
-     */
+
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyArray() {
         new ByteArrayMatcher(new byte[0]);
     }    
     
-    /**
-     * 
-     */
+
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullCollection() {
         new ByteArrayMatcher((ArrayList<Byte>) null);
     }   
     
-    /**
-     * 
-     */
+
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyCollection() {
         new ByteArrayMatcher(new ArrayList<Byte>());
     }       
     
-    /**
-     * 
-     */
+
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullList() {
         new ByteArrayMatcher((ArrayList<ByteArrayMatcher>) null);
     }        
 
-    /**
-     * 
-     */
+
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyList() {
         new ByteArrayMatcher(new ArrayList<ByteArrayMatcher>());
@@ -289,11 +287,6 @@ public class ByteArrayMatcherTest {
     ///////////////////////////////
     
     
-    /**
-     * Test of matches method, of class ByteArrayMatcher.
-     * @throws FileNotFoundException 
-     * @throws IOException 
-     */
     @Test
     public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {
         SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
@@ -329,8 +322,9 @@ public class ByteArrayMatcherTest {
     
     
     /**
-     * Test of matches reader method, of class ByteArrayMatcher, matching over
-     * a window boundary.
+     * Test matching successfully over a window boundary.  
+     * A FileReader uses a default window size of 4096,
+     * so the last position in the first window is 4095.
      * 
      * @throws FileNotFoundException 
      * @throws IOException 
@@ -383,10 +377,7 @@ public class ByteArrayMatcherTest {
     //   byte array matches tests  //
     /////////////////////////////////      
     
-    
-    /**
-     * Test of matches byte array method, of class ByteArrayMatcher.
-     */
+
     @Test
     public void testMatches_byteArr_int() {
         SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
@@ -399,9 +390,6 @@ public class ByteArrayMatcherTest {
     }
     
 
-    /**
-     * Test of matchesNoBoundsCheck byte array method, of class ByteArrayMatcher.
-     */
     @Test
     public void testMatchesNoBoundsCheck_byteArr_int() {
         ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3); 
@@ -465,9 +453,6 @@ public class ByteArrayMatcherTest {
     ///////////////////////////////////   
     
     
-    /**
-     * Test of toRegularExpression method, of class ByteArrayMatcher.
-     */
     @Test
     public void testToRegularExpression() {
         ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
@@ -477,9 +462,6 @@ public class ByteArrayMatcherTest {
     }
 
     
-    /**
-     * Test of getByteMatcherForPosition method, of class ByteArrayMatcher.
-     */
     @Test
     public void testGetByteMatcherForPosition() {
         testMatchersForSequence("abc");
@@ -494,9 +476,6 @@ public class ByteArrayMatcherTest {
     /////////////////////////    
     
     
-    /**
-     * Test of reverse method, of class ByteArrayMatcher.
-     */
     @Test
     public void testReverse() {
         testReversed("a");
@@ -506,9 +485,6 @@ public class ByteArrayMatcherTest {
     }
     
 
-    /**
-     * Test of subsequence method, of class ByteArrayMatcher.
-     */
     @Test
     public void testSubsequence() {
          ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
@@ -523,13 +499,32 @@ public class ByteArrayMatcherTest {
     //  private test methods  //
     ////////////////////////////
     
-
+    
+    /**
+     * Tests that a sequence matcher matches at a series of positions, but not
+     * immediately surrounding them using a Reader interface.
+     * 
+     * Also tests that the reverse of the reverse of the matcher has identical
+     * behaviour.
+     * 
+     * @param matcher
+     * @param positions
+     * @throws IOException 
+     */
     private void runTestMatchesAround(SequenceMatcher matcher, long... positions) throws IOException {
         runTestMatchesAroundOriginal(matcher, positions);
         runTestMatchesAroundDoubleReversed(matcher, positions);
     }
     
     
+    /**
+     * Tests that a sequence matcher matches at a series of positions, but not
+     * immediately surrounding them, using a Reader interface.
+     * 
+     * @param matcher
+     * @param positions
+     * @throws IOException 
+     */
     private void runTestMatchesAroundOriginal(SequenceMatcher matcher, long... positions) throws IOException {
         for (long position : positions) {
             testMatchesAroundReader(matcher, position);
@@ -537,6 +532,15 @@ public class ByteArrayMatcherTest {
     }
     
     
+    /**
+     * Tests that the reverse of the reverse of a sequence matcher matches 
+     * at a series of positions, but not immediately surrounding them, 
+     * using a Reader interface.
+     * 
+     * @param matcher
+     * @param positions
+     * @throws IOException 
+     */
     private void runTestMatchesAroundDoubleReversed(SequenceMatcher matcher, long... positions) throws IOException {
         SequenceMatcher doubleReversed = matcher.reverse().reverse();
         for (long position : positions) {
@@ -545,12 +549,31 @@ public class ByteArrayMatcherTest {
     }  
     
     
+    /**
+     * Tests that a sequence matcher matches at a series of positions, but not
+     * immediately surrounding them, using a byte array.
+     * 
+     * Also tests that the reverse of the reverse of the matcher has identical
+     * behaviour.
+     * 
+     * @param matcher
+     * @param positions
+     * @throws IOException 
+     */
     private void runTestMatchesAroundArray(SequenceMatcher matcher, int... positions) {
         runTestMatchesAroundOriginalArray(matcher, positions);
         runTestMatchesAroundDoubleReversedArray(matcher, positions);
     }
     
     
+    /**
+     * Tests that a sequence matcher matches at a series of positions, but not
+     * immediately surrounding them, using a byte array.
+     * 
+     * @param matcher
+     * @param positions
+     * @throws IOException 
+     */
     private void runTestMatchesAroundOriginalArray(SequenceMatcher matcher, int... positions) {
         for (int position : positions) {
             testMatchesAroundArray(matcher, position);
@@ -558,6 +581,14 @@ public class ByteArrayMatcherTest {
     }
     
     
+    /**
+     * Tests that the reverse of the reverse of a sequence matcher matches 
+     * at a series of positions, but not immediately surrounding them, using a byte array.
+     * 
+     * @param matcher
+     * @param positions
+     * @throws IOException 
+     */
     private void runTestMatchesAroundDoubleReversedArray(SequenceMatcher matcher, int... positions) {
         SequenceMatcher doubleReversed = matcher.reverse().reverse();
         for (int position : positions) {
@@ -566,11 +597,21 @@ public class ByteArrayMatcherTest {
     }
 
     
+    /**
+     * Tests that:
+     * 
+     * - the length of a reversed sequence is the same as the original.
+     * - that each position in the reversed matcher matches only one byte.
+     * - that the bytes in the reversed matcher correspond to the original, but reversed.
+     * 
+     * @param sequence A string to construct a ByteArrayMatcher from.
+     */
     private void testReversed(String sequence) {
         ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
         SequenceMatcher reversed = matcher.reverse();
         int matcherLength = matcher.length();
         assertEquals(sequence + " length", matcherLength, reversed.length());
+        
         for (int index = 0; index < matcherLength; index++) {
             byte[] matcherbytes = matcher.getMatcherForPosition(index).getMatchingBytes();
             assertEquals(sequence + " matches one byte at index" + index, 1, matcherbytes.length);
@@ -580,6 +621,17 @@ public class ByteArrayMatcherTest {
     }
     
     
+    /**
+     * Tests that:
+     * 
+     * - a matcher matches at a given position in a FileReader.
+     * - it does not match one position behind that position.
+     * - it does not match one position ahead of that position.
+     * 
+     * @param matcher
+     * @param pos
+     * @throws IOException 
+     */
     private void testMatchesAroundReader(SequenceMatcher matcher, long pos) throws IOException {
         String matchDesc = matcher.toRegularExpression(true);
         assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
@@ -588,7 +640,16 @@ public class ByteArrayMatcherTest {
     }
     
 
-    
+    /**
+     * Tests that:
+     * 
+     * - a matcher matches at a given position in a byte array.
+     * - it does not match one position behind that position.
+     * - it does not match one position ahead of that position.
+     * 
+     * @param matcher
+     * @param pos 
+     */
     private void testMatchesAroundArray(SequenceMatcher matcher, int pos) {
         String matchDesc = matcher.toRegularExpression(true);
         assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(bytes, pos));
@@ -597,6 +658,16 @@ public class ByteArrayMatcherTest {
     }
     
     
+    /**
+     * Tests that:
+     * 
+     * - a matcher matches at a given position in a byte array using a no bounds check match.
+     * - it does not match one position behind that position.
+     * - it does not match one position ahead of that position.
+     * 
+     * @param matcher
+     * @param pos 
+     */    
     private void testMatchesAroundArrayNoCheck(SequenceMatcher matcher, int pos) {
         String matchDesc = matcher.toRegularExpression(true);
         assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matchesNoBoundsCheck(bytes, pos));
@@ -605,6 +676,14 @@ public class ByteArrayMatcherTest {
     }    
     
 
+    /**
+     * Tests that:
+     * 
+     * - a matcher is the right length with the right byte values for a string sequence.
+     * - the same holds true for the reverse matcher on the reversed string.
+     * 
+     * @param sequence 
+     */
     private void testMatchersForSequence(String sequence) {
         // test forwards matcher
         ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
@@ -617,6 +696,15 @@ public class ByteArrayMatcherTest {
     }
 
     
+    /**
+     * Tests that:
+     * 
+     * - each position in a byte matcher constructed from a string matches only one byte.
+     * - the value is the corresponding value in the original string.
+     * 
+     * @param sequence
+     * @param m 
+     */
     private void testByteMatcherForPosition(String sequence, SequenceMatcher m) {
         for (int position = 0; position < sequence.length(); position++) {
             byte[] onebytes = m.getMatcherForPosition(position).getMatchingBytes();
@@ -626,12 +714,24 @@ public class ByteArrayMatcherTest {
     }
         
     
+    /**
+     * Returns a file given a resource name of a file in the test packages.
+     * 
+     * @param resourceName
+     * @return 
+     */
     private File getFile(final String resourceName) {
         URL url = this.getClass().getResource(resourceName);
         return new File(url.getPath());
     }  
     
     
+    /**
+     * Creates a random length byte array containing random bytes.
+     * 
+     * @param maxLength
+     * @return 
+     */
     private byte[] createRandomArray(final int maxLength) {
         final int length = rand.nextInt(maxLength) + 1;
         final byte[] array = new byte[length];
@@ -641,6 +741,16 @@ public class ByteArrayMatcherTest {
         return array;
     }
 
+    
+    /**
+     * Creates a random length list of random length matchers.
+     * The matchers are constructed using either a random byte value,
+     * a random length byte array, or a random number of repeated random
+     * byte values.
+     * 
+     * @param maxNum
+     * @return 
+     */
     private List<ByteArrayMatcher> createRandomList(final int maxNum) {
         final int noOfMatchers = rand.nextInt(maxNum) + 1;
         final List<ByteArrayMatcher> matchers = new ArrayList<ByteArrayMatcher>();
