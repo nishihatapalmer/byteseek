@@ -47,7 +47,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Tests all the constructors and public methods of the ByteArrayMatcher class.
+ * Tests all the constructors and public methods of the ByteArrayMatcher class for
+ * both success and failure.
+ * 
+ * In particular, it tests for out-of-bounds, next-to-boundary and boundary-crossing
+ * conditions in the matching methods.
  * 
  * @author Matt Palmer
  */
