@@ -410,7 +410,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         }
         final int subsequenceLength = endIndex - beginIndex;
         if (subsequenceLength == 1) {
-            return new OneByteMatcher(byteArray[beginIndex]);
+            return new OneByteMatcher(byteArray[startIndex + beginIndex]);
         }
         if (subsequenceLength == length()) {
             return this;
