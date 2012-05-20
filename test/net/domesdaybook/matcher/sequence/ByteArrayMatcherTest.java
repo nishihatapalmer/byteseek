@@ -495,6 +495,8 @@ public class ByteArrayMatcherTest {
          SequenceMatcher sub = matcher.subsequence(1);
          assertEquals("abc length", 2, sub.length());
          
+         
+         testSubSequence("abc");
          //TODO: lots more subsequence tests.
     }    
 
@@ -503,6 +505,24 @@ public class ByteArrayMatcherTest {
     //  private test methods  //
     ////////////////////////////
     
+    
+    private void testSubSequence(String sequence) {
+        // Given a sequence, test all possible subsequences of it using only beginIndex:
+        ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
+        SequenceMatcher sub = matcher;
+        for (int count = 1; count < sequence.length(); count++) {
+           sub = sub.subsequence(1);
+           assertEquals("subsequence length correct", sequence.length() - count, sub.length());
+           for (int pos = count; pos < sequence.length(); pos++) {
+               int charvalue = (int) sequence.charAt(pos);
+               byte[] matchingbytes = sub.getMatcherForPosition(pos - count).getMatchingBytes();
+               assertEquals("only one byte matches at position", 1, matchingbytes.length);
+               assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+           }
+        }
+        
+        
+    }
     
     /**
      * Tests that a sequence matcher matches at a series of positions, but not
