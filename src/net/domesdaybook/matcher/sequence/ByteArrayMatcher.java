@@ -502,7 +502,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                 throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, source.length()));
             }
             this.byteArray = source.byteArray;
-            this.startIndex = source.startIndex + endIndex - startIndex - 1;
+            this.startIndex = source.startIndex + source.length() - endIndex;
             this.endIndex = source.endIndex - startIndex;
         }         
                
@@ -668,7 +668,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             }
             final int subsequenceLength = endIndex - beginIndex;
             if (subsequenceLength == 1) {
-                return new OneByteMatcher(byteArray[beginIndex]);
+                return new OneByteMatcher(byteArray[this.endIndex - beginIndex - 1]);
             }
             if (subsequenceLength == length()) {
                 return this;
