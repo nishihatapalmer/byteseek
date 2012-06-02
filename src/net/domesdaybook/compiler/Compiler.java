@@ -38,6 +38,7 @@ import java.util.Collection;
  * An interface for compilers which compile an expression written as a string
  * into an object of type T.
  *
+ * @param <T> The type of the object to compile to.
  * @author Matt Palmer
  */
 public interface Compiler<T> {
