@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,10 +33,11 @@ package net.domesdaybook.matcher.bytes;
 
 /**
  * An abstract base class for SingleByteMatchers which can invert
- * the bytes the SingleByteMatcher is provided with.  For example,
- * if a SingleByteMatcher had a rule to match all the odd bytes, but
+ * the results of matching.
+ * <p>
+ * For example, if a ByteMatcher had a rule to match all the odd bytes, but
  * it was inverted, it would match all the even bytes.
- *
+ * <p>
  * When extending this base class, careful attention must be paid to
  * the other interface methods, in particular getNumberOfMatchingBytes() and
  * getMatchingBytes(), as it is easy to forget to invert the number and set
@@ -46,16 +47,28 @@ package net.domesdaybook.matcher.bytes;
  */
 public abstract class InvertibleMatcher extends AbstractByteMatcher {
 
+    /**
+     * A public constant indicating that the results of a match should be inverted.
+     */
     public static final boolean INVERTED = true;
+    
+    
+    /**
+     * A public constant indicating that the results of a match should not be inverted.
+     */
     public static final boolean NOT_INVERTED = false;
     
+    
+    /**
+     * Whether the results of a match should be inverted.
+     */
     protected final boolean inverted;
 
     
     /**
      * Constructs an InvertibleMatcher.
      * 
-     * @param inverted Whether the matcher bytes are inverted or not.
+     * @param inverted Whether the matcher results are inverted or not.
      */
     public InvertibleMatcher(final boolean inverted) {
         this.inverted = inverted;
@@ -63,8 +76,9 @@ public abstract class InvertibleMatcher extends AbstractByteMatcher {
 
 
     /**
-     *
-     * @return Whether the matcher bytes are inverted or not.
+     * Returns true if the matcher inverts its results.
+     * 
+     * @return Whether the matcher results are inverted or not.
      */
     public final boolean isInverted() {
         return inverted;
