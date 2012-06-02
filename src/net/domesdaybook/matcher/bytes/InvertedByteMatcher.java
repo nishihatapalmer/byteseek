@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,13 +33,14 @@
 package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
-import net.domesdaybook.util.bytes.ByteUtilities;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
+import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
+ * A class which matches all bytes except for the one provided.
  *
- * @author matt
+ * @author Matt Palmer
  */
 public final class InvertedByteMatcher extends AbstractByteMatcher {
 
@@ -59,7 +60,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
     /**
      * Constructs an immutable InvertedByteMatcher from a hex representation of a byte.
      * 
-     * @param hexByte 
+     * @param hexByte A string containing a 2-digit hex string giving the value of the byte not to match.
      * @throws IllegalArgumentException if the string is not a valid 2-digit hex byte.
      */
     public InvertedByteMatcher(final String hexByte) {
@@ -123,7 +124,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
     }
 
 
-     /**
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -131,7 +132,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
         StringBuilder builder = new StringBuilder();
         builder.append(prettyPrint? " [^ " : "[^");
         builder.append(ByteUtilities.byteToString(prettyPrint, byteToMiss & 0xFF));
-        builder.append(prettyPrint? " ] " : "]");
+        builder.append(prettyPrint? " ] " : ']');
         return builder.toString();
     }
 
