@@ -31,15 +31,15 @@
 
 package net.domesdaybook.compiler.regex;
 
-import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
-import net.domesdaybook.automata.regex.RegexBuilder;
-import java.util.Collection;
-import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
-import net.domesdaybook.automata.factory.TransitionFactory;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.Automata;
+import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
+import net.domesdaybook.automata.regex.RegexBuilder;
 import net.domesdaybook.compiler.AbstractAstCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
@@ -49,12 +49,15 @@ import org.antlr.runtime.tree.CommonTree;
 
 /**
  * A compiler which produces Non-deterministic Finite-state Automata (NFA)
- * from an expression.  This class extends {@link AbstractAstCompiler}, which
+ * from an expression.  
+ * <p>
+ * This class extends {@link AbstractAstCompiler}, which
  * parses the expression using an ANTLR generated parser, and turns it into
  * an abstract syntax tree.  The compiler takes the abstract syntax tree
  * and uses it to direct the construction of an NFA using various builder
  * and factory helper classes.
  * 
+ * @param <T> The type of object which a match of the regular expression should return.
  * @author Matt Palmer
  */
 public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
