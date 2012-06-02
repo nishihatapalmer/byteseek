@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,15 +33,15 @@
 package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
-import net.domesdaybook.util.bytes.ByteUtilities;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
+import net.domesdaybook.util.bytes.ByteUtilities;
 
 
 /**
- * A OneByteMatcher is a {@link SingleByteMatcher} which matches
+ * A OneByteMatcher is a {@link ByteMatcher} which matches
  * one byte value only.
  *
  * @author Matt Palmer
@@ -93,7 +93,6 @@ public final class OneByteMatcher extends AbstractByteMatcher {
     }   
     
     
-    
     /**
      * {@inheritDoc}
      */
@@ -121,7 +120,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
     }
 
 
-     /**
+    /**
      * {@inheritDoc}
      */
     @Override
