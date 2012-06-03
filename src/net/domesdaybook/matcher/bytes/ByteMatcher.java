@@ -39,8 +39,8 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
  * It extends {@link SequenceMatcher} as the special case of a sequence with
  * a fixed length of one.
  * <p>
- * All implementations of this interface should be immutable.
- * This allows them to be safely shared amongst other classes and threads.
+ * All implementations of this interface should either be immutable, or if 
+ * immutability is not possible, then entirely thread-safe by some other means.
  * 
  * @author Matt Palmer
  */
