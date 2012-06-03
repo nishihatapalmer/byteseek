@@ -38,7 +38,6 @@ import java.util.Set;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
-//FIXME: signed bytes causes issue in ByteUtilities.toString()
 
 /**
  * A SetBinarySearchMatcher is a {@link ByteMatcher which
