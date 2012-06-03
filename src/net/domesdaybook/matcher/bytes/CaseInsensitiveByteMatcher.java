@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -41,10 +41,10 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
 /**
- * An immutable {@link SingleByteMatcher} which matches ASCII bytes case insensitively.
+ * An immutable {@link ByteMatcher} which matches ASCII bytes case insensitively.
  *
  * <p>It will only work for ASCII characters in the range 0 - 127.
- * Other Unicode characters will not work, as all of the SingleByteMatcher
+ * Other Unicode characters will not work, as all of the ByteMatcher
  * classes work at the byte level, so cannot deal with multi-byte characters.
  *
  * @author Matt Palmer
@@ -61,8 +61,6 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
      * Constructs a CaseInsensitiveByteMatcher from the character provided.
      *
      * @param asciiChar The ASCII character to match in a case insensitive way.
-     * @throws {@link IllegalArgumentException} if the character is not ASCII.
-     *
      */
     public CaseInsensitiveByteMatcher(final char asciiChar) {
         // Precondition: must be an ASCII char:
@@ -161,7 +159,7 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override    
-    public SequenceMatcher repeat(int numberOfRepeats) {
+    public SequenceMatcher repeat(final int numberOfRepeats) {
         if (numberOfRepeats < 1) {
             throw new IllegalArgumentException("Number of repeats must be at least one.");
         }
