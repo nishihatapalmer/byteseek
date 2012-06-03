@@ -76,10 +76,10 @@ public final class OneByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) throws IOException{
-        final Window window = reader.getWindow(matchFrom);
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException{
+        final Window window = reader.getWindow(matchPosition);
         return window == null? false
-               : window.getByte(reader.getWindowOffset(matchFrom)) == byteToMatch;
+               : window.getByte(reader.getWindowOffset(matchPosition)) == byteToMatch;
     }
 
 
@@ -87,9 +87,9 @@ public final class OneByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
-        return matchFrom >= 0 && matchFrom < bytes.length &&
-                bytes[matchFrom] == byteToMatch;
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        return matchPosition >= 0 && matchPosition < bytes.length &&
+                bytes[matchPosition] == byteToMatch;
     }   
     
     
