@@ -56,7 +56,7 @@ public interface ByteMatcher extends SequenceMatcher {
      * @param theByte The byte to match.
      * @return boolean Whether the byte matches the byte matcher.
      */
-    boolean matches(final byte theByte);
+    boolean matches(byte theByte);
 
     
     /**
