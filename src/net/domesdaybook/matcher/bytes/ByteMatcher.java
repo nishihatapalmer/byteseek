@@ -47,7 +47,11 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 public interface ByteMatcher extends SequenceMatcher {
 
     /**
+     * Returns whether the matcher matched the byte provided.
+     * <p>
      * Implementations of this method should strive to be as efficient as possible.
+     * In general, time efficiency is preferred, but space efficiency may also be a 
+     * consideration.
      *
      * @param theByte The byte to match.
      * @return boolean Whether the byte matches the byte matcher.
@@ -56,7 +60,11 @@ public interface ByteMatcher extends SequenceMatcher {
 
     
     /**
-     * Implementations of this method can be calculated dynamically,
+     * Returns an array of bytes containing all the byte values which this matcher
+     * can match.  The length of the array will be the number returned by
+     * {@link #getNumberOfMatchingBytes()}.
+     * <p>
+     * Implementations of this method may be calculated dynamically,
      * and may not be efficient if called repeatedly.
      *
      * @return byte[] An array of all the bytes that this byte matcher could match.
@@ -65,7 +73,9 @@ public interface ByteMatcher extends SequenceMatcher {
 
 
     /**
-     * Implementations of this method can be calculated dynamically,
+     * Returns the number of different byte values which this matcher can match.
+     * <p>
+     * Implementations of this method may be calculated dynamically,
      * and may not be efficient if called repeatedly.
      *
      * @return int The number of bytes this byte matcher will match.
