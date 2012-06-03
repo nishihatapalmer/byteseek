@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -34,17 +34,41 @@ package net.domesdaybook.matcher.bytes;
 import java.util.Set;
 
 /**
- * An interface for objects which implement a factory for SingleByteMatchers.
+ * An interface for objects which implement a factory for {@link ByteMatcher}s.
  *
- * @author matt
+ * @author Matt Palmer
  */
 public interface ByteMatcherFactory {
 
+    /**
+     * A constant to say that a set of bytes passed in to the factory should be inverted.
+     */
     public final static boolean INVERTED = true;
+    
+    
+    /**
+     * A constant to say that a set of bytes passed in to the factory should not be inverted.
+     */
     public final static boolean NOT_INVERTED = false;
     
+    
+    /**
+     * Creates a {@link  ByteMatcher} from the set of bytes passed in.
+     * 
+     * @param bytes A set of bytes to match
+     * @return A ByteMatcher which matches that set of bytes.
+     */
     ByteMatcher create(Set<Byte> bytes);
     
+    
+    /**
+     * Creates a {@link  ByteMatcher} from the set of bytes passed in.
+     * 
+     * @param bytes A set of bytes to match
+     * @param inverted Whether to invert the set of bytes to match.
+     * @return A ByteMatcher which matches the set of bytes (or their inverse, if
+     *         specified in the inverted parameter).
+     */
     ByteMatcher create(Set<Byte> bytes, boolean inverted);
 
 }
