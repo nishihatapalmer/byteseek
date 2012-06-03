@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -41,10 +41,10 @@ import net.domesdaybook.reader.Window;
 //FIXME: signed bytes causes issue in ByteUtilities.toString()
 
 /**
- * A SetBinarySearchMatcher is a {@link SingleByteMatcher which
+ * A SetBinarySearchMatcher is a {@link ByteMatcher which
  * uses a binary search to determine whether a given byte is in the
- * set of bytes.  This makes it more memory efficient than the {@link ByteSetMatcher} class, at the expense of slightly more
- * time to match.
+ * set of bytes.  This makes it more memory efficient than the {@link SetBitsetMatcher} class,
+ * at the expense of slightly more time to match.
  *
  * @author Matt Palmer
  */
@@ -60,7 +60,6 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      * 
      * @param bytes The Set of bytes to match.
      * @param inverted Whether the set of bytes is inverted or not.
-     * @throws {@link IllegalArgumentException} if the set is null or empty.
      */
     public SetBinarySearchMatcher(final Set<Byte> bytes, final boolean inverted) {
         super(inverted);
@@ -85,11 +84,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) throws IOException{
-        final Window window = reader.getWindow(matchFrom);
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException{
+        final Window window = reader.getWindow(matchPosition);
         return window == null? false
                : ((Arrays.binarySearch(bytes, 
-                       window.getByte(reader.getWindowOffset(matchFrom))) >= 0) ^ inverted);
+                       window.getByte(reader.getWindowOffset(matchPosition))) >= 0) ^ inverted);
     }    
 
     
@@ -98,8 +97,8 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytesFrom, final int matchFrom) {
-        return (Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted;
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        return (Arrays.binarySearch(bytes, bytes[matchPosition]) >= 0) ^ inverted;
     }     
     
 
@@ -108,10 +107,9 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final byte[] bytesFrom, final int matchFrom) {
-        return (Arrays.binarySearch(bytes, bytesFrom[matchFrom]) >= 0) ^ inverted;
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        return (Arrays.binarySearch(bytes, bytes[matchPosition]) >= 0) ^ inverted;
     }
-    
     
 
     /**
@@ -152,9 +150,9 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         if ( prettyPrint ) {
             regularExpression.append(' ');
         }
-        regularExpression.append("[");
+        regularExpression.append('[');
         if (inverted) {
-            regularExpression.append("^");
+            regularExpression.append('^');
         }
         int byteIndex = 0;
         int[] integers = ByteUtilities.toIntArray(bytes);
@@ -187,7 +185,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
                 byteIndex++;
             }
         }
-        regularExpression.append("]");
+        regularExpression.append(']');
         if (prettyPrint) {
             regularExpression.append(' ');
         }
