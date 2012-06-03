@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -38,13 +38,18 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 
 /**
- * A {@link SingleByteMatcher} which matches any byte at all.
+ * A {@link ByteMatcher} which matches any byte at all.
  *
  * @author Matt Palmer
  */
 public final class AnyByteMatcher extends AbstractByteMatcher {
 
+    /**
+     * A static AnyByteMatcher to return - there only needs to be one
+     * AnyByteMatcher.
+     */
     public static final AnyByteMatcher ANY_BYTE_MATCHER = new AnyByteMatcher();
+    
     
     // A static 256-element array containing all the bytes.
     private static final byte[] ALL_BYTES =  ByteUtilities.getAllByteValues();
@@ -58,8 +63,6 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
 
 
     /**
-     * {@inheritDoc}
-     *
      * Always returns true.
      */
     @Override
@@ -69,15 +72,11 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
     
 
     /**
-     * {@inheritDoc}
-     *
      * Returns a 256-element array of all the possible byte values.
-     * The array returned by this method MUST not be altered.  It is
-     * intended to be a constant array of all possible byte values.
      */
     @Override
     public byte[] getMatchingBytes() {
-        return ALL_BYTES;
+        return ALL_BYTES.clone();
     }
 
 
@@ -103,14 +102,12 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
-        return matchFrom >= 0 && matchFrom < bytes.length;
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        return matchPosition >= 0 && matchPosition < bytes.length;
     }    
 
 
     /**
-     * {@inheritDoc}
-     *
      * Always returns 256.
      */
     @Override
@@ -120,9 +117,7 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
 
     
     /**
-     * {@inheritDoc}
-     *
-     * Always true
+     * Always returns true
      */ 
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
@@ -131,10 +126,10 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
 
     
     /**
-     * {@inheritDoc}
-     *
      * Returns a FixedGapMatcher as long as the number of repeats.
+     * @throws IllegalArgumentException if the number of repeats is less than one.
      */     
+    @Override
     public SequenceMatcher repeat(int numberOfRepeats) {
         if (numberOfRepeats < 1) {
             throw new IllegalArgumentException("Number of repeats must be at least one.");
