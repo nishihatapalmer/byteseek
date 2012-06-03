@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -45,17 +45,22 @@ public interface Matcher {
 
     /**
      * Returns whether there is a match or not at the given position in a Reader.
+     * If the position to match at does not exist in the Reader,
+     * then no exception is thrown - there will simply be no match.
      * 
      * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
-     * @throws IOException if the Reader cannot read.
+     * @throws IOException if the Reader cannot read (but not for reads past the
+     *                     end of the Reader).
      */
     public boolean matches(Reader reader, long matchPosition) throws IOException;
     
     
     /**
      * Returns whether there is a match or not at the given position in a byte array.
+     * If the position to match at does not exist in the byte array,
+     * then no exception is thrown - there will simply be no match.
      * 
      * @param bytes An array of bytes to read from.
      * @param matchPosition The position to try to match at.
