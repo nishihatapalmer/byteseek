@@ -129,7 +129,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append(prettyPrint? " [^ " : "[^");
         builder.append(ByteUtilities.byteToString(prettyPrint, byteToMiss & 0xFF));
         builder.append(prettyPrint? " ] " : ']');
