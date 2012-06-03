@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -39,8 +39,23 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
- * @author matt
+ * A fairly simple implementation of {@link ByteMatcherFactory}.  It attempts to build the
+ * most efficient {@link ByteMatcher} which matches the set of bytes passed in (and whether or
+ * not that set of bytes should be inverted).
+ * <p>
+ * Its heuristics are as follows:
+ * <ul>
+ * <li>Find the simple cases that only match 1, 2, 255 and 256 different values.
+ *     Use either a {@link OneByteMatcher}, a {@link CaseInsensitiveByteMatcher}, a
+ *     {@link InvertedByteMatcher} or an {@link AnyByteMatcher}.
+ * <li>Do the set of bytes match a bitmask (all or any of the bits?)  Use either an 
+ *     {@link AnyBitmaskMatcher} or a {@link AllBitMaskMatcher}.
+ * <li>Do the set of bytes match a contiguous range of bytes?  Use a {@link ByteRangeMatcher}
+ * <li>For less than 16 byte values, use a {@link SetBinarySearchMatcher}.
+ * <li>Otherwise, fall back on a {@link SetBitSetMatcher}.
+ * </ul>
+ * 
+ * @author Matt Palmer
  */
 public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
 
@@ -48,6 +63,12 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     private static final int BINARY_SEARCH_THRESHOLD = 16;
 
     
+    /**
+     * Creates an efficient {@link ByteMatcher} from a set of bytes passed in.
+     * 
+     * @param bytes A set of bytes which a ByteMatcher must match.
+     * @return A ByteMatcher which matches that set of bytes.
+     */
     @Override
     public ByteMatcher create(final Set<Byte> bytes) {
         return create(bytes, ByteMatcherFactory.NOT_INVERTED);
@@ -55,18 +76,12 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
     
     
     /**
-     * Builds an optimal matcher from a set of bytes.
-     *<p>
-     * If the set is a single, non-inverted byte, then a {@link OneByteMatcher}
-     * is returned. If the values lie in a contiguous range, then a
-     * {@link ByteRangeMatcher} is returned.  If the number of bytes in the
-     * set are below a threshold value (16), then a {@link SetBinarySearchMatcher}
-     * is returned, otherwise a {@link SetBitsetMatcher} is returned.
+     * Creates an efficient {@link ByteMatcher} from a set of bytes passed in (
+     * and whether that set of bytes should be inverted or not).
      *
-     * @param setValues The set of byte values to match.
+     * @param bytes  The set of bytes to match (or their inverse).
      * @param matchInverse   Whether the set values are inverted or not
      * @return A ByteMatcher which is optimal for that set of bytes.
-     * @throws {@link IllegalArgumentException} if the set is null or empty.
      */
     @Override
     public ByteMatcher create(final Set<Byte> bytes, final boolean matchInverse) {
@@ -235,6 +250,7 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
         return ((val >= 65 && val <= 90) || (val >= 97 && val <= 122));
     }
 
+    
     private static List<Integer> getSortedByteValues(final Set<Byte> byteSet) {
         final List<Integer> sortedByteValues = new ArrayList<Integer>();
         for (final Byte b : byteSet) {
