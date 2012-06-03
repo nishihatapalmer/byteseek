@@ -63,8 +63,8 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
         if (values == null || values.isEmpty()) {
             throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
-        for (Byte b : values) {
-            byteValues.set((int) b & 0xFF);
+        for (final Byte b : values) {
+            byteValues.set(b & 0xFF);
         }
     }
 
