@@ -135,7 +135,7 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final StringBuffer regularExpression = new StringBuffer();
+        final StringBuilder regularExpression = new StringBuilder();
         if (prettyPrint) {
             regularExpression.append(' ');
         }
