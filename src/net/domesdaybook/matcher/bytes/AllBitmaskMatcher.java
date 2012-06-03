@@ -38,6 +38,7 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
+
 /**
  * A {@link ByteMatcher} which matches a byte which
  * shares all of its set bits with a bitmask (or shares none of them if the
