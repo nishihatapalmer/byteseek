@@ -78,7 +78,7 @@ public interface ByteMatcher extends SequenceMatcher {
      * Implementations of this method may be calculated dynamically,
      * and may not be efficient if called repeatedly.
      *
-     * @return int The number of bytes this byte matcher will match.
+     * @return int The number of different bytes this byte matcher will match.
      */
     int getNumberOfMatchingBytes();
     
