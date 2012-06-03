@@ -39,7 +39,7 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
 /**
- * A SetBitsetMatcher is a {@link ByteMatcher  which
+ * A SetBitsetMatcher is a {@link ByteMatcher} which
  * matches an arbitrary set of bytes.
  * <p>
  * It uses a BitSet as the underlying representation of the entire set of bytes,
