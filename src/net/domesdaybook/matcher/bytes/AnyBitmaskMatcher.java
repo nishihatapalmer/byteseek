@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,7 +40,7 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
 /**
- * A {@link SingleByteMatcher} which matches a byte which
+ * A {@link ByteMatcher} which matches a byte which
  * shares any of its bits with a bitmask.
  * 
  * @author Matt Palmer
@@ -50,7 +50,7 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
     final byte mBitMaskValue;
 
 
-     /**
+    /**
      * Constructs an immutable AnyBitmaskMatcher.
      *
      * @param bitMaskValue The bitmaskValue to match any of its bits against.
@@ -60,6 +60,7 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
         mBitMaskValue = bitMaskValue;
     }
 
+    
     /**
      * Constructs an immutable AnyBitmaskMatcher.
      *
@@ -76,22 +77,22 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) throws IOException {
-        final Window window = reader.getWindow(matchFrom);
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+        final Window window = reader.getWindow(matchPosition);
         return window == null? false
-               : ((window.getByte(reader.getWindowOffset(matchFrom)) & mBitMaskValue) != 0) ^ inverted;
+               : ((window.getByte(reader.getWindowOffset(matchPosition)) & mBitMaskValue) != 0) ^ inverted;
     }
-
 
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
-        return (matchFrom >= 0 && matchFrom < bytes.length) &&
-                (((bytes[matchFrom] & mBitMaskValue) != 0) ^ inverted);
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        return (matchPosition >= 0 && matchPosition < bytes.length) &&
+                (((bytes[matchPosition] & mBitMaskValue) != 0) ^ inverted);
     }    
+    
     
     /**
      * {@inheritDoc}
@@ -108,8 +109,8 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         final String wrapper = inverted? "[^ ~%02x]" : "~%02x";
-        final String regEx = String.format(wrapper, (int) 0xFF & mBitMaskValue);
-        return prettyPrint ? " " + regEx + " " : regEx;
+        final String regEx = String.format(wrapper, 0xFF & mBitMaskValue);
+        return prettyPrint ? ' ' + regEx + ' ' : regEx;
     }
 
 
@@ -118,7 +119,9 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public byte[] getMatchingBytes() {
-        final List<Byte> bytes = ByteUtilities.getBytesMatchingAnyBitMask(mBitMaskValue);
+        final List<Byte> bytes = inverted? 
+                ByteUtilities.getBytesNotMatchingAnyBitMask(mBitMaskValue) :
+                ByteUtilities.getBytesMatchingAnyBitMask(mBitMaskValue);
         return ByteUtilities.toArray(bytes);
     }
 
@@ -128,21 +131,18 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public int getNumberOfMatchingBytes() {
-        return ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue);
+        return inverted? 256 - ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue)
+                       : ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue);
     }
 
-    
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
-        return ((bytes[matchFrom] & mBitMaskValue) != 0) ^ inverted;
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        return ((bytes[matchPosition] & mBitMaskValue) != 0) ^ inverted;
     }
     
-    
-
-
 
 }
