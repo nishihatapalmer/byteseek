@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -37,8 +37,8 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
 /**
- * An immutable {@link SingleByteMatcher} which matches a range of bytes, 
- * or bytes outside the range if inverted.
+ * An immutable {@link ByteMatcher} which matches a range of bytes, 
+ * or the bytes outside the range if inverted.
  * 
  * @author Matt Palmer
  *
@@ -50,14 +50,16 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
 
+    
     /**
-     * Constructs an immutable {@link SingleByteMatcher} which matches a range of bytes.
-     * If the minimum value is greater than the maximum value, then the values are reversed.
+     * Constructs an immutable {@link ByteMatcher} which matches a range of bytes.
+     * <p>
+     * If the minimum value is greater than the maximum value, 
+     * then the values are reversed, so the same range is matched.
      *
-     * @param minValue The minimum value to match.
-     * @param maxValue The maximum value to match.
+     * @param minValue The minimum value to match, inclusive.
+     * @param maxValue The maximum value to match, inclusive.
      * @param inverted If true, the matcher matches values outside the range given.
-     * @throws {@link IllegalArgumentException} if the values are not between 0-255.
      */
     public ByteRangeMatcher(final int minValue, final int maxValue, final boolean inverted) {
         super(inverted);
@@ -80,11 +82,11 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) 
+    public boolean matches(final Reader reader, final long matchPosition) 
             throws IOException{
-        final Window window = reader.getWindow(matchFrom);
+        final Window window = reader.getWindow(matchPosition);
         if (window != null) {
-            final int byteValue = window.getByte(reader.getWindowOffset(matchFrom)) & 0xFF;
+            final int byteValue = window.getByte(reader.getWindowOffset(matchPosition)) & 0xFF;
             final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
             return insideRange ^ inverted;
         }
@@ -96,9 +98,9 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
-        if (matchFrom >= 0 && matchFrom < bytes.length) {
-            final int byteValue = bytes[matchFrom] & 0xFF;
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        if (matchPosition >= 0 && matchPosition < bytes.length) {
+            final int byteValue = bytes[matchPosition] & 0xFF;
             final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
             return insideRange ^ inverted;
         }
@@ -135,17 +137,17 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     public String toRegularExpression(final boolean prettyPrint) {
         final StringBuffer regularExpression = new StringBuffer();
         if (prettyPrint) {
-            regularExpression.append(" ");
+            regularExpression.append(' ');
         }
-        regularExpression.append( "[" );
+        regularExpression.append('[');
         if (inverted) {
-            regularExpression.append( "^" );
+            regularExpression.append('^');
         }
         final String minValue = ByteUtilities.byteToString(prettyPrint, minByteValue);
         final String maxValue = ByteUtilities.byteToString(prettyPrint, maxByteValue);
-        regularExpression.append( String.format( "%s-%s]", minValue, maxValue ));
+        regularExpression.append( String.format("%s-%s]", minValue, maxValue ));
         if (prettyPrint) {
-            regularExpression.append(" ");
+            regularExpression.append(' ');
         }
         return regularExpression.toString();
     }
