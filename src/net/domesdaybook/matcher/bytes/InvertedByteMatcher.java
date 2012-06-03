@@ -72,10 +72,10 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchFrom) throws IOException{
-        final Window window = reader.getWindow(matchFrom);
+    public boolean matches(final Reader reader, final long matchPosition) throws IOException{
+        final Window window = reader.getWindow(matchPosition);
         return window == null? false
-                : window.getByte(reader.getWindowOffset(matchFrom)) != byteToMiss;
+                : window.getByte(reader.getWindowOffset(matchPosition)) != byteToMiss;
     }
     
 
@@ -83,9 +83,9 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final byte[] bytes, final int matchFrom) {
-        return matchFrom >= 0 && matchFrom < bytes.length &&
-                bytes[matchFrom] != byteToMiss;
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        return matchPosition >= 0 && matchPosition < bytes.length &&
+                bytes[matchPosition] != byteToMiss;
     }    
     
     
@@ -93,8 +93,8 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchFrom) {
-        return bytes[matchFrom] != byteToMiss;
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        return bytes[matchPosition] != byteToMiss;
     }    
 
     
