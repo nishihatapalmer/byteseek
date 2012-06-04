@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -194,6 +194,16 @@ public interface MultiSequenceMatcher extends Matcher {
     public MultiSequenceMatcher reverse();
     
     
+    /**
+     * Creates a new instance of the same type of MultiSequenceMatcher as the
+     * implementation, but constructed using a different collection of sequence
+     * matchers.  Using this method, all MultiSequenceMatchers provide factory
+     * services.
+     * 
+     * @param sequences The SequenceMatchers to construct the new MultiSequenceMatcher from. 
+     * @return A MultiSequenceMatcher of the same type as this implementation, constructed
+     *         from the SequenceMatchers.
+     */
     public MultiSequenceMatcher newInstance(Collection<? extends SequenceMatcher> sequences);
 
     
