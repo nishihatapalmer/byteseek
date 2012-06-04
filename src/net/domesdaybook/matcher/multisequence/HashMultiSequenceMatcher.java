@@ -68,6 +68,8 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
     private final int maximumLength;
     
     /**
+     * Private constructor to prevent construction.  This class is currently only
+     * a shell with no real implementation.
      * 
      * @param matchers
      */
