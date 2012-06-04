@@ -42,7 +42,15 @@ import net.domesdaybook.reader.Reader;
 
 /**
  * A very simple MultiSequenceMatcher which simply tries all of the
- * sequence matchers in turn.
+ * sequence matchers in a list in turn.
+ * <p>
+ * For large lists of SequenceMatchers, this will not be a very time-efficient
+ * way of matching them; using something like a {@link TrieMultiSequenceMatcher}
+ * will be much faster.  However, it is space efficient, in that it only incurs
+ * the overhead of a list to store the SequenceMatchers.
+ * <p>
+ * For very short lists of SequenceMatchers, it is possible that it may even be 
+ * faster than more complex MultiSequenceMatchers.
  *
  * @author Matt Palmer.
  */
@@ -54,8 +62,17 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**
+     * Constructs a ListMultiSequenceMatcher from a list of byte arrays.
+     * <p>
+     * The byte arrays will be cloned when constructing {@link ByteArrayMatchers}
+     * from them to be used in this matcher.  If the list of byte arrays is empty
+     * then a ListMultiSequenceMatcher is constructed which will not match anything.
      * 
-     * @param bytesToMatch
+     * @param bytesToMatch A list of byte arrays from which to construct the 
+     *                     ListMultiSequenceMatcher.
+     * @throws IllegalArgumentException if the list passed in is null, any of the
+     *         byte arrays in the list is null, or any of the byte arrays in the
+     *         list have a length of zero.
      */
     public ListMultiSequenceMatcher(final List<byte[]> bytesToMatch) {
         if (bytesToMatch == null) {
@@ -84,14 +101,26 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**
+     * Constructs a ListMultiSequenceMatcher from a collection of sequence matchers.
+     * The ListMultiSequenceMatcher places the sequence matchers in the collection
+     * into its own internal list.  If the collection passed in is empty, 
+     * then a MultiSequenceMatcher is constructed which does not match anything.
      * 
-     * @param matchersToUse
+     * @param matchersToUse A collection of sequence matchers to construct the
+     *        ListMultiSequenceMatcher from.
+     * @throws IllegalArgumentException if the collection is null, or any of the
+     *         SequenceMatchers in the collection are null.
      */
     public ListMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchersToUse) {
         if (matchersToUse == null) {
             throw new IllegalArgumentException("Null collection of matchers passed in.");
         }
         matchers = new ArrayList<SequenceMatcher>(matchersToUse);
+        for (final SequenceMatcher matcher : matchers) {
+            if (matcher == null) {
+                throw new IllegalArgumentException("A matcher in the collection was null.");
+            }
+        }
         if (matchers.isEmpty()) {
             minimumLength = 0;
             maximumLength = 0;
@@ -110,9 +139,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
 
     /**
-     * 
-     * @throws IOException 
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public List<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) 
@@ -132,8 +159,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
-     * 
-     * @inheritDoc
+     * {@inheritDoc}
      */ 
     @Override   
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, 
@@ -167,11 +193,9 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     }    
     
     
-    /**
-     * 
-     * @throws IOException 
-     * @inheritDoc
-     */
+    /**    
+     * {@inheritDoc}
+     */ 
     @Override
     public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
             final long matchPosition) throws IOException {
@@ -190,12 +214,9 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     }    
     
     
-    
     /**    
-     * 
-     * @param bytes 
-     * @inheritDoc
-     */    
+     * {@inheritDoc}
+     */ 
     @Override
     public Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, 
             final int matchPosition) {
@@ -229,10 +250,8 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
-     * 
-     * @throws IOException 
-     * @inheritDoc
-     */    
+     * {@inheritDoc}
+     */   
     @Override
     public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) 
             throws IOException {
@@ -247,7 +266,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**    
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override      
     public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition) {
@@ -273,8 +292,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
-     * @throws IOException 
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override 
     public SequenceMatcher firstMatchBackwards(final Reader reader, 
@@ -291,7 +309,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**    
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override 
     public SequenceMatcher firstMatchBackwards(final byte[] bytes, final int matchPosition) {
@@ -318,8 +336,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
-     * 
-     * @inheritDoc
+     * {@inheritDoc}
      */ 
     @Override
     public boolean matches(final Reader reader, final long matchPosition) 
@@ -335,8 +352,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
-     * 
-     * @inheritDoc
+     * {@inheritDoc}
      */ 
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
@@ -361,11 +377,8 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     }
 
     
-
     /**    
-     * 
-     * @throws IOException 
-     * @inheritDoc
+     * {@inheritDoc}
      */ 
     @Override
     public boolean matchesBackwards(final Reader reader, final long matchPosition) throws IOException { 
@@ -381,9 +394,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**    
-     * 
-     * @param bytes 
-     * @inheritDoc
+     * {@inheritDoc}
      */ 
     @Override
     public boolean matchesBackwards(final byte[] bytes, final int matchPosition) {
@@ -410,7 +421,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
 
     /**    
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override  
     public int getMinimumLength() {
@@ -419,7 +430,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**    
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override  
     public int getMaximumLength() {
@@ -428,7 +439,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**    
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override  
     public MultiSequenceMatcher reverse() {
@@ -438,7 +449,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override 
     public MultiSequenceMatcher newInstance(Collection<? extends SequenceMatcher> sequences) {
@@ -447,7 +458,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**    
-     * @inheritDoc 
+     * {@inheritDoc}
      */ 
     @Override  
     public List<SequenceMatcher> getSequenceMatchers() {
