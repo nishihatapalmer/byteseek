@@ -42,7 +42,9 @@ import net.domesdaybook.reader.Reader;
 
 /**
  * A very simple MultiSequenceMatcher which simply tries all of the
- * sequence matchers in a list in turn.
+ * sequence matchers in a list in turn.  It is immutable (and so must be all
+ * implementations of SequenceMatcher), so it can be safely used in multi-threaded 
+ * applications.
  * <p>
  * For large lists of SequenceMatchers, this will not be a very time-efficient
  * way of matching them; using something like a {@link TrieMultiSequenceMatcher}
