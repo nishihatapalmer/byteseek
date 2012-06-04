@@ -53,7 +53,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
-     * @throws IOException  
+     * @throws IOException If the reader encounters a problem reading bytes.
      */
     public Collection<SequenceMatcher> allMatches(Reader reader, long matchPosition)
             throws IOException;
@@ -80,7 +80,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
-     * @throws IOException  
+     * @throws IOException If the reader encounters a problem reading bytes.
      */
     public Collection<SequenceMatcher> allMatchesBackwards(Reader reader, 
             long matchPosition) throws IOException;
@@ -105,7 +105,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
-     * @throws IOException  
+     * @throws IOException If the reader encounters a problem reading bytes.
      */
     public SequenceMatcher firstMatch(Reader reader, long matchPosition)
        throws IOException;
@@ -129,7 +129,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
-     * @throws IOException  
+     * @throws IOException If the reader encounters a problem reading bytes.
      */
     public SequenceMatcher firstMatchBackwards(Reader reader, long matchPosition)
         throws IOException;
@@ -152,7 +152,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @param reader The {@link Reader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
-     * @throws IOException  
+     * @throws IOException If the reader encounters a problem reading bytes.
      */    
     public boolean matchesBackwards(Reader reader, long matchPosition)
          throws IOException;;
@@ -208,9 +208,9 @@ public interface MultiSequenceMatcher extends Matcher {
 
     
     /**
-     * Returns a collection of all the sequences matched by this matcher.
+     * Returns a list of all the sequences matched by this matcher.
      * 
-     * @return A collection of the sequence matchers this multi sequence matcher matches.
+     * @return A list of the sequence matchers this multi sequence matcher matches.
      */
     public List<SequenceMatcher> getSequenceMatchers();
 }
