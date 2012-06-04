@@ -71,7 +71,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
      * 
      * @param matchers
      */
-    public HashMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchers) {
+    private HashMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchers) {
         // Store matcher list:
         if (matchers == null || matchers.isEmpty()) {
             throw new IllegalArgumentException("Null or empty matchers passed in.");
