@@ -82,6 +82,9 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
         }
         matchers = new ArrayList<SequenceMatcher>(bytesToMatch.size());
         for (final byte[] bytes : bytesToMatch) {
+            if (bytes == null) {
+                throw new IllegalArgumentException("A null byte array was in the list of arrays to match.");
+            }
             final SequenceMatcher sequence = new ByteArrayMatcher(bytes);
             matchers.add(sequence);
         }
