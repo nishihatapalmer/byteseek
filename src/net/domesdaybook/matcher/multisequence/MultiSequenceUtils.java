@@ -33,16 +33,16 @@ package net.domesdaybook.matcher.multisequence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import net.domesdaybook.util.bytes.ByteUtilities;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
- *
+ * Some static utilities useful in processing collections of sequence matchers
+ * and MultiSequenceMatchers.  
+ * 
  * @author Matt Palmer
  */
 public final class MultiSequenceUtils {
@@ -55,6 +55,13 @@ public final class MultiSequenceUtils {
     }
     
     
+    /**
+     * Produces a list of {@link SequenceMatcher}s where each SequenceMatcher in
+     * the new list is reversed from the original.
+     * 
+     * @param matchers The collection of SequenceMatchers to reverse.
+     * @return A list of SequenceMatchers with each matcher reversed from the original.
+     */
     public static List<SequenceMatcher> reverseMatchers(Collection<? extends SequenceMatcher> matchers) {
         final List<SequenceMatcher> reversedMatchers = new ArrayList<SequenceMatcher>(matchers.size());
         for (final SequenceMatcher matcher : matchers) {
@@ -64,16 +71,16 @@ public final class MultiSequenceUtils {
     }
     
     
-    public static Map<SequenceMatcher, SequenceMatcher> mapReverseMatchers(Collection<? extends SequenceMatcher> matchers) {
-        final Map<SequenceMatcher, SequenceMatcher> mapReversedMatchers = new IdentityHashMap<SequenceMatcher, SequenceMatcher>();
-        for (final SequenceMatcher matcher : matchers) {
-            final SequenceMatcher reversed = matcher.reverse();
-            mapReversedMatchers.put(reversed, matcher);
-        }
-        return mapReversedMatchers;
-    }
-    
-    
+    /**
+     * Returns the set of bytes found by aligning all the {@link SequenceMatcher}s 
+     * in a MultiSequenceMatcher to the left, and taking a position from the left 
+     * hand side.  Zero is the leftmost position.
+     * 
+     * @param atPosition The position from the left hand side to find the superset of matching bytes.
+     * @param matcher The MultiSequenceMatcher to find the matching bytes from.
+     * @return A set of bytes containing the superset of all bytes matching at the position
+     *         given in all the SequenceMatchers contained in the MultiSequenceMatcher, aligned left.
+     */
     public static Set<Byte> bytesAlignedLeft(final int atPosition, 
                                              final MultiSequenceMatcher matcher) {
         final Set<Byte> bytes = new HashSet<Byte>();
@@ -89,6 +96,17 @@ public final class MultiSequenceUtils {
         return bytes;
     }
 
+
+    /**
+     * Returns the set of bytes found by aligning all the {@link SequenceMatcher}s 
+     * in a MultiSequenceMatcher to the right, and taking a position from the right 
+     * hand side.  Zero is the rightmost position.
+     * 
+     * @param atPosition The position from the right hand side to find the superset of matching bytes.
+     * @param matcher The MultiSequenceMatcher to find the matching bytes from.
+     * @return A set of bytes containing the superset of all bytes matching at the position
+     *         given in all the SequenceMatchers contained in the MultiSequenceMatcher, aligned right.
+     */
 
     public static Set<Byte> bytesAlignedRight(final int atPosition,
                                               final MultiSequenceMatcher matcher) {
