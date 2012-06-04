@@ -37,8 +37,27 @@ import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 
+
 /**
- *
+ * WARNING: THIS CLASS IS ENTIRELY UNFINISHED.  DO NOT USE.
+ * <p>
+ * It is intended to be a half-way house in terms of time-space trade-off  between
+ * the List and the Trie multi-sequence-matchers.
+ * <p>
+ * The idea is to create a limited-size hash-table.  Each sequence matcher is 
+ * added to the hashtable, indexed on the bytes which they first match. Each position
+ * in the hashtable contains a list of sequence matchers that hash to that position.
+ * Encountering a byte, a hashtable lookup is performed to see which lists of sequence
+ * matchers need to be tried at that position.
+ * <p>
+ * It should be faster than a ListMultiSequenceMatcher, but take up less memory than
+ * building an entirely new Trie structure from the sequence matchers.  The size of the
+ * hashtable must be chosen carefully to achieve this balance.
+ * <p>
+ * When used in conjunction with the WuManber multi-sequence search algorithms,
+ * we are as close as possible to the original description of Wu-Manber (although 
+ * the Trie based matcher would probably be faster in most cases).
+ * 
  * @author Matt Palmer
  */
 public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
@@ -48,6 +67,10 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
     private final int minimumLength;
     private final int maximumLength;
     
+    /**
+     * 
+     * @param matchers
+     */
     public HashMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchers) {
         // Store matcher list:
         if (matchers == null || matchers.isEmpty()) {
@@ -121,6 +144,11 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * 
+     * @param sequences
+     * @return
+     */
     public MultiSequenceMatcher newInstance(final Collection<? extends SequenceMatcher> sequences) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
