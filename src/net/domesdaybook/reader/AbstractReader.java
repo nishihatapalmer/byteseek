@@ -127,8 +127,8 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      * Reads a byte in the file at the given position.
      *
      * @param position The position in the reader to read a byte from.
-     * @return The byte at the given position (0-255), or -1 if there is no
-     *         byte at the position specified.
+     * @return The byte at the given position (0-255), or a negative number
+     *         if there is no byte at the position specified.
      * @throws IOException if an error occurs reading the byte.
      */
     @Override
