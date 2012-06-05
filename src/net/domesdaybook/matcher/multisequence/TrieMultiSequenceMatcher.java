@@ -38,43 +38,73 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.trie.SequenceMatcherTrie;
+import net.domesdaybook.automata.trie.SequenceMatcherTrieFactory;
 import net.domesdaybook.automata.trie.Trie;
+import net.domesdaybook.automata.trie.TrieFactory;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 
 /**
- *
- * @author matt
+ * A {@link MultiSequenceMatcher} uses a {@link Trie} structure to match 
+ * with. A Trie is a deterministic automata, arranged as a prefix tree of all
+ * the sequences in it.  This means that no matter how many SequenceMatchers
+ * are added to it (hundreds, thousands, mjllions...), to match it performs no more
+ * comparisons than required for the longest sequence in the Trie (and usually less). 
+ * <p>
+ * This is highly time-efficient, but takes more space to hold the Trie automata 
+ * states in addition to the original list of SequenceMatchers used to construct 
+ * the Trie.
+ * <p>
+ * Note that for a very low number of SequenceMatchers, it is possible that a simpler
+ * matcher, such as the {@link ListMultiSequenceMatcher} may be faster, due to lower
+ * complexity and fewer objects required.
+ * <p>
+ * The TrieMultiSequenceMatcher is immutable, so can be safely used in multi-
+ * threaded applications.
+ * 
+ * @author Matt Palmer
  */
 public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
+    private final static TrieFactory<SequenceMatcher> DEFAULT_TRIE_FACTORY 
+            = new SequenceMatcherTrieFactory();
+    
     private final Trie<SequenceMatcher> trie;
 
+    
     /**
+     * Constructs an immutable TrieMultiSequenceMatcher from a collection of {@link SequenceMatcher}s,
+     * using a default {@link SequenceMatcherTrieFactory} to create the Trie with.
      * 
-     * @param trie
+     * @param matchers The collection of sequences to construct the TrieMultiSequenceMatcher from.
      */
-    public TrieMultiSequenceMatcher(final Trie<SequenceMatcher> trie) {
-        if (trie == null) {
-            throw new IllegalArgumentException("Null Trie passed in to TrieMatcher.");
-        }
-        this.trie = trie;
-    }
-    
-    
     public TrieMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchers) {
-        if (matchers == null || matchers.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty list of sequence matchers passed in.");
-        }
-        this.trie = new SequenceMatcherTrie(matchers);
+        this(DEFAULT_TRIE_FACTORY, matchers);
     }
-
+    
+    
+    /**
+     * Constructs an immutable TrieMultiSequenceMatcher from a collection of {@link SequenceMatcher}s,
+     * using the {@link TrieFactory<SequenceMatcher>} provided to build the Trie.
+     * 
+     * @param factory The factory to create a {@link Trie<SequenceMatcher>} with.
+     * @param matchers The collection of sequences to construct the TrieMultiSequenceMatcher from.
+     */
+    public TrieMultiSequenceMatcher(final TrieFactory<SequenceMatcher> factory, 
+                                    final Collection<? extends SequenceMatcher> matchers) {
+        if (factory == null) {
+            throw new IllegalArgumentException("Null factory passed in to TrieMultiSequenceMatcher");
+        }
+        if (matchers == null || matchers.isEmpty()) {
+            throw new IllegalArgumentException("Null or empty SequenceMatcher collection passed in to TrieMultiSequenceMatcher.");
+        }
+        this.trie = factory.create(matchers);
+    }
+    
 
     /**
-     * @throws IOException 
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Collection<SequenceMatcher> allMatches(final Reader reader, 
@@ -109,8 +139,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override    
     public Collection<SequenceMatcher> allMatches(final byte[] bytes, final int matchPosition) {
@@ -137,9 +166,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**
-     * @throws IOException 
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override  
     public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
@@ -174,9 +201,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**
-     * @param bytes 
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override  
     public Collection<SequenceMatcher> allMatchesBackwards(final byte[] bytes, final int matchPosition) {
@@ -204,8 +229,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**
-     * @throws IOException 
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) 
@@ -235,8 +259,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override    
     public SequenceMatcher firstMatch(final byte[] bytes, final int matchPosition) {
@@ -257,9 +280,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**
-     * @throws IOException 
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override  
     public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
@@ -289,8 +310,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override  
     public SequenceMatcher firstMatchBackwards(final byte[] bytes, final int matchPosition) {
@@ -311,8 +331,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override    
     public boolean matches(final Reader reader, final long matchPosition) 
@@ -322,8 +341,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
       
     /**
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override     
     public boolean matches(final byte[] bytes, final int matchPosition) {
@@ -332,9 +350,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**
-     * @throws IOException 
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override 
     public boolean matchesBackwards(final Reader reader, final long matchPosition) 
@@ -344,9 +360,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**
-     * @param bytes 
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override 
     public boolean matchesBackwards(final byte[] bytes, final int matchPosition) {
@@ -355,8 +369,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     
     
     /**
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override 
     public int getMinimumLength() {
@@ -365,8 +378,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 
     
     /**
-     * @inheritDoc
-     * 
+     * {@inheritDoc}
      */
     @Override 
     public int getMaximumLength() {
@@ -374,28 +386,27 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     }
     
     
-    /**    
-     * @inheritDoc 
-     */ 
+    /**
+     * {@inheritDoc}
+     */
     @Override  
     public MultiSequenceMatcher reverse() {
         return new TrieMultiSequenceMatcher(
                 MultiSequenceUtils.reverseMatchers(trie.getSequences()));
     }
     
-    
-    
-    /**    
-     * @inheritDoc 
-     */ 
+      
+    /**
+     * {@inheritDoc}
+     */
     @Override 
     public MultiSequenceMatcher newInstance(Collection<? extends SequenceMatcher> sequences) {
         return new TrieMultiSequenceMatcher(sequences);
     }    
     
     
-    /**    
-     * @inheritDoc 
+    /**
+     * {@inheritDoc}
      */ 
     @Override  
     public List<SequenceMatcher> getSequenceMatchers() {
@@ -416,6 +427,14 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     }    
     
     
+    /**
+     * Returns the SequenceMatcher which happens to be the first one associated
+     * with an automata State.  A State may be associated with zero to many
+     * SequenceMatchers.  This is to support the firstMatch functions.
+     * 
+     * @param state The State to get the first associated SequenceMatcher from.
+     * @return The first associated SequenceMatcher, or null if there are none.
+     */
     private SequenceMatcher getFirstAssociation(final State<SequenceMatcher> state) {
         final Collection<SequenceMatcher> associations = state.getAssociations();
         if (associations != null) {
