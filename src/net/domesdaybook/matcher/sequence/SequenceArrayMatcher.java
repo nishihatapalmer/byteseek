@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -56,6 +56,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      * Constructs a SequenceArrayMatcher from a list of {@link SequenceMatcher} objects.
      *
      * @param matchList A list of SequenceMatchers from which to construct this SequenceArrayMatcher.
+     * @throws IllegalArgumentException if the collection is null or empty.
      */
     public SequenceArrayMatcher(final Collection<? extends SequenceMatcher> matchList) {
         this(matchList, 1);
@@ -65,36 +66,51 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
     /**
      * Constructs a SequenceArrayMatcher from a repeated list of {@link SequenceMatcher} objects.
      * 
-     * @param matchList  A list of (repeated) SequenceMatchers from which to construct this SequenceArrayMatcher.
+     * @param matcherCollection  A collection of (repeated) SequenceMatchers from which to construct this SequenceArrayMatcher.
      * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
-     * @throws IllegalArgumentException if the list is null or empty, or the number to repeat is less than one.
+     * @throws IllegalArgumentException if the collection is null or empty, or the number to repeat is less than one.
      */
-    public SequenceArrayMatcher(final Collection<? extends SequenceMatcher> matchList, final int numberOfRepeats) {
-        if (matchList == null || matchList.isEmpty()) {
+    public SequenceArrayMatcher(final Collection<? extends SequenceMatcher> matcherCollection, final int numberOfRepeats) {
+        if (matcherCollection == null || matcherCollection.isEmpty()) {
             throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
         }
         if (numberOfRepeats < 1) {
             throw new IllegalArgumentException("CombinedSequenceMatcher requires a positive number of repeats.");
         }
         if (numberOfRepeats == 1) {
-            matchers = matchList.toArray(new SequenceMatcher[matchList.size() * numberOfRepeats]);
+            matchers = matcherCollection.toArray(new SequenceMatcher[matcherCollection.size() * numberOfRepeats]);
             length = matchers.length;
         } else {
-            length = matchList.size() * numberOfRepeats;
+            length = matcherCollection.size() * numberOfRepeats;
             final List<SequenceMatcher> allMatchers = new ArrayList<SequenceMatcher>(length);
             for (int count = 0; count < numberOfRepeats; count++) {
-                allMatchers.addAll(matchList);
+                allMatchers.addAll(matcherCollection);
             }
-            matchers = matchList.toArray(new SequenceMatcher[length]);
+            matchers = matcherCollection.toArray(new SequenceMatcher[length]);
         }
     }
     
     
+    /**
+     * Constructs a SequenceArrayMatcher from an array of SequenceMatchers.
+     * 
+     * @param matchArray The array of SequenceMatchers to construct from.
+     * @throws IllegalArgumentException if the array is null or empty.
+     */
     public SequenceArrayMatcher(final SequenceMatcher[] matchArray) {
         this(matchArray, 1);
     }
     
     
+    /**
+     * Constructs a SequenceArrayMatcher from an array of SequenceMatcher,
+     * repeated a number of times.
+     * 
+     * @param matchArray The array of SequenceMatchers to construct from.
+     * @param numberOfRepeats The number of times to repeat the array.
+     * @throws IllegalArgumentException if the array is null or empty, or the
+     *         number of repeats is less than one.
+     */
     public SequenceArrayMatcher(final SequenceMatcher[] matchArray, final int numberOfRepeats) {
         if (matchArray == null || matchArray.length == 0) {
             throw new IllegalArgumentException("Null or empty match array passed in to CombinedSequenceMatcher.");
@@ -235,7 +251,8 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
                 return matcher.getMatcherForPosition(matcherOffset);
             }
         }
-        return null; // This should never happen - unsure whether to throw runtimeexception or not.
+        final String badness = "A ByteMatcher for position %d in a sequence of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
+        throw new RuntimeException(String.format(badness, position, length));
     }
 
 
