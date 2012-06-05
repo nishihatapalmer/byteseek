@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Set;
 import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
-import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
 import net.domesdaybook.automata.regex.RegexBuilder;
 import net.domesdaybook.compiler.AbstractAstCompiler;
@@ -83,19 +83,19 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
      * Constructs an RegexCompiler, supplying the {@link RegexBuilder} object
      * to use to construct the NFA from the parse tree.
      *
-     * @param stateWrapperBuilder
+     * @param regExBuilder the NFA builder used to create an NFA from an abstract
+     *        syntax tree (AST).
      */
-    public RegexCompiler(final RegexBuilder<T> stateWrapperBuilder) {
-        this.regexBuilder = stateWrapperBuilder;
+    public RegexCompiler(final RegexBuilder<T> regExBuilder) {
+        this.regexBuilder = regExBuilder;
     }
 
     
-
     /**
      * Compiles a Non-deterministic Finite-state Automata (NFA) from the
      * abstract syntax tree provided by the {@link AbstractAstCompiler} which this
      * class extends.
-     * <p/>
+     * <p>
      * It uses a {@link RegexBuilder} object to build the actual automata,
      * returning only the initial state of the final automata.
      *
@@ -116,6 +116,9 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Automata<T> compile(final Collection<String> expressions) throws CompileException {
         final List<Automata<T>> automataList = new ArrayList<Automata<T>>();
