@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -38,7 +38,31 @@ import net.domesdaybook.reader.cache.MostRecentlyUsedCache;
 import net.domesdaybook.reader.cache.TempFileCache;
 import net.domesdaybook.reader.cache.TwoLevelCache;
 
+
 /**
+ * A Reader implementing {@link AbstractReader} over an {@link java.io.InputStream}.
+ * <p>
+ * The implementation is stream-friendly, in that it does not need to know the length
+ * of the stream in order to serve bytes out of it for any position in the stream.
+ * If a position requested has not yet been read in the stream, then the stream
+ * will be read (and the Windows encountered cached) until the position requested is
+ * available in a {@link Window}.
+ * Note that if you explicitly call the {@link #length()} method, then the stream
+ * will be read until the end is encountered and a length can be determined.
+ * <p>
+ * By default, the InputStreamReader uses a {@link TwoLevelCache}, with a
+ * {@link MostRecentlyUsedCache} as its primary cache, and a {@link TempFileCache} as
+ * its secondary cache.  If the input stream fits entirely into the MostRecentlyUsedCache,
+ * then a temporary file will never be created.  The secondary cache only gets used if
+ * a Window drops out of the primary cache due to exceeding its capacity.
+ * <p>
+ * Note that if you provide your own WindowCache to this Reader, then you should either
+ * be sure that it is always possible to retrieve an earlier Window from the cache
+ * (since it is not possible to rewind all InputStreams), or be sure that in the use
+ * you make of this Reader, a position which is no longer available in your cache
+ * will never be requested.  If you request a position which has already been read
+ * in the stream, but which the cache can no longer provide, then a {@link WindowMissingException}
+ * will be thrown (this is a RuntimeException, as it indicates a programming error).
  *
  * @author Matt Palmer
  */
@@ -50,8 +74,13 @@ public class InputStreamReader extends AbstractReader {
     
     
     /**
+     * Constructs an InputStreamReader from an InputStream, using
+     * the default window size of 4096 and a default capacity of 32,
+     * and a {@link TwoLevelCache} with a {@link MostRecentlyUsedCache} as its
+     * primary cache and a {@link TempFileCache} as the secondary cache.
      * 
-     * @param stream
+     * @param stream The InputStream to read from.
+     * @throws IllegalArgumentException if the stream is null.
      */
     public InputStreamReader(final InputStream stream) {
         this(stream, DEFAULT_WINDOW_SIZE, DEFAULT_CAPACITY);
@@ -59,9 +88,16 @@ public class InputStreamReader extends AbstractReader {
     
     
     /**
+     * Constructs an InputStreamReader from an InputStream using a 
+     * default window size of 4096, and the {@link WindowCache} provided.
+     * The WindowCache must ensure that it can provide any Window
+     * from a position in the stream which has already been read, or
+     * you must be sure that you will never request such a position if the
+     * cache cannot provide that guarantee.
      * 
-     * @param stream
-     * @param cache
+     * @param stream The InputStream to read from.
+     * @param cache The WindowCache to use.
+     * @throws IllegalArgumentException if the stream or cache is null.
      */
     public InputStreamReader(final InputStream stream, final WindowCache cache) {
         this(stream, DEFAULT_WINDOW_SIZE, cache);
@@ -69,9 +105,15 @@ public class InputStreamReader extends AbstractReader {
     
     
     /**
+     * Constructs an InputStreamReader from an InputStream, using
+     * the window size provided and a default capacity of 32,
+     * and a {@link TwoLevelCache} with a {@link MostRecentlyUsedCache} as its
+     * primary cache and a {@link TempFileCache} as the secondary cache.
      * 
-     * @param stream
-     * @param windowSize
+     * @param stream The InputStream to read from.
+     * @param windowSize The size of a Window to create from the stream.
+     * @throws IllegalArgumentException if the stream is null, or the window size
+     *         is less than one.
      */
     public InputStreamReader(final InputStream stream, final int windowSize) {
         this(stream, windowSize, DEFAULT_CAPACITY);
@@ -79,10 +121,16 @@ public class InputStreamReader extends AbstractReader {
 
     
     /**
+     * Constructs an InputStreamReader from an InputStream, using
+     * the window size provided, the capacity provided
+     * and a {@link TwoLevelCache} with a {@link MostRecentlyUsedCache} as its
+     * primary cache and a {@link TempFileCache} as the secondary cache.
      * 
-     * @param stream
-     * @param windowSize
-     * @param capacity 
+     * @param stream The InputStream to read from.
+     * @param windowSize The size of a Window to create from the stream.
+     * @param capacity The capacity of the MostRecentlyUsedCache.
+     * @throws IllegalArgumentException if the stream is null, or the window size
+     *         is less than one, or the capacity is less than zero.
      */
     public InputStreamReader(final InputStream stream, final int windowSize, final int capacity) {
         this(stream, windowSize, 
@@ -92,17 +140,40 @@ public class InputStreamReader extends AbstractReader {
     
     
     /**
+     * Constructs an InputStreamReader from an InputStream, using 
+     * the window size provided and the {@link WindowCache} provided.
+     * The WindowCache must ensure that it can provide any Window
+     * from a position in the stream which has already been read, or
+     * you must be sure that you will never request such a position if the
+     * cache cannot provide that guarantee.
      * 
-     * @param stream
-     * @param windowSize
-     * @param cache
+     * @param stream The InputStream to read from.
+     * @param windowSize The size of a Window to create from the stream.
+     * @param cache The WindowCache to use.
+     * @throws IllegalArgumentException if the stream or cache is null, or the
+     *         window size is less than one.
      */
     public InputStreamReader(final InputStream stream, final int windowSize, final WindowCache cache) { 
         super(windowSize, cache);
+        if (stream == null) {
+            throw new IllegalArgumentException("Stream is null.");
+        }
         this.stream = stream;
     }    
     
     
+    /**
+     * Returns a window onto the data for a given position.  The position does not
+     * have to be the beginning of a {@link Window} - but the Window returned must include
+     * that position (if such a position exists in the Reader).
+     * 
+     * @param position The position in the reader for which a Window is requested.
+     * @return A Window backed by a byte array onto the data for a given position.
+     *         If a window can't be provided for the given position, null is returned.
+     * @throws IOException if an IO error occurred trying to create a new window.
+     * @throws WindowMissingException if the cache could not provide a Window for a
+     *         position in the stream which has already been read.
+     */
     @Override
     public final Window getWindow(final long position) 
             throws IOException, WindowMissingException {
@@ -120,6 +191,9 @@ public class InputStreamReader extends AbstractReader {
     }
  
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Window createWindow(final long readPos) throws IOException {
         Window lastWindow = null;
@@ -141,6 +215,15 @@ public class InputStreamReader extends AbstractReader {
     }    
 
     
+    /**
+     * Returns the total length of the InputStream.  
+     * <p>
+     * Note that calling this method will cause the entire stream to be read
+     * and cached in order to determine the length.
+     * 
+     * @return The total length of the stream.
+     * @throws IOException If any problem occurred reading the stream.
+     */
     @Override
     public long length() throws IOException {
         while (length == UNKNOWN_LENGTH) {
@@ -159,6 +242,12 @@ public class InputStreamReader extends AbstractReader {
     }
 
     
+    /**
+     * Closes the underlying InputStream and clears any cache associated with it
+     * in this Reader.
+     * 
+     * @throws IOException If a problem occurred closing the stream.
+     */
     @Override
     public void close() throws IOException {
         try {
