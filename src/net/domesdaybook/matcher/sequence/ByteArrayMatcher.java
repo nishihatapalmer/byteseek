@@ -474,7 +474,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     
     
     /**
-     * A ReverseMatcher is a view over an original ByteArrayMatcher, which
+     * A ReverseMatcher is an immutable view over an original ByteArrayMatcher, which
      * matches the reverse order of bytes in the original ByteArrayMatcher,
      * without creating a new underlying byte array.
      */
