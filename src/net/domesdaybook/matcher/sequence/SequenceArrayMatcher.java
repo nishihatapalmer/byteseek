@@ -251,7 +251,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
                 return matcher.getMatcherForPosition(matcherOffset);
             }
         }
-        final String badness = "A ByteMatcher for position %d in a sequence of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
+        final String badness = "A ByteMatcher for position %d in a SequenceArrayMatcher of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
         throw new RuntimeException(String.format(badness, position, length));
     }
 
