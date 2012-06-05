@@ -35,7 +35,7 @@ import net.domesdaybook.reader.cache.NoCache;
 
 /**
  * Provides a reader interface over an array of bytes.
- * 
+ * <p>
  * If constructed from a byte array, the source array is not copied - 
  * the reader just wraps the byte array passed in.
  * 
@@ -47,11 +47,12 @@ public class ByteArrayReader extends AbstractReader {
     
     
     /**
-     * Constructs a ByteArrayReader from an array of bytes.  The array passed
-     * in is not copied - the reader just wraps them to provide a reader interface
-     * over them.
+     * Constructs a ByteArrayReader from an array of bytes.
+     * <p>
+     * The array passed in is not copied - the reader just wraps it to provide a
+     * reader interface over it.
      * 
-     * @param bytes 
+     * @param bytes The byte array to wrap in a reader interface.
      */
     public ByteArrayReader(final byte[] bytes) {
         super(bytes == null? 0 : bytes.length, NoCache.NO_CACHE);  
@@ -64,10 +65,10 @@ public class ByteArrayReader extends AbstractReader {
     
     /**
      * Constructs a ByteArrayReader from a single byte value.
-     * 
+     * <p>
      * A new array is created containing a single byte.
      * 
-     * @param byteValue 
+     * @param byteValue The byte value to wrap in a Reader interface.
      */
     public ByteArrayReader(final byte byteValue) {
         super(1, NoCache.NO_CACHE);
@@ -75,19 +76,33 @@ public class ByteArrayReader extends AbstractReader {
     }
     
     
-    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Window createWindow(long windowStart) throws IOException {
         return new Window(bytes, 0, bytes.length);
     }
 
     
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public long length() throws IOException {
         return bytes.length;
     }
     
     
+    /**
+     * Returns the byte array backing this ByteArrayReader.
+     * <p>
+     * While this exposes mutable state, the intention of this class is to
+     * wrap a byte array in a Reader interface, not to protect the byte array
+     * wrapped by it.
+     * 
+     * @return The byte array that this reader wraps.
+     */
     public byte[] getByteArray() {
         return bytes;
     }
