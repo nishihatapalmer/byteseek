@@ -54,6 +54,12 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      */
     protected final static int NO_BYTE_AT_POSITION = -1;
     
+
+    /**
+     * A constant indicating that the length of the reader is currently unknown.
+     */
+    protected static final long UNKNOWN_LENGTH = -1;
+    
     
     /**
      * The default size in bytes of a Window, unless a different value is provided in
@@ -147,6 +153,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
      * have to be the beginning of a Window - but the Window returned must include
      * that position (if such a position exists in the Reader).
      * 
+     * @param position The position in the reader for which a Window is requested.
      * @return A Window backed by a byte array onto the data for a given position.
      *         If a window can't be provided for the given position, null is returned.
      * @throws IOException if an IO error occurred trying to create a new window.
