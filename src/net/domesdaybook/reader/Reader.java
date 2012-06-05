@@ -57,12 +57,7 @@ import java.io.IOException;
  * @author Matt Palmer
  */
 public interface Reader extends Closeable {
-
-    /**
-     * 
-     */
-    public static final long UNKNOWN_LENGTH = -1;
-    
+  
     /**
      * Read a byte from a given position.
      *
@@ -103,8 +98,10 @@ public interface Reader extends Closeable {
     
     
     /**
+     * Returns the total length of the bytes provided by this Reader.
+     * 
      * @return long the length of the byte source accessed by the reader.
-     * @throws IOException  
+     * @throws IOException If a problem occurred trying to determine the length. 
      */
     public long length() throws IOException;
     
