@@ -113,7 +113,7 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         final String wrapper = inverted? "[^ &%02x]" : "&%02x";
-        final String regEx = String.format(wrapper, (int) 0xFF & mBitMaskValue);
+        final String regEx = String.format(wrapper, 0xFF & mBitMaskValue);
         return prettyPrint ? ' ' + regEx + ' ' : regEx;
     }
 
