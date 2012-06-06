@@ -102,7 +102,10 @@ public final class TempFileReader extends FileReader {
         try {
             super.close(); // ensure the inherited random access file is closed first
         } finally {
-            getFile().delete(); // before we attempt to delete the file.
+            if (!getFile().delete()) {
+                final File file = getFile();
+                throw new IOException("Could not delete the temporary file:" + file.getAbsolutePath());
+            } 
         }
     }
     
