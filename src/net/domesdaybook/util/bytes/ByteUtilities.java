@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -118,6 +118,7 @@ public final class ByteUtilities {
         // which particular bits are set or unset does not affect the calculation.
         return 1 << countUnsetBits(bitmask);
     }
+    
 
     /**
      * Returns the number of bytes which would match any of the bits
@@ -141,7 +142,6 @@ public final class ByteUtilities {
     }
 
 
-
     /**
      * Returns a list of bytes which would match all the bits in a given bitmask.
      *
@@ -159,6 +159,24 @@ public final class ByteUtilities {
         return bytes;
     }
 
+    
+    /**
+     * Returns a list of bytes which would not match all the bits in a given bitmask.
+     *
+     * @param bitMask The bitmask to not match.
+     * @return A list of bytes not matching the bitmask.
+     */
+    public static List<Byte> getBytesNotMatchingAllBitMask(final byte bitMask) {
+        final List<Byte> bytes = new ArrayList<Byte>(128);
+        for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+            final byte byteValue = (byte) byteIndex;
+            if ((byteValue & bitMask) != bitMask) {
+                bytes.add(Byte.valueOf((byte) byteIndex));
+            }
+        }
+        return bytes;
+    }
+    
 
     /**
      * Returns a bitmask which would match the set of bytes in the array
@@ -251,10 +269,11 @@ public final class ByteUtilities {
     /**
      * Reverses a subsequence of an array.
      * 
-     * @param array
-     * @param startIndex
-     * @param endIndex
-     * @return 
+     * @param array The array to reverse a subsequence of.
+     * @param startIndex The start position in the array, inclusive.
+     * @param endIndex The end index in the array, exclusive.
+     * @return A new array containing the bytes of the original array from the
+     *         start index to the end index, in reverse order.
      */
     public static byte[] reverseArraySubsequence(final byte[] array, final int startIndex, final int endIndex) {
         final int length = endIndex - startIndex;
@@ -269,11 +288,12 @@ public final class ByteUtilities {
     
     /**
      * Returns a byte array containing the original array passed in repeated a 
-     * number of times.
+     * number of times.  It will always create a new array, even if the number of
+     * times to repeat is only one.
      * 
-     * @param array
-     * @param numberOfRepeats
-     * @return 
+     * @param array The array to repeat.
+     * @param numberOfRepeats The number of times to repeat the array.
+     * @return A new array containing the original array repeated a number of time.
      */
     public static byte[] repeat(final byte[] array, final int numberOfRepeats) {
         final int repeatLength = array.length;
@@ -288,11 +308,15 @@ public final class ByteUtilities {
     
     /**
      * Returns a byte array containing the original array passed in repeated a 
-     * number of times.
+     * number of times.  It will always produce a new array, even if the numberOfRepeats
+     * is only one.
      * 
-     * @param array
-     * @param numberOfRepeats
-     * @return 
+     * @param array The array to repeat.
+     * @param numberOfRepeats The number of times to repeat it.
+     * @param startIndex The start index to begin repeating the array from, inclusive.
+     * @param endIndex The end index to stop repeating the array from, exclusive.
+     * @return A new byte array consisting of the portions of the original array
+     *         from the startIndex to the endIndex repeated.
      */
     public static byte[] repeat(final byte[] array, final int numberOfRepeats,
                                 final int startIndex, final int endIndex) {
@@ -383,7 +407,7 @@ public final class ByteUtilities {
      * possible byte values than the ones in the set provided.
      * 
      * @param bytes A set of bytes.
-     * @return Set<Byte> A set of all other bytes.
+     * @param invertedSet  
      */
     public static void buildInvertedSet(final Set<Byte> bytes, final Set<Byte> invertedSet) {
         for (int value = 0; value < 256; value++) {
@@ -394,6 +418,14 @@ public final class ByteUtilities {
     }    
     
     
+    /**
+     * Subtracts a set of bytes from another set of bytes.  
+     * Returns a new Set containing only the bytes which were actually removed.
+     * 
+     * @param bytes The set of bytes to subtract.
+     * @param fromSet The set of bytes to subtract from.
+     * @return A new set containing the bytes which were subtracted.
+     */
     public static Set<Byte> subtract(final Set<Byte> bytes, final Set<Byte> fromSet) {
         final Set<Byte> bytesRemoved = new LinkedHashSet<Byte>();
         buildSubtractedSet(bytes, fromSet, bytesRemoved);
@@ -401,6 +433,14 @@ public final class ByteUtilities {
     }   
     
     
+    /**
+     * Subtracts a set of bytes from another set of bytes, and adds the subtracted
+     * bytes to yet another set.
+     * 
+     * @param bytes The set of bytes to subtract.
+     * @param fromSet The set of bytes to subtract from.
+     * @param bytesRemoved The bytes which were removed from the set.
+     */
     public static void buildSubtractedSet(final Set<Byte> bytes, 
                                           final Set<Byte> fromSet,
                                           final Set<Byte> bytesRemoved) {
@@ -415,21 +455,45 @@ public final class ByteUtilities {
     }
 
     
+    /**
+     * Returns the log base 2 of an integer, rounded to the floor.
+     * 
+     * @param i The integer
+     * @return int the log base 2 of an integer, rounded to the floor. 
+     */
     public static int floorLogBaseTwo(final int i) {
         return 31 - Integer.numberOfLeadingZeros(i);
     }
     
     
+    /**
+     * Returns the log base 2 of an integer, rounded to the ceiling.
+     * 
+     * @param i The integer.
+     * @return int the log base 2 of an integer, rounded to the ceiling.
+     */
     public static int ceilLogBaseTwo(final int i) {
         return 32 - Integer.numberOfLeadingZeros(i - 1);
     }    
     
     
+    /**
+     * Returns true if an integer is a power of two.
+     * 
+     * @param i The integer
+     * @return boolean True if the integer was a power of two.
+     */
     public static boolean isPowerOfTwo(final int i) {
         return i > 0? (i & (i - 1)) == 0 : false;
     }
     
     
+    /**
+     * Returns the number which is the next highest power of two bigger than another integer.
+     * 
+     * @param i The integer
+     * @return int the closest number which is a power of two and greater than the original integer.
+     */
     public static int nextHighestPowerOfTwo(final int i) {
         return Integer.highestOneBit(i) << 1;
     }
@@ -470,7 +534,8 @@ public final class ByteUtilities {
      * the bits in the bitmask, and for which there are no other bytes it would match.
      *
      * @param bytes A set of bytes to find an any bitmask to match.
-     * @return A bitmask to match the set with, or null if no bitmask exists for that set of bytes.
+     * @return A bitmask to match the set with, or null if no bitmask exists for that
+     *         set of bytes.
      */
     public static Byte getAnyBitMaskForBytes(final Set<Byte> bytes) {
         Byte anyBitMask = null;
@@ -500,8 +565,9 @@ public final class ByteUtilities {
      * would match all of the bits in the bitmask, and for which there are no 
      * other bytes it would match.
      *
-     * @param bytes
-     * @return
+     * @param bytes An array of bytes to find an any bitmask to match.
+     * @return A bitmask to match the byte values in the array with, or null, 
+     *         if no bitmask exists for that set of  bytes.
      */
     public static Byte getAnyBitMaskForBytes(final byte[] bytes) {
         return getAnyBitMaskForBytes(toSet(bytes));
@@ -550,16 +616,6 @@ public final class ByteUtilities {
             bit6 += (value & 32) >> 5;
             bit7 += (value & 64) >> 6;
             bit8 += (value & 128) >> 7;
-            /*
-            if ((value & 1) > 0) bit1 += 1;
-            if ((value & 2) > 0) bit2 += 1;
-            if ((value & 4) > 0) bit3 += 1;
-            if ((value & 8) > 0) bit4 += 1;
-            if ((value & 16) > 0) bit5 += 1;
-            if ((value & 32) > 0) bit6 += 1;
-            if ((value & 64) > 0) bit7 += 1;
-            if ((value & 128) > 0) bit8 += 1;
-            */
         }
         // produce a mask of the bits which each matched 128 bytes in the set:
         int anyBitMask = 0;
@@ -601,7 +657,6 @@ public final class ByteUtilities {
     }
 
 
-
     /**
      * Returns a list of bytes which would match any of the bits in a given bitmask.
      * @param bitMask The bitmask to match.
@@ -613,6 +668,24 @@ public final class ByteUtilities {
         for (int byteIndex = 1; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) != 0) {
+                bytes.add(Byte.valueOf((byte) byteIndex));
+            }
+        }
+        return bytes;
+    }
+    
+    
+    /**
+     * Returns a list of bytes which would not match any of the bits in a given bitmask.
+     * 
+     * @param bitMask The bitmask to not match.
+     * @return A list of all the bytes not matching the any bitmask.
+     */
+    public static List<Byte> getBytesNotMatchingAnyBitMask(final byte bitMask) {
+        final List<Byte> bytes = new ArrayList<Byte>(256);
+        for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+            final byte byteValue = (byte) byteIndex;
+            if ((byteValue & bitMask) == 0) {
                 bytes.add(Byte.valueOf((byte) byteIndex));
             }
         }
@@ -647,7 +720,7 @@ public final class ByteUtilities {
      * a hex byte.
      * 
      * @param prettyPrint Whether to pretty print the byte value.
-     * @param byteValue 
+     * @param byteValue The byte value to convert.
      * @return A string containing the byte value as a string.
      */
     public static String byteToString(final boolean prettyPrint, int byteValue) {
@@ -667,6 +740,16 @@ public final class ByteUtilities {
     }
     
     
+    /**
+     * Returns a String containing a 2-digit hex representation of each byte in the
+     * array.  If pretty printing and the byte value is a printable ASCII character,
+     * these values are returned as a quoted ASCII string (unless it is a single quote
+     * character itself, in which case it will still be represented as a hex byte).
+     * 
+     * @param prettyPrint Whether to pretty print the byte string.
+     * @param bytes the array of bytes to convert.
+     * @return A string containing the byte values as a string.
+     */
     public static String bytesToString(final boolean prettyPrint, final byte[] bytes) {
         return bytesToString(prettyPrint, bytes, 0, bytes.length);
     }
