@@ -47,7 +47,22 @@ import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
- *
+ * A class implementing the Set-Horspool Final-Flag algorithm. This is a variant
+ * of the {@link SetHorspoolSearcher}, with an optimisation invented by Matt Palmer,
+ * and dubbed "final flag" searching.
+ * <p>
+ * Final flag searching optimises for the case where a match is not found.  In
+ * the original algorithm, all that can be done is to shift on by one byte, as
+ * we lost any previous bigger shift when we set the final shift to a value of one.
+ * Final flag searching allows a bigger shift to occur in this case, by not overwriting the
+ * shift for the last byte in a sequence with one.  Instead, it takes the shift
+ * that existed previously, and just makes it negative.  A negative shift now indicates
+ * that a verification step must be undertaken - but if that verification fails, we still
+ * have the bigger shift which existed (albeit negative, but we can simply subtract it
+ * rather than add it).
+ * <p>
+ * Tests indicate that this is often quite a bit faster than the original version.
+ * 
  * @author Matt Palmer
  */
 public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher {
@@ -56,6 +71,11 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     private final LazyObject<SearchInfo> backwardInfo;
     
     
+    /**
+     * Constructs a SetHorspoolFinalFlagSearcher.
+     * 
+     * @param sequences A MultiSequenceMatcher containing the sequences to be searched for.
+     */
     public SetHorspoolFinalFlagSearcher(final MultiSequenceMatcher sequences) {
         super(sequences);
         forwardInfo = new ForwardSearchInfo();
@@ -120,10 +140,8 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
         
     
     /**
-     * Searches forward using the Boyer Moore Horspool algorithm, using 
-     * byte arrays from Windows to handle shifting, and the Reader interface
-     * on the SequenceMatcher to verify whether a match exists.
-     */
+     * {@inheritDoc}
+     */ 
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, final long fromPosition, 
         final long toPosition) throws IOException {
@@ -304,24 +322,37 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     }
 
     
+    /**
+     * Forces the calculation of the forward search information needed to search forwards.
+     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
 
     
+    /**
+     * Forces the calculation of the backwards search information needed to search backwards.
+     */
     @Override
     public void prepareBackwards() {
         backwardInfo.get();
     }
     
 
+    /**
+     * A class holding information needed to search.
+     */
     private static class SearchInfo {
         public int[] shifts;
         public MultiSequenceMatcher verifier;
     }    
     
     
+    /**
+     * A factory class implementing the {@link LazyObject}, creating a 
+     * {@SearchInfo} for searching forwards.
+     */
     private class ForwardSearchInfo extends LazyObject<SearchInfo> {
 
         public ForwardSearchInfo() {
@@ -383,7 +414,10 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     }
     
     
-    
+    /**
+     * A factory class implementing the {@link LazyObject}, creating a 
+     * {@SearchInfo} for searching backwards.
+     */
     private class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
         public BackwardSearchInfo() {

@@ -414,7 +414,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     
     /**
      * A factory class implementing the {@link LazyObject}, creating a 
-     * {@SearchInfo} for searching forwards.
+     * {@SearchInfo} for searching backwards.
      */
     private class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
