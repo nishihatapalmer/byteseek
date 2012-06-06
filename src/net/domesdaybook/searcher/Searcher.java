@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -42,6 +42,8 @@ import net.domesdaybook.reader.Reader;
  * Searching either returns the position at which a match was found,
  * or a negative number indicates a match was not found.
  *
+ * @param <T> The type of object associated with a search match.
+ * 
  * @author Matt Palmer
  */
 public interface Searcher<T> {
@@ -118,7 +120,6 @@ public interface Searcher<T> {
      * Searches bytes forwards provided by a byte array
      *
      * @param bytes        The byte array giving access to the bytes being searched.
-     * \     * @return 
      * @return             The position a match was found at, or a negative number if
      *                     no match was found.
      */
