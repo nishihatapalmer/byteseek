@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -31,8 +31,7 @@
 
 package net.domesdaybook.automata.base;
 
-import net.domesdaybook.automata.base.ByteMatcherTransition;
-import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import java.util.Set;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
