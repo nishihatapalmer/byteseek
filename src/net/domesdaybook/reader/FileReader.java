@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * A class which reads a random access file into cached byte arrays.
+ * A Reader extending {@link AbstractReader} which reads a random access file into cached byte arrays.
  * <p>
  * This class (like the underlying RandomAccessFile) is not thread-safe.
  * 

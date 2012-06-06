@@ -40,7 +40,7 @@ import net.domesdaybook.reader.cache.TwoLevelCache;
 
 
 /**
- * A Reader implementing {@link AbstractReader} over an {@link java.io.InputStream}.
+ * A Reader extending {@link AbstractReader} over an {@link java.io.InputStream}.
  * <p>
  * The implementation is stream-friendly, in that it does not need to know the length
  * of the stream in order to serve bytes out of it for any position in the stream.
