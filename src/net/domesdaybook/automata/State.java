@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -181,13 +181,18 @@ public interface State<T> extends DeepCopy {
      * This interface does not guarantee that the instance added will be unique.
      * Specific implementations may provide this guarantee.
      * 
-     * @param object The object to associated with the state.
+     * @param association The object to associate with this state.
      */
     public void addAssociation(T association);
     
     
     
-    public void addAllAssociations(Collection<T> associations);
+    /**
+     * Adds all the associations of type T to the State.
+     * 
+     * @param associations A collection of associations to add to the state.
+     */
+    public void addAllAssociations(Collection<? extends T> associations);
     
     
     /**
@@ -215,7 +220,6 @@ public interface State<T> extends DeepCopy {
      * @return A collection of the objects currently associated with this state.
      */
     public Collection<T> getAssociations();
-    
     
     
     /**
