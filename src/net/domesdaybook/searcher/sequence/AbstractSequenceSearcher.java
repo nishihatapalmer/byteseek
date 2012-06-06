@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-12, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -32,7 +32,6 @@
 package net.domesdaybook.searcher.sequence;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
@@ -65,13 +64,16 @@ import net.domesdaybook.searcher.SearchResult;
  */
 public abstract class AbstractSequenceSearcher extends AbstractSearcher<SequenceMatcher> {
     
+    /**
+     * The SequenceMatcher which the Searcher should search for.
+     */
     protected final SequenceMatcher matcher;
     
     /**
      * Constructs a sequence searcher given a {@link SequenceMatcher}
      * to search for.
      * 
-     * @param sequence 
+     * @param sequence The SequenceMatcher to search for.
      */
     public AbstractSequenceSearcher(final SequenceMatcher sequence) {
         if (sequence == null) {
