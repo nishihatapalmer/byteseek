@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -31,20 +31,26 @@
 
 package net.domesdaybook.automata.base;
 
-import net.domesdaybook.automata.base.BaseAutomata;
-import net.domesdaybook.automata.factory.AutomataFactory;
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.factory.AutomataFactory;
-import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.AutomataFactory;
 import net.domesdaybook.automata.State;
 
 /**
- *
+ * A factory for base automata, implementing the {@link net.domesdaybook.automata.AutomataFactory} interface.
+ * 
+ * @param <T> The type of object that can be associated with states of the automata.
+ * 
  * @author Matt Palmer
  */
 public class BaseAutomataFactory<T> implements AutomataFactory<T> {
 
+    /**
+     * Creates a {@link BaseAutomata} given an initial state.
+     * 
+     * @param initialState The initial state of the automata.
+     * @return A BaseAutomata object with the intial state provided.
+     */
+    @Override
     public Automata<T> create(State<T> initialState) {
         return new BaseAutomata<T>(initialState);
     }
