@@ -48,7 +48,7 @@ import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
  * {@link ByteMatcherTransition}s.
  * <p>
  * Where the requirement for a matcher is unambiguous, the factory will
- * create an appropriate underlying {@link ByteMatcher} directly.
+ * create an appropriate underlying {@link net.domesdaybook.matcher.bytes.ByteMatcher} directly.
  * <p>
  * Where a set of bytes is required for a transition, it uses a 
  * {link ByteMatcherFactory} to create the appropriate type of

@@ -42,7 +42,7 @@ import java.util.NoSuchElementException;
  * Iterable<Window> to allow iterating over the Windows of a Reader.
  * <p>
  * It provides common Window and cache management services using a fixed 
- * Window size, and a standard Window iterator {@link WindowIterator}.
+ * Window size, and a standard Window iterator {@link net.domesdaybook.reader.AbstractReader.WindowIterator}.
  * 
  * @author Matt Palmer
  */
