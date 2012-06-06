@@ -61,7 +61,10 @@ import net.domesdaybook.searcher.SearchResult;
  * have the bigger shift which existed (albeit negative, but we can simply subtract it
  * rather than add it).
  * <p>
- * Tests indicate that this is often quite a bit faster than the original version.
+ * Tests indicate that this is often quite a bit faster than the original version, 
+ * partly because we get a bigger shift in the case of a mismatch, but also because
+ * testing for a final byte match can be done entirely using the shift table, rather
+ * than relying on a dedicated class to match the last byte of the sequence.
  * 
  * @author Matt Palmer
  */
