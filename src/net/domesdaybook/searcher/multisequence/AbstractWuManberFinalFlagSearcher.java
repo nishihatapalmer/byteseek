@@ -31,7 +31,8 @@
 package net.domesdaybook.searcher.multisequence;
 
 /**
- *
+ * TO BE IMPLEMENTED.
+ * 
  * @author Matt Palmer
  */
 public class AbstractWuManberFinalFlagSearcher {
