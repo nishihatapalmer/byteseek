@@ -217,7 +217,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                             final String str = ParseUtils.unquoteString(child.getText());
                             for (int charIndex = 0, end = str.length(); charIndex < end; charIndex++) {
                                 final byte byteValue = (byte) str.charAt(charIndex);
-                                byteValuesToJoin.add((byte) byteValue);
+                                byteValuesToJoin.add(byteValue);
                             }
                             break;
                         }
