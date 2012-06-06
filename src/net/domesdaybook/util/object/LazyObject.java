@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -38,6 +38,8 @@ package net.domesdaybook.util.object;
  * been fully initialised, it is possible for the object to be created 
  * more than once.  
  * 
+ * @param <T> The type of object to instantiate lazily.
+ * 
  * @author Matt Palmer
  */
 public abstract class LazyObject<T> {
@@ -45,6 +47,11 @@ public abstract class LazyObject<T> {
     private volatile T object;
 
     
+    /**
+     * Creates an instance of type T.
+     * 
+     * @return An instance of type T.
+     */
     protected abstract T create();
     
     
