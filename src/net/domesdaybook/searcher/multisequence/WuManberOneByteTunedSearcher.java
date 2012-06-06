@@ -39,19 +39,31 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.SearchUtils;
-import net.domesdaybook.searcher.multisequence.AbstractWuManberSearcher.SearchInfo;
+
 
 /**
- *
+ * An implementation of the Tuned Wu-Manber search algorithm that works with a block
+ * size of only one byte. It extends the {@link AbstractWuManberTunedSearcher} 
+ * - see that class for more details of the Tuned Wu-Manber algorithm itself.
+ * 
  * @author Matt Palmer
  */
 public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher {
         
+    
+    /**
+     * Constructs a WuManberOneByteTunderSearcher.
+     * 
+     * @param matcher The MultiSequenceMatcher containing the sequences to search for.
+     */
     public WuManberOneByteTunedSearcher(final MultiSequenceMatcher matcher) {
         super(matcher, 1);
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
@@ -143,7 +155,10 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
         return SearchUtils.noResults();
     }
 
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
@@ -203,6 +218,9 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
@@ -243,6 +261,9 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
