@@ -138,7 +138,7 @@ public class InputStreamReader extends AbstractReader {
     public InputStreamReader(final InputStream stream, final int windowSize, final int capacity) {
         this(stream, windowSize, 
              TwoLevelCache.create(new MostRecentlyUsedCache(capacity),
-                                  new TempFileCache(windowSize)));
+                                  new TempFileCache()));
     }
     
     

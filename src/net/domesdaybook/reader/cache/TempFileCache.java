@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -41,12 +41,17 @@ import net.domesdaybook.reader.Window;
 
 
 /**
- *
+ * A {@link WindowCache} which stores {@link net.domesdaybook.reader.Window} objects
+ * into a temporary file for later retrieval.  It maintains a map of the start positions
+ * of each window against the position in the file where the Window was stored.
+ * <p>
+ * A temporary file is only created if a Window is added to the cache, and it is
+ * deleted when the cache is cleared.
+ * 
  * @author Matt Palmer
  */
 public final class TempFileCache extends AbstractCache {
 
-    private final int windowSize;
     private final Map<Long, WindowInfo> windowPositions;
     
     private File tempFile;
@@ -55,30 +60,25 @@ public final class TempFileCache extends AbstractCache {
    
     
     /**
-     * 
-     * @param windowSize
-     * @throws IOException
+     * Constructs a TempFileCache.
      */
-    public TempFileCache(final int windowSize) {
-        this.windowSize = windowSize;
+    public TempFileCache() {
         windowPositions = new HashMap<Long, WindowInfo>();
     }
     
     
     /**
-     * 
-     * @param position
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public Window getWindow(final long position) {
         Window window = null;
         final WindowInfo info = windowPositions.get(position);
         if (info != null) {
-            final byte[] array = new byte[windowSize];
+            final byte[] array = new byte[info.length];
             try {
                 ReadUtils.readBytes(file, array, info.filePosition);
-                window = new Window(array, position, info.limit);
+                window = new Window(array, position, info.length);
             } catch (IOException justReturnNullWindow) {
             }
         }
@@ -87,8 +87,7 @@ public final class TempFileCache extends AbstractCache {
 
     
     /**
-     * 
-     * @param window
+     * {@inheritDoc}
      */
     @Override
     public void addWindow(final Window window) {
@@ -98,10 +97,10 @@ public final class TempFileCache extends AbstractCache {
             try {
                 createFileIfNotExists();
                 file.seek(nextFilePos);
-                file.write(window.getArray());
+                file.write(window.getArray(), 0, window.length());
                 windowPositions.put(windowPosition, 
                                     new WindowInfo(window.length(), nextFilePos));
-                nextFilePos += windowSize;
+                nextFilePos += window.length();
                 notifyWindowFree(window, this);
             } catch (IOException justFailToAddTheWindow) {
             }
@@ -110,7 +109,8 @@ public final class TempFileCache extends AbstractCache {
 
     
     /**
-     * 
+     * Clears the map of Window positions to their position and size in the file,
+     * and deletes the temporary file if it exists.
      */
     @Override
     public void clear() {
@@ -120,8 +120,9 @@ public final class TempFileCache extends AbstractCache {
     
     
     /**
+     * Returns the temporary file backing this cache object.
      * 
-     * @return
+     * @return File The temporary file backing this cache object, or null if it doesn't exist.
      */
     public File getTempFile() {
         return tempFile;
@@ -153,13 +154,17 @@ public final class TempFileCache extends AbstractCache {
     }
     
     
-    private static class WindowInfo {
+    /**
+     * A utility class recording the length of a Window and the position in 
+     * the temporary file it exists at.
+     */
+    private static final class WindowInfo {
         
-        final int limit;
+        final int length;
         final long filePosition;  
         
         public WindowInfo(final int limit, final long filePosition) {
-            this.limit = limit;
+            this.length = limit;
             this.filePosition = filePosition;
         }
 
