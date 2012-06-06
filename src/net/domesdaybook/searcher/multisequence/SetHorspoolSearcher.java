@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-12, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -48,9 +48,19 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
+import net.domesdaybook.searcher.sequence.BoyerMooreHorspoolSearcher;
 
 /**
- *
+ * The SetHorspoolSearcher implements the Boyer-Moore-Horspool algorithm for
+ * multiple sequences.  For a description of this algorithm, please see the
+ * class {@link BoyerMooreHorspoolSearcher}.
+ * <p>
+ * It extends that algorithm by calculating the shifts for all the sequences
+ * to be searched for.  As the number of sequences rises, the performance of
+ * this algorithm will degrade.  The average shift possible will fall, since
+ * the chances of finding any particular byte value close to the end of a sequence
+ * rises as the number of sequences increases.
+ * 
  * @author Matt Palmer
  */
 public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
@@ -60,6 +70,11 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     private final LazyObject<SearchInfo> backwardInfo;
     
     
+    /**
+     * Constructs a SetHorspoolSearcher.
+     * 
+     * @param sequences A MultiSequenceMatcher containing the sequences to be searched for.
+     */
     public SetHorspoolSearcher(final MultiSequenceMatcher sequences) {
         super(sequences);
         forwardInfo = new ForwardSearchInfo();
@@ -130,9 +145,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         
     
     /**
-     * Searches forward using the Boyer Moore Horspool algorithm, using 
-     * byte arrays from Windows to handle shifting, and the Reader interface
-     * on the SequenceMatcher to verify whether a match exists.
+     * {@inheritDoc}
      */
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, final long fromPosition, 
@@ -311,18 +324,27 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     }
 
     
+    /**
+     * Forces the calculation of the forward search information needed to search forwards.
+     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
 
     
+    /**
+     * Forces the calculation of the backwards search information needed to search backwards.
+     */
     @Override
     public void prepareBackwards() {
         backwardInfo.get();
     }
     
 
+    /**
+     * A class holding information needed to search.
+     */
     private static class SearchInfo {
         public int[] shifts;
         public ByteMatcher matcher;
@@ -330,6 +352,10 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     }    
     
     
+    /**
+     * A factory class implementing the {@link LazyObject}, creating a 
+     * {@SearchInfo} for searching forwards.
+     */
     private class ForwardSearchInfo extends LazyObject<SearchInfo> {
 
         public ForwardSearchInfo() {
@@ -386,7 +412,10 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     }
     
     
-    
+    /**
+     * A factory class implementing the {@link LazyObject}, creating a 
+     * {@SearchInfo} for searching forwards.
+     */
     private class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
         public BackwardSearchInfo() {
