@@ -44,10 +44,6 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
  * This implementation is immutable, so is thread-safe.  It is possible to
  * get the internal ByteMatcher used, but implementations of this interface
  * should also be immutable.
- * <p>
- * Note: "Single"ByteMatcher does not imply that it can only match a single byte
- * value; it implies it only matches a single byte (as opposed to a sequence of bytes),
- * but that match can be on many different byte values.
  * 
  * @author Matt Palmer
  */
