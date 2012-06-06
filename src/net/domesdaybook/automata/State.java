@@ -229,7 +229,7 @@ public interface State<T> extends DeepCopy {
      * 
      * @param associations The objects to associated with this State.
      */
-    public void setAssociations(Collection<T> associations);
+    public void setAssociations(Collection<? extends T> associations);
     
     
     /**
