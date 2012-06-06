@@ -38,7 +38,7 @@ import net.domesdaybook.automata.Transition;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 
 /**
- * An implementation of {@link Transition} which matches bytes using a
+ * A mutable implementation of {@link Transition} which matches bytes using a
  * {@link ByteMatcher}.
  * <p>
  * This implementation is immutable, so is thread-safe.  It is possible to
@@ -93,7 +93,7 @@ public class ByteMatcherTransition implements Transition {
 
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public final State getStateForByte(byte theByte) {
@@ -102,7 +102,7 @@ public class ByteMatcherTransition implements Transition {
 
     
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public final State getToState() {
@@ -111,7 +111,7 @@ public class ByteMatcherTransition implements Transition {
 
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public byte[] getBytes() {
@@ -168,6 +168,7 @@ public class ByteMatcherTransition implements Transition {
      * {@inheritDoc}
      * 
      */
+    @Override
     public void setToState(final State stateToPointAt) {
         this.toState = stateToPointAt;
     }
