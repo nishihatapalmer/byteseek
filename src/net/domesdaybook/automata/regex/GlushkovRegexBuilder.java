@@ -375,7 +375,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      * It is the same as building one to many states, except the initial state
      * is set to final to cover the zero case.
      * 
-     * @param zeroToMany 
+     * @param zeroToMany The automata to repeat zero to many times.
      * @return An automata which will repeat zero to many times.
      */
     @Override
@@ -410,8 +410,8 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      *
      * It is the same as zeroToManyStates, except that the initial state is not made final.
      *
-     * @param oneToMany
-     * @return
+     * @param oneToMany The automata to repeat one to many times.
+     * @return An Automata which repeats the automata passed in one to many times.
      */
     @Override
     public Automata<T> buildOneToManyAutomata(final Automata<T> oneToMany) {
@@ -434,8 +434,8 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      *                 X
      * }</pre><p/>
      *
-     * @param optional 
-     * @return
+     * @param optional THe automata to make optional.
+     * @return An Automata which is optional.
      */
     @Override
     public Automata<T> buildOptionalAutomata(final Automata<T> optional) {
@@ -556,9 +556,9 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      *
      * }</pre><p/>
      *
-     * @param repeatNumber
-     * @param repeatedAutomata
-     * @return
+     * @param repeatNumber The number of times to repeat the automata.
+     * @param repeatedAutomata The automata to repeat.
+     * @return An automata which repeats the number of times specified.
      */
     @Override
     public Automata<T> buildRepeatedAutomata(final int repeatNumber, final Automata<T> repeatedAutomata) {

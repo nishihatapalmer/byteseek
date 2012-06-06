@@ -55,9 +55,9 @@ import net.domesdaybook.reader.cache.WindowCache.WindowObserver;
 
     /**
      * 
-     * @param primaryCache
-     * @param secondaryCache
-     * @return
+     * @param primaryCache The primary cache.
+     * @param secondaryCache The secondary cache.
+     * @return A TwoLevelCache using the primary and secondary caches.
      */
     public static TwoLevelCache create(final WindowCache primaryCache, final WindowCache secondaryCache) {
         final TwoLevelCache twoLevels = new TwoLevelCache(primaryCache, secondaryCache);

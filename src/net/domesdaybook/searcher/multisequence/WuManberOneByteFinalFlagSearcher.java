@@ -150,7 +150,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
      * This formulae to suggest the optimum block size is suggested by
      * Wu and Manber.
      * 
-     * @param alphabetSize 
+     * @param alphabetSize  
      * @param minimumLength The minimum length of all sequences to be matched.
      * @param numberOfSequences The number of sequences to be matched.
      * @return The suggested block size for an efficient Wu Manber search.

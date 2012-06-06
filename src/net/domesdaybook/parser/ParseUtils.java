@@ -159,8 +159,8 @@ public class ParseUtils {
      * This can be recursive procedure if sets are nested within one another.
      *
      * @param node          The set node to calculate a set of byte values for.
-     * @return
-     * @throws ParseException  
+     * @return A set of byte values defined by the node.
+     * @throws ParseException If a problem occurs parsing the node.
      */
     public static Set<Byte> calculateSetValue(final CommonTree node) throws ParseException {
         final Set<Byte> setValues = new LinkedHashSet<Byte>(320);
