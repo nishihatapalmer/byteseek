@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -31,13 +31,13 @@
 
 package net.domesdaybook.automata.base;
 
-import net.domesdaybook.automata.base.BaseState;
-import net.domesdaybook.automata.factory.StateFactory;
-import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.StateFactory;
 
 /**
- * A factory which creates {@link BaseState} objects.
+ * A factory which creates {@link BaseState} objects, implementing the
+ * {@link net.domesdaybook.automata.StateFactory} interface.
  * 
+ * @param <T> The type of object associated with a {@link BaseState}
  * @author Matt Palmer
  */
 public final class BaseStateFactory<T> implements StateFactory<T> {
@@ -51,7 +51,7 @@ public final class BaseStateFactory<T> implements StateFactory<T> {
      * @see BaseState
      */
     @Override
-    public State<T> create(boolean isFinal) {
+    public BaseState<T> create(boolean isFinal) {
         return new BaseState<T>(isFinal);
     }
     
