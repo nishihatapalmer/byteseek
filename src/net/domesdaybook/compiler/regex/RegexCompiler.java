@@ -68,7 +68,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
 
     /**
      * Constructs an RegexCompiler, using default {@link TransitionFactory},
-     * {@link StateBuilder} and {@link RegexBuilder} objects.
+     * {@link StateFactory} and {@link RegexBuilder} objects.
      *
      * By default, it uses the {@link ByteMatcherTransitionFactory} and
      * the {@link net.domesdaybook.automata.StateFactory} to make a {@link GlushkovRegexBuilder} to

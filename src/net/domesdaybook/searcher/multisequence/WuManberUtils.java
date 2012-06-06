@@ -100,7 +100,7 @@ public class WuManberUtils {
      * 
      * @param minimumLength The minimum length of all the sequences you want to search for.
      * @param possibleBlockSize A suggested block size.
-     * @return
+     * @return A safe block size given the minimum length and possible block size.
      */
     public static int getSafeBlockSize(final int minimumLength, final int possibleBlockSize) {
         final int notGreaterThanMinimumLength = minimumLength < possibleBlockSize?

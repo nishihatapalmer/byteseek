@@ -46,13 +46,13 @@ import java.util.Set;
  * Its heuristics are as follows:
  * <ul>
  * <li>Find the simple cases that only match 1, 2, 255 and 256 different values.
- *     Use either a {@link OneByteMatcher}, a {@link CaseInsensitiveByteMatcher}, a
- *     {@link InvertedByteMatcher} or an {@link AnyByteMatcher}.
+ *     Use either a {@link net.domesdaybook.matcher.bytes.OneByteMatcher}, a {@link net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher}, a
+ *     {@link net.domesdaybook.matcher.bytes.InvertedByteMatcher} or an {@link net.domesdaybook.matcher.bytes.AnyByteMatcher}.
  * <li>Do the set of bytes match a bitmask (all or any of the bits?)  Use either an 
- *     {@link AnyBitmaskMatcher} or a {@link AllBitMaskMatcher}.
- * <li>Do the set of bytes match a contiguous range of bytes?  Use a {@link ByteRangeMatcher}
- * <li>For less than 16 byte values, use a {@link SetBinarySearchMatcher}.
- * <li>Otherwise, fall back on a {@link SetBitSetMatcher}.
+ *     {@link net.domesdaybook.matcher.bytes.AnyBitmaskMatcher} or a {@link net.domesdaybook.matcher.bytes.AllBitMaskMatcher}.
+ * <li>Do the set of bytes match a contiguous range of bytes?  Use a {@link net.domesdaybook.matcher.bytes.ByteRangeMatcher}
+ * <li>For less than 16 byte values, use a {@link net.domesdaybook.matcher.bytes.SetBinarySearchMatcher}.
+ * <li>Otherwise, fall back on a {@link net.domesdaybook.matcher.bytes.SetBitSetMatcher}.
  * </ul>
  * 
  * @author Matt Palmer

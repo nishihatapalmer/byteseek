@@ -86,9 +86,9 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
     
     /**
      * Constructs an immutable TrieMultiSequenceMatcher from a collection of {@link SequenceMatcher}s,
-     * using the {@link TrieFactory<SequenceMatcher>} provided to build the Trie.
+     * using the {@link TrieFactory} provided to build the Trie.
      * 
-     * @param factory The factory to create a {@link Trie<SequenceMatcher>} with.
+     * @param factory The factory to create a {@link Trie} with.
      * @param matchers The collection of sequences to construct the TrieMultiSequenceMatcher from.
      */
     public TrieMultiSequenceMatcher(final TrieFactory<SequenceMatcher> factory, 

@@ -60,7 +60,7 @@ import org.antlr.runtime.tree.CommonTree;
  * abstract syntax tree provided by the {@link AbstractAstCompiler} class,
  * which it extends.
  * <p>
- * It can handle nearly all the syntax processable by the {@link AstParser},
+ * It can handle nearly all the syntax processable by the {@link net.domesdaybook.parser.AstParser},
  * but it cannot handle any syntax which would give variable lengths to
  * match, or which would have alternative sequences of bytes,
  * as a sequence matcher can only match a single defined sequence.
@@ -139,7 +139,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
     /**
      * Compiles an abstract syntax tree provided by the {@link AbstractAstCompiler} class
-     * which it extends, to create a {@SequenceMatcher} object.
+     * which it extends, to create a {@link SequenceMatcher} object.
      *
      * @param ast The abstract syntax tree provided by the {@link AbstractAstCompiler} class.
      * @return A {@link SequenceMatcher} which matches the expression defined by the ast passed in.

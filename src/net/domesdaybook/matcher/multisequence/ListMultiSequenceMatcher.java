@@ -66,7 +66,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     /**
      * Constructs a ListMultiSequenceMatcher from a list of byte arrays.
      * <p>
-     * The byte arrays will be cloned when constructing {@link ByteArrayMatchers}
+     * The byte arrays will be cloned when constructing {@link ByteArrayMatcher}s
      * from them to be used in this matcher.  If the list of byte arrays is empty
      * then a ListMultiSequenceMatcher is constructed which will not match anything.
      * 
