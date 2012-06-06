@@ -704,7 +704,7 @@ public final class ByteUtilities {
         if (hexByte != null && hexByte.length() == 2) {
             try {
                 return Byte.valueOf(hexByte, 16);
-            } catch (NumberFormatException ex) {
+            } catch (NumberFormatException dropThroughToIllegalArgumentException) {
                 // do nothing - illegal argument exception will be thrown below.
             }
         }
