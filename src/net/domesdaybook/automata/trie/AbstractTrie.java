@@ -40,13 +40,21 @@ import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
-import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
- *
+ * An abstract implementation of {@link Trie} providing most methods for
+ * constructing a Trie from sequences provided to it.  It extends {@link net.domesdaybook.automata.base.BaseAutomata}.
+ * <p>
+ * Implementors only have to provide constructors equivalent to those in this class,
+ * and override the methods {@link #getSequenceLength(java.lang.Object)} and 
+ * {@link #getBytesForPosition(java.lang.Object, int).
+ * 
+ * @param <T> T The type of sequence to add to the Trie.
+ * 
  * @author Matt Palmer
  */
 public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T> {
@@ -59,21 +67,46 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     private int minimumLength = -1;
     private int maximumLength = 0;
     
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     */
     public AbstractTrie() {
         this(null, null);
     }
     
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * 
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     */
     public AbstractTrie(final StateFactory<T> stateFactory) {
         this(stateFactory, null);
     }
     
     
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public AbstractTrie(final TransitionFactory transitionFactory) {
         this(null, transitionFactory);
     }
     
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public AbstractTrie(final StateFactory<T> stateFactory, 
                         final TransitionFactory transitionFactory) {
         this.stateFactory = stateFactory != null?
@@ -85,21 +118,37 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getMinimumLength() {
         return minimumLength == -1 ? 0 : minimumLength;
     }
 
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getMaximumLength() {
         return maximumLength;
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Collection<T> getSequences() {
         return new ArrayList<T>(sequences);
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void add(final T sequence) {
         List<State<T>> currentStates = new ArrayList<State<T>>();
         currentStates.add(initialState);
@@ -117,6 +166,10 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addAll(final Collection<? extends T> sequences) {
         for (final T sequence : sequences) {
             add(sequence);
@@ -124,6 +177,10 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addReversed(final T sequence) {
         List<State<T>> currentStates = new ArrayList<State<T>>();
         currentStates.add(initialState);
@@ -141,6 +198,10 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     }  
     
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addAllReversed(final Collection<? extends T> sequences) {
         for (final T sequence : sequences) {
             addReversed(sequence);
@@ -148,9 +209,23 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
     }    
     
     
+    /**
+     * Returns the length of a sequence of type T.
+     * 
+     * @param sequence The sequence to return the length of.
+     * @return int the length of the sequence.
+     */
     protected abstract int getSequenceLength(T sequence);
     
     
+    /**
+     * Returns an array of bytes which represent the possible bytes in the
+     * sequence of type T at a given position.
+     * 
+     * @param sequence The sequence of type T.
+     * @param position The position in the sequence.
+     * @return byte[] an array of bytes which exist in the sequence at the position.
+     */
     protected abstract byte[] getBytesForPosition(T sequence, int position);
     
     
@@ -166,11 +241,13 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 
     
     /**
+     * Returns the next states which must be processed when adding an array of
+     * bytes to the Trie to the list of states passed in.
      * 
-     * @param currentStates
-     * @param bytes
-     * @param isFinal
-     * @return
+     * @param currentStates The currently active states in the Trie.
+     * @param bytes The byte values which must be added to each of those states.
+     * @param isFinal Whether the new states must be final.
+     * @return A list of states forming the next states to be processed in the Trie.
      */
     private List<State<T>> nextStates(final List<State<T>> currentStates, 
                                       final byte[] bytes, 
