@@ -1,6 +1,5 @@
 /*
- * 
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -17,7 +16,6 @@
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *  
- * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,9 +27,8 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
- * 
- * 
  */
+
 package net.domesdaybook.automata.base;
 
 import java.util.ArrayList;
@@ -46,33 +43,60 @@ import net.domesdaybook.automata.walker.StepAction;
 import net.domesdaybook.util.object.DeepCopy;
 
 /**
- *
+ * A mutable implementation of {@link net.domesdaybook.automata.Automata} interface.
+ * 
+ * @param <T> The type of object which can be associated with states of the automata.
+ * 
  * @author Matt Palmer
  */
 public class BaseAutomata<T> implements Automata<T>{
 
+    /**
+     * The initial state of the automata.
+     */
     protected State<T> initialState;
     
     
+    /**
+     * Constructs an empty Automata with no states.
+     */
     public BaseAutomata() {
     }
     
     
+    /**
+     * Constructs an Automata with an initial state.
+     * 
+     * @param initialState The initial state of the automata.
+     */
     public BaseAutomata(final State<T> initialState) {
         this.initialState = initialState;
     }
 
     
+    /**
+     * {@inheritDoc}
+     */
     public State<T> getInitialState() {
         return initialState;
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
     public void setInitialState(final State<T> initialState) {
         this.initialState = initialState;
     }
 
     
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * This implementation calculates the final states dynamically by walking
+     * the automata states to find the final ones.
+     */
     public List<State<T>> getFinalStates() {
         final List<State<T>> finalStates = new ArrayList<State<T>>();
         final StepAction findFinalStates = new StepAction() {
@@ -88,12 +112,20 @@ public class BaseAutomata<T> implements Automata<T>{
     }
     
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public BaseAutomata<T> deepCopy() {
         final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
         return deepCopy(oldToNew);
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public BaseAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
         return new BaseAutomata<T>(initialState.deepCopy(oldToNewObjects));
     }
