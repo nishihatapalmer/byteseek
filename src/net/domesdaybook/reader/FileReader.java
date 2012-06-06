@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -41,7 +41,7 @@ import java.io.RandomAccessFile;
 
 /**
  * A class which reads a random access file into cached byte arrays.
- * 
+ * <p>
  * This class (like the underlying RandomAccessFile) is not thread-safe.
  * 
  * @author matt
@@ -192,6 +192,7 @@ public class FileReader extends AbstractReader {
 
    
     /**
+     * Returns the length of the file.
      * 
      * @return The length of the file accessed by the reader.
      */
@@ -201,6 +202,9 @@ public class FileReader extends AbstractReader {
     }
 
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     final Window createWindow(final long windowStart) throws IOException {
         try {
@@ -216,6 +220,10 @@ public class FileReader extends AbstractReader {
     }
     
     
+    /**
+     * Closes the underlying {@link java.io.RandomAccessFile}, then 
+     * clears any cache associated with this Reader.
+     */    
     @Override
     public void close() throws IOException {
         try {
@@ -227,8 +235,9 @@ public class FileReader extends AbstractReader {
     
     
     /**
+     * Returns the {@link java.io.File} object accessed by this Reader.
      * 
-     * @return
+     * @return The File object accessed by this Reader.
      */
     public final File getFile() {
         return file;
