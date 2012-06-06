@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -32,56 +32,114 @@
 package net.domesdaybook.automata.trie;
 
 import java.util.Collection;
-import net.domesdaybook.automata.factory.StateFactory;
-import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
+ * An implementation of {@link Trie} formed of {@link SequenceMatcher}s.
+ * It extends the {@link AbstractTrie} class.
  * 
  * @author Matt Palmer
- * @see <a href="http://en.wikipedia.org/wiki/Trie">SequenceMatcherTrie structures</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Trie">Trie structures</a>
  */
 public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
 
 
+    /**
+     * Constructs a SequenceMatcherTrie with no sequences added to it initially.
+     * using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     */
     public SequenceMatcherTrie() {
         this(null, null, null);
     }
     
     
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * 
+     * @param sequences A collection of SequenceMatchers to add to the Trie.
+     */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences) {
         this(sequences, null, null);
     }        
     
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * 
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     */
     public SequenceMatcherTrie(final StateFactory<SequenceMatcher> stateFactory) {
         this(null, stateFactory, null);
     }
     
+ 
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
+    public SequenceMatcherTrie(final TransitionFactory transitionFactory) {
+        this(null, null, transitionFactory);
+    }
     
+    
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * 
+     * @param sequences The initial collection of SequenceMatchers to add to the Trie.
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences,
                                final StateFactory<SequenceMatcher> stateFactory) {
         this(sequences, stateFactory, null);
     }    
     
     
-    public SequenceMatcherTrie(final TransitionFactory transitionFactory) {
-        this(null, null, transitionFactory);
-    }
-
-    
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param sequences The initial collection of SequenceMatchers to add to the Trie.
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences,
                               final TransitionFactory transitionFactory) {
         this(sequences, null, transitionFactory);
     }
         
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public SequenceMatcherTrie(final StateFactory<SequenceMatcher> stateFactory, 
                                final TransitionFactory transitionFactory) {
         this(null, stateFactory, transitionFactory);
     }
     
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param sequences The initial collection of SequenceMatchers to add to the Trie.
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences, 
                                final StateFactory<SequenceMatcher> stateFactory, 
                                final TransitionFactory transitionFactory) {
@@ -91,12 +149,27 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
         }
     }    
     
-    
+
+    /**
+     * Returns the length of a {@link SequenceMatcher}.
+     * 
+     * @param sequence The SequencMatcher to return the length of.
+     * @return int the length of the SequenceMatcher.
+     */
     @Override
     protected int getSequenceLength(final SequenceMatcher sequence) {
         return sequence.length();
     }
 
+    
+    /**
+     * Returns an array of bytes for the values of bytes that exist at a 
+     * given position in the SequenceMatcher.
+     * 
+     * @param sequence The SequenceMatcher to get the byte values for.
+     * @param position The position in the SequenceMatcher to get the byte values.
+     * @return A byte array containing the bytes which exist in the SequenceMatcher at the given position.
+     */
     @Override
     protected byte[] getBytesForPosition(final SequenceMatcher sequence, final int position) {
         return sequence.getMatcherForPosition(position).getMatchingBytes();
