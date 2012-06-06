@@ -36,6 +36,12 @@ package net.domesdaybook.reader;
  * creates it, at a specified position in the Reader.  Windows contain the position
  * in the Reader they begin from, and how long the Window is.
  * <p>
+ * The byte array is not copied, which means that mutable state is directly 
+ * wrapped by this class, although the Window itself is immutable.
+ * The entire reason for having a Window is to facilitate
+ * direct access to the underlying byte arrays taken from a Reader in order to
+ * optimise read performance.
+ * <p>
  * Note that the length of the Window may be less than the byte array backing it,
  * so only bytes up to the length of the Window will be from the actual Reader.
  * For example, the last Window read from a file will almost certainly be shorter
@@ -50,7 +56,15 @@ public final class Window {
     private final int length;
     
     /**
-     * Constructs a Window using the byte array provided.
+     * Constructs a Window using the byte array provided, recording the position
+     * in the Reader from which the bytes provided were read, and the length of the
+     * Window (which may be shorter than the length of the backing byte array).
+     * <p>
+     * The byte array is not copied, which means that mutable state is directly 
+     * wrapped by this class, although the Window itself is immutable.
+     * The entire reason for having a Window is to facilitate
+     * direct access to the underlying byte arrays taken from a Reader in order to
+     * optimise read performance.
 =    * 
      * @param bytes  The byte array to wrap.
      * @param windowPosition The position at which the Window starts.
@@ -60,11 +74,10 @@ public final class Window {
         if (bytes == null) {
             throw new IllegalArgumentException("Null byte array passed in to Array.");
         }
-        this.bytes = bytes;  
+        this.bytes = bytes; // a Window wraps a byte array - no defensive copying should be allowed.
         this.windowPosition = windowPosition;
         this.length = length;
     }
-    
     
     
     /**
@@ -95,7 +108,7 @@ public final class Window {
      * @return The byte array which backs this Window.
      */
     public byte[] getArray() {
-        return bytes; 
+        return bytes; // a Window wraps a byte array - no defensive copying should be allowed.
     }
     
     
