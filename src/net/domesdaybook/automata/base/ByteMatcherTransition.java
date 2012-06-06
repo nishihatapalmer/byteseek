@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -130,7 +130,7 @@ public class ByteMatcherTransition implements Transition {
         ByteMatcherTransition transitionCopy = (ByteMatcherTransition) oldToNewObjects.get(this);
         if (transitionCopy == null) {
             oldToNewObjects.put(this, this); // put in a placeholder mapping to prevent an infinite loop.
-            final State copyState = (State) toState.deepCopy(oldToNewObjects);
+            final State copyState = toState.deepCopy(oldToNewObjects);
             transitionCopy = new ByteMatcherTransition(this, copyState);
             oldToNewObjects.put(this, transitionCopy); // now put the real transition in.
         }
