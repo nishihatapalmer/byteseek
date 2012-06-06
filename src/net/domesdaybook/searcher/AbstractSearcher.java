@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -38,9 +38,11 @@ import net.domesdaybook.reader.Reader;
 
 
 /**
- * An abstract searcher implementation which only implements the common variations
- * of the search methods, by providing default values to the real search methods.
+ * An abstract searcher implementation which provides default implementations 
+ * of many of the overloaded search methods, 
+ * providing default values to the real search methods.
  * 
+ * @param <T> The type of object returned on a match by this Searcher.
  * @author Matt Palmer
  */
 public abstract class AbstractSearcher<T> implements Searcher<T> {
