@@ -63,7 +63,7 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
     
     /** 
      * Default constructor which used an underlying {@link SimpleByteMatcherFactory}
-     * to create {@link ByteMatcher}s based on sets of bytes.
+     * to create {@link net.domesdaybook.matcher.bytes.ByteMatcher}s based on sets of bytes.
      */
     public ByteMatcherTransitionFactory() {
         matcherFactory = new SimpleByteMatcherFactory();
@@ -72,7 +72,7 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
     
     /**
      * Constructor which uses the supplied {@link ByteMatcherFactory} to
-     * create {@link ByteMatcher}s based on sets of bytes.
+     * create {@link net.domesdaybook.matcher.bytes.ByteMatcher}s based on sets of bytes.
      * 
      * @param factoryToUse The factory to create transitions based on sets of bytes.
      */
@@ -134,7 +134,7 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
      * Creates a transition on a match to any bytes in the set of bytes supplied (or
      * the inverse set, if that is specified).
      * <p>
-     * The underlying {@link ByteMatcher} used is created by the 
+     * The underlying {@link net.domesdaybook.matcher.bytes.ByteMatcher} used is created by the 
      * {@link ByteMatcherFactory}, which attempts to optimise what sort
      * of matcher is used for the set of bytes provided.
      * 
