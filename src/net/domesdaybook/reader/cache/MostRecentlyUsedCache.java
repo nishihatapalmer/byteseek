@@ -42,7 +42,6 @@ import net.domesdaybook.reader.Window;
  * 
  * @author Matt Palmer
  */
-
 public final class MostRecentlyUsedCache extends AbstractCache  {
 
     private final static boolean ACCESS_ORDER = true;    
