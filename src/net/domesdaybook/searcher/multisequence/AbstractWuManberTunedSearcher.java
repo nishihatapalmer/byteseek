@@ -90,6 +90,8 @@ import net.domesdaybook.util.object.LazyObject;
  * <li>A block size of two - NOT YET IMPLEMENTED.
  * <li>Block sizes greater than two - NOT YET IMPLEMENTED.
  * </ul>
+ * You can use the utility methods defined in {@link WuManberUtils} to determine
+ * an appropriate block size to use.
  * 
  * @see <a href="http://webglimpse.net/pubs/TR94-17.pdf">Wu-Manber paper (PDF)</a>
  * @see <a href="http://www-igm.univ-mlv.fr/~lecroq/string/tunedbm.html">Tuned Boyer Moore</a>

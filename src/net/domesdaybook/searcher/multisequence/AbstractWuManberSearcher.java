@@ -83,6 +83,8 @@ import net.domesdaybook.util.object.LazyObject;
  * <li>A block size of two {@link WuManberTwoByteSearcher}
  * <li>Block sizes greater than two {@link WuManberMultiByteSearcher} - NOT YET FULLY IMPLEMENTED.
  * </ul>
+ * You can use the utility methods defined in {@link WuManberUtils} to determine
+ * an appropriate block size to use.
  * 
  * @see <a href="http://webglimpse.net/pubs/TR94-17.pdf">Wu-Manber paper (PDF)</a>
  * @author Matt Palmer
