@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -34,21 +34,25 @@ package net.domesdaybook.reader.cache;
 import net.domesdaybook.reader.Window;
 
 /**
- *
- * @author matt
+ * A {@link WindowCache} which holds on to no {@link net.domesdaybook.reader.Window}
+ * objects.
+ * 
+ * @author Matt Palmer
  */
 public final class NoCache extends AbstractCache {
 
     /**
-     * 
+     * A static NoCache object, as this object has no state, so can be
+     * safely re-used by any class which requires a NoCache.
      */
     public static final NoCache NO_CACHE = new NoCache();
     
     
     /**
+     * Always returns null, as no Windows are cached.
      * 
-     * @param position
-     * @return
+     * @param position The position for which a {@link net.domesdaybook.reader.Window} is requested.
+     * @return Window null in all cases.
      */
     @Override
     public Window getWindow(long position) {
@@ -57,8 +61,10 @@ public final class NoCache extends AbstractCache {
 
     
     /**
+     * Does not actually add the {@link net.domesdaybook.reader.Window} to the
+     * cache, as the NoCache object performs no caching.
      * 
-     * @param window
+     * @param window A Window to add (which it will not be).
      */
     @Override
     public void addWindow(Window window) {
@@ -67,7 +73,7 @@ public final class NoCache extends AbstractCache {
 
     
     /**
-     * 
+     * Does nothing, as the NoCache object does not cache anything.
      */
     @Override
     public void clear() {
