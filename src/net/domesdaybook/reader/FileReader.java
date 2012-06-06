@@ -58,7 +58,7 @@ public class FileReader extends AbstractReader {
     
     /**
      * Constructs a FileReader which defaults to an array size of 4096,
-     * caching the last 8 most recently used Windows.
+     * caching the last 32 most recently used Windows in a {@link MostRecentlyUsedCache}.
      * 
      * @param file The file to read from.
      * @throws FileNotFoundException If the file does not exist.
@@ -70,7 +70,7 @@ public class FileReader extends AbstractReader {
     
 
     /**
-     * Constructs a FileReader which defaults to an array size of 4096
+     * Constructs a FileReader which defaults to a {@link Window} size of 4096
      * using the WindowCache passed in to cache ArrayWindows.
      * 
      * @param file The file to read from.
@@ -84,8 +84,8 @@ public class FileReader extends AbstractReader {
     
     
     /**
-     * Constructs a FileReader using the array size passed in, and caches the
-     * last 8 Windows.
+     * Constructs a FileReader using the {@link Window} size passed in, and caches the
+     * last 32 Windows in a {@link MostRecentlyUsedCache}.
      * 
      * @param file The file to read from.
      * @param windowSize the size of the byte array to read from the file.
@@ -99,7 +99,8 @@ public class FileReader extends AbstractReader {
     
     /**
      * Constructs a FileReader using the array size passed in, and caches the
-     * last most recently used Windows up to the capacity specified.
+     * last most recently used Windows up to the capacity specified in a 
+     * {@link MostRecentlyUsedCache}.
      * 
      * @param file The file to read from.
      * @param windowSize the size of the byte array to read from the file.
@@ -113,8 +114,9 @@ public class FileReader extends AbstractReader {
     
 
     /**
-     * Constructs a FileReader which defaults to an array size of 4096,
-     * caching the last 8 most recently used Windows.
+     * Constructs a FileReader which defaults to a {@link Window} size of 4096,
+     * caching the last 32 most recently used {@link Window}s in a 
+     * {@link MostRecentlyUsedCache}.
      * 
      * @param path The path of the file to read from.
      * @throws FileNotFoundException If the file does not exist.
@@ -126,8 +128,8 @@ public class FileReader extends AbstractReader {
     
 
     /**
-     * Constructs a FileReader which defaults to an array size of 4096
-     * using the WindowCache passed in to cache Windows.
+     * Constructs a FileReader which defaults to a {@link Window} size of 4096
+     * using the {@link WindowCache} passed in to cache Windows.
      * 
      * @param path The path of the file to read from.
      * @param cache the cache of Windows to use.
@@ -140,8 +142,8 @@ public class FileReader extends AbstractReader {
     
     
     /**
-     * Constructs a FileReader using the array size passed in, and caches the
-     * last Window 
+     * Constructs a FileReader using the {@link Window} size passed in, and caches the
+     * last 32 Windows in a {@link MostRecentlyUsedCache}.
      * 
      * @param path The path of the file to read from.
      * @param windowSize the size of the byte array to read from the file.
@@ -154,8 +156,8 @@ public class FileReader extends AbstractReader {
     
     
     /**
-     * Constructs a FileReader using the array size passed in, and caches the
-     * last Window 
+     * Constructs a FileReader using the {@link Window} size passed in, and caches the
+     * last Windows up to the capacity supplied using a {@link MostRecentlyUsedCache}.
      * 
      * @param path The path of the file to read from.
      * @param windowSize the size of the byte array to read from the file.
@@ -170,8 +172,8 @@ public class FileReader extends AbstractReader {
 
     
     /**
-     * Constructs a FileReader which reads the file into arrays of
-     * the specified size.
+     * Constructs a FileReader which reads the file into {@link Window}s of
+     * the specified size, using the {@link WindowCache} supplied to cache them.
      *
      * @param file The file to read from.
      * @param windowSize the size of the byte array to read from the file.
