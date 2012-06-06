@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,17 +36,16 @@ import java.util.Map;
 import net.domesdaybook.reader.Window;
 
 /**
- *
- * @author matt
+ * A {@link WindowCache} which holds on to all {@link Window} objects.
+ * 
+ * @author Matt Palmer
  */
 public final class AllWindowsCache extends AbstractCache {
 
     private final Map<Long, Window> cache = new HashMap<Long, Window>();
     
     /**
-     * 
-     * @param position
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public Window getWindow(final long position) {
@@ -55,8 +54,7 @@ public final class AllWindowsCache extends AbstractCache {
 
     
     /**
-     * 
-     * @param window
+     * {@inheritDoc}
      */
     @Override
     public void addWindow(final Window window) {
@@ -65,7 +63,7 @@ public final class AllWindowsCache extends AbstractCache {
 
     
     /**
-     * 
+     * {@inheritDoc}
      */
     @Override
     public void clear() {
