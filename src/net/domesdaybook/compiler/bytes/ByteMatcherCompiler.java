@@ -211,6 +211,7 @@ public final class ByteMatcherCompiler extends AbstractAstCompiler<ByteMatcher> 
      * @return ByteMatcher a ByteMatcher which matches all the bytes in the expressions.
      * @throws CompileException If the expressions could not be compiled.
      */
+    @Override
     public ByteMatcher compile(Collection<String> expressions) throws CompileException {
         final Set<Byte> bytesToMatch = new HashSet<Byte>();
         for (final String expression : expressions) {
