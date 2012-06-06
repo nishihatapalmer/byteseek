@@ -85,7 +85,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
      * to search for.
      * 
-     * @param sequence 
+     * @param sequence The SequenceMatcher to search for.
      */
     public BoyerMooreHorspoolSearcher(final SequenceMatcher sequence) {
         super(sequence);

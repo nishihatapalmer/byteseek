@@ -200,13 +200,13 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * by the searchForwards method which calls it.
      * 
      * @param reader The reader providing bytes to search in.
-     * @param searchPosition The search position to search from.
-     * @param lastSearchPosition The search position to search to.
+     * @param fromPosition The search position to search from.
+     * @param toPosition The search position to search to.
      * @return The position of a match, or a negative number if no match was found.
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
     protected abstract List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, 
-            long searchPosition, long lastSearchPosition) throws IOException;
+            long fromPosition, long toPosition) throws IOException;
 
     
     
@@ -323,13 +323,13 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * in the operation of the search algorithm itself.
      * 
      * @param reader The reader providing bytes to search in.
-     * @param searchPosition The search position to search from.
-     * @param lastSearchPosition The search position to search to.
+     * @param fromPosition The search position to search from.
+     * @param toPosition The search position to search to.
      * @return The position of a match, or a negative number if no match was found.
      * @throws IOException If the reader encounters difficulties reading bytes.
      */    
     protected abstract List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader,
-            long searchPosition, long lastSearchPosition) throws IOException;
+            long fromPosition, long toPosition) throws IOException;
     
     
     
