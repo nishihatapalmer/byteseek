@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,7 +32,7 @@
 
 package net.domesdaybook.automata.regex;
 
-import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.TransitionFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +42,7 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 
 /**
@@ -78,25 +78,30 @@ import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
  *   "A reexamination of the Glushkov and Thompson Constructions"
  *    by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
  *
+ * @param <T> The type of the object associated with a State in the NFA.
+ * 
  * @author Matt Palmer
  */
 public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 
      private final TransitionFactory transitionFactory;
      private final StateFactory<T> stateFactory;
-
-     //TODO: add AutomataFactory.
      
      /**
-      * 
+      * Constructs a GlushkovRegexBuilder using the default {@link net.domesdaybook.automata.StateFactory},
+      * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the
+      * default {@link net.domesdaybook.automata.TransitionFactory} {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
       */
      public GlushkovRegexBuilder() {
          this(null, null);
      }
      
+     
      /**
+      * Constructs a GlushkovRegexBuilder using supplied {@link net.domesdaybook.automata.StateFactory} and the
+      * default {@link net.domesdaybook.automata.TransitionFactory} {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
       * 
-      * @param stateFactory
+      * @param stateFactory The StateFactory to use when creating the NFA.
       */
      public GlushkovRegexBuilder(final StateFactory<T> stateFactory) {
          this(null, stateFactory);
@@ -104,17 +109,25 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
          
          
      /**
+      * Constructs a GlushkovRegexBuilder using the default {@link net.domesdaybook.automata.StateFactory},
+      * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied 
+      * default {@link net.domesdaybook.automata.TransitionFactory}.
       * 
-      * @param transitionFactory
+      * @param transitionFactory The TransitionFactory to use when creating the NFA.
       */
      public GlushkovRegexBuilder(final TransitionFactory transitionFactory) {
          this(transitionFactory,null);
      }
      
+     
      /**
+      * Constructs a GlushkovRegexBuilder using the supplied
+      * {@link net.domesdaybook.automata.StateFactory},
+      * and the supplied 
+      * default {@link net.domesdaybook.automata.TransitionFactory}.
       * 
-      * @param transitionFactory
-      * @param stateFactory
+      * @param transitionFactory The TransitionFactory to use when creating the NFA.
+      * @param stateFactory The StateFactory to use when creating the NFA.
       */
      public GlushkovRegexBuilder(final TransitionFactory transitionFactory, final StateFactory<T> stateFactory) {
          if (transitionFactory == null) {
@@ -362,7 +375,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      * It is the same as building one to many states, except the initial state
      * is set to final to cover the zero case.
      * 
-     * @param zeroToManyStates An automata to repeat zero to many times.
+     * @param zeroToMany 
      * @return An automata which will repeat zero to many times.
      */
     @Override
@@ -421,7 +434,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      *                 X
      * }</pre><p/>
      *
-     * @param optionalStates
+     * @param optional 
      * @return
      */
     @Override
