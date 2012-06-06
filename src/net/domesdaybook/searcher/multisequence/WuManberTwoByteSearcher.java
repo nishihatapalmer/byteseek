@@ -41,11 +41,19 @@ import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.SearchUtils;
 
 /**
- *
+ * An implementation of the Wu-Manber search algorithm that works with a block
+ * size of two bytes. It extends the {@link AbstractWuManberSearcher} 
+ * - see that class for more details of the Wu-Manber algorithm itself.
+ * 
  * @author Matt Palmer
  */
 public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
     
+    /**
+     * Constructs a WuManberTwoByteSearcher.
+     * 
+     * @param matcher The MultiSequenceMatcher containing the sequences to search for.
+     */
     public WuManberTwoByteSearcher(final MultiSequenceMatcher matcher) {
         super(matcher, 2);
         if (matcher.getMinimumLength() < 2) {
@@ -53,6 +61,10 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
         }
     }        
 
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
@@ -128,6 +140,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
@@ -187,6 +202,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     //FIXME: copy of do search forwards gradually evolving to a backwards search...
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader,
@@ -255,6 +273,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         // Get info needed to search with:
