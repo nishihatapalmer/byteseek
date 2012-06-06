@@ -63,6 +63,9 @@ import net.domesdaybook.reader.cache.TwoLevelCache;
  * will never be requested.  If you request a position which has already been read
  * in the stream, but which the cache can no longer provide, then a {@link WindowMissingException}
  * will be thrown (this is a RuntimeException, as it indicates a programming error).
+ * <p>
+ * This class depends on InputStream implementations, which are unlikely to be
+ * thread-safe.
  *
  * @author Matt Palmer
  */
