@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -38,9 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.factory.TransitionFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
@@ -48,7 +46,11 @@ import net.domesdaybook.automata.walker.StepAction;
 import net.domesdaybook.util.collections.IdentityHashSet;
 
 /**
- *
+ * A class which can convert a non-deterministic finite state automata into
+ * a deterministic finite state automata, using the subset construction.
+ * 
+ * @param <T> The type of object associated with states in the automata.
+ * 
  * @author Matt Palmer
  */
 public final class DfaBuilder<T> {
@@ -57,7 +59,9 @@ public final class DfaBuilder<T> {
     private final TransitionFactory transitionFactory;
     
     /**
-     * 
+     * Constructs a DfaBuilder using the default {@link StateFactory}, 
+     * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+     * {@link TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
      */
     public DfaBuilder() {
         this(null, null);
@@ -65,8 +69,10 @@ public final class DfaBuilder<T> {
 
     
     /**
+     * Constructs a DfaBuilder using the supplied {@link StateFactory}, 
+     * and the default {@link TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
      * 
-     * @param stateFactory
+     * @param stateFactory The StateFactory to use when building the DFA.
      */
     public DfaBuilder(final StateFactory<T> stateFactory) {
         this(stateFactory, null);
@@ -74,8 +80,11 @@ public final class DfaBuilder<T> {
 
     
     /**
+     * Constructs a DfaBuilder using the default {@link StateFactory}, 
+     * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+     * {@link TransitionFactory}.
      * 
-     * @param transitionFactory
+     * @param transitionFactory The TransitionFactory to use when building the DFA.
      */
     public DfaBuilder(final TransitionFactory transitionFactory) {
         this(null, transitionFactory);
@@ -83,10 +92,11 @@ public final class DfaBuilder<T> {
     
     
     /**
+     * Constructs a DfaBuilder using the supplied {@link StateFactory}, 
+     * and the supplied {@link TransitionFactory}.
      * 
-     * @param nfaCompilerToUse
-     * @param stateFactory
-     * @param transitionFactory
+     * @param stateFactory The StateFactory to use when building the DFA.
+     * @param transitionFactory The TransitionFactory to use when building the DFA.
      */
     public DfaBuilder(final StateFactory<T> stateFactory, 
                       final TransitionFactory transitionFactory) {
@@ -99,6 +109,12 @@ public final class DfaBuilder<T> {
     }
 
 
+    /**
+     * Builds a DFA from the initial state provided.
+     * 
+     * @param initialState The initial state to being building the DFA from.
+     * @return A new State which forms a deterministic finite-state automata.
+     */
     public State<T> build(final State<T> initialState) {
         final Set<State<T>> stateSet = new IdentityHashSet<State<T>>();
         stateSet.add(initialState);
@@ -107,6 +123,14 @@ public final class DfaBuilder<T> {
     }
     
     
+    /**
+     * Builds a DFA from a collection of initial states.  The initial states are
+     * first joined into an NFA (each initial state becoming an alternative state),
+     * then a DFA is built from the joined states.
+     * 
+     * @param initialStates A collection of initial states to build an automata from.
+     * @return A new State which forms a deterministic finite-state automata.
+     */
     public State<T> build(final Collection<State<T>> initialStates) {
         return build(join(initialStates));
     }    
