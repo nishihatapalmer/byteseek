@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -50,6 +50,8 @@ import net.domesdaybook.util.object.DeepCopy;
  * <p>
  * It is intentionally not a final class, allowing other States to inherit from 
  * this implementation.
+ * 
+ * @param <T> The type of object which can be associated with this state.
  * 
  * @see net.domesdaybook.automata.State
  * @see net.domesdaybook.automata.Transition
@@ -209,6 +211,7 @@ public class BaseState<T> implements State<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final List<Transition> getTransitions() {
         if (transitions.isEmpty()) {
             return transitions;
@@ -245,7 +248,7 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public void addAllAssociations(Collection<T> associations) {
+    public void addAllAssociations(Collection<? extends T> associations) {
         if (associations.isEmpty()) {
             associations = new ArrayList<T>(associations.size());
         }
@@ -270,7 +273,7 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public void setAssociations(final Collection<T> associations) {
+    public void setAssociations(final Collection<? extends T> associations) {
         if (this.associations.isEmpty()) {
             this.associations = new ArrayList<T>(associations.size());
         }
@@ -322,11 +325,6 @@ public class BaseState<T> implements State<T> {
         }
         return stateCopy;
     }
-
-
-
-
-
 
    
 }
