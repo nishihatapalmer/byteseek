@@ -42,16 +42,27 @@ import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.multisequence.AbstractWuManberSearcher.SearchInfo;
 
 /**
- *
+ * An implementation of the Wu-Manber search algorithm that works with a block
+ * size of only one byte. It extends the {@link AbstractWuManberSearcher} 
+ * - see that class for more details of the Wu-Manber algorithm itself.
+ * 
  * @author Matt Palmer
  */
 public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
         
+    /**
+     * Constructs a WuManberOneByteSearcher.
+     * 
+     * @param matcher The MultiSequenceMatcher containing the sequences to search for.
+     */
     public WuManberOneByteSearcher(final MultiSequenceMatcher matcher) {
         super(matcher, 1);
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
@@ -102,6 +113,9 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
@@ -161,6 +175,9 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
@@ -201,6 +218,9 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
             final long fromPosition, final long toPosition) throws IOException {
