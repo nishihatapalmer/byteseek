@@ -39,8 +39,12 @@ import java.util.NoSuchElementException;
 import net.domesdaybook.reader.Reader;
 
 /**
- *
- * @author matt
+ * An iterator which iterates over a {@link net.domesdaybook.reader.Reader} or a 
+ * byte array, using a provided {@link Searcher}. 
+ * Each iteration returns the next set of search results, searching forwards.
+ * 
+ * @param <T> The type of object returned on a match by the Searcher.
+ * @author Matt Palmer
  */
 public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>> {
     
@@ -57,10 +61,14 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     
     
     /**
+     * Constructs a ForwardSearchIterator from a {@link Searcher} and 
+     * {@link net.domesdaybook.reader.Reader}, searching forwards from the
+     * end of the Reader to the end of the Reader.
      * 
-     * @param searcher
-     * @param reader
-     * @throws IOException
+     * @param searcher The Searcher to use.
+     * @param reader The Reader to search in.
+     * @throws IOException If determining the length of the Reader causes an error.
+     * @throws IllegalArgumentException if the Searcher or Reader is null.
      */
     public ForwardSearchIterator(final Searcher<T> searcher, final Reader reader) throws IOException {
         this(searcher, 0, Long.MAX_VALUE, reader);
@@ -68,10 +76,15 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     
     
     /**
+     * Constructs a ForwardSearchIterator from a {@link Searcher} and 
+     * {@link net.domesdaybook.reader.Reader}, searching forwards from the
+     * position specified in the Reader to the end of the Reader.
      * 
-     * @param searcher
-     * @param reader
-     * @throws IOException
+     * @param searcher The Searcher to use.
+     * @param reader The Reader to search in.
+     * @param fromPosition The position to start searching forwards from.
+     * @throws IOException If determining the length of the Reader causes an error.
+     * @throws IllegalArgumentException if the Searcher or Reader is null.
      */
     public ForwardSearchIterator(final Searcher<T> searcher, final Reader reader,
                                  final long fromPosition) throws IOException {
@@ -80,11 +93,16 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
         
     
     /**
+     * Constructs a ForwardSearchIterator from a {@link Searcher} and 
+     * {@link net.domesdaybook.reader.Reader}, searching forwards from the
+     * position specified to the final position.
      * 
-     * @param searcher
-     * @param fromPosition
-     * @param toPosition
-     * @param reader
+     * @param searcher The Searcher to use.
+     * @param fromPosition The position to start searching forwards from.
+     * @param toPosition The final position to search up to in the Reader.
+     * @param reader The Reader to search in.
+     * @throws IOException If determining the length of the Reader causes an error.
+     * @throws IllegalArgumentException if the Searcher or Reader is null.
      */
     public ForwardSearchIterator(final Searcher<T> searcher, final long fromPosition, 
                                  final long toPosition, final Reader reader) {
@@ -101,15 +119,29 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     
     
     /**
+     * Constructs a ForwardSearchIterator from a {@link Searcher} and 
+     * byte array, searching forwards from the
+     * start of the array to the end of the array.
      * 
-     * @param searcher
-     * @param bytes
+     * @param searcher The Searcher to use.
+     * @param bytes The byte array to search in.
+     * @throws IllegalArgumentException if the Searcher or byte array is null.
      */
     public ForwardSearchIterator(final Searcher<T> searcher, final byte[] bytes) {
         this(searcher, 0, bytes.length - 1, bytes);
     }
     
 
+    /**
+     * Constructs a ForwardSearchIterator from a {@link Searcher} and 
+     * byte array, searching forwards from the
+     * position specified in the byte array to the end of the array.
+     * 
+     * @param searcher The Searcher to use.
+     * @param bytes The byte array to search in.
+     * @param fromPosition The position to start searching backwards from.
+     * @throws IllegalArgumentException if the Searcher or byte array is null.
+     */
     public ForwardSearchIterator(final Searcher<T> searcher, final byte[] bytes,
                                  final long fromPosition) {
         this(searcher, fromPosition, bytes.length - 1, bytes);
@@ -117,11 +149,15 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     
     
     /**
+     * Constructs a ForwardSearchIterator from a {@link Searcher} and 
+     * byte array, searching forwards from the
+     * position specified in the array to the final position specified.
      * 
-     * @param searcher
-     * @param fromPosition
-     * @param toPosition
-     * @param bytes
+     * @param searcher The Searcher to use.
+     * @param fromPosition The position to start searching forwards from.
+     * @param toPosition The final position to search up to in the array.
+     * @param bytes The byte array to search in.
+     * @throws IllegalArgumentException if the Searcher or array is null.
      */
     public ForwardSearchIterator(final Searcher<T> searcher, final long fromPosition, 
                                  final long toPosition, final byte[] bytes) {
@@ -136,6 +172,9 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     }        
     
     
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public boolean hasNext() {
         if (!searchedForNext) {
@@ -150,6 +189,9 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     }
 
     
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public List<SearchResult<T>> next() {
         if (hasNext()) {
@@ -161,17 +203,32 @@ public class ForwardSearchIterator<T> implements Iterator<List<SearchResult<T>>>
     }
     
     
+    /**
+     * It is not possible to remove search results from this iterator.
+     * 
+     * @throws UnsupportedOperationException if the method is called.
+     */
     @Override
     public void remove() {
         throw new UnsupportedOperationException("Cannot remove search results.");
     }
     
     
+    /**
+     * Returns the current search position in the iterator.
+     * 
+     * @return long the current search position in the iterator.
+     */
     public long getSearchPosition() {
         return searchPosition;
     }
     
     
+    /**
+     * Sets the search position to use in the iterator.
+     * 
+     * @param searchPosition The search position to search from in this iterator.
+     */
     public void setSearchPosition(final long searchPosition) {
         this.searchPosition = searchPosition;
         searchedForNext = false;

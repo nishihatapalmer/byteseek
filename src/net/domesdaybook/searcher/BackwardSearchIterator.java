@@ -117,7 +117,6 @@ public class BackwardSearchIterator<T> implements Iterator<List<SearchResult<T>>
     }        
    
     
-    
     /**
      * Constructs a BackwardSearchIterator from a {@link Searcher} and 
      * byte array, searching backwards from the
@@ -135,7 +134,7 @@ public class BackwardSearchIterator<T> implements Iterator<List<SearchResult<T>>
     /**
      * Constructs a BackwardSearchIterator from a {@link Searcher} and 
      * byte array, searching backwards from the
-     * position specified in the byte array to the start of the Reader.
+     * position specified in the byte array to the start of the array.
      * 
      * @param searcher The Searcher to use.
      * @param bytes The byte array to search in.
