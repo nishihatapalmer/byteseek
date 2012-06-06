@@ -99,7 +99,8 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
         /**
          * The hash-table of safe shifts.  This table will be constructed
          * to be a power of two, making the hash calculation easy by masking
-         * the hash values by length - 1.
+         * the hash values by length - 1.  A shift of zero in this table
+         * indicates that we may have a potential match.
          */
         public final int[] shifts;
         
@@ -129,15 +130,15 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
     
     
     /**
-     * A lazily instantiated SearchInfo object containing the information needed
-     * to search forwards.
+     * A factory for a lazily instantiated SearchInfo object containing the 
+     * information needed to search forwards.
      */
     protected final LazyObject<SearchInfo> forwardInfo;
     
     
     /**
-     * A lazily instantiated SearchInfo object containing the information needed
-     * to search backwards.
+     * A factory for a lazily instantiated SearchInfo object containing the 
+     * information needed to search backwards.
      */
     protected final LazyObject<SearchInfo> backwardInfo;
 
@@ -380,7 +381,6 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
      * and matcher to use when searching backwards with the Wu-Manber search
      * algorithm.
      */
-
     protected class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
         /**

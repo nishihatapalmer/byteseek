@@ -42,18 +42,102 @@ import net.domesdaybook.util.bytes.ByteUtilities;
 import net.domesdaybook.util.object.LazyObject;
 
 /**
- *
+ * This abstract class calculates the search information for a Wu-Manber style
+ * multi-sequence searcher.  It extends {@link AbstractMultiSequenceSearcher},
+ * taking a {@link MultiSequenceMatcher} containing the sequences to search for,
+ * and which provides the matching capability to verify a match.
+ * <p>
+ * The Tuned version of the Wu-Manber search takes some of the ideas from the 
+ * Tuned Boyer Moore Horspool search, which is really just an optimisation of
+ * the search algorithm to unroll some loops.  However, it also requires that for any shift
+ * which is calculated as zero, we additionally record the shift as it was before
+ * setting it to zero, so we can jump further in the event that a match is not found.
+ * This adds more space requirements, although we use a hash table to limit how
+ * big our mismatch shift table needs to be.
+ * <p>
+ * A true Wu-Manber style search would use the {@link HashMultiSequenceMatcher}
+ * class as its matcher, which has a good time-space trade-off.  However, you can 
+ * use any MultiSequenceMatcher in this searcher, for different trade-offs.
+ * <p>
+ * This style of search is very fast for large numbers of sequences, although its
+ * speed is heavily constrained by the minimum length of the sequences.  Very short
+ * sequences slow it down a lot, as it can only skip ahead in the search by at most
+ * the minimum length of all the sequences (or it might skip over a possible short match).
+ * <p>
+ * It is similar in principle to the {@link SetHorspoolSearcher}, in that it calculates
+ * a table of safe shifts it can make working from the ends of the sequences (not the start).
+ * It scans along, shifting across the Reader or byte array until it finds a shift of zero, 
+ * when it has to verify whether there is genuinely a match at that position.
+ * <p>
+ * However, it performs much better for large numbers of sequences than Set Horspool.
+ * Set Horspool suffers with large numbers of sequences, because as the number of 
+ * sequences to be matched rises, the chances that any given byte value will exist
+ * near the end in one of them approaches 100%, making the effective shifts
+ * very small (or just one - the smallest safe shift possible).  Wu Manber avoids this
+ * fate by working on blocks of bytes, making the effective alphabet much bigger and
+ * reducing the chances of a collision in the shift table.
+ * <p>
+ * To avoid having to have a huge shift table, it uses a hash table to store its shifts,
+ * which can be tuned to be any size (trading off speed against space).  When Wu-Manber
+ * is used with a block size of only one byte, then it is effectively equivalent to the
+ * Set Horspool searcher.  With larger block sizes, the hash table is bigger than that of
+ * Set Horspool, so again there is a time-space trade-off.
+ * <p>
+ * The concrete sub-classes of this abstract class implement the Wu-Manber search algorithm
+ * for different block sizes, in order to make each variation as efficient as possible:
+ * <ul>
+ * <li>A block size of one {@link WuManberOneByteTunedSearcher}
+ * <li>A block size of two - NOT YET IMPLEMENTED.
+ * <li>Block sizes greater than two - NOT YET IMPLEMENTED.
+ * </ul>
+ * 
+ * @see <a href="http://webglimpse.net/pubs/TR94-17.pdf">Wu-Manber paper (PDF)</a>
+ * @see <a href="http://www-igm.univ-mlv.fr/~lecroq/string/tunedbm.html">Tuned Boyer Moore</a>
  * @author Matt Palmer
  */
 public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenceSearcher {
         
     private static int HIGHEST_POWER_OF_TWO = 1073741824;
 
+    /**
+     * A class holding the search information used in the Tuned Wu-Manber search.
+     */
     protected static final class SearchInfo {
-        public int[] shifts;
-        public int[] finalShifts;
-        public MultiSequenceMatcher matcher;
+        
+        
+        /**
+         * The main hash-table of safe shifts.  This table will be constructed
+         * to be a power of two, making the hash calculation easy by masking
+         * the hash values by length - 1.  A shift of zero in this table
+         * indicates that we may have a potential match.
+         */
+        public final int[] shifts;
+        
+        
+        /**
+         * The smaller hash table to use when encountering a mismatch, recording
+         * in it the shift which would have appeared in the shifts table before
+         * setting it to zero.  We are using this table to record a hopefully bigger 
+         * shift to use in the event of a mismatch (when the shift in the table above  
+         * was zero and we didn't find a match).
+         */
+        public final int[] finalShifts;
+        
+        
+        /**
+         * The MultiSequenceMatcher to use to verify a match.
+         */
+        public final MultiSequenceMatcher matcher;
 
+        /**
+         * Constructs a SearchInfo objecxt with the shifts and matcher to use
+         * when searching.
+         * 
+         * @param shifts The hash-table containing the safe shifts.
+         * @param finalShifts The smaller hash-table to use when the shifts table has
+         *        a zero in it, and we did not find a match.
+         * @param matcher The matcher to use to verify whether a match exists.
+         */
         public SearchInfo(final int[] shifts, final int[] finalShifts,
                           final MultiSequenceMatcher matcher) {
             this.shifts = shifts;
@@ -62,10 +146,34 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
         }
     }
 
+    
+    /**
+     * The block size to use in the Tuned Wu-Manber search.
+     */
     protected final int blockSize;
+    
+    
+    /**
+     * A factory for a lazily instantiated SearchInfo object containing the 
+     * information needed to search forwards.
+     */
     protected final LazyObject<SearchInfo> forwardInfo;
+    
+    
+    /**
+     * A factory for a lazily instantiated SearchInfo object containing the 
+     * information needed to search backwards.
+     */
     protected final LazyObject<SearchInfo> backwardInfo;
 
+    
+    /**
+     * Constructs an abstract TunedWuManberSearcher from a {@link MultiSequenceMatcher} and 
+     * a block size.
+     * 
+     * @param matcher A MultiSequenceMatcher containing the sequences to search for.
+     * @param blockSize The block size of the Wu-Manber searcher.
+     */
     public AbstractWuManberTunedSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
         super(matcher);
         this.blockSize = blockSize;
@@ -73,15 +181,32 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
         backwardInfo = new BackwardSearchInfo();
     }
 
+    
+    /**
+     * Forces the initialisation of the forward search info.
+     */    
+    @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
 
+    
+    /**
+     * Forces the initialisation of the backward search info.
+     */    
+    @Override
     public void prepareBackwards() {
         backwardInfo.get();
     }
 
 
+    /**
+     * For a given SequenceMatcher, builds a list of the byte values for a block.
+     * 
+     * @param position The end of the block to get the byte values for.
+     * @param matcher The SequenceMatcher to build the list of byte arrays for.
+     * @return A list of byte arrays containing the matching byte values for a block in the SequenceMatcher.
+     */    
     private List<byte[]> getBlockByteList(final int position, final SequenceMatcher matcher) {
         final List<byte[]> byteList = new ArrayList<byte[]>(blockSize);
         for (int blockIndex = position - blockSize + 1; blockIndex <= position; blockIndex++) {
@@ -91,7 +216,13 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
         return byteList;
     }
 
-
+    
+    /**
+     * Given a block as a byte array, calculate its block hash value.
+     * 
+     * @param block The block to calculate a hash value for.
+     * @return The hash value of a block.
+     */    
     private static int getBlockHash(final byte[] block) {
         int hashCode = 0;
         for (final byte b : block) {
@@ -102,6 +233,12 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
     }
 
 
+    /**
+     * Creates a hash table of the optimum size and fills it with the default shift value
+     * 
+     * @param defaultShift The default shift to use (the minimum length of all the sequences).
+     * @return A shift table filled with the default shift value.
+     */    
     private int[] createShiftHashTable(final int defaultShift) {
         final int possibleTableSize = guessTableSize();
         final int optimumTableSize = chooseOptimumSize(possibleTableSize);
@@ -111,6 +248,13 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
     }
     
     
+    /**
+     * Creates the smaller final shift table to use in the event of a mismatch when the
+     * main shift table has a shift of zero.
+     * 
+     * @param defaultShift The default shift to use in the final shift table.
+     * @return A shift table containing shifts to use in the event of a mismatch.
+     */
     private int[] createFinalShiftHashTable(final int defaultShift) {
         //TODO: figure out what a reasonable size is.
         final int[] finalShifts = new int[32];
@@ -181,18 +325,36 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
     }
 
 
+    
+    /**
+     * Returns the maximum possible table size for a given block size.
+     * For block sizes greater than three, default to the highest positive
+     * power of two possible in an integer.
+     * 
+     * @return int The maximum possible table size for a given block size.
+     */    
     private int getMaxTableSize() {
         switch (blockSize) {
-            case 1: return 256;
-            case 2: return 65536;   
-            case 3: return 16777216;
+            case 1: return 256;       // 2 ^ 8
+            case 2: return 65536;     // 2 ^ 16
+            case 3: return 16777216;  // 2 ^ 24
         }
         return HIGHEST_POWER_OF_TWO;
     }
 
 
+    /**
+     * A class extending LazyObject<SearchInfo>, which calculates the shift,
+     * the final shift and matcher to use when searching forwards with the
+     * Tuned Wu-Manber search algorithm.
+     */
     protected class ForwardSearchInfo extends LazyObject<SearchInfo> {
 
+        /**
+         * Creates and returns the forward search information.
+         * 
+         * @return SearchInfo The information needed to search forwards.
+         */
         @Override
         protected SearchInfo create() {
             final int defaultShift = sequences.getMinimumLength() - blockSize + 1;        
@@ -269,17 +431,31 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
                 }           
             }
                 
-            
+            // Create a SearchInfo object to hold the data.
+            // We use a MultiSequenceReverseMatcher to match sequences searching
+            // forwards, as we want to match backwards from the ends of the sequences
+            // so we create a reversed matcher, which we match backwards.  It then
+            // translates the reversed sequences back into the original ones in the
+            // event of a match.
             return new SearchInfo(shifts, 
                                   finalShifts, 
                                   new MultiSequenceReverseMatcher(sequences));
         }
-
     }
 
 
+    /**
+     * A class extending LazyObject<SearchInfo>, which calculates the shift,
+     * the final shift and matcher to use when searching backwards with the
+     * Tuned Wu-Manber search algorithm.
+     */
     protected class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
+        /**
+         * Creates and returns the backward search information.
+         * 
+         * @return SearchInfo The information needed to search backwards.
+         */
         @Override
         protected SearchInfo create() {
             final int minLength = sequences.getMinimumLength();
