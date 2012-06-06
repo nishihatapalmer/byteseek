@@ -274,7 +274,7 @@ public final class DfaBuilder<T> {
      */
     private void buildByteToStates(final State<T> state, Map<Byte, Set<State<T>>> byteToTargetStates) {
         for (final Transition transition : state.getTransitions()) {
-            final State<T> transitionToState = (State<T>) transition.getToState();
+            final State<T> transitionToState = transition.getToState();
             final byte[] transitionBytes = transition.getBytes();
             for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
                 final Byte transitionByte = transitionBytes[index];
