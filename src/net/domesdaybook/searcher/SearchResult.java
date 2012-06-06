@@ -31,7 +31,13 @@
 package net.domesdaybook.searcher;
 
 /**
- *
+ * A simple immutable class holding a single result of a search.  
+ * <p>
+ * It contains the position that a match was found at, and the matching object
+ * which is associated with that position.
+ * 
+ * @param <T> The type of object to return for a match.
+ * 
  * @author Matt Palmer
  */
 public final class SearchResult<T> {
@@ -39,15 +45,34 @@ public final class SearchResult<T> {
     private final long matchPosition;
     private final T matchingObject;
     
+    
+    /**
+     * Constructs a SearchResult from a position and the object which matched.
+     * 
+     * @param matchPosition The position a match was found at.
+     * @param matchingObject The object associated with the match.
+     */
     public SearchResult(final long matchPosition, final T matchingObject) {
         this.matchPosition = matchPosition;
         this.matchingObject = matchingObject;
     }
     
+    
+    /**
+     * Returns the position a match was found at.
+     * 
+     * @return long The position a match was found at.
+     */
     public long getMatchPosition() {
         return matchPosition;
     }
     
+    
+    /**
+     * Returns the object associated with the match.
+     * 
+     * @return T The object associated with the match.
+     */
     public T getMatchingObject() {
         return matchingObject;
     }
