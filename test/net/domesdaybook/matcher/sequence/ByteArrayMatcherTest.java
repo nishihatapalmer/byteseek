@@ -491,12 +491,8 @@ public class ByteArrayMatcherTest {
 
     @Test
     public void testSubsequence() {
-         ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
-         SequenceMatcher sub = matcher.subsequence(1);
-         assertEquals("abc length", 2, sub.length());
-         
-         
          testSubSequence("abc");
+         testSubSequence("I know a banke where the wilde thyme blows");
          //TODO: lots more subsequence tests.
     }    
 
@@ -505,10 +501,16 @@ public class ByteArrayMatcherTest {
     //  private test methods  //
     ////////////////////////////
     
-    
     private void testSubSequence(String sequence) {
-        // Given a sequence, test all possible subsequences of it using only beginIndex:
+        testSubSequenceBeginIndex(sequence);
+        testSubSequenceBeginEndIndex(sequence);
+    }
+    
+    
+    private void testSubSequenceBeginIndex(String sequence) {
         ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
+        
+        // Test all possible subsequences of it using only beginIndex:
         SequenceMatcher sub = matcher;
         for (int count = 1; count < sequence.length(); count++) {
            sub = sub.subsequence(1);
@@ -521,8 +523,61 @@ public class ByteArrayMatcherTest {
            }
         }
         
+        // Now run equivalent tests for the reversed sequence:
+        sub = matcher.reverse();
+        for (int count = 1; count < sequence.length(); count++) {
+           sub = sub.subsequence(1);
+           assertEquals("subsequence length correct", sequence.length() - count, sub.length());
+           for (int pos = count; pos < sequence.length(); pos++) {
+               int charvalue = (int) sequence.charAt(sequence.length() - pos - 1);
+               byte[] matchingbytes = sub.getMatcherForPosition(pos - count).getMatchingBytes();
+               assertEquals("only one byte matches at position", 1, matchingbytes.length);
+               assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+           }
+        }
         
     }
+    
+    
+    private void testSubSequenceBeginEndIndex(String sequence) {
+        ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
+        
+        // Test all possible subsequences of it from begin index to end index:
+        SequenceMatcher sub = matcher;
+        for (int beginIndex = 0; beginIndex < sequence.length(); beginIndex++) {
+            for (int endIndex = beginIndex + 1; endIndex <= sequence.length(); endIndex++) {
+                sub = matcher.subsequence(beginIndex, endIndex);
+                int sequencelength = endIndex - beginIndex;
+                assertEquals("subsequence length correct", sequencelength);
+                for (int pos = 0; pos < sequencelength; pos++) {
+                   int charvalue = (int) sequence.charAt(beginIndex + pos);
+                   byte[] matchingbytes = sub.getMatcherForPosition(pos).getMatchingBytes();
+                   assertEquals("only one byte matches at position", 1, matchingbytes.length);
+                   assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+                }
+            }
+        }
+        
+        // Now run equivalent tests for the reversed sequence:
+        SequenceMatcher reversed = matcher.reverse();        
+        for (int beginIndex = 0; beginIndex < sequence.length(); beginIndex++) {
+            for (int endIndex = beginIndex + 1; endIndex <= sequence.length(); endIndex++) {
+                sub = reversed.subsequence(beginIndex, endIndex);
+                int sequencelength = endIndex - beginIndex;
+                assertEquals("subsequence length correct", sequencelength);
+                for (int pos = 0; pos < sequencelength; pos++) {
+                   int charvalue = (int) sequence.charAt(beginIndex + pos);
+                   byte[] matchingbytes = sub.getMatcherForPosition(pos).getMatchingBytes();
+                   assertEquals("only one byte matches at position", 1, matchingbytes.length);
+                   assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+                }
+            }
+        }        
+        
+        
+    }
+
+    
     
     /**
      * Tests that a sequence matcher matches at a series of positions, but not
@@ -812,8 +867,6 @@ public class ByteArrayMatcherTest {
         }
         return matchers;
     }
-
-
 
    
 }
