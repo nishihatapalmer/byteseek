@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -50,6 +50,8 @@ import java.util.Set;
  * <p>
  * This class will be most useful when working with graphs of objects, where
  * the object identity is most important in determining set membership.
+ * 
+ * @param <T> The type of object to put in the set.
  * 
  * @see java.util.Set
  * @see java.util.IdentityHashMap
@@ -130,6 +132,9 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
     }
     
     
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public IdentityHashSet<T> clone() {
         return new IdentityHashSet<T>(map.keySet());
