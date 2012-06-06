@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -34,15 +34,41 @@ import java.util.Collection;
 import net.domesdaybook.util.object.DeepCopy;
 
 /**
- *
+ * An interface representing an automata, containing an initial {@link State} and 
+ * a collection of final States.  A final State is one which represents a match
+ * in the automata.
+ * 
+ * @param <T> The type of object associated with a State.
+ * 
  * @author Matt Palmer
  */
 public interface Automata<T> extends DeepCopy {
     
+    /**
+     * Returns the initial {@link State} of the Automata.
+     * 
+     * @return State<T> the initial State of the automata.
+     */
     public State<T> getInitialState();
     
+    
+    /**
+     * Returns a collection of {@link State}s which are final in the Automata.
+     * Implementations should return an empty collection if there are no final
+     * states.
+     * 
+     * @return A collection of final States.
+     */
     public Collection<State<T>> getFinalStates();
     
+    
+    /**
+     * Produces a deep copy of the automata, its' States and Transitions.  It 
+     * will not produce deep copies of any objects associated with a State, although
+     * the automata copy will link to the same associated objects as the original.
+     * 
+     * @return A deep copy of the automata.
+     */
     public Automata<T> deepCopy();
     
 }
