@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,8 +32,16 @@
 package net.domesdaybook.reader;
 
 /**
- *
- * @author matt
+ * A Window is essentially a wrapper for a byte array containing bytes from the {@link Reader} that
+ * creates it, at a specified position in the Reader.  Windows contain the position
+ * in the Reader they begin from, and how long the Window is.
+ * <p>
+ * Note that the length of the Window may be less than the byte array backing it,
+ * so only bytes up to the length of the Window will be from the actual Reader.
+ * For example, the last Window read from a file will almost certainly be shorter
+ * than the byte array that backs it.
+ * 
+ * @author Matt Palmer
  */
 public final class Window {
     
@@ -60,9 +68,18 @@ public final class Window {
     
     
     /**
+     * Gets a byte from the Window relative to the start of the Window (not
+     * relative to the start of the Reader).  It simply returns the byte at 
+     * the position in the byte array that backs the Window.
+     * <p>
+     * Note that no bounds checking is done by this method.  It is possible
+     * to read bytes in the byte array which are beyond the length of the Window
+     * itself (since a Window can be shorter than the byte array which backs it).
      * 
-     * @param position
-     * @return
+     * @param position The position in the Window to read a byte from.
+     * @return The byte at that position in the Window.
+     * @throws IndexOutOfBoundsException if the position is less than zero,
+     *         or past the end of the byte array which backs this Window.
      */
     public byte getByte(final int position) {
         return bytes[position];
@@ -75,7 +92,7 @@ public final class Window {
      * Hence, it is possible to abuse this.  Clients should not alter the
      * array returned by this method.
      * 
-     * @return
+     * @return The byte array which backs this Window.
      */
     public byte[] getArray() {
         return bytes; 
@@ -83,8 +100,11 @@ public final class Window {
     
     
     /**
+     * Returns the position in the Reader at which this Window begins from.
+     * The first byte in the Window (position zero) is the byte in the Reader
+     * at the position returned by this method.
      * 
-     * @return
+     * @return The position in the Reader from which this Window was read.
      */
     public long getWindowPosition() {
         return windowPosition;
@@ -92,8 +112,10 @@ public final class Window {
     
     
     /**
+     * Returns the length of the Window.  Note that this may be shorter
+     * than the length of the byte array which backs this Window.
      * 
-     * @return
+     * @return The length of the Window.
      */
     public int length() {
         return length;
