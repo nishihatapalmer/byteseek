@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -34,56 +34,72 @@ package net.domesdaybook.reader.cache;
 import net.domesdaybook.reader.Window;
 
 /**
- *
- * @author matt
+ * A interface for classes which cache {@link net.domesdaybook.reader.Window} objects.
+ * It also provides the ability to subscribe for notifications that a
+ * Window object is leaving the cache.
+ * 
+ * @author Matt Palmer
  */
 public interface WindowCache {
     
     
     /**
+     * Returns the {@link net.domesdaybook.reader.Window} at the position specified.
+     * The position must be one at which a Window object begins.  It will not return
+     * a Window for a position which simply exists within a Window.  If no Window
+     * exists in the cache at the exact position specified, then null is returned.
      * 
-     * @param position
-     * @return
+     * @param position The position at which a Window begins in the cache.
+     * @return A Window for the specified starting position, or null if the Window does not exist.
      */
     public Window getWindow(final long position);
     
     
     /**
+     * Adds a {@link net.domesdaybook.reader.Window} to the cache.
      * 
-     * @param window
+     * @param window The Window to add to the cache.
      */
     public void addWindow(final Window window);
     
     
     /**
-     * 
+     * Clears all {@link net.domesdaybook.reader.Window}s from the cache.
      */
     public void clear();
     
     
     /**
+     * Subscribes a {@link WindowObserver} to this cache for notification when a
+     * {@link net.domesdaybook.reader.Window} leaves it.
      * 
-     * @param observer
+     * @param observer The observer who wants notification that a Window is leaving the cache.
      */
     public void subscribe(final WindowObserver observer);
     
     
     /**
+     * Unsubscribes a {@link WindowObserver} from this cache.
      * 
-     * @param observer
-     * @return
+     * @param observer The observer who no longer wants notification that a Window is leaving the cache.
+     * @return boolean True if the observer was unsubcribed from the cache.  If false, then it
+     *                 is likely that the observer was never subscribed in the first place, or
+     *                 has already been unsubscribed.
      */
     public boolean unsubscribe(final WindowObserver observer);
     
     
     /**
-     * 
+     * An interface for objects which want notification when a {@link net.domesdaybook.reader.Window}
+     * is leaving a cache.
      */
     public interface WindowObserver {
         
         /**
-         * 
-         * @param window
+         * A method which is called on the WindowObserver when a {@link net.domesdaybook.reader.Window}
+         * leaves a cache.
+         * @param window The Window which is leaving a cache.
+         * @param fromCache The cache that the Window is leaving.
          * 
          */
         public void windowFree(final Window window, WindowCache fromCache);
