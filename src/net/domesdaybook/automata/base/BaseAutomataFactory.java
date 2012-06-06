@@ -48,7 +48,7 @@ public class BaseAutomataFactory<T> implements AutomataFactory<T> {
      * Creates a {@link BaseAutomata} given an initial state.
      * 
      * @param initialState The initial state of the automata.
-     * @return A BaseAutomata object with the intial state provided.
+     * @return A BaseAutomata object with the initial state provided.
      */
     @Override
     public Automata<T> create(State<T> initialState) {
