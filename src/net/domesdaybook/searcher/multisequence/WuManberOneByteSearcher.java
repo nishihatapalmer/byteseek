@@ -39,7 +39,6 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.SearchUtils;
-import net.domesdaybook.searcher.multisequence.AbstractWuManberSearcher.SearchInfo;
 
 /**
  * An implementation of the Wu-Manber search algorithm that works with a block
