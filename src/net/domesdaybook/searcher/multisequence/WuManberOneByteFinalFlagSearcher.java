@@ -44,13 +44,15 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.util.object.LazyObject;
 import net.domesdaybook.reader.Window;
-import net.domesdaybook.searcher.ProxySearcher;
+//import net.domesdaybook.searcher.ProxySearcher;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.Searcher;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
+ * TO BE FINISHED.
+ * 
  * WuManberSearcher implements a variation of the classic multi-pattern
  * search algorithm invented by Wu and Manber.
  * <p/>
@@ -98,15 +100,25 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * 
  * @author Matt Palmer
  */
-
-public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatcher> {
+ public class WuManberOneByteFinalFlagSearcher {
    
 
+    /**
+     * 
+     * @param matcher
+     * @return
+     */
     public static int getBlockSize(final MultiSequenceMatcher matcher) {
         return getBlockSize(matcher, 256);
     }
     
     
+    /**
+     * 
+     * @param matcher
+     * @param alphabetSize
+     * @return
+     */
     public static int getBlockSize(final MultiSequenceMatcher matcher,
                                    final int alphabetSize) {
         final int minLength = matcher.getMinimumLength();
@@ -115,6 +127,13 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
     }
     
     
+    /**
+     * 
+     * @param minimumLength
+     * @param numberOfSequences
+     * @param alphabetSize
+     * @return
+     */
     public static int getBlockSize(final int minimumLength, 
                                    final int numberOfSequences,
                                    final int alphabetSize) {
@@ -131,6 +150,7 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
      * This formulae to suggest the optimum block size is suggested by
      * Wu and Manber.
      * 
+     * @param alphabetSize 
      * @param minimumLength The minimum length of all sequences to be matched.
      * @param numberOfSequences The number of sequences to be matched.
      * @return The suggested block size for an efficient Wu Manber search.
@@ -163,7 +183,7 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
     
     /**
      * 
-     * @param sequences 
+     * @param matcher 
      */
     public WuManberOneByteFinalFlagSearcher(final MultiSequenceMatcher matcher) {
         this(matcher, getBlockSize(matcher));
@@ -172,18 +192,32 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
     
     /**
      * 
-     * @param sequences
+     * @param matcher 
      * @param blockSize 
      */
     public WuManberOneByteFinalFlagSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
-        super(createSearchInstance(matcher, blockSize));
+        //super(createSearchInstance(matcher, blockSize));
     }
     
     
+    /**
+     * 
+     */
     public static final class SearchInfo {
+        /**
+         * 
+         */
         public int[] shifts;
+        /**
+         * 
+         */
         public MultiSequenceMatcher matcher;
         
+        /**
+         * 
+         * @param shifts
+         * @param matcher
+         */
         public SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
             this.shifts = shifts;
             this.matcher = matcher;
@@ -198,10 +232,24 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
         
         private static int HIGHEST_POWER_OF_TWO = 1073741824;
         
+        /**
+         * 
+         */
         protected final int blockSize;
+        /**
+         * 
+         */
         protected final LazyObject<SearchInfo> forwardInfo;
+        /**
+         * 
+         */
         protected final LazyObject<SearchInfo> backwardInfo;
         
+        /**
+         * 
+         * @param matcher
+         * @param blockSize
+         */
         public AbstractWuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
             super(matcher);
             this.blockSize = blockSize;
@@ -322,8 +370,15 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
 
 
         
+        /**
+         * 
+         */
         protected class ForwardSearchInfo extends LazyObject<SearchInfo> {
 
+            /**
+             * 
+             * @return
+             */
             @Override
             protected SearchInfo create() {
                 return new SearchInfo(getShifts(), getMatcher());
@@ -386,8 +441,15 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
 
         //FIXME: this is just a copy of the forward search info at present.
         //       must be changed to reflect distance from start of strings
+        /**
+         * 
+         */
         protected class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
+            /**
+             * 
+             * @return
+             */
             @Override
             protected SearchInfo create() {
                 return new SearchInfo(getShifts(), getMatcher());
@@ -450,8 +512,15 @@ public class WuManberOneByteFinalFlagSearcher extends ProxySearcher<SequenceMatc
     }
     
     
+    /**
+     * 
+     */
     public static final class OneByteBlockSearcher extends AbstractWuManberSearcher {
 
+        /**
+         * 
+         * @param matcher
+         */
         public OneByteBlockSearcher(final MultiSequenceMatcher matcher) {
             super(matcher, 1);
         }
