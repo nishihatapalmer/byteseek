@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-12, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -65,13 +65,16 @@ import net.domesdaybook.searcher.SearchResult;
  */
 public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<SequenceMatcher> {
     
+    /**
+     * 
+     */
     protected final MultiSequenceMatcher sequences;
     
     /**
-     * Constructs a sequence searcher given a {@link SequenceMatcher}
+     * Constructs a sequence searcher given a {@link MultiSequenceMatcher}
      * to search for.
      * 
-     * @param sequence 
+     * @param sequences The MultiSequenceMatcher to search for.
      */
     public AbstractMultiSequenceSearcher(final MultiSequenceMatcher sequences) {
         if (sequences == null) {
@@ -82,9 +85,9 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
     
     
     /**
-     * Returns the {@link SequenceMatcher} to be searched for.
+     * Returns the {@link MultiSequenceMatcher} to be searched for.
      * 
-     * @return SequenceMatcher the sequence sequences to be searched for.
+     * @return MultiSequenceMatcher the MultiSequenceMatcher to search for.
      */
     public MultiSequenceMatcher getMatcher() {
         return sequences;
@@ -196,14 +199,14 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * by the searchForwards method which calls it.
      * 
      * @param reader The reader providing bytes to search in.
-     * @param searchPosition The search position to search from.
-     * @param lastSearchPosition The search position to search to.
+     * @param fromPosition The search position to search from.
+     * @param toPosition The search position to search to.
      * @return A list of search results.  
      *         If there are no results, then the list is empty (not null).
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
     protected abstract List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, 
-            long searchPosition, long lastSearchPosition) throws IOException;
+            long fromPosition, long toPosition) throws IOException;
 
     
     
@@ -307,14 +310,14 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * in the operation of the search algorithm itself.
      * 
      * @param reader The reader providing bytes to search in.
-     * @param searchPosition The search position to search from.
-     * @param lastSearchPosition The search position to search to.
+     * @param fromPosition The search position to search from.
+     * @param toPosition The search position to search to.
      * @return A list of search results.
      *         If there are no results, the list is empty (not null).
      * @throws IOException If the reader encounters difficulties reading bytes.
      */    
     protected abstract List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader,
-            long searchPosition, long lastSearchPosition) throws IOException;
+            long fromPosition, long toPosition) throws IOException;
     
     
     /**
