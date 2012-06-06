@@ -81,7 +81,7 @@ import net.domesdaybook.util.object.LazyObject;
  * <ul>
  * <li>A block size of one {@link WuManberOneByteSearcher}
  * <li>A block size of two {@link WuManberTwoByteSearcher}
- * <li>Block sizes greater than two {@link WuManberMultiByteSearcher}.
+ * <li>Block sizes greater than two {@link WuManberMultiByteSearcher} - NOT YET FULLY IMPLEMENTED.
  * </ul>
  * 
  * @see <a href="http://webglimpse.net/pubs/TR94-17.pdf">Wu-Manber paper (PDF)</a>

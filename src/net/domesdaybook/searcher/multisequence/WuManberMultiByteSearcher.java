@@ -40,11 +40,26 @@ import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.SearchUtils;
 
 /**
- *
+ * THIS CLASS IS NOT YET FULLY IMPLEMENTED.
+ * <p>
+ * An implementation of the Wu-Manber search algorithm that works with any block
+ * size. It extends the {@link AbstractWuManberSearcher} 
+ * - see that class for more details of the Wu-Manber algorithm itself.
+ * <p>
+ * Note that there are optimised implementations of this algorithm for a block size of
+ * one (@link WuManberOneByteSearcher} and with a block size of two {@link WuManberTwoByteSearcher}.
+ * 
  * @author Matt Palmer
  */
+
 public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
 
+    /**
+     * Constructs a WuManberMultiByteSearcher.
+     * 
+     * @param matcher The MultiSequenceMatcher containing the sequences to search for.
+     * @param blockSize The block size to use when searching.
+     */
     public WuManberMultiByteSearcher(final MultiSequenceMatcher matcher,
                                       final int blockSize) {
         super(matcher, blockSize);
@@ -66,6 +81,7 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public List<SearchResult<SequenceMatcher>> searchForwards(byte[] bytes, int fromPosition, int toPosition) {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
