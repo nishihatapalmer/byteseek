@@ -45,8 +45,6 @@ import java.util.Map;
  * A {@link Transition} is a reference to another State reachable from this State.
  * Transitions specify on which bytes a transition to the other State can be made.
  * To find which States are reachable given a byte, call appendNextStatesForByte().
- * The states which are reachable depend both on the transitions that actually exist, 
- * and the {@link TransitionStrategy} in use by this State.
  * <p>
  * A final State is one which marks the completion of some part of the automata.
  * It is possible for a State to be both final and have transitions out of it
@@ -68,7 +66,6 @@ import java.util.Map;
  * 
  * @param <T> The type of objects the state will be associated with.
  * @see Transition
- * @see TransitionStrategy
  *
  * @author Matt Palmer
  */
@@ -93,12 +90,9 @@ public interface State<T> extends DeepCopy {
     
     /**
      * Appends to the collection supplied any states reachable by the byte given.
-     * <p/>
-     * The {@link TransitionStrategy} used by this State controls which states are appended.
      * 
      * @param value The byte value to find the next states for.
      * @param states The collection to which the next states (if any) will be added.
-     * @see TransitionStrategy
      */
     public void appendNextStates(Collection<State<T>> states, byte value);
 
@@ -114,7 +108,7 @@ public interface State<T> extends DeepCopy {
      * 
      * @param value The byte value to get the next State for.
      * @return The State to transition to for the byte value, or null if there is no
-     * State to transition to.
+     *         State to transition to.
      */
     public State<T> getNextState(byte value);
     
@@ -244,7 +238,7 @@ public interface State<T> extends DeepCopy {
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
      *
      * @return State a deep copy of this object.
-     * @see #deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)
+     * @see #deepCopy(java.util.Map) 
      */
     public State<T> deepCopy();
 
@@ -258,6 +252,7 @@ public interface State<T> extends DeepCopy {
      * @return State A deep copy of this State and any Transitions and States
      *         reachable from this State.
      */
+    @Override
     public State<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }

@@ -184,7 +184,7 @@ public final class ByteMatcherCompiler extends AbstractAstCompiler<ByteMatcher> 
 
     /**
      * Compiles an abstract syntax tree provided by the {@link AbstractAstCompiler} class
-     * which it extends, to create a {@ByteMatcher} object.
+     * which it extends, to create a {@link ByteMatcher} object.
      *
      * @param ast The abstract syntax tree provided by the {@link AbstractAstCompiler} class.
      * @return A {@link ByteMatcher} which matches the expression defined by the ast passed in.

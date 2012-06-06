@@ -77,13 +77,16 @@ public class BaseAutomata<T> implements Automata<T>{
     /**
      * {@inheritDoc}
      */
+    @Override
     public State<T> getInitialState() {
         return initialState;
     }
     
     
     /**
-     * {@inheritDoc}
+     * Sets the initial state of this automata.
+     * 
+     * @param initialState  The initial State of this automata.
      */
     public void setInitialState(final State<T> initialState) {
         this.initialState = initialState;

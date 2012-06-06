@@ -74,7 +74,7 @@ public final class SearchUtils {
 
 
     /**
-     * Searches a {@link net.domesdaybook.reader.Reader) forwards for all matches of a {@link Searcher}.
+     * Searches a {@link net.domesdaybook.reader.Reader} forwards for all matches of a {@link Searcher}.
      * 
      * @param <T> The type of object associated with a match in the Searcher.
      * @param searcher The Searcher to search with.
@@ -114,7 +114,7 @@ public final class SearchUtils {
 
 
     /**
-     * Searches a {@link net.domesdaybook.reader.Reader) forwards for all matches of a {@link Searcher}.
+     * Searches a {@link net.domesdaybook.reader.Reader} forwards for all matches of a {@link Searcher}.
      * 
      * @param <T> The type of object associated with a match in the Searcher.
      * @param searcher The Searcher to search with.

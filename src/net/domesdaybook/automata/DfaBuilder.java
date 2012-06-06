@@ -218,8 +218,8 @@ public final class DfaBuilder<T> {
      * If any of the first states are final, then the state returned will
      * also be final.
      * 
-     * @param automata
-     * @return 
+     * @param automata A collection of states to join.
+     * @return State<T> A State linking to all the initial States in the collection.
      */
     public State<T> join(final Collection<State<T>> automata) {
         final Iterator<State<T>> automataFirstStates = automata.iterator();

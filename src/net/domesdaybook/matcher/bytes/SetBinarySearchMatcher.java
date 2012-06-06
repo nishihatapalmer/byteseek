@@ -40,7 +40,7 @@ import net.domesdaybook.reader.Window;
 
 
 /**
- * A SetBinarySearchMatcher is a {@link ByteMatcher which
+ * A SetBinarySearchMatcher is a {@link ByteMatcher} which
  * uses a binary search to determine whether a given byte is in the
  * set of bytes.  This makes it more memory efficient than the {@link SetBitsetMatcher} class,
  * at the expense of slightly more time to match.

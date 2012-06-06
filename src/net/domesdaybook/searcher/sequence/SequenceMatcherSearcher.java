@@ -45,7 +45,7 @@ import net.domesdaybook.searcher.SearchResult;
  * determine there is no match.
  * <p>
  * The algorithm used by this search is exactly the same as that used for the
- * {@link MatcherSearcher} searcher.  However, since we know that we are looking for
+ * {@link net.domesdaybook.searcher.matcher.MatcherSearcher} searcher.  However, since we know that we are looking for
  * a sequence with a defined length, the search can be more efficiently partitioned
  * between searching directly in byte arrays when the sequence fits, only using
  * the less efficient reader interface when the sequence crosses over windows.

@@ -51,7 +51,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * <p>
  * Implementors only have to provide constructors equivalent to those in this class,
  * and override the methods {@link #getSequenceLength(java.lang.Object)} and 
- * {@link #getBytesForPosition(java.lang.Object, int).
+ * {@link #getBytesForPosition(java.lang.Object, int)}.
  * 
  * @param <T> T The type of sequence to add to the Trie.
  * 

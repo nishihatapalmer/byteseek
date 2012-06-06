@@ -295,7 +295,7 @@ public class BaseState<T> implements State<T> {
      * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
      *
      * @return BaseState a deep copy of this object.
-     * @see #deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)
+     * @see #deepCopy(java.util.Map) 
      */
     @Override
     public BaseState<T> deepCopy() {

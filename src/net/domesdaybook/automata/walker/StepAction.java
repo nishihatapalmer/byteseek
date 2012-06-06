@@ -36,7 +36,7 @@ package net.domesdaybook.automata.walker;
  * An interface for classes which take each step of a walk of an automata.
  * <p>
  * The walker controls which steps are sent to the observer (probably an implementation
- * of the {@ink Walker} interface.  Each step of the walk is encapsulated in a 
+ * of the {@link Walker} interface.  Each step of the walk is encapsulated in a 
  * {@link Step} object, which contains details of the step taken.
  * 
  * @author Matt Palmer

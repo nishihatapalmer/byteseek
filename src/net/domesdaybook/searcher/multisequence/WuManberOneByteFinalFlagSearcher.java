@@ -94,7 +94,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * described in the original paper, which specifies a particular method of verifying
  * whether a sequence has actually matched.  Byteseek allows any form of 
  * MultiSequenceMatcher to be plugged in for the verification stage.  If the 
- * {@link HashMultiSequenceMatcher} is used with this searcher, then the combination
+ * {@link net.domesdaybook.matcher.multisequence.HashMultiSequenceMatcher} is used with this searcher, then the combination
  * is comparable to the entire original algorithm.  In practice, other matchers can
  * provide better performance or use less memory, depending on requirements.
  * 

@@ -55,7 +55,7 @@ import net.domesdaybook.util.object.LazyObject;
  * This adds more space requirements, although we use a hash table to limit how
  * big our mismatch shift table needs to be.
  * <p>
- * A true Wu-Manber style search would use the {@link HashMultiSequenceMatcher}
+ * A true Wu-Manber style search would use the {@link net.domesdaybook.matcher.multisequence.HashMultiSequenceMatcher}
  * class as its matcher, which has a good time-space trade-off.  However, you can 
  * use any MultiSequenceMatcher in this searcher, for different trade-offs.
  * <p>

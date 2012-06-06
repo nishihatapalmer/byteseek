@@ -491,10 +491,11 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      *                      
      * }</pre><p/>
      *
-     * @param minRepeat
-     * @param maxRepeat
-     * @param repeatedAutomata
-     * @return
+     * @param minRepeat The minimum number of times to repeat.
+     * @param maxRepeat The maximum number of times to repeat.
+     * @param repeatedAutomata The automata to repeat.
+     * @return An automata which repeats at least the minimum numer of times up
+     *         to the maximum number of times specified.
      */
     @Override
     public Automata<T> buildMinToMaxAutomata(final int minRepeat, final int maxRepeat, 
