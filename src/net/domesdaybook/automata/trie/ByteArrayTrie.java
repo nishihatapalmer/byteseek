@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -31,55 +31,114 @@
 package net.domesdaybook.automata.trie;
 
 import java.util.Collection;
-import net.domesdaybook.automata.factory.StateFactory;
-import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.TransitionFactory;
 
 
 /**
- *
+ * An implementation of {@link Trie} formed of byte arrays.
+ * It extends the {@link AbstractTrie} class.
+ * 
  * @author Matt Palmer
+ * @see <a href="http://en.wikipedia.org/wiki/Trie">Trie structures</a>
  */
 public class ByteArrayTrie extends AbstractTrie<byte[]> {
 
     
+    /**
+     * Constructs a SequenceMatcherTrie with no sequences added to it initially.
+     * using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     */
     public ByteArrayTrie() {
         this(null, null, null);
     }
     
     
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * 
+     * @param sequences A collection of byte arrays to add to the Trie.
+     */
     public ByteArrayTrie(final Collection<byte[]> sequences) {
         this(sequences, null, null);
     }        
     
     
+     /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * 
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     */
     public ByteArrayTrie(final StateFactory<byte[]> stateFactory) {
         this(null, stateFactory, null);
     }
     
     
-    public ByteArrayTrie(final Collection<byte[]> sequences,
-                         final StateFactory<byte[]> stateFactory) {
-        this(sequences, stateFactory, null);
-    }    
-    
-    
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public ByteArrayTrie(final TransitionFactory transitionFactory) {
         this(null, null, transitionFactory);
     }
     
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * 
+     * @param sequences The initial collection of byte arrays to add to the Trie.
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     */
+    public ByteArrayTrie(final Collection<byte[]> sequences,
+                         final StateFactory<byte[]> stateFactory) {
+        this(sequences, stateFactory, null);
+    }    
+    
+
+    /**
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
+     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param sequences The initial collection of byte arrays to add to the Trie.
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public ByteArrayTrie(final Collection<byte[]> sequences,
                          final TransitionFactory transitionFactory) {
         this(sequences, null, transitionFactory);
     }    
     
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public ByteArrayTrie(final StateFactory<byte[]> stateFactory, 
                          final TransitionFactory transitionFactory) {
         this(null, stateFactory, transitionFactory);
     }
     
     
+    /**
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
+     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * 
+     * @param sequences The initial collection of byte arrays to add to the Trie.
+     * @param stateFactory The StateFactory to use to create States for the Trie.
+     * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+     */
     public ByteArrayTrie(final Collection<byte[]> sequences, 
                          final StateFactory<byte[]> stateFactory, 
                          final TransitionFactory transitionFactory) {
@@ -90,12 +149,26 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     }
     
     
+    /**
+     * Returns the length of a byte array.
+     * 
+     * @param sequence The byte array to return the length of.
+     * @return int the length of the SequenceMatcher.
+     */
     @Override
     protected int getSequenceLength(final byte[] sequence) {
         return sequence.length;
     }
 
     
+    /**
+     * Returns an array of bytes containing the single byte value that exists
+     * for a given position in the byte array.
+     * 
+     * @param sequence The byte array to get the byte value for.
+     * @param position The position in the byte array to get the byte value.
+     * @return A byte array containing the byte which exists in the byte array at the given position.
+     */
     @Override
     protected byte[] getBytesForPosition(final byte[] sequence, int position) {
         return new byte[] {sequence[position]};

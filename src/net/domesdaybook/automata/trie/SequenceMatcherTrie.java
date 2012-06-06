@@ -153,7 +153,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     /**
      * Returns the length of a {@link SequenceMatcher}.
      * 
-     * @param sequence The SequencMatcher to return the length of.
+     * @param sequence The SequenceMatcher to return the length of.
      * @return int the length of the SequenceMatcher.
      */
     @Override
