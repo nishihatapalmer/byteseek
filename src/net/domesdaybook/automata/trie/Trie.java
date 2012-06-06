@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -36,23 +36,66 @@ import java.util.Collection;
 import net.domesdaybook.automata.Automata;
 
 /**
- *
+ * An interface for Trie automata, extending the {@link net.domesdaybook.automata.Automata} interface.
+ * 
+ * @param <T> The type of sequence from which the Trie is built and which are associated to the final states of the Trie.
  * @author Matt Palmer
  */
 public interface Trie<T> extends Automata<T> {
     
+    
+    /**
+     * Adds a sequence of type T to the Trie object.
+     * 
+     * @param sequence The sequence to add to the Trie.
+     */
     public void add(T sequence);
     
+    
+    /**
+     * Adds all the sequences of type T in the collection to the Trie object.
+     * 
+     * @param sequences The sequences to add to the Trie.
+     */
     public void addAll(Collection<? extends T> sequences);    
     
+    
+    /**
+     * Adds the reversed sequence of type T to the Trie.
+     * 
+     * @param sequence The sequence to reverse and add to the Trie.
+     */
     public void addReversed(T sequence);    
     
+    
+    /**
+     * Adds all the reversed sequences of type T in the collection to the Trie object.
+     * @param sequences The sequences to reverse and add to the Trie.
+     */
     public void addAllReversed(Collection<? extends T> sequences);
     
+    
+    /**
+     * Gets the minimum length of the sequences in the Trie.
+     * 
+     * @return int The minimum length of the sequences in the Trie.
+     */
     public int getMinimumLength();
     
+    
+    /**
+     * Gets the maximum length of the sequences in the Trie.
+     * 
+     * @return int The maximum length of the sequences in the Trie.
+     */
     public int getMaximumLength();
     
+    
+    /**
+     * Returns a collection of all the sequences in the Trie.
+     * 
+     * @return Collection<T> A collection of all the sequences in the Trie.
+     */
     public Collection<T> getSequences();
     
 }
