@@ -142,7 +142,7 @@ public class SearcherPerformanceTests {
         searchers.add(new WuManberOneByteSearcher(multisequence));
         searchers.add(new WuManberOneByteTunedSearcher(multisequence));
         searchers.add(new WuManberTwoByteSearcher(multisequence));
-        searchers.add(new WuManberOneByteFinalFlagSearcher(multisequence));
+        //searchers.add(new WuManberOneByteFinalFlagSearcher(multisequence));
         return searchers;
     }    
     
