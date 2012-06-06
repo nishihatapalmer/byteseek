@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -51,9 +51,16 @@ import net.domesdaybook.util.collections.IdentityHashSet;
  */
 public final class StateChildWalker implements Walker {
 
-    public static void walkAutomata(final State startState, final StepAction taker) {
+    /**
+     * Walks an automata from the starting state, invoking the StepAction for
+     * each step of the walk.
+     * 
+     * @param startState the start to start from.
+     * @param action The action to take on each step of the walk.
+     */
+    public static void walkAutomata(final State startState, final StepAction action) {
         final Walker walker = new StateChildWalker();
-        walker.walk(startState, taker);
+        walker.walk(startState, action);
     }
     
     
@@ -63,10 +70,10 @@ public final class StateChildWalker implements Walker {
      * start State only once, in a child-first (i.e. depth-first) order.
      * 
      * @param startState The state to begin walking the automata.
-     * @param observer The observer to invoke for each step of the walk.
+     * @param action  The action to take for each step of the walk.
      */
     @Override
-    public void walk(final State startState, final StepAction taker) {
+    public void walk(final State startState, final StepAction action) {
         final Set<State> visitedStates = new IdentityHashSet<State>();
         final Deque<Step> walkSteps = new ArrayDeque<Step>();
         walkSteps.addFirst(new Step(null, null, startState));
@@ -79,7 +86,7 @@ public final class StateChildWalker implements Walker {
                     walkSteps.addFirst(
                         new Step(state, transition, transition.getToState()));
                 }
-                taker.take(step);                
+                action.take(step);                
             }
         }
     }
