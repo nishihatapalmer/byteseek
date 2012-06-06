@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
+import net.domesdaybook.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
@@ -42,16 +43,38 @@ import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
 /**
- *
+ * This class implements the {@link net.domesdaybook.searcher.Searcher} interface,
+ * extending {@link AbstractMultiSequenceSearcher}.
+ * <p>
+ * It searches across a byte array or a {@link Reader} for a {@link MultiSequenceMatcher},
+ * using the naive technique of searching for the MultiSequenceMatcher at each position,
+ * until it either finds a match or runs out of search space.
+ * <p>
+ * Other MultiSequenceSearchers usually offer better performance (albeit with more memory
+ * usage) for most cases, although when a large number of sequences are being searched
+ * for using an efficient {@link MultiSequenceMatcher} such as a {@link TrieMultiSequenceMatcher}
+ * then this may be more efficient for short searches.
+ * <p>
+ * No preparation needs to be done in order to search, so for one-off short searches
+ * this may also be faster than other methods.
+ * 
  * @author Matt Palmer
  */
 public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher {
 
+    /**
+     * Constructs a MultiSequenceMatcherSearcher.
+     * 
+     * @param matcher The MultiSequenceMatcher to search for.
+     */
     public MultiSequenceMatcherSearcher(final MultiSequenceMatcher matcher) {
         super(matcher);
     }
     
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader,
         final long fromPosition, final long toPosition) throws IOException {
@@ -85,6 +108,9 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
         final int fromPosition, final int toPosition) {
@@ -111,6 +137,9 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     }
 
 
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
         final long fromPosition, final long toPosition) throws IOException {
@@ -142,6 +171,9 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     }
 
 
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
         final int fromPosition, final int toPosition) {
@@ -168,12 +200,18 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
     }
 
     
+    /**
+     * No preparation is necessary for this searcher.
+     */    
     @Override
     public void prepareForwards() {
         //  nothing to prepare.
     }
 
     
+    /**
+     * No preparation is necessary for this searcher.
+     */    
     @Override
     public void prepareBackwards() {
         // nothing to prepare.
