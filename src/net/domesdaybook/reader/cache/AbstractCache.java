@@ -42,6 +42,9 @@ import net.domesdaybook.reader.Window;
  * providing subscription, unsubscription and notification services.
  * <p>
  * Observers can receive notifications that a Window is leaving a WindowCache.
+ * <p>
+ * This is not thread-safe - there is no synchronisation in the list of observers
+ * or access to the list.
  * 
  * @author Matt Palmer
  */
