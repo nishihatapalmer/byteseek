@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-12, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,7 +32,6 @@
 package net.domesdaybook.searcher.matcher;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.reader.Reader;
@@ -101,7 +100,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * whichever comes first.  If there are more windows left, then they are
      * searched in turn.  
      * 
-     * @throws IOException 
+     * @throws IOException if a problem occurred reading bytes from the Reader.
      */
     @Override
     public List<SearchResult<Matcher>> searchForwards(final Reader reader, final long fromPosition, 
