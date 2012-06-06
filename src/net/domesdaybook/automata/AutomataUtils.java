@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -50,8 +50,11 @@ public final class AutomataUtils {
     private static final String STATE_DEFINITION = "%s [label=\"%s\", shape=\"%s\"]\n";
     private static final String TRANSITION_DEFINITION = "%s->%s [label=\"%s\"]\n";
     
+    /**
+     * A private constructor to prevent instantiation of this static utility class.
+     */
     private AutomataUtils() {
-    };
+    }
 
     
     /**
@@ -61,9 +64,9 @@ public final class AutomataUtils {
      * Graphviz can then render the automata using a variety of graph layout 
      * algorithms, outputting the render to many common formats.
      *
-     * @param initialState
-     * @param title
-     * @return
+     * @param automata The automata to produce a DOT graph from.
+     * @param title The title of the DOT graph.
+     * @return A String containing the automata serialised in DOT format.
      */
     public static String toDot(final Automata<?> automata, final String title) {
         final StringBuilder builder = new StringBuilder();
