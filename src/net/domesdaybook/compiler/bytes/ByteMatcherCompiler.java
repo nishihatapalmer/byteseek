@@ -206,7 +206,6 @@ public final class ByteMatcherCompiler extends AbstractAstCompiler<ByteMatcher> 
 
     /**
      * Compiles a ByteMatcher which matches all of the bytes in the expressions.
-     * It simply
      * 
      * @param expressions A collection of expression to compile.
      * @return ByteMatcher a ByteMatcher which matches all the bytes in the expressions.
