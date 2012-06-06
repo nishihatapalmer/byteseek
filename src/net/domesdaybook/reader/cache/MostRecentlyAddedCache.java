@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,7 +36,11 @@ import java.util.Map;
 import net.domesdaybook.reader.Window;
 
 /**
- * @author matt
+ * A {@link WindowCache} which holds on to the {@link net.domesdaybook.reader.Window}
+ * objects which were most recently added. The number of Windows which will be cached
+ * is configurable by its capacity.
+ * 
+ * @author Matt Palmer
  */
 public final class MostRecentlyAddedCache extends AbstractCache  {
 
@@ -45,8 +49,9 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
     private final Cache cache;
     
     /**
+     * Creates a MostRecentlyAddedCache using the provided capacity.
      * 
-     * @param capacity
+     * @param capacity The number of Window objects to cache.
      */
     public MostRecentlyAddedCache(final int capacity) {
         cache = new Cache(capacity + 1, 1.1f, INSERTION_ORDER);
@@ -54,9 +59,7 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
     
     
     /**
-     * 
-     * @param position
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public Window getWindow(final long position) {
@@ -65,8 +68,7 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
 
     
     /**
-     * 
-     * @param window
+     * {@inheritDoc}
      */
     @Override
     public void addWindow(final Window window) {
@@ -78,7 +80,7 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
 
     
     /**
-     * 
+     * {@inheritDoc}
      */
     @Override
     public void clear() {
@@ -86,6 +88,11 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
     }
     
     
+    /**
+     * A simple most recently added cache, which extends {@link java.util.LinkedHashMap}
+     * to provide caching services, and also provides notification to any
+     * {@link WindowObserver}s who are subscribed when a {@link Window} leaves it.
+     */
     private class Cache extends LinkedHashMap<Long, Window> {
 
         private final int capacity;
