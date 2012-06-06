@@ -113,11 +113,9 @@ public final class Window {
     
     
     /**
-     * Returns the position in the Reader at which this Window begins from.
-     * The first byte in the Window (position zero) is the byte in the Reader
-     * at the position returned by this method.
+     * Returns the position in the Reader that this Window was read from.
      * 
-     * @return The position in the Reader from which this Window was read.
+     * @return The position in the Reader that this Window was read from.
      */
     public long getWindowPosition() {
         return windowPosition;
