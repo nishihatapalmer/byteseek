@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,11 +35,23 @@ import net.domesdaybook.reader.Window;
 import net.domesdaybook.reader.cache.WindowCache.WindowObserver;
 
 /**
- *
+ * A {@link WindowCache} which wraps two further WindowCaches.  When a {@link net.domesdaybook.reader.Window}
+ * leaves the primary cache, it is automatically added to the secondary cache.
+ * Observers of this cache are notified when a Window leaves the secondary cache, 
+ * but not when it leaves the primary one (as it is added immediately to the secondary).
+ * Adding a Window to this cache adds it to the primary cache.
+ * <p>
+ * This class can only be constructed using a static method, as it subscribes as an
+ * observer to the primary secondary cache's passed in.  We do not want to have
+ * subscription happening in its constructor, as this may allow an invalid "this" reference
+ * to escape if an error occurs during construction.
+ * <p>
+ * It implements {@link WindowObserver} in order to receive notifications from the 
+ * primary and secondary caches about Windows leaving them.
+ * 
  * @author Matt Palmer
  */
-
-public final class TwoLevelCache extends AbstractCache implements WindowObserver {
+ public final class TwoLevelCache extends AbstractCache implements WindowObserver {
 
     /**
      * 
@@ -64,9 +76,7 @@ public final class TwoLevelCache extends AbstractCache implements WindowObserver
     
     
     /**
-     * 
-     * @param position
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public Window getWindow(final long position) {
@@ -82,8 +92,7 @@ public final class TwoLevelCache extends AbstractCache implements WindowObserver
 
     
     /**
-     * 
-     * @param window
+     * {@inheritDoc}
      */
     @Override
     public void addWindow(final Window window) {
@@ -92,7 +101,8 @@ public final class TwoLevelCache extends AbstractCache implements WindowObserver
 
     
     /**
-     * 
+     * Clears both the primary and secondary caches, using whatever 
+     * mechanisms they use to clear themselves.
      */
     @Override
     public void clear() {
@@ -102,9 +112,16 @@ public final class TwoLevelCache extends AbstractCache implements WindowObserver
 
     
     /**
+     * Implementation of the {@link WindowObserver} method to receive 
+     * notification that a Window is freed from a cache.
+     * <p>
+     * If a {@link net.domesdaybook.reader.Window} leaves the primary
+     * cache, then it is automatically added to the secondary cache.
+     * If it leaves the secondary cache, then any observer of this cache
+     * is notified that the Window is no longer cached at all by this cache.
      * 
-     * @param window
-     * 
+     * @param window The Window which is leaving either the primary or secondary cache.
+     * @param fromCache The WindowCache from which the Window is leaving.
      */
     @Override
     public void windowFree(final Window window, final WindowCache fromCache) {
@@ -117,8 +134,9 @@ public final class TwoLevelCache extends AbstractCache implements WindowObserver
     
     
     /**
+     * Returns the primary cache used by this TwoLevelCache.
      * 
-     * @return
+     * @return WindowCache The primary cache used by this TwoLevelCache.
      */
     public WindowCache getPrimaryCache() {
         return primaryCache;
@@ -126,8 +144,9 @@ public final class TwoLevelCache extends AbstractCache implements WindowObserver
     
     
     /**
+     * Returns the secondary cache used by this TwoLevelCache.
      * 
-     * @return
+     * @return WindowCache the secondary cache used by this TwoLevelCache.
      */
     public WindowCache getSecondaryCache() {
         return secondaryCache;
