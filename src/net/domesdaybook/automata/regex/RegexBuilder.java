@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,9 +36,10 @@ import java.util.Set;
 import net.domesdaybook.automata.Automata;
 
 /**
- * An interface for classes which build automata, 
+ * An interface for classes which build automata that implement regular expressions,
  * wrapped in {@link Automata<T>} objects.
  *
+ * @param <T> The type of object associated with a match of the regular expression.
  * @author Matt Palmer
  */
 public interface RegexBuilder<T> {
