@@ -51,7 +51,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
 
     private static final String ILLEGAL_ARGUMENTS = "Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.";
 
-    private byte[] bytes;
+    private byte[] bytesToMatch;
 
 
     /**
@@ -65,8 +65,8 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         if (bytes == null || bytes.isEmpty()) {
             throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
-        this.bytes = ByteUtilities.toArray(bytes);
-        Arrays.sort(this.bytes);
+        this.bytesToMatch = ByteUtilities.toArray(bytes);
+        Arrays.sort(this.bytesToMatch);
     }
 
 
@@ -75,7 +75,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      */
     @Override
     public boolean matches(final byte theByte) {
-        return (Arrays.binarySearch(bytes, theByte) >= 0) ^ inverted;
+        return (Arrays.binarySearch(bytesToMatch, theByte) >= 0) ^ inverted;
     }
     
 
@@ -86,7 +86,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
     public boolean matches(final Reader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
         return window == null? false
-               : ((Arrays.binarySearch(bytes, 
+               : ((Arrays.binarySearch(bytesToMatch, 
                        window.getByte(reader.getWindowOffset(matchPosition))) >= 0) ^ inverted);
     }    
 
@@ -125,9 +125,8 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
                 }
             }
             return invertedValues;
-        } else {
-            return bytes.clone();
         }
+        return bytesToMatch.clone();
     }
 
 
@@ -136,7 +135,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      */
     @Override
     public int getNumberOfMatchingBytes() {
-        return inverted ? 256 - bytes.length : bytes.length;
+        return inverted ? 256 - bytesToMatch.length : bytesToMatch.length;
     }
 
 
@@ -154,7 +153,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
             regularExpression.append('^');
         }
         int byteIndex = 0;
-        int[] integers = ByteUtilities.toIntArray(bytes);
+        int[] integers = ByteUtilities.toIntArray(bytesToMatch);
         Arrays.sort(integers);
         while (byteIndex < integers.length) {
             int byteValue = integers[byteIndex];
