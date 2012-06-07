@@ -138,9 +138,8 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
             }
             if (checkPos == localLength) {
                 return true;
-            } else {
-                window = reader.getWindow(matchPosition + checkPos);
             }
+            window = reader.getWindow(matchPosition + checkPos);
         }
         return false;
     }    
