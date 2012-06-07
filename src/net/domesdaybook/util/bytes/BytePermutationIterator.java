@@ -112,9 +112,8 @@ public class BytePermutationIterator implements Iterator<byte[]> {
             buildCurrentPermutation();
             buildNextPermutationState();
             return permutation.clone();
-        } else {
-            throw new NoSuchElementException("No more permutations available for the byte arrays.");
         }
+        throw new NoSuchElementException("No more permutations available for the byte arrays.");
     }
 
     
