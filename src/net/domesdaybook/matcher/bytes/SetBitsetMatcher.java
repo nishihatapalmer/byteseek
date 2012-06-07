@@ -86,7 +86,7 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return (matchPosition >= 0 && matchPosition < bytes.length) &&
-                (byteValues.get((int) bytes[matchPosition] & 0xFF) ^ inverted);
+                (byteValues.get(bytes[matchPosition] & 0xFF) ^ inverted);
     }  
     
 
@@ -95,7 +95,7 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
-        return byteValues.get((int) bytes[matchPosition] & 0xFF) ^ inverted;
+        return byteValues.get(bytes[matchPosition] & 0xFF) ^ inverted;
     }    
     
     
@@ -104,7 +104,7 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
      */
     @Override
     public boolean matches(final byte theByte) {
-        return byteValues.get((int) theByte & 0xFF) ^ inverted;
+        return byteValues.get(theByte & 0xFF) ^ inverted;
     }
 
 
