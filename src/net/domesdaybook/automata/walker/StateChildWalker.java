@@ -85,7 +85,10 @@ public final class StateChildWalker<T> implements Walker<T> {
 				for (final Transition<T> transition : state) {
 					walkSteps.addFirst(new Step<T>(state, transition, transition.getToState()));
 				}
-				action.take(step);
+				final boolean keepWalking = action.take(step);
+				if (!keepWalking) {
+					return;
+				}
 			}
 		}
 	}

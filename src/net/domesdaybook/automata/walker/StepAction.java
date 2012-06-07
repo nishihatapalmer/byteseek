@@ -29,7 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package net.domesdaybook.automata.walker;
 
 /**
@@ -38,16 +37,19 @@ package net.domesdaybook.automata.walker;
  * The walker controls which steps are sent to the observer (probably an implementation
  * of the {@link Walker} interface.  Each step of the walk is encapsulated in a 
  * {@link Step} object, which contains details of the step taken.
+ * <p>
+ * The StepAction can instruct the walker to stop the walk by returning false from the action.
  * 
  * @author Matt Palmer
  */
 public interface StepAction<T> {
-    
-    /**
-     * Takes a step of the walk of an automata.
-     * 
-     * @param step The step to take.
-     */
-    public void take(Step<T> step);
-    
+
+	/**
+	 * Takes a step of the walk of an automata.
+	 * 
+	 * @param step The step to take.
+	 * @return If false, then the walker should stop the walk.
+	 */
+	public boolean take(Step<T> step);
+
 }

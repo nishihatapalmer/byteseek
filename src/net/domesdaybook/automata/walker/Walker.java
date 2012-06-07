@@ -29,7 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package net.domesdaybook.automata.walker;
 
 import net.domesdaybook.automata.State;
@@ -39,6 +38,9 @@ import net.domesdaybook.automata.State;
  * supplied.  It takes a {@link StepAction} as a parameter, which is the class
  * that observes each step of the walk.
  * <p>
+ * If any StepAction returns false from its {@link StepAction#take(Step)} method,
+ * then the walker should stop the walk.
+ * <p>
  * Different implementations can walk the automata in different ways.  Some may
  * visit each state only once, some may visit each transition once and the order
  * of visiting may be different.
@@ -46,14 +48,14 @@ import net.domesdaybook.automata.State;
  * @author Matt Palmer
  */
 public interface Walker<T> {
-    
-    /**
-     * Walks the automata beginning at the startState.  The {@link StepAction} 
-     * is invoked for each step of the walk.
-     * 
-     * @param startState The state to begin walking at.
-     * @param observer The class which takes action for each step of the walk.
-     */
-    void walk(final State<T> startState, final StepAction<T> observer);
-    
+
+	/**
+	 * Walks the automata beginning at the startState.  The {@link StepAction} 
+	 * is invoked for each step of the walk.
+	 * 
+	 * @param startState The state to begin walking at.
+	 * @param observer The class which takes action for each step of the walk.
+	 */
+	void walk(final State<T> startState, final StepAction<T> observer);
+
 }
