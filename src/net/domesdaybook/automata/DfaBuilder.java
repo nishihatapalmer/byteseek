@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -247,20 +248,26 @@ public final class DfaBuilder<T> {
 	 * the new state in the entire automata reachable from the oldState passed
 	 * in.
 	 * 
-	 * @param oldState
-	 * @param newState
-	 * @return
+	 * @param oldState 
+	 * 				The old state to replace transitions to.
+	 * @param newState 
+	 * 				The new state to transition to.
 	 */
 	private void replaceReachableReferences(final State<T> oldState, final State<T> newState) {
 		final StepAction<T> replaceWithNewState = new StepAction<T>() {
 			@Override
-			public void take(final Step<T> step) {
+			public boolean take(final Step<T> step) {
 				final State<T> stateToUpdate = step.currentState;
-				for (final Transition<T> transition : stateToUpdate) {
+				// Make a defensive copy of the transitions in the state as they exist right now,
+				// as we will be replacing transitions in this state with new ones.
+				final List<Transition<T>> existingTransitions = stateToUpdate.getTransitions();
+				for (final Transition<T> transition : existingTransitions) {
 					if (transition.getToState() == oldState) {
-						transition.setToState(newState);
+						final Transition<T> newTransition = transition.newTransition(newState);
+						stateToUpdate.replaceTransition(transition, newTransition);
 					}
 				}
+				return true;
 			}
 		};
 		StateChildWalker.walkAutomata(oldState, replaceWithNewState);

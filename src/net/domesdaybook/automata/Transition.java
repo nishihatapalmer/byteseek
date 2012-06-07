@@ -67,19 +67,22 @@ public interface Transition<T> extends DeepCopy {
 	public State<T> getToState();
 
 	/**
-	 * Sets the state this transition points at.
-	 * 
-	 * @param stateToPointAt
-	 *            THe state this transition points at.
-	 */
-	public void setToState(State<T> stateToPointAt);
-
-	/**
 	 * Returns an array of all the bytes which this transition can match.
+	 * <p>
+	 * Implementors guarantee that modifying the array contents will not affect the transition.
 	 * 
 	 * @return byte[] An array of bytes on which this transition will match.
 	 */
 	public byte[] getBytes();
+
+	/**
+	 * Creates a new Transition from this transition, but pointing at a new State.
+	 * The new Transition will transition on the same bytes as this transition.
+	 * 
+	 * @param newState The new state to point to.
+	 * @return A new transition which points to a new state but transitions on the same byte values.
+	 */
+	public Transition<T> newTransition(State<T> newState);
 
 	/**
 	 * This method is inherited from the {@link DeepCopy} interface, and is

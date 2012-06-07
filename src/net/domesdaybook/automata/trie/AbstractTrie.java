@@ -118,6 +118,14 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 	 * {@inheritDoc}
 	 */
 	@Override
+	public boolean isDeterministic() {
+		return true; // A Trie is always deterministic.
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public int getMinimumLength() {
 		return minimumLength == -1 ? 0 : minimumLength;
 	}

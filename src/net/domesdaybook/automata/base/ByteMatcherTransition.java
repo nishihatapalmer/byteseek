@@ -32,10 +32,11 @@
 package net.domesdaybook.automata.base;
 
 import java.util.Map;
-import net.domesdaybook.util.object.DeepCopy;
+
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.util.object.DeepCopy;
 
 /**
  * A mutable implementation of {@link Transition} which matches bytes using a
@@ -49,124 +50,116 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
  */
 public class ByteMatcherTransition<T> implements Transition<T> {
 
-    private final ByteMatcher matcher;
-    private State<T> toState;
+	private final ByteMatcher	matcher;
+	private final State<T>		toState;
 
+	/**
+	 * Constructor for the ByteMatcherTransition taking the {@link ByteMatcher}
+	 * to use and the {@link State} this transition links to.
+	 * 
+	 * @param matcher The ByteMatcher to use to match bytes for this transition.
+	 * @param toState The state this transition links to.
+	 */
+	public ByteMatcherTransition(final ByteMatcher matcher, final State<T> toState) {
+		this.matcher = matcher;
+		this.toState = toState;
+	}
 
-    /**
-     * Constructor for the ByteMatcherTransition taking the {@link ByteMatcher}
-     * to use and the {@link State} this transition links to.
-     * 
-     * @param matcher The ByteMatcher to use to match bytes for this transition.
-     * @param toState The state this transition links to.
-     */
-    public ByteMatcherTransition(final ByteMatcher matcher, final State<T> toState) {
-        this.matcher = matcher;
-        this.toState = toState;
-    }
-   
-    
-    /**
-     * Copy constructor for the ByteMatcherTransition, taking another
-     * ByteMatcherTransition to copy from, and another {@link State} to link to.
-     * <p>
-     * Since instances of this class are immutable, an identical copy of an instance
-     * of this class will always be identical to the original, making a copy constructor
-     * essentially useless.
-     * <p>
-     * This is really a convenience constructor, which copies the matcher out of 
-     * an existing ByteMatcherTransition, but specifies a different State to 
-     * link to.  It is equivalent to:
-     * <code>ByteMatcherTransition(other.getMatcher(), someState);</code>
-     * 
-     * @param other The ByteMatcherTransition to copy the matcher from.
-     * @param toState The State that this transition links to.
-     */
-    public ByteMatcherTransition(final ByteMatcherTransition<T> other, final State<T> toState) {
-        this.matcher = other.matcher;
-        this.toState = toState;
-    }
+	/**
+	 * Copy constructor for the ByteMatcherTransition, taking another
+	 * ByteMatcherTransition to copy from, and another {@link State} to link to.
+	 * <p>
+	 * Since instances of this class are immutable, an identical copy of an instance
+	 * of this class will always be identical to the original, making a copy constructor
+	 * essentially useless.
+	 * <p>
+	 * This is really a convenience constructor, which copies the matcher out of 
+	 * an existing ByteMatcherTransition, but specifies a different State to 
+	 * link to.  It is equivalent to:
+	 * <code>ByteMatcherTransition(other.getMatcher(), someState);</code>
+	 * 
+	 * @param other The ByteMatcherTransition to copy the matcher from.
+	 * @param toState The State that this transition links to.
+	 */
+	public ByteMatcherTransition(final ByteMatcherTransition<T> other, final State<T> toState) {
+		this.matcher = other.matcher;
+		this.toState = toState;
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final State<T> getStateForByte(byte theByte) {
+		return matcher.matches(theByte) ? toState : null;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final State<T> getStateForByte(byte theByte) {
-        return matcher.matches(theByte) ? toState : null;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final State<T> getToState() {
+		return toState;
+	}
 
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final State<T> getToState() {
-        return toState;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public byte[] getBytes() {
+		return matcher.getMatchingBytes();
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Transition<T> newTransition(State<T> newState) {
+		return new ByteMatcherTransition<T>(matcher, newState);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public byte[] getBytes() {
-        return matcher.getMatchingBytes();
-    }
+	/**
+	 * This method is inherited from the {@link DeepCopy} interface,
+	 * and is redeclared here with a return type of ByteMatcherTransition
+	 * (rather than DeepCopy), to make using the method easier.
+	 *
+	 * @param oldToNewObjects A map of the original objects to their new deep copies.
+	 * @return Transition A deep copy of this ByteMatcherTransition and any 
+	 *                    States and Transitions reachable from this Transition.
+	 */
+	@Override
+	public ByteMatcherTransition<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+		@SuppressWarnings("unchecked")
+		// if there is an object copy of this in the map, it will be of the same type.
+		ByteMatcherTransition<T> transitionCopy = (ByteMatcherTransition<T>) oldToNewObjects
+				.get(this);
+		if (transitionCopy == null) {
+			oldToNewObjects.put(this, this); // put in a placeholder mapping to prevent an infinite loop.
+			final State<T> copyState = toState.deepCopy(oldToNewObjects);
+			transitionCopy = new ByteMatcherTransition<T>(this, copyState);
+			oldToNewObjects.put(this, transitionCopy); // now put the real transition in.
+		}
+		return transitionCopy;
+	}
 
+	/**
+	 * Returns the ByteMatcher used in this Transition.
+	 * 
+	 * @return ByteMatcher the matcher used in this Transition.
+	 */
+	public final ByteMatcher getMatcher() {
+		return matcher;
+	}
 
-    /**
-     * This method is inherited from the {@link DeepCopy} interface,
-     * and is redeclared here with a return type of ByteMatcherTransition
-     * (rather than DeepCopy), to make using the method easier.
-     *
-     * @param oldToNewObjects A map of the original objects to their new deep copies.
-     * @return Transition A deep copy of this ByteMatcherTransition and any 
-     *                    States and Transitions reachable from this Transition.
-     */
-    @Override
-    public ByteMatcherTransition<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        @SuppressWarnings("unchecked") // if there is an object copy of this in the map, it will be of the same type.
-		ByteMatcherTransition<T> transitionCopy = (ByteMatcherTransition<T>) oldToNewObjects.get(this);
-        if (transitionCopy == null) {
-            oldToNewObjects.put(this, this); // put in a placeholder mapping to prevent an infinite loop.
-            final State<T> copyState = toState.deepCopy(oldToNewObjects);
-            transitionCopy = new ByteMatcherTransition<T>(this, copyState);
-            oldToNewObjects.put(this, transitionCopy); // now put the real transition in.
-        }
-        return transitionCopy;
-    }
-    
-
-    /**
-     * Returns the ByteMatcher used in this Transition.
-     * 
-     * @return ByteMatcher the matcher used in this Transition.
-     */
-    public final ByteMatcher getMatcher() {
-        return matcher;
-    }
-    
-
-    /**
-     * Returns a regular-expression representation of the underlying
-     * ByteMatcher, in byte-seek syntax.
-     * 
-     * @return String a byteSeek regular expression representation of this Transition.
-     */
-    @Override
-    public String toString() {
-        return matcher.toRegularExpression(true);
-    }
-
-    
-    /**
-     * {@inheritDoc}
-     * 
-     */
-    @Override
-    public void setToState(final State<T> stateToPointAt) {
-        this.toState = stateToPointAt;
-    }
+	/**
+	 * Returns a regular-expression representation of the underlying
+	 * ByteMatcher, in byte-seek syntax.
+	 * 
+	 * @return String a byteSeek regular expression representation of this Transition.
+	 */
+	@Override
+	public String toString() {
+		return matcher.toRegularExpression(true);
+	}
 
 }

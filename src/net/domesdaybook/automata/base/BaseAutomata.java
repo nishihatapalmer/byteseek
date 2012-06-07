@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.walker.StateChildWalker;
@@ -49,89 +50,104 @@ import net.domesdaybook.util.object.DeepCopy;
  * 
  * @author Matt Palmer
  */
-public class BaseAutomata<T> implements Automata<T>{
+public class BaseAutomata<T> implements Automata<T> {
 
-    /**
-     * The initial state of the automata.
-     */
-    protected State<T> initialState;
-    
-    
-    /**
-     * Constructs an empty Automata with no states.
-     */
-    public BaseAutomata() {
-    }
-    
-    
-    /**
-     * Constructs an Automata with an initial state.
-     * 
-     * @param initialState The initial state of the automata.
-     */
-    public BaseAutomata(final State<T> initialState) {
-        this.initialState = initialState;
-    }
+	/**
+	 * The initial state of the automata.
+	 */
+	protected State<T>	initialState;
 
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public State<T> getInitialState() {
-        return initialState;
-    }
-    
-    
-    /**
-     * Sets the initial state of this automata.
-     * 
-     * @param initialState  The initial State of this automata.
-     */
-    public void setInitialState(final State<T> initialState) {
-        this.initialState = initialState;
-    }
+	/**
+	 * Constructs an empty Automata with no states.
+	 */
+	public BaseAutomata() {
+	}
 
-    
-    
-    /**
-     * {@inheritDoc}
-     * 
-     * This implementation calculates the final states dynamically by walking
-     * the automata states to find the final ones.
-     */
-    @Override
+	/**
+	 * Constructs an Automata with an initial state.
+	 * 
+	 * @param initialState The initial state of the automata.
+	 */
+	public BaseAutomata(final State<T> initialState) {
+		this.initialState = initialState;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public State<T> getInitialState() {
+		return initialState;
+	}
+
+	/**
+	 * Sets the initial state of this automata.
+	 * 
+	 * @param initialState  The initial State of this automata.
+	 */
+	public void setInitialState(final State<T> initialState) {
+		this.initialState = initialState;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isDeterministic() {
+		final class MutableBoolean {
+			public boolean	isDeterministic	= true;
+		}
+		final MutableBoolean result = new MutableBoolean();
+		final StepAction<T> isDeterministic = new StepAction<T>() {
+			@Override
+			public boolean take(final Step<T> step) {
+				result.isDeterministic = step.currentState.isDeterministic();
+				// if any state is not deterministic, then the whole automata is not,
+				// so stop the walk.
+				return result.isDeterministic;
+			}
+		};
+		StateChildWalker.walkAutomata(initialState, isDeterministic);
+		return result.isDeterministic;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * This implementation calculates the final states dynamically by walking
+	 * the automata states to find the final ones.
+	 */
+	@Override
 	public List<State<T>> getFinalStates() {
-        final List<State<T>> finalStates = new ArrayList<State<T>>();
-        final StepAction<T> findFinalStates = new StepAction<T>() {
-            @Override
-            public void take(final Step<T> step) {
-                if (step.currentState.isFinal()) {
-                    finalStates.add(step.currentState);
-                }
-            }
-        };
-        StateChildWalker.walkAutomata(initialState, findFinalStates);
-        return finalStates;
-    }
-    
+		final List<State<T>> finalStates = new ArrayList<State<T>>();
+		final StepAction<T> findFinalStates = new StepAction<T>() {
+			@Override
+			public boolean take(final Step<T> step) {
+				if (step.currentState.isFinal()) {
+					finalStates.add(step.currentState);
+				}
+				return true;
+			}
+		};
+		StateChildWalker.walkAutomata(initialState, findFinalStates);
+		return finalStates;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BaseAutomata<T> deepCopy() {
-        final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
-        return deepCopy(oldToNew);
-    }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BaseAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        return new BaseAutomata<T>(initialState.deepCopy(oldToNewObjects));
-    }
-    
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public BaseAutomata<T> deepCopy() {
+		final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
+		return deepCopy(oldToNew);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public BaseAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+		return new BaseAutomata<T>(initialState.deepCopy(oldToNewObjects));
+	}
+
 }

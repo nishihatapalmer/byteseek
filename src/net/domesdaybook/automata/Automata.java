@@ -63,6 +63,13 @@ public interface Automata<T> extends DeepCopy {
 	public Collection<State<T>> getFinalStates();
 
 	/**
+	 * Returns true if the automata is deterministic.
+	 * 
+	 * @return true if the automata is deterministic.
+	 */
+	public boolean isDeterministic();
+
+	/**
 	 * Produces a deep copy of the automata, its' States and Transitions. It
 	 * will not produce deep copies of any objects associated with a State,
 	 * although the automata copy will link to the same associated objects as

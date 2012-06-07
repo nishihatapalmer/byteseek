@@ -123,6 +123,33 @@ public interface State<T> extends Iterable<Transition<T>>, DeepCopy {
 	public boolean isFinal();
 
 	/**
+	 * Sets whether this state is final or not.
+	 * 
+	 * @param isFinal
+	 *            The finality of the state.
+	 */
+	public void setIsFinal(boolean isFinal);
+
+	/**
+	 * Returns true if the State is deterministic.  This means that there are no
+	 * transitions to more than one state for the same byte value.
+	 * <p>
+	 * Any state with fewer than two transitions is deterministic by definition, as
+	 * there can be no conflicting transitions.
+	 * 
+	 * @return true if the State is deterministic.
+	 */
+	public boolean isDeterministic();
+
+	/**
+	 * Returns an iterator over the transitions of the state.
+	 * 
+	 * @return An iterator over the transitions of the state.
+	 */
+	@Override
+	public Iterator<Transition<T>> iterator();
+
+	/**
 	 * Returns a list of the transitions which currently exist in this State.
 	 * <p>
 	 * Implementors of State guarantee that the contents of the list 
@@ -133,14 +160,6 @@ public interface State<T> extends Iterable<Transition<T>>, DeepCopy {
 	 * @return A list of transitions from this state.
 	 */
 	public List<Transition<T>> getTransitions();
-
-	/**
-	 * Sets whether this state is final or not.
-	 * 
-	 * @param isFinal
-	 *            The finality of the state.
-	 */
-	public void setIsFinal(boolean isFinal);
 
 	/**
 	 * Adds a {@link Transition} to this state.
@@ -174,6 +193,15 @@ public interface State<T> extends Iterable<Transition<T>>, DeepCopy {
 	 * @return boolean Whether the transition was in the State.
 	 */
 	public boolean removeTransition(Transition<T> transition);
+
+	/**
+	 * Replaces a transition in the state with a new transition.
+	 * 
+	 * @param oldTransition The old transition to replace
+	 * @param newTransition The new transition
+	 * @return true if the transition was replaced.
+	 */
+	public boolean replaceTransition(Transition<T> oldTransition, Transition<T> newTransition);
 
 	/**
 	 * Clears all transitions from this state.

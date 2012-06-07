@@ -34,10 +34,12 @@ package net.domesdaybook.automata.base;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import net.domesdaybook.automata.State;
@@ -46,8 +48,16 @@ import net.domesdaybook.util.collections.IdentityHashSet;
 import net.domesdaybook.util.object.DeepCopy;
 
 /**
- * A simple implementation of the {@link State} interface with no added extras.
- * Transitions are managed internally as a simple list of Transitions.  
+ * An implementation of the {@link State} interface.
+ * Transitions are managed internally as a list of Transitions, as are any 
+ * associations with the state.
+ * <p>
+ * Note that this implementation of State relies on the fact that Transitions are
+ * immutable, to make determining the deterministic state efficient.  If transitions
+ * which are not deterministic are used, then either whenever the transition is modified,
+ * the State it belongs to must have its deterministic status invalidated by calling
+ * {@ink #invalidateDeterministicStatus()}, or by sub-classing this State and overriding
+ * the {@link #isDeterministic} method.
  * <p>
  * It is intentionally not a final class, allowing other States to inherit from 
  * this implementation.
@@ -63,6 +73,7 @@ public class BaseState<T> implements State<T> {
 	private List<Transition<T>>	transitions;
 	private List<T>				associations;
 	private boolean				isFinal;
+	private Boolean				isDeterministic;
 
 	//////////////////
 	// Constructors //
@@ -113,9 +124,28 @@ public class BaseState<T> implements State<T> {
 		}
 	}
 
-	// ///////////
+	/////////////
 	// Methods //
-	// ///////////
+	/////////////
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final Iterator<Transition<T>> iterator() {
+		return new TransitionIterator();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final List<Transition<T>> getTransitions() {
+		if (transitions.isEmpty()) {
+			return transitions;
+		}
+		return new ArrayList<Transition<T>>(transitions);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -126,6 +156,7 @@ public class BaseState<T> implements State<T> {
 			transitions = new ArrayList<Transition<T>>(1);
 		}
 		transitions.add(transition);
+		isDeterministic = null;
 	}
 
 	/**
@@ -137,6 +168,7 @@ public class BaseState<T> implements State<T> {
 			this.transitions = new ArrayList<Transition<T>>(transitionList.size());
 		}
 		transitions.addAll(transitionList);
+		isDeterministic = null;
 	}
 
 	/**
@@ -145,15 +177,13 @@ public class BaseState<T> implements State<T> {
 	@Override
 	public final void addAllTransitions(final Iterator<Transition<T>> transitionIterator) {
 		if (transitions.isEmpty()) {
-			this.transitions = new ArrayList<Transition<T>>(3); // a guess,
-																// hopefully not
-																// too big and
-																// not too
-																// small.
+			// Guess a fairly small size for the list given most states don't have many transitions.
+			this.transitions = new ArrayList<Transition<T>>(3);
 		}
 		while (transitionIterator.hasNext()) {
 			transitions.add(transitionIterator.next());
 		}
+		isDeterministic = null;
 	}
 
 	/**
@@ -161,11 +191,32 @@ public class BaseState<T> implements State<T> {
 	 */
 	@Override
 	public final boolean removeTransition(final Transition<T> transition) {
-		boolean wasRemoved = transitions.remove(transition);
-		if (transitions.isEmpty()) {
-			transitions = Collections.emptyList();
+		if (!transitions.isEmpty()) {
+			boolean wasRemoved = transitions.remove(transition);
+			if (transitions.isEmpty()) {
+				transitions = Collections.emptyList();
+			}
+			isDeterministic = null;
+			return wasRemoved;
 		}
-		return wasRemoved;
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final boolean replaceTransition(final Transition<T> oldTransition,
+			final Transition<T> newTransition) {
+		if (!transitions.isEmpty()) {
+			boolean wasRemoved = transitions.remove(oldTransition);
+			if (wasRemoved) {
+				transitions.add(newTransition);
+				isDeterministic = null;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -174,6 +225,7 @@ public class BaseState<T> implements State<T> {
 	@Override
 	public void clearTransitions() {
 		transitions = Collections.emptyList();
+		isDeterministic = null;
 	}
 
 	/**
@@ -217,19 +269,45 @@ public class BaseState<T> implements State<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void setIsFinal(boolean isFinal) {
-		this.isFinal = isFinal;
+	public boolean isDeterministic() {
+		if (transitions.size() > 1) {
+			if (isDeterministic == null) {
+				final Map<Byte, State<T>> bytesToStates = new HashMap<Byte, State<T>>(128);
+				for (Transition<T> transition : transitions) {
+					final byte[] matchingBytes = transition.getBytes();
+					final State<T> toState = transition.getToState();
+					for (byte b : matchingBytes) {
+						final State<T> existingState = bytesToStates.get(b);
+						if (existingState != toState) {
+							if (existingState != null) {
+								isDeterministic = Boolean.FALSE;
+								return false;
+							}
+							bytesToStates.put(b, toState);
+						}
+					}
+				}
+				isDeterministic = Boolean.TRUE;
+			}
+			return isDeterministic;
+		}
+		return true;
+	}
+
+	/**
+	 * Calling this method invalidates the deterministic status of this State,
+	 * causing it to be re-calculated if {@link #isDeterministic} is called.
+	 */
+	public final void invalidateDeterministicStatus() {
+		isDeterministic = null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final List<Transition<T>> getTransitions() {
-		if (transitions.isEmpty()) {
-			return transitions;
-		}
-		return new ArrayList<Transition<T>>(transitions);
+	public final void setIsFinal(boolean isFinal) {
+		this.isFinal = isFinal;
 	}
 
 	/**
@@ -355,11 +433,51 @@ public class BaseState<T> implements State<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * An iterator over the transitions that ensures that if {@link #remove()} is called,
+	 * then the deterministic flag in State is properly updated, by calling its instance
+	 * method to remove the Transition.
+	 * 
+	 * @author Matt Palmer
 	 */
-	@Override
-	public Iterator<Transition<T>> iterator() {
-		return transitions.iterator();
+	private final class TransitionIterator implements Iterator<Transition<T>> {
+
+		private int		index;
+		private boolean	removed;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public boolean hasNext() {
+			return index < transitions.size();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Transition<T> next() {
+			removed = false;
+			if (hasNext()) {
+				return transitions.get(index++);
+			}
+			throw new NoSuchElementException("There are no more transitions in the state.");
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void remove() {
+			int elementToRemove = index - 1;
+			if (elementToRemove >= 0 && !removed) {
+				removeTransition(transitions.get(elementToRemove));
+				removed = true;
+			}
+			throw new IllegalStateException(
+					"Next has not been called or remove has already been called.");
+		}
+
 	}
 
 }
