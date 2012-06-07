@@ -244,20 +244,20 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
      * Translates a collection of reversed sequence matchers back into the original
      * non-reversed ones they were created from.
      * 
-     * @param reversed A collection of reversed sequence matchers.
+     * @param toTranslate A collection of reversed sequence matchers.
      * @return A collection of the corresponding non-reversed sequence matchers.
      */
-    private Collection<SequenceMatcher> getOriginalSequences(final Collection<SequenceMatcher> reversed) {
-        final List<SequenceMatcher> originals = new ArrayList<SequenceMatcher>(reversed.size());
-        for (final SequenceMatcher reverse : reversed) {
+    private Collection<SequenceMatcher> getOriginalSequences(final Collection<SequenceMatcher> toTranslate) {
+        final List<SequenceMatcher> originals = new ArrayList<SequenceMatcher>(toTranslate.size());
+        for (final SequenceMatcher reverse : toTranslate) {
             originals.add(reverseToOriginals.get(reverse));
         }
         return originals;
     }
     
     
-    private SequenceMatcher getOriginalSequence(final SequenceMatcher reversed) {
-        return reverseToOriginals.get(reversed);
+    private SequenceMatcher getOriginalSequence(final SequenceMatcher toTranslate) {
+        return reverseToOriginals.get(toTranslate);
     }
 
     
