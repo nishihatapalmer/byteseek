@@ -137,7 +137,8 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
         return SearchUtils.noResults();
     }
 
-    public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    @Override
+	public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }    
 }
