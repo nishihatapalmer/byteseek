@@ -205,12 +205,12 @@ public class ParseUtils {
                     String minRange = ParseUtils.getChildStringValue(childNode, 0);
                     String maxRange = ParseUtils.getChildStringValue(childNode, 1);
                     if (minRange.startsWith(QUOTE)) {
-                        minRangeValue = (int) minRange.charAt(1);
+                        minRangeValue = minRange.charAt(1);
                     } else {
                         minRangeValue = Integer.parseInt(minRange, 16);
                     }
                     if (maxRange.startsWith(QUOTE)) {
-                        maxRangeValue = (int) maxRange.charAt(1);
+                        maxRangeValue = maxRange.charAt(1);
                     } else {
                         maxRangeValue = Integer.parseInt(maxRange, 16);
                     }
@@ -219,9 +219,6 @@ public class ParseUtils {
                         minRangeValue = maxRangeValue;
                         maxRangeValue = swapTemp;
                     }
-                    //if (minRange < 0 || maxRange > 255) {
-                        //
-                    //}
                     for (int rangeValue = minRangeValue; rangeValue <= maxRangeValue; rangeValue++) {
                         setValues.add((byte) rangeValue);
                     }
