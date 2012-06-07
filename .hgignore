@@ -3,3 +3,10 @@
 \.chg\..*$
 \.rej$
 \.conflict\~$
+
+syntax: regexp
+^dist$
+syntax: regexp
+^nbproject$
+syntax: regexp
+^antlr$
