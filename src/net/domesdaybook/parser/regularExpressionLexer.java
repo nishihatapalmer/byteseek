@@ -2,7 +2,7 @@
  package net.domesdaybook.parser; 
 
 import org.antlr.runtime.*;
-
+@SuppressWarnings("all") // generated code.
 public class regularExpressionLexer extends Lexer {
     public static final int CLOSE_CURLY=60;
     public static final int SET_NEWLINE=38;
