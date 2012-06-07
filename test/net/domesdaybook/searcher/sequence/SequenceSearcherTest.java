@@ -35,6 +35,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+
+import org.junit.Test;
+
 import net.domesdaybook.matcher.bytes.AnyByteMatcher;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
@@ -44,50 +47,51 @@ import net.domesdaybook.reader.Reader;
 import net.domesdaybook.searcher.ForwardSearchIterator;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.Searcher;
-import org.junit.Test;
 
 /**
  *
  * @author Matt Palmer
  */
 public class SequenceSearcherTest {
-    
-    @Test
-    public void scratchTesting() throws FileNotFoundException, IOException {
-        
 
-        SequenceMatcher matcher = new ByteArrayMatcher("A Midsommer Nights Dreame");
-        Searcher<SequenceMatcher> searcher = new BoyerMooreHorspoolSearcher(matcher);
-        findMatches(searcher, 0);
-        
-        SequenceMatcher caseMatcher = new CaseInsensitiveSequenceMatcher("A Midsommer Nights Dreame");
-        Searcher<SequenceMatcher> caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
-        findMatches(caseSearcher, 0);
-        
-        caseMatcher = new CaseInsensitiveSequenceMatcher("MIDSOMMER NIGHT"); // fails its own length from the end if you add the H.
-        caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
-        findMatches(caseSearcher, 112236);
-        
-        caseSearcher = new BoyerMooreHorspoolSearcher(AnyByteMatcher.ANY_BYTE_MATCHER);
-        findMatches(caseSearcher, 112236);
-    }
-    
-    private void findMatches(Searcher<SequenceMatcher> searcher, final long searchPosition) throws FileNotFoundException, IOException {
-        final Reader reader = new FileReader(getFile("/TestASCII.txt"));
-        final ForwardSearchIterator searchIterator = new ForwardSearchIterator(searcher, reader, searchPosition);
-        while (searchIterator.hasNext()) {
-            final List<SearchResult<SequenceMatcher>> results = searchIterator.next();
-            for (final SearchResult<SequenceMatcher> result : results) {
-                String message = String.format("Match found at:%d", result.getMatchPosition());
-                System.out.println(message);
-            }
-        }
-        System.out.println();
-    }
-    
-    private File getFile(final String resourceName) {
-        URL url = this.getClass().getResource(resourceName);
-        return new File(url.getPath());
-    }    
-    
+	@Test
+	public void scratchTesting() throws FileNotFoundException, IOException {
+
+		SequenceMatcher matcher = new ByteArrayMatcher("A Midsommer Nights Dreame");
+		Searcher<SequenceMatcher> searcher = new BoyerMooreHorspoolSearcher(matcher);
+		findMatches(searcher, 0);
+
+		SequenceMatcher caseMatcher = new CaseInsensitiveSequenceMatcher(
+				"A Midsommer Nights Dreame");
+		Searcher<SequenceMatcher> caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
+		findMatches(caseSearcher, 0);
+
+		caseMatcher = new CaseInsensitiveSequenceMatcher("MIDSOMMER NIGHT"); // fails its own length from the end if you add the H.
+		caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
+		findMatches(caseSearcher, 112236);
+
+		caseSearcher = new BoyerMooreHorspoolSearcher(AnyByteMatcher.ANY_BYTE_MATCHER);
+		findMatches(caseSearcher, 112236);
+	}
+
+	private void findMatches(Searcher<SequenceMatcher> searcher, final long searchPosition)
+			throws FileNotFoundException, IOException {
+		final Reader reader = new FileReader(getFile("/TestASCII.txt"));
+		final ForwardSearchIterator<SequenceMatcher> searchIterator = new ForwardSearchIterator<SequenceMatcher>(
+				searcher, reader, searchPosition);
+		while (searchIterator.hasNext()) {
+			final List<SearchResult<SequenceMatcher>> results = searchIterator.next();
+			for (final SearchResult<SequenceMatcher> result : results) {
+				String message = String.format("Match found at:%d", result.getMatchPosition());
+				System.out.println(message);
+			}
+		}
+		System.out.println();
+	}
+
+	private File getFile(final String resourceName) {
+		URL url = this.getClass().getResource(resourceName);
+		return new File(url.getPath());
+	}
+
 }
