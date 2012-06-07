@@ -100,6 +100,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * 
  * @author Matt Palmer
  */
+@SuppressWarnings("all") // code is entirely unfinished - do not use yet.
  public class WuManberOneByteFinalFlagSearcher {
    
 
