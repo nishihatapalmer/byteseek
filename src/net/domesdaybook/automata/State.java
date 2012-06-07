@@ -32,6 +32,7 @@
 package net.domesdaybook.automata;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -72,18 +73,16 @@ import net.domesdaybook.util.object.DeepCopy;
  * 
  * @author Matt Palmer
  */
-public interface State<T> extends DeepCopy {
+public interface State<T> extends Iterable<Transition<T>>, DeepCopy {
 
 	// -------------------------------------------------------------------------
 	// Constants
 
-	// FIXME: replace these with an enum and wherever they are currently used?
-
 	/** A constant representing a final state. */
-	public static boolean FINAL = true;
+	public static boolean	FINAL		= true;
 
 	/** A constant representing a non-final state. */
-	public static boolean NON_FINAL = false;
+	public static boolean	NON_FINAL	= false;
 
 	// -------------------------------------------------------------------------
 	// Methods
@@ -124,7 +123,12 @@ public interface State<T> extends DeepCopy {
 	public boolean isFinal();
 
 	/**
-	 * Returns a list of the transitions which exist from this State.
+	 * Returns a list of the transitions which currently exist in this State.
+	 * <p>
+	 * Implementors of State guarantee that the contents of the list 
+	 * returned will not subsequently change, even if the state itself
+	 * is modified (new transitions added or removed from it), and equally,
+	 * that changes to the list returned will not affect this State.
 	 * 
 	 * @return A list of transitions from this state.
 	 */
@@ -153,6 +157,14 @@ public interface State<T> extends DeepCopy {
 	 *            A list of transitions to add to this state.
 	 */
 	public void addAllTransitions(List<Transition<T>> transitions);
+
+	/**
+	 * Adds all the transitions returned by the iterator to this state.
+	 * 
+	 * @param transitionIterator
+	 * 			  An iterator over transitions to add to this state.
+	 */
+	public void addAllTransitions(Iterator<Transition<T>> transitionIterator);
 
 	/**
 	 * Removes a {@link Transition} from this state.
@@ -188,6 +200,14 @@ public interface State<T> extends DeepCopy {
 	public void addAllAssociations(Collection<? extends T> associations);
 
 	/**
+	 * Adds all the associations of type T to the State.
+	 * 
+	 * @param associations
+	 *            An iterator over associations to add to the state.
+	 */
+	public void addAllAssociations(Iterator<T> associationIterator);
+
+	/**
 	 * Removes an object of type T from the State.
 	 * <p>
 	 * This interface does not guarantee that all instances will be removed,
@@ -201,7 +221,7 @@ public interface State<T> extends DeepCopy {
 	public boolean removeAssociation(T object);
 
 	/**
-	 * Returns the associations of type T.
+	 * Returns the current associations of type T.
 	 * <p>
 	 * No guarantee is made that the associations returned will be unique,
 	 * although specific implementations may provide this guarantee.
@@ -209,10 +229,22 @@ public interface State<T> extends DeepCopy {
 	 * Implementors of this interface guarantee that null will never be returned
 	 * by this call. If there are no associations then an empty collection will
 	 * be returned.
+	 * <p>
+	 * Implementors of State guarantee that the contents of the list 
+	 * returned will not subsequently change, even if the state itself
+	 * is modified (new associations added or removed from it), and equally,
+	 * that changes to the list returned will not affect this State.
 	 * 
 	 * @return A collection of the objects currently associated with this state.
 	 */
 	public Collection<T> getAssociations();
+
+	/**
+	 * Returns an iterator over the associations of this State.
+	 * 
+	 * @return An iterator over the associations of this State.
+	 */
+	public Iterator<T> associationIterator();
 
 	/**
 	 * Sets a collection of objects of type T to be associated with this State.

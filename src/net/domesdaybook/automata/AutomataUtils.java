@@ -32,7 +32,6 @@
 package net.domesdaybook.automata;
 
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,13 +41,13 @@ import java.util.Map;
  */
 public final class AutomataUtils {
 
-	private static final String DOT_HEADER = "digraph {\n";
-	private static final String DOT_TITLE = "label=\"%s\"\n";
-	private static final String DOT_FOOTER = "\n}";
-	private static final String FINAL_STATE_SHAPE = "doublecircle";
-	private static final String NON_FINAL_STATE_SHAPE = "circle";
-	private static final String STATE_DEFINITION = "%s [label=\"%s\", shape=\"%s\"]\n";
-	private static final String TRANSITION_DEFINITION = "%s->%s [label=\"%s\"]\n";
+	private static final String	DOT_HEADER				= "digraph {\n";
+	private static final String	DOT_TITLE				= "label=\"%s\"\n";
+	private static final String	DOT_FOOTER				= "\n}";
+	private static final String	FINAL_STATE_SHAPE		= "doublecircle";
+	private static final String	NON_FINAL_STATE_SHAPE	= "circle";
+	private static final String	STATE_DEFINITION		= "%s [label=\"%s\", shape=\"%s\"]\n";
+	private static final String	TRANSITION_DEFINITION	= "%s->%s [label=\"%s\"]\n";
 
 	/**
 	 * A private constructor to prevent instantiation of this static utility
@@ -70,8 +69,7 @@ public final class AutomataUtils {
 	 *            The title of the DOT graph.
 	 * @return A String containing the automata serialised in DOT format.
 	 */
-	public static <T> String toDot(final Automata<T> automata,
-			final String title) {
+	public static <T> String toDot(final Automata<T> automata, final String title) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append(DOT_HEADER);
 		final String onelineTitle = title.replaceAll("\\s", " ");
@@ -88,23 +86,20 @@ public final class AutomataUtils {
 		if (!visitedStates.containsKey(state)) {
 			visitedStates.put(state, nextStateNumber);
 			final String label = Integer.toString(nextStateNumber);
-			final String shape = state.isFinal() ? FINAL_STATE_SHAPE
-					: NON_FINAL_STATE_SHAPE;
+			final String shape = state.isFinal() ? FINAL_STATE_SHAPE : NON_FINAL_STATE_SHAPE;
 			builder.append(String.format(STATE_DEFINITION, label, label, shape));
 
 			// process its transitions:
-			final List<Transition<T>> transitions = state.getTransitions();
-			for (final Transition<T> transition : transitions) {
+			for (final Transition<T> transition : state) {
 				final State<T> toState = transition.getToState();
-				final int processedNumber = buildDot(toState, visitedStates,
-						nextStateNumber + 1, builder);
+				final int processedNumber = buildDot(toState, visitedStates, nextStateNumber + 1,
+						builder);
 				nextStateNumber = processedNumber > nextStateNumber ? processedNumber
 						: nextStateNumber;
-				final String toStateLabel = Integer.toString(visitedStates
-						.get(toState));
+				final String toStateLabel = Integer.toString(visitedStates.get(toState));
 				final String transitionLabel = transition.toString();
-				builder.append(String.format(TRANSITION_DEFINITION, label,
-						toStateLabel, transitionLabel));
+				builder.append(String.format(TRANSITION_DEFINITION, label, toStateLabel,
+						transitionLabel));
 			}
 		}
 		return nextStateNumber;

@@ -29,12 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package net.domesdaybook.automata.walker;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Set;
+
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.util.collections.IdentityHashSet;
@@ -52,45 +52,42 @@ import net.domesdaybook.util.collections.IdentityHashSet;
  */
 public final class StateSiblingWalker<T> implements Walker<T> {
 
-    
-    /**
-     * Walks an automata from the start state, invoking an action for each step of
-     * the walk.
-     * 
-     * @param startState The state to start from.
-     * @param action The action to take on each step of the walk.
-     */
-    public static <T> void walkAutomata(final State<T> startState, final StepAction<T> action) {
-        final Walker<T> walker = new StateSiblingWalker<T>();
-        walker.walk(startState, action);
-    }    
-    
-    
-    /**
-     * Walks an automata from the startState, invoking the {@link StepAction} for
-     * each step of the walk.  This method will visit each State reachable from the 
-     * start State only once, in a sibling-first (i.e. breadth-first) order.
-     * 
-     * @param startState The state to begin walking the automata.
-     * @param action The observer to invoke for each step of the walk.
-     */    
-    @Override
-    public void walk(final State<T> startState, final StepAction<T> action) {
-        final Set<State<T>> visitedStates = new IdentityHashSet<State<T>>();
-        final Deque<Step<T>> walkSteps = new ArrayDeque<Step<T>>();
-        walkSteps.addFirst(new Step<T>(null, null, startState));
-        while (!walkSteps.isEmpty()) {
-            final Step<T> step = walkSteps.removeLast();
-            final State<T> state = step.currentState;
-            if (!visitedStates.contains(state)) {
-                visitedStates.add(state);
-                for (final Transition<T> transition: state.getTransitions()) {
-                    walkSteps.addFirst(
-                       new Step<T>(state, transition, transition.getToState()));
-                }
-                action.take(step);                
-            }
-        }
-    }
-    
+	/**
+	 * Walks an automata from the start state, invoking an action for each step of
+	 * the walk.
+	 * 
+	 * @param startState The state to start from.
+	 * @param action The action to take on each step of the walk.
+	 */
+	public static <T> void walkAutomata(final State<T> startState, final StepAction<T> action) {
+		final Walker<T> walker = new StateSiblingWalker<T>();
+		walker.walk(startState, action);
+	}
+
+	/**
+	 * Walks an automata from the startState, invoking the {@link StepAction} for
+	 * each step of the walk.  This method will visit each State reachable from the 
+	 * start State only once, in a sibling-first (i.e. breadth-first) order.
+	 * 
+	 * @param startState The state to begin walking the automata.
+	 * @param action The observer to invoke for each step of the walk.
+	 */
+	@Override
+	public void walk(final State<T> startState, final StepAction<T> action) {
+		final Set<State<T>> visitedStates = new IdentityHashSet<State<T>>();
+		final Deque<Step<T>> walkSteps = new ArrayDeque<Step<T>>();
+		walkSteps.addFirst(new Step<T>(null, null, startState));
+		while (!walkSteps.isEmpty()) {
+			final Step<T> step = walkSteps.removeLast();
+			final State<T> state = step.currentState;
+			if (!visitedStates.contains(state)) {
+				visitedStates.add(state);
+				for (final Transition<T> transition : state) {
+					walkSteps.addFirst(new Step<T>(state, transition, transition.getToState()));
+				}
+				action.take(step);
+			}
+		}
+	}
+
 }

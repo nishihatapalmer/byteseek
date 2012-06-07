@@ -57,8 +57,8 @@ import net.domesdaybook.util.collections.IdentityHashSet;
  */
 public final class DfaBuilder<T> {
 
-	private final StateFactory<T> stateFactory;
-	private final TransitionFactory<T> transitionFactory;
+	private final StateFactory<T>		stateFactory;
+	private final TransitionFactory<T>	transitionFactory;
 
 	/**
 	 * Constructs a DfaBuilder using the default {@link StateFactory},
@@ -105,8 +105,7 @@ public final class DfaBuilder<T> {
 	 */
 	public DfaBuilder(final StateFactory<T> stateFactory,
 			final TransitionFactory<T> transitionFactory) {
-		this.stateFactory = stateFactory == null ? new BaseStateFactory<T>()
-				: stateFactory;
+		this.stateFactory = stateFactory == null ? new BaseStateFactory<T>() : stateFactory;
 		this.transitionFactory = transitionFactory == null ? new ByteMatcherTransitionFactory<T>()
 				: transitionFactory;
 	}
@@ -160,7 +159,7 @@ public final class DfaBuilder<T> {
 
 		// Append all associations of the sourceStates to the new state.
 		for (final State<T> state : sourceStates) {
-			newState.addAllAssociations(state.getAssociations());
+			newState.addAllAssociations(state.associationIterator());
 		}
 
 		// Create transitions to all the new dfa states this one points to:
@@ -169,19 +168,16 @@ public final class DfaBuilder<T> {
 		return newState;
 	}
 
-	private void createDfaTransitions(final Set<State<T>> stateSet,
-			final State<T> newState,
+	private void createDfaTransitions(final Set<State<T>> stateSet, final State<T> newState,
 			final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
 		// For each target nfa state set, add a transition on those bytes:
 		final Map<Set<State<T>>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(stateSet);
-		for (final Map.Entry<Set<State<T>>, Set<Byte>> targetEntry : targetStatesToBytes
-				.entrySet()) {
+		for (final Map.Entry<Set<State<T>>, Set<Byte>> targetEntry : targetStatesToBytes.entrySet()) {
 			// Get the set of bytes to transition on:
 			final Set<Byte> transitionBytes = targetEntry.getValue();
 
 			// Recursive: get the target DFA state for this transition.
-			final State<T> targetDFAState = getState(targetEntry.getKey(),
-					stateSetsSeenSoFar);
+			final State<T> targetDFAState = getState(targetEntry.getKey(), stateSetsSeenSoFar);
 
 			// Create a transition to the target state using the bytes to
 			// transition on:
@@ -191,16 +187,15 @@ public final class DfaBuilder<T> {
 			// it.
 			// Maybe should rename method or add a createOptimalTransition()
 			// method...?
-			final Transition<T> transition = transitionFactory
-					.createSetTransition(transitionBytes, false, targetDFAState);
+			final Transition<T> transition = transitionFactory.createSetTransition(transitionBytes,
+					false, targetDFAState);
 
 			// Add the transition to the source state:
 			newState.addTransition(transition);
 		}
 	}
 
-	private Map<Set<State<T>>, Set<Byte>> getDfaTransitionInfo(
-			final Set<State<T>> sourceStates) {
+	private Map<Set<State<T>>, Set<Byte>> getDfaTransitionInfo(final Set<State<T>> sourceStates) {
 		// Build a map of bytes to the target nfa states each points to:
 		final Map<Byte, Set<State<T>>> byteToStates = buildByteToStates(sourceStates);
 
@@ -209,8 +204,7 @@ public final class DfaBuilder<T> {
 		return getStatesToBytes(byteToStates);
 	}
 
-	private Map<Byte, Set<State<T>>> buildByteToStates(
-			final Set<State<T>> states) {
+	private Map<Byte, Set<State<T>>> buildByteToStates(final Set<State<T>> states) {
 		final Map<Byte, Set<State<T>>> byteToTargetStates = new LinkedHashMap<Byte, Set<State<T>>>();
 		for (final State<T> state : states) {
 			buildByteToStates(state, byteToTargetStates);
@@ -239,8 +233,8 @@ public final class DfaBuilder<T> {
 				final State<T> automataFirstState = automataFirstStates.next();
 				isFinal |= automataFirstState.isFinal();
 				replaceReachableReferences(automataFirstState, root);
-				root.addAllTransitions(automataFirstState.getTransitions());
-				root.addAllAssociations(automataFirstState.getAssociations());
+				root.addAllTransitions(automataFirstState.iterator());
+				root.addAllAssociations(automataFirstState.associationIterator());
 			}
 			root.setIsFinal(isFinal);
 			return root;
@@ -257,14 +251,12 @@ public final class DfaBuilder<T> {
 	 * @param newState
 	 * @return
 	 */
-	private void replaceReachableReferences(final State<T> oldState,
-			final State<T> newState) {
+	private void replaceReachableReferences(final State<T> oldState, final State<T> newState) {
 		final StepAction<T> replaceWithNewState = new StepAction<T>() {
 			@Override
 			public void take(final Step<T> step) {
 				final State<T> stateToUpdate = step.currentState;
-				for (final Transition<T> transition : stateToUpdate
-						.getTransitions()) {
+				for (final Transition<T> transition : stateToUpdate) {
 					if (transition.getToState() == oldState) {
 						transition.setToState(newState);
 					}
@@ -285,7 +277,7 @@ public final class DfaBuilder<T> {
 	 */
 	private void buildByteToStates(final State<T> state,
 			final Map<Byte, Set<State<T>>> byteToTargetStates) {
-		for (final Transition<T> transition : state.getTransitions()) {
+		for (final Transition<T> transition : state) {
 			final State<T> transitionToState = transition.getToState();
 			final byte[] transitionBytes = transition.getBytes();
 			for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
@@ -317,8 +309,7 @@ public final class DfaBuilder<T> {
 		final Map<Set<State<T>>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State<T>>, Set<Byte>>();
 
 		// For each byte there is a transition on:
-		for (final Map.Entry<Byte, Set<State<T>>> transitionByte : bytesToTargetStates
-				.entrySet()) {
+		for (final Map.Entry<Byte, Set<State<T>>> transitionByte : bytesToTargetStates.entrySet()) {
 
 			// Get the target states for that byte:
 			final Set<State<T>> targetStates = transitionByte.getValue();
