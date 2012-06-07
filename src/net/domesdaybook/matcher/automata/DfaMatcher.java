@@ -143,8 +143,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 				if (state.isFinal()) {
 					final long matchLength = currentPosition - matchPosition + windowPos
 							- windowStart;
-					return new DfaMatchResult<T>(matchPosition, matchLength,
-							state.getAssociations(), state);
+					return new DfaMatchResult<T>(matchPosition, matchLength, null, state);
 				}
 
 				// No match was found, find the next state to follow:
@@ -187,8 +186,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 					if (state != null && state.isFinal()) {
 						final long matchLength = currentPosition - matchPosition + windowPos
 								- windowStart;
-						return new DfaMatchResult<T>(matchPosition, matchLength,
-								state.getAssociations(), state);
+						return new DfaMatchResult<T>(matchPosition, matchLength, null, state);
 					}
 				}
 				currentPosition += windowLength - windowStart;
@@ -226,9 +224,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 					}
 					final long matchLength = currentPosition - matchPosition + windowPos
 							- windowStart;
-					final MatchResult<T> match = new MatchResult<T>(matchPosition, matchLength,
-							state.getAssociations());
-					results.add(match);
+					results.add(new DfaMatchResult<T>(matchPosition, matchLength, null, state));
 				}
 
 				// No match was found, find the next state to follow:
@@ -258,8 +254,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 				// See if the next state is final (a match).
 				if (currentState.isFinal()) {
 					final long matchLength = currentPosition - matchPosition;
-					return new DfaMatchResult<T>(matchPosition, matchLength,
-							currentState.getAssociations(), currentState);
+					return new DfaMatchResult<T>(matchPosition, matchLength, null, currentState);
 				}
 
 				// No match was found, find the next state to follow:
@@ -294,8 +289,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 					// See if the next state is final (a match).
 					if (currentState != null && currentState.isFinal()) {
 						final long matchLength = currentPosition - matchPosition;
-						return new DfaMatchResult<T>(matchPosition, matchLength,
-								currentState.getAssociations(), currentState);
+						return new DfaMatchResult<T>(matchPosition, matchLength, null, currentState);
 					}
 				}
 			}
@@ -324,9 +318,8 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 						results = new ArrayList<MatchResult<T>>();
 					}
 					final long matchLength = currentPosition - matchPosition;
-					final MatchResult<T> match = new MatchResult<T>(matchPosition, matchLength,
-							currentState.getAssociations());
-					results.add(match);
+					results.add(new DfaMatchResult<T>(matchPosition, matchLength, null,
+							currentState));
 				}
 
 				// No match was found, find the next state to follow:
@@ -349,12 +342,21 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 */
 	private static final class DfaMatchResult<T> extends MatchResult<T> {
 
-		private State<T>	matchingState;
+		private State<T>		matchingState;
+		private Collection<T>	associations;
 
 		public DfaMatchResult(final long matchPosition, final long matchLength,
 				final Collection<T> matchingObjects, final State<T> matchingState) {
 			super(matchPosition, matchLength, matchingObjects);
 			this.matchingState = matchingState;
+		}
+
+		@Override
+		public Collection<T> getMatchingObjects() {
+			if (associations == null) {
+				associations = matchingState.getAssociations();
+			}
+			return associations;
 		}
 
 		private State<T> getMatchingState() {
