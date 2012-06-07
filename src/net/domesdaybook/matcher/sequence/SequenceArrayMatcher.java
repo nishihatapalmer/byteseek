@@ -72,10 +72,10 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      */
     public SequenceArrayMatcher(final Collection<? extends SequenceMatcher> matcherCollection, final int numberOfRepeats) {
         if (matcherCollection == null || matcherCollection.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty match list passed in to CombinedSequenceMatcher.");
+            throw new IllegalArgumentException("Null or empty match list passed in to SequenceArrayMatcher.");
         }
         if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("CombinedSequenceMatcher requires a positive number of repeats.");
+            throw new IllegalArgumentException("SequenceArrayMatcher requires a positive number of repeats.");
         }
         if (numberOfRepeats == 1) {
             matchers = matcherCollection.toArray(new SequenceMatcher[matcherCollection.size() * numberOfRepeats]);
@@ -113,10 +113,10 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      */
     public SequenceArrayMatcher(final SequenceMatcher[] matchArray, final int numberOfRepeats) {
         if (matchArray == null || matchArray.length == 0) {
-            throw new IllegalArgumentException("Null or empty match array passed in to CombinedSequenceMatcher.");
+            throw new IllegalArgumentException("Null or empty match array passed in to SequenceArrayMatcher.");
         }
         if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("CombinedSequenceMatcher requires a positive number of repeats.");
+            throw new IllegalArgumentException("SequenceArrayMatcher requires a positive number of repeats.");
         }
         if (numberOfRepeats == 1) {
             matchers = matchArray.clone();
@@ -163,9 +163,8 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
             }
             if (checkPos == localLength) {
                 return true;
-            } else {
-                window = reader.getWindow(matchPosition + checkPos);
             }
+            window = reader.getWindow(matchPosition + checkPos);
         }
         return false;
     }   
@@ -257,7 +256,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
 
 
     /**
-     * Returns an array of {@link SequenceMatcher}s this combined matcher matches.
+     * Returns an array of {@link SequenceMatcher}s this sequence array matcher matches.
      * 
      * @return An array of SequenceMatchers.
      */
@@ -332,7 +331,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
             System.arraycopy(matchers, startIndex + 1, newSequence, 1, newSize - 2);
         }
         
-        // Forming the new combined sequence matcher:
+        // Forming the new sequence array matcher:
         return new SequenceArrayMatcher(newSequence);
     }
 
