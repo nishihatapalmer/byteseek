@@ -32,129 +32,162 @@
 package net.domesdaybook.matcher.automata;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.matcher.Matcher;
+import net.domesdaybook.matcher.MatchResult;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
-
 
 /**
  * 
  * @author Matt Palmer
  */
-public final class NfaMatcher implements Matcher {
+public final class NfaMatcher<T> implements AutomataMatcher<T> {
 
-    private final State firstState;
+	private final Automata<T>	automata;
 
+	/**
+	 * 
+	 * @param automata
+	 */
+	public NfaMatcher(final Automata<T> automata) {
+		this.automata = automata;
+	}
 
-    /**
-     * 
-     * @param firstState
-     */
-    public NfaMatcher(final State firstState) {
-        this.firstState = firstState;
-    }
-    
-    
-    /**
-     * 
-     * @param reader
-     * @param matchPosition
-     * @return
-     * @throws IOException
-     */
-    @Override
-    public boolean matches(final Reader reader, final long matchPosition) 
-        throws IOException {
-        // Setup 
-        long currentPosition = matchPosition;    
-        Set<State> nextStates = new LinkedHashSet<State>();   
-        Set<State> activeStates = new LinkedHashSet<State>();
-        activeStates.add(firstState);
-        Window window = reader.getWindow(currentPosition);
-        
-        //While we have a window on the data to match in:
-        while (window != null) {
-            final byte[] bytes = window.getArray();            
-            final int windowLength = window.length();
-            final int windowStart = reader.getWindowOffset(currentPosition);            
-            int windowPos = windowStart;
-            
-            // While we have states to match:
-            while (!activeStates.isEmpty() && windowPos < windowLength) {
-                
-                // See if any active states are final (a match).
-                for (final State currentState : activeStates) {
-                    if (currentState.isFinal()) {
-                        return true;
-                    }
-                }
-                
-                // No match was found, find the next distinct states to follow:
-                final byte currentByte = bytes[windowPos++];
-                for (final State currentState : activeStates) {
-                    currentState.appendNextStates(nextStates, currentByte);
-                }
+	/**
+	 * 
+	 * @param reader
+	 * @param matchPosition
+	 * @return
+	 * @throws IOException
+	 */
+	@Override
+	public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+		// Setup 
+		long currentPosition = matchPosition;
+		Set<State<T>> nextStates = new LinkedHashSet<State<T>>();
+		Set<State<T>> activeStates = new LinkedHashSet<State<T>>();
+		activeStates.add(automata.getInitialState());
+		Window window = reader.getWindow(currentPosition);
 
-                // Make the next states active.  The last active set is 
-                // re-used for the next states to be processed.
-                final Set<State> lastActiveSet = activeStates;
-                activeStates = nextStates;
-                nextStates = lastActiveSet;
-                nextStates.clear();
-            }
-            currentPosition += windowLength - windowStart;
-            window = reader.getWindow(currentPosition);
-        }
-        return false;
-    }
+		//While we have a window on the data to match in:
+		while (window != null) {
+			final byte[] bytes = window.getArray();
+			final int windowLength = window.length();
+			final int windowStart = reader.getWindowOffset(currentPosition);
+			int windowPos = windowStart;
 
-    
-    /**
-     * 
-     * @param bytes
-     * @param matchPosition
-     * @return 
-     */
-    @Override
-    public boolean matches(final byte[] bytes, final int matchPosition) {
-        // Setup
-        final int length = bytes.length;
-        if (matchPosition >= 0 && matchPosition < length) {
-            int currentPosition = matchPosition;    
-            Set<State> nextStates = new LinkedHashSet<State>();   
-            Set<State> activeStates = new LinkedHashSet<State>();
-            activeStates.add(firstState);
+			// While we have states to match:
+			while (!activeStates.isEmpty() && windowPos < windowLength) {
 
-            // Match automata:
-            while (!activeStates.isEmpty() && currentPosition < length) {
+				// See if any active states are final (a match).
+				for (final State<T> currentState : activeStates) {
+					if (currentState.isFinal()) {
+						return true;
+					}
+				}
 
-                // See if any active states are final (a match).
-                for (final State currentState : activeStates) {
-                    if (currentState.isFinal()) {
-                        return true;
-                    }
-                }
+				// No match was found, find the next distinct states to follow:
+				final byte currentByte = bytes[windowPos++];
+				for (final State<T> currentState : activeStates) {
+					currentState.appendNextStates(nextStates, currentByte);
+				}
 
-                // No match was found, find the next distinct states to follow:
-                final byte currentByte = bytes[currentPosition++];
-                for (final State currentState : activeStates) {
-                    currentState.appendNextStates(nextStates, currentByte);
-                }
+				// Make the next states active.  The last active set is 
+				// re-used for the next states to be processed.
+				final Set<State<T>> lastActiveSet = activeStates;
+				activeStates = nextStates;
+				nextStates = lastActiveSet;
+				nextStates.clear();
+			}
+			currentPosition += windowLength - windowStart;
+			window = reader.getWindow(currentPosition);
+		}
+		return false;
+	}
 
-                // Make the next states active.  The last active set is cleared 
-                // and re-used for the next states.
-                final Set<State> lastActiveSet = activeStates;
-                activeStates = nextStates;
-                nextStates = lastActiveSet;
-                nextStates.clear();
-            }
-        }
-        return false;
-    }
+	/**
+	 * 
+	 * @param bytes
+	 * @param matchPosition
+	 * @return 
+	 */
+	@Override
+	public boolean matches(final byte[] bytes, final int matchPosition) {
+		// Setup
+		final int length = bytes.length;
+		if (matchPosition >= 0 && matchPosition < length) {
+			int currentPosition = matchPosition;
+			Set<State<T>> nextStates = new LinkedHashSet<State<T>>();
+			Set<State<T>> activeStates = new LinkedHashSet<State<T>>();
+			activeStates.add(automata.getInitialState());
 
+			// Match automata:
+			while (!activeStates.isEmpty() && currentPosition < length) {
+
+				// See if any active states are final (a match).
+				for (final State<T> currentState : activeStates) {
+					if (currentState.isFinal()) {
+						return true;
+					}
+				}
+
+				// No match was found, find the next distinct states to follow:
+				final byte currentByte = bytes[currentPosition++];
+				for (final State<T> currentState : activeStates) {
+					currentState.appendNextStates(nextStates, currentByte);
+				}
+
+				// Make the next states active.  The last active set is cleared 
+				// and re-used for the next states.
+				final Set<State<T>> lastActiveSet = activeStates;
+				activeStates = nextStates;
+				nextStates = lastActiveSet;
+				nextStates.clear();
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public MatchResult<T> firstMatch(Reader reader, long matchPosition) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MatchResult<T> nextMatch(Reader reader, MatchResult<T> lastMatch) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<MatchResult<T>> allMatches(Reader reader, long matchPosition)
+			throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MatchResult<T> firstMatch(byte[] bytes, int matchPosition) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MatchResult<T> nextMatch(byte[] bytes, MatchResult<T> lastMatch) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<MatchResult<T>> allMatches(byte[] bytes, int matchPosition) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
-
