@@ -61,6 +61,7 @@ import net.domesdaybook.reader.Reader;
  * 
  * @author Matt Palmer
  */
+@SuppressWarnings("all") // code entirely unfinished - do not use yet.
 public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
 
     private final List<SequenceMatcher> matchers;
