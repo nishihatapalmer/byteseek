@@ -514,9 +514,8 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
             }
             return matcher;
-        } else {
-            throw new ParseException("Sequences can only contain repeats of a fixed length {n}");
         }
+        throw new ParseException("Sequences can only contain repeats of a fixed length {n}");
     }
 
     
