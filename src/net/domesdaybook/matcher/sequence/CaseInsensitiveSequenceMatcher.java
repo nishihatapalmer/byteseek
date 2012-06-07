@@ -157,9 +157,8 @@ public final class CaseInsensitiveSequenceMatcher implements SequenceMatcher {
             }
             if (checkPos == localLength) {
                 return true;
-            } else {
-                window = reader.getWindow(matchPosition + checkPos);
             }
+            window = reader.getWindow(matchPosition + checkPos);
         }
         return false;
     }   
@@ -234,10 +233,9 @@ public final class CaseInsensitiveSequenceMatcher implements SequenceMatcher {
         if ((theChar >= 'a' && theChar <= 'z') ||
             (theChar >= 'A' && theChar <= 'Z')) {
             return new CaseInsensitiveByteMatcher(theChar);
-        } else {
-            //FIXME: if the char is not an ASCII char, this will not be correct.
-            return new OneByteMatcher((byte) theChar);
         }
+        //FIXME: if the char is not an ASCII char, this will not be correct.
+        return new OneByteMatcher((byte) theChar);
     }
 
     
