@@ -47,10 +47,10 @@ import net.domesdaybook.matcher.bytes.ByteMatcher;
  * 
  * @author Matt Palmer
  */
-public class ByteMatcherTransition implements Transition {
+public class ByteMatcherTransition<T> implements Transition<T> {
 
     private final ByteMatcher matcher;
-    private State toState;
+    private State<T> toState;
 
 
     /**
@@ -60,7 +60,7 @@ public class ByteMatcherTransition implements Transition {
      * @param matcher The ByteMatcher to use to match bytes for this transition.
      * @param toState The state this transition links to.
      */
-    public ByteMatcherTransition(final ByteMatcher matcher, final State toState) {
+    public ByteMatcherTransition(final ByteMatcher matcher, final State<T> toState) {
         this.matcher = matcher;
         this.toState = toState;
     }
@@ -82,7 +82,7 @@ public class ByteMatcherTransition implements Transition {
      * @param other The ByteMatcherTransition to copy the matcher from.
      * @param toState The State that this transition links to.
      */
-    public ByteMatcherTransition(final ByteMatcherTransition other, final State toState) {
+    public ByteMatcherTransition(final ByteMatcherTransition<T> other, final State<T> toState) {
         this.matcher = other.matcher;
         this.toState = toState;
     }
@@ -92,7 +92,7 @@ public class ByteMatcherTransition implements Transition {
      * {@inheritDoc}
      */
     @Override
-    public final State getStateForByte(byte theByte) {
+    public final State<T> getStateForByte(byte theByte) {
         return matcher.matches(theByte) ? toState : null;
     }
 
@@ -101,7 +101,7 @@ public class ByteMatcherTransition implements Transition {
      * {@inheritDoc}
      */
     @Override
-    public final State getToState() {
+    public final State<T> getToState() {
         return toState;
     }
 
@@ -124,14 +124,14 @@ public class ByteMatcherTransition implements Transition {
      * @return Transition A deep copy of this ByteMatcherTransition and any 
      *                    States and Transitions reachable from this Transition.
      */
-
     @Override
-    public ByteMatcherTransition deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        ByteMatcherTransition transitionCopy = (ByteMatcherTransition) oldToNewObjects.get(this);
+    public ByteMatcherTransition<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+        @SuppressWarnings("unchecked") // if there is an object copy of this in the map, it will be of the same type.
+		ByteMatcherTransition<T> transitionCopy = (ByteMatcherTransition<T>) oldToNewObjects.get(this);
         if (transitionCopy == null) {
             oldToNewObjects.put(this, this); // put in a placeholder mapping to prevent an infinite loop.
-            final State copyState = toState.deepCopy(oldToNewObjects);
-            transitionCopy = new ByteMatcherTransition(this, copyState);
+            final State<T> copyState = toState.deepCopy(oldToNewObjects);
+            transitionCopy = new ByteMatcherTransition<T>(this, copyState);
             oldToNewObjects.put(this, transitionCopy); // now put the real transition in.
         }
         return transitionCopy;
@@ -165,7 +165,7 @@ public class ByteMatcherTransition implements Transition {
      * 
      */
     @Override
-    public void setToState(final State stateToPointAt) {
+    public void setToState(final State<T> stateToPointAt) {
         this.toState = stateToPointAt;
     }
 

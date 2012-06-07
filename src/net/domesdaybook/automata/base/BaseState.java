@@ -60,7 +60,7 @@ import net.domesdaybook.util.object.DeepCopy;
 public class BaseState<T> implements State<T> {
     
     
-    private List<Transition> transitions;
+    private List<Transition<T>> transitions;
     private List<T> associations;    
     private boolean isFinal;
 
@@ -96,9 +96,9 @@ public class BaseState<T> implements State<T> {
      */
     public BaseState(final State<T> other) {
         this.isFinal = other.isFinal();
-        final List<Transition> otherTransitions = other.getTransitions();
+        final List<Transition<T>> otherTransitions = other.getTransitions();
         if (otherTransitions != null && otherTransitions.size() > 0) {
-            this.transitions = new ArrayList<Transition>(otherTransitions);
+            this.transitions = new ArrayList<Transition<T>>(otherTransitions);
         } else {
             this.transitions = Collections.emptyList();
         }
@@ -117,9 +117,9 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public final void addTransition(final Transition transition) {
+    public final void addTransition(final Transition<T> transition) {
         if (transitions.isEmpty()) {
-            transitions = new ArrayList<Transition>(1);
+            transitions = new ArrayList<Transition<T>>(1);
         }
         transitions.add(transition);
     }
@@ -129,11 +129,11 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public final void addAllTransitions(final List<Transition> transitions) {
-        if (transitions.isEmpty()) {
-            this.transitions = new ArrayList<Transition>(transitions.size());
+    public final void addAllTransitions(final List<Transition<T>> transitionList) {
+        if (transitionList.isEmpty()) {
+            this.transitions = new ArrayList<Transition<T>>(transitionList.size());
         }        
-        transitions.addAll(transitions);
+        transitions.addAll(transitionList);
     }
 
     
@@ -141,7 +141,7 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public final boolean removeTransition(final Transition transition) {
+    public final boolean removeTransition(final Transition<T> transition) {
         boolean wasRemoved = transitions.remove(transition);
         if (transitions.isEmpty()) {
             transitions = Collections.emptyList();
@@ -165,7 +165,7 @@ public class BaseState<T> implements State<T> {
     @Override
     public final void appendNextStates(final Collection<State<T>> states, final byte value) {
        final Set<State<T>> matchingStates = new IdentityHashSet<State<T>>();
-        for (final Transition transition : transitions) {
+        for (final Transition<T> transition : transitions) {
             final State<T> nextState = transition.getStateForByte(value);
             if (nextState != null && !matchingStates.contains(nextState)) {
                 matchingStates.add(nextState);
@@ -180,7 +180,7 @@ public class BaseState<T> implements State<T> {
      */
     @Override
     public final State<T> getNextState(final byte value) {
-        for (final Transition transition : transitions) {
+        for (final Transition<T> transition : transitions) {
             final State<T> nextState = transition.getStateForByte(value);
             if (nextState != null) {
                 return nextState;
@@ -212,11 +212,11 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public final List<Transition> getTransitions() {
+    public final List<Transition<T>> getTransitions() {
         if (transitions.isEmpty()) {
             return transitions;
         }
-        return new ArrayList<Transition>(transitions);
+        return new ArrayList<Transition<T>>(transitions);
     }
     
     
@@ -236,11 +236,11 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public void addAssociation(final Object association) {
+    public void addAssociation(final T association) {
         if (associations.isEmpty()) {
             associations = new ArrayList<T>(1);
         }
-        associations.add((T) association);
+        associations.add(association);
     }
     
 
@@ -248,11 +248,11 @@ public class BaseState<T> implements State<T> {
      * {@inheritDoc}
      */
     @Override
-    public void addAllAssociations(Collection<? extends T> associations) {
-        if (associations.isEmpty()) {
-            associations = new ArrayList<T>(associations.size());
+    public void addAllAssociations(Collection<? extends T> associationsToAdd) {
+        if (associationsToAdd.isEmpty()) {
+            associationsToAdd = new ArrayList<T>(associationsToAdd.size());
         }
-        this.associations.addAll(associations);
+        this.associations.addAll(associationsToAdd);
     }    
 
     
@@ -261,7 +261,7 @@ public class BaseState<T> implements State<T> {
      */
     @Override
     public boolean removeAssociation(final Object association) {
-        final boolean wasRemoved = associations.remove((T) association);
+        final boolean wasRemoved = associations.remove(association);
         if (associations.isEmpty()) {
             associations = Collections.emptyList();
         }
@@ -314,12 +314,13 @@ public class BaseState<T> implements State<T> {
      */
     @Override
     public BaseState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-        BaseState<T> stateCopy = (BaseState<T>)oldToNewObjects.get(this);
+        @SuppressWarnings("unchecked") // if there is a copy of this in the map, it will be of the same type.
+		BaseState<T> stateCopy = (BaseState<T>)oldToNewObjects.get(this);
         if (stateCopy == null) {
             stateCopy = new BaseState<T>(this.isFinal);
             oldToNewObjects.put(this, stateCopy);
-            for (Transition transition : transitions) {
-                final Transition transitionCopy = transition.deepCopy(oldToNewObjects);
+            for (Transition<T> transition : transitions) {
+                final Transition<T> transitionCopy = transition.deepCopy(oldToNewObjects);
                 stateCopy.transitions.add(transitionCopy);
             }
         }

@@ -126,7 +126,7 @@ public interface State<T> extends DeepCopy {
      * 
      * @return A list of transitions from this state.
      */
-    public List<Transition> getTransitions();
+    public List<Transition<T>> getTransitions();
 
    
     /**
@@ -143,7 +143,7 @@ public interface State<T> extends DeepCopy {
      * 
      * @param transition The transition to add to this state.
      */
-    public void addTransition(Transition transition);
+    public void addTransition(Transition<T> transition);
 
 
     /**
@@ -151,7 +151,7 @@ public interface State<T> extends DeepCopy {
      * 
      * @param transitions A list of transitions to add to this state.
      */
-    public void addAllTransitions(List<Transition> transitions);
+    public void addAllTransitions(List<Transition<T>> transitions);
 
     
     /**
@@ -160,7 +160,7 @@ public interface State<T> extends DeepCopy {
      * @param transition The transition to remove from this state.
      * @return boolean Whether the transition was in the State.
      */
-    public boolean removeTransition(Transition transition);    
+    public boolean removeTransition(Transition<T> transition);    
     
     
     /**

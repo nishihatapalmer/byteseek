@@ -87,7 +87,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * 
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
-    public SequenceMatcherTrie(final TransitionFactory transitionFactory) {
+    public SequenceMatcherTrie(final TransitionFactory<SequenceMatcher> transitionFactory) {
         this(null, null, transitionFactory);
     }
     
@@ -114,7 +114,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences,
-                              final TransitionFactory transitionFactory) {
+                              final TransitionFactory<SequenceMatcher> transitionFactory) {
         this(sequences, null, transitionFactory);
     }
         
@@ -127,7 +127,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public SequenceMatcherTrie(final StateFactory<SequenceMatcher> stateFactory, 
-                               final TransitionFactory transitionFactory) {
+                               final TransitionFactory<SequenceMatcher> transitionFactory) {
         this(null, stateFactory, transitionFactory);
     }
     
@@ -142,7 +142,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences, 
                                final StateFactory<SequenceMatcher> stateFactory, 
-                               final TransitionFactory transitionFactory) {
+                               final TransitionFactory<SequenceMatcher> transitionFactory) {
         super(stateFactory, transitionFactory);
         if (sequences != null) {
             addAll(sequences);

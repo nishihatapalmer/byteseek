@@ -86,7 +86,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      * 
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
-    public ByteArrayTrie(final TransitionFactory transitionFactory) {
+    public ByteArrayTrie(final TransitionFactory<byte[]> transitionFactory) {
         this(null, null, transitionFactory);
     }
     
@@ -113,7 +113,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public ByteArrayTrie(final Collection<byte[]> sequences,
-                         final TransitionFactory transitionFactory) {
+                         final TransitionFactory<byte[]> transitionFactory) {
         this(sequences, null, transitionFactory);
     }    
     
@@ -126,7 +126,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public ByteArrayTrie(final StateFactory<byte[]> stateFactory, 
-                         final TransitionFactory transitionFactory) {
+                         final TransitionFactory<byte[]> transitionFactory) {
         this(null, stateFactory, transitionFactory);
     }
     
@@ -141,7 +141,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      */
     public ByteArrayTrie(final Collection<byte[]> sequences, 
                          final StateFactory<byte[]> stateFactory, 
-                         final TransitionFactory transitionFactory) {
+                         final TransitionFactory<byte[]> transitionFactory) {
         super(stateFactory, transitionFactory);
         if (sequences != null) {
             addAll(sequences);

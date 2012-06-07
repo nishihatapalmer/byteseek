@@ -45,7 +45,7 @@ import net.domesdaybook.automata.State;
  *  
  * @author Matt Palmer
  */
-public interface Walker {
+public interface Walker<T> {
     
     /**
      * Walks the automata beginning at the startState.  The {@link StepAction} 
@@ -54,6 +54,6 @@ public interface Walker {
      * @param startState The state to begin walking at.
      * @param observer The class which takes action for each step of the walk.
      */
-    void walk(final State startState, final StepAction observer);
+    void walk(final State<T> startState, final StepAction<T> observer);
     
 }

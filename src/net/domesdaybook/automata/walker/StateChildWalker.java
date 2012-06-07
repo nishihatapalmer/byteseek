@@ -49,7 +49,7 @@ import net.domesdaybook.util.collections.IdentityHashSet;
  * 
  * @author Matt Palmer
  */
-public final class StateChildWalker implements Walker {
+public final class StateChildWalker<T> implements Walker<T> {
 
     /**
      * Walks an automata from the starting state, invoking the StepAction for
@@ -58,8 +58,8 @@ public final class StateChildWalker implements Walker {
      * @param startState the start to start from.
      * @param action The action to take on each step of the walk.
      */
-    public static void walkAutomata(final State startState, final StepAction action) {
-        final Walker walker = new StateChildWalker();
+    public static <T> void walkAutomata(final State<T> startState, final StepAction<T> action) {
+        final Walker<T> walker = new StateChildWalker<T>();
         walker.walk(startState, action);
     }
     
@@ -73,18 +73,18 @@ public final class StateChildWalker implements Walker {
      * @param action  The action to take for each step of the walk.
      */
     @Override
-    public void walk(final State startState, final StepAction action) {
-        final Set<State> visitedStates = new IdentityHashSet<State>();
-        final Deque<Step> walkSteps = new ArrayDeque<Step>();
-        walkSteps.addFirst(new Step(null, null, startState));
+    public void walk(final State<T> startState, final StepAction<T> action) {
+        final Set<State<T>> visitedStates = new IdentityHashSet<State<T>>();
+        final Deque<Step<T>> walkSteps = new ArrayDeque<Step<T>>();
+        walkSteps.addFirst(new Step<T>(null, null, startState));
         while (!walkSteps.isEmpty()) {
-            final Step step = walkSteps.removeFirst();
-            final State<?> state = step.currentState;
+            final Step<T> step = walkSteps.removeFirst();
+            final State<T> state = step.currentState;
             if (!visitedStates.contains(state)) {
                 visitedStates.add(state);
-                for (final Transition transition: state.getTransitions()) {
+                for (final Transition<T> transition: state.getTransitions()) {
                     walkSteps.addFirst(
-                        new Step(state, transition, transition.getToState()));
+                        new Step<T>(state, transition, transition.getToState()));
                 }
                 action.take(step);                
             }

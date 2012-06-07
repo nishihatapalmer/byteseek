@@ -56,7 +56,7 @@ import net.domesdaybook.util.collections.IdentityHashSet;
 public final class DfaBuilder<T> {
 
     private final StateFactory<T> stateFactory;
-    private final TransitionFactory transitionFactory;
+    private final TransitionFactory<T> transitionFactory;
     
     /**
      * Constructs a DfaBuilder using the default {@link StateFactory}, 
@@ -86,7 +86,7 @@ public final class DfaBuilder<T> {
      * 
      * @param transitionFactory The TransitionFactory to use when building the DFA.
      */
-    public DfaBuilder(final TransitionFactory transitionFactory) {
+    public DfaBuilder(final TransitionFactory<T> transitionFactory) {
         this(null, transitionFactory);
     }
     
@@ -99,12 +99,12 @@ public final class DfaBuilder<T> {
      * @param transitionFactory The TransitionFactory to use when building the DFA.
      */
     public DfaBuilder(final StateFactory<T> stateFactory, 
-                      final TransitionFactory transitionFactory) {
+                      final TransitionFactory<T> transitionFactory) {
         this.stateFactory      = stateFactory == null
                                ? new BaseStateFactory<T>()
                                : stateFactory;
         this.transitionFactory = transitionFactory == null
-                               ? new ByteMatcherTransitionFactory()
+                               ? new ByteMatcherTransitionFactory<T>()
                                : transitionFactory;
     }
 
@@ -141,9 +141,8 @@ public final class DfaBuilder<T> {
         // if we have already built this dfa state, just return it:
         if (stateSetsSeenSoFar.containsKey(stateSet)) {
             return stateSetsSeenSoFar.get(stateSet);
-        } else {
-            return createState(stateSet, stateSetsSeenSoFar);
         }
+        return createState(stateSet, stateSetsSeenSoFar);
     }
 
 
@@ -182,7 +181,7 @@ public final class DfaBuilder<T> {
             // This places a burden on the implementor of createSetTransition to ensure it
             // returns an efficient transition, given the set of bytes passed to it.
             // Maybe should rename method or add a createOptimalTransition() method...?
-            final Transition transition = transitionFactory.createSetTransition(transitionBytes, false, targetDFAState);
+            final Transition<T> transition = transitionFactory.createSetTransition(transitionBytes, false, targetDFAState);
 
             // Add the transition to the source state:
             newState.addTransition(transition);
@@ -250,11 +249,11 @@ public final class DfaBuilder<T> {
      * @return 
      */
     private void replaceReachableReferences(final State<T> oldState, final State<T> newState) {
-        final StepAction replaceWithNewState = new StepAction() {
+        final StepAction<T> replaceWithNewState = new StepAction<T>() {
             @Override
-            public void take(final Step step) {
+            public void take(final Step<T> step) {
                 final State<T> stateToUpdate = step.currentState;
-                for (final Transition transition : stateToUpdate.getTransitions()) {
+                for (final Transition<T> transition : stateToUpdate.getTransitions()) {
                     if (transition.getToState() == oldState) {
                         transition.setToState(newState);
                     }
@@ -273,7 +272,7 @@ public final class DfaBuilder<T> {
      * @param byteToTargetStates The map of byte to states in which the results are placed.
      */
     private void buildByteToStates(final State<T> state, Map<Byte, Set<State<T>>> byteToTargetStates) {
-        for (final Transition transition : state.getTransitions()) {
+        for (final Transition<T> transition : state.getTransitions()) {
             final State<T> transitionToState = transition.getToState();
             final byte[] transitionBytes = transition.getBytes();
             for (int index = 0, stop = transitionBytes.length; index < stop; index++) {

@@ -49,27 +49,27 @@ import net.domesdaybook.automata.Transition;
  * 
  * @author Matt Palmer
  */
-public final class Step {
+public final class Step<T> {
     
     /** 
      * The previous State from which the step was taken.  
      * Can be null if the first state is being processed, as it did not originate
      * from another State.
      */
-    public final State previousState;
+    public final State<T> previousState;
     
     /**
      * The transition followed to arrive at the current State.
      * Can be null if the first state is being processed, as it did not originate
      * by following a transition.
      */
-    public final Transition transitionFollowed;
+    public final Transition<T> transitionFollowed;
     
     /**
      * The current State being observed.  If this is the first state being
      * processing in a walk of an automata, then the other parameters will be null.
      */
-    public final State currentState;
+    public final State<T> currentState;
     
     
     /**
@@ -79,7 +79,7 @@ public final class Step {
      * @param followed The transition followed to arrive at the current state.
      * @param currentState The current state in the walk.
      */
-    public Step(final State previous, final Transition followed, final State currentState) {
+    public Step(final State<T> previous, final Transition<T> followed, final State<T> currentState) {
         this.previousState = previous;
         this.transitionFollowed = followed;
         this.currentState = currentState;

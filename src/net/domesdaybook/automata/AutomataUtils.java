@@ -68,19 +68,19 @@ public final class AutomataUtils {
      * @param title The title of the DOT graph.
      * @return A String containing the automata serialised in DOT format.
      */
-    public static String toDot(final Automata<?> automata, final String title) {
+    public static <T> String toDot(final Automata<T> automata, final String title) {
         final StringBuilder builder = new StringBuilder();
         builder.append(DOT_HEADER);
         String onelineTitle = title.replaceAll("\\s", " ");
         builder.append(String.format(DOT_TITLE, onelineTitle));
-        Map<State<?>,Integer> visitedStates = new IdentityHashMap<State<?>,Integer>();
+        Map<State<T>,Integer> visitedStates = new IdentityHashMap<State<T>,Integer>();
         buildDot(automata.getInitialState(), visitedStates, 0, builder);
         builder.append(DOT_FOOTER);
         return builder.toString();
     }
 
 
-    private static int buildDot(State<?> state, Map<State<?>,Integer> visitedStates, int nextStateNumber, StringBuilder builder) {
+    private static <T> int buildDot(State<T> state, Map<State<T>,Integer> visitedStates, int nextStateNumber, StringBuilder builder) {
         if (!visitedStates.containsKey(state)) {
             visitedStates.put(state, nextStateNumber);
             final String label = Integer.toString(nextStateNumber);
@@ -90,9 +90,9 @@ public final class AutomataUtils {
             builder.append(String.format(STATE_DEFINITION, label, label, shape));
 
             // process its transitions:
-            final List<Transition> transitions = state.getTransitions();
-            for (final Transition transition : transitions) {
-                final State toState = transition.getToState();
+            final List<Transition<T>> transitions = state.getTransitions();
+            for (final Transition<T> transition : transitions) {
+                final State<T> toState = transition.getToState();
                 int processedNumber = buildDot(toState, visitedStates, nextStateNumber + 1, builder);
                 nextStateNumber = processedNumber > nextStateNumber? processedNumber : nextStateNumber;
                 final String toStateLabel = Integer.toString(visitedStates.get(toState));

@@ -51,7 +51,7 @@ import java.util.Set;
  * @author Matt Palmer
  * @see net.domesdaybook.automata.Transition
  */
-public interface TransitionFactory {
+public interface TransitionFactory<T> {
 
     
     /**
@@ -61,7 +61,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition A transition to the State on the byte value provided.
      */
-    public Transition createByteTransition(byte theByte, State toState);
+    public Transition<T> createByteTransition(byte theByte, State<T> toState);
 
     
     /**
@@ -75,7 +75,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition a transition to the State on matching all bits set in the bitmask provided.
      */
-    public Transition createAllBitmaskTransition(byte bitMask, State toState);
+    public Transition<T> createAllBitmaskTransition(byte bitMask, State<T> toState);
 
     
     /**
@@ -89,7 +89,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition a transition to the State on matching any bits set in the bitmask provided.
      */
-    public Transition createAnyBitmaskTransition(byte bitMask, State toState);
+    public Transition<T> createAnyBitmaskTransition(byte bitMask, State<T> toState);
 
     
     /**
@@ -102,7 +102,7 @@ public interface TransitionFactory {
      * @return Transition a transition to the State on matching any of the bytes in the
      *                    set of bytes (or the inverted set) provided.
      */
-    public Transition createSetTransition(Set<Byte> byteSet, boolean inverted, State toState);
+    public Transition<T> createSetTransition(Set<Byte> byteSet, boolean inverted, State<T> toState);
 
     
     /**
@@ -111,7 +111,7 @@ public interface TransitionFactory {
      * @param toState The State which this transition goes to.
      * @return Transition a transition to the State which always matches.
      */
-    public Transition createAnyByteTransition(State toState);
+    public Transition<T> createAnyByteTransition(State<T> toState);
 
     
     /**
@@ -123,6 +123,6 @@ public interface TransitionFactory {
      * @return Transition a transition to the State which matches bytes as if they
      *         were ASCII text case-insensitively.
      */
-    public Transition createCaseInsensitiveByteTransition(char Char, State toState);
+    public Transition<T> createCaseInsensitiveByteTransition(char Char, State<T> toState);
 
 }

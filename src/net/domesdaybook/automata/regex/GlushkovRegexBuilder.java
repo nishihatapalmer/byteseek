@@ -84,7 +84,7 @@ import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
  */
 public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 
-     private final TransitionFactory transitionFactory;
+     private final TransitionFactory<T> transitionFactory;
      private final StateFactory<T> stateFactory;
      
      /**
@@ -115,7 +115,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
       * 
       * @param transitionFactory The TransitionFactory to use when creating the NFA.
       */
-     public GlushkovRegexBuilder(final TransitionFactory transitionFactory) {
+     public GlushkovRegexBuilder(final TransitionFactory<T> transitionFactory) {
          this(transitionFactory,null);
      }
      
@@ -129,9 +129,9 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
       * @param transitionFactory The TransitionFactory to use when creating the NFA.
       * @param stateFactory The StateFactory to use when creating the NFA.
       */
-     public GlushkovRegexBuilder(final TransitionFactory transitionFactory, final StateFactory<T> stateFactory) {
+     public GlushkovRegexBuilder(final TransitionFactory<T> transitionFactory, final StateFactory<T> stateFactory) {
          if (transitionFactory == null) {
-             this.transitionFactory = new ByteMatcherTransitionFactory();
+             this.transitionFactory = new ByteMatcherTransitionFactory<T>();
          } else {
              this.transitionFactory = transitionFactory;
          }
@@ -158,7 +158,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
      public Automata<T> buildSingleByteAutomata(final byte transitionByte) {
         final State<T> initialState = stateFactory.create(State.NON_FINAL);
         final State<T> finalState = stateFactory.create(State.FINAL);
-        final Transition transition = transitionFactory.createByteTransition(transitionByte, finalState);
+        final Transition<T> transition = transitionFactory.createByteTransition(transitionByte, finalState);
         initialState.addTransition(transition);
         return new BaseAutomata<T>(initialState);
     }
@@ -180,7 +180,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
     public Automata<T> buildSetAutomata(final Set<Byte> byteSet, final boolean negated) {
         final State<T> initialState = stateFactory.create(State.NON_FINAL);
         final State<T> finalState = stateFactory.create(State.FINAL);
-        final Transition transition = transitionFactory.createSetTransition(byteSet, negated, finalState);
+        final Transition<T> transition = transitionFactory.createSetTransition(byteSet, negated, finalState);
         initialState.addTransition(transition);
         return new BaseAutomata<T>(initialState);
     }
@@ -200,7 +200,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
     public Automata<T> buildAnyByteAutomata() {
         final State<T> initialState = stateFactory.create(State.NON_FINAL);
         final State<T> finalState = stateFactory.create(State.FINAL);
-        final Transition transition = transitionFactory.createAnyByteTransition(finalState);
+        final Transition<T> transition = transitionFactory.createAnyByteTransition(finalState);
         initialState.addTransition(transition);
         return new BaseAutomata<T>(initialState);
     }
@@ -221,7 +221,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
     public Automata<T> buildAllBitmaskAutomata(final byte bitMask) {
         final State<T> initialState = stateFactory.create(State.NON_FINAL);
         final State<T> finalState = stateFactory.create(State.FINAL);
-        final Transition transition = transitionFactory.createAllBitmaskTransition(bitMask, finalState);
+        final Transition<T> transition = transitionFactory.createAllBitmaskTransition(bitMask, finalState);
         initialState.addTransition(transition);
         return new BaseAutomata<T>(initialState);
     }
@@ -242,7 +242,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
     public Automata<T> buildAnyBitmaskAutomata(final byte bitMask) {
         final State<T> initialState = stateFactory.create(State.NON_FINAL);
         final State<T> finalState = stateFactory.create(State.FINAL);
-        final Transition transition = transitionFactory.createAnyBitmaskTransition(bitMask, finalState);
+        final Transition<T> transition = transitionFactory.createAnyBitmaskTransition(bitMask, finalState);
         initialState.addTransition(transition);
         return new BaseAutomata<T>(initialState);
     }
@@ -287,7 +287,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
             // Get the transitions and finality of the right hand side initial state:
             final Automata<T> rightAutomata = automataSequence.get(automataIndex);
             final State<T> rightInitialState = rightAutomata.getInitialState();
-            final List<Transition> rightTransitions = rightInitialState.getTransitions();
+            final List<Transition<T>> rightTransitions = rightInitialState.getTransitions();
             final boolean rightInitialStateIsFinal = rightInitialState.isFinal();
             
             // For each final state we currently have:
@@ -345,7 +345,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
             final Automata<T> nextAutomata = alternateAutomata.get(automataIndex);
             final State<T> nextInitialState = nextAutomata.getInitialState();
             isFinal |= nextInitialState.isFinal();
-            final List<Transition> transitions = nextInitialState.getTransitions();
+            final List<Transition<T>> transitions = nextInitialState.getTransitions();
             initialState.addAllTransitions(transitions);
         }
         initialState.setIsFinal(isFinal);
@@ -381,9 +381,9 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
     @Override
     public Automata<T> buildZeroToManyAutomata(final Automata<T> zeroToMany) {
         final State<T> initialState = zeroToMany.getInitialState();
-        final List<Transition> initialTransitions = initialState.getTransitions();
+        final List<Transition<T>> initialTransitions = initialState.getTransitions();
         final Collection<State<T>> finalStates = zeroToMany.getFinalStates();
-        for (final State state : finalStates) {
+        for (final State<T> state : finalStates) {
             state.addAllTransitions(initialTransitions);
         }
         initialState.setIsFinal(true);
@@ -416,7 +416,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
     @Override
     public Automata<T> buildOneToManyAutomata(final Automata<T> oneToMany) {
         final State<T> initialState = oneToMany.getInitialState();
-        final List<Transition> initialTransitions = initialState.getTransitions();
+        final List<Transition<T>> initialTransitions = initialState.getTransitions();
         final Collection<State<T>> finalStates = oneToMany.getFinalStates();
         for (final State<T> state : finalStates) {
             state.addAllTransitions(initialTransitions);
@@ -590,7 +590,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
         for (int index = 0, stop = str.length(); index < stop; index++) {
             final byte transitionByte = (byte) str.charAt(index);
             final State<T> transitionToState = stateFactory.create(State.NON_FINAL);
-            final Transition transition = transitionFactory.createByteTransition(transitionByte, transitionToState);
+            final Transition<T> transition = transitionFactory.createByteTransition(transitionByte, transitionToState);
             lastState.addTransition(transition);
             lastState = transitionToState;
         }
@@ -614,11 +614,11 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
     @Override
     public Automata<T> buildCaseInsensitiveStringAutomata(final String str) {
         final State<T> initialState = stateFactory.create(State.NON_FINAL);
-        State lastState = initialState;
+        State<T> lastState = initialState;
         for (int index = 0, stop = str.length(); index < stop; index++) {
             final char transitionChar = str.charAt(index);
-            Transition transition;
-            final State transitionToState = stateFactory.create(State.NON_FINAL);
+            Transition<T> transition;
+            final State<T> transitionToState = stateFactory.create(State.NON_FINAL);
             if ((transitionChar >= 'A' && transitionChar <= 'Z') ||
                 (transitionChar >= 'a' && transitionChar <= 'z')) {
                 transition = transitionFactory.createCaseInsensitiveByteTransition(transitionChar, transitionToState);

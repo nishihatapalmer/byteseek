@@ -100,11 +100,12 @@ public class BaseAutomata<T> implements Automata<T>{
      * This implementation calculates the final states dynamically by walking
      * the automata states to find the final ones.
      */
-    public List<State<T>> getFinalStates() {
+    @Override
+	public List<State<T>> getFinalStates() {
         final List<State<T>> finalStates = new ArrayList<State<T>>();
-        final StepAction findFinalStates = new StepAction() {
+        final StepAction<T> findFinalStates = new StepAction<T>() {
             @Override
-            public void take(final Step step) {
+            public void take(final Step<T> step) {
                 if (step.currentState.isFinal()) {
                     finalStates.add(step.currentState);
                 }

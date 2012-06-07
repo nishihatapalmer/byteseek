@@ -44,7 +44,7 @@ import net.domesdaybook.util.object.DeepCopy;
  * @author Matt Palmer
  * @see State
  */
-public interface Transition extends DeepCopy {
+public interface Transition<T> extends DeepCopy {
 
     
     /**
@@ -55,7 +55,7 @@ public interface Transition extends DeepCopy {
      * @return State The State to transition to for this byte, or null if the
      *               byte does not match.
      */
-    public State getStateForByte(byte theByte);
+    public State<T> getStateForByte(byte theByte);
 
     
     /**
@@ -63,7 +63,7 @@ public interface Transition extends DeepCopy {
      * 
      * @return State the state this transition links to.
      */
-    public State getToState();
+    public State<T> getToState();
 
     
     /**
@@ -71,7 +71,7 @@ public interface Transition extends DeepCopy {
      * 
      * @param stateToPointAt THe state this transition points at.
      */
-    public void setToState(State stateToPointAt);
+    public void setToState(State<T> stateToPointAt);
     
     
     /**
@@ -91,7 +91,8 @@ public interface Transition extends DeepCopy {
      * @return Transition A deep copy of this Transition and any States and Transitions
      *         reachable from this Transition.
      */
-    public Transition deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
+    @Override
+	public Transition<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects);
 
 }
 

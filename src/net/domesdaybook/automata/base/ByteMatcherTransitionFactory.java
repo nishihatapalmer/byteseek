@@ -56,7 +56,7 @@ import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
  * 
  * @author Matt Palmer
  */
-public class ByteMatcherTransitionFactory implements TransitionFactory {
+public class ByteMatcherTransitionFactory<T> implements TransitionFactory<T> {
 
     private final ByteMatcherFactory matcherFactory;
 
@@ -89,8 +89,8 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
      * @return Transition a transition which transitions to the given state on the given byte.
      */
     @Override
-    public final Transition createByteTransition(final byte theByte, final State toState) {
-        return new ByteMatcherTransition(new OneByteMatcher(theByte), toState);
+    public final Transition<T> createByteTransition(final byte theByte, final State<T> toState) {
+        return new ByteMatcherTransition<T>(new OneByteMatcher(theByte), toState);
     }
 
     
@@ -107,8 +107,8 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
      *                    bitmask to the state supplied.
      */
     @Override
-    public final Transition createAllBitmaskTransition(final byte bitMask, final State toState) {
-        return new ByteMatcherTransition(new AllBitmaskMatcher(bitMask), toState);
+    public final Transition<T> createAllBitmaskTransition(final byte bitMask, final State<T> toState) {
+        return new ByteMatcherTransition<T>(new AllBitmaskMatcher(bitMask), toState);
     }
 
     
@@ -125,8 +125,8 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
      *                     bitmask to the state supplied.
      */
     @Override
-    public final Transition createAnyBitmaskTransition(final byte bitMask, final State toState) {
-        return new ByteMatcherTransition(new AnyBitmaskMatcher(bitMask), toState);
+    public final Transition<T> createAnyBitmaskTransition(final byte bitMask, final State<T> toState) {
+        return new ByteMatcherTransition<T>(new AnyBitmaskMatcher(bitMask), toState);
     }
     
     
@@ -145,8 +145,8 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
      *         inverse), to the state supplied.
      */
     @Override
-    public final Transition createSetTransition(final Set<Byte> byteSet, final boolean inverted, final State toState) {
-        return new ByteMatcherTransition(matcherFactory.create(byteSet, inverted), toState);
+    public final Transition<T> createSetTransition(final Set<Byte> byteSet, final boolean inverted, final State<T> toState) {
+        return new ByteMatcherTransition<T>(matcherFactory.create(byteSet, inverted), toState);
     }
 
     
@@ -157,8 +157,8 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
      * @return Transition a transition which always matches, going to the state supplied.
      */
     @Override
-    public final Transition createAnyByteTransition(State toState) {
-        return new ByteMatcherTransition(new AnyByteMatcher(), toState);
+    public final Transition<T> createAnyByteTransition(State<T> toState) {
+        return new ByteMatcherTransition<T>(new AnyByteMatcher(), toState);
     }
 
     
@@ -172,8 +172,8 @@ public class ByteMatcherTransitionFactory implements TransitionFactory {
      *                    case insensitively, to the state supplied.
      */
     @Override
-    public final Transition createCaseInsensitiveByteTransition(final char Char, final State toState) {
-        return new ByteMatcherTransition(new CaseInsensitiveByteMatcher(Char), toState);
+    public final Transition<T> createCaseInsensitiveByteTransition(final char Char, final State<T> toState) {
+        return new ByteMatcherTransition<T>(new CaseInsensitiveByteMatcher(Char), toState);
     }
 
 }

@@ -41,13 +41,13 @@ package net.domesdaybook.automata.walker;
  * 
  * @author Matt Palmer
  */
-public interface StepAction {
+public interface StepAction<T> {
     
     /**
      * Takes a step of the walk of an automata.
      * 
      * @param step The step to take.
      */
-    public void take(Step step);
+    public void take(Step<T> step);
     
 }
