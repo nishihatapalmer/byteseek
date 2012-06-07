@@ -163,10 +163,6 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
                 result = new AnyByteMatcher();
                 break;
             }
-
-            default: { // no simple match available.
-                result = null;
-            }
         }
        return result;
     }
