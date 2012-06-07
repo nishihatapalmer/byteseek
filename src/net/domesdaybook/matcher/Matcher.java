@@ -32,8 +32,8 @@
 package net.domesdaybook.matcher;
 
 import java.io.IOException;
-import net.domesdaybook.reader.Reader;
 
+import net.domesdaybook.reader.Reader;
 
 /**
  * An interface for classes that can match bytes from a given position, either
@@ -43,28 +43,33 @@ import net.domesdaybook.reader.Reader;
  */
 public interface Matcher {
 
-    /**
-     * Returns whether there is a match or not at the given position in a Reader.
-     * If the position to match at does not exist in the Reader,
-     * then no exception is thrown - there will simply be no match.
-     * 
-     * @param reader The {@link Reader} to read from.
-     * @param matchPosition The position to try to match at.
-     * @return Whether there is a match at the given position.
-     * @throws IOException if the Reader cannot read (but not for reads past the
-     *                     end of the Reader).
-     */
-    public boolean matches(Reader reader, long matchPosition) throws IOException;
-    
-    
-    /**
-     * Returns whether there is a match or not at the given position in a byte array.
-     * If the position to match at does not exist in the byte array,
-     * then no exception is thrown - there will simply be no match.
-     * 
-     * @param bytes An array of bytes to read from.
-     * @param matchPosition The position to try to match at.
-     * @return Whether there is a match at the given position.
-     */
-    public boolean matches(byte[] bytes, int matchPosition);
+	/**
+	 * Returns whether there is a match or not at the given position in a
+	 * Reader. If the position to match at does not exist in the Reader, then no
+	 * exception is thrown - there will simply be no match.
+	 * 
+	 * @param reader
+	 *            The {@link Reader} to read from.
+	 * @param matchPosition
+	 *            The position to try to match at.
+	 * @return Whether there is a match at the given position.
+	 * @throws IOException
+	 *             if the Reader cannot read (but not for reads past the end of
+	 *             the Reader).
+	 */
+	public boolean matches(Reader reader, long matchPosition)
+			throws IOException;
+
+	/**
+	 * Returns whether there is a match or not at the given position in a byte
+	 * array. If the position to match at does not exist in the byte array, then
+	 * no exception is thrown - there will simply be no match.
+	 * 
+	 * @param bytes
+	 *            An array of bytes to read from.
+	 * @param matchPosition
+	 *            The position to try to match at.
+	 * @return Whether there is a match at the given position.
+	 */
+	public boolean matches(byte[] bytes, int matchPosition);
 }

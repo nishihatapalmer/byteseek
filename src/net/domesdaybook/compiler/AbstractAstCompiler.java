@@ -31,61 +31,65 @@
 
 package net.domesdaybook.compiler;
 
-import net.domesdaybook.parser.AstParser;
-import net.domesdaybook.parser.ParseException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
+import net.domesdaybook.parser.AstParser;
+import net.domesdaybook.parser.ParseException;
+
 /**
- * An abstract base class for compilers which compile a String expression into an 
- * object of type T using an {@link AstParser} to generate the parse tree.
+ * An abstract base class for compilers which compile a String expression into
+ * an object of type T using an {@link AstParser} to generate the parse tree.
  * 
- * @param <T> The type of object to build.
+ * @param <T>
+ *            The type of object to build.
  * 
  * @author Matt Palmer
  */
 public abstract class AbstractAstCompiler<T> implements Compiler<T> {
 
-    /**
-     * Turns an expression into a parse tree using an
-     * {@link AstParser}.  Then it invokes the abstract compile
-     * method with the resulting parse-tree, to build and return a
-     * compiled object of type T.
-     * <p>
-     * Classes implementing this abstract class must implement
-     * the other abstract compile method.
-     *
-     * @param expression The expression to compile.
-     * @return A compiled object of type T.
-     * @throws CompileException If the expression could not be parsed.
-     */
-    @Override
-    public T compile(final String expression) throws CompileException {
-        try {
-            final AstParser parser = new AstParser();
-            final Tree tree = parser.parseToAST(expression);
-            final CommonTree optimisedAST = (CommonTree) parser.optimiseAST(tree);
-            return compile(optimisedAST);
-        } catch (final ParseException ex) {
-            throw new CompileException(ex);
-        } catch (final IllegalArgumentException e) {
-            throw new CompileException(e);
-        }
-    }
+	/**
+	 * Turns an expression into a parse tree using an {@link AstParser}. Then it
+	 * invokes the abstract compile method with the resulting parse-tree, to
+	 * build and return a compiled object of type T.
+	 * <p>
+	 * Classes implementing this abstract class must implement the other
+	 * abstract compile method.
+	 * 
+	 * @param expression
+	 *            The expression to compile.
+	 * @return A compiled object of type T.
+	 * @throws CompileException
+	 *             If the expression could not be parsed.
+	 */
+	@Override
+	public T compile(final String expression) throws CompileException {
+		try {
+			final AstParser parser = new AstParser();
+			final Tree tree = parser.parseToAST(expression);
+			final CommonTree optimisedAST = (CommonTree) parser
+					.optimiseAST(tree);
+			return compile(optimisedAST);
+		} catch (final ParseException ex) {
+			throw new CompileException(ex);
+		} catch (final IllegalArgumentException e) {
+			throw new CompileException(e);
+		}
+	}
 
-    
-    /**
-     * An abstract compile method which takes a parse tree created
-     * using the ANTLR parse generator and uses it to build the
-     * compiled object of type T.
-     * <p>
-     * Classes implementing this base class must implement this method
-     * to perform the actual compilation.
-     *
-     * @param ast An abstract syntax tree using the ANTLR tree class.
-     * @return A compiled object of type T.
-     * @throws CompileException If the abstract syntax tree could not be parsed.
-     */
-    public abstract T compile(final CommonTree ast) throws CompileException;
+	/**
+	 * An abstract compile method which takes a parse tree created using the
+	 * ANTLR parse generator and uses it to build the compiled object of type T.
+	 * <p>
+	 * Classes implementing this base class must implement this method to
+	 * perform the actual compilation.
+	 * 
+	 * @param ast
+	 *            An abstract syntax tree using the ANTLR tree class.
+	 * @return A compiled object of type T.
+	 * @throws CompileException
+	 *             If the abstract syntax tree could not be parsed.
+	 */
+	public abstract T compile(final CommonTree ast) throws CompileException;
 
 }

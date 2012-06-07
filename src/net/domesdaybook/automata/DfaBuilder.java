@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import net.domesdaybook.automata.base.BaseStateFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.walker.StateChildWalker;
@@ -46,291 +47,303 @@ import net.domesdaybook.automata.walker.StepAction;
 import net.domesdaybook.util.collections.IdentityHashSet;
 
 /**
- * A class which can convert a non-deterministic finite state automata into
- * a deterministic finite state automata, using the subset construction.
+ * A class which can convert a non-deterministic finite state automata into a
+ * deterministic finite state automata, using the subset construction.
  * 
- * @param <T> The type of object associated with states in the automata.
+ * @param <T>
+ *            The type of object associated with states in the automata.
  * 
  * @author Matt Palmer
  */
 public final class DfaBuilder<T> {
 
-    private final StateFactory<T> stateFactory;
-    private final TransitionFactory<T> transitionFactory;
-    
-    /**
-     * Constructs a DfaBuilder using the default {@link StateFactory}, 
-     * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
-     */
-    public DfaBuilder() {
-        this(null, null);
-    }
+	private final StateFactory<T> stateFactory;
+	private final TransitionFactory<T> transitionFactory;
 
-    
-    /**
-     * Constructs a DfaBuilder using the supplied {@link StateFactory}, 
-     * and the default {@link TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
-     * 
-     * @param stateFactory The StateFactory to use when building the DFA.
-     */
-    public DfaBuilder(final StateFactory<T> stateFactory) {
-        this(stateFactory, null);
-    }
+	/**
+	 * Constructs a DfaBuilder using the default {@link StateFactory},
+	 * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+	 * {@link TransitionFactory},
+	 * {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+	 */
+	public DfaBuilder() {
+		this(null, null);
+	}
 
-    
-    /**
-     * Constructs a DfaBuilder using the default {@link StateFactory}, 
-     * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
-     * {@link TransitionFactory}.
-     * 
-     * @param transitionFactory The TransitionFactory to use when building the DFA.
-     */
-    public DfaBuilder(final TransitionFactory<T> transitionFactory) {
-        this(null, transitionFactory);
-    }
-    
-    
-    /**
-     * Constructs a DfaBuilder using the supplied {@link StateFactory}, 
-     * and the supplied {@link TransitionFactory}.
-     * 
-     * @param stateFactory The StateFactory to use when building the DFA.
-     * @param transitionFactory The TransitionFactory to use when building the DFA.
-     */
-    public DfaBuilder(final StateFactory<T> stateFactory, 
-                      final TransitionFactory<T> transitionFactory) {
-        this.stateFactory      = stateFactory == null
-                               ? new BaseStateFactory<T>()
-                               : stateFactory;
-        this.transitionFactory = transitionFactory == null
-                               ? new ByteMatcherTransitionFactory<T>()
-                               : transitionFactory;
-    }
+	/**
+	 * Constructs a DfaBuilder using the supplied {@link StateFactory}, and the
+	 * default {@link TransitionFactory},
+	 * {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+	 * 
+	 * @param stateFactory
+	 *            The StateFactory to use when building the DFA.
+	 */
+	public DfaBuilder(final StateFactory<T> stateFactory) {
+		this(stateFactory, null);
+	}
 
+	/**
+	 * Constructs a DfaBuilder using the default {@link StateFactory},
+	 * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+	 * {@link TransitionFactory}.
+	 * 
+	 * @param transitionFactory
+	 *            The TransitionFactory to use when building the DFA.
+	 */
+	public DfaBuilder(final TransitionFactory<T> transitionFactory) {
+		this(null, transitionFactory);
+	}
 
-    /**
-     * Builds a DFA from the initial state provided.
-     * 
-     * @param initialState The initial state to being building the DFA from.
-     * @return A new State which forms a deterministic finite-state automata.
-     */
-    public State<T> build(final State<T> initialState) {
-        final Set<State<T>> stateSet = new IdentityHashSet<State<T>>();
-        stateSet.add(initialState);
-        final Map<Set<State<T>>, State<T>> nfaToDfa = new IdentityHashMap<Set<State<T>>, State<T>>();        
-        return getState(stateSet, nfaToDfa);
-    }
-    
-    
-    /**
-     * Builds a DFA from a collection of initial states.  The initial states are
-     * first joined into an NFA (each initial state becoming an alternative state),
-     * then a DFA is built from the joined states.
-     * 
-     * @param initialStates A collection of initial states to build an automata from.
-     * @return A new State which forms a deterministic finite-state automata.
-     */
-    public State<T> build(final Collection<State<T>> initialStates) {
-        return build(join(initialStates));
-    }    
+	/**
+	 * Constructs a DfaBuilder using the supplied {@link StateFactory}, and the
+	 * supplied {@link TransitionFactory}.
+	 * 
+	 * @param stateFactory
+	 *            The StateFactory to use when building the DFA.
+	 * @param transitionFactory
+	 *            The TransitionFactory to use when building the DFA.
+	 */
+	public DfaBuilder(final StateFactory<T> stateFactory,
+			final TransitionFactory<T> transitionFactory) {
+		this.stateFactory = stateFactory == null ? new BaseStateFactory<T>()
+				: stateFactory;
+		this.transitionFactory = transitionFactory == null ? new ByteMatcherTransitionFactory<T>()
+				: transitionFactory;
+	}
 
+	/**
+	 * Builds a DFA from the initial state provided.
+	 * 
+	 * @param initialState
+	 *            The initial state to being building the DFA from.
+	 * @return A new State which forms a deterministic finite-state automata.
+	 */
+	public State<T> build(final State<T> initialState) {
+		final Set<State<T>> stateSet = new IdentityHashSet<State<T>>();
+		stateSet.add(initialState);
+		final Map<Set<State<T>>, State<T>> nfaToDfa = new IdentityHashMap<Set<State<T>>, State<T>>();
+		return getState(stateSet, nfaToDfa);
+	}
 
-    private State<T> getState(final Set<State<T>> stateSet, final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
-        // This method is called recursively -
-        // if we have already built this dfa state, just return it:
-        if (stateSetsSeenSoFar.containsKey(stateSet)) {
-            return stateSetsSeenSoFar.get(stateSet);
-        }
-        return createState(stateSet, stateSetsSeenSoFar);
-    }
+	/**
+	 * Builds a DFA from a collection of initial states. The initial states are
+	 * first joined into an NFA (each initial state becoming an alternative
+	 * state), then a DFA is built from the joined states.
+	 * 
+	 * @param initialStates
+	 *            A collection of initial states to build an automata from.
+	 * @return A new State which forms a deterministic finite-state automata.
+	 */
+	public State<T> build(final Collection<State<T>> initialStates) {
+		return build(join(initialStates));
+	}
 
+	private State<T> getState(final Set<State<T>> stateSet,
+			final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
+		// This method is called recursively -
+		// if we have already built this dfa state, just return it:
+		if (stateSetsSeenSoFar.containsKey(stateSet)) {
+			return stateSetsSeenSoFar.get(stateSet);
+		}
+		return createState(stateSet, stateSetsSeenSoFar);
+	}
 
-    private State<T> createState(final Set<State<T>> sourceStates, final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
-        // Determine if the new Dfa state should be final:
-        boolean isFinal = anyStatesAreFinal(sourceStates);
+	private State<T> createState(final Set<State<T>> sourceStates,
+			final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
+		// Determine if the new Dfa state should be final:
+		final boolean isFinal = anyStatesAreFinal(sourceStates);
 
-        // Create the new state and register it in our map of nfa states to dfa state.
-        State<T> newState = stateFactory.create(isFinal);
-        stateSetsSeenSoFar.put(sourceStates, newState);
+		// Create the new state and register it in our map of nfa states to dfa
+		// state.
+		final State<T> newState = stateFactory.create(isFinal);
+		stateSetsSeenSoFar.put(sourceStates, newState);
 
-        // Append all associations of the sourceStates to the new state.
-        for (final State<T> state : sourceStates) {
-            newState.addAllAssociations(state.getAssociations());
-        }
-        
-        // Create transitions to all the new dfa states this one points to:
-        createDfaTransitions(sourceStates, newState, stateSetsSeenSoFar);
-        
-        return newState;
-    }
+		// Append all associations of the sourceStates to the new state.
+		for (final State<T> state : sourceStates) {
+			newState.addAllAssociations(state.getAssociations());
+		}
 
+		// Create transitions to all the new dfa states this one points to:
+		createDfaTransitions(sourceStates, newState, stateSetsSeenSoFar);
 
-    private void createDfaTransitions(final Set<State<T>> stateSet, final State<T> newState,
-                                     final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar)  {
-       // For each target nfa state set, add a transition on those bytes:
-       final Map<Set<State<T>>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(stateSet);
-       for (final Map.Entry<Set<State<T>>, Set<Byte>> targetEntry : targetStatesToBytes.entrySet()) {
-            // Get the set of bytes to transition on:
-            final Set<Byte> transitionBytes = targetEntry.getValue();
+		return newState;
+	}
 
-            // Recursive: get the target DFA state for this transition.
-            final State<T> targetDFAState = getState(targetEntry.getKey(), stateSetsSeenSoFar);
+	private void createDfaTransitions(final Set<State<T>> stateSet,
+			final State<T> newState,
+			final Map<Set<State<T>>, State<T>> stateSetsSeenSoFar) {
+		// For each target nfa state set, add a transition on those bytes:
+		final Map<Set<State<T>>, Set<Byte>> targetStatesToBytes = getDfaTransitionInfo(stateSet);
+		for (final Map.Entry<Set<State<T>>, Set<Byte>> targetEntry : targetStatesToBytes
+				.entrySet()) {
+			// Get the set of bytes to transition on:
+			final Set<Byte> transitionBytes = targetEntry.getValue();
 
-            // Create a transition to the target state using the bytes to transition on:
-            // This places a burden on the implementor of createSetTransition to ensure it
-            // returns an efficient transition, given the set of bytes passed to it.
-            // Maybe should rename method or add a createOptimalTransition() method...?
-            final Transition<T> transition = transitionFactory.createSetTransition(transitionBytes, false, targetDFAState);
+			// Recursive: get the target DFA state for this transition.
+			final State<T> targetDFAState = getState(targetEntry.getKey(),
+					stateSetsSeenSoFar);
 
-            // Add the transition to the source state:
-            newState.addTransition(transition);
-        }
-    }
+			// Create a transition to the target state using the bytes to
+			// transition on:
+			// This places a burden on the implementor of createSetTransition to
+			// ensure it
+			// returns an efficient transition, given the set of bytes passed to
+			// it.
+			// Maybe should rename method or add a createOptimalTransition()
+			// method...?
+			final Transition<T> transition = transitionFactory
+					.createSetTransition(transitionBytes, false, targetDFAState);
 
-   
-   private Map<Set<State<T>>, Set<Byte>> getDfaTransitionInfo(final Set<State<T>> sourceStates) {
-        // Build a map of bytes to the target nfa states each points to:
-        Map<Byte, Set<State<T>>> byteToStates = buildByteToStates(sourceStates);
+			// Add the transition to the source state:
+			newState.addTransition(transition);
+		}
+	}
 
-        // Return a map of target nfa states to the bytes they each transition on:
-        return getStatesToBytes(byteToStates);
-   }
-   
+	private Map<Set<State<T>>, Set<Byte>> getDfaTransitionInfo(
+			final Set<State<T>> sourceStates) {
+		// Build a map of bytes to the target nfa states each points to:
+		final Map<Byte, Set<State<T>>> byteToStates = buildByteToStates(sourceStates);
 
-   private Map<Byte, Set<State<T>>> buildByteToStates(final Set<State<T>> states) {
-        Map<Byte, Set<State<T>>> byteToTargetStates = new LinkedHashMap<Byte, Set<State<T>>>();
-        for (final State<T> state : states) {
-            buildByteToStates(state, byteToTargetStates);
-        }
-        return byteToTargetStates;
-    }
-   
-   
-    /**
-     * This function joins all the automata into a single automata,
-     * by adding all the transitions and associations of all the states after 
-     * the first in to the first state in the collection, and ensuring that
-     * any references to the other states are updated to point to the
-     * first state.
-     * <o>
-     * If any of the first states are final, then the state returned will
-     * also be final.
-     * 
-     * @param automata A collection of states to join.
-     * @return State<T> A State linking to all the initial States in the collection.
-     */
-    public State<T> join(final Collection<State<T>> automata) {
-        final Iterator<State<T>> automataFirstStates = automata.iterator();
-        if (automataFirstStates.hasNext()) {
-            final State<T> root = automataFirstStates.next();
-            boolean isFinal = root.isFinal();            
-            while (automataFirstStates.hasNext()) {
-                final State<T> automataFirstState = automataFirstStates.next();
-                isFinal |= automataFirstState.isFinal();
-                replaceReachableReferences(automataFirstState, root);
-                root.addAllTransitions(automataFirstState.getTransitions());
-                root.addAllAssociations(automataFirstState.getAssociations());
-            }
-            root.setIsFinal(isFinal);
-            return root;
-        }
-        return null;
-    }
-    
-    
-    /**
-     * This function replaces all references to an old State with references 
-     * to the new state in the entire automata reachable from the oldState 
-     * passed in.
-     * 
-     * @param oldState
-     * @param newState
-     * @return 
-     */
-    private void replaceReachableReferences(final State<T> oldState, final State<T> newState) {
-        final StepAction<T> replaceWithNewState = new StepAction<T>() {
-            @Override
-            public void take(final Step<T> step) {
-                final State<T> stateToUpdate = step.currentState;
-                for (final Transition<T> transition : stateToUpdate.getTransitions()) {
-                    if (transition.getToState() == oldState) {
-                        transition.setToState(newState);
-                    }
-                }
-            }
-        };
-        StateChildWalker.walkAutomata(oldState, replaceWithNewState);
-    }
-    
-   
-    /**
-     * Builds a map of bytes to the states which can be reached by them from a
-     * given state.
-     * 
-     * @param state The state to build the map from.
-     * @param byteToTargetStates The map of byte to states in which the results are placed.
-     */
-    private void buildByteToStates(final State<T> state, Map<Byte, Set<State<T>>> byteToTargetStates) {
-        for (final Transition<T> transition : state.getTransitions()) {
-            final State<T> transitionToState = transition.getToState();
-            final byte[] transitionBytes = transition.getBytes();
-            for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
-                final Byte transitionByte = transitionBytes[index];
-                Set<State<T>> states = byteToTargetStates.get(transitionByte);
-                if (states == null) {
-                    states = new IdentityHashSet<State<T>>();
-                    byteToTargetStates.put(transitionByte, states);
-                }
-                states.add(transitionToState);
-            }
-        }
-    }
+		// Return a map of target nfa states to the bytes they each transition
+		// on:
+		return getStatesToBytes(byteToStates);
+	}
 
-       
-    /**
-     * Given a map of the bytes to the states which can be reached by them, this
-     * method returns the reversed map of the sets of states to the sets of bytes 
-     * required to reach them.  The map is many-to-many (sets of states to sets of
-     * bytes) because a set of states can be reached by more than one byte.
-     * 
-     * @param bytesToTargetStates The map of bytes to states reachable by them.
-     * @return A map of the set of states to the set of bytes required to reach that set of states.
-     */
-    public Map<Set<State<T>>, Set<Byte>> getStatesToBytes(Map<Byte, Set<State<T>>> bytesToTargetStates) {
-        Map<Set<State<T>>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State<T>>, Set<Byte>>();
+	private Map<Byte, Set<State<T>>> buildByteToStates(
+			final Set<State<T>> states) {
+		final Map<Byte, Set<State<T>>> byteToTargetStates = new LinkedHashMap<Byte, Set<State<T>>>();
+		for (final State<T> state : states) {
+			buildByteToStates(state, byteToTargetStates);
+		}
+		return byteToTargetStates;
+	}
 
-        // For each byte there is a transition on:
-        for (final Map.Entry<Byte, Set<State<T>>> transitionByte : bytesToTargetStates.entrySet()) {
+	/**
+	 * This function joins all the automata into a single automata, by adding
+	 * all the transitions and associations of all the states after the first in
+	 * to the first state in the collection, and ensuring that any references to
+	 * the other states are updated to point to the first state. <o> If any of
+	 * the first states are final, then the state returned will also be final.
+	 * 
+	 * @param automata
+	 *            A collection of states to join.
+	 * @return State<T> A State linking to all the initial States in the
+	 *         collection.
+	 */
+	public State<T> join(final Collection<State<T>> automata) {
+		final Iterator<State<T>> automataFirstStates = automata.iterator();
+		if (automataFirstStates.hasNext()) {
+			final State<T> root = automataFirstStates.next();
+			boolean isFinal = root.isFinal();
+			while (automataFirstStates.hasNext()) {
+				final State<T> automataFirstState = automataFirstStates.next();
+				isFinal |= automataFirstState.isFinal();
+				replaceReachableReferences(automataFirstState, root);
+				root.addAllTransitions(automataFirstState.getTransitions());
+				root.addAllAssociations(automataFirstState.getAssociations());
+			}
+			root.setIsFinal(isFinal);
+			return root;
+		}
+		return null;
+	}
 
-            // Get the target states for that byte:
-            Set<State<T>> targetStates = transitionByte.getValue();
+	/**
+	 * This function replaces all references to an old State with references to
+	 * the new state in the entire automata reachable from the oldState passed
+	 * in.
+	 * 
+	 * @param oldState
+	 * @param newState
+	 * @return
+	 */
+	private void replaceReachableReferences(final State<T> oldState,
+			final State<T> newState) {
+		final StepAction<T> replaceWithNewState = new StepAction<T>() {
+			@Override
+			public void take(final Step<T> step) {
+				final State<T> stateToUpdate = step.currentState;
+				for (final Transition<T> transition : stateToUpdate
+						.getTransitions()) {
+					if (transition.getToState() == oldState) {
+						transition.setToState(newState);
+					}
+				}
+			}
+		};
+		StateChildWalker.walkAutomata(oldState, replaceWithNewState);
+	}
 
-            // Get the set of bytes so far for those target states:
-            Set<Byte> targetStateBytes = statesToBytes.get(targetStates);
-            if (targetStateBytes == null) {
-                targetStateBytes = new TreeSet<Byte>();
-                statesToBytes.put(targetStates, targetStateBytes);
-            }
-            
-            // Add the transition byte to that set of bytes:
-            targetStateBytes.add(transitionByte.getKey());
-        }
+	/**
+	 * Builds a map of bytes to the states which can be reached by them from a
+	 * given state.
+	 * 
+	 * @param state
+	 *            The state to build the map from.
+	 * @param byteToTargetStates
+	 *            The map of byte to states in which the results are placed.
+	 */
+	private void buildByteToStates(final State<T> state,
+			final Map<Byte, Set<State<T>>> byteToTargetStates) {
+		for (final Transition<T> transition : state.getTransitions()) {
+			final State<T> transitionToState = transition.getToState();
+			final byte[] transitionBytes = transition.getBytes();
+			for (int index = 0, stop = transitionBytes.length; index < stop; index++) {
+				final Byte transitionByte = transitionBytes[index];
+				Set<State<T>> states = byteToTargetStates.get(transitionByte);
+				if (states == null) {
+					states = new IdentityHashSet<State<T>>();
+					byteToTargetStates.put(transitionByte, states);
+				}
+				states.add(transitionToState);
+			}
+		}
+	}
 
-        return statesToBytes;
-    }
-    
+	/**
+	 * Given a map of the bytes to the states which can be reached by them, this
+	 * method returns the reversed map of the sets of states to the sets of
+	 * bytes required to reach them. The map is many-to-many (sets of states to
+	 * sets of bytes) because a set of states can be reached by more than one
+	 * byte.
+	 * 
+	 * @param bytesToTargetStates
+	 *            The map of bytes to states reachable by them.
+	 * @return A map of the set of states to the set of bytes required to reach
+	 *         that set of states.
+	 */
+	public Map<Set<State<T>>, Set<Byte>> getStatesToBytes(
+			final Map<Byte, Set<State<T>>> bytesToTargetStates) {
+		final Map<Set<State<T>>, Set<Byte>> statesToBytes = new IdentityHashMap<Set<State<T>>, Set<Byte>>();
 
-    private boolean anyStatesAreFinal(final Set<State<T>> sourceStates) {
-        for (final State<T> state : sourceStates) {
-            if (state.isFinal()) {
-                return true;
-            }
-        }
-        return false;
-    }
+		// For each byte there is a transition on:
+		for (final Map.Entry<Byte, Set<State<T>>> transitionByte : bytesToTargetStates
+				.entrySet()) {
 
- 
+			// Get the target states for that byte:
+			final Set<State<T>> targetStates = transitionByte.getValue();
 
+			// Get the set of bytes so far for those target states:
+			Set<Byte> targetStateBytes = statesToBytes.get(targetStates);
+			if (targetStateBytes == null) {
+				targetStateBytes = new TreeSet<Byte>();
+				statesToBytes.put(targetStates, targetStateBytes);
+			}
+
+			// Add the transition byte to that set of bytes:
+			targetStateBytes.add(transitionByte.getKey());
+		}
+
+		return statesToBytes;
+	}
+
+	private boolean anyStatesAreFinal(final Set<State<T>> sourceStates) {
+		for (final State<T> state : sourceStates) {
+			if (state.isFinal()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

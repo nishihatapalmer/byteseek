@@ -37,17 +37,19 @@ package net.domesdaybook.automata;
  * Implementations of this interface should create the particular type of State
  * required.
  * 
- * @param <T> The type of object which can be associated with each State.
+ * @param <T>
+ *            The type of object which can be associated with each State.
  * @author Matt Palmer
  */
 public interface StateFactory<T> {
-    
-    /**
-     * Builds an {@link State} object.
-     *
-     * @param isFinal Whether the state is final or not.
-     * @return An object implementing the State interface.
-     */
-    public State<T> create(boolean isFinal);    
-    
+
+	/**
+	 * Builds an {@link State} object.
+	 * 
+	 * @param isFinal
+	 *            Whether the state is final or not.
+	 * @return An object implementing the State interface.
+	 */
+	public State<T> create(boolean isFinal);
+
 }

@@ -38,34 +38,35 @@ package net.domesdaybook.compiler;
  */
 public class CompileException extends Exception {
 
+	/**
+	 * Constructor taking an error message as a paramater.
+	 * 
+	 * @param message
+	 *            the error message
+	 */
+	public CompileException(final String message) {
+		super(message);
+	}
 
-    /**
-     * Constructor taking an error message as a paramater.
-     * @param message the error message
-     */
-    public CompileException(final String message) {
-        super(message);
-    }
+	/**
+	 * Constructor taking a Throwable cause as a parameter.
+	 * 
+	 * @param cause
+	 *            the cause of the compile exception
+	 */
+	public CompileException(final Throwable cause) {
+		super(cause);
+	}
 
-
-    /**
-     * Constructor taking a Throwable cause as a parameter.
-     * 
-     * @param cause the cause of the compile exception
-     */
-    public CompileException(final Throwable cause) {
-        super(cause);
-    }
-
-
-    /**
-     * Constructor taking a message and a Throwable cause as parameters.
-     * 
-     * @param message The error message
-     * @param cause The cause of the compile exception.
-     */
-    public CompileException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * Constructor taking a message and a Throwable cause as parameters.
+	 * 
+	 * @param message
+	 *            The error message
+	 * @param cause
+	 *            The cause of the compile exception.
+	 */
+	public CompileException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }
-

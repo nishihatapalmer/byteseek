@@ -41,67 +41,73 @@ import java.util.Map;
  * @author Matt Palmer
  */
 public final class AutomataUtils {
-    
-    private static final String DOT_HEADER = "digraph {\n";
-    private static final String DOT_TITLE = "label=\"%s\"\n";
-    private static final String DOT_FOOTER = "\n}";    
-    private static final String FINAL_STATE_SHAPE = "doublecircle";
-    private static final String NON_FINAL_STATE_SHAPE = "circle";
-    private static final String STATE_DEFINITION = "%s [label=\"%s\", shape=\"%s\"]\n";
-    private static final String TRANSITION_DEFINITION = "%s->%s [label=\"%s\"]\n";
-    
-    /**
-     * A private constructor to prevent instantiation of this static utility class.
-     */
-    private AutomataUtils() {
-    }
 
-    
-    /**
-     * Builds a text representation of the automata in Graphviz dot format.
-     * http://www.graphviz.org/
-     * <p/>
-     * Graphviz can then render the automata using a variety of graph layout 
-     * algorithms, outputting the render to many common formats.
-     *
-     * @param automata The automata to produce a DOT graph from.
-     * @param title The title of the DOT graph.
-     * @return A String containing the automata serialised in DOT format.
-     */
-    public static <T> String toDot(final Automata<T> automata, final String title) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(DOT_HEADER);
-        String onelineTitle = title.replaceAll("\\s", " ");
-        builder.append(String.format(DOT_TITLE, onelineTitle));
-        Map<State<T>,Integer> visitedStates = new IdentityHashMap<State<T>,Integer>();
-        buildDot(automata.getInitialState(), visitedStates, 0, builder);
-        builder.append(DOT_FOOTER);
-        return builder.toString();
-    }
+	private static final String DOT_HEADER = "digraph {\n";
+	private static final String DOT_TITLE = "label=\"%s\"\n";
+	private static final String DOT_FOOTER = "\n}";
+	private static final String FINAL_STATE_SHAPE = "doublecircle";
+	private static final String NON_FINAL_STATE_SHAPE = "circle";
+	private static final String STATE_DEFINITION = "%s [label=\"%s\", shape=\"%s\"]\n";
+	private static final String TRANSITION_DEFINITION = "%s->%s [label=\"%s\"]\n";
 
+	/**
+	 * A private constructor to prevent instantiation of this static utility
+	 * class.
+	 */
+	private AutomataUtils() {
+	}
 
-    private static <T> int buildDot(State<T> state, Map<State<T>,Integer> visitedStates, int nextStateNumber, StringBuilder builder) {
-        if (!visitedStates.containsKey(state)) {
-            visitedStates.put(state, nextStateNumber);
-            final String label = Integer.toString(nextStateNumber);
-            final String shape = state.isFinal() 
-                    ? FINAL_STATE_SHAPE 
-                    : NON_FINAL_STATE_SHAPE;
-            builder.append(String.format(STATE_DEFINITION, label, label, shape));
+	/**
+	 * Builds a text representation of the automata in Graphviz dot format.
+	 * http://www.graphviz.org/
+	 * <p/>
+	 * Graphviz can then render the automata using a variety of graph layout
+	 * algorithms, outputting the render to many common formats.
+	 * 
+	 * @param automata
+	 *            The automata to produce a DOT graph from.
+	 * @param title
+	 *            The title of the DOT graph.
+	 * @return A String containing the automata serialised in DOT format.
+	 */
+	public static <T> String toDot(final Automata<T> automata,
+			final String title) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(DOT_HEADER);
+		final String onelineTitle = title.replaceAll("\\s", " ");
+		builder.append(String.format(DOT_TITLE, onelineTitle));
+		final Map<State<T>, Integer> visitedStates = new IdentityHashMap<State<T>, Integer>();
+		buildDot(automata.getInitialState(), visitedStates, 0, builder);
+		builder.append(DOT_FOOTER);
+		return builder.toString();
+	}
 
-            // process its transitions:
-            final List<Transition<T>> transitions = state.getTransitions();
-            for (final Transition<T> transition : transitions) {
-                final State<T> toState = transition.getToState();
-                int processedNumber = buildDot(toState, visitedStates, nextStateNumber + 1, builder);
-                nextStateNumber = processedNumber > nextStateNumber? processedNumber : nextStateNumber;
-                final String toStateLabel = Integer.toString(visitedStates.get(toState));
-                final String transitionLabel = transition.toString();
-                builder.append(String.format(TRANSITION_DEFINITION, label, toStateLabel,transitionLabel));
-            }
-        }
-        return nextStateNumber;
-    }
+	private static <T> int buildDot(final State<T> state,
+			final Map<State<T>, Integer> visitedStates, int nextStateNumber,
+			final StringBuilder builder) {
+		if (!visitedStates.containsKey(state)) {
+			visitedStates.put(state, nextStateNumber);
+			final String label = Integer.toString(nextStateNumber);
+			final String shape = state.isFinal() ? FINAL_STATE_SHAPE
+					: NON_FINAL_STATE_SHAPE;
+			builder.append(String.format(STATE_DEFINITION, label, label, shape));
 
+			// process its transitions:
+			final List<Transition<T>> transitions = state.getTransitions();
+			for (final Transition<T> transition : transitions) {
+				final State<T> toState = transition.getToState();
+				final int processedNumber = buildDot(toState, visitedStates,
+						nextStateNumber + 1, builder);
+				nextStateNumber = processedNumber > nextStateNumber ? processedNumber
+						: nextStateNumber;
+				final String toStateLabel = Integer.toString(visitedStates
+						.get(toState));
+				final String transitionLabel = transition.toString();
+				builder.append(String.format(TRANSITION_DEFINITION, label,
+						toStateLabel, transitionLabel));
+			}
+		}
+		return nextStateNumber;
+	}
 
 }

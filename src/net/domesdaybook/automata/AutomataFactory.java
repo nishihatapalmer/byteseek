@@ -34,18 +34,20 @@ package net.domesdaybook.automata;
 /**
  * A factory for {@link Automata}.
  * 
- * @param <T> The type of object associated with states in the Automata.
+ * @param <T>
+ *            The type of object associated with states in the Automata.
  * 
  * @author Matt Palmer
  */
 public interface AutomataFactory<T> {
-    
-    /**
-     * Creates an {@link Automata} given an initial State.
-     * 
-     * @param initialState The initial state of the automata.
-     * @return An automata.
-     */
-    public Automata<T> create(State<T> initialState);
-    
+
+	/**
+	 * Creates an {@link Automata} given an initial State.
+	 * 
+	 * @param initialState
+	 *            The initial state of the automata.
+	 * @return An automata.
+	 */
+	public Automata<T> create(State<T> initialState);
+
 }

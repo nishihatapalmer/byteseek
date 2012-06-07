@@ -33,33 +33,36 @@ package net.domesdaybook.compiler;
 
 import java.util.Collection;
 
-
 /**
  * An interface for compilers which compile an expression written as a string
  * into an object of type T.
- *
- * @param <T> The type of the object to compile to.
+ * 
+ * @param <T>
+ *            The type of the object to compile to.
  * @author Matt Palmer
  */
 public interface Compiler<T> {
 
-    /**
-     * Compiles an expression into an object of type T.
-     *
-     * @param expression The expression to compile.
-     * @return A compiled object of type T.
-     * @throws CompileException if an object could not be compiled.
-     */
-    public T compile(String expression) throws CompileException;
-    
-    
-    /**
-     * Compiles a collection of expressions into a single object of type T.
-     * 
-     * @param expressions A collection of expressions to compile.
-     * @return A compiled object of type T
-     * @throws CompileException if an object could not be compiled.
-     */
-    public T compile(Collection<String> expressions) throws CompileException;
-    
+	/**
+	 * Compiles an expression into an object of type T.
+	 * 
+	 * @param expression
+	 *            The expression to compile.
+	 * @return A compiled object of type T.
+	 * @throws CompileException
+	 *             if an object could not be compiled.
+	 */
+	public T compile(String expression) throws CompileException;
+
+	/**
+	 * Compiles a collection of expressions into a single object of type T.
+	 * 
+	 * @param expressions
+	 *            A collection of expressions to compile.
+	 * @return A compiled object of type T
+	 * @throws CompileException
+	 *             if an object could not be compiled.
+	 */
+	public T compile(Collection<String> expressions) throws CompileException;
+
 }

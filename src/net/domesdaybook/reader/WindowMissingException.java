@@ -34,46 +34,52 @@ package net.domesdaybook.reader;
 import java.io.IOException;
 
 /**
- * An exception thrown when a {@link Reader} cannot access a Window which it 
- * should be able to return.  It extends {@link java.io.IOException}, which means
- * it is a checked exception.  However, it will be thrown from methods which can also
- * throw IOExceptions for other reasons, so no specific catch block is technically
- * required, although you can specifically catch this exception if you want to know
- * that this specific problem has occurred.
+ * An exception thrown when a {@link Reader} cannot access a Window which it
+ * should be able to return. It extends {@link java.io.IOException}, which means
+ * it is a checked exception. However, it will be thrown from methods which can
+ * also throw IOExceptions for other reasons, so no specific catch block is
+ * technically required, although you can specifically catch this exception if
+ * you want to know that this specific problem has occurred.
  * <p>
- * This may be because an inappropriate {@link net.domesdaybook.reader.cache.WindowCache}
- * object was used for the input source of the Reader and the access pattern used with it.
+ * This may be because an inappropriate
+ * {@link net.domesdaybook.reader.cache.WindowCache} object was used for the
+ * input source of the Reader and the access pattern used with it.
  * 
  * @author Matt Palmer.
  */
 public class WindowMissingException extends IOException {
 
-    /**
-     * Constructs a WindowMissingException with a descriptive message.
-     * 
-     * @param message The message to include with the exception.
-     */
-    public WindowMissingException(String message) {
-        super(message);
-    }
+	/**
+	 * Constructs a WindowMissingException with a descriptive message.
+	 * 
+	 * @param message
+	 *            The message to include with the exception.
+	 */
+	public WindowMissingException(final String message) {
+		super(message);
+	}
 
-    /**
-     * Constructs a WindowMissingException from a Throwable cause.
-     * 
-     * @param cause The Throwable which caused this exception to be thrown.
-     */
-    public WindowMissingException(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * Constructs a WindowMissingException from a Throwable cause.
+	 * 
+	 * @param cause
+	 *            The Throwable which caused this exception to be thrown.
+	 */
+	public WindowMissingException(final Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Constructs a WindowMissingException from a descriptive message and a Throwable cause.
-     * 
-     * @param message The message to include with the exception.
-     * @param cause The Throwable which caused this exception to be thrown.
-     */
-    public WindowMissingException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    
+	/**
+	 * Constructs a WindowMissingException from a descriptive message and a
+	 * Throwable cause.
+	 * 
+	 * @param message
+	 *            The message to include with the exception.
+	 * @param cause
+	 *            The Throwable which caused this exception to be thrown.
+	 */
+	public WindowMissingException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+
 }
