@@ -101,7 +101,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
      */
     @Override
     public boolean remove(final Object object) {
-        return map.remove((T)object) != null;
+        return map.remove(object) != null;
     }
     
     
@@ -110,7 +110,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, 
      */
     @Override
     public boolean contains(final Object object) {
-        return map.containsKey((T)object);
+        return map.containsKey(object);
     }
     
     
