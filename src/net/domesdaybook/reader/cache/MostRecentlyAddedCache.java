@@ -103,10 +103,10 @@ public final class MostRecentlyAddedCache extends AbstractCache  {
         }
         
         @Override
-        protected boolean removeEldestEntry(final Map.Entry eldest) {
+        protected boolean removeEldestEntry(final Map.Entry<Long, Window> eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
-                notifyWindowFree((Window) eldest.getValue(), MostRecentlyAddedCache.this);
+                notifyWindowFree(eldest.getValue(), MostRecentlyAddedCache.this);
             }
             return remove;
         }   
