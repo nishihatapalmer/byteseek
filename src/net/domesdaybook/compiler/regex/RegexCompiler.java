@@ -40,18 +40,19 @@ import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
 import net.domesdaybook.automata.regex.RegexBuilder;
-import net.domesdaybook.compiler.AbstractAstCompiler;
+import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.ParseUtils;
-import net.domesdaybook.parser.regularExpressionParser;
+import net.domesdaybook.parser.ParseTreeUtils;
+import net.domesdaybook.parser.regex.regularExpressionParser;
+
 import org.antlr.runtime.tree.CommonTree;
 
 /**
  * A compiler which produces Non-deterministic Finite-state Automata (NFA)
  * from an expression.  
  * <p>
- * This class extends {@link AbstractAstCompiler}, which
+ * This class extends {@link AbstractCompiler}, which
  * parses the expression using an ANTLR generated parser, and turns it into
  * an abstract syntax tree.  The compiler takes the abstract syntax tree
  * and uses it to direct the construction of an NFA using various builder
@@ -60,7 +61,7 @@ import org.antlr.runtime.tree.CommonTree;
  * @param <T> The type of object which a match of the regular expression should return.
  * @author Matt Palmer
  */
-public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
+public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>> {
 
     private static final String MANY = "*";
     
@@ -93,7 +94,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
     
     /**
      * Compiles a Non-deterministic Finite-state Automata (NFA) from the
-     * abstract syntax tree provided by the {@link AbstractAstCompiler} which this
+     * abstract syntax tree provided by the {@link AbstractCompiler} which this
      * class extends.
      * <p>
      * It uses a {@link RegexBuilder} object to build the actual automata,
@@ -164,11 +165,11 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
             case (regularExpressionParser.REPEAT): {
                 final CommonTree nodeToRepeat = (CommonTree) ast.getChild(2);
                 final Automata<T> repeatedAutomata = buildAutomata(nodeToRepeat);
-                final int minRepeat = ParseUtils.getChildIntValue(ast, 0);
-                if (MANY.equals(ParseUtils.getChildStringValue(ast,1))) {
+                final int minRepeat = ParseTreeUtils.getChildIntValue(ast, 0);
+                if (MANY.equals(ParseTreeUtils.getChildStringValue(ast,1))) {
                     automata = regexBuilder.buildMinToManyAutomata(minRepeat, repeatedAutomata);
                 } else {
-                    final int maxRepeat = ParseUtils.getChildIntValue(ast, 1);
+                    final int maxRepeat = ParseTreeUtils.getChildIntValue(ast, 1);
                     automata = regexBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, repeatedAutomata);
                 }
                 break;
@@ -203,20 +204,20 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
 
 
             case (regularExpressionParser.BYTE): {
-                final byte transitionByte = ParseUtils.getHexByteValue(ast);
+                final byte transitionByte = ParseTreeUtils.getHexByteValue(ast);
                 automata = regexBuilder.buildSingleByteAutomata(transitionByte);
                 break;
             }
 
 
             case (regularExpressionParser.ALL_BITMASK): {
-                final byte transitionByte = ParseUtils.getBitMaskValue(ast);
+                final byte transitionByte = ParseTreeUtils.getBitMaskValue(ast);
                 automata = regexBuilder.buildAllBitmaskAutomata(transitionByte);
                 break;
             }
 
             case (regularExpressionParser.ANY_BITMASK): {
-                final byte transitionByte = ParseUtils.getBitMaskValue(ast);
+                final byte transitionByte = ParseTreeUtils.getBitMaskValue(ast);
                 automata = regexBuilder.buildAnyBitmaskAutomata(transitionByte);
                 break;
             }
@@ -224,7 +225,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
 
             case (regularExpressionParser.SET): {
                 try {
-                    final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
+                    final Set<Byte> byteSet = ParseTreeUtils.calculateSetValue(ast);
                     automata = regexBuilder.buildSetAutomata(byteSet,false);
                     break;
                 } catch (ParseException ex) {
@@ -235,7 +236,7 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
 
             case (regularExpressionParser.INVERTED_SET): {
                 try {
-                    final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
+                    final Set<Byte> byteSet = ParseTreeUtils.calculateSetValue(ast);
                     automata = regexBuilder.buildSetAutomata(byteSet, true);
                     break;
                 } catch (ParseException ex) {
@@ -250,20 +251,20 @@ public final class RegexCompiler<T> extends AbstractAstCompiler<Automata<T>> {
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = ParseUtils.unquoteString(ast.getText());
+                final String str = ParseTreeUtils.unquoteString(ast.getText());
                 automata = regexBuilder.buildCaseSensitiveStringAutomata(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = ParseUtils.unquoteString(ast.getText());
+                final String str = ParseTreeUtils.unquoteString(ast.getText());
                 automata = regexBuilder.buildCaseInsensitiveStringAutomata(str);
                 break;
             }
 
             default: {
-                throw new CompileException(ParseUtils.getTypeErrorMessage(ast));
+                throw new CompileException(ParseTreeUtils.getTypeErrorMessage(ast));
             }
         }
         

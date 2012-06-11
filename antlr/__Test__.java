@@ -6,10 +6,10 @@ import org.antlr.runtime.debug.DebugEventSocketProxy;
 public class __Test__ {
 
     public static void main(String args[]) throws Exception {
-        regularExpressionLexer lex = new regularExpressionLexer(new ANTLRFileStream("/home/matt/dev/search/regex/antlr/__Test___input.txt", "UTF8"));
+        regularExpressionLexer lex = new regularExpressionLexer(new ANTLRFileStream("/home/matt/dev/search/byteseek/antlr/__Test___input.txt"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
-        regularExpressionParser g = new regularExpressionParser(tokens, 49154, null);
+        regularExpressionParser g = new regularExpressionParser(tokens, 49152, null);
         try {
             g.start();
         } catch (RecognitionException e) {

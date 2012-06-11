@@ -35,11 +35,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import net.domesdaybook.compiler.AbstractAstCompiler;
+import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.ParseUtils;
-import net.domesdaybook.parser.regularExpressionParser;
+import net.domesdaybook.parser.ParseTreeUtils;
+import net.domesdaybook.parser.regex.regularExpressionParser;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -57,10 +57,10 @@ import org.antlr.runtime.tree.CommonTree;
 
 /**
  * A compiler which produces a {@link SequenceMatcher} from an
- * abstract syntax tree provided by the {@link AbstractAstCompiler} class,
+ * abstract syntax tree provided by the {@link AbstractCompiler} class,
  * which it extends.
  * <p>
- * It can handle nearly all the syntax processable by the {@link net.domesdaybook.parser.AstParser},
+ * It can handle nearly all the syntax processable by the {@link net.domesdaybook.parser.regex.RegexParser},
  * but it cannot handle any syntax which would give variable lengths to
  * match, or which would have alternative sequences of bytes,
  * as a sequence matcher can only match a single defined sequence.
@@ -79,10 +79,10 @@ import org.antlr.runtime.tree.CommonTree;
  * provided to it.
  * 
  * @author Matt Palmer
- * @see AbstractAstCompiler
+ * @see AbstractCompiler
  * @see SequenceMatcher
  */
-public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceMatcher> {
+public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher> {
 
     private static SequenceMatcherCompiler defaultCompiler;
     
@@ -138,10 +138,10 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
     /**
-     * Compiles an abstract syntax tree provided by the {@link AbstractAstCompiler} class
+     * Compiles an abstract syntax tree provided by the {@link AbstractCompiler} class
      * which it extends, to create a {@link SequenceMatcher} object.
      *
-     * @param ast The abstract syntax tree provided by the {@link AbstractAstCompiler} class.
+     * @param ast The abstract syntax tree provided by the {@link AbstractCompiler} class.
      * @return A {@link SequenceMatcher} which matches the expression defined by the ast passed in.
      */
     @Override
@@ -207,14 +207,14 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                         // or case sensitive strings to process.
                         case (regularExpressionParser.BYTE): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            byteValuesToJoin.add(ParseUtils.getHexByteValue(child));
+                            byteValuesToJoin.add(ParseTreeUtils.getHexByteValue(child));
                             break;
                         }
 
 
                         case (regularExpressionParser.CASE_SENSITIVE_STRING): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            final String str = ParseUtils.unquoteString(child.getText());
+                            final String str = ParseTreeUtils.unquoteString(child.getText());
                             for (int charIndex = 0, end = str.length(); charIndex < end; charIndex++) {
                                 final byte byteValue = (byte) str.charAt(charIndex);
                                 byteValuesToJoin.add(byteValue);
@@ -309,7 +309,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                         }
 
                         default: {
-                            throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
+                            throw new ParseException(ParseTreeUtils.getTypeErrorMessage(ast));
                         }
                     }
 
@@ -335,7 +335,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
             // where there is not a parent Sequence node.
 
             case (regularExpressionParser.BYTE): {
-                matcher = new OneByteMatcher(ParseUtils.getHexByteValue(ast));
+                matcher = new OneByteMatcher(ParseTreeUtils.getHexByteValue(ast));
                 break;
             }
 
@@ -377,20 +377,20 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
             case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = ParseUtils.unquoteString(ast.getText());
+                final String str = ParseTreeUtils.unquoteString(ast.getText());
                 matcher = new ByteArrayMatcher(str);
                 break;
             }
 
 
             case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = ParseUtils.unquoteString(ast.getText());
+                final String str = ParseTreeUtils.unquoteString(ast.getText());
                 matcher = new CaseInsensitiveSequenceMatcher(str);
                 break;
             }
 
             default: {
-                throw new ParseException(ParseUtils.getTypeErrorMessage(ast));
+                throw new ParseException(ParseTreeUtils.getTypeErrorMessage(ast));
             }
         }
         return matcher;
@@ -418,25 +418,25 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
     
     private SequenceMatcher getCaseInsensitiveStringMatcher(final CommonTree ast) {
-        final String str = ParseUtils.unquoteString(ast.getText());
+        final String str = ParseTreeUtils.unquoteString(ast.getText());
         return new CaseInsensitiveSequenceMatcher(str);
     }
 
 
     private ByteMatcher getAllBitmaskMatcher(final CommonTree ast) {
-        final byte bitmask = ParseUtils.getBitMaskValue(ast);
+        final byte bitmask = ParseTreeUtils.getBitMaskValue(ast);
         return new AllBitmaskMatcher(bitmask);
     }
 
     
     private ByteMatcher getAnyBitmaskMatcher(final CommonTree ast) {
-        final byte bitmask = ParseUtils.getBitMaskValue(ast);
+        final byte bitmask = ParseTreeUtils.getBitMaskValue(ast);
         return new AnyBitmaskMatcher(bitmask);
     }
 
 
     private ByteMatcher getSetMatcher(final CommonTree ast, final boolean inverted) throws ParseException {
-        final Set<Byte> byteSet = ParseUtils.calculateSetValue(ast);
+        final Set<Byte> byteSet = ParseTreeUtils.calculateSetValue(ast);
         return matcherFactory.create(byteSet, inverted);
     }
 
@@ -447,10 +447,10 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
     private SequenceMatcher getFixedRepeatMatcher(final CommonTree ast) throws ParseException {
-        int minRepeat = ParseUtils.getMinRepeatValue(ast);
-        int maxRepeat = ParseUtils.getMaxRepeatValue(ast);
+        int minRepeat = ParseTreeUtils.getMinRepeatValue(ast);
+        int maxRepeat = ParseTreeUtils.getMaxRepeatValue(ast);
         if (minRepeat == maxRepeat) {
-            CommonTree repeatedNode = (CommonTree) ParseUtils.getRepeatNode(ast);
+            CommonTree repeatedNode = (CommonTree) ParseTreeUtils.getRepeatNode(ast);
             SequenceMatcher matcher = null;
             switch (repeatedNode.getType()) {
 
@@ -461,7 +461,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
 
 
                 case (regularExpressionParser.BYTE): {
-                    matcher = new ByteArrayMatcher(ParseUtils.getHexByteValue(repeatedNode), maxRepeat);
+                    matcher = new ByteArrayMatcher(ParseTreeUtils.getHexByteValue(repeatedNode), maxRepeat);
                     break;
                 }
 
@@ -490,14 +490,14 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                 }
 
                 case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                    final String str = ParseUtils.unquoteString(repeatedNode.getText());
+                    final String str = ParseTreeUtils.unquoteString(repeatedNode.getText());
                     matcher = new ByteArrayMatcher(repeatString(str, maxRepeat));
                     break;
                 }
 
 
                 case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                    final String str = ParseUtils.unquoteString(repeatedNode.getText());
+                    final String str = ParseTreeUtils.unquoteString(repeatedNode.getText());
                     matcher = new CaseInsensitiveSequenceMatcher(str, maxRepeat);
                     break;
                 }
@@ -509,7 +509,7 @@ public final class SequenceMatcherCompiler extends AbstractAstCompiler<SequenceM
                 }
 
                 default: {
-                    throw new ParseException(ParseUtils.getTypeErrorMessage(repeatedNode));
+                    throw new ParseException(ParseTreeUtils.getTypeErrorMessage(repeatedNode));
                 }
 
             }

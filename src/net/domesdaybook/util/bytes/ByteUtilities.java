@@ -149,11 +149,11 @@ public final class ByteUtilities {
      * @return A list of bytes matching the bitmask.
      */
     public static List<Byte> getBytesMatchingAllBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>(128);
+        final List<Byte> bytes = new ArrayList<Byte>(countBytesMatchingAllBits(bitMask));
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) == bitMask) {
-                bytes.add(Byte.valueOf((byte) byteIndex));
+                bytes.add(Byte.valueOf(byteValue));
             }
         }
         return bytes;
@@ -167,11 +167,11 @@ public final class ByteUtilities {
      * @return A list of bytes not matching the bitmask.
      */
     public static List<Byte> getBytesNotMatchingAllBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>(128);
+        final List<Byte> bytes = new ArrayList<Byte>(countBytesMatchingAnyBit(bitMask));
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) != bitMask) {
-                bytes.add(Byte.valueOf((byte) byteIndex));
+                bytes.add(Byte.valueOf(byteValue));
             }
         }
         return bytes;

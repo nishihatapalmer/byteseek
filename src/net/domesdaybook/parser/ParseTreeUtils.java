@@ -31,12 +31,14 @@
 
 package net.domesdaybook.parser;
 
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
+import net.domesdaybook.parser.regex.regularExpressionParser;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -44,18 +46,18 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * 
  * @author Matt Palmer
  */
-public class ParseUtils {
+public final class ParseTreeUtils {
 
 	/**
      * 
      */
-	public static final String TYPE_ERROR = "Type [%s] not supported by the compiler.";
+	public static final String TYPE_ERROR = "Parse tree type id [&d] with description [%s] is not supported by the parser.";
 	/**
      * 
      */
 	public static final String QUOTE = "\'";
 
-	private ParseUtils() {
+	private ParseTreeUtils() {
 	}
 
 	/**
@@ -64,33 +66,16 @@ public class ParseUtils {
 	 * @param hexByte
 	 *            a hexadecimal representation of a byte.
 	 * @return the byte encoded by the hex representation.
+	 * @throws ParseException if the string cannot be parsed.
 	 */
-	public static byte parseHexByte(final String hexByte) {
-		return (byte) Integer.parseInt(hexByte, 16);
+	public static byte parseHexByte(final String hexByte) throws ParseException {
+		try {
+			return (byte) Integer.parseInt(hexByte, 16);
+		} catch (NumberFormatException nfe) {
+			throw new ParseException("Could not parse into a hex byte:" + hexByte);
+		}
 	}
 
-	/**
-	 * Returns a byte from a parse-tree node containing a byte value.
-	 * 
-	 * @param treeNode
-	 *            The parse-tree node to extract the byte value from.
-	 * @return The byte encoded by the parse-tree node.
-	 */
-	public static byte getHexByteValue(final Tree treeNode) {
-		return parseHexByte(treeNode.getText());
-	}
-
-	/**
-	 * Returns the byte value of a bitmask-type tree node.
-	 * 
-	 * @param treeNode
-	 *            THe parse-tree node to extract the bitmask value from.
-	 * @return The byte value of the bitmask in the parse-tree.
-	 */
-	public static byte getBitMaskValue(final Tree treeNode) {
-		final Tree childNode = treeNode.getChild(0);
-		return parseHexByte(childNode.getText());
-	}
 
 	/**
 	 * Returns an integer value of the specified child of the parse-tree node.
@@ -172,85 +157,59 @@ public class ParseUtils {
 	 * @throws ParseException
 	 *             If a problem occurs parsing the node.
 	 */
-	public static Set<Byte> calculateSetValue(final CommonTree node)
+	public static Set<Byte> calculateSetValue(final ParseTree set)
 			throws ParseException {
 		final Set<Byte> setValues = new LinkedHashSet<Byte>(320);
-		for (int childIndex = 0, stop = node.getChildCount(); childIndex < stop; childIndex++) {
-			final CommonTree childNode = (CommonTree) node.getChild(childIndex);
-			switch (childNode.getType()) {
+		for (final ParseTree child : set.getChildren()) {
+			switch (child.getParseTreeType().getId()) {
 
 			// Recursively build if we have nested child sets:
-			case regularExpressionParser.SET: {
-				final Set<Byte> nestedSetValues = calculateSetValue(childNode);
-				setValues.addAll(nestedSetValues);
+			case ParseTreeType.SET_ID: {
+				setValues.addAll(calculateSetValue(child));
 				break;
 			}
 
-			case regularExpressionParser.INVERTED_SET: {
-				final Set<Byte> nestedSetValues = calculateSetValue(childNode);
-				setValues.addAll(inverseOf(nestedSetValues));
+			case ParseTreeType.INVERTED_SET_ID: {
+				setValues.addAll(inverseOf(calculateSetValue(child)));
 				break;
 			}
 
-				// non recursive: just build values:
-			case regularExpressionParser.BYTE: {
-				setValues.add(ParseUtils.getHexByteValue(childNode));
+			// non recursive: just build values:
+			case ParseTreeType.BYTE_ID: {
+				setValues.add(child.getByteValue());
+				break;
+			}
+			
+			case ParseTreeType.SET_RANGE_ID:
+			case ParseTreeType.ALL_BITMASK_ID:
+			case ParseTreeType.ANY_BITMASK_ID:
+			{
+				setValues.addAll(child.getByteSetValue());
+				break;
+			}			
+			/*
+			case : {
+				setValues.addAll(ByteUtilities.getBytesMatchingAllBitMask(child.getByteValue()));
 				break;
 			}
 
-			case regularExpressionParser.ALL_BITMASK: {
-				final byte allBitMask = ParseUtils.getBitMaskValue(childNode);
-				setValues.addAll(ByteUtilities
-						.getBytesMatchingAllBitMask(allBitMask));
+			 {
+				setValues.addAll(ByteUtilities.getBytesMatchingAnyBitMask(child.getByteValue()));
 				break;
 			}
-
-			case regularExpressionParser.ANY_BITMASK: {
-				final byte allBitMask = ParseUtils.getBitMaskValue(childNode);
-				setValues.addAll(ByteUtilities
-						.getBytesMatchingAnyBitMask(allBitMask));
-				break;
-			}
-
-			case regularExpressionParser.RANGE: {
-				int minRangeValue;
-				int maxRangeValue;
-				final String minRange = ParseUtils.getChildStringValue(
-						childNode, 0);
-				final String maxRange = ParseUtils.getChildStringValue(
-						childNode, 1);
-				if (minRange.startsWith(QUOTE)) {
-					minRangeValue = minRange.charAt(1);
-				} else {
-					minRangeValue = Integer.parseInt(minRange, 16);
-				}
-				if (maxRange.startsWith(QUOTE)) {
-					maxRangeValue = maxRange.charAt(1);
-				} else {
-					maxRangeValue = Integer.parseInt(maxRange, 16);
-				}
-				if (minRangeValue > maxRangeValue) {
-					final int swapTemp = minRangeValue;
-					minRangeValue = maxRangeValue;
-					maxRangeValue = swapTemp;
-				}
-				for (int rangeValue = minRangeValue; rangeValue <= maxRangeValue; rangeValue++) {
-					setValues.add((byte) rangeValue);
+	*/
+			case ParseTreeType.CASE_SENSITIVE_STRING_ID: {
+				try {
+					final byte[] utf8Value = child.getTextValue().getBytes("US-ASCII");
+					ByteUtilities.addAll(utf8Value, setValues);
+				} catch (UnsupportedEncodingException e) {
+					throw new ParseException(e);
 				}
 				break;
 			}
 
-			case regularExpressionParser.CASE_SENSITIVE_STRING: {
-				final String stringValue = unquoteString(childNode.getText());
-				for (int charIndex = 0; charIndex < stringValue.length(); charIndex++) {
-					final char charAt = stringValue.charAt(charIndex);
-					setValues.add((byte) charAt);
-				}
-				break;
-			}
-
-			case regularExpressionParser.CASE_INSENSITIVE_STRING: {
-				final String stringValue = unquoteString(childNode.getText());
+			case ParseTreeType.CASE_INSENSITIVE_STRING_ID: {
+				final String stringValue = child.getTextValue();
 				for (int charIndex = 0; charIndex < stringValue.length(); charIndex++) {
 					final char charAt = stringValue.charAt(charIndex);
 					if (charAt >= 'a' && charAt <= 'z') {
@@ -265,8 +224,8 @@ public class ParseUtils {
 			}
 
 			default: {
-				final String message = String.format(TYPE_ERROR,
-						getTokenName(childNode));
+				final ParseTreeType type = child.getParseTreeType();
+				final String message = String.format(TYPE_ERROR, type.getId(), type.getDescription());
 				throw new ParseException(message);
 			}
 			}

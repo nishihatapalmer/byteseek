@@ -31,25 +31,26 @@
 
 package net.domesdaybook.compiler;
 
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
-
-import net.domesdaybook.parser.AstParser;
 import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.ParseTree;
+import net.domesdaybook.parser.Parser;
+import net.domesdaybook.parser.regex.RegexParser;
 
 /**
  * An abstract base class for compilers which compile a String expression into
- * an object of type T using an {@link AstParser} to generate the parse tree.
+ * an object of type T using an {@link Parser} to generate the parse tree.
  * 
  * @param <T>
  *            The type of object to build.
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractAstCompiler<T> implements Compiler<T> {
+public abstract class AbstractCompiler<T> implements Compiler<T> {
+
+	private Parser	parser;
 
 	/**
-	 * Turns an expression into a parse tree using an {@link AstParser}. Then it
+	 * Turns an expression into a parse tree using an {@link RegexParser}. Then it
 	 * invokes the abstract compile method with the resulting parse-tree, to
 	 * build and return a compiled object of type T.
 	 * <p>
@@ -65,11 +66,14 @@ public abstract class AbstractAstCompiler<T> implements Compiler<T> {
 	@Override
 	public T compile(final String expression) throws CompileException {
 		try {
-			final AstParser parser = new AstParser();
-			final Tree tree = parser.parseToAST(expression);
-			final CommonTree optimisedAST = (CommonTree) parser
-					.optimiseAST(tree);
-			return compile(optimisedAST);
+			final ParseTree tree = parser.parse(expression);
+
+			//TODO fix optimisation stage - should be generic optimisations available...
+			//     but nice if new optimisations can be plugged in too...
+			//final ParseTree optimisedTree = parser.			
+			//final CommonTree optimisedAST = (CommonTree) parser
+			//		.optimiseAST(tree);
+			return compile(tree);
 		} catch (final ParseException ex) {
 			throw new CompileException(ex);
 		} catch (final IllegalArgumentException e) {
@@ -90,6 +94,6 @@ public abstract class AbstractAstCompiler<T> implements Compiler<T> {
 	 * @throws CompileException
 	 *             If the abstract syntax tree could not be parsed.
 	 */
-	public abstract T compile(final CommonTree ast) throws CompileException;
+	public abstract T compile(final ParseTree ast) throws CompileException;
 
 }

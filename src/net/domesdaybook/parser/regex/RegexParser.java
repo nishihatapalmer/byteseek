@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.parser;
+package net.domesdaybook.parser.regex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +39,11 @@ import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.Tree;
+
+import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.ParseTree;
+import net.domesdaybook.parser.Parser;
 
 //TODO: define an AST interface separated from the ANTLR parser.
 //      This will allow different parsers to the ANTLR parser to be defined.
@@ -57,12 +60,12 @@ import org.antlr.runtime.tree.Tree;
  * 
  * @author Matt Palmer palmer
  */
-public class AstParser {
+public class RegexParser implements Parser {
 
 	/**
      * 
      */
-	public AstParser() {
+	public RegexParser() {
 	}
 
 	/**
@@ -75,10 +78,11 @@ public class AstParser {
 	 * @throws ParseException
 	 *             If the expression could not be parsed.
 	 */
-	public Tree parseToAST(final String expression) throws ParseException {
+	@Override
+	public ParseTree parse(final String expression) throws ParseException {
 		if (expression == null || expression.isEmpty()) {
-			throw new IllegalArgumentException(
-					"Null or empty expression passed in to AstParser.parseToAST.");
+			throw new ParseException(
+					"Null or empty expression passed in.");
 		}
 		try {
 			return parseToAbstractSyntaxTree(expression);
@@ -106,7 +110,7 @@ public class AstParser {
 	 */
 	public Tree optimiseAST(final Tree treeNode) throws ParseException {
 		if (treeNode == null) {
-			throw new IllegalArgumentException(
+			throw new ParseException (
 					"Null node passed in to AstParser.optimiseAST");
 		}
 		Tree result = treeNode;
@@ -152,9 +156,8 @@ public class AstParser {
 	 * @throws RecognitionException
 	 *             If the expression could be parsed by ANTLR.
 	 */
-	private CommonTree parseToAbstractSyntaxTree(final String expression)
+	private ParseTree parseToAbstractSyntaxTree(final String expression)
 			throws ParseException, RecognitionException {
-		CommonTree tree;
 		final ANTLRStringStream input = new ANTLRStringStream(expression);
 		final regularExpressionLexer lexer = new regularExpressionLexer(input);
 		if (lexer.getNumberOfSyntaxErrors() == 0) {
@@ -168,19 +171,16 @@ public class AstParser {
 				}
 			};
 			try {
-				final CommonTreeAdaptor adaptor = new CommonTreeAdaptor();
-				parser.setTreeAdaptor(adaptor);
+				parser.setTreeAdaptor(new AntlrParseTreeAdaptor());
 				final regularExpressionParser.start_return ret = parser.start();
-				tree = (CommonTree) ret.getTree();
+				return (ParseTree) ret.getTree();
 			} catch (final ParseErrorException e) {
 				throw new ParseException(e.getMessage());
 			}
-		} else {
-			throw new ParseException(String.format(
-					"Parse error: %d syntax errors in %s",
-					lexer.getNumberOfSyntaxErrors(), expression));
 		}
-		return tree;
+		throw new ParseException(String.format(
+				"Parse error: %d syntax errors in %s",
+				lexer.getNumberOfSyntaxErrors(), expression));
 	}
 
 	/**

@@ -31,12 +31,15 @@
 
 package net.domesdaybook.matcher.bytes;
 
-import net.domesdaybook.util.bytes.ByteUtilities;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
  * A fairly simple implementation of {@link ByteMatcherFactory}.  It attempts to build the
@@ -70,26 +73,29 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
      * @return A ByteMatcher which matches that set of bytes.
      */
     @Override
-    public ByteMatcher create(final Set<Byte> bytes) {
+    public ByteMatcher create(final Collection<Byte> bytes) {
         return create(bytes, ByteMatcherFactory.NOT_INVERTED);
     }
     
     
     /**
-     * Creates an efficient {@link ByteMatcher} from a set of bytes passed in (
-     * and whether that set of bytes should be inverted or not).
+     * Creates an efficient {@link ByteMatcher} from a collection of bytes passed in (
+     * and whether that the set of bytes in the collection should be inverted or not).
+     * <p>
+     * Duplicate values are permitted in the collection passed in.
      *
-     * @param bytes  The set of bytes to match (or their inverse).
+     * @param bytes  The collection of bytes to match (or their inverse).
      * @param matchInverse   Whether the set values are inverted or not
      * @return A ByteMatcher which is optimal for that set of bytes.
      */
     @Override
-    public ByteMatcher create(final Set<Byte> bytes, final boolean matchInverse) {
+    public ByteMatcher create(final Collection<Byte> bytes, final boolean matchInverse) {
         if (bytes == null || bytes.isEmpty()) {
             throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
-        // Produce the (possibly inverted) set of bytes:
-        final  Set<Byte> values = matchInverse? ByteUtilities.invertedSet(bytes) : bytes;
+        // Produce the (possibly inverted) unique set of bytes:
+        Set<Byte> uniqueValues = new LinkedHashSet<Byte>(bytes);
+        final  Set<Byte> values = matchInverse? ByteUtilities.invertedSet(uniqueValues) : uniqueValues;
 
         // See if some obvious byte matchers apply:
         ByteMatcher result = getSimpleCases(values);
@@ -102,12 +108,12 @@ public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
 
                 // They didn't match the set of bytes, but since we have invertible
                 // matchers, does the inverse set match any of them?
-                final Set<Byte> invertedValues = matchInverse? bytes : ByteUtilities.invertedSet(bytes);
+                final Set<Byte> invertedValues = matchInverse? uniqueValues : ByteUtilities.invertedSet(uniqueValues);
                 result = getInvertibleCases(invertedValues, true);
                 if (result == null) {
 
                     // Fall back on a standard set, defined as passed in.
-                    result = new SetBitsetMatcher(bytes, matchInverse);
+                    result = new SetBitsetMatcher(uniqueValues, matchInverse);
                 }
             }
         }

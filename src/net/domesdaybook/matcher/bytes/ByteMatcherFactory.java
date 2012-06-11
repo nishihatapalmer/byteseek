@@ -31,7 +31,7 @@
 
 package net.domesdaybook.matcher.bytes;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * An interface for objects which implement a factory for {@link ByteMatcher}s.
@@ -53,22 +53,24 @@ public interface ByteMatcherFactory {
     
     
     /**
-     * Creates a {@link  ByteMatcher} from the set of bytes passed in.
+     * Creates a {@link  ByteMatcher} from the collection of bytes passed in.
+     * There may be duplicate values in the collection.
      * 
-     * @param bytes A set of bytes to match
+     * @param bytes A collection of bytes to match.
      * @return A ByteMatcher which matches that set of bytes.
      */
-    ByteMatcher create(Set<Byte> bytes);
+    ByteMatcher create(Collection<Byte> bytes);
     
     
     /**
-     * Creates a {@link  ByteMatcher} from the set of bytes passed in.
+     * Creates a {@link  ByteMatcher} from the collection of bytes passed in.
+     * There may be duplicate values in the collection.
      * 
-     * @param bytes A set of bytes to match
+     * @param byteSet A collection of bytes to match
      * @param inverted Whether to invert the set of bytes to match.
      * @return A ByteMatcher which matches the set of bytes (or their inverse, if
      *         specified in the inverted parameter).
      */
-    ByteMatcher create(Set<Byte> bytes, boolean inverted);
+    ByteMatcher create(Collection<Byte> byteSet, boolean inverted);
 
 }
