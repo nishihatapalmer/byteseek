@@ -34,26 +34,25 @@ package net.domesdaybook.compiler.sequence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.ParseTreeUtils;
-import net.domesdaybook.parser.regex.regularExpressionParser;
-import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
-import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.matcher.sequence.SequenceArrayMatcher;
-import net.domesdaybook.matcher.sequence.FixedGapMatcher;
-import net.domesdaybook.matcher.sequence.ByteMatcherArrayMatcher;
 import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.AnyBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.AnyByteMatcher;
-import net.domesdaybook.matcher.bytes.OneByteMatcher;
-import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
-import org.antlr.runtime.tree.CommonTree;
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
+import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
+import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
+import net.domesdaybook.matcher.sequence.ByteMatcherArrayMatcher;
+import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
+import net.domesdaybook.matcher.sequence.FixedGapMatcher;
+import net.domesdaybook.matcher.sequence.SequenceArrayMatcher;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.ParseTree;
+import net.domesdaybook.parser.ParseTreeType;
 
 /**
  * A compiler which produces a {@link SequenceMatcher} from an
@@ -145,7 +144,7 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
      * @return A {@link SequenceMatcher} which matches the expression defined by the ast passed in.
      */
     @Override
-    public SequenceMatcher compile(final CommonTree ast) throws CompileException {
+    public SequenceMatcher compile(final ParseTree ast) throws CompileException {
         if (ast == null) {
             throw new CompileException("Null abstract syntax tree passed in to SequenceMatcherCompiler.");
         }
@@ -176,45 +175,43 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
      * @return A SequenceMatcher representing the expression.
      * @throws ParseException If the ast could not be parsed.
      */
-    private SequenceMatcher buildSequence(final CommonTree ast) throws ParseException {
+    private SequenceMatcher buildSequence(final ParseTree ast) throws ParseException {
 
         SequenceMatcher matcher = null;
 
-        switch (ast.getToken().getType()) {
+        switch (ast.getParseTreeType().getId()) {
 
             // Deals with sequences of values, where a sequence node
             // has an ordered list of child nodes.
             // Processing is complicated by the need to optimise the
-            // resulting sequences.  We could just build a singlebytesequencematcher
-            // (consisting of a list of singleByteMatchers), but this is not optimal
+            // resulting sequences.  We could just build a ByteMatcherArrayMatcher
+            // (consisting of an array of ByteMatchers), but this is not optimal
             // if, for instance, we just have simple list of bytes, for which a
-            // bytesequencematcher would be more appropriate.
+            // ByteArrayMatcher would be more appropriate.
 
-            case (regularExpressionParser.SEQUENCE): {
+            case (ParseTreeType.SEQUENCE_ID): {
 
                 final List<Byte> byteValuesToJoin = new ArrayList<Byte>();
                 final List<ByteMatcher> singleByteSequence = new ArrayList<ByteMatcher>();
                 final List<SequenceMatcher> sequences = new ArrayList<SequenceMatcher>();
+                for (final ParseTree child : ast.getChildren()) {
 
-                for (int childIndex = 0, stop = ast.getChildCount(); childIndex < stop; childIndex++) {
-                    final CommonTree child = (CommonTree) ast.getChild(childIndex);
-
-                    switch (child.getToken().getType()) {
+                    switch (child.getParseTreeType().getId()) {
 
                         // Bytes and case sensitive strings are just byte values,
                         // so we join them into a list of values as we go,
                         // building the final matcher when we run out of bytes
                         // or case sensitive strings to process.
-                        case (regularExpressionParser.BYTE): {
+                        case (ParseTreeType.BYTE_ID): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            byteValuesToJoin.add(ParseTreeUtils.getHexByteValue(child));
+                            byteValuesToJoin.add(child.getByteValue());
                             break;
                         }
 
 
-                        case (regularExpressionParser.CASE_SENSITIVE_STRING): {
+                        case (ParseTreeType.CASE_SENSITIVE_STRING_ID): {
                             addCollectedSingleByteMatchers(singleByteSequence, sequences);
-                            final String str = ParseTreeUtils.unquoteString(child.getText());
+                            final String str = child.getTextValue();
                             for (int charIndex = 0, end = str.length(); charIndex < end; charIndex++) {
                                 final byte byteValue = (byte) str.charAt(charIndex);
                                 byteValuesToJoin.add(byteValue);
@@ -225,21 +222,21 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
 
                         // bitmasks, sets and any bytes are multiple-valued single byte matchers:
 
-                        case (regularExpressionParser.ALL_BITMASK): {
+                        case (ParseTreeType.ALL_BITMASK_ID): {
                             addCollectedByteValues(byteValuesToJoin, sequences);
                             singleByteSequence.add(getAllBitmaskMatcher(child));
                             break;
                         }
 
                         
-                        case (regularExpressionParser.ANY_BITMASK): {
+                        case (ParseTreeType.ANY_BITMASK_ID): {
                             addCollectedByteValues(byteValuesToJoin, sequences);
                             singleByteSequence.add(getAnyBitmaskMatcher(child));
                             break;
                         }
 
 
-                        case (regularExpressionParser.SET): {
+                        case (ParseTreeType.SET_ID): {
                             final ByteMatcher bytematch = getSetMatcher(child, false);
                             if (bytematch instanceof OneByteMatcher) {
                                 addCollectedSingleByteMatchers(singleByteSequence, sequences);
@@ -252,7 +249,7 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
                         }
 
 
-                        case (regularExpressionParser.INVERTED_SET): {
+                        case (ParseTreeType.INVERTED_SET_ID): {
                             final ByteMatcher bytematch = getSetMatcher(child, true);
                             if (bytematch instanceof OneByteMatcher) {
                                 addCollectedSingleByteMatchers(singleByteSequence, sequences);
@@ -265,16 +262,16 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
                         }
 
 
-                        case (regularExpressionParser.ANY): {
+                        case (ParseTreeType.ANY_ID): {
                             addCollectedByteValues(byteValuesToJoin, sequences);
-                            singleByteSequence.add(getAnyByteMatcher(child));
+                            singleByteSequence.add(AnyByteMatcher.ANY_BYTE_MATCHER);
                             break;
                         }
 
 
                         // case insensitive strings are already sequences of values:
 
-                        case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
+                        case (ParseTreeType.CASE_INSENSITIVE_STRING_ID): {
                             // Add any bytes or singlebytematchers to the sequences.
                             // There cannot be both bytes and singlebytematchers
                             // outstanding to be collected, as they both ensure
@@ -286,7 +283,7 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
                             break;
                         }
 
-                        case (regularExpressionParser.REPEAT): {
+                        case (ParseTreeType.REPEAT_ID): {
                             SequenceMatcher sequence = getFixedRepeatMatcher(child);
                             if (sequence instanceof ByteArrayMatcher) {
                                 addCollectedSingleByteMatchers(singleByteSequence, sequences);
@@ -309,7 +306,7 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
                         }
 
                         default: {
-                            throw new ParseException(ParseTreeUtils.getTypeErrorMessage(ast));
+                          throwParseException(ast);
                         }
                     }
 
@@ -334,63 +331,61 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
             // Deal with sequences consisting of a single value,
             // where there is not a parent Sequence node.
 
-            case (regularExpressionParser.BYTE): {
-                matcher = new OneByteMatcher(ParseTreeUtils.getHexByteValue(ast));
+            case (ParseTreeType.BYTE_ID): {
+                matcher = new OneByteMatcher(ast.getByteValue());
                 break;
             }
 
 
-            case (regularExpressionParser.ALL_BITMASK): {
+            case (ParseTreeType.ALL_BITMASK_ID): {
                 matcher = getAllBitmaskMatcher(ast);
                 break;
             }
 
 
-            case (regularExpressionParser.ANY_BITMASK): {
+            case (ParseTreeType.ANY_BITMASK_ID): {
                 matcher = getAnyBitmaskMatcher(ast);
                 break;
             }
 
 
-            case (regularExpressionParser.SET): {
+            case (ParseTreeType.SET_ID): {
                 matcher = getSetMatcher(ast, false);
                 break;
             }
 
 
-            case (regularExpressionParser.INVERTED_SET): {
+            case (ParseTreeType.INVERTED_SET_ID): {
                 matcher = getSetMatcher(ast, true);
                 break;
             }
 
 
-            case (regularExpressionParser.ANY): {
-                matcher = getAnyByteMatcher(ast);
+            case (ParseTreeType.ANY_ID): {
+                matcher = AnyByteMatcher.ANY_BYTE_MATCHER;
                 break;
             }
 
             
-            case (regularExpressionParser.REPEAT): {
+            case (ParseTreeType.REPEAT_ID): {
                 matcher = getFixedRepeatMatcher(ast);
                 break;
             }
 
 
-            case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                final String str = ParseTreeUtils.unquoteString(ast.getText());
-                matcher = new ByteArrayMatcher(str);
+            case (ParseTreeType.CASE_SENSITIVE_STRING_ID): {
+                matcher = new ByteArrayMatcher(ast.getTextValue());
                 break;
             }
 
 
-            case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                final String str = ParseTreeUtils.unquoteString(ast.getText());
-                matcher = new CaseInsensitiveSequenceMatcher(str);
+            case (ParseTreeType.CASE_INSENSITIVE_STRING_ID): {
+                matcher = new CaseInsensitiveSequenceMatcher(ast.getTextValue());
                 break;
             }
 
             default: {
-                throw new ParseException(ParseTreeUtils.getTypeErrorMessage(ast));
+                throwParseException(ast);
             }
         }
         return matcher;
@@ -417,108 +412,97 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
     }
 
     
-    private SequenceMatcher getCaseInsensitiveStringMatcher(final CommonTree ast) {
-        final String str = ParseTreeUtils.unquoteString(ast.getText());
-        return new CaseInsensitiveSequenceMatcher(str);
+    private SequenceMatcher getCaseInsensitiveStringMatcher(final ParseTree ast) throws ParseException {
+        return new CaseInsensitiveSequenceMatcher(ast.getTextValue());
     }
 
 
-    private ByteMatcher getAllBitmaskMatcher(final CommonTree ast) {
-        final byte bitmask = ParseTreeUtils.getBitMaskValue(ast);
-        return new AllBitmaskMatcher(bitmask);
-    }
-
-    
-    private ByteMatcher getAnyBitmaskMatcher(final CommonTree ast) {
-        final byte bitmask = ParseTreeUtils.getBitMaskValue(ast);
-        return new AnyBitmaskMatcher(bitmask);
-    }
-
-
-    private ByteMatcher getSetMatcher(final CommonTree ast, final boolean inverted) throws ParseException {
-        final Set<Byte> byteSet = ParseTreeUtils.calculateSetValue(ast);
-        return matcherFactory.create(byteSet, inverted);
+    private ByteMatcher getAllBitmaskMatcher(final ParseTree ast) throws ParseException {
+        return new AllBitmaskMatcher(ast.getByteValue());
     }
 
     
-    private ByteMatcher getAnyByteMatcher(final CommonTree ast) {
-        return new AnyByteMatcher();
+    private ByteMatcher getAnyBitmaskMatcher(final ParseTree ast) throws ParseException {
+        return new AnyBitmaskMatcher(ast.getByteValue());
     }
 
 
-    private SequenceMatcher getFixedRepeatMatcher(final CommonTree ast) throws ParseException {
-        int minRepeat = ParseTreeUtils.getMinRepeatValue(ast);
-        int maxRepeat = ParseTreeUtils.getMaxRepeatValue(ast);
+    private ByteMatcher getSetMatcher(final ParseTree ast, final boolean inverted) throws ParseException {
+        //TODO: do we need inverted now the inverted set is already inverting the bytes it matches?
+        return matcherFactory.create(ast.getByteSetValue(), inverted);
+    }
+
+    
+    private SequenceMatcher getFixedRepeatMatcher(final ParseTree ast) throws ParseException {
+        final List<ParseTree> repeatChildren = ast.getChildren();
+        int minRepeat = repeatChildren.get(0).getIntValue();
+        int maxRepeat = repeatChildren.get(1).getIntValue();
         if (minRepeat == maxRepeat) {
-            CommonTree repeatedNode = (CommonTree) ParseTreeUtils.getRepeatNode(ast);
+            ParseTree repeatedNode = repeatChildren.get(2);
             SequenceMatcher matcher = null;
-            switch (repeatedNode.getType()) {
+            switch (repeatedNode.getParseTreeType().getId()) {
 
-                case (regularExpressionParser.ANY): {
+                case (ParseTreeType.ANY_ID): {
                     matcher = new FixedGapMatcher(maxRepeat);
                     break;
                 }
 
 
-                case (regularExpressionParser.BYTE): {
-                    matcher = new ByteArrayMatcher(ParseTreeUtils.getHexByteValue(repeatedNode), maxRepeat);
+                case (ParseTreeType.BYTE_ID): {
+                    matcher = new ByteArrayMatcher(repeatedNode.getByteValue(), maxRepeat);
                     break;
                 }
 
 
-                case (regularExpressionParser.SET): {
+                case (ParseTreeType.SET_ID): {
                     matcher = new ByteMatcherArrayMatcher(getSetMatcher(repeatedNode, false), maxRepeat);
                     break;
                 }
 
 
-                case (regularExpressionParser.INVERTED_SET): {
+                case (ParseTreeType.INVERTED_SET_ID): {
                     matcher = new ByteMatcherArrayMatcher(getSetMatcher(repeatedNode, true), maxRepeat);
                     break;
                 }
 
 
-                case (regularExpressionParser.ANY_BITMASK): {
+                case (ParseTreeType.ANY_BITMASK_ID): {
                     matcher = new ByteMatcherArrayMatcher(getAnyBitmaskMatcher(repeatedNode), maxRepeat);
                     break;
                 }
 
                 
-                case (regularExpressionParser.ALL_BITMASK): {
+                case (ParseTreeType.ALL_BITMASK_ID): {
                     matcher = new ByteMatcherArrayMatcher(getAllBitmaskMatcher(repeatedNode), maxRepeat);
                     break;
                 }
 
-                case (regularExpressionParser.CASE_SENSITIVE_STRING): {
-                    final String str = ParseTreeUtils.unquoteString(repeatedNode.getText());
-                    matcher = new ByteArrayMatcher(repeatString(str, maxRepeat));
+                case (ParseTreeType.CASE_SENSITIVE_STRING_ID): {
+                    matcher = new ByteArrayMatcher(repeatString(repeatedNode.getTextValue(), maxRepeat));
                     break;
                 }
 
 
-                case (regularExpressionParser.CASE_INSENSITIVE_STRING): {
-                    final String str = ParseTreeUtils.unquoteString(repeatedNode.getText());
-                    matcher = new CaseInsensitiveSequenceMatcher(str, maxRepeat);
+                case (ParseTreeType.CASE_INSENSITIVE_STRING_ID): {
+                    matcher = new CaseInsensitiveSequenceMatcher(repeatedNode.getTextValue(), maxRepeat);
                     break;
                 }
 
 
-                case (regularExpressionParser.SEQUENCE): {
+                case (ParseTreeType.SEQUENCE_ID): {
                     matcher = buildSequence(repeatedNode).repeat(maxRepeat);
                     break;
                 }
 
                 default: {
-                    throw new ParseException(ParseTreeUtils.getTypeErrorMessage(repeatedNode));
+                    throwParseException(repeatedNode);
                 }
-
             }
             return matcher;
         }
         throw new ParseException("Sequences can only contain repeats of a fixed length {n}");
     }
 
-    
     private String repeatString(final String stringToRepeat, final int numberToRepeat) {
         if (numberToRepeat == 1) {
             return stringToRepeat;
@@ -530,4 +514,18 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
         return builder.toString();
     }        
 
+    
+    /**
+     * @param ast
+     * @throws ParseException 
+     */
+    private void throwParseException(ParseTree ast) throws ParseException {
+      final ParseTreeType type = ast.getParseTreeType();
+      final String message = String.format("Unknown type, id %d with description: %s", 
+                         type.getId(), type.getDescription());
+      throw new ParseException(message);
+    }
+
+    
+    
 }

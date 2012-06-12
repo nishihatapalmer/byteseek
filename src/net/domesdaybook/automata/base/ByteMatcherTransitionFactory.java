@@ -31,17 +31,18 @@
 
 package net.domesdaybook.automata.base;
 
-import net.domesdaybook.automata.TransitionFactory;
-import java.util.Set;
+import java.util.Collection;
+
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
+import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.AnyBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.AnyByteMatcher;
-import net.domesdaybook.matcher.bytes.OneByteMatcher;
-import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
-import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
+import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
+import net.domesdaybook.matcher.bytes.OneByteMatcher;
+import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
 
 /**
  * An implementation of {@link TransitionFactory} which creates 
@@ -145,7 +146,7 @@ public class ByteMatcherTransitionFactory<T> implements TransitionFactory<T> {
      *         inverse), to the state supplied.
      */
     @Override
-    public final Transition<T> createSetTransition(final Set<Byte> byteSet, final boolean inverted, final State<T> toState) {
+    public final Transition<T> createSetTransition(final Collection<Byte> byteSet, final boolean inverted, final State<T> toState) {
         return new ByteMatcherTransition<T>(matcherFactory.create(byteSet, inverted), toState);
     }
 

@@ -35,11 +35,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
-
 import net.domesdaybook.parser.regex.regularExpressionParser;
 import net.domesdaybook.util.bytes.ByteUtilities;
+
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.Tree;
 
 /**
  * A utility class of static helper methods to use when parsing expressions.

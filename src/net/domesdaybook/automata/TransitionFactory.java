@@ -31,7 +31,7 @@
 
 package net.domesdaybook.automata;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * A factory for {@link Transition} objects with a variety of construction
@@ -114,7 +114,7 @@ public interface TransitionFactory<T> {
 	 * @return Transition a transition to the State on matching any of the bytes
 	 *         in the set of bytes (or the inverted set) provided.
 	 */
-	public Transition<T> createSetTransition(Set<Byte> byteSet,
+	public Transition<T> createSetTransition(Collection<Byte> byteSet,
 			boolean inverted, State<T> toState);
 
 	/**

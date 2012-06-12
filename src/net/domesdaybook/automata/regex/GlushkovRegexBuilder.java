@@ -34,7 +34,6 @@ package net.domesdaybook.automata.regex;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.State;
@@ -174,7 +173,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 	* @return An automata with a transition on the set of bytes supplied.
 	*/
 	@Override
-	public Automata<T> buildSetAutomata(final Set<Byte> byteSet, final boolean negated) {
+	public Automata<T> buildSetAutomata(final Collection<Byte> byteSet, final boolean negated) {
 		final State<T> initialState = stateFactory.create(State.NON_FINAL);
 		final State<T> finalState = stateFactory.create(State.FINAL);
 		final Transition<T> transition = transitionFactory.createSetTransition(byteSet, negated,

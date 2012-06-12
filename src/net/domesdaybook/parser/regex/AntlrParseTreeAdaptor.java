@@ -30,14 +30,12 @@
  */
 package net.domesdaybook.parser.regex;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.antlr.runtime.Token;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.CommonTreeAdaptor;
 
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseTree;
@@ -45,13 +43,18 @@ import net.domesdaybook.parser.ParseTreeType;
 import net.domesdaybook.parser.ParseTreeUtils;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.CommonTreeAdaptor;
+
 /**
  * @author matt
  *
  */
 public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 
-	
+  public static final String TYPE_ERROR = "Parse tree type id [&d] with description [%s] is not supported by the parser.";
+  
 	@Override
 	public Object create(Token payload) {
 		switch (payload.getType()) {
@@ -85,11 +88,15 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 			}
 			
 			case regularExpressionParser.INVERTED_SET: {
-				return new SetAdaptor(payload, ParseTreeType.INVERTED_SET);
+				return new InvertedSetAdaptor(payload, ParseTreeType.INVERTED_SET);
 			}
 			
 			case regularExpressionParser.RANGE: {
 				return new RangeAdaptor(payload, ParseTreeType.SET_RANGE);
+			}
+			
+			case regularExpressionParser.NUMBER: {
+			  return new IntegerAdaptor(payload, ParseTreeType.INTEGER);
 			}
 			
 			default:
@@ -165,7 +172,14 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		}
 		
 		@Override
+    public byte getByteValue() throws ParseException {
+		//TODO: what is the type of the node under bitmask?  Is it a byte node?
+      return ParseTreeUtils.parseHexByte(getChild(0).getText());
+    }		
+		
+		@Override
 		public Collection<Byte> getByteSetValue() throws ParseException {
+		//TODO: what is the type of the node under bitmask?  Is it a byte node?
 			final byte byteValue = ParseTreeUtils.parseHexByte(getChild(0).getText());
 			return ByteUtilities.getBytesMatchingAnyBitMask(byteValue);
 		}
@@ -178,7 +192,14 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		}
 		
 		@Override
+		public byte getByteValue() throws ParseException {
+		  //TODO: what is the type of the node under bitmask?  Is it a byte node?
+		  return ParseTreeUtils.parseHexByte(getChild(0).getText());
+		}
+		
+		@Override
 		public Collection<Byte> getByteSetValue() throws ParseException {
+		  //TODO: what is the type of the node under bitmask?  Is it a byte node?
 			final byte byteValue = ParseTreeUtils.parseHexByte(getChild(0).getText());
 			return ByteUtilities.getBytesMatchingAllBitMask(byteValue);
 		}
@@ -256,11 +277,88 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		
 		@Override
 		public Set<Byte> getByteSetValue() throws ParseException {
-			return ParseTreeUtils.calculateSetValue(this);
-		}
-		
+	    final Set<Byte> setValues = new LinkedHashSet<Byte>(320);
+	    for (final ParseTree child : getChildren()) {
+	      switch (child.getParseTreeType().getId()) {
+
+          case ParseTreeType.BYTE_ID: {
+  	        setValues.add(child.getByteValue());
+  	        break;
+  	      }
+  	      
+  	      case ParseTreeType.SET_RANGE_ID:
+  	      case ParseTreeType.ALL_BITMASK_ID:
+  	      case ParseTreeType.ANY_BITMASK_ID:
+  	      case ParseTreeType.INVERTED_SET_ID:
+  	      case ParseTreeType.SET_ID:
+  	      {
+  	        setValues.addAll(child.getByteSetValue());
+  	        break;
+  	      }     
+  
+  	      case ParseTreeType.CASE_SENSITIVE_STRING_ID: {
+  	        try {
+  	          final byte[] utf8Value = child.getTextValue().getBytes("US-ASCII");
+  	          ByteUtilities.addAll(utf8Value, setValues);
+  	        } catch (UnsupportedEncodingException e) {
+  	          throw new ParseException(e);
+  	        }
+  	        break;
+  	      }
+  
+  	      case ParseTreeType.CASE_INSENSITIVE_STRING_ID: {
+  	        final String stringValue = child.getTextValue();
+  	        for (int charIndex = 0; charIndex < stringValue.length(); charIndex++) {
+  	          final char charAt = stringValue.charAt(charIndex);
+  	          if (charAt >= 'a' && charAt <= 'z') {
+  	            setValues.add((byte) Character.toUpperCase(charAt));
+  
+  	          } else if (charAt >= 'A' && charAt <= 'A') {
+  	            setValues.add((byte) Character.toLowerCase(charAt));
+  	          }
+  	          setValues.add((byte) charAt);
+  	        }
+  	        break;
+  	      }
+  
+  	      default: {
+  	        final ParseTreeType type = child.getParseTreeType();
+  	        final String message = String.format(TYPE_ERROR, type.getId(), type.getDescription());
+  	        throw new ParseException(message);
+  	      }
+	      }
+	    }
+	    return setValues;
+	  }		
 	}		
 	
+  public static class InvertedSetAdaptor extends SetAdaptor {
+    
+    public InvertedSetAdaptor(Token payload, ParseTreeType type) {
+      super(payload, type);
+    }
+    
+    @Override
+    public Set<Byte> getByteSetValue() throws ParseException {
+      return ByteUtilities.invertedSet(super.getByteSetValue());
+    }
+  }
+	
+  public static class IntegerAdaptor extends ParseTreeAdaptor {
+    
+    public IntegerAdaptor(Token payload, ParseTreeType type) {
+      super(payload, type);
+    }
+    
+    @Override
+    public int getIntValue() throws ParseException {
+      try {
+        return Integer.parseInt(getText());
+      } catch (NumberFormatException nfe) {
+        throw new ParseException("Could not parse value into an integer:" + getText());
+      }
+    }
+  }
 	
 }
 

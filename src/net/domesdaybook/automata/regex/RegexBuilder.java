@@ -31,8 +31,9 @@
 
 package net.domesdaybook.automata.regex;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+
 import net.domesdaybook.automata.Automata;
 
 /**
@@ -151,7 +152,7 @@ public interface RegexBuilder<T> {
      * @param negated Whether the set of bytes should be inverted or not.
      * @return An automata which transitions on the (negated) set of bytes passed in.
      */
-    public Automata<T> buildSetAutomata(final Set<Byte> byteSet, final boolean negated);
+    public Automata<T> buildSetAutomata(final Collection<Byte> byteSet, final boolean negated);
 
 
     /**
