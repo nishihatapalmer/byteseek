@@ -47,8 +47,12 @@ import net.domesdaybook.parser.regex.RegexParser;
  */
 public abstract class AbstractCompiler<T> implements Compiler<T> {
 
-	private Parser	parser;
+	private final Parser parser;
 
+	public AbstractCompiler(final Parser parser) {
+		this.parser = parser == null? new RegexParser() : parser;
+	}
+	
 	/**
 	 * Turns an expression into a parse tree using an {@link RegexParser}. Then it
 	 * invokes the abstract compile method with the resulting parse-tree, to

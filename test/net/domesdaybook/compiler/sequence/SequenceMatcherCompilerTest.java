@@ -8,7 +8,6 @@ package net.domesdaybook.compiler.sequence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,6 +23,7 @@ import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SequenceArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.parser.ParseTree;
 
 /**
  *
@@ -79,7 +79,7 @@ public class SequenceMatcherCompilerTest {
 	 */
 	@Test(expected = CompileException.class)
 	public void testCompileNullAST() throws CompileException {
-		compiler.compile((CommonTree) null);
+		compiler.compile((ParseTree) null);
 	}
 
 	/**

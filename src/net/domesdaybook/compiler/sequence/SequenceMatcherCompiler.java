@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -53,32 +53,22 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseTree;
 import net.domesdaybook.parser.ParseTreeType;
+import net.domesdaybook.parser.Parser;
 
 /**
  * A compiler which produces a {@link SequenceMatcher} from an
- * abstract syntax tree provided by the {@link AbstractCompiler} class,
- * which it extends.
+ * abstract syntax tree provided by a {@link Parser}.
  * <p>
  * It can handle nearly all the syntax processable by the {@link net.domesdaybook.parser.regex.RegexParser},
  * but it cannot handle any syntax which would give variable lengths to
  * match, or which would have alternative sequences of bytes,
  * as a sequence matcher can only match a single defined sequence.
  * <p>
- * In general, this means that it *cannot* handle alternatives (X|Y|Z),
+ * This means that it *cannot* handle alternatives (X|Y|Z),
  * optionality X?, variable length repeats {n-m}, 
- * and the wildcard repeats * and +.
- * <p>
- * It can handle fixed length repeats {n}.  Also, alternative sequences
- * (X|Y|Z) where each alternative is one byte long can be handled, but only
- * because they are pre-optimised by the AbstractAstCompiler class into a [set] 
- * of bytes instead of a list of alternatives, before this compiler even sees them.
- * Therefore, this may not be relied upon, as it is an artefact of an earlier
- * stage of optimisation which may or may not hold true in the future. This
- * compiler, in principle, cannot handle alternative sequences if they are
- * provided to it.
+ * and the wildcard repeats * and +.  It can handle fixed length repeats {n}.  
  * 
  * @author Matt Palmer
- * @see AbstractCompiler
  * @see SequenceMatcher
  */
 public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher> {
@@ -117,22 +107,54 @@ public final class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatc
     
     /**
      * Default constructor which uses the {@link SimpleByteMatcherFactory}
-     * to produce matchers for sets of bytes.
+     * to produce matchers for sets of bytes, and the parser defined in 
+     * AbstractCompiler to produce the abstract syntax tree.
      * 
      */
     public SequenceMatcherCompiler() {
-        matcherFactory = new SimpleByteMatcherFactory();
+       this(null, null);
     }
 
     /**
      * Constructor which uses the provided {@link ByteMatcherFactory} to
-     * produce matchers for sets of bytes
+     * produce matchers for sets of bytes, and the parser defined in 
+     * AbstractCompiler to produce the abstract syntax tree.
      * 
      * @param factoryToUse The ByteMatcherFactory used to produce matchers
      * for sets of bytes.
      */
     public SequenceMatcherCompiler(final ByteMatcherFactory factoryToUse) {
-        matcherFactory = factoryToUse;
+        this(null, factoryToUse);
+    }
+    
+
+    /**
+     * Constructor which uses the provided {@link Parser} to produce the abstract
+     * syntax tree, and the default {@SimpleByteMatcherFactory} to build the byte
+     * matchers.
+     * 
+     * @param parser The parser to use to produce the abstract syntax tree.
+     */    
+    public SequenceMatcherCompiler(final Parser parser) {
+        this(parser, null);
+    }
+    
+    /**
+     * Constructor which uses the provided {@link ByteMatcherFactory} to
+     * produce matchers for sets of bytes, and the provided {@link Parser} to
+     * product the abstract syntax tree.
+     * <p>
+     * If the parser is null, then the parser used will be the default parser defined
+     * in {@link AbstractCompiler}.  If the factory is null, then the default
+     * {@link SimpleByteMatcherFactory} will be used.
+     * 
+     * @param parser The parser to use to produce the abstract syntax tree. 
+     * @param factoryToUse The ByteMatcherFactory used to produce matchers
+     * for sets of bytes.
+     */    
+    public SequenceMatcherCompiler(final Parser parser, final ByteMatcherFactory factoryToUse) {
+        super(parser);
+    	matcherFactory = factoryToUse == null? new SimpleByteMatcherFactory() : factoryToUse;
     }
 
 

@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
 import net.domesdaybook.automata.regex.RegexBuilder;
@@ -47,6 +46,7 @@ import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseTree;
 import net.domesdaybook.parser.ParseTreeType;
 import net.domesdaybook.parser.ParseTreeUtils;
+import net.domesdaybook.parser.Parser;
 import net.domesdaybook.parser.regex.regularExpressionParser;
 
 /**
@@ -69,27 +69,58 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>> {
     private final RegexBuilder<T> regexBuilder;
 
     /**
-     * Constructs an RegexCompiler, using the default {@link TransitionFactory},
-     * {@link net.domesdaybook.automata.StateFactory} and {@link RegexBuilder} objects.
+     * Constructs a RegexCompiler, using the default {@link RegexBuilder} object.
+     * The parser used will be the default parser defined in {@link AbstractCompiler}
      *
      * By default, it uses the {@link ByteMatcherTransitionFactory} and
      * the {@link net.domesdaybook.automata.base.BaseStateFactory} to make a {@link GlushkovRegexBuilder} to
      * produce the NFA.
      */
     public RegexCompiler() {
-        regexBuilder = new GlushkovRegexBuilder<T>();
+    	this(null,null);
     }
 
     
     /**
-     * Constructs an RegexCompiler, supplying the {@link RegexBuilder} object
+     * Constructs a RegexCompiler, supplying the {@link RegexBuilder} object
      * to use to construct the NFA from the parse tree.
+     * The parser used will be the default parser defined in {@link AbstractCompiler}
      *
-     * @param regExBuilder the NFA builder used to create an NFA from an abstract
+     * @param regexBuilder the NFA builder used to create an NFA from an abstract
      *        syntax tree (AST).
      */
-    public RegexCompiler(final RegexBuilder<T> regExBuilder) {
-        this.regexBuilder = regExBuilder;
+    public RegexCompiler(final RegexBuilder<T> regexBuilder) {
+        this(null, regexBuilder);
+    }
+    
+    
+    /**
+     * Constructs a RegexCompiler, supplying the {@link Parser} to use.
+     * The default {@link RegexBuilder} object will be used to construct the NFA
+     * from the parse tree.
+     * 
+     * @param parser The Parser to use to produce the parse tree.
+     */
+    public RegexCompiler(final Parser parser) {
+    	this(parser, null);
+    }
+    
+    
+    /**
+     * Constructs a RegexCompiler, supplying the {@link Parser} to use, and the
+     * {@link RegexBuilder} object to use to construct the NFA from the parse tree.
+     * <p>
+     * If the parser is null, then the parser used will be the default parser defined
+     * in {@link AbstractCompiler}.  If the regexBuilder is null, then the default
+     * {@link GlushkovRegexBuilder} will be used.
+     * 
+     * @param parser The Parser to use to produce the parse tree.
+     * @param regexBuilder the NFA builder used to create an NFA from an abstract
+     *        syntax tree (AST).
+     */
+    public RegexCompiler(final Parser parser, final RegexBuilder<T> regexBuilder) {
+    	super(parser);
+    	this.regexBuilder = regexBuilder == null? new GlushkovRegexBuilder<T>() : regexBuilder;
     }
 
     
@@ -150,7 +181,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>> {
                     break;
                 }
     
-                case (ParseTreeType.ALT_ID): {
+                case (ParseTreeType.ALTERNATIVES_ID): {
                     final List<Automata<T>> alternateStates = new ArrayList<Automata<T>>();
                     for (final ParseTree child : ast.getChildren()) {
                       alternateStates.add(buildAutomata(child));
@@ -173,7 +204,6 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>> {
                     break;
                 }
     
-    
                 case (ParseTreeType.MANY_ID): {
                     final ParseTree zeroToManyNode = ast.getChildren().get(0);
                     final Automata<T> zeroToManyStates = buildAutomata(zeroToManyNode);
@@ -181,14 +211,12 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>> {
                     break;
                 }
     
-    
                 case (ParseTreeType.ONE_TO_MANY_ID): {
                     final ParseTree oneToManyNode = ast.getChildren().get(0);
                     final Automata<T> oneToManyStates = buildAutomata(oneToManyNode);
                     automata = regexBuilder.buildOneToManyAutomata(oneToManyStates);
                     break;
                 }
-    
     
                 case (ParseTreeType.OPTIONAL_ID): {
                     final ParseTree optionalNode = ast.getChildren().get(0);

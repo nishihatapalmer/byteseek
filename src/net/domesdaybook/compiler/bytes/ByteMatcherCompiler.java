@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -49,6 +49,7 @@ import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.ParseTree;
 import net.domesdaybook.parser.ParseTreeType;
+import net.domesdaybook.parser.Parser;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -154,21 +155,50 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 
 	/**
 	 * Constructs a ByteMatcherCompiler using a {@link SimpleByteMatcherFactory}
-	 * to construct optimal matchers for sets of bytes.
+	 * to construct optimal matchers for sets of bytes, and the default parser
+	 * defined in AbstractCompiler.
 	 * 
 	 */
 	public ByteMatcherCompiler() {
-		matcherFactory = new SimpleByteMatcherFactory();
+		this(null, null);
 	}
 
 	/**
 	 * Constructs a ByteMatcherCompiler using the provided factory
-	 * to construct optimal matchers for sets of bytes.
+	 * to construct optimal matchers for sets of bytes.  The parser 
+	 * that produces the abstract syntax tree will the default one
+	 * defined in AbstractCompiler.
 	 * 
 	 * @param factoryToUse The factory used to create optimal matchers for sets of bytes.
 	 */
 	public ByteMatcherCompiler(final ByteMatcherFactory factoryToUse) {
-		matcherFactory = factoryToUse;
+		this(null, factoryToUse);
+	}
+	
+	
+	/**
+	 * Constructs a ByteMatcherCompiler using the provided parser.  The factory
+	 * used to construct matchers from sets of bytes will be the default
+	 * SimpleByteMatcherFactory.
+	 * 
+	 * @param parser The parser to use to produce an abstract syntax tree.
+	 */
+	public ByteMatcherCompiler(final Parser parser) {
+		this(parser, null);
+	}
+	
+	
+	/**
+	 * Constructs a ByteMatcherCompiler using the provided parser and factory.
+	 * <p>
+	 * If the parser is null, then the default compiler defined in AbstractCompiler will be used.
+	 * If the factory is null, then a SimpleByteMatcherFactory will be used.
+	 * 
+	 * @param parser The parser to use to produce an abstract syntax tree.
+	 */
+	public ByteMatcherCompiler(final Parser parser, final ByteMatcherFactory factoryToUse) {
+		super(parser);
+		matcherFactory = factoryToUse == null? new SimpleByteMatcherFactory() : factoryToUse;
 	}
 
 	/**

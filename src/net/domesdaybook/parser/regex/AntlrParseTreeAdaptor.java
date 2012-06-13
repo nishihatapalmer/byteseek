@@ -92,7 +92,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 			}
 			
 			case regularExpressionParser.RANGE: {
-				return new RangeAdaptor(payload, ParseTreeType.SET_RANGE);
+				return new RangeAdaptor(payload, ParseTreeType.RANGE);
 			}
 			
 			case regularExpressionParser.NUMBER: {
@@ -286,7 +286,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
   	        break;
   	      }
   	      
-  	      case ParseTreeType.SET_RANGE_ID:
+  	      case ParseTreeType.RANGE_ID:
   	      case ParseTreeType.ALL_BITMASK_ID:
   	      case ParseTreeType.ANY_BITMASK_ID:
   	      case ParseTreeType.INVERTED_SET_ID:

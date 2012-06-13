@@ -180,7 +180,7 @@ public final class ParseTreeUtils {
 				break;
 			}
 			
-			case ParseTreeType.SET_RANGE_ID:
+			case ParseTreeType.RANGE_ID:
 			case ParseTreeType.ALL_BITMASK_ID:
 			case ParseTreeType.ANY_BITMASK_ID:
 			{
