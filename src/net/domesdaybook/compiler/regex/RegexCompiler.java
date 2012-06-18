@@ -198,7 +198,9 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>> {
                     final ParseTree maxTree = ast.getChildren().get(1);
                     if (maxTree.getParseTreeType() == ParseTreeType.INTEGER) {
                       automata = regexBuilder.buildMinToMaxAutomata(minRepeat, maxTree.getIntValue(), repeatedAutomata);
-                    } else { // if (MANY.equals(ParseTreeUtils.getChildStringValue(ast,1)))) {
+                    } else { 
+                      //FIXME: test for * text value...? Or force parse into MANY object?
+                      // if (MANY.equals(ParseTreeUtils.getChildStringValue(ast,1)))) {
                       automata = regexBuilder.buildMinToManyAutomata(minRepeat, repeatedAutomata);
                     }
                     break;
@@ -294,6 +296,10 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>> {
             }
         } catch (ParseException pe) {
           throw new CompileException(pe);
+        } catch (ArrayIndexOutOfBoundsException ai) {
+        	final String message = "A mandatory child node did not exist for the tree node id %d with name %s";
+        	final ParseTreeType treeType = ast.getParseTreeType();
+        	throw new CompileException(String.format(message, treeType.getId(), treeType.getName()), ai);
         }
         
         return automata;
