@@ -71,13 +71,10 @@ public class ForwardSearchIterator<T> implements
 	 *            The Searcher to use.
 	 * @param reader
 	 *            The Reader to search in.
-	 * @throws IOException
-	 *             If determining the length of the Reader causes an error.
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or Reader is null.
 	 */
-	public ForwardSearchIterator(final Searcher<T> searcher, final Reader reader)
-			throws IOException {
+	public ForwardSearchIterator(final Searcher<T> searcher, final Reader reader) {
 		this(searcher, 0, Long.MAX_VALUE, reader);
 	}
 
@@ -92,13 +89,11 @@ public class ForwardSearchIterator<T> implements
 	 *            The Reader to search in.
 	 * @param fromPosition
 	 *            The position to start searching forwards from.
-	 * @throws IOException
-	 *             If determining the length of the Reader causes an error.
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or Reader is null.
 	 */
 	public ForwardSearchIterator(final Searcher<T> searcher,
-			final Reader reader, final long fromPosition) throws IOException {
+			final Reader reader, final long fromPosition) {
 		this(searcher, fromPosition, Long.MAX_VALUE, reader);
 	}
 

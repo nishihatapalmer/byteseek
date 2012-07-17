@@ -3,7 +3,7 @@
 
 import org.antlr.runtime.*;
 @SuppressWarnings("all") // generated code.
-public class regularExpressionLexer extends Lexer {
+public class AntlrRegexLexer extends Lexer {
     public static final int CLOSE_CURLY=60;
     public static final int SET_NEWLINE=38;
     public static final int SET_LOWER=30;
@@ -88,11 +88,11 @@ public class regularExpressionLexer extends Lexer {
     // delegates
     // delegators
 
-    public regularExpressionLexer() {;} 
-    public regularExpressionLexer(CharStream input) {
+    public AntlrRegexLexer() {;} 
+    public AntlrRegexLexer(CharStream input) {
         this(input, new RecognizerSharedState());
     }
-    public regularExpressionLexer(CharStream input, RecognizerSharedState state) {
+    public AntlrRegexLexer(CharStream input, RecognizerSharedState state) {
         super(input,state);
 
     }

@@ -59,7 +59,7 @@ import java.util.Set;
  * 
  * @author Matt Palmer
  */
-public final class IdentityHashSet<T> extends AbstractSet<T> implements Set<T>, Cloneable {
+public final class IdentityHashSet<T> extends AbstractSet<T> implements Cloneable {
     
     private final Map<T, Object> map;
     

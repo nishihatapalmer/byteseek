@@ -1,7 +1,7 @@
-grammar regularExpression;
+grammar AntlrRegex;
 
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -43,7 +43,7 @@ grammar regularExpression;
 
   Input
   -----
-  A regular expression conforming to the syntax described in the file syntax.txt.
+  A regular expression conforming to the syntax described in the file "Regular Expression syntax.txt"
   
   Output
   ------
@@ -86,7 +86,7 @@ tokens { SEQUENCE;
 
 
 @parser::header {
-package net.domesdaybook.expression.parser;
+package net.domesdaybook.expression.parser.regex;
 }
 
 
@@ -96,7 +96,7 @@ package net.domesdaybook.expression.parser;
 
 
 @lexer::header{
-package net.domesdaybook.expression.parser;
+package net.domesdaybook.expression.parser.regex;
 } 
 
 @lexer::members { 

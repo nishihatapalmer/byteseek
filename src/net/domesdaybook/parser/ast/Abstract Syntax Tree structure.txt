@@ -35,18 +35,24 @@
  There are two main types of ParseTree nodes: leaf nodes, which have values and structural
  nodes, which have no direct value but do have child ParseTrees.
  
-	 notes: make all value nodes invertible - means inverted set type goes away.
+ Value-carrying ParseTrees:
+ ---------------------------
+ 
+ 	ANY						Matches any byte.
+ 
+ The following types can be flagged as being inverted.
 	 
- 	BYTE
-	ALL_BITMASK
-	ANY_BITMASK
-	SET
-	INVERTED_SET
-	ANY
-	CASE_SENSITIVE_STRING
-	CASE_INSENSITIVE_STRING
+ 	BYTE					Has a single byte value
+	ALL_BITMASK				Has a single byte value, used to compare against all of its bits.
+	ANY_BITMASK				Has a single byte value, used to compare against any of its bits.
+	SET						A set of byte values.
 	
-	RANGE
+	
+	CASE_SENSITIVE_STRING	Defines a string from which bytes are 
+	CASE_INSENSITIVE_STRING Matches the bytes in the string ... ?
+	
+	
+	RANGE					Defines a range of byte values. 
 	SEQUENCE
 	REPEAT
 	INTEGER

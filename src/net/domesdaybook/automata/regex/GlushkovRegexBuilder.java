@@ -58,7 +58,7 @@ import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
  * <p>
  * Being Non-Deterministic means that from any given state,
  * there can be transitions to several states on the same byte value.
- * (by constrast, Deterministic Finite-state Automata (DFAs) have at most one
+ * (by contrast, Deterministic Finite-state Automata (DFAs) have at most one
  * state they can transition to on a given byte value.)
  * <p>
  * Unlike the classic Thompson construction (the most common regular expression NFA)
@@ -151,7 +151,7 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 	 * @return An automata with a transition on the byte supplied.
 	 */
 	@Override
-	public Automata<T> buildSingleByteAutomata(final byte transitionByte) {
+	public Automata<T> buildByteAutomata(final byte transitionByte) {
 		final State<T> initialState = stateFactory.create(State.NON_FINAL);
 		final State<T> finalState = stateFactory.create(State.FINAL);
 		final Transition<T> transition = transitionFactory.createByteTransition(transitionByte,

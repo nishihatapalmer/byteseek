@@ -1,8 +1,8 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -29,42 +29,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.compiler;
+package net.domesdaybook.matcher.sequence;
 
-import java.util.Collection;
+import java.util.List;
 
-/**
- * An interface for compilers which compile a String expression 
- * into an object of type T.
- * 
- * @param <T>
- *            The type of the object to compile to.
- * @param <S>
- *            The type of syntax that is parsed.       
- * @author Matt Palmer
- */
-public interface Compiler<T> {
+public class BytesToSequencesMatcherFactory implements SequenceMatcherFactory {
 
-	/**
-	 * Compiles an expression into an object of type T.
-	 * 
-	 * @param expression
-	 *            The expression to compile.
-	 * @return A compiled object of type T.
-	 * @throws CompileException
-	 *             if an object could not be compiled.
-	 */
-	public T compile(String expression) throws CompileException;
-
-	/**
-	 * Compiles a collection of expressions into a single object of type T.
-	 * 
-	 * @param expressions
-	 *            A collection of expressions to compile.
-	 * @return A compiled object of type T
-	 * @throws CompileException
-	 *             if an object could not be compiled.
-	 */
-	public T compile(Collection<String> expressions) throws CompileException;
+	@Override
+	public SequenceMatcher create(final List<SequenceMatcher> sequences) {
+    	// If there's only one sequence, then just return it:
+		if (sequences.size() == 1) {
+    		return sequences.get(0);
+    	}
+		
+    	//TODO: optimise sequences - collapse runs of single bytes into ByteArrayMatchers,
+    	//                           and runs of sequences of length one into 
+    	//                           ByteMatcherArrayMatchers.
+    	
+    	// Last resort - just build a sequence array matcher over the list of sequences.
+    	return new SequenceArrayMatcher(sequences);
+	}
 
 }

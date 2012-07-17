@@ -60,7 +60,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * 
  * @author Matt Palmer
  */
-public final class SimpleByteMatcherFactory implements ByteMatcherFactory {
+public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
 
     private static final String ILLEGAL_ARGUMENTS = "Null or empty Byte set passed in to ByteSetMatcher.";
     private static final int BINARY_SEARCH_THRESHOLD = 16;

@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
-import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
+import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceUtils;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
@@ -81,7 +81,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         backwardInfo = new BackwardSearchInfo();
         
         //TODO: provide constructors to allow different byte sequences factories.
-        byteMatcherFactory = new SimpleByteMatcherFactory();
+        byteMatcherFactory = new SetAnalysisByteMatcherFactory();
     }
     
     

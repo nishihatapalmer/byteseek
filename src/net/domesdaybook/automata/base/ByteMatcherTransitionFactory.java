@@ -42,7 +42,7 @@ import net.domesdaybook.matcher.bytes.AnyByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;
-import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
+import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 
 /**
  * An implementation of {@link TransitionFactory} which creates 
@@ -63,11 +63,11 @@ public class ByteMatcherTransitionFactory<T> implements TransitionFactory<T> {
 
     
     /** 
-     * Default constructor which used an underlying {@link SimpleByteMatcherFactory}
+     * Default constructor which used an underlying {@link SetAnalysisByteMatcherFactory}
      * to create {@link net.domesdaybook.matcher.bytes.ByteMatcher}s based on sets of bytes.
      */
     public ByteMatcherTransitionFactory() {
-        matcherFactory = new SimpleByteMatcherFactory();
+        matcherFactory = new SetAnalysisByteMatcherFactory();
     }
 
     

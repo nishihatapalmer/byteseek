@@ -93,7 +93,7 @@ public final class SearchUtils {
 	 *             if a problem occurred reading in the Reader.
 	 */
 	public static <T> List<SearchResult<T>> searchAllForwards(
-			final Searcher<T> searcher, final Reader reader) throws IOException {
+			final Searcher<T> searcher, final Reader reader) {
 		final List<SearchResult<T>> results = new ArrayList<SearchResult<T>>();
 		final ForwardSearchIterator<T> iterator = new ForwardSearchIterator<T>(
 				searcher, reader);

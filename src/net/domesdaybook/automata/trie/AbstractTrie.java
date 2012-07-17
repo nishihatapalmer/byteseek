@@ -247,7 +247,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 		final List<State<T>> nextStates = new ArrayList<State<T>>();
 		final Set<Byte> allBytesToTransitionOn = ByteUtilities.toSet(bytes);
 		for (final State<T> currentState : currentStates) {
-			// make a defensive copy of the transitions of the current state:
+			//TODO: make a defensive copy of the transitions of the current state:
 			final List<Transition<T>> stateTransitions = currentState.getTransitions();
 			final Set<Byte> bytesToTransitionOn = new HashSet<Byte>(allBytesToTransitionOn);
 			for (final Transition<T> transition : stateTransitions) {

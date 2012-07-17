@@ -389,6 +389,28 @@ public final class ByteUtilities {
     
     
     /**
+     * Adds all the bytes in a range to a set.  The range can be specified
+     * either forwards or backwards.
+     * 
+     * @param from A number in the range from 0 to 255;
+     * @param to A number in the range from 0 to 255.
+     * @param bytes A set of bytes to add the bytes in the range to.
+     * @throws IllegalArgumentException if the from or to values are not between 0 and 255.
+     */
+    public static void addBytesInRange(final int from, final int to, final Set<Byte> bytes) {
+    	if (from < 0 || from > 255 || to < 0 || to > 255) {
+    		final String message = "The from and to values must be in the range 0 to 255.  Values provided were %d and %d";
+    		throw new IllegalArgumentException(String.format(message, from, to));
+    	}
+    	final int start = from < to? from : to;
+    	final int end =   from < to? to : from;
+    	for (int value = start; value <= end; value++) {
+    		bytes.add((byte) value);
+    	}
+    }
+    
+    
+    /**
      * Returns an inverted set of bytes.  This set of bytes contains all other
      * possible byte values than the ones in the set provided.
      * 

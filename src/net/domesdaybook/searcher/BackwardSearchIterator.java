@@ -92,13 +92,11 @@ public class BackwardSearchIterator<T> implements
 	 *            The Reader to search in.
 	 * @param fromPosition
 	 *            The position to start searching backwards from.
-	 * @throws IOException
-	 *             If determining the length of the Reader causes an error.
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or Reader is null.
 	 */
 	public BackwardSearchIterator(final Searcher<T> searcher,
-			final Reader reader, final long fromPosition) throws IOException {
+			final Reader reader, final long fromPosition) {
 		this(searcher, fromPosition, 0, reader);
 	}
 

@@ -48,10 +48,10 @@ public interface RegexBuilder<T> {
     /**
      * Builds a simple automata with a transition on a single byte value.
      *
-     * @param transitionByte The byte value to transition on.
+     * @param transition Byte The byte value to transition on.
      * @return An automata with a transition on the transitionByte.
      */
-    public Automata<T> buildSingleByteAutomata(final byte transitionByte);
+    public Automata<T> buildByteAutomata(final byte transitionByte);
 
 
     /**

@@ -1,8 +1,8 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -28,43 +28,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-package net.domesdaybook.compiler;
-
-import java.util.Collection;
+package net.domesdaybook.util.object;
 
 /**
- * An interface for compilers which compile a String expression 
- * into an object of type T.
- * 
- * @param <T>
- *            The type of the object to compile to.
- * @param <S>
- *            The type of syntax that is parsed.       
  * @author Matt Palmer
+ *
  */
-public interface Compiler<T> {
-
-	/**
-	 * Compiles an expression into an object of type T.
-	 * 
-	 * @param expression
-	 *            The expression to compile.
-	 * @return A compiled object of type T.
-	 * @throws CompileException
-	 *             if an object could not be compiled.
-	 */
-	public T compile(String expression) throws CompileException;
-
-	/**
-	 * Compiles a collection of expressions into a single object of type T.
-	 * 
-	 * @param expressions
-	 *            A collection of expressions to compile.
-	 * @return A compiled object of type T
-	 * @throws CompileException
-	 *             if an object could not be compiled.
-	 */
-	public T compile(Collection<String> expressions) throws CompileException;
+public interface Transformer<T> {
+	
+	public T transform(T toTransform) throws TransformException;
+	
+	public class TransformException extends Exception {
+		
+		public TransformException(String message) {
+			super(message);
+		}
+		
+		public TransformException(Throwable cause) {
+			super(cause);
+		}
+		
+		public TransformException(String message, Throwable cause) {
+			super(message, cause);
+		}
+	}
 
 }

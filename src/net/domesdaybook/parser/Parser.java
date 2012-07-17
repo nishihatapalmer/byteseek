@@ -31,20 +31,14 @@
 package net.domesdaybook.parser;
 
 /**
- * An interface for parsers which can parse a String expression into a
- * {@link ParseTree}.  
- * <p>
- * A ParseTree is an abstract syntax tree (AST) representing an expression as a 
- * tree of operations.  Compilers can be written which operate on the ParseTree,
- * without any knowledge of the syntax originally parsed.
- * This allows us to use different syntaxes to produce the same AST, and we can
- * re-use the compiler itself without modification.
+ * An interface for parsers which can parse a String expression into an 
+ * Abstract Syntax Tree (AST) of type T.
  * 
  * @author Matt Palmer
  *
  */
-public interface Parser {
+public interface Parser<T> {
 
-	public ParseTree parse(String expression) throws ParseException;
+	public T parse(String expression) throws ParseException;
 
 }

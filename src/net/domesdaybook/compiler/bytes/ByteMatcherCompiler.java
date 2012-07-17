@@ -32,24 +32,21 @@
 package net.domesdaybook.compiler.bytes;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
-import net.domesdaybook.matcher.bytes.AnyBitmaskMatcher;
-import net.domesdaybook.matcher.bytes.AnyByteMatcher;
+import net.domesdaybook.compiler.ast.AstCompilerUtils;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
-import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
-import net.domesdaybook.matcher.bytes.InvertedByteMatcher;
-import net.domesdaybook.matcher.bytes.OneByteMatcher;
-import net.domesdaybook.matcher.bytes.SimpleByteMatcherFactory;
+import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.ParseTree;
-import net.domesdaybook.parser.ParseTreeType;
 import net.domesdaybook.parser.Parser;
+import net.domesdaybook.parser.ast.ParseTree;
+import net.domesdaybook.parser.ast.ParseTreeType;
+import net.domesdaybook.parser.ast.StructuralNode;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -58,29 +55,24 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * which it extends.
  *
  * It can only handle syntax which would result in a single byte being
- * matched.  This means hex bytes, any byte (.), all bit-masks (&),
- * any bit-masks (~),single-character case sensitive and insensitive
+ * matched. Multiple values of a single byte can be matched - just not a sequence
+ * of bytes.  This means hex bytes, any byte (.), all bit-masks (&),
+ * any bit-masks (~),single-character case 'sensitive' and `insensitive`
  * strings, and sets of bytes [].
  *
- * It can handle alternative sequences (X|Y|Z) where each alternative
- * is one byte long, but only because they are pre-optimised by the
- * AbstractAstCompiler class into a [set] of bytes instead of a list of alternatives,
- * before this compiler even sees them.  Any alternative sequences provided
- * directly to this compiler will result in a CompileException.
- * 
  * @author Matt Palmer
  */
-public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
+public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree> {
 
 	// Private constants:
 
-	private static final boolean		NOT_INVERTED	= false;
-	private static final boolean		INVERTED		= true;
+	protected static final boolean		NOT_YET_INVERTED	= false;
+	protected static final boolean		INVERTED			= true;
 
 	// Static fields and utility methods:
 
-	private static ByteMatcherCompiler	defaultCompiler;
-	private static ByteMatcherFactory	defaultFactory;
+	protected static ByteMatcherCompiler defaultCompiler;
+	protected static ByteMatcherFactory	 defaultFactory;
 
 	/**
 	 * Compiles a {@link ByteMatcher} from the expression (assuming the syntax
@@ -90,31 +82,9 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	 * @return ByteMatcher A ByteMatcher which matches a byte according to the expression.
 	 * @throws CompileException If a ByteMatcher cannot be produced from the expression.
 	 */
-	public static ByteMatcher matcherFrom(final String expression) throws CompileException {
+	public static ByteMatcher compileFrom(final String expression) throws CompileException {
 		defaultCompiler = new ByteMatcherCompiler();
 		return defaultCompiler.compile(expression);
-	}
-
-	/**
-	 * Returns a {@link OneByteMatcher} which matches the byte provided.
-	 * Equivalent to <code>new OneByteMatcher(aByte)</code>
-	 * 
-	 * @param aByte The byte to match.
-	 * @return OneByteMatcher a ByteMatcher which matches a single byte value.
-	 */
-	public static ByteMatcher matcherFrom(final byte aByte) {
-		return new OneByteMatcher(aByte);
-	}
-
-	/**
-	 * Returns an {@link InvertedByteMatcher} which matches everything but the
-	 * byte provided.  Equivalent to <code>new InvertedByteMatcher(aByte)</code>
-	 * 
-	 * @param aByte The byte which should not match.
-	 * @return InvertedByteMatcher a matcher which matches everything but the byte provided.
-	 */
-	public static ByteMatcher invertedMatcherFrom(final byte aByte) {
-		return new InvertedByteMatcher(aByte);
 	}
 
 	/**
@@ -125,10 +95,10 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	 * @param bytes An array of bytes containing the values the ByteMatcher must match.
 	 * @return ByteMatcher a matcher which matches the byte values in the array provided.
 	 */
-	public static ByteMatcher matcherFrom(final byte[] bytes) {
-		defaultFactory = new SimpleByteMatcherFactory();
+	public static ByteMatcher compileFrom(final byte[] bytes) {
+		defaultFactory = new SetAnalysisByteMatcherFactory();
 		final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
-		return defaultFactory.create(byteSet, NOT_INVERTED);
+		return defaultFactory.create(byteSet, NOT_YET_INVERTED);
 	}
 
 	/**
@@ -141,8 +111,8 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	 * @return ByteMatcher a matcher which matches all byte values other 
 	 *         than those in the array provided.
 	 */
-	public static ByteMatcher invertedMatcherFrom(final byte[] bytes) {
-		defaultFactory = new SimpleByteMatcherFactory();
+	public static ByteMatcher compileInvertedFrom(final byte[] bytes) {
+		defaultFactory = new SetAnalysisByteMatcherFactory();
 		final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
 		return defaultFactory.create(byteSet, INVERTED);
 	}
@@ -154,7 +124,7 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	// Constructors:
 
 	/**
-	 * Constructs a ByteMatcherCompiler using a {@link SimpleByteMatcherFactory}
+	 * Constructs a ByteMatcherCompiler using a {@link SetAnalysisByteMatcherFactory}
 	 * to construct optimal matchers for sets of bytes, and the default parser
 	 * defined in AbstractCompiler.
 	 * 
@@ -175,7 +145,6 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 		this(null, factoryToUse);
 	}
 	
-	
 	/**
 	 * Constructs a ByteMatcherCompiler using the provided parser.  The factory
 	 * used to construct matchers from sets of bytes will be the default
@@ -183,7 +152,7 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	 * 
 	 * @param parser The parser to use to produce an abstract syntax tree.
 	 */
-	public ByteMatcherCompiler(final Parser parser) {
+	public ByteMatcherCompiler(final Parser<ParseTree> parser) {
 		this(parser, null);
 	}
 	
@@ -196,31 +165,11 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	 * 
 	 * @param parser The parser to use to produce an abstract syntax tree.
 	 */
-	public ByteMatcherCompiler(final Parser parser, final ByteMatcherFactory factoryToUse) {
+	public ByteMatcherCompiler(final Parser<ParseTree> parser, final ByteMatcherFactory factoryToUse) {
 		super(parser);
-		matcherFactory = factoryToUse == null? new SimpleByteMatcherFactory() : factoryToUse;
+		matcherFactory = factoryToUse == null? new SetAnalysisByteMatcherFactory() : factoryToUse;
 	}
 
-	/**
-	 * Compiles an abstract syntax tree provided by the {@link AbstractCompiler} class
-	 * which it extends, to create a {@link ByteMatcher} object.
-	 *
-	 * @param ast The abstract syntax tree provided by the {@link AbstractCompiler} class.
-	 * @return A {@link ByteMatcher} which matches the expression defined by the ast passed in.
-	 */
-	@Override
-	public ByteMatcher compile(final ParseTree ast) throws CompileException {
-		if (ast == null) {
-			throw new CompileException("Null abstract syntax tree passed in to SingleByteCompiler.");
-		}
-		try {
-			return parseBytes(ast);
-		} catch (IllegalArgumentException e) {
-			throw new CompileException(e);
-		} catch (ParseException ex) {
-			throw new CompileException(ex);
-		}
-	}
 
 	/**
 	 * Compiles a ByteMatcher which matches all of the bytes in the expressions.
@@ -230,13 +179,13 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	 * @throws CompileException If the expressions could not be compiled.
 	 */
 	@Override
-	public ByteMatcher compile(Collection<String> expressions) throws CompileException {
-		final Set<Byte> bytesToMatch = new HashSet<Byte>();
+	public ByteMatcher compile(final Collection<String> expressions) throws CompileException {
+		final Set<Byte> bytesToMatch = new LinkedHashSet<Byte>();
 		for (final String expression : expressions) {
 			final byte[] matchingBytes = compile(expression).getMatchingBytes();
 			bytesToMatch.addAll(ByteUtilities.toList(matchingBytes));
 		}
-		return matcherFactory.create(bytesToMatch, NOT_INVERTED);
+		return matcherFactory.create(bytesToMatch, NOT_YET_INVERTED);
 	}
 
 	/**
@@ -246,70 +195,39 @@ public final class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher> {
 	 * @return A ByteMatcher representing the expression.
 	 * @throws ParseException If the ast could not be parsed.
 	 */
-	private ByteMatcher parseBytes(ParseTree node) throws ParseException {
+	protected ByteMatcher doCompile(final ParseTree node) throws ParseException {
 
-		switch (node.getParseTreeType().getId()) {
-
-			case (ParseTreeType.BYTE_ID): {
-				// ParseUtils.getHexByteValue(node)
-				return new OneByteMatcher(node.getByteValue());
-			}
-	
-			case (ParseTreeType.ALL_BITMASK_ID): {
-				//final byte bitmask = ParseUtils.getBitMaskValue(node);
-				return new AllBitmaskMatcher(node.getByteValue());
-			}
-	
-			case (ParseTreeType.ANY_BITMASK_ID): {
-				//final byte bitmask = ParseUtils.getBitMaskValue(node);
-				return new AnyBitmaskMatcher(node.getByteValue());
-			}
-	
-			case (ParseTreeType.SET_ID): {
-				//final Set<Byte> byteSet = ParseUtils.calculateSetValue(node);
-				final Collection<Byte> byteSet = node.getByteSetValue();
-				return matcherFactory.create(byteSet, false);
-			}
-	
-			case (ParseTreeType.INVERTED_SET_ID): {
-				//final Set<Byte> byteSet = ParseUtils.calculateSetValue(node);
-				final Collection<Byte> byteSet = node.getByteSetValue();
-				return matcherFactory.create(byteSet, true);
-			}
-	
-			case (ParseTreeType.ANY_ID): {
-				return AnyByteMatcher.ANY_BYTE_MATCHER;
-			}
-	
-			case (ParseTreeType.CASE_SENSITIVE_STRING_ID): {
-				//final String str = ParseUtils.unquoteString(node.getTextValue());
-				final String str = node.getTextValue();
-				if (str.length() != 1) {
-					//TODO: or we use the string as a set definition.
-					throw new ParseException(
-							"String must be one character to parse into a single byte matcher.");
-				}
-				final byte value = (byte) str.charAt(0);
-				return new OneByteMatcher(value);
-			}
-	
-			case (ParseTreeType.CASE_INSENSITIVE_STRING_ID): {
-				//final String str = ParseUtils.unquoteString(node.getText());
-				final String str = node.getTextValue();
-				if (str.length() != 1) {
-					//TODO: or we use the string as a set definition.
-					throw new ParseException(
-							"String must be one character to parse into a single byte matcher.");
-				}
-				return new CaseInsensitiveByteMatcher(str.charAt(0));
-			}
+		switch (node.getParseTreeType()) {
+			case BYTE: 
+				return AstCompilerUtils.createByteMatcher(node, NOT_YET_INVERTED);
+			case ANY:
+				return AstCompilerUtils.getAnyMatcher(node, NOT_YET_INVERTED);
+			case ALL_BITMASK:
+				return AstCompilerUtils.createAllBitmaskMatcher(node, NOT_YET_INVERTED);
+			case ANY_BITMASK:
+				return AstCompilerUtils.createAnyBitmaskMatcher(node, NOT_YET_INVERTED);
+			case RANGE: 
+				return AstCompilerUtils.createRangeMatcher(node, NOT_YET_INVERTED);
+			case SET: 	
+				return AstCompilerUtils.createMatcherFromSet(node, NOT_YET_INVERTED, matcherFactory);
+			case CASE_SENSITIVE_STRING:
+				return AstCompilerUtils.createMatcherFromString(node, NOT_YET_INVERTED, matcherFactory);
+			case CASE_INSENSITIVE_STRING:
+				return AstCompilerUtils.createMatcherFromCaseInsensitiveString(node, NOT_YET_INVERTED, matcherFactory);
 		}
 		
 		// The node type wasn't understood by this compiler.
 		final ParseTreeType type = node.getParseTreeType();
-		final String message = String.format("Unknown type, id %d with description: %s", 
-											 type.getId(), type.getDescription());
+		final String message = String.format("Unknown syntax tree node, type [%s] with description: [%s]", 
+											 type, type.getDescription());
 		throw new ParseException(message);
+	}
+
+	
+	@Override
+	protected ParseTree joinExpressions(List<ParseTree> expressions) 
+			throws ParseException, CompileException {
+		return new StructuralNode(ParseTreeType.SET, expressions, NOT_YET_INVERTED);
 	}
 
 }

@@ -23,7 +23,7 @@ import org.antlr.runtime.tree.TreeAdaptor;
 
 @SuppressWarnings("all")
 // generated code.
-public class regularExpressionParser extends org.antlr.runtime.Parser {
+public class AntlrRegexParser extends org.antlr.runtime.Parser {
 	public static final String[]	tokenNames					= new String[] { "<invalid>",
 			"<EOR>", "<DOWN>", "<UP>", "SEQUENCE", "ALTERNATE", "REPEAT", "SET", "INVERTED_SET",
 			"RANGE", "ALL_BITMASK", "ANY_BITMASK", "ANY", "ALT", "BYTE", "FULL_STOP",
@@ -108,11 +108,11 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 	// delegates
 	// delegators
 
-	public regularExpressionParser(TokenStream input) {
+	public AntlrRegexParser(TokenStream input) {
 		this(input, new RecognizerSharedState());
 	}
 
-	public regularExpressionParser(TokenStream input, RecognizerSharedState state) {
+	public AntlrRegexParser(TokenStream input, RecognizerSharedState state) {
 		super(input, state);
 
 	}
@@ -128,7 +128,7 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 	}
 
 	public String[] getTokenNames() {
-		return regularExpressionParser.tokenNames;
+		return AntlrRegexParser.tokenNames;
 	}
 
 	public String getGrammarFileName() {
@@ -147,14 +147,14 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "start"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:85:1: start : regex EOF ;
-	public final regularExpressionParser.start_return start() throws RecognitionException {
-		regularExpressionParser.start_return retval = new regularExpressionParser.start_return();
+	public final AntlrRegexParser.start_return start() throws RecognitionException {
+		AntlrRegexParser.start_return retval = new AntlrRegexParser.start_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
 		Token EOF2 = null;
-		regularExpressionParser.regex_return regex1 = null;
+		AntlrRegexParser.regex_return regex1 = null;
 
 		Object EOF2_tree = null;
 
@@ -201,16 +201,16 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "regex"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:89:1: regex : sequence ( ( ( ALT sequence )+ -> ^( ALT ( sequence )+ ) ) | ( -> sequence ) ) ;
-	public final regularExpressionParser.regex_return regex() throws RecognitionException {
-		regularExpressionParser.regex_return retval = new regularExpressionParser.regex_return();
+	public final AntlrRegexParser.regex_return regex() throws RecognitionException {
+		AntlrRegexParser.regex_return retval = new AntlrRegexParser.regex_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
 		Token ALT4 = null;
-		regularExpressionParser.sequence_return sequence3 = null;
+		AntlrRegexParser.sequence_return sequence3 = null;
 
-		regularExpressionParser.sequence_return sequence5 = null;
+		AntlrRegexParser.sequence_return sequence5 = null;
 
 		Object ALT4_tree = null;
 		RewriteRuleTokenStream stream_ALT = new RewriteRuleTokenStream(adaptor, "token ALT");
@@ -382,19 +382,19 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "sequence"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:101:1: sequence : ({...}? => ( ( quantified_atom -> quantified_atom ) ( sequence -> ^( SEQUENCE quantified_atom sequence ) )? ) | {...}? => ( quantified_atom ( ( ( quantified_atom )+ -> ^( SEQUENCE ( quantified_atom )+ ) ) | ( -> ^( quantified_atom ) ) ) ) );
-	public final regularExpressionParser.sequence_return sequence() throws RecognitionException {
-		regularExpressionParser.sequence_return retval = new regularExpressionParser.sequence_return();
+	public final AntlrRegexParser.sequence_return sequence() throws RecognitionException {
+		AntlrRegexParser.sequence_return retval = new AntlrRegexParser.sequence_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
-		regularExpressionParser.quantified_atom_return quantified_atom6 = null;
+		AntlrRegexParser.quantified_atom_return quantified_atom6 = null;
 
-		regularExpressionParser.sequence_return sequence7 = null;
+		AntlrRegexParser.sequence_return sequence7 = null;
 
-		regularExpressionParser.quantified_atom_return quantified_atom8 = null;
+		AntlrRegexParser.quantified_atom_return quantified_atom8 = null;
 
-		regularExpressionParser.quantified_atom_return quantified_atom9 = null;
+		AntlrRegexParser.quantified_atom_return quantified_atom9 = null;
 
 		RewriteRuleSubtreeStream stream_quantified_atom = new RewriteRuleSubtreeStream(adaptor,
 				"rule quantified_atom");
@@ -679,16 +679,16 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "quantified_atom"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:121:1: quantified_atom : e= atom ( quantifier -> ^( quantifier $e) | -> ^( $e) ) ;
-	public final regularExpressionParser.quantified_atom_return quantified_atom()
+	public final AntlrRegexParser.quantified_atom_return quantified_atom()
 			throws RecognitionException {
-		regularExpressionParser.quantified_atom_return retval = new regularExpressionParser.quantified_atom_return();
+		AntlrRegexParser.quantified_atom_return retval = new AntlrRegexParser.quantified_atom_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
-		regularExpressionParser.atom_return e = null;
+		AntlrRegexParser.atom_return e = null;
 
-		regularExpressionParser.quantifier_return quantifier10 = null;
+		AntlrRegexParser.quantifier_return quantifier10 = null;
 
 		RewriteRuleSubtreeStream stream_quantifier = new RewriteRuleSubtreeStream(adaptor,
 				"rule quantifier");
@@ -825,31 +825,31 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "atom"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:129:1: atom : ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | all_bitmask | any_bitmask | case_sensitive_string | case_insensitive_string | group ) ;
-	public final regularExpressionParser.atom_return atom() throws RecognitionException {
-		regularExpressionParser.atom_return retval = new regularExpressionParser.atom_return();
+	public final AntlrRegexParser.atom_return atom() throws RecognitionException {
+		AntlrRegexParser.atom_return retval = new AntlrRegexParser.atom_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
-		regularExpressionParser.hexbyte_return hexbyte11 = null;
+		AntlrRegexParser.hexbyte_return hexbyte11 = null;
 
-		regularExpressionParser.any_byte_return any_byte12 = null;
+		AntlrRegexParser.any_byte_return any_byte12 = null;
 
-		regularExpressionParser.byte_set_return byte_set13 = null;
+		AntlrRegexParser.byte_set_return byte_set13 = null;
 
-		regularExpressionParser.byte_shorthand_return byte_shorthand14 = null;
+		AntlrRegexParser.byte_shorthand_return byte_shorthand14 = null;
 
-		regularExpressionParser.set_shorthand_return set_shorthand15 = null;
+		AntlrRegexParser.set_shorthand_return set_shorthand15 = null;
 
-		regularExpressionParser.all_bitmask_return all_bitmask16 = null;
+		AntlrRegexParser.all_bitmask_return all_bitmask16 = null;
 
-		regularExpressionParser.any_bitmask_return any_bitmask17 = null;
+		AntlrRegexParser.any_bitmask_return any_bitmask17 = null;
 
-		regularExpressionParser.case_sensitive_string_return case_sensitive_string18 = null;
+		AntlrRegexParser.case_sensitive_string_return case_sensitive_string18 = null;
 
-		regularExpressionParser.case_insensitive_string_return case_insensitive_string19 = null;
+		AntlrRegexParser.case_insensitive_string_return case_insensitive_string19 = null;
 
-		regularExpressionParser.group_return group20 = null;
+		AntlrRegexParser.group_return group20 = null;
 
 		try {
 			// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:129:6: ( ( hexbyte | any_byte | byte_set | byte_shorthand | set_shorthand | all_bitmask | any_bitmask | case_sensitive_string | case_insensitive_string | group ) )
@@ -1069,8 +1069,8 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "hexbyte"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:144:1: hexbyte : BYTE ;
-	public final regularExpressionParser.hexbyte_return hexbyte() throws RecognitionException {
-		regularExpressionParser.hexbyte_return retval = new regularExpressionParser.hexbyte_return();
+	public final AntlrRegexParser.hexbyte_return hexbyte() throws RecognitionException {
+		AntlrRegexParser.hexbyte_return retval = new AntlrRegexParser.hexbyte_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -1118,8 +1118,8 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "any_byte"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:148:1: any_byte : FULL_STOP -> ANY ;
-	public final regularExpressionParser.any_byte_return any_byte() throws RecognitionException {
-		regularExpressionParser.any_byte_return retval = new regularExpressionParser.any_byte_return();
+	public final AntlrRegexParser.any_byte_return any_byte() throws RecognitionException {
+		AntlrRegexParser.any_byte_return retval = new AntlrRegexParser.any_byte_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -1185,8 +1185,8 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "byte_set"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:152:1: byte_set : OPEN_SQUARE ( ( CARET set_specification -> ^( INVERTED_SET set_specification ) ) | ( set_specification -> ^( SET set_specification ) ) ) CLOSE_SQUARE ;
-	public final regularExpressionParser.byte_set_return byte_set() throws RecognitionException {
-		regularExpressionParser.byte_set_return retval = new regularExpressionParser.byte_set_return();
+	public final AntlrRegexParser.byte_set_return byte_set() throws RecognitionException {
+		AntlrRegexParser.byte_set_return retval = new AntlrRegexParser.byte_set_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -1194,9 +1194,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 		Token OPEN_SQUARE23 = null;
 		Token CARET24 = null;
 		Token CLOSE_SQUARE27 = null;
-		regularExpressionParser.set_specification_return set_specification25 = null;
+		AntlrRegexParser.set_specification_return set_specification25 = null;
 
-		regularExpressionParser.set_specification_return set_specification26 = null;
+		AntlrRegexParser.set_specification_return set_specification26 = null;
 
 		Object OPEN_SQUARE23_tree = null;
 		Object CARET24_tree = null;
@@ -1359,32 +1359,32 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "set_specification"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:163:1: set_specification : ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | all_bitmask | any_bitmask | byte_set )+ ;
-	public final regularExpressionParser.set_specification_return set_specification()
+	public final AntlrRegexParser.set_specification_return set_specification()
 			throws RecognitionException {
-		regularExpressionParser.set_specification_return retval = new regularExpressionParser.set_specification_return();
+		AntlrRegexParser.set_specification_return retval = new AntlrRegexParser.set_specification_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
-		regularExpressionParser.hexbyte_return hexbyte28 = null;
+		AntlrRegexParser.hexbyte_return hexbyte28 = null;
 
-		regularExpressionParser.byte_shorthand_return byte_shorthand29 = null;
+		AntlrRegexParser.byte_shorthand_return byte_shorthand29 = null;
 
-		regularExpressionParser.set_shorthand_return set_shorthand30 = null;
+		AntlrRegexParser.set_shorthand_return set_shorthand30 = null;
 
-		regularExpressionParser.mnemonic_return mnemonic31 = null;
+		AntlrRegexParser.mnemonic_return mnemonic31 = null;
 
-		regularExpressionParser.case_sensitive_string_return case_sensitive_string32 = null;
+		AntlrRegexParser.case_sensitive_string_return case_sensitive_string32 = null;
 
-		regularExpressionParser.case_insensitive_string_return case_insensitive_string33 = null;
+		AntlrRegexParser.case_insensitive_string_return case_insensitive_string33 = null;
 
-		regularExpressionParser.byte_range_return byte_range34 = null;
+		AntlrRegexParser.byte_range_return byte_range34 = null;
 
-		regularExpressionParser.all_bitmask_return all_bitmask35 = null;
+		AntlrRegexParser.all_bitmask_return all_bitmask35 = null;
 
-		regularExpressionParser.any_bitmask_return any_bitmask36 = null;
+		AntlrRegexParser.any_bitmask_return any_bitmask36 = null;
 
-		regularExpressionParser.byte_set_return byte_set37 = null;
+		AntlrRegexParser.byte_set_return byte_set37 = null;
 
 		try {
 			// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:164:2: ( ( hexbyte | byte_shorthand | set_shorthand | mnemonic | case_sensitive_string | case_insensitive_string | byte_range | all_bitmask | any_bitmask | byte_set )+ )
@@ -1557,16 +1557,16 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "byte_range"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:179:1: byte_range : r1= range_values RANGE_SEPARATOR r2= range_values -> ^( RANGE $r1 $r2) ;
-	public final regularExpressionParser.byte_range_return byte_range() throws RecognitionException {
-		regularExpressionParser.byte_range_return retval = new regularExpressionParser.byte_range_return();
+	public final AntlrRegexParser.byte_range_return byte_range() throws RecognitionException {
+		AntlrRegexParser.byte_range_return retval = new AntlrRegexParser.byte_range_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
 		Token RANGE_SEPARATOR38 = null;
-		regularExpressionParser.range_values_return r1 = null;
+		AntlrRegexParser.range_values_return r1 = null;
 
-		regularExpressionParser.range_values_return r2 = null;
+		AntlrRegexParser.range_values_return r2 = null;
 
 		Object RANGE_SEPARATOR38_tree = null;
 		RewriteRuleTokenStream stream_RANGE_SEPARATOR = new RewriteRuleTokenStream(adaptor,
@@ -1656,9 +1656,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "range_values"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:186:1: range_values : ( BYTE | CASE_SENSITIVE_STRING );
-	public final regularExpressionParser.range_values_return range_values()
+	public final AntlrRegexParser.range_values_return range_values()
 			throws RecognitionException {
-		regularExpressionParser.range_values_return retval = new regularExpressionParser.range_values_return();
+		AntlrRegexParser.range_values_return retval = new AntlrRegexParser.range_values_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -1712,9 +1712,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "all_bitmask"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:192:1: all_bitmask : AMPERSAND BYTE -> ^( ALL_BITMASK BYTE ) ;
-	public final regularExpressionParser.all_bitmask_return all_bitmask()
+	public final AntlrRegexParser.all_bitmask_return all_bitmask()
 			throws RecognitionException {
-		regularExpressionParser.all_bitmask_return retval = new regularExpressionParser.all_bitmask_return();
+		AntlrRegexParser.all_bitmask_return retval = new AntlrRegexParser.all_bitmask_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -1795,9 +1795,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "any_bitmask"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:196:1: any_bitmask : TILDE BYTE -> ^( ANY_BITMASK BYTE ) ;
-	public final regularExpressionParser.any_bitmask_return any_bitmask()
+	public final AntlrRegexParser.any_bitmask_return any_bitmask()
 			throws RecognitionException {
-		regularExpressionParser.any_bitmask_return retval = new regularExpressionParser.any_bitmask_return();
+		AntlrRegexParser.any_bitmask_return retval = new AntlrRegexParser.any_bitmask_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -1877,8 +1877,8 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "mnemonic"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:200:1: mnemonic : (m= SET_ASCII -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"7f\"] ) ) | m= SET_PRINT -> ^( SET ^( RANGE BYTE[$m,\"' '\"] BYTE[$m,\"'~'\"] ) ) | m= SET_GRAPH -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_WORD -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) BYTE[$m,\"'_'\"] ) | m= SET_ALPHANUM -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_ALPHA -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_UPPER -> ^( SET ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'Z'\"] ) ) | m= SET_LOWER -> ^( SET ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'z'\"] ) ) | m= SET_PUNCT -> ^( SET ^( RANGE BYTE[$m,\"'!'\"] BYTE[$m,\"'/'\"] ) ^( RANGE BYTE[$m,\"':'\"] BYTE[$m,\"'@'\"] ) ^( RANGE BYTE[$m,\"'['\"] BYTE[$m,\"'`'\"] ) ^( RANGE BYTE[$m,\"'{'\"] BYTE[$m,\"'~'\"] ) ) | m= SET_HEXDIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ^( RANGE BYTE[$m,\"'a'\"] BYTE[$m,\"'f'\"] ) ^( RANGE BYTE[$m,\"'A'\"] BYTE[$m,\"'F'\"] ) ) | m= SET_DIGIT -> ^( SET ^( RANGE BYTE[$m,\"'0'\"] BYTE[$m,\"'9'\"] ) ) | m= SET_WHITESPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_BLANK -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"' '\"] ) | m= SET_SPACE -> ^( SET BYTE[$m,\"09\"] BYTE[$m,\"0a\"] BYTE[$m,\"0b\"] BYTE[$m,\"0c\"] BYTE[$m,\"0d\"] BYTE[$m,\"' '\"] ) | m= SET_TAB -> BYTE[$m,\"09\"] | m= SET_NEWLINE -> BYTE[$m,\"0a\"] | m= SET_RETURN -> BYTE[$m,\"0d\"] | m= SET_CONTROL -> ^( SET ^( RANGE BYTE[$m,\"00\"] BYTE[$m,\"1f\"] ) BYTE[$m,\"7f\"] ) );
-	public final regularExpressionParser.mnemonic_return mnemonic() throws RecognitionException {
-		regularExpressionParser.mnemonic_return retval = new regularExpressionParser.mnemonic_return();
+	public final AntlrRegexParser.mnemonic_return mnemonic() throws RecognitionException {
+		AntlrRegexParser.mnemonic_return retval = new AntlrRegexParser.mnemonic_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -2896,9 +2896,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "byte_shorthand"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:222:1: byte_shorthand : (sh= TAB_SHORTHAND -> BYTE[$sh,\"09\"] | sh= NEWLINE_SHORTHAND -> BYTE[$sh,\"0a\"] | sh= VERTICAL_TAB_SHORTHAND -> BYTE[$sh,\"0b\"] | sh= FORM_FEED_SHORTHAND -> BYTE[$sh,\"0c\"] | sh= RETURN_SHORTHAND -> BYTE[$sh,\"0d\"] | sh= ESCAPE_SHORTHAND -> BYTE[$sh,\"1b\"] );
-	public final regularExpressionParser.byte_shorthand_return byte_shorthand()
+	public final AntlrRegexParser.byte_shorthand_return byte_shorthand()
 			throws RecognitionException {
-		regularExpressionParser.byte_shorthand_return retval = new regularExpressionParser.byte_shorthand_return();
+		AntlrRegexParser.byte_shorthand_return retval = new AntlrRegexParser.byte_shorthand_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -3150,9 +3150,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "set_shorthand"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:232:1: set_shorthand : (sh= DIGIT_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= NOT_DIGIT_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ) | sh= WORD_SHORTHAND -> ^( SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= NOT_WORD_SHORTHAND -> ^( INVERTED_SET ^( RANGE BYTE[$sh,\"'0'\"] BYTE[$sh,\"'9'\"] ) ^( RANGE BYTE[$sh,\"'a'\"] BYTE[$sh,\"'z'\"] ) ^( RANGE BYTE[$sh,\"'A'\"] BYTE[$sh,\"'Z'\"] ) BYTE[$sh,\"'_'\"] ) | sh= WHITE_SPACE_SHORTHAND -> ^( SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) | sh= NOT_WHITE_SPACE_SHORTHAND -> ^( INVERTED_SET BYTE[$sh,\"09\"] BYTE[$sh,\"0a\"] BYTE[$sh,\"0d\"] BYTE[$sh,\"' '\"] ) );
-	public final regularExpressionParser.set_shorthand_return set_shorthand()
+	public final AntlrRegexParser.set_shorthand_return set_shorthand()
 			throws RecognitionException {
-		regularExpressionParser.set_shorthand_return retval = new regularExpressionParser.set_shorthand_return();
+		AntlrRegexParser.set_shorthand_return retval = new AntlrRegexParser.set_shorthand_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -3551,9 +3551,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "case_insensitive_string"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:241:1: case_insensitive_string : CASE_INSENSITIVE_STRING ;
-	public final regularExpressionParser.case_insensitive_string_return case_insensitive_string()
+	public final AntlrRegexParser.case_insensitive_string_return case_insensitive_string()
 			throws RecognitionException {
-		regularExpressionParser.case_insensitive_string_return retval = new regularExpressionParser.case_insensitive_string_return();
+		AntlrRegexParser.case_insensitive_string_return retval = new AntlrRegexParser.case_insensitive_string_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -3602,9 +3602,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "case_sensitive_string"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:246:1: case_sensitive_string : CASE_SENSITIVE_STRING ;
-	public final regularExpressionParser.case_sensitive_string_return case_sensitive_string()
+	public final AntlrRegexParser.case_sensitive_string_return case_sensitive_string()
 			throws RecognitionException {
-		regularExpressionParser.case_sensitive_string_return retval = new regularExpressionParser.case_sensitive_string_return();
+		AntlrRegexParser.case_sensitive_string_return retval = new AntlrRegexParser.case_sensitive_string_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -3653,15 +3653,15 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "group"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:251:1: group : OPEN regex CLOSE -> regex ;
-	public final regularExpressionParser.group_return group() throws RecognitionException {
-		regularExpressionParser.group_return retval = new regularExpressionParser.group_return();
+	public final AntlrRegexParser.group_return group() throws RecognitionException {
+		AntlrRegexParser.group_return retval = new AntlrRegexParser.group_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
 		Token OPEN46 = null;
 		Token CLOSE48 = null;
-		regularExpressionParser.regex_return regex47 = null;
+		AntlrRegexParser.regex_return regex47 = null;
 
 		Object OPEN46_tree = null;
 		Object CLOSE48_tree = null;
@@ -3732,19 +3732,19 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "quantifier"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:255:1: quantifier : ( optional | zero_to_many | one_to_many | repeat ) ;
-	public final regularExpressionParser.quantifier_return quantifier() throws RecognitionException {
-		regularExpressionParser.quantifier_return retval = new regularExpressionParser.quantifier_return();
+	public final AntlrRegexParser.quantifier_return quantifier() throws RecognitionException {
+		AntlrRegexParser.quantifier_return retval = new AntlrRegexParser.quantifier_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
-		regularExpressionParser.optional_return optional49 = null;
+		AntlrRegexParser.optional_return optional49 = null;
 
-		regularExpressionParser.zero_to_many_return zero_to_many50 = null;
+		AntlrRegexParser.zero_to_many_return zero_to_many50 = null;
 
-		regularExpressionParser.one_to_many_return one_to_many51 = null;
+		AntlrRegexParser.one_to_many_return one_to_many51 = null;
 
-		regularExpressionParser.repeat_return repeat52 = null;
+		AntlrRegexParser.repeat_return repeat52 = null;
 
 		try {
 			// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:256:2: ( ( optional | zero_to_many | one_to_many | repeat ) )
@@ -3858,8 +3858,8 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "repeat"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:265:1: repeat : OPEN_CURLY n1= NUMBER ( ( REPEAT_SEPARATOR n2= NUMBER -> ^( REPEAT $n1 $n2) ) | ( REPEAT_SEPARATOR MANY -> ^( REPEAT $n1 MANY ) ) | ( -> ^( REPEAT $n1 $n1) ) ) CLOSE_CURLY ;
-	public final regularExpressionParser.repeat_return repeat() throws RecognitionException {
-		regularExpressionParser.repeat_return retval = new regularExpressionParser.repeat_return();
+	public final AntlrRegexParser.repeat_return repeat() throws RecognitionException {
+		AntlrRegexParser.repeat_return retval = new AntlrRegexParser.repeat_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -4097,8 +4097,8 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "optional"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:277:1: optional : QUESTION_MARK ;
-	public final regularExpressionParser.optional_return optional() throws RecognitionException {
-		regularExpressionParser.optional_return retval = new regularExpressionParser.optional_return();
+	public final AntlrRegexParser.optional_return optional() throws RecognitionException {
+		AntlrRegexParser.optional_return retval = new AntlrRegexParser.optional_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -4147,9 +4147,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "zero_to_many"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:281:1: zero_to_many : MANY ;
-	public final regularExpressionParser.zero_to_many_return zero_to_many()
+	public final AntlrRegexParser.zero_to_many_return zero_to_many()
 			throws RecognitionException {
-		regularExpressionParser.zero_to_many_return retval = new regularExpressionParser.zero_to_many_return();
+		AntlrRegexParser.zero_to_many_return retval = new AntlrRegexParser.zero_to_many_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
@@ -4197,9 +4197,9 @@ public class regularExpressionParser extends org.antlr.runtime.Parser {
 
 	// $ANTLR start "one_to_many"
 	// /home/matt/dev/search/regex/src/net/domesdaybook/expression/parser/regularExpression.g:286:1: one_to_many : PLUS ;
-	public final regularExpressionParser.one_to_many_return one_to_many()
+	public final AntlrRegexParser.one_to_many_return one_to_many()
 			throws RecognitionException {
-		regularExpressionParser.one_to_many_return retval = new regularExpressionParser.one_to_many_return();
+		AntlrRegexParser.one_to_many_return retval = new AntlrRegexParser.one_to_many_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
