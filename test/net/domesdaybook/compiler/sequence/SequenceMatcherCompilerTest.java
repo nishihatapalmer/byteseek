@@ -23,7 +23,7 @@ import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SequenceArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.parser.ParseTree;
+import net.domesdaybook.parser.ast.ParseTree;
 
 /**
  *
