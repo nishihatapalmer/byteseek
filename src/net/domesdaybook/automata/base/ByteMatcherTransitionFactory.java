@@ -14,7 +14,7 @@ public class ByteMatcherTransitionFactory implements TransitionFactory<ByteMatch
   public Transition<ByteMatcher> create(final ByteMatcher source,
                                         final boolean ignoreInversion,
                                         final State<ByteMatcher> toState) {
-    return new ByteMatcherTransition(source, toState);
+    return new ByteMatcherTransition<ByteMatcher>(source, toState);
   }
 
 }
