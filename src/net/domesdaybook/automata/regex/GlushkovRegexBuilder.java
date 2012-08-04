@@ -112,9 +112,8 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 			final StateFactory<T> stateFactory) {
 		if (transitionFactory == null) {
 			throw new IllegalArgumentException("Transition factory cannot be null.");
-		} else {
-			this.transitionFactory = transitionFactory;
 		}
+		this.transitionFactory = transitionFactory;
 		if (stateFactory == null) {
 			this.stateFactory = new BaseStateFactory<T>();
 		} else {
