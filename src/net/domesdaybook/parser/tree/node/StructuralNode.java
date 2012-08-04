@@ -28,58 +28,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.domesdaybook.parser.ast;
+package net.domesdaybook.parser.tree.node;
 
+import java.util.List;
 
-/**
- * @author Matt Palmer
- *
- */
-public enum ParseTreeType {
+import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeType;
+
+public final class StructuralNode extends BaseNode {
+
+	private final List<ParseTree> children;	
 	
-	// Value carrying tree leaf node types (have direct value, no children)
-		
-    BYTE("A single byte value"),
-
-	ALL_BITMASK("A bitmask for matching all of its bits"),
-
-	ANY_BITMASK("A bitmask for matching any of its bits"),
-
-	SET("A set of byte values"),
-	
-	ANY("A wildcard matching any byte value"),
-
-	CASE_SENSITIVE_STRING("An ASCII string to match case sensitively"),
-
-	CASE_INSENSITIVE_STRING("An ASCII string to match case insensitively"),
-
-	INTEGER("An integer"),
-	
-    // Child carrying tree node types (no direct value, has child ParseTrees)
-
-	SEQUENCE("An ordered sequence of child ParseTrees"),
-
-	RANGE("A range of byte values with the range defined as two child INTEGER ParseTree nodes, from 0 to 255"),
-
-	REPEAT("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER or MANY child) number of times."),
-
-	ALTERNATIVES("A set of alternatives as children of this ParseTree"),
-	
-	ZERO_TO_MANY("Repeat the child ParseTree zero to many times"),
-
-	ONE_TO_MANY("Repeat the child ParseTree one to many times"),
-	
-  	OPTIONAL("The child ParseTree is optional (repeat zero to one times).");
-  
-  private final String description;
-	
-	private ParseTreeType(final String description) {
-   	this.description = description;
+	public StructuralNode(final ParseTreeType type,
+							   final List<ParseTree> children) {
+		this(type, children, false);
 	}
 	
-	public String getDescription() {
-		return description;
+	public StructuralNode(final ParseTreeType type, 
+							   final List<ParseTree> children,
+							   final boolean inverted) {
+		super(type, inverted);
+		this.children = children;
+	}
+
+	@Override
+	public List<ParseTree> getChildren() {
+		return children;
 	}
 
 }
-

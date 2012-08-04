@@ -44,13 +44,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.reader.ByteArrayReader;
 import net.domesdaybook.reader.FileReader;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests all the constructors and public methods of the ByteArrayMatcher class for
@@ -520,7 +520,7 @@ public class ByteArrayMatcherTest {
 			for (int endIndex = beginIndex + 1; endIndex <= sequence.length(); endIndex++) {
 				sub = matcher.subsequence(beginIndex, endIndex);
 				int sequencelength = endIndex - beginIndex;
-				assertEquals("subsequence length correct", sequencelength);
+				assertEquals("subsequence length correct",sequencelength, sub.length());
 				for (int pos = 0; pos < sequencelength; pos++) {
 					int charvalue = sequence.charAt(beginIndex + pos);
 					byte[] matchingbytes = sub.getMatcherForPosition(pos).getMatchingBytes();
@@ -536,7 +536,7 @@ public class ByteArrayMatcherTest {
 			for (int endIndex = beginIndex + 1; endIndex <= sequence.length(); endIndex++) {
 				sub = reversed.subsequence(beginIndex, endIndex);
 				int sequencelength = endIndex - beginIndex;
-				assertEquals("subsequence length correct", sequencelength);
+				assertEquals("subsequence length correct", sequencelength, sub.length());
 				for (int pos = 0; pos < sequencelength; pos++) {
 					int charvalue = sequence.charAt(beginIndex + pos);
 					byte[] matchingbytes = sub.getMatcherForPosition(pos).getMatchingBytes();

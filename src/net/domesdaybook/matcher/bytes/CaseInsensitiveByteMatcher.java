@@ -33,12 +33,13 @@
 package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
-import net.domesdaybook.util.bytes.ByteUtilities;
+
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.reader.Reader;
 import net.domesdaybook.reader.Window;
+import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
  * An immutable {@link ByteMatcher} which matches ASCII bytes case insensitively.
@@ -100,7 +101,6 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
         }
         return false;
     }    
-    
     
     
     /**

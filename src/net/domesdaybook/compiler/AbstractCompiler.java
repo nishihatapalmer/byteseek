@@ -93,9 +93,10 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 			throw new CompileException("An illegal argument occurred when compiling the expression: " + expression, compex);
 		} catch (final NullPointerException npe) {
 			throw new CompileException("A null object occurred when compiling the expression: " + expression, npe);
+		} catch (final ArrayIndexOutOfBoundsException aie) {
+		  throw new CompileException("An attempt was made to access an array out of its bounds when compiling the expression: " + expression, aie);
 		}
 	}
-	
 	
 	@Override
 	public T compile(final Collection<String> expressions) throws CompileException {
@@ -140,9 +141,9 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 			return doCompile(ast);
 		} catch (IllegalArgumentException e) {
             throw new CompileException("An illegal argument occurred during construction.", e);
-        } catch (ParseException ex) {
-            throw new CompileException("A problem occurred parsing the syntax tree.", ex);
-        }	
+    } catch (ParseException ex) {
+      throw new CompileException("A problem occurred parsing the syntax tree.", ex);
+    }	
 	}
 	
 

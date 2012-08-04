@@ -31,7 +31,6 @@
 
 package net.domesdaybook.automata.regex;
 
-import java.util.Collection;
 import java.util.List;
 
 import net.domesdaybook.automata.Automata;
@@ -41,39 +40,14 @@ import net.domesdaybook.automata.Automata;
  * wrapped in {@link Automata} objects.
  *
  * @param <T> The type of object associated with a match of the regular expression.
+ * @param <S> The type of object used to build a transition from.
+ * 
  * @author Matt Palmer
  */
-public interface RegexBuilder<T> {
+public interface RegexBuilder<T, S> {
 
-    /**
-     * Builds a simple automata with a transition on a single byte value.
-     *
-     * @param transition Byte The byte value to transition on.
-     * @return An automata with a transition on the transitionByte.
-     */
-    public Automata<T> buildByteAutomata(final byte transitionByte);
-
-
-    /**
-     * Builds a simple automata with a transition on a bitmask,
-     * where all bits must match.
-     *
-     * @param bitMask The bitmask to match all bits of.
-     * @return An automata with a transition on the all-bits bitmask.
-     */
-    public Automata<T> buildAllBitmaskAutomata(final byte bitMask);
-
-
-    /**
-     * Builds a simple automata with a transition on a bitmask,
-     * where any of the bits can match.
-     *
-     * @param bitMask The bitmask to match any bits of.
-     * @return An automata with a transition on the any-bits bitmask.
-     */
-    public Automata<T> buildAnyBitmaskAutomata(final byte bitMask);
-
-
+    public Automata<T> buildTransitionAutomata(S source, boolean inverted);
+    
     /**
      * Builds an automata by joining the list of automata passed in
      * as a sequence.
@@ -145,17 +119,6 @@ public interface RegexBuilder<T> {
 
 
     /**
-     * Builds a simple automata with a transition on the set of bytes passed in,
-     * (which may be negated).
-     *
-     * @param byteSet The set of bytes to transition on.
-     * @param negated Whether the set of bytes should be inverted or not.
-     * @return An automata which transitions on the (negated) set of bytes passed in.
-     */
-    public Automata<T> buildSetAutomata(final Collection<Byte> byteSet, final boolean negated);
-
-
-    /**
      * Builds an automata consisting of a defined number of optional automata.
      *
      * @param numberOptional The number of optional automata to repeat.
@@ -172,33 +135,4 @@ public interface RegexBuilder<T> {
      * @return An automata which is an optional version of the automata passed in.
      */
     public Automata<T> buildOptionalAutomata(final Automata<T> optionalStates);
-
-
-    /**
-     * Builds an automata which transitions on the string passed in,
-     * matching the bytes as ASCII characters case sensitively.
-     *
-     * @param str The ASCII string to build the automata from.
-     * @return An automata which matches the string passed in case sensitively.
-     */
-    public Automata<T> buildCaseSensitiveStringAutomata(final String str);
-
-    
-    /**
-     * Builds an automata which transitions on the string passed in,
-     * matching the bytes as ASCII characters case insensitively.
-     *
-     * @param str The ASCII string to build the automata from.
-     * @return An automata which matches the string passed in case insensitively.
-     */
-    public Automata<T> buildCaseInsensitiveStringAutomata(final String str);
-
-
-    /**
-     * Builds a simple automata with a transition on any byte.
-     *
-     * @return An automata which transitions on any byte.
-     */
-    public Automata<T> buildAnyByteAutomata();
-
 }

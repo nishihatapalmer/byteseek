@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata;
+package net.domesdaybook.automata.deterministic;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -40,8 +40,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.Transition;
+import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
+import net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
 import net.domesdaybook.automata.walker.StepAction;
@@ -59,13 +63,13 @@ import net.domesdaybook.util.collections.IdentityHashSet;
 public final class DfaBuilder<T> {
 
 	private final StateFactory<T>		stateFactory;
-	private final TransitionFactory<T>	transitionFactory;
+	private final TransitionFactory<T, Collection<Byte>>	transitionFactory;
 
 	/**
 	 * Constructs a DfaBuilder using the default {@link StateFactory},
 	 * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
 	 * {@link TransitionFactory},
-	 * {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+	 * {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
 	 */
 	public DfaBuilder() {
 		this(null, null);
@@ -74,7 +78,7 @@ public final class DfaBuilder<T> {
 	/**
 	 * Constructs a DfaBuilder using the supplied {@link StateFactory}, and the
 	 * default {@link TransitionFactory},
-	 * {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+	 * {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
 	 * 
 	 * @param stateFactory
 	 *            The StateFactory to use when building the DFA.
@@ -91,7 +95,7 @@ public final class DfaBuilder<T> {
 	 * @param transitionFactory
 	 *            The TransitionFactory to use when building the DFA.
 	 */
-	public DfaBuilder(final TransitionFactory<T> transitionFactory) {
+	public DfaBuilder(final TransitionFactory<T, Collection<Byte>> transitionFactory) {
 		this(null, transitionFactory);
 	}
 
@@ -105,9 +109,10 @@ public final class DfaBuilder<T> {
 	 *            The TransitionFactory to use when building the DFA.
 	 */
 	public DfaBuilder(final StateFactory<T> stateFactory,
-			final TransitionFactory<T> transitionFactory) {
+			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
 		this.stateFactory = stateFactory == null ? new BaseStateFactory<T>() : stateFactory;
-		this.transitionFactory = transitionFactory == null ? new ByteMatcherTransitionFactory<T>()
+		this.transitionFactory = transitionFactory == null ?
+		      new ByteSetMatcherTransitionFactory<T>()
 				: transitionFactory;
 	}
 
@@ -119,6 +124,7 @@ public final class DfaBuilder<T> {
 	 * @return A new State which forms a deterministic finite-state automata.
 	 */
 	public State<T> build(final State<T> initialState) {
+	  //TODO: build from and to an automata...
 		final Set<State<T>> stateSet = new IdentityHashSet<State<T>>();
 		stateSet.add(initialState);
 		final Map<Set<State<T>>, State<T>> nfaToDfa = new IdentityHashMap<Set<State<T>>, State<T>>();
@@ -188,7 +194,7 @@ public final class DfaBuilder<T> {
 			// it.
 			// Maybe should rename method or add a createOptimalTransition()
 			// method...?
-			final Transition<T> transition = transitionFactory.createSetTransition(transitionBytes,
+			final Transition<T> transition = transitionFactory.create(transitionBytes,
 					false, targetDFAState);
 
 			// Add the transition to the source state:

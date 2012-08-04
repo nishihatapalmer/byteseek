@@ -42,7 +42,6 @@ import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 
 /**
  * This class helps to build an automata as it is invoked for each node of a regular 
@@ -78,32 +77,14 @@ import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
  *    by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
  *
  * @param <T> The type of the object associated with a State in the NFA.
+ * @param <S> The type of object used to build a transition from.
  * 
  * @author Matt Palmer
  */
-public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
+public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 
-	private final TransitionFactory<T>	transitionFactory;
+	private final TransitionFactory<T, S>	transitionFactory;
 	private final StateFactory<T>		stateFactory;
-
-	/**
-	 * Constructs a GlushkovRegexBuilder using the default {@link net.domesdaybook.automata.StateFactory},
-	 * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the
-	 * default {@link net.domesdaybook.automata.TransitionFactory} {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
-	 */
-	public GlushkovRegexBuilder() {
-		this(null, null);
-	}
-
-	/**
-	 * Constructs a GlushkovRegexBuilder using supplied {@link net.domesdaybook.automata.StateFactory} and the
-	 * default {@link net.domesdaybook.automata.TransitionFactory} {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
-	 * 
-	 * @param stateFactory The StateFactory to use when creating the NFA.
-	 */
-	public GlushkovRegexBuilder(final StateFactory<T> stateFactory) {
-		this(null, stateFactory);
-	}
 
 	/**
 	 * Constructs a GlushkovRegexBuilder using the default {@link net.domesdaybook.automata.StateFactory},
@@ -111,8 +92,9 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 	 * default {@link net.domesdaybook.automata.TransitionFactory}.
 	 * 
 	 * @param transitionFactory The TransitionFactory to use when creating the NFA.
+	 * @throws IllegalArgumentException if the transition factory passed in is null.
 	 */
-	public GlushkovRegexBuilder(final TransitionFactory<T> transitionFactory) {
+	public GlushkovRegexBuilder(final TransitionFactory<T, S> transitionFactory) {
 		this(transitionFactory, null);
 	}
 
@@ -124,11 +106,12 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 	 * 
 	 * @param transitionFactory The TransitionFactory to use when creating the NFA.
 	 * @param stateFactory The StateFactory to use when creating the NFA.
+	 * @throws IllegalArgumentException if the transition factory passed in is null.
 	 */
-	public GlushkovRegexBuilder(final TransitionFactory<T> transitionFactory,
+	public GlushkovRegexBuilder(final TransitionFactory<T, S> transitionFactory,
 			final StateFactory<T> stateFactory) {
 		if (transitionFactory == null) {
-			this.transitionFactory = new ByteMatcherTransitionFactory<T>();
+			throw new IllegalArgumentException("Transition factory cannot be null.");
 		} else {
 			this.transitionFactory = transitionFactory;
 		}
@@ -141,104 +124,23 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 
 	/**
 	 * Builds an (initial) state and a [final] state,
-	 * and joins them together with a transition on the transition byte.
+	 * and joins them together with a transition on the transition bytes
+	 * defined by the source type.
 	 *
 	 * <p/><code>
 	 *   b      (0) --b--> [1]
 	 * </code><p/>
 	 *
 	 * @param transitionByte The byte to transition on.
+	 * @param inverted Whether to match all other bytes, or just the one passed in.
 	 * @return An automata with a transition on the byte supplied.
 	 */
 	@Override
-	public Automata<T> buildByteAutomata(final byte transitionByte) {
+	public Automata<T> buildTransitionAutomata(final S source, final boolean inverted) {
 		final State<T> initialState = stateFactory.create(State.NON_FINAL);
 		final State<T> finalState = stateFactory.create(State.FINAL);
-		final Transition<T> transition = transitionFactory.createByteTransition(transitionByte,
-				finalState);
-		initialState.addTransition(transition);
-		return new BaseAutomata<T>(initialState);
-	}
-
-	/**
-	* Builds an (initial) state and a [final] state,
-	* and joins them together with a transition on the set of bytes.
-	*
-	* <p/><code>
-	*   [abc]   (0) --[abc]--> [1]
-	* </code><p/>
-	*
-	* @param byteSet A set of bytes to match.
-	* @param negated Whether the set of bytes should be inverted or not when matching.
-	* @return An automata with a transition on the set of bytes supplied.
-	*/
-	@Override
-	public Automata<T> buildSetAutomata(final Collection<Byte> byteSet, final boolean negated) {
-		final State<T> initialState = stateFactory.create(State.NON_FINAL);
-		final State<T> finalState = stateFactory.create(State.FINAL);
-		final Transition<T> transition = transitionFactory.createSetTransition(byteSet, negated,
-				finalState);
-		initialState.addTransition(transition);
-		return new BaseAutomata<T>(initialState);
-	}
-
-	/**
-	 * Builds an (initial) state and a [final] state
-	 * and joins them together with a transition on any byte.
-	 *
-	 * <p/><code>
-	 *   .       (0) --.--> [1]
-	 * </code><p/>
-	 *
-	 * @return An automata with a transition on any byte.
-	 */
-	@Override
-	public Automata<T> buildAnyByteAutomata() {
-		final State<T> initialState = stateFactory.create(State.NON_FINAL);
-		final State<T> finalState = stateFactory.create(State.FINAL);
-		final Transition<T> transition = transitionFactory.createAnyByteTransition(finalState);
-		initialState.addTransition(transition);
-		return new BaseAutomata<T>(initialState);
-	}
-
-	/**
-	 * Build an (initial) state and a [final] state,
-	 * and join them together with a transition on the all bitmask byte.
-	 *
-	 * <p/><code>
-	 *   &m     (0) --&m--> [1]
-	 * </code><p/>
-	 *
-	 * @param bitMask The bitmask to transition on if all bits match.
-	 * @return An automata using an All bitmask transition.
-	 */
-	@Override
-	public Automata<T> buildAllBitmaskAutomata(final byte bitMask) {
-		final State<T> initialState = stateFactory.create(State.NON_FINAL);
-		final State<T> finalState = stateFactory.create(State.FINAL);
-		final Transition<T> transition = transitionFactory.createAllBitmaskTransition(bitMask,
-				finalState);
-		initialState.addTransition(transition);
-		return new BaseAutomata<T>(initialState);
-	}
-
-	/**
-	 * Build an (initial) state and a [final] state,
-	 * and join them together with a transition on the any bitmask byte.
-	 *
-	 * <p/><pre>{@code
-	 *    ~m    (0) --~m--> [1]
-	 * }</pre><p/>
-	 *
-	 * @param bitMask The bitmask to transition on if any bits match.
-	 * @return An automata using an Any bitmask transition.
-	 */
-	@Override
-	public Automata<T> buildAnyBitmaskAutomata(final byte bitMask) {
-		final State<T> initialState = stateFactory.create(State.NON_FINAL);
-		final State<T> finalState = stateFactory.create(State.FINAL);
-		final Transition<T> transition = transitionFactory.createAnyBitmaskTransition(bitMask,
-				finalState);
+		final Transition<T> transition =
+		    transitionFactory.create(source, inverted, finalState);
 		initialState.addTransition(transition);
 		return new BaseAutomata<T>(initialState);
 	}
@@ -562,70 +464,6 @@ public final class GlushkovRegexBuilder<T> implements RegexBuilder<T> {
 			automataList.add(newAutomata);
 		}
 		return buildSequenceAutomata(automataList);
-	}
-
-	/**
-	 * Builds an automata which matches an ASCII string case sensitively.
-	 *
-	 * <p/><pre>{@code
-	 *
-	 * 'abc'   (0) --a--> (1) --b--> (2) --c--> [3]
-	 *
-	 * }</pre><p/>
-	 *
-	 * @param str The ASCII string to match case sensitively.
-	 * @return An automata which matches an ASCII string case sensitively.
-	 */
-	@Override
-	public Automata<T> buildCaseSensitiveStringAutomata(final String str) {
-		final State<T> initialState = stateFactory.create(State.NON_FINAL);
-		State<T> lastState = initialState;
-		for (int index = 0, stop = str.length(); index < stop; index++) {
-			final byte transitionByte = (byte) str.charAt(index);
-			final State<T> transitionToState = stateFactory.create(State.NON_FINAL);
-			final Transition<T> transition = transitionFactory.createByteTransition(transitionByte,
-					transitionToState);
-			lastState.addTransition(transition);
-			lastState = transitionToState;
-		}
-		lastState.setIsFinal(true);
-		return new BaseAutomata<T>(initialState);
-	}
-
-	/**
-	 * Builds an automata which matches an ASCII string case insensitively.
-	 *
-	 * <p/><pre>{@code
-	 *
-	 * `abc`   (0) --[aA]--> (1) --[bB]--> (2) --[cC]--> [3]
-	 *
-	 * }</pre><p/>
-	 *
-	 * @param str The ASCII string to match case insensitively.
-	 * @return An automata which matches an ASCII string case insensitively.
-	 */
-	@Override
-	public Automata<T> buildCaseInsensitiveStringAutomata(final String str) {
-		final State<T> initialState = stateFactory.create(State.NON_FINAL);
-		State<T> lastState = initialState;
-		for (int index = 0, stop = str.length(); index < stop; index++) {
-			final char transitionChar = str.charAt(index);
-			Transition<T> transition;
-			final State<T> transitionToState = stateFactory.create(State.NON_FINAL);
-			if ((transitionChar >= 'A' && transitionChar <= 'Z')
-					|| (transitionChar >= 'a' && transitionChar <= 'z')) {
-				transition = transitionFactory.createCaseInsensitiveByteTransition(transitionChar,
-						transitionToState);
-			} else {
-				final byte transitionByte = (byte) transitionChar;
-				transition = transitionFactory.createByteTransition(transitionByte,
-						transitionToState);
-			}
-			lastState.addTransition(transition);
-			lastState = transitionToState;
-		}
-		lastState.setIsFinal(true);
-		return new BaseAutomata<T>(initialState);
 	}
 
 	private Automata<T> joinAutomata(final Automata<T> leftAutomata, final Automata<T> rightAutomata) {

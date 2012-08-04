@@ -32,6 +32,7 @@
 package net.domesdaybook.automata.trie;
 
 import java.util.Collection;
+
 import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -50,7 +51,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * Constructs a SequenceMatcherTrie with no sequences added to it initially.
      * using the default {@link net.domesdaybook.automata.StateFactory}
      * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      */
     public SequenceMatcherTrie() {
         this(null, null, null);
@@ -60,7 +61,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     /**
      * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
      * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences A collection of SequenceMatchers to add to the Trie.
      */
@@ -71,7 +72,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     /**
      * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      */
@@ -87,14 +88,14 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * 
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
-    public SequenceMatcherTrie(final TransitionFactory<SequenceMatcher> transitionFactory) {
+    public SequenceMatcherTrie(final TransitionFactory<SequenceMatcher, Collection<Byte>> transitionFactory) {
         this(null, null, transitionFactory);
     }
     
     
     /**
      * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences The initial collection of SequenceMatchers to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.
@@ -114,7 +115,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences,
-                              final TransitionFactory<SequenceMatcher> transitionFactory) {
+                              final TransitionFactory<SequenceMatcher, Collection<Byte>> transitionFactory) {
         this(sequences, null, transitionFactory);
     }
         
@@ -127,7 +128,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public SequenceMatcherTrie(final StateFactory<SequenceMatcher> stateFactory, 
-                               final TransitionFactory<SequenceMatcher> transitionFactory) {
+                               final TransitionFactory<SequenceMatcher, Collection<Byte>> transitionFactory) {
         this(null, stateFactory, transitionFactory);
     }
     
@@ -142,7 +143,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      */
     public SequenceMatcherTrie(final Collection<? extends SequenceMatcher> sequences, 
                                final StateFactory<SequenceMatcher> stateFactory, 
-                               final TransitionFactory<SequenceMatcher> transitionFactory) {
+                               final TransitionFactory<SequenceMatcher, Collection<Byte>> transitionFactory) {
         super(stateFactory, transitionFactory);
         if (sequences != null) {
             addAll(sequences);

@@ -37,8 +37,8 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 
 import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.ast.ParseTree;
-import net.domesdaybook.parser.ast.ParseTreeType;
+import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeType;
 
 /**
  * @author matt

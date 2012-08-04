@@ -29,17 +29,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata;
+package net.domesdaybook.automata.serializer;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import net.domesdaybook.automata.Automata;
+import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.Transition;
+
 /**
- * A utility class to do useful things with automata.
  * 
  * @author Matt Palmer
  */
-public final class AutomataUtils {
+public final class DotSerializer<T> implements AutomataSerializer<T, String> {
 
 	private static final String	DOT_HEADER				= "digraph {\n";
 	private static final String	DOT_TITLE				= "label=\"%s\"\n";
@@ -47,17 +50,14 @@ public final class AutomataUtils {
 	private static final String	FINAL_STATE_SHAPE		= "doublecircle";
 	private static final String	NON_FINAL_STATE_SHAPE	= "circle";
 	private static final String	STATE_DEFINITION		= "%s [label=\"%s\", shape=\"%s\"]\n";
-	private static final String	TRANSITION_DEFINITION	= "%s->%s [label=\"%s\"]\n";
+	private static final String	TRANSITION_DEFINITION	= "%s->%s [label=\"%s\"]\n";	
+	
 
-	/**
-	 * A private constructor to prevent instantiation of this static utility
-	 * class.
-	 */
-	private AutomataUtils() {
+	public DotSerializer() {
 	}
 
 	/**
-	 * Builds a text representation of the automata in Graphviz dot format.
+	 * Builds a text representation of the automata in Graphviz DOT format.
 	 * http://www.graphviz.org/
 	 * <p/>
 	 * Graphviz can then render the automata using a variety of graph layout
@@ -69,18 +69,31 @@ public final class AutomataUtils {
 	 *            The title of the DOT graph.
 	 * @return A String containing the automata serialised in DOT format.
 	 */
-	public static <T> String toDot(final Automata<T> automata, final String title) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append(DOT_HEADER);
-		final String onelineTitle = title.replaceAll("\\s", " ");
-		builder.append(String.format(DOT_TITLE, onelineTitle));
-		final Map<State<T>, Integer> visitedStates = new IdentityHashMap<State<T>, Integer>();
-		buildDot(automata.getInitialState(), visitedStates, 0, builder);
-		builder.append(DOT_FOOTER);
-		return builder.toString();
+	@Override
+	public String serialize(final Automata<T> automata, final String title) {
+		final StringBuilder stringBuilder = new StringBuilder(256);
+		buildHeader(stringBuilder, title);
+		buildStates(stringBuilder, automata);
+		buildFooter(stringBuilder);
+		return stringBuilder.toString();
+	}
+	
+	private void buildHeader(final StringBuilder builder, final String title) {
+	  builder.append(DOT_HEADER);
+    final String onelineTitle = title.replaceAll("\\s", " ");
+    builder.append(String.format(DOT_TITLE, onelineTitle));	  
+	}
+	
+	private void buildStates(final StringBuilder builder, final Automata<T> automata) {
+	  final Map<State<T>, Integer> visitedStates = new IdentityHashMap<State<T>, Integer>();
+    buildDot(automata.getInitialState(), visitedStates, 0, builder);
+	}
+	
+	private void buildFooter(final StringBuilder builder) {
+	  builder.append(DOT_FOOTER);
 	}
 
-	private static <T> int buildDot(final State<T> state,
+	private int buildDot(final State<T> state,
 			final Map<State<T>, Integer> visitedStates, int nextStateNumber,
 			final StringBuilder builder) {
 		if (!visitedStates.containsKey(state)) {

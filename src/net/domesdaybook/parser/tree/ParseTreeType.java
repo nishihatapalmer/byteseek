@@ -28,60 +28,58 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.domesdaybook.parser.ast;
+package net.domesdaybook.parser.tree;
 
-import java.util.List;
 
-import net.domesdaybook.parser.ParseException;
-
-public class StructuralNode implements ParseTree {
-
-	private final ParseTreeType type;
-	private final List<ParseTree> children;
-	private final boolean inverted;	
+/**
+ * @author Matt Palmer
+ *
+ */
+public enum ParseTreeType {
 	
+	// Value carrying tree leaf node types (have direct value, no children)
+		
+    BYTE("A single byte value"),
+
+	ALL_BITMASK("A bitmask for matching all of its bits"),
+
+	ANY_BITMASK("A bitmask for matching any of its bits"),
+
+	SET("A set of byte values"),
 	
-	public StructuralNode(final ParseTreeType type,
-							   final List<ParseTree> children) {
-		this(type, children, false);
+	ANY("A wildcard matching any byte value"),
+
+	CASE_SENSITIVE_STRING("An ASCII string to match case sensitively"),
+
+	CASE_INSENSITIVE_STRING("An ASCII string to match case insensitively"),
+
+	INTEGER("An integer"),
+	
+    // Child carrying tree node types (no direct value, has child ParseTrees)
+
+	SEQUENCE("An ordered sequence of child ParseTrees"),
+
+	RANGE("A range of byte values with the range defined as two child INTEGER ParseTree nodes, from 0 to 255"),
+
+	REPEAT("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER or MANY child) number of times."),
+
+	ALTERNATIVES("A set of alternatives as children of this ParseTree"),
+	
+	ZERO_TO_MANY("Repeat the child ParseTree zero to many times"),
+
+	ONE_TO_MANY("Repeat the child ParseTree one to many times"),
+	
+  	OPTIONAL("The child ParseTree is optional (repeat zero to one times).");
+  
+  private final String description;
+	
+	private ParseTreeType(final String description) {
+   	this.description = description;
 	}
 	
-	public StructuralNode(final ParseTreeType type, 
-							   final List<ParseTree> children,
-							   final boolean inverted) {
-		this.type = type;
-		this.children = children;
-		this.inverted = inverted;
-	}
-	
-	@Override
-	public ParseTreeType getParseTreeType() {
-		return type;
-	}
-
-	@Override
-	public byte getByteValue() throws ParseException {
-		throw new ParseException("No byte value is available.");
-	}
-
-	@Override
-	public int getIntValue() throws ParseException {
-		throw new ParseException("No int value is available.");
-	}
-
-	@Override
-	public String getTextValue() throws ParseException {
-		throw new ParseException("No text value is available.");
-	}
-
-	@Override
-	public boolean isValueInverted() throws ParseException {
-		return inverted;
-	}
-
-	@Override
-	public List<ParseTree> getChildren() {
-		return children;
+	public String getDescription() {
+		return description;
 	}
 
 }
+

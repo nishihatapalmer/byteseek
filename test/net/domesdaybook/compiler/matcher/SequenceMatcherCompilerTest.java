@@ -3,7 +3,7 @@
  *
  */
 
-package net.domesdaybook.compiler.sequence;
+package net.domesdaybook.compiler.matcher;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import net.domesdaybook.compiler.CompileException;
+import net.domesdaybook.compiler.matcher.SequenceMatcherCompiler;
 import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.ByteRangeMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;
@@ -23,7 +24,7 @@ import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SequenceArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.parser.ast.ParseTree;
+import net.domesdaybook.parser.tree.ParseTree;
 
 /**
  *

@@ -29,27 +29,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.compiler.sequence;
+package net.domesdaybook.compiler.matcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.compiler.ast.AstCompilerUtils;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
-import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.BytesToSequencesMatcherFactory;
+import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcherFactory;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.ast.ParseTree;
-import net.domesdaybook.parser.ast.ParseTreeType;
-import net.domesdaybook.parser.ast.ParseTreeUtils;
-import net.domesdaybook.parser.ast.StructuralNode;
+import net.domesdaybook.parser.regex.RegexParser;
+import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeType;
+import net.domesdaybook.parser.tree.ParseTreeUtils;
+import net.domesdaybook.parser.tree.node.StructuralNode;
 
 /**
  * A compiler which produces a {@link SequenceMatcher} from an
@@ -163,10 +163,10 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * for sets of bytes.
      */    
     public SequenceMatcherCompiler(final Parser<ParseTree> parser,
-    							   final ByteMatcherFactory byteFactoryToUse,
-    							   final SequenceMatcherFactory sequenceFactoryToUse) {
-        super(parser);
-    	byteMatcherFactory = byteFactoryToUse != null? byteFactoryToUse
+		   final ByteMatcherFactory byteFactoryToUse,
+    		   final SequenceMatcherFactory sequenceFactoryToUse) {
+        super(parser == null? new RegexParser() : parser);
+	byteMatcherFactory = byteFactoryToUse != null? byteFactoryToUse
     												 : new SetAnalysisByteMatcherFactory();
     	sequenceMatcherFactory = sequenceFactoryToUse != null? sequenceFactoryToUse
     												 : new BytesToSequencesMatcherFactory();
@@ -201,71 +201,141 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     										  throws ParseException {
     	switch (ast.getParseTreeType()) {
     	
-    		case BYTE: {
-    			sequenceList.add(AstCompilerUtils.createByteMatcher(ast, NOT_YET_INVERTED));
-				break;
-			}
+    		case BYTE:           			    addByteMatcher(ast, sequenceList);                  break;
+    		case ANY:                     addAnyMatcher(ast, sequenceList);                   break;
+    		case ALL_BITMASK:   			    addAllBitmaskMatcher(ast, sequenceList);            break;
+    		case ANY_BITMASK:   			    addAnyBitmaskMatcher(ast, sequenceList);            break;
+    		case RANGE:       				    addRangeMatcher(ast, sequenceList);                 break;
+    		case SET:         				    addSetMatcher(ast, sequenceList);                   break;
+    		case CASE_SENSITIVE_STRING:   addStringMatcher(ast, sequenceList);                break;
+    		case CASE_INSENSITIVE_STRING: addCaseInsensitiveStringMatcher(ast, sequenceList); break;
+    		case SEQUENCE:          			addSequenceMatcher(ast, sequenceList);              break;
+    		case REPEAT:          				addRepeatedSequence(ast, sequenceList);             break;
 			
-			case ANY: {
-				sequenceList.add(AstCompilerUtils.getAnyMatcher(ast, NOT_YET_INVERTED));
-				break;
-			}
-			
-			case ALL_BITMASK: {
-				sequenceList.add(AstCompilerUtils.createAllBitmaskMatcher(ast, NOT_YET_INVERTED));
-				break;
-			}
-			
-			case ANY_BITMASK: {
-				sequenceList.add(AstCompilerUtils.createAnyBitmaskMatcher(ast, NOT_YET_INVERTED));
-				break;
-			}
-			
-			case RANGE: {
-				sequenceList.add(AstCompilerUtils.createRangeMatcher(ast, NOT_YET_INVERTED));
-				break;
-			}
-				
-			case SET: {
-				sequenceList.add(AstCompilerUtils.createMatcherFromSet(ast, NOT_YET_INVERTED, byteMatcherFactory));
-				break;
-			}
-	   		
-			case CASE_SENSITIVE_STRING: {
-				sequenceList.add(new ByteArrayMatcher(ast.getTextValue()));
-				break;
-			}
-				
-			case CASE_INSENSITIVE_STRING: {
-				sequenceList.add(new CaseInsensitiveSequenceMatcher(ast.getTextValue()));
-				break;
-			}
-				
-			case SEQUENCE: {
-				for (final ParseTree child : ast.getChildren()) {
-					buildSequenceList(child, sequenceList);
-				}
-				break;
-			}
-			
-			case REPEAT: {
-				final int timesToRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
-				final SequenceMatcher sequenceToRepeat = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
-				for (int count = 1; count <= timesToRepeat; count++) {
-					sequenceList.add(sequenceToRepeat);
-				}
-				break;
-			}
-			
-			default: {
+    		default: {
 		      final ParseTreeType type = ast.getParseTreeType();
 		      final String message = String.format("Unknown type, id %d with description: %s", 
 		                         type, type.getDescription());
 		      throw new ParseException(message);
-			}
+    		}
     	}    	
-    	
     	return sequenceList;
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addRepeatedSequence(final ParseTree ast,
+                                     final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      final int timesToRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
+      final SequenceMatcher sequenceToRepeat = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      for (int count = 1; count <= timesToRepeat; count++) {
+      	sequenceList.add(sequenceToRepeat);
+      }
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addSequenceMatcher(final ParseTree ast,
+                                    final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      for (final ParseTree child : ast.getChildren()) {
+      	buildSequenceList(child, sequenceList);
+      }
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addCaseInsensitiveStringMatcher(final ParseTree ast,
+                                                 final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(new CaseInsensitiveSequenceMatcher(ast.getTextValue()));
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addStringMatcher(final ParseTree ast,
+                                  final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(new ByteArrayMatcher(ast.getTextValue()));
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addSetMatcher(final ParseTree ast,
+                               final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(CompilerUtils.createMatcherFromSet(ast, byteMatcherFactory));
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addRangeMatcher(final ParseTree ast,
+                                 final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(CompilerUtils.createRangeMatcher(ast));
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addAnyBitmaskMatcher(final ParseTree ast,
+                                      final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(CompilerUtils.createAnyBitmaskMatcher(ast));
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addAllBitmaskMatcher(final ParseTree ast,
+                                      final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(CompilerUtils.createAllBitmaskMatcher(ast));
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addAnyMatcher(final ParseTree ast,
+                               final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(CompilerUtils.createAnyMatcher(ast));
+    }
+
+    /**
+     * @param ast
+     * @param sequenceList
+     * @throws ParseException
+     */
+    private void addByteMatcher(final ParseTree ast,
+                                final List<SequenceMatcher> sequenceList)
+        throws ParseException {
+      sequenceList.add(CompilerUtils.createByteMatcher(ast));
     }
     
     

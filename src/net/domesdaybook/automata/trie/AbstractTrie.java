@@ -43,7 +43,7 @@ import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.base.BaseAutomata;
 import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
+import net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -61,7 +61,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
 public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T> {
 
 	private final StateFactory<T>		stateFactory;
-	private final TransitionFactory<T>	transitionFactory;
+	private final TransitionFactory<T, Collection<Byte>>	transitionFactory;
 
 	private final List<T>				sequences;
 
@@ -71,7 +71,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 	/**
 	 * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
 	 * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-	 * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+	 * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
 	 */
 	public AbstractTrie() {
 		this(null, null);
@@ -79,7 +79,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 
 	/**
 	 * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-	 * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+	 * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
 	 * 
 	 * @param stateFactory The StateFactory to use to create States for the Trie.
 	 */
@@ -94,7 +94,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 	 * 
 	 * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
 	 */
-	public AbstractTrie(final TransitionFactory<T> transitionFactory) {
+	public AbstractTrie(final TransitionFactory<T, Collection<Byte>> transitionFactory) {
 		this(null, transitionFactory);
 	}
 
@@ -106,10 +106,10 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 	 * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
 	 */
 	public AbstractTrie(final StateFactory<T> stateFactory,
-			final TransitionFactory<T> transitionFactory) {
+			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
 		this.stateFactory = stateFactory != null ? stateFactory : new BaseStateFactory<T>();
 		this.transitionFactory = transitionFactory != null ? transitionFactory
-				: new ByteMatcherTransitionFactory<T>();
+				: new ByteSetMatcherTransitionFactory<T>();
 		this.sequences = new ArrayList<T>();
 		setInitialState(this.stateFactory.create(State.NON_FINAL));
 	}
@@ -247,8 +247,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 		final List<State<T>> nextStates = new ArrayList<State<T>>();
 		final Set<Byte> allBytesToTransitionOn = ByteUtilities.toSet(bytes);
 		for (final State<T> currentState : currentStates) {
-			//TODO: make a defensive copy of the transitions of the current state:
-			final List<Transition<T>> stateTransitions = currentState.getTransitions();
+			final List<Transition<T>> stateTransitions = new ArrayList<Transition<T>>(currentState.getTransitions());
 			final Set<Byte> bytesToTransitionOn = new HashSet<Byte>(allBytesToTransitionOn);
 			for (final Transition<T> transition : stateTransitions) {
 
@@ -285,12 +284,12 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 
 					// Add a transition to the bytes which are not in common:
 					final Transition<T> bytesNotInCommonTransition = transitionFactory
-							.createSetTransition(originalTransitionBytes, false, originalToState);
+							.create(originalTransitionBytes, false, originalToState);
 					currentState.addTransition(bytesNotInCommonTransition);
 
 					// Add a transition to the bytes in common:
 					final Transition<T> bytesInCommonTransition = transitionFactory
-							.createSetTransition(bytesInCommon, false, newToState);
+							.create(bytesInCommon, false, newToState);
 					currentState.addTransition(bytesInCommonTransition);
 
 					// Add the bytes in common state to the next states to
@@ -313,7 +312,7 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 			final int numberOfBytesLeft = bytesToTransitionOn.size();
 			if (numberOfBytesLeft > 0) {
 				final State<T> newState = stateFactory.create(isFinal);
-				final Transition<T> newTransition = transitionFactory.createSetTransition(
+				final Transition<T> newTransition = transitionFactory.create(
 						bytesToTransitionOn, false, newState);
 				currentState.addTransition(newTransition);
 				nextStates.add(newState);

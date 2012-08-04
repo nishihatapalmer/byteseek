@@ -34,19 +34,20 @@ package net.domesdaybook.compiler.regex;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
 import net.domesdaybook.automata.regex.RegexBuilder;
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.ast.ParseTree;
-import net.domesdaybook.parser.ast.ParseTreeType;
-import net.domesdaybook.parser.ast.ParseTreeUtils;
+import net.domesdaybook.parser.regex.RegexParser;
+import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeType;
+import net.domesdaybook.parser.tree.ParseTreeUtils;
+import net.domesdaybook.parser.tree.node.ByteNode;
+import net.domesdaybook.parser.tree.node.StructuralNode;
 
 /**
  * A compiler which produces Non-deterministic Finite-state Automata (NFA)
@@ -60,22 +61,30 @@ import net.domesdaybook.parser.ast.ParseTreeUtils;
  * @param <T> The type of object which a match of the regular expression should return.
  * @author Matt Palmer
  */
+//FIXME: the final automata states need to be associated with some objects passed in.
+//       If compiling from a string expression, then associate final states with the string expression?
+//       If compiling from an abstract syntax tree, then associate final states with what?  The current AST node?  The root AST node?
+//       Should allow association with arbitrary objects associated with the expression itself?  Would require changes to the compiler
+//       interface itself, or the passing in of a wrapped String-Association object...
+//       If compiling from a collection of string expressions, then we also need to associate different final states correctly with different
+//       expressions.
 public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseTree> {
 
+    private static final boolean NOT_YET_INVERTED = false;
     private static final String MANY = "*";
     
-    private final RegexBuilder<T> regexBuilder;
+    private final RegexBuilder<T, ParseTree> regexBuilder;
 
     /**
      * Constructs a RegexCompiler, using the default {@link RegexBuilder} object.
      * The parser used will be the default parser defined in {@link AbstractCompiler}
      *
-     * By default, it uses the {@link ByteMatcherTransitionFactory} and
+     * By default, it uses the {@link ByteCollectionMatcherTransitionFactory} and
      * the {@link net.domesdaybook.automata.base.BaseStateFactory} to make a {@link GlushkovRegexBuilder} to
      * produce the NFA.
      */
     public RegexCompiler() {
-    	this(null,null);
+    	this(null, null);
     }
 
     
@@ -87,7 +96,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
      * @param regexBuilder the NFA builder used to create an NFA from an abstract
      *        syntax tree (AST).
      */
-    public RegexCompiler(final RegexBuilder<T> regexBuilder) {
+    public RegexCompiler(final RegexBuilder<T, ParseTree> regexBuilder) {
         this(null, regexBuilder);
     }
     
@@ -114,39 +123,16 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
      * 
      * @param parser The Parser to use to produce the parse tree.
      * @param regexBuilder the NFA builder used to create an NFA from an abstract
-     *        syntax tree (AST).
+     *        syntax tree defined through a ParseTree interface..
      */
-    public RegexCompiler(final Parser<ParseTree> parser, final RegexBuilder<T> regexBuilder) {
-    	super(parser);
-    	this.regexBuilder = regexBuilder == null? new GlushkovRegexBuilder<T>() : regexBuilder;
+    public RegexCompiler(final Parser<ParseTree> parser, final RegexBuilder<T, ParseTree> regexBuilder) {
+    	super(parser == null? new RegexParser() : parser);
+    	this.regexBuilder = regexBuilder != null? regexBuilder
+    	    : new GlushkovRegexBuilder<T, ParseTree>(
+    	          new ParseTreeTransitionFactory<T>());
     }
 
-    
-    /**
-     * Compiles a Non-deterministic Finite-state Automata (NFA) from the
-     * abstract syntax tree provided by the {@link AbstractCompiler} which this
-     * class extends.
-     * <p>
-     * It uses a {@link RegexBuilder} object to build the actual automata,
-     * returning only the initial state of the final automata.
-     *
-     * @param ast The abstract syntax tree to compile the State automata from.
-     * @return An automata recognising the expression described by the abstract syntax tree.
-     * @throws CompileException If the abstract syntax tree could not be parsed.
-     */
-    @Override
-    public Automata<T> compile(final ParseTree ast) throws CompileException {
-       if (ast == null) {
-           throw new CompileException("Null abstract syntax tree passed in to NfaCompiler.");
-       }
-       try {
-           return buildAutomata(ast);
-        } catch (IllegalArgumentException e) {
-            throw new CompileException(e);
-        }
-    }
-    
-    
+
     /**
      * {@inheritDoc}
      */
@@ -160,182 +146,188 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     }    
     
     
-    private Automata<T> buildAutomata(final ParseTree ast) throws CompileException {
+    protected Automata<T> doCompile(final ParseTree ast) throws CompileException, ParseException {
+        switch (ast.getParseTreeType()) {
 
-        Automata<T> automata = null;
-
-        try {
-        
-            switch (ast.getParseTreeType()) {
-    
-                // recursive part of building:
-                
-                case SEQUENCE: {
-                    final List<Automata<T>> sequenceStates = new ArrayList<Automata<T>>();
-                    for (final ParseTree child : ast.getChildren()) {
-                      sequenceStates.add(buildAutomata(child));
-                    }
-                    automata = regexBuilder.buildSequenceAutomata(sequenceStates);
-                    break;
-                }
-    
-                case ALTERNATIVES: {
-                    final List<Automata<T>> alternateStates = new ArrayList<Automata<T>>();
-                    for (final ParseTree child : ast.getChildren()) {
-                      alternateStates.add(buildAutomata(child));
-                    }
-                    automata = regexBuilder.buildAlternativesAutomata(alternateStates);
-                    break;
-                }
-    
-                //TODO: nested repeats can be optimised.
-                case REPEAT: {
-                    final ParseTree nodeToRepeat = ast.getChildren().get(2);
-                    final Automata<T> repeatedAutomata = buildAutomata(nodeToRepeat);
-                    final int minRepeat = ast.getChildren().get(0).getIntValue();
-                    final ParseTree maxTree = ast.getChildren().get(1);
-                    if (maxTree.getParseTreeType() == ParseTreeType.INTEGER) {
-                      automata = regexBuilder.buildMinToMaxAutomata(minRepeat, maxTree.getIntValue(), repeatedAutomata);
-                    } else { 
-                      //FIXME: test for * text value...? Or force parse into MANY object?
-                      // if (MANY.equals(ParseTreeUtils.getChildStringValue(ast,1)))) {
-                      automata = regexBuilder.buildMinToManyAutomata(minRepeat, repeatedAutomata);
-                    }
-                    break;
-                }
-    
-                case ZERO_TO_MANY: {
-                    final ParseTree zeroToManyNode = ast.getChildren().get(0);
-                    final Automata<T> zeroToManyStates = buildAutomata(zeroToManyNode);
-                    automata = regexBuilder.buildZeroToManyAutomata(zeroToManyStates);
-                    break;
-                }
-    
-                case ONE_TO_MANY: {
-                    final ParseTree oneToManyNode = ast.getChildren().get(0);
-                    final Automata<T> oneToManyStates = buildAutomata(oneToManyNode);
-                    automata = regexBuilder.buildOneToManyAutomata(oneToManyStates);
-                    break;
-                }
-    
-                case OPTIONAL: {
-                    final ParseTree optionalNode = ast.getChildren().get(0);
-                    final Automata<T> optionalStates = buildAutomata(optionalNode);
-                    automata = regexBuilder.buildOptionalAutomata(optionalStates);
-                    break;
-                }
-    
-    
-                // non-recursive part of building:
-    
-    
-                //TODO: evaluate whether bitmasks should return bitmasks or the set of bytes
-                //      they match, or both.  Who should be responsible for assembling the
-                //      sets of bytes..?  In one compiler the bitmask parse tree nodes do it,
-                //      but here we defer to the transition builder in the regex builder....
-                
-                case BYTE: {
-                    automata = createByteAutomata(ast);
-                    //automata = regexBuilder.buildByteAutomata(ast.getByteValue());
-                    break;
-                }
-    
-    
-                case ALL_BITMASK: {
-                    automata = regexBuilder.buildAllBitmaskAutomata(ast.getByteValue());
-                    break;
-                }
-    
-                case ANY_BITMASK: {
-                    automata = regexBuilder.buildAnyBitmaskAutomata(ast.getByteValue());
-                    break;
-                }
-    
-    
-                case SET: {
-                	automata = buildSetAutomata(ast);
-                    //automata = regexBuilder.buildSetAutomata(ast.getByteSetValue(), false);
-                    break;
-                }
-    
-                //TODO: do we need an inverted set id?
-                case INVERTED_SET: {
-                    try {
-                        final Set<Byte> byteSet = ParseTreeUtils.calculateSetValues(ast);
-                        automata = regexBuilder.buildSetAutomata(byteSet, true);
-                        break;
-                    } catch (ParseException ex) {
-                        throw new CompileException(ex);
-                    }
-                }
-    
-                case ANY: {
-                    automata = regexBuilder.buildAnyByteAutomata();
-                    break;
-                }
-    
-    
-                case CASE_SENSITIVE_STRING: {
-                    automata = regexBuilder.buildCaseSensitiveStringAutomata(ast.getTextValue());
-                    break;
-                }
-    
-    
-                case CASE_INSENSITIVE_STRING: {
-                    automata = regexBuilder.buildCaseInsensitiveStringAutomata(ast.getTextValue());
-                    break;
-                }
-    
-                default: {
-                    throwCompileException(ast);
-                }
+            case BYTE:
+            case ALL_BITMASK:
+            case ANY_BITMASK:
+            case SET:
+            case ANY:                      return createTransitionAutomata(ast);
+            case CASE_SENSITIVE_STRING:    return createStringAutomata(ast);
+            case CASE_INSENSITIVE_STRING:  return createCaseInsensitiveStringAutomata(ast);
+            case SEQUENCE:                 return createSequenceAutomata(ast);
+            case ALTERNATIVES:             return createAlternativesAutomata(ast);
+            case REPEAT:                   return createRepeatedAutomata(ast);
+            case ZERO_TO_MANY:             return createZeroToManyAutomata(ast);
+            case ONE_TO_MANY:              return createOneToManyAutomata(ast);
+            case OPTIONAL:                 return createOptionalAutomata(ast);
+              
+            default: {
+              final ParseTreeType type = ast.getParseTreeType();
+              final String message = String.format("Unknown parse tree type %s with description: %s", 
+                                 type, type.getDescription());
+              throw new CompileException(message);
             }
-        } catch (ParseException pe) {
-          throw new CompileException(pe);
-        } catch (ArrayIndexOutOfBoundsException ai) {
-        	final String message = "A mandatory child node did not exist for the tree node %s with description %s";
-        	final ParseTreeType treeType = ast.getParseTreeType();
-        	throw new CompileException(String.format(message, treeType, treeType.getDescription()), ai);
         }
-        
-        return automata;
-    }
-    
-    private Automata<T> createByteAutomata(ParseTree ast) throws ParseException {
-    	return regexBuilder.buildByteAutomata(ast.getByteValue(), ast.isValueInverted());
-	}
+   }
 
 
-	private Automata<T> buildSetAutomata(final ParseTree ast) {
-		final List<ParseTree> setElements = ast.getChildren();
-		final boolean isInverted = ast.isValueInverted();
-		// If the set only has one element, it may be something we can directly represent
-		// with a dedicated matcher, rather than using the slower matcherFactory (as we
-		// are forced to calculate the set of byte values in the set to use it).
-		if (setElements.size() == 1) {
-			final ParseTree singleElement = setElements.get(0);
-			switch (singleElement.getParseTreeType()) {
-				case BYTE: 			return createByteAutomata(singleElement);
-				case ANY:  			return createAnyByteAutomata(singleElement);
-				case ALL_BITMASK: 	return createAllBitmaskMatcher(singleElement);
-				case ANY_BITMASK: 	return createAnyBitmaskMatcher(singleElement);
-				case RANGE: 		return createRangeMatcher(singleElement);
-			}
-		}
-		// Not a simple set - build the bytes in the set and ask the matcher factory for a matcher.
-		return regexBuilder.buildSetAutomata(ParseTreeUtils.getSetValues(ast), isInverted);
-	}
-
-
-	/**
+    /**
      * @param ast
-     * @throws ParseException 
+     * @return
      */
-    private void throwCompileException(ParseTree ast) throws CompileException {
-      final ParseTreeType type = ast.getParseTreeType();
-      final String message = String.format("Unknown parse tree type %s with description: %s", 
-                         type, type.getDescription());
-      throw new CompileException(message);
+    private Automata<T> createTransitionAutomata(final ParseTree ast) {
+      return regexBuilder.buildTransitionAutomata(ast, NOT_YET_INVERTED);
+    }    
+    
+
+    /**
+     * 
+     */
+    private Automata<T> createStringAutomata(final ParseTree ast) throws ParseException {
+        return regexBuilder.buildSequenceAutomata(getByteAutomataList(ast.getTextValue()));
+    }    
+    
+
+    /**
+     * 
+     */
+    private Automata<T> createCaseInsensitiveStringAutomata(final ParseTree ast) throws ParseException {
+        return regexBuilder.buildSequenceAutomata(getCaseInsensitiveAutomataList(ast.getTextValue()));
+    }
+
+
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     */
+    private Automata<T> createSequenceAutomata(final ParseTree ast) throws ParseException, CompileException {
+      return regexBuilder.buildSequenceAutomata(compileChildren(ast));
     }    
 
+    
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     */
+    private Automata<T> createAlternativesAutomata(final ParseTree ast) throws ParseException, CompileException {
+      return regexBuilder.buildAlternativesAutomata(compileChildren(ast));
+    }
+
+    
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     * @throws ParseException 
+     */
+    private Automata<T> createOptionalAutomata(final ParseTree ast) throws CompileException, ParseException {
+      return regexBuilder.buildOptionalAutomata(compileFirstChild(ast));
+    }
+
+    
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     * @throws ParseException 
+     */
+    private Automata<T> createOneToManyAutomata(final ParseTree ast) throws CompileException, ParseException {
+      return regexBuilder.buildOneToManyAutomata(compileFirstChild(ast));
+    }
+
+
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     */
+    private Automata<T> createZeroToManyAutomata(final ParseTree ast) throws CompileException, ParseException {
+      return regexBuilder.buildZeroToManyAutomata(compileFirstChild(ast));
+    }
+
+
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     * @throws ParseException
+     */
+    private Automata<T> createRepeatedAutomata(final ParseTree ast) throws CompileException, ParseException {
+      //TODO: nested repeats can be optimised.
+      final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
+      final int maxRepeat = ParseTreeUtils.getSecondRepeatValue(ast);
+      if (maxRepeat < 0) { 
+        return regexBuilder.buildMinToManyAutomata(minRepeat, automata);
+      }
+      return regexBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, automata);
+    }
+    
+    
+    protected ParseTree joinExpressions(final List<ParseTree> expressions)
+        throws ParseException, CompileException {
+      return new StructuralNode(ParseTreeType.ALTERNATIVES, expressions);
+    }
+
+    
+    private Automata<T> compileFirstChild(final ParseTree ast) throws CompileException, ParseException {
+      return doCompile(ParseTreeUtils.getFirstChild(ast));
+    }
+
+    private List<Automata<T>> compileChildren(final ParseTree ast) throws CompileException, ParseException {
+      final List<Automata<T>> automataList = new ArrayList<Automata<T>>();
+      for (final ParseTree child : ast.getChildren()) {
+        automataList.add(doCompile(child));
+      }      
+      return automataList;
+    }
+    
+    
+    private List<Automata<T>> getByteAutomataList(final String fromString) {
+      final List<Automata<T>> automataList = new ArrayList<Automata<T>>(fromString.length());
+      final ByteNode byteValue = new ByteNode();
+      for (int i = 0; i < fromString.length(); i++) {
+        byteValue.setByteValue((byte) fromString.charAt(i));
+        automataList.add(createTransitionAutomata(byteValue));
+      }      
+      return automataList;
+    }
+    
+    
+    /**
+     * @param fromString
+     * @return
+     */
+    private List<Automata<T>> getCaseInsensitiveAutomataList(final String fromString) {
+      final List<Automata<T>> automataList = new ArrayList<Automata<T>>(fromString.length());
+      final ParseTree set = createTwoByteSet();
+      final ByteNode lowerByte = (ByteNode) set.getChildren().get(0);
+      final ByteNode upperByte = (ByteNode) set.getChildren().get(1);
+      for (int i = 0; i < fromString.length(); i++) {
+        final char character = fromString.charAt(i);
+        final byte upper = (byte) Character.toUpperCase(character);
+        final byte lower = (byte) Character.toLowerCase(character);
+        lowerByte.setByteValue(lower);
+        if (lower == upper) {
+          automataList.add(createTransitionAutomata(lowerByte));
+        } else {
+          upperByte.setByteValue(upper);
+          automataList.add(createTransitionAutomata(set));
+        }
+      }      
+      return automataList;      
+    }
+
+    
+    private ParseTree createTwoByteSet() {
+     final List<ParseTree> setChildren = new ArrayList<ParseTree>(2);
+      setChildren.add(new ByteNode());
+      setChildren.add(new ByteNode());
+      return new StructuralNode(ParseTreeType.SET, setChildren);
+    }
+    
 }

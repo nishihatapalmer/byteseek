@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.compiler.bytes;
+package net.domesdaybook.compiler.matcher;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -38,15 +38,15 @@ import java.util.Set;
 
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.compiler.ast.AstCompilerUtils;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.ast.ParseTree;
-import net.domesdaybook.parser.ast.ParseTreeType;
-import net.domesdaybook.parser.ast.StructuralNode;
+import net.domesdaybook.parser.regex.RegexParser;
+import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeType;
+import net.domesdaybook.parser.tree.node.StructuralNode;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -66,7 +66,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 
 	// Private constants:
 
-	protected static final boolean		NOT_YET_INVERTED	= false;
+	protected static final boolean		NOT_INVERTED	= false;
 	protected static final boolean		INVERTED			= true;
 
 	// Static fields and utility methods:
@@ -98,7 +98,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	public static ByteMatcher compileFrom(final byte[] bytes) {
 		defaultFactory = new SetAnalysisByteMatcherFactory();
 		final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
-		return defaultFactory.create(byteSet, NOT_YET_INVERTED);
+		return defaultFactory.create(byteSet, NOT_INVERTED);
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 * @param parser The parser to use to produce an abstract syntax tree.
 	 */
 	public ByteMatcherCompiler(final Parser<ParseTree> parser, final ByteMatcherFactory factoryToUse) {
-		super(parser);
+		super(parser == null? new RegexParser() : parser);
 		matcherFactory = factoryToUse == null? new SetAnalysisByteMatcherFactory() : factoryToUse;
 	}
 
@@ -185,7 +185,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 			final byte[] matchingBytes = compile(expression).getMatchingBytes();
 			bytesToMatch.addAll(ByteUtilities.toList(matchingBytes));
 		}
-		return matcherFactory.create(bytesToMatch, NOT_YET_INVERTED);
+		return matcherFactory.create(bytesToMatch, NOT_INVERTED);
 	}
 
 	/**
@@ -199,21 +199,21 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 
 		switch (node.getParseTreeType()) {
 			case BYTE: 
-				return AstCompilerUtils.createByteMatcher(node, NOT_YET_INVERTED);
+				return CompilerUtils.createByteMatcher(node);
 			case ANY:
-				return AstCompilerUtils.getAnyMatcher(node, NOT_YET_INVERTED);
+				return CompilerUtils.createAnyMatcher(node);
 			case ALL_BITMASK:
-				return AstCompilerUtils.createAllBitmaskMatcher(node, NOT_YET_INVERTED);
+				return CompilerUtils.createAllBitmaskMatcher(node);
 			case ANY_BITMASK:
-				return AstCompilerUtils.createAnyBitmaskMatcher(node, NOT_YET_INVERTED);
+				return CompilerUtils.createAnyBitmaskMatcher(node);
 			case RANGE: 
-				return AstCompilerUtils.createRangeMatcher(node, NOT_YET_INVERTED);
+				return CompilerUtils.createRangeMatcher(node);
 			case SET: 	
-				return AstCompilerUtils.createMatcherFromSet(node, NOT_YET_INVERTED, matcherFactory);
+				return CompilerUtils.createMatcherFromSet(node, matcherFactory);
 			case CASE_SENSITIVE_STRING:
-				return AstCompilerUtils.createMatcherFromString(node, NOT_YET_INVERTED, matcherFactory);
+				return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
 			case CASE_INSENSITIVE_STRING:
-				return AstCompilerUtils.createMatcherFromCaseInsensitiveString(node, NOT_YET_INVERTED, matcherFactory);
+				return CompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
 		}
 		
 		// The node type wasn't understood by this compiler.
@@ -227,7 +227,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	@Override
 	protected ParseTree joinExpressions(List<ParseTree> expressions) 
 			throws ParseException, CompileException {
-		return new StructuralNode(ParseTreeType.SET, expressions, NOT_YET_INVERTED);
+		return new StructuralNode(ParseTreeType.SET, expressions, NOT_INVERTED);
 	}
 
 }

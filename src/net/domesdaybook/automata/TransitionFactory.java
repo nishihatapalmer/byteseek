@@ -31,114 +31,15 @@
 
 package net.domesdaybook.automata;
 
-import java.util.Collection;
 
 /**
- * A factory for {@link Transition} objects with a variety of construction
- * methods allowing different methods of matching the bytes being transitioned
- * on.
- * 
- * <p>
- * It has specific factory methods for creating a Transition on:
- * <ul>
- * <li>A single byte value
- * <li>A transition based on matching all bits in a bitmask.
- * <li>A transition based on matching any bits in a bitmask.
- * <li>A transition based on matching any of the bytes in a set of bytes (or the
- * inverse of that set)
- * <li>A transition based on matching a case-insensitive ASCII character.
- * </ul>
+ * A factory for {@link Transition} objects
  * 
  * @author Matt Palmer
  * @see net.domesdaybook.automata.Transition
  */
-public interface TransitionFactory<T> {
+public interface TransitionFactory<T, S> {
 
-	/**
-	 * Creates a {@link Transition} to a given {@link State} on a match to the
-	 * byte provided.
-	 * 
-	 * @param theByte
-	 *            The byte on which this transition can match.
-	 * @param toState
-	 *            The State which this transition goes to.
-	 * @return Transition A transition to the State on the byte value provided.
-	 */
-	public Transition<T> createByteTransition(byte theByte, State<T> toState);
-
-	/**
-	 * Creates a {@link Transition} to a given {@link State} on a match to all
-	 * the bits in a bitmask.
-	 * <p>
-	 * Note that a bitmask of zero will match everything, as the matching rule
-	 * is that, given a byte b: <code>b & bitmask == bitmask</code>
-	 * 
-	 * @param bitMask
-	 *            The bitmask for which all set bits must match.
-	 * @param toState
-	 *            The State which this transition goes to.
-	 * @return Transition a transition to the State on matching all bits set in
-	 *         the bitmask provided.
-	 */
-	public Transition<T> createAllBitmaskTransition(byte bitMask,
-			State<T> toState);
-
-	/**
-	 * Creates a {@link Transition} to a given {@link State} on a match to any
-	 * of the bits in a bitmask.
-	 * <p>
-	 * Note that a bitmask of zero will not match anything, as the matching rule
-	 * is that, given a byte b: <code>b & bitmask > 0</code>.
-	 * 
-	 * @param bitMask
-	 *            The bitmask for which any set bits can match.
-	 * @param toState
-	 *            The State which this transition goes to.
-	 * @return Transition a transition to the State on matching any bits set in
-	 *         the bitmask provided.
-	 */
-	public Transition<T> createAnyBitmaskTransition(byte bitMask,
-			State<T> toState);
-
-	/**
-	 * Creates a {@link Transition} to a given {@link State} on a match to any
-	 * of the bytes in a set of bytes (or the inverse of that set).
-	 * 
-	 * @param byteSet
-	 *            The set of bytes which a given byte should match (or the
-	 *            inverted set if specified below)
-	 * @param inverted
-	 *            Whether the set of bytes to be matched should be inverted.
-	 * @param toState
-	 *            The State which this transition goes to.
-	 * @return Transition a transition to the State on matching any of the bytes
-	 *         in the set of bytes (or the inverted set) provided.
-	 */
-	public Transition<T> createSetTransition(Collection<Byte> byteSet,
-			boolean inverted, State<T> toState);
-
-	/**
-	 * Creates a {@link Transition} to a given {@link State} which always
-	 * matches.
-	 * 
-	 * @param toState
-	 *            The State which this transition goes to.
-	 * @return Transition a transition to the State which always matches.
-	 */
-	public Transition<T> createAnyByteTransition(State<T> toState);
-
-	/**
-	 * Creates a {@link Transition} to a given {@link State} on a
-	 * case-insensitive match to an ASCII character.
-	 * 
-	 * @param Char
-	 *            The ASCII character to match case-insensitively.
-	 * @param toState
-	 *            THe state which this transition goes to.
-	 * @return Transition a transition to the State which matches bytes as if
-	 *         they were ASCII text case-insensitively.
-	 */
-	public Transition<T> createCaseInsensitiveByteTransition(char Char,
-			State<T> toState);
-
+  public Transition<T> create(S source, boolean invert, State<T> toState);
+  
 }

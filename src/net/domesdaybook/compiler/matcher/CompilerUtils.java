@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.domesdaybook.compiler.ast;
+package net.domesdaybook.compiler.matcher;
 
 import java.util.List;
 
@@ -41,16 +41,18 @@ import net.domesdaybook.matcher.bytes.ByteRangeMatcher;
 import net.domesdaybook.matcher.bytes.InvertedByteMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;
 import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.ast.ParseTree;
-import net.domesdaybook.parser.ast.ParseTreeUtils;
+import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeUtils;
 
 /**
  * @author Matt Palmer
  *
  */
-public final class AstCompilerUtils {
+public final class CompilerUtils {
 
-	private AstCompilerUtils() {
+  private final static boolean NOT_YET_INVERTED = false;
+  
+	private CompilerUtils() {
 		// Private constructor to prevent the construction of a static utility class.
 	}
 
@@ -58,10 +60,17 @@ public final class AstCompilerUtils {
 		return currentInversion ^ node.isValueInverted();
 	}
 	
+	public static ByteMatcher createByteMatcher(final ParseTree node) throws ParseException {
+	  return createByteMatcher(node, NOT_YET_INVERTED);
+	}
+	
 	public static ByteMatcher createByteMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
 		return isInverted(node, currentInversion)? new InvertedByteMatcher(node.getByteValue()) 
 		 							 			 : new OneByteMatcher(node.getByteValue());
-
+	}
+	
+	public static ByteMatcher createAnyMatcher(final ParseTree node) throws ParseException {
+	  return getAnyMatcher(node, NOT_YET_INVERTED);
 	}
 	
 	public static ByteMatcher getAnyMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
@@ -71,19 +80,36 @@ public final class AstCompilerUtils {
 		return AnyByteMatcher.ANY_BYTE_MATCHER;
 	}	
 	
+	public static ByteMatcher createAllBitmaskMatcher(final ParseTree node) throws ParseException {
+	  return createAllBitmaskMatcher(node, NOT_YET_INVERTED);
+	}
+	
 	public static ByteMatcher createAllBitmaskMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
 		return new AllBitmaskMatcher(node.getByteValue(), isInverted(node, currentInversion));
 	}	
 	
+	public static ByteMatcher createAnyBitmaskMatcher(final ParseTree node) throws ParseException {
+	  return createAnyBitmaskMatcher(node, NOT_YET_INVERTED);
+	}
+	
 	public static ByteMatcher createAnyBitmaskMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
 		return new AnyBitmaskMatcher(node.getByteValue(), isInverted(node, currentInversion));
 	}		
+	
+	public static ByteMatcher createRangeMatcher(final ParseTree node) throws ParseException {
+	  return createRangeMatcher(node, NOT_YET_INVERTED);
+	}
 	
 	public static ByteMatcher createRangeMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
 		return new ByteRangeMatcher(ParseTreeUtils.getFirstRangeValue(node),
 									ParseTreeUtils.getSecondRangeValue(node), 
 									isInverted(node, currentInversion));
 	}	
+	
+	public static ByteMatcher createMatcherFromSet(final ParseTree node,
+	                                               final ByteMatcherFactory matcherFactory) throws ParseException {
+	  return createMatcherFromSet(node, NOT_YET_INVERTED, matcherFactory);
+	}
 	
 	public static ByteMatcher createMatcherFromSet(final ParseTree node, 
 												   final boolean currentInversion,
@@ -107,14 +133,24 @@ public final class AstCompilerUtils {
 		return matcherFactory.create(ParseTreeUtils.getSetValues(node), isInverted);
 	}
 	
-	public static ByteMatcher createMatcherFromString(final ParseTree node, 
+	public static ByteMatcher createSetMatcherFromString(final ParseTree node,
+	                                                  final ByteMatcherFactory matcherFactory) throws ParseException {
+	  return createSetMatcherFromString(node, NOT_YET_INVERTED, matcherFactory);
+	}
+	
+	public static ByteMatcher createSetMatcherFromString(final ParseTree node, 
 													  final boolean currentInversion,
 													  final ByteMatcherFactory matcherFactory) throws ParseException {
 		return matcherFactory.create(ParseTreeUtils.getStringAsSet(node), 
 									 isInverted(node, currentInversion));
 	}
 	
-	public static ByteMatcher createMatcherFromCaseInsensitiveString(final ParseTree node,
+	public static ByteMatcher createSetMatcherFromCaseInsensitiveString(final ParseTree node,
+	                                                          final ByteMatcherFactory matcherFactory) throws ParseException {
+	  return createSetMatcherFromCaseInsensitiveString(node, NOT_YET_INVERTED, matcherFactory);
+	}
+	
+	public static ByteMatcher createSetMatcherFromCaseInsensitiveString(final ParseTree node,
 																	 final boolean currentInversion,
 																	 final ByteMatcherFactory matcherFactory) throws ParseException {
 		return matcherFactory.create(ParseTreeUtils.getCaseInsensitiveStringAsSet(node),

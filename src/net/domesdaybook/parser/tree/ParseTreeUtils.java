@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.parser.ast;
+package net.domesdaybook.parser.tree;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
@@ -71,8 +71,17 @@ public final class ParseTreeUtils {
 		try {
 			return (byte) Integer.parseInt(hexByte, 16);
 		} catch (NumberFormatException nfe) {
-			throw new ParseException("Could not parse into a hex byte:" + hexByte);
+			throw new ParseException("Could not parse into a hex byte: " + hexByte);
 		}
+	}
+	
+	public static ParseTree getFirstChild(final ParseTree node) throws ParseException {
+	  final List<ParseTree> children = node.getChildren();
+	  if (children.size() > 0) {
+	    return children.get(0);
+	  }
+	  throw new ParseException("No children exist for node type: " +
+	                           node.getParseTreeType().name());
 	}
 
 	public static int getFirstRangeValue(final ParseTree rangeNode) throws ParseException {
@@ -86,13 +95,13 @@ public final class ParseTreeUtils {
 	private static int getRangeValue(final ParseTree rangeNode, final int valueIndex) throws ParseException {
 		final List<ParseTree> rangeChildren = rangeNode.getChildren();
 		if (rangeChildren.size() != 2) {
-			final String message = "Ranges must have two integer values as child nodes.  Actual number of children was %d";
-			throw new ParseException(String.format(message, rangeChildren.size()));			
+			throw new ParseException("Ranges must have two integer values as child nodes." +
+			                         "Actual number of children was: " + rangeChildren.size());			
 		}
 		final int rangeValue = rangeChildren.get(0).getIntValue();
 		if (rangeValue < 0 || rangeValue > 255) {
-			final String message = "Range values must be between 0 and 255.  Actual value was: %d";
-			throw new ParseException(String.format(message, rangeValue));
+			throw new ParseException("Range values must be between 0 and 255." +
+			                         "Actual value was: " + rangeValue);
 		}
 		return rangeValue;		
 	}
@@ -107,25 +116,31 @@ public final class ParseTreeUtils {
 	
 	public static ParseTree getNodeToRepeat(final ParseTree repeatNode) throws ParseException {
 		final List<ParseTree> repeatChildren = repeatNode.getChildren();
-		if (repeatChildren.size() != 2) {
-			final String message = "Repeats must have three child nodes.  Actual number of children was %d";
-			throw new ParseException(String.format(message, repeatChildren.size()));			
+		if (repeatChildren.size() != 3) {
+			throw new ParseException("Repeats must have three child nodes. " +
+			                         "Actual number of children was: " + repeatChildren.size());			
 		}
 		return repeatChildren.get(2);
 	}
 	
 	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
 		final List<ParseTree> repeatChildren = repeatNode.getChildren();
-		if (repeatChildren.size() != 2) {
-			final String message = "Repeats must have three child nodes.  Actual number of children was %d";
-			throw new ParseException(String.format(message, repeatChildren.size()));			
+		if (repeatChildren.size() != 3) {
+			throw new ParseException("Repeats must have three child nodes. " +
+			                         "Actual number of children was: " +repeatChildren.size());			
 		}
-		final int repeatValue = repeatChildren.get(0).getIntValue();
-		if (repeatValue < 1) {
-			final String message = "Repeat values must be at least one.  Actual value was: %d";
-			throw new ParseException(String.format(message, repeatValue));
+		final ParseTree repeatValue = repeatChildren.get(valueIndex);
+		if (repeatValue.getParseTreeType() == ParseTreeType.INTEGER) {
+		  final int intValue = repeatValue.getIntValue();
+	    if (intValue < 1) {
+	      throw new ParseException("Repeat integer values must be at least one. " +
+	                               "Actual value was: " + intValue);
+	    }
+	    return intValue;
 		}
-		return repeatValue;			
+		return -1; //FIXME: need to test for MANY node, which doesn't exist at the moment...	
+		//          But this function should return a negative number for a many node,
+		//          and throw a ParseException if the node isn't an integer or a many node.
 	}
 	
 	

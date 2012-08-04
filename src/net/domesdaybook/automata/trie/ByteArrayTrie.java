@@ -31,6 +31,7 @@
 package net.domesdaybook.automata.trie;
 
 import java.util.Collection;
+
 import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.TransitionFactory;
 
@@ -49,7 +50,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      * Constructs a SequenceMatcherTrie with no sequences added to it initially.
      * using the default {@link net.domesdaybook.automata.StateFactory}
      * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      */
     public ByteArrayTrie() {
         this(null, null, null);
@@ -59,7 +60,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     /**
      * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
      * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences A collection of byte arrays to add to the Trie.
      */
@@ -70,7 +71,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
      /**
      * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      */
@@ -86,14 +87,14 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      * 
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
-    public ByteArrayTrie(final TransitionFactory<byte[]> transitionFactory) {
+    public ByteArrayTrie(final TransitionFactory<byte[], Collection<Byte>> transitionFactory) {
         this(null, null, transitionFactory);
     }
     
     
     /**
      * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteMatcherTransitionFactory}.
+     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences The initial collection of byte arrays to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.
@@ -113,7 +114,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public ByteArrayTrie(final Collection<byte[]> sequences,
-                         final TransitionFactory<byte[]> transitionFactory) {
+                         final TransitionFactory<byte[], Collection<Byte>> transitionFactory) {
         this(sequences, null, transitionFactory);
     }    
     
@@ -126,7 +127,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
     public ByteArrayTrie(final StateFactory<byte[]> stateFactory, 
-                         final TransitionFactory<byte[]> transitionFactory) {
+                         final TransitionFactory<byte[], Collection<Byte>> transitionFactory) {
         this(null, stateFactory, transitionFactory);
     }
     
@@ -141,7 +142,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
      */
     public ByteArrayTrie(final Collection<byte[]> sequences, 
                          final StateFactory<byte[]> stateFactory, 
-                         final TransitionFactory<byte[]> transitionFactory) {
+                         final TransitionFactory<byte[], Collection<Byte>> transitionFactory) {
         super(stateFactory, transitionFactory);
         if (sequences != null) {
             addAll(sequences);

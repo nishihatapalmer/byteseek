@@ -34,19 +34,16 @@ package net.domesdaybook.parser.regex;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.Parser;
+import net.domesdaybook.parser.tree.ParseTree;
+
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-
-import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.ast.ParseTree;
-
-//TODO: define an AST interface separated from the ANTLR parser.
-//      This will allow different parsers to the ANTLR parser to be defined.
 
 /**
  * Parses a regular expression into an Abstract Syntax Tree (ast), using ANTLR
