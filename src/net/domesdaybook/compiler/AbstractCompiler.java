@@ -41,8 +41,8 @@ import net.domesdaybook.parser.regex.RegexParser;
 
 /**
  * An abstract base class for compilers which compile a String expression into
- * an object of type T using a {@link Parser} to generate an abstract syntax tree
- * of type S.
+ * an object of type T using a {@link Parser} to generate an abstract syntax
+ * tree of type S.
  * 
  * @param <T>
  *            The type of object to build.
@@ -61,10 +61,10 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 		}
 		this.parser = parser;
 	}
-	
+
 	/**
-	 * Turns an expression into a parse tree using an {@link RegexParser}. Then it
-	 * invokes the abstract compile method with the resulting parse-tree, to
+	 * Turns an expression into a parse tree using an {@link RegexParser}. Then
+	 * it invokes the abstract compile method with the resulting parse-tree, to
 	 * build and return a compiled object of type T.
 	 * <p>
 	 * Classes implementing this abstract class must implement the other
@@ -79,25 +79,21 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	@Override
 	public T compile(final String expression) throws CompileException {
 		try {
-			final S tree = parser.parse(expression);
-
-			//TODO fix optimisation stage - should be generic optimisations available...
-			//     but nice if new optimisations can be plugged in too...
-			//final ParseTree optimisedTree = parser.			
-			//final CommonTree optimisedAST = (CommonTree) parser
-			//		.optimiseAST(tree);
-			return compile(tree);
+			return compile(parser.parse(expression));
 		} catch (final ParseException pex) {
 			throw new CompileException("A problem occurred parsing the expression: " + expression, pex);
 		} catch (final IllegalArgumentException compex) {
-			throw new CompileException("An illegal argument occurred when compiling the expression: " + expression, compex);
+			throw new CompileException("An illegal argument occurred when compiling the expression: " + expression,
+					compex);
 		} catch (final NullPointerException npe) {
 			throw new CompileException("A null object occurred when compiling the expression: " + expression, npe);
 		} catch (final ArrayIndexOutOfBoundsException aie) {
-		  throw new CompileException("An attempt was made to access an array out of its bounds when compiling the expression: " + expression, aie);
+			throw new CompileException(
+					"An attempt was made to access an array out of its bounds when compiling the expression: "
+							+ expression, aie);
 		}
 	}
-	
+
 	@Override
 	public T compile(final Collection<String> expressions) throws CompileException {
 		List<S> parsedExpressions = new ArrayList<S>(expressions.size());
@@ -108,27 +104,27 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 				currentExpression = expression;
 				parsedExpressions.add(parser.parse(expression));
 			}
-			
+
 			// Place them all under an alternatives node:
 			final S joinedTrees = joinExpressions(parsedExpressions);
-			
+
 			// Compile the resulting single syntax tree:
 			return compile(joinedTrees);
-			
+
 		} catch (ParseException pex) {
 			throw new CompileException("A problem occurred parsing the expression: " + currentExpression, pex);
 		}
 	}
 
 	/**
-	 * A compile method which takes a parse tree and uses it 
-	 * to build the compiled object of type T.
+	 * A compile method which takes a parse tree and uses it to build the
+	 * compiled object of type T.
 	 * <p>
 	 * Classes implementing this base class must implement this method to
 	 * perform the actual compilation.
 	 * 
 	 * @param S
-	 *            An abstract syntax tree 
+	 *            An abstract syntax tree
 	 * @return A compiled object of type T.
 	 * @throws CompileException
 	 *             If a problem occurred during compilation.
@@ -140,12 +136,11 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 		try {
 			return doCompile(ast);
 		} catch (IllegalArgumentException e) {
-            throw new CompileException("An illegal argument occurred during construction.", e);
-    } catch (ParseException ex) {
-      throw new CompileException("A problem occurred parsing the syntax tree.", ex);
-    }	
+			throw new CompileException("An illegal argument occurred during construction.", e);
+		} catch (ParseException ex) {
+			throw new CompileException("A problem occurred parsing the syntax tree.", ex);
+		}
 	}
-	
 
 	/**
 	 * An abstract compile method which takes a parse tree created using the
@@ -155,16 +150,15 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 * perform the actual compilation.
 	 * 
 	 * @param S
-	 *            An abstract syntax tree 
+	 *            An abstract syntax tree
 	 * @return A compiled object of type T.
 	 * @throws ParseException
-	 * 			   If a problem occurred during parsing.
+	 *             If a problem occurred during parsing.
 	 * @throws CompileException
 	 *             If a problem occurred during compilation.
 	 */
-	protected abstract T doCompile(S ast) throws ParseException, CompileException;	
+	protected abstract T doCompile(S ast) throws ParseException, CompileException;
 
-	
 	/**
 	 * 
 	 * @param expressions
@@ -173,6 +167,5 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 * @throws CompileException
 	 */
 	protected abstract S joinExpressions(List<S> expressions) throws ParseException, CompileException;
-	
-	
+
 }
