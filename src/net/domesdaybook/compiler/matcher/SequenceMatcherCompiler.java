@@ -197,32 +197,26 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * @throws NullPointerException if the parse tree or sequence list are null.
      */
     protected List<SequenceMatcher> buildSequenceList(final ParseTree ast,
-    										  		  final List<SequenceMatcher> sequenceList)
+    										  		   final List<SequenceMatcher> sequenceList)
     										  throws ParseException {
     	switch (ast.getParseTreeType()) {
-    	
-    		case BYTE:           			    addByteMatcher(ast, sequenceList);                  break;
-    		case ANY:                     addAnyMatcher(ast, sequenceList);                   break;
-    		case ALL_BITMASK:   			    addAllBitmaskMatcher(ast, sequenceList);            break;
-    		case ANY_BITMASK:   			    addAnyBitmaskMatcher(ast, sequenceList);            break;
-    		case RANGE:       				    addRangeMatcher(ast, sequenceList);                 break;
-    		case SET:         				    addSetMatcher(ast, sequenceList);                   break;
-    		case CASE_SENSITIVE_STRING:   addStringMatcher(ast, sequenceList);                break;
-    		case CASE_INSENSITIVE_STRING: addCaseInsensitiveStringMatcher(ast, sequenceList); break;
-    		case SEQUENCE:          			addSequenceMatcher(ast, sequenceList);              break;
-    		case REPEAT:          				addRepeatedSequence(ast, sequenceList);             break;
-			
-    		default: {
-		      final ParseTreeType type = ast.getParseTreeType();
-		      final String message = String.format("Unknown type, id %d with description: %s", 
-		                         type, type.getDescription());
-		      throw new ParseException(message);
-    		}
-    	}    	
+    		case BYTE:           			addByteMatcher(ast, sequenceList);                  break;
+    		case ANY:                     	addAnyMatcher(ast, sequenceList);                   break;
+    		case ALL_BITMASK:   			addAllBitmaskMatcher(ast, sequenceList);            break;
+    		case ANY_BITMASK:   			addAnyBitmaskMatcher(ast, sequenceList);            break;
+    		case RANGE:       				addRangeMatcher(ast, sequenceList);                 break;
+    		case CASE_SENSITIVE_STRING:   	addStringMatcher(ast, sequenceList);                break;
+    		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(ast, sequenceList); break;
+    		case SEQUENCE:          		addSequenceMatcher(ast, sequenceList);              break;
+    		case REPEAT:          			addRepeatedSequence(ast, sequenceList);             break;
+    		case SET: case ALTERNATIVES: 	addSetMatcher(ast, sequenceList);                   break;
+    		default: 						throw new ParseException(getTypeErrorMessage(ast));
+    	}
     	return sequenceList;
     }
 
-    /**
+
+	/**
      * @param ast
      * @param sequenceList
      * @throws ParseException
@@ -343,6 +337,13 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 	protected ParseTree joinExpressions(List<ParseTree> expressions) throws ParseException, CompileException {
 		return new StructuralNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED);
     }    
+	
+	
+	private String getTypeErrorMessage(final ParseTree ast) {
+		final ParseTreeType type = ast.getParseTreeType();
+		return String.format("Unknown type, id %d with description: %s", 
+		                       type, type.getDescription());
+	}    	
 	
     
     /*

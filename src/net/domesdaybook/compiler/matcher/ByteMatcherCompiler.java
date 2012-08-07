@@ -198,22 +198,14 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	protected ByteMatcher doCompile(final ParseTree node) throws ParseException {
 
 		switch (node.getParseTreeType()) {
-			case BYTE: 
-				return CompilerUtils.createByteMatcher(node);
-			case ANY:
-				return CompilerUtils.createAnyMatcher(node);
-			case ALL_BITMASK:
-				return CompilerUtils.createAllBitmaskMatcher(node);
-			case ANY_BITMASK:
-				return CompilerUtils.createAnyBitmaskMatcher(node);
-			case RANGE: 
-				return CompilerUtils.createRangeMatcher(node);
-			case SET: 	
-				return CompilerUtils.createMatcherFromSet(node, matcherFactory);
-			case CASE_SENSITIVE_STRING:
-				return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
-			case CASE_INSENSITIVE_STRING:
-				return CompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
+			case BYTE: 						return CompilerUtils.createByteMatcher(node);
+			case ANY:						return CompilerUtils.createAnyMatcher(node);
+			case ALL_BITMASK:				return CompilerUtils.createAllBitmaskMatcher(node);
+			case ANY_BITMASK:				return CompilerUtils.createAnyBitmaskMatcher(node);
+			case RANGE: 					return CompilerUtils.createRangeMatcher(node);
+			case CASE_SENSITIVE_STRING:		return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
+			case CASE_INSENSITIVE_STRING:	return CompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
+			case SET: case ALTERNATIVES:	return CompilerUtils.createMatcherFromSet(node, matcherFactory);
 		}
 		
 		// The node type wasn't understood by this compiler.
