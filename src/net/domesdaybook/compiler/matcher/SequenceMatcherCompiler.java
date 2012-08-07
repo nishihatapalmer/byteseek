@@ -166,10 +166,10 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 		   final ByteMatcherFactory byteFactoryToUse,
     		   final SequenceMatcherFactory sequenceFactoryToUse) {
         super(parser == null? new RegexParser() : parser);
-	byteMatcherFactory = byteFactoryToUse != null? byteFactoryToUse
-    												 : new SetAnalysisByteMatcherFactory();
-    	sequenceMatcherFactory = sequenceFactoryToUse != null? sequenceFactoryToUse
-    												 : new BytesToSequencesMatcherFactory();
+        byteMatcherFactory = byteFactoryToUse != null? 
+        					 byteFactoryToUse :  new SetAnalysisByteMatcherFactory();
+    	sequenceMatcherFactory = sequenceFactoryToUse != null? 
+    			                 sequenceFactoryToUse :  new BytesToSequencesMatcherFactory();
     }    
 
 
