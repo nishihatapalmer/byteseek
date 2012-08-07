@@ -200,17 +200,18 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     										  		   final List<SequenceMatcher> sequenceList)
     										  throws ParseException {
     	switch (ast.getParseTreeType()) {
-    		case BYTE:           			addByteMatcher(ast, sequenceList);                  break;
-    		case ANY:                     	addAnyMatcher(ast, sequenceList);                   break;
-    		case ALL_BITMASK:   			addAllBitmaskMatcher(ast, sequenceList);            break;
-    		case ANY_BITMASK:   			addAnyBitmaskMatcher(ast, sequenceList);            break;
-    		case RANGE:       				addRangeMatcher(ast, sequenceList);                 break;
-    		case CASE_SENSITIVE_STRING:   	addStringMatcher(ast, sequenceList);                break;
-    		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(ast, sequenceList); break;
-    		case SEQUENCE:          		addSequenceMatcher(ast, sequenceList);              break;
-    		case REPEAT:          			addRepeatedSequence(ast, sequenceList);             break;
-    		case SET: case ALTERNATIVES: 	addSetMatcher(ast, sequenceList);                   break;
-    		default: 						throw new ParseException(getTypeErrorMessage(ast));
+    		case BYTE:           			addByteMatcher(                 	ast, sequenceList); break;
+    		case ANY:                     	addAnyMatcher(						ast, sequenceList); break;
+    		case ALL_BITMASK:   			addAllBitmaskMatcher(				ast, sequenceList); break;
+    		case ANY_BITMASK:   			addAnyBitmaskMatcher(				ast, sequenceList); break;
+    		case RANGE:       				addRangeMatcher(					ast, sequenceList); break;
+    		case CASE_SENSITIVE_STRING:   	addStringMatcher(					ast, sequenceList); break;
+    		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(	ast, sequenceList); break;
+    		case SEQUENCE:          		addSequenceMatcher(					ast, sequenceList); break;
+    		case REPEAT:          			addRepeatedSequence(				ast, sequenceList); break;
+    		case SET: case ALTERNATIVES: 	addSetMatcher(						ast, sequenceList); break;
+    		
+    		default: throw new ParseException(getTypeErrorMessage(ast));
     	}
     	return sequenceList;
     }
