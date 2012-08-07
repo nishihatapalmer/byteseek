@@ -198,7 +198,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      */
     protected List<SequenceMatcher> buildSequenceList(final ParseTree ast,
     										  		   final List<SequenceMatcher> sequenceList)
-    										  throws ParseException {
+    										  		   throws ParseException {
     	switch (ast.getParseTreeType()) {
     		case BYTE:           			addByteMatcher(                 	ast, sequenceList); break;
     		case ANY:                     	addAnyMatcher(						ast, sequenceList); break;
