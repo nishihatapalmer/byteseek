@@ -148,27 +148,21 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     protected Automata<T> doCompile(final ParseTree ast) throws CompileException, ParseException {
         switch (ast.getParseTreeType()) {
-
             case BYTE:
             case ALL_BITMASK:
             case ANY_BITMASK:
             case SET:
-            case ANY:                      return createTransitionAutomata(ast);
-            case CASE_SENSITIVE_STRING:    return createStringAutomata(ast);
-            case CASE_INSENSITIVE_STRING:  return createCaseInsensitiveStringAutomata(ast);
-            case SEQUENCE:                 return createSequenceAutomata(ast);
-            case ALTERNATIVES:             return createAlternativesAutomata(ast);
-            case REPEAT:                   return createRepeatedAutomata(ast);
-            case ZERO_TO_MANY:             return createZeroToManyAutomata(ast);
-            case ONE_TO_MANY:              return createOneToManyAutomata(ast);
-            case OPTIONAL:                 return createOptionalAutomata(ast);
-              
-            default: {
-              final ParseTreeType type = ast.getParseTreeType();
-              final String message = String.format("Unknown parse tree type %s with description: %s", 
-                                 type, type.getDescription());
-              throw new CompileException(message);
-            }
+            case ANY:						return createTransitionAutomata(ast);
+            case CASE_SENSITIVE_STRING:		return createStringAutomata(ast);
+            case CASE_INSENSITIVE_STRING:	return createCaseInsensitiveStringAutomata(ast);
+            case SEQUENCE:					return createSequenceAutomata(ast);
+            case ALTERNATIVES:				return createAlternativesAutomata(ast);
+            case REPEAT:					return createRepeatedAutomata(ast);
+            case ZERO_TO_MANY:				return createZeroToManyAutomata(ast);
+            case ONE_TO_MANY:				return createOneToManyAutomata(ast);
+            case OPTIONAL:					return createOptionalAutomata(ast);
+            
+            default: throw new CompileException(getTypeErrorMessage(ast));
         }
    }
 
@@ -328,6 +322,12 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
       setChildren.add(new ByteNode());
       setChildren.add(new ByteNode());
       return new StructuralNode(ParseTreeType.SET, setChildren);
+    }
+    
+    private String getTypeErrorMessage(final ParseTree ast) {
+        final ParseTreeType type = ast.getParseTreeType();
+        return String.format("Unknown parse tree type %s with description: %s", 
+                              type, type.getDescription());
     }
     
 }

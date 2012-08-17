@@ -33,7 +33,7 @@ package net.domesdaybook.matcher.sequence;
 
 import java.util.List;
 
-public class BytesToSequencesMatcherFactory implements SequenceMatcherFactory {
+public class OptimisingSequenceMatcherFactory implements SequenceMatcherFactory {
 
 	@Override
 	public SequenceMatcher create(final List<SequenceMatcher> sequences) {

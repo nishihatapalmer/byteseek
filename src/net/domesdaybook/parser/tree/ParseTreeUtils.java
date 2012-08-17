@@ -96,12 +96,12 @@ public final class ParseTreeUtils {
 		final List<ParseTree> rangeChildren = rangeNode.getChildren();
 		if (rangeChildren.size() != 2) {
 			throw new ParseException("Ranges must have two integer values as child nodes." +
-			                         "Actual number of children was: " + rangeChildren.size());			
+			                          "Actual number of children was: " + rangeChildren.size());			
 		}
 		final int rangeValue = rangeChildren.get(0).getIntValue();
 		if (rangeValue < 0 || rangeValue > 255) {
 			throw new ParseException("Range values must be between 0 and 255." +
-			                         "Actual value was: " + rangeValue);
+			                          "Actual value was: " + rangeValue);
 		}
 		return rangeValue;		
 	}
@@ -118,7 +118,7 @@ public final class ParseTreeUtils {
 		final List<ParseTree> repeatChildren = repeatNode.getChildren();
 		if (repeatChildren.size() != 3) {
 			throw new ParseException("Repeats must have three child nodes. " +
-			                         "Actual number of children was: " + repeatChildren.size());			
+			                          "Actual number of children was: " + repeatChildren.size());			
 		}
 		return repeatChildren.get(2);
 	}
@@ -127,14 +127,14 @@ public final class ParseTreeUtils {
 		final List<ParseTree> repeatChildren = repeatNode.getChildren();
 		if (repeatChildren.size() != 3) {
 			throw new ParseException("Repeats must have three child nodes. " +
-			                         "Actual number of children was: " +repeatChildren.size());			
+			                          "Actual number of children was: " +repeatChildren.size());			
 		}
 		final ParseTree repeatValue = repeatChildren.get(valueIndex);
 		if (repeatValue.getParseTreeType() == ParseTreeType.INTEGER) {
 		  final int intValue = repeatValue.getIntValue();
 	    if (intValue < 1) {
 	      throw new ParseException("Repeat integer values must be at least one. " +
-	                               "Actual value was: " + intValue);
+	                                "Actual value was: " + intValue);
 	    }
 	    return intValue;
 		}
@@ -143,73 +143,6 @@ public final class ParseTreeUtils {
 		//          and throw a ParseException if the node isn't an integer or a many node.
 	}
 	
-	
-//	/**
-//	 * Returns an integer value of the specified child of the parse-tree node.
-//	 * The integer must be encoded in base-10, not hexadecimal or any other
-//	 * base.
-//	 * 
-//	 * @param treeNode
-//	 *            The parent node from whose children we want to extract an
-//	 *            integer value.
-//	 * @param childIndex
-//	 *            The index of the child to extract the integer from.
-//	 * @return The integer value of the specified child of the parse-tree node.
-//	 */
-//	public static int getChildIntValue(final Tree treeNode, final int childIndex) {
-//		final Tree childNode = treeNode.getChild(childIndex);
-//		return Integer.parseInt(childNode.getText(), 10);
-//	}
-//
-//	/**
-//	 * Returns a string value of the specified child of the parse-tree node.
-//	 * 
-//	 * @param treeNode
-//	 *            The parent node from whose children we want to extract a
-//	 *            string value.
-//	 * @param childIndex
-//	 *            The index of the child to extract the string from.
-//	 * @return The string value of the specified child of the parse-tree node.
-//	 */
-//	public static String getChildStringValue(final Tree treeNode,
-//			final int childIndex) {
-//		return treeNode.getChild(childIndex).getText();
-//	}
-//
-//	/**
-//	 * Gets the minimum repeat value of a repeat node in a parse-tree.
-//	 * 
-//	 * @param treeNode
-//	 *            the repeat node in the parse-tree.
-//	 * @return The minimum repeat value of the repeat node.
-//	 */
-//	public static int getMinRepeatValue(final Tree treeNode) {
-//		return getChildIntValue(treeNode, 0);
-//	}
-//
-//	/**
-//	 * Gets the maximum repeat value of a repeat node in a parse-tree.
-//	 * 
-//	 * @param treeNode
-//	 *            the repeat node in the parse-tree.
-//	 * @return The maximum repeat value of the repeat node.
-//	 */
-//	public static int getMaxRepeatValue(final Tree treeNode) {
-//		return getChildIntValue(treeNode, 1);
-//	}
-//
-//	/**
-//	 * Gets the node which must be repeated in the parse-tree under a parent
-//	 * repeat-node.
-//	 * 
-//	 * @param treeNode
-//	 *            the node to repeat in a repeat node.
-//	 * @return The node which needs to be repeated under a parent repeat node.
-//	 */
-//	public static Tree getRepeatNode(final Tree treeNode) {
-//		return treeNode.getChild(2);
-//	}
-
 	
 	public static Collection<Byte> getRangeValues(final ParseTree range) throws ParseException {
 		final int range1 = getFirstRangeValue(range);
@@ -339,5 +272,115 @@ public final class ParseTreeUtils {
 	}
 
 
+	/**
+	 * Applies three optimisations to a parse tree:
+	 * 
+	 * 1) All single byte alternatives directly replaced by a set:
+	 *    A list of alternatives each of which matches only a single byte is turned directly into a set of bytes,
+	 *    losing the original alternatives node entirely.
+	 *    For example, ALT(01 | 02 | 03) is the same as Set{01 02 03}.
+	 * 2) Some single byte alternatives merged into a child set:
+	 *    A list of alternatives where only some of them match a single byte turns only those alternatives into 
+	 *    a single set of bytes under the original alternatives node.
+	 *    For example, ALT(01 | 'a sequence' | 02 03 04) is the same as ALT(Set{01 02 03 04} | 'a sequence')
+	 * 3) Nested sequences, sets or alternatives:
+	 *    A sequence, set or alternatives node whose parent is another node of the same type can simply
+	 *    add its children to its parent in place of itself (assuming they have the same inversion).
+	 *    For example a Set{01 Set{02 03} 04} is the same as the simpler Set{01 02 03 04}, or
+	 *    a Sequence['w', Sequence['x', 'y'], 'z'] is the same as Sequence['w', 'x', 'y', 'z']
+	 * 
+	 * @param node The node to optimise.
+	 * @return A node which is optimised (including optimising its children).
+	 */
+	public ParseTree optimiseTree(ParseTree node) {
+		//TODO: do we even need to optimise at the parse tree level?
+		//       The alternatives -> set optimisations are useful, but a compiler could do that from the parse 
+		//       tree directly, where it made sense to do so.
+		//       Optimising the nesting only optimises the look of the parse tree, since a
+		//       compiler should be able to deal with such nesting in any case (as optimisation is not guaranteed
+		//       by all parsers).  
+		
+		//NOTE:  'optimising' alternatives into sets is now handled automatically by the bytematcher and
+		//       sequencematcher compilers directly and more efficiently, by just processing the children of
+		//       an alternatives node as if it was a set node. 
+		// 
+		//       The regex compiler will still have to do something different here.
+		// 
+		//       As far as nested sequences, sets or alternatives go, these are already directly compiled
+		//       by processing the parse tree.  The only good effect of doing it here is to produce nicer
+		//       parse trees for display, but manipulating the parse tree before compilation is probably no
+		//       faster and is possibly slower than just compiling the values directly.  The only exception
+		//       might be if it were more efficient to match something represented by the structure of the
+		//       parse tree (e.g. a set of two ranges) rather than collapsing all the values up into the root set.
+		
+	}
+	
+	
+//	/**
+//	 * Returns an integer value of the specified child of the parse-tree node.
+//	 * The integer must be encoded in base-10, not hexadecimal or any other
+//	 * base.
+//	 * 
+//	 * @param treeNode
+//	 *            The parent node from whose children we want to extract an
+//	 *            integer value.
+//	 * @param childIndex
+//	 *            The index of the child to extract the integer from.
+//	 * @return The integer value of the specified child of the parse-tree node.
+//	 */
+//	public static int getChildIntValue(final Tree treeNode, final int childIndex) {
+//		final Tree childNode = treeNode.getChild(childIndex);
+//		return Integer.parseInt(childNode.getText(), 10);
+//	}
+//
+//	/**
+//	 * Returns a string value of the specified child of the parse-tree node.
+//	 * 
+//	 * @param treeNode
+//	 *            The parent node from whose children we want to extract a
+//	 *            string value.
+//	 * @param childIndex
+//	 *            The index of the child to extract the string from.
+//	 * @return The string value of the specified child of the parse-tree node.
+//	 */
+//	public static String getChildStringValue(final Tree treeNode,
+//			final int childIndex) {
+//		return treeNode.getChild(childIndex).getText();
+//	}
+//
+//	/**
+//	 * Gets the minimum repeat value of a repeat node in a parse-tree.
+//	 * 
+//	 * @param treeNode
+//	 *            the repeat node in the parse-tree.
+//	 * @return The minimum repeat value of the repeat node.
+//	 */
+//	public static int getMinRepeatValue(final Tree treeNode) {
+//		return getChildIntValue(treeNode, 0);
+//	}
+//
+//	/**
+//	 * Gets the maximum repeat value of a repeat node in a parse-tree.
+//	 * 
+//	 * @param treeNode
+//	 *            the repeat node in the parse-tree.
+//	 * @return The maximum repeat value of the repeat node.
+//	 */
+//	public static int getMaxRepeatValue(final Tree treeNode) {
+//		return getChildIntValue(treeNode, 1);
+//	}
+//
+//	/**
+//	 * Gets the node which must be repeated in the parse-tree under a parent
+//	 * repeat-node.
+//	 * 
+//	 * @param treeNode
+//	 *            the node to repeat in a repeat node.
+//	 * @return The node which needs to be repeated under a parent repeat node.
+//	 */
+//	public static Tree getRepeatNode(final Tree treeNode) {
+//		return treeNode.getChild(2);
+//	}	
+	
 
 }

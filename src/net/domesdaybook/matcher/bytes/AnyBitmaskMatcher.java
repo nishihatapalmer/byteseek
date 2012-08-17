@@ -67,7 +67,7 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
      * @param bitMaskValue The bitmaskValue to match any of its bits against.
      * @param inverted Whether the result of a match should be inverted.
      */
-    public AnyBitmaskMatcher(final byte bitMaskValue, boolean inverted) {
+    public AnyBitmaskMatcher(final byte bitMaskValue, final boolean inverted) {
         super(inverted);
         mBitMaskValue = bitMaskValue;
     }

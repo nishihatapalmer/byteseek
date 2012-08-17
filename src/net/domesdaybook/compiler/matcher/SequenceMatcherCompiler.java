@@ -39,7 +39,7 @@ import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
-import net.domesdaybook.matcher.sequence.BytesToSequencesMatcherFactory;
+import net.domesdaybook.matcher.sequence.OptimisingSequenceMatcherFactory;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcherFactory;
@@ -169,7 +169,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
         byteMatcherFactory = byteFactoryToUse != null? 
         					 byteFactoryToUse :  new SetAnalysisByteMatcherFactory();
     	sequenceMatcherFactory = sequenceFactoryToUse != null? 
-    			                 sequenceFactoryToUse :  new BytesToSequencesMatcherFactory();
+    			                 sequenceFactoryToUse :  new OptimisingSequenceMatcherFactory();
     }    
 
 
@@ -182,36 +182,35 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * @throws ParseException If the ast could not be parsed.
      */
     protected SequenceMatcher doCompile(final ParseTree ast) throws ParseException {
-    	final List<SequenceMatcher> sequenceList = buildSequenceList(ast, new ArrayList<SequenceMatcher>());
-    	return sequenceMatcherFactory.create(sequenceList);
+    	return sequenceMatcherFactory.create(buildSequenceList(ast, new ArrayList<SequenceMatcher>()));
     }
     
     
     /**
      * Parses the ParseTree node passed in, building a list of sequence matchers from it.
      * 
-     * @param matcherTree The abstract syntax tree to parse.
+     * @param matcherNode The abstract syntax tree to parse.
      * @param sequenceList A sequence matcher list to append to.
      * @return A list of sequence matchers in the order specified by the ParseTree.
      * @throws ParseException If there is a problem parsing the parse tree.
      * @throws NullPointerException if the parse tree or sequence list are null.
      */
-    protected List<SequenceMatcher> buildSequenceList(final ParseTree matcherTree,
+    protected List<SequenceMatcher> buildSequenceList(final ParseTree matcherNode,
     										  		   final List<SequenceMatcher> sequenceList)
     										  		   throws ParseException {
-    	switch (matcherTree.getParseTreeType()) {
-    		case BYTE:           			addByteMatcher(                 	matcherTree, sequenceList); break;
-    		case ANY:                     	addAnyMatcher(						matcherTree, sequenceList); break;
-    		case ALL_BITMASK:   			addAllBitmaskMatcher(				matcherTree, sequenceList); break;
-    		case ANY_BITMASK:   			addAnyBitmaskMatcher(				matcherTree, sequenceList); break;
-    		case RANGE:       				addRangeMatcher(					matcherTree, sequenceList); break;
-    		case CASE_SENSITIVE_STRING:   	addStringMatcher(					matcherTree, sequenceList); break;
-    		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(	matcherTree, sequenceList); break;
-    		case SEQUENCE:          		addSequenceMatcher(					matcherTree, sequenceList); break;
-    		case REPEAT:          			addRepeatedSequence(				matcherTree, sequenceList); break;
-    		case SET: case ALTERNATIVES: 	addSetMatcher(						matcherTree, sequenceList); break;
+    	switch (matcherNode.getParseTreeType()) {
+    		case BYTE:           			addByteMatcher(                 	matcherNode, sequenceList); break;
+    		case ANY:                     	addAnyMatcher(						matcherNode, sequenceList); break;
+    		case ALL_BITMASK:   			addAllBitmaskMatcher(				matcherNode, sequenceList); break;
+    		case ANY_BITMASK:   			addAnyBitmaskMatcher(				matcherNode, sequenceList); break;
+    		case RANGE:       				addRangeMatcher(					matcherNode, sequenceList); break;
+    		case CASE_SENSITIVE_STRING:   	addStringMatcher(					matcherNode, sequenceList); break;
+    		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(	matcherNode, sequenceList); break;
+    		case SEQUENCE:          		addSequenceMatcher(					matcherNode, sequenceList); break;
+    		case REPEAT:          			addRepeatedSequence(				matcherNode, sequenceList); break;
+    		case SET: case ALTERNATIVES: 	addSetMatcher(						matcherNode, sequenceList); break;
     		
-    		default: throw new ParseException(getTypeErrorMessage(matcherTree));
+    		default: throw new ParseException(getTypeErrorMessage(matcherNode));
     	}
     	return sequenceList;
     }

@@ -205,14 +205,13 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 			case RANGE: 					return CompilerUtils.createRangeMatcher(node);
 			case CASE_SENSITIVE_STRING:		return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
 			case CASE_INSENSITIVE_STRING:	return CompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
-			case SET: case ALTERNATIVES:	return CompilerUtils.createMatcherFromSet(node, matcherFactory);
+			case SET: 						// drop through - sets, sequences and alternatives are all treated as sets.
+			case SEQUENCE:					//FIXME: the below won't work for nested sets, sequences or alternatives:
+			case ALTERNATIVES:				return CompilerUtils.createMatcherFromSet(node, matcherFactory);
 		}
 		
 		// The node type wasn't understood by this compiler.
-		final ParseTreeType type = node.getParseTreeType();
-		final String message = String.format("Unknown syntax tree node, type [%s] with description: [%s]", 
-											 type, type.getDescription());
-		throw new ParseException(message);
+		throw new ParseException(getTypeErrorMessage(node));
 	}
 
 	
@@ -220,6 +219,13 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	protected ParseTree joinExpressions(List<ParseTree> expressions) 
 			throws ParseException, CompileException {
 		return new StructuralNode(ParseTreeType.SET, expressions, NOT_INVERTED);
+	}
+	
+	
+	private String getTypeErrorMessage(final ParseTree node) {
+		final ParseTreeType type = node.getParseTreeType();
+		return String.format("Unknown syntax tree node, type [%s] with description: [%s]", 
+							  type, type.getDescription());	
 	}
 
 }

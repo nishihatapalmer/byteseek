@@ -41,7 +41,7 @@ import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
 /**
- * @author matt
+ * @author Matt Palmer
  *
  */
 public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {

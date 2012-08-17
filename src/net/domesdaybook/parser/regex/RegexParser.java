@@ -78,67 +78,13 @@ public class RegexParser implements Parser<ParseTree> {
 	@Override
 	public ParseTree parse(final String expression) throws ParseException {
 		if (expression == null || expression.isEmpty()) {
-			throw new ParseException(
-					"Null or empty expression passed in.");
+			throw new ParseException("Null or empty expression passed in.");
 		}
 		try {
 			return parseToAbstractSyntaxTree(expression);
 		} catch (final RecognitionException ex) {
 			throw new ParseException(ex);
 		}
-	}
-
-	/**
-	 * Optimises AST tree structures:
-	 * 
-	 * 1) Looks for alternate lists with more than one single byte alternatives.
-	 * These can be more efficiently be represented as a set of bytes. 2) If
-	 * there are existing alternate sets of bytes, they can also be merged. 3)
-	 * If all the alternatives are single bytes, then the entire alternative can
-	 * be replaced by the set. 4) Finds children of exactly the same type as the
-	 * parent, and merges the children (e.g. a sequence with a sequence in it -
-	 * the children of the child sequence can be pulled 'up' into the parent
-	 * sequence.
-	 * 
-	 * @param treeNode
-	 *            The abstract syntax tree root to optimise.
-	 * @return Tree an AST with the alternatives optimised.
-	 * @throws ParseException
-	 */
-	public Tree optimiseAST(final Tree treeNode) throws ParseException {
-		if (treeNode == null) {
-			throw new ParseException (
-					"Null node passed in to AstParser.optimiseAST");
-		}
-		Tree result = treeNode;
-		// Recursively invoke on children of tree node, to walk the tree:
-		for (int childIndex = 0; childIndex < treeNode.getChildCount(); childIndex++) {
-			Tree childNode = treeNode.getChild(childIndex);
-
-			// If a child is exactly equivalent to its parent, then
-			// replace it with its own children, unless it is a repeat node,
-			// which can
-			// have repeats of repeats
-			// TODO: optimise repeats of repeats.
-			if (equivalent(treeNode, childNode)
-					&& treeNode.getType() != AntlrRegexParser.REPEAT) {
-				treeNode.replaceChildren(childIndex, childIndex,
-						getChildList(childNode));
-				childNode = treeNode.getChild(childIndex);
-			}
-
-			final Tree resultNode = optimiseAST(childNode);
-			if (resultNode != childNode) {
-				treeNode.setChild(childIndex, resultNode);
-			}
-		}
-
-		// If the current node is an alternative node:
-		if (treeNode.getType() == AntlrRegexParser.ALT) {
-			result = optimiseSingleByteAlternatives(treeNode);
-		}
-
-		return result;
 	}
 
 	/**
@@ -180,6 +126,59 @@ public class RegexParser implements Parser<ParseTree> {
 				lexer.getNumberOfSyntaxErrors(), expression));
 	}
 
+	/**
+	 * Optimises AST tree structures in several ways:
+	 * 
+	 * 1) Looks for alternate lists with more than one single byte alternatives.
+	 * These can be more efficiently be represented as a set of bytes.
+	 * 2) If there are existing alternate sets of bytes, they can also be merged.
+	 * 3) If all the alternatives are single bytes, then the entire alternative can
+	 * be replaced by the set. 
+	 * 4) Finds children of exactly the same type as the parent, and merges the children
+	 * (e.g. a sequence with a sequence in it the children of the child sequence can be pulled 
+	 * 'up' into the parent sequence.
+	 * 
+	 * @param treeNode
+	 *            The abstract syntax tree root to optimise.
+	 * @return Tree an AST with the alternatives optimised.
+	 * @throws ParseException
+	 */
+	public Tree optimiseAST(final Tree treeNode) throws ParseException {
+		if (treeNode == null) {
+			throw new ParseException (
+					"Null node passed in to AstParser.optimiseAST");
+		}
+		Tree result = treeNode;
+		// Recursively invoke on children of tree node, to walk the tree:
+		for (int childIndex = 0; childIndex < treeNode.getChildCount(); childIndex++) {
+			Tree childNode = treeNode.getChild(childIndex);
+
+			// If a child is exactly equivalent to its parent, then
+			// replace it with its own children, unless it is a repeat node,
+			// which can have repeats of repeats
+			// TODO: optimise repeats of repeats.
+			if (equivalent(treeNode, childNode)
+					&& treeNode.getType() != AntlrRegexParser.REPEAT) {
+				treeNode.replaceChildren(childIndex, childIndex,
+						getChildList(childNode));
+				childNode = treeNode.getChild(childIndex);
+			}
+
+			final Tree resultNode = optimiseAST(childNode);
+			if (resultNode != childNode) {
+				treeNode.setChild(childIndex, resultNode);
+			}
+		}
+
+		// If the current node is an alternative node:
+		if (treeNode.getType() == AntlrRegexParser.ALT) {
+			result = optimiseSingleByteAlternatives(treeNode);
+		}
+
+		return result;
+	}	
+	
+	
 	/**
 	 * Transforms alternatives containing single bytes into a set of bytes to
 	 * match, which is a more efficient representation.

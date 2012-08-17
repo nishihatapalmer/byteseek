@@ -10,3 +10,9 @@ syntax: regexp
 ^nbproject$
 syntax: regexp
 ^antlr$
+syntax: regexp
+hg[\.]old
+syntax: regexp
+[\.]hgignore
+syntax: regexp
+.hgignore
