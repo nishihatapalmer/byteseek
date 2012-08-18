@@ -68,7 +68,6 @@ import net.domesdaybook.parser.tree.node.StructuralNode;
  */
 public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, ParseTree> {
 
-	
 	// Protected constants:
 
 	protected static final boolean NOT_YET_INVERTED = false;
@@ -78,7 +77,10 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     /**
      * Compiles a SequenceMatcher from a byteSeek regular expression (limited to
      * syntax which produces fixed-length sequences).  It will use the default
-     * {@link SetAnalysisByteMatcherFactory} to produce matchers for sets of bytes.
+     * {@link SetAnalysisByteMatcherFactory} to produce matchers for sets of bytes, a
+     * {@link OptimisingSequenceMatcherFactory} to join lists of sequences into a 
+     * sequence matcher, and a {@link RegexParser} to parse the expression into an abstract
+     * syntax tree.
      * 
      * @param expression The regular expression to compile
      * @return SequenceMatcher a SequenceMatcher matching the regular expression.
@@ -96,25 +98,56 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     
     /**
      * Default constructor which uses the {@link SetAnalysisByteMatcherFactory}
-     * to produce matchers for sets of bytes, and the parser defined in 
-     * AbstractCompiler to produce the abstract syntax tree.
+     * to produce matchers for sets of bytes, and a {@link RegexParser} to produce
+     * the abstract syntax tree.  It also uses the {@link OptimisingSequenceMatcherFactory}
+     * to produce sequences from lists of sequence matchers.
      * 
      */
     public SequenceMatcherCompiler() {
-       this(null, null);
+       this(null, null, null);
     }
 
     /**
      * Constructor which uses the provided {@link ByteMatcherFactory} to
-     * produce matchers for sets of bytes, and the parser defined in 
-     * AbstractCompiler to produce the abstract syntax tree.
+     * produce matchers for sets of bytes, and a {@link RegexParser} to produce 
+     * the abstract syntax tree. It also uses the  {@link OptimisingSequenceMatcherFactory}
+     * to produce sequences from lists of sequence matchers.
      * 
      * @param factoryToUse The ByteMatcherFactory used to produce matchers
      * for sets of bytes.
      */
     public SequenceMatcherCompiler(final ByteMatcherFactory factoryToUse) {
-        this(null, factoryToUse);
+        this(null, factoryToUse, null);
     }
+    
+    
+    /**
+     * Constructor which uses the provided {@link SequenceMatcherFactory} to
+     * produce a sequence from a list of sequences, and a {@link RegexParser}
+     * to produce the abstract syntax tree. It also uses the
+     * {@link SetAnalysisByteMatcherFactory} to produce matchers from sets of bytes.
+     * 
+     * @param factoryToUse The SequenceMatcherFactory to produce sequences from lists of sequences.
+     */
+    public SequenceMatcherCompiler(final SequenceMatcherFactory factoryToUse) {
+        this(null, null, factoryToUse);
+    }   
+
+    
+    /**
+     * Constructor which uses the provided {@link SequenceMatcherFactory} to
+     * produce a sequence from a list of sequences, and the provided
+     * {@link ByteMatcherFactory} to produce matchers from sets of bytes.  The
+     * parser used will be the {@link RegexParser}.
+     * 
+     * @param byteFactory The ByteMatcherFactory to produce matchers from sets of bytes.
+     * @param sequenceFactory The SequenceMatcherFactory to produce sequences from lists of sequences.
+     */
+    public SequenceMatcherCompiler(final ByteMatcherFactory byteFactory,
+    								final SequenceMatcherFactory sequenceFactory) {
+        this(null, byteFactory, sequenceFactory);
+    }   
+    
     
 
     /**
@@ -125,7 +158,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * @param parser The parser to use to produce the abstract syntax tree.
      */    
     public SequenceMatcherCompiler(final Parser<ParseTree> parser) {
-        this(parser, null);
+        this(parser, null, null);
     }
     
     /**
@@ -146,25 +179,41 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
         this(parser, byteFactoryToUse, null);
     }
     
-    //TODO: add constructors which take a sequenceMatcherFactory as a parameter.
-    
-    
     /**
-     * Constructor which uses the provided {@link ByteMatcherFactory} to
-     * produce matchers for sets of bytes, and the provided {@link Parser} to
-     * product the abstract syntax tree.
+     * Constructor which uses the provided {@link SequenceMatcherFactory} to
+     * produce matchers for lists of sequences, and the provided {@link Parser} to
+     * produce the abstract syntax tree.  It uses the default {@link ByteMatcherFactory}
+     * to produce byte matchers for sets of bytes.
      * <p>
      * If the parser is null, then the parser used will be the default parser defined
      * in {@link AbstractCompiler}.  If the factory is null, then the default
      * {@link SetAnalysisByteMatcherFactory} will be used.
      * 
      * @param parser The parser to use to produce the abstract syntax tree. 
-     * @param factoryToUse The ByteMatcherFactory used to produce matchers
+     * @param sequenceFactoryToUse The SequenceMatcherFactory used to produce sequences from a list of sequences.
      * for sets of bytes.
      */    
+    public SequenceMatcherCompiler(final Parser<ParseTree> parser, 
+    							    final SequenceMatcherFactory sequenceFactoryToUse) {
+        this(parser, null, sequenceFactoryToUse);
+    }    
+    
+    /**
+     * Constructor which uses the provided {@link ByteMatcherFactory} to
+     * produce matchers for sets of bytes, and the provided {@link Parser} to
+     * product the abstract syntax tree.
+     * <p>
+     * If the parser is null, then the parser used will be the {@link RegexParser}.
+     * If the byte matcher factory is null, then a {@link SetAnalysisByteMatcherFactory} will be used.
+     * If the sequence matcher factory is null, then a {@link OptimisingSequenceMatcherFactory} will be used.
+     * 
+     * @param parser The parser to use to produce the abstract syntax tree. 
+     * @param byteFactoryToUse The ByteMatcherFactory used to produce matchers from a set of bytes
+     * @param sequenceFactoryToUse The SequenceMatcherFactory used to produce sequences from a list of sequences.
+     */    
     public SequenceMatcherCompiler(final Parser<ParseTree> parser,
-		   final ByteMatcherFactory byteFactoryToUse,
-    		   final SequenceMatcherFactory sequenceFactoryToUse) {
+    								final ByteMatcherFactory byteFactoryToUse,
+    								final SequenceMatcherFactory sequenceFactoryToUse) {
         super(parser == null? new RegexParser() : parser);
         byteMatcherFactory = byteFactoryToUse != null? 
         					 byteFactoryToUse :  new SetAnalysisByteMatcherFactory();
