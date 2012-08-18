@@ -206,7 +206,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 			case CASE_SENSITIVE_STRING:		return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
 			case CASE_INSENSITIVE_STRING:	return CompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
 			case SET: 						// drop through - sets, sequences and alternatives are all treated as sets.
-			case SEQUENCE:					//FIXME: the below won't work for nested sets, sequences or alternatives:
+			case SEQUENCE:					
 			case ALTERNATIVES:				return CompilerUtils.createMatcherFromSet(node, matcherFactory);
 		}
 		

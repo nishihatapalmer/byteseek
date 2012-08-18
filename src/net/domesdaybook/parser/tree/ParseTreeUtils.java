@@ -224,54 +224,29 @@ public final class ParseTreeUtils {
 		final Set<Byte> setValues = new LinkedHashSet<Byte>(192);
 		for (final ParseTree child : set.getChildren()) {
 			switch (child.getParseTreeType()) {
-
-			// Recursively build if we have nested child sets:
-			case SET: {
-				setValues.addAll(calculateSetValues(child));
-				break;
-			}
-
-			// non recursive: just build values:
-			case BYTE: {
-				setValues.add(child.getByteValue());
-				break;
-			}
-			
-			case RANGE: {
-				setValues.addAll(getRangeValues(child));
-				break;
-			}
-			
-			case ALL_BITMASK: {
-				setValues.addAll(getAllBitmaskValues(child));
-				break;
-			}
-
-			case ANY_BITMASK: {
-				setValues.addAll(getAnyBitmaskValues(child));
-				break;
-			}
-			case CASE_SENSITIVE_STRING: {
-				setValues.addAll(getStringAsSet(child));
-				break;
-			}
-
-			case CASE_INSENSITIVE_STRING: {
-				setValues.addAll(getCaseInsensitiveStringAsSet(child));
-				break;
-			}
-
-			default: {
-				final ParseTreeType type = child.getParseTreeType();
-				final String message = String.format(TYPE_ERROR, type, type.getDescription());
-				throw new ParseException(message);
-			}
+				case SEQUENCE:
+				case ALTERNATIVES:
+				case SET:						setValues.addAll(calculateSetValues(child)); 			break;
+				case BYTE: 						setValues.add(child.getByteValue());  					break;
+				case RANGE: 					setValues.addAll(getRangeValues(child));				break;
+				case ALL_BITMASK:				setValues.addAll(getAllBitmaskValues(child));			break;
+				case ANY_BITMASK:				setValues.addAll(getAnyBitmaskValues(child));			break;
+				case CASE_SENSITIVE_STRING:		setValues.addAll(getStringAsSet(child));				break;
+				case CASE_INSENSITIVE_STRING:	setValues.addAll(getCaseInsensitiveStringAsSet(child));	break;
+	
+				default: throw new ParseException(getTypeError(child));
 			}
 		}
 		return setValues;
 	}
 
-
+	
+	private static String getTypeError(final ParseTree node) {
+		final ParseTreeType type = node.getParseTreeType();
+		return String.format(TYPE_ERROR, type, type.getDescription());
+	}
+	
+	
 	/**
 	 * Applies three optimisations to a parse tree:
 	 * 

@@ -70,10 +70,10 @@ public final class CompilerUtils {
 	}
 	
 	public static ByteMatcher createAnyMatcher(final ParseTree node) throws ParseException {
-	  return getAnyMatcher(node, NOT_YET_INVERTED);
+	  return createAnyMatcher(node, NOT_YET_INVERTED);
 	}
 	
-	public static ByteMatcher getAnyMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
+	public static ByteMatcher createAnyMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
 		if (isInverted(node, currentInversion)) {
 			throw new ParseException("Cannot invert the value of the Any matcher - matching nothing is not permitted.");
 		}
@@ -123,7 +123,7 @@ public final class CompilerUtils {
 			final ParseTree singleElement = setElements.get(0);
 			switch (singleElement.getParseTreeType()) {
 				case BYTE: 			return createByteMatcher(singleElement, isInverted);
-				case ANY:  			return getAnyMatcher(singleElement, isInverted);
+				case ANY:  			return createAnyMatcher(singleElement, isInverted);
 				case ALL_BITMASK: 	return createAllBitmaskMatcher(singleElement, isInverted);
 				case ANY_BITMASK: 	return createAnyBitmaskMatcher(singleElement, isInverted);
 				case RANGE: 		return createRangeMatcher(singleElement, isInverted);
