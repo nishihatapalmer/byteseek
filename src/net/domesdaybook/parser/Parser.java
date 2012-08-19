@@ -39,6 +39,14 @@ package net.domesdaybook.parser;
  */
 public interface Parser<T> {
 
+	/**
+	 * Parses a string expression into an abstract syntax tree of type T.
+	 * 
+	 * @param expression
+	 * 			The expression to parse.
+	 * @return An abstract syntax tree of type T
+	 * @throws ParseException if a problem occurs parsing the expression.
+	 */
 	public T parse(String expression) throws ParseException;
 
 }
