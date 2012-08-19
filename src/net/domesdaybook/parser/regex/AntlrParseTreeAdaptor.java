@@ -50,16 +50,54 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 	public Object create(Token payload) {
 		switch (payload.getType()) {
 
-		case AntlrRegexParser.BYTE:							return new HexByteAdaptor(payload, ParseTreeType.BYTE);
-		case AntlrRegexParser.ALL_BITMASK:					return new ChildHexByteAdaptor(payload, ParseTreeType.ALL_BITMASK);
-		case AntlrRegexParser.ANY_BITMASK:					return new ChildHexByteAdaptor(payload, ParseTreeType.ANY_BITMASK);
-		case AntlrRegexParser.CASE_INSENSITIVE_STRING:		return new QuotedTextAdaptor(payload, ParseTreeType.CASE_INSENSITIVE_STRING);
-		case AntlrRegexParser.CASE_SENSITIVE_STRING:		return new QuotedTextAdaptor(payload, ParseTreeType.CASE_SENSITIVE_STRING);
-		case AntlrRegexParser.ANY:							return new InvertibleNode(payload, ParseTreeType.ANY);
-		case AntlrRegexParser.SET:							return new InvertibleNode(payload, ParseTreeType.SET, false);
-		case AntlrRegexParser.INVERTED_SET:					return new InvertibleNode(payload, ParseTreeType.SET, true);
-		case AntlrRegexParser.RANGE:						return new InvertibleNode(payload, ParseTreeType.RANGE);
-		case AntlrRegexParser.NUMBER:						return new IntAdaptor(payload, ParseTreeType.INTEGER);
+		case AntlrRegexParser.BYTE:
+			return new HexByteAdaptor(payload, 		ParseTreeType.BYTE);
+			
+		case AntlrRegexParser.ALL_BITMASK:
+			return new ChildHexByteAdaptor(payload, 	ParseTreeType.ALL_BITMASK);
+			
+		case AntlrRegexParser.ANY_BITMASK:
+			return new ChildHexByteAdaptor(payload, 	ParseTreeType.ANY_BITMASK);
+			
+		case AntlrRegexParser.CASE_INSENSITIVE_STRING:
+			return new QuotedTextAdaptor(payload, 		ParseTreeType.CASE_INSENSITIVE_STRING);
+			
+		case AntlrRegexParser.CASE_SENSITIVE_STRING:
+			return new QuotedTextAdaptor(payload, 		ParseTreeType.CASE_SENSITIVE_STRING);
+			
+		case AntlrRegexParser.ANY:
+			return new InvertibleNode(payload, 		ParseTreeType.ANY);
+			
+		case AntlrRegexParser.SET:
+			return new InvertibleNode(payload, 		ParseTreeType.SET, false);
+			
+		case AntlrRegexParser.INVERTED_SET:
+			return new InvertibleNode(payload, 		ParseTreeType.SET, true);
+			
+		case AntlrRegexParser.RANGE:
+			return new InvertibleNode(payload, 		ParseTreeType.RANGE);
+			
+		case AntlrRegexParser.NUMBER:
+			return new IntAdaptor(payload, 			ParseTreeType.INTEGER);
+			
+		case AntlrRegexParser.ALTERNATE:
+			return new StructuralNode(payload, 		ParseTreeType.ALTERNATIVES);
+			
+		case AntlrRegexParser.SEQUENCE:	
+			return new StructuralNode(payload, 		ParseTreeType.SEQUENCE);
+			
+		case AntlrRegexParser.REPEAT:
+			return new StructuralNode(payload, 		ParseTreeType.REPEAT);
+			
+		case AntlrRegexParser.MANY:	
+			return new StructuralNode(payload, 		ParseTreeType.ZERO_TO_MANY);
+			
+		case AntlrRegexParser.PLUS:
+			return new StructuralNode(payload, 		ParseTreeType.ONE_TO_MANY);
+			
+		case AntlrRegexParser.QUESTION_MARK:
+			return new StructuralNode(payload, 		ParseTreeType.OPTIONAL);
+			
 		default:
 			//TODO: should we throw an exception here instead of creating a node with no type...?
 			return new StructuralNode(payload, null);
