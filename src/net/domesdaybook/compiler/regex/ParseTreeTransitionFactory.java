@@ -50,23 +50,23 @@ public final class ParseTreeTransitionFactory<T>
 
   
   private Transition<T> createByteTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition(CompilerUtils.createByteMatcher(ast), toState);
+    return new ByteMatcherTransition<T>(CompilerUtils.createByteMatcher(ast), toState);
   }
   
   private Transition<T> createAllBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition(CompilerUtils.createAllBitmaskMatcher(ast), toState);
+    return new ByteMatcherTransition<T>(CompilerUtils.createAllBitmaskMatcher(ast), toState);
   }
 
   private Transition<T> createAnyBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-   return new ByteMatcherTransition(CompilerUtils.createAnyBitmaskMatcher(ast), toState);
+   return new ByteMatcherTransition<T>(CompilerUtils.createAnyBitmaskMatcher(ast), toState);
   }
   
   private Transition<T> createAnyTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition(CompilerUtils.createAnyMatcher(ast), toState);
+    return new ByteMatcherTransition<T>(CompilerUtils.createAnyMatcher(ast), toState);
   }
 
   private Transition<T> createSetTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-     return new ByteMatcherTransition(CompilerUtils.createMatcherFromSet(ast, matcherFactory), toState);
+     return new ByteMatcherTransition<T>(CompilerUtils.createMatcherFromSet(ast, matcherFactory), toState);
   }
 
 }
