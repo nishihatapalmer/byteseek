@@ -35,7 +35,7 @@ import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
 
-public final class ByteNode extends BaseNode {
+public class ByteNode extends BaseNode {
 
   private byte value;
 

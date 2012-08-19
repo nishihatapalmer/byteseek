@@ -35,7 +35,7 @@ import java.util.List;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
-public final class StructuralNode extends BaseNode {
+public class StructuralNode extends BaseNode {
 
 	private final List<ParseTree> children;	
 	
