@@ -148,7 +148,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     protected Automata<T> doCompile(final ParseTree ast) throws CompileException, ParseException {
         switch (ast.getParseTreeType()) {
-            case BYTE:						// drop through - bytes, bitmasks (all and any), sets, ranges and any bytes
+            case BYTE:						// Drop through - bytes, bitmasks (all and any), sets, ranges and any bytes
             case ALL_BITMASK:				// are all just transitions on some specification of byte values we
             case ANY_BITMASK:				// can make a transition on.
             case SET:

@@ -127,6 +127,7 @@ public final class CompilerUtils {
 				case ALL_BITMASK: 	return createAllBitmaskMatcher(singleElement, isInverted);
 				case ANY_BITMASK: 	return createAnyBitmaskMatcher(singleElement, isInverted);
 				case RANGE: 		return createRangeMatcher(singleElement, isInverted);
+				case SET:			return createMatcherFromSet(singleElement, singleElement.isValueInverted(), matcherFactory);
 			}
 		}
 		// Not a simple set - build the bytes in the set and ask the matcher factory for a matcher.

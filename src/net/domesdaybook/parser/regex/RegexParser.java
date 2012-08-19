@@ -126,6 +126,7 @@ public class RegexParser implements Parser<ParseTree> {
 				lexer.getNumberOfSyntaxErrors(), expression));
 	}
 
+
 	/**
 	 * Optimises AST tree structures in several ways:
 	 * 

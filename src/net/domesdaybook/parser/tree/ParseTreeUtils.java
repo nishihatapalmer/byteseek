@@ -224,16 +224,19 @@ public final class ParseTreeUtils {
 		final Set<Byte> setValues = new LinkedHashSet<Byte>(192);
 		for (final ParseTree child : set.getChildren()) {
 			switch (child.getParseTreeType()) {
-				case SEQUENCE:
-				case ALTERNATIVES:
-				case SET:						setValues.addAll(calculateSetValues(child)); 			break;
-				case BYTE: 						setValues.add(child.getByteValue());  					break;
-				case RANGE: 					setValues.addAll(getRangeValues(child));				break;
-				case ALL_BITMASK:				setValues.addAll(getAllBitmaskValues(child));			break;
-				case ANY_BITMASK:				setValues.addAll(getAnyBitmaskValues(child));			break;
-				case CASE_SENSITIVE_STRING:		setValues.addAll(getStringAsSet(child));				break;
-				case CASE_INSENSITIVE_STRING:	setValues.addAll(getCaseInsensitiveStringAsSet(child));	break;
-	
+				case SEQUENCE:				    // Drop through: treat all possible types of node which may hold
+				case ALTERNATIVES:			    // byte value bearing children as just containers of those values.
+				case SET:					    // The idea is you can pass any regular expression node into this
+				case ZERO_TO_MANY:			    // function, and get the set of all byte values which *could* be
+				case ONE_TO_MANY:			    // matched by that expression.
+				case OPTIONAL:					setValues.addAll(calculateSetValues(child)); 					break;
+				case REPEAT:					setValues.addAll(calculateSetValues(getNodeToRepeat(child))); 	break;
+				case BYTE: 						setValues.add(child.getByteValue());  							break;
+				case RANGE: 					setValues.addAll(getRangeValues(child));						break;
+				case ALL_BITMASK:				setValues.addAll(getAllBitmaskValues(child));					break;
+				case ANY_BITMASK:				setValues.addAll(getAnyBitmaskValues(child));					break;
+				case CASE_SENSITIVE_STRING:		setValues.addAll(getStringAsSet(child));						break;
+				case CASE_INSENSITIVE_STRING:	setValues.addAll(getCaseInsensitiveStringAsSet(child));			break;
 				default: throw new ParseException(getTypeError(child));
 			}
 		}
@@ -289,73 +292,6 @@ public final class ParseTreeUtils {
 		//       parse tree (e.g. a set of two ranges) rather than collapsing all the values up into the root set.
 		
 	}
-	
-	
-//	/**
-//	 * Returns an integer value of the specified child of the parse-tree node.
-//	 * The integer must be encoded in base-10, not hexadecimal or any other
-//	 * base.
-//	 * 
-//	 * @param treeNode
-//	 *            The parent node from whose children we want to extract an
-//	 *            integer value.
-//	 * @param childIndex
-//	 *            The index of the child to extract the integer from.
-//	 * @return The integer value of the specified child of the parse-tree node.
-//	 */
-//	public static int getChildIntValue(final Tree treeNode, final int childIndex) {
-//		final Tree childNode = treeNode.getChild(childIndex);
-//		return Integer.parseInt(childNode.getText(), 10);
-//	}
-//
-//	/**
-//	 * Returns a string value of the specified child of the parse-tree node.
-//	 * 
-//	 * @param treeNode
-//	 *            The parent node from whose children we want to extract a
-//	 *            string value.
-//	 * @param childIndex
-//	 *            The index of the child to extract the string from.
-//	 * @return The string value of the specified child of the parse-tree node.
-//	 */
-//	public static String getChildStringValue(final Tree treeNode,
-//			final int childIndex) {
-//		return treeNode.getChild(childIndex).getText();
-//	}
-//
-//	/**
-//	 * Gets the minimum repeat value of a repeat node in a parse-tree.
-//	 * 
-//	 * @param treeNode
-//	 *            the repeat node in the parse-tree.
-//	 * @return The minimum repeat value of the repeat node.
-//	 */
-//	public static int getMinRepeatValue(final Tree treeNode) {
-//		return getChildIntValue(treeNode, 0);
-//	}
-//
-//	/**
-//	 * Gets the maximum repeat value of a repeat node in a parse-tree.
-//	 * 
-//	 * @param treeNode
-//	 *            the repeat node in the parse-tree.
-//	 * @return The maximum repeat value of the repeat node.
-//	 */
-//	public static int getMaxRepeatValue(final Tree treeNode) {
-//		return getChildIntValue(treeNode, 1);
-//	}
-//
-//	/**
-//	 * Gets the node which must be repeated in the parse-tree under a parent
-//	 * repeat-node.
-//	 * 
-//	 * @param treeNode
-//	 *            the node to repeat in a repeat node.
-//	 * @return The node which needs to be repeated under a parent repeat node.
-//	 */
-//	public static Tree getRepeatNode(final Tree treeNode) {
-//		return treeNode.getChild(2);
-//	}	
 	
 
 }

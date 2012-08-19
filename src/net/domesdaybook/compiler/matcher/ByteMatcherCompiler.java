@@ -209,6 +209,9 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 			case SET: 						// drop through - sets, sequences and alternatives are all treated as sets.
 			case SEQUENCE:					
 			case ALTERNATIVES:				return CompilerUtils.createMatcherFromSet(node, matcherFactory);
+			case ZERO_TO_MANY:				// drop through - these special cases of repeated nodes
+			case ONE_TO_MANY:				// all just process their first child as a set of possible byte values to match.
+			case OPTIONAL:					return doCompile(ParseTreeUtils.getFirstChild(node));
 			case REPEAT:					return doCompile(ParseTreeUtils.getNodeToRepeat(node));
 		}
 		
