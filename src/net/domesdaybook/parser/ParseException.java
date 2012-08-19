@@ -41,6 +41,7 @@ public class ParseException extends Exception {
 	private static final long serialVersionUID = -4081239885659052145L;
 
 	/**
+	 * Constructs a ParseException with the supplied message.
 	 * 
 	 * @param message
 	 *            the error message
@@ -50,6 +51,8 @@ public class ParseException extends Exception {
 	}
 
 	/**
+	 * Constructs a ParseException with the supplied cause.
+	 * 
 	 * @param cause
 	 *            the cause of the parse exception
 	 */
@@ -58,6 +61,7 @@ public class ParseException extends Exception {
 	}
 
 	/**
+	 * Constructs a ParseException with the supplied message and cause.
 	 * 
 	 * @param message
 	 *            The error message
