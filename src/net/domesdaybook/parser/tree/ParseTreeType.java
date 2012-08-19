@@ -59,6 +59,7 @@ public enum ParseTreeType {
 
 	SEQUENCE("An ordered sequence of child ParseTrees"),
 
+	//TODO: range can also have many nodes as the max value.
 	RANGE("A range of byte values with the range defined as two child INTEGER ParseTree nodes, from 0 to 255"),
 
 	REPEAT("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER or MANY child) number of times."),
