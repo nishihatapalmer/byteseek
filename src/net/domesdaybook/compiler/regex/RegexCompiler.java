@@ -251,11 +251,10 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
      * @throws ParseException
      */
     private Automata<T> createRepeatedAutomata(final ParseTree ast) throws CompileException, ParseException {
-      //TODO: nested repeats can be optimised.
       final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
       final int maxRepeat = ParseTreeUtils.getSecondRepeatValue(ast);
-      if (maxRepeat < 0) { 
+      if (maxRepeat < 0) { //TODO: don't really like the convention of a negative max value indicating MANY...
         return regexBuilder.buildMinToManyAutomata(minRepeat, automata);
       }
       return regexBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, automata);
