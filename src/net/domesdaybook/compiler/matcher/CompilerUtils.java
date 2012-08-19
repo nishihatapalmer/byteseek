@@ -107,7 +107,7 @@ public final class CompilerUtils {
 	}	
 	
 	public static ByteMatcher createMatcherFromSet(final ParseTree node,
-	                                               final ByteMatcherFactory matcherFactory) throws ParseException {
+	                                                final ByteMatcherFactory matcherFactory) throws ParseException {
 	  return createMatcherFromSet(node, NOT_YET_INVERTED, matcherFactory);
 	}
 	
