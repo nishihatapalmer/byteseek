@@ -49,13 +49,6 @@ import net.domesdaybook.parser.Parser;
  * may optionally be 'inverted', in which case the value it possesses should be
  * inverted to match.  For example, a single byte value node with the value 'FF',
  * which is also inverted should match everything except 'FF'.
- * <p>
- * TODO: provide interface methods allowing the AST nodes to be changed or their
- *       child nodes altered.  This will allow optimisations to be 
- *       generically applied to the output of different parsers.
- *       At present, all optimisation of the tree must happen in the
- *       parser implementation directly, as this interface provides no such
- *       methods.
  * 
  * @author Matt Palmer
  *
