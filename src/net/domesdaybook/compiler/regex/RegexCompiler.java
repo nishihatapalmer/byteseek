@@ -209,7 +209,8 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
      * @throws CompileException
      */
     private Automata<T> createAlternativesAutomata(final ParseTree ast) throws ParseException, CompileException {
-      return regexBuilder.buildAlternativesAutomata(compileChildren(ast));
+    	//TODO: optimise alternatives which match single bytes into one set of bytes to match.
+    	return regexBuilder.buildAlternativesAutomata(compileChildren(ast));
     }
 
     
