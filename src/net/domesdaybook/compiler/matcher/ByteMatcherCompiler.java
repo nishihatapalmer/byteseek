@@ -46,6 +46,7 @@ import net.domesdaybook.parser.Parser;
 import net.domesdaybook.parser.regex.RegexParser;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
+import net.domesdaybook.parser.tree.ParseTreeUtils;
 import net.domesdaybook.parser.tree.node.StructuralNode;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
@@ -208,6 +209,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 			case SET: 						// drop through - sets, sequences and alternatives are all treated as sets.
 			case SEQUENCE:					
 			case ALTERNATIVES:				return CompilerUtils.createMatcherFromSet(node, matcherFactory);
+			case REPEAT:					return doCompile(ParseTreeUtils.getNodeToRepeat(node));
 		}
 		
 		// The node type wasn't understood by this compiler.
