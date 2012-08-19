@@ -33,6 +33,7 @@ public final class ParseTreeTransitionFactory<T>
         case ALL_BITMASK:   return createAllBitmaskTransition(source, toState);
         case ANY_BITMASK:   return createAnyBitmaskTransition(source, toState);
         case ANY:           return createAnyTransition(source, toState);
+        case RANGE:			return createRangeTransition(source, toState);
         case SET:           return createSetTransition(source, toState);
       }
     } catch (final ParseException justReturnNull) {
@@ -64,7 +65,11 @@ public final class ParseTreeTransitionFactory<T>
   private Transition<T> createAnyTransition(final ParseTree ast, final State<T> toState) throws ParseException {
     return new ByteMatcherTransition<T>(CompilerUtils.createAnyMatcher(ast), toState);
   }
-
+  
+  private Transition<T> createRangeTransition(final ParseTree ast, final State<T> toState) throws ParseException {
+	  return new ByteMatcherTransition<T>(CompilerUtils.createRangeMatcher(ast), toState);
+  }
+  
   private Transition<T> createSetTransition(final ParseTree ast, final State<T> toState) throws ParseException {
      return new ByteMatcherTransition<T>(CompilerUtils.createMatcherFromSet(ast, matcherFactory), toState);
   }
