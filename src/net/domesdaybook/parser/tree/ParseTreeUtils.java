@@ -249,49 +249,4 @@ public final class ParseTreeUtils {
 		return String.format(TYPE_ERROR, type, type.getDescription());
 	}
 	
-	
-	/**
-	 * Applies three optimisations to a parse tree:
-	 * 
-	 * 1) All single byte alternatives directly replaced by a set:
-	 *    A list of alternatives each of which matches only a single byte is turned directly into a set of bytes,
-	 *    losing the original alternatives node entirely.
-	 *    For example, ALT(01 | 02 | 03) is the same as Set{01 02 03}.
-	 * 2) Some single byte alternatives merged into a child set:
-	 *    A list of alternatives where only some of them match a single byte turns only those alternatives into 
-	 *    a single set of bytes under the original alternatives node.
-	 *    For example, ALT(01 | 'a sequence' | 02 03 04) is the same as ALT(Set{01 02 03 04} | 'a sequence')
-	 * 3) Nested sequences, sets or alternatives:
-	 *    A sequence, set or alternatives node whose parent is another node of the same type can simply
-	 *    add its children to its parent in place of itself (assuming they have the same inversion).
-	 *    For example a Set{01 Set{02 03} 04} is the same as the simpler Set{01 02 03 04}, or
-	 *    a Sequence['w', Sequence['x', 'y'], 'z'] is the same as Sequence['w', 'x', 'y', 'z']
-	 * 
-	 * @param node The node to optimise.
-	 * @return A node which is optimised (including optimising its children).
-	 */
-	public ParseTree optimiseTree(ParseTree node) {
-		//TODO: do we even need to optimise at the parse tree level?
-		//       The alternatives -> set optimisations are useful, but a compiler could do that from the parse 
-		//       tree directly, where it made sense to do so.
-		//       Optimising the nesting only optimises the look of the parse tree, since a
-		//       compiler should be able to deal with such nesting in any case (as optimisation is not guaranteed
-		//       by all parsers).  
-		
-		//NOTE:  'optimising' alternatives into sets is now handled automatically by the bytematcher and
-		//       sequencematcher compilers directly and more efficiently, by just processing the children of
-		//       an alternatives node as if it was a set node. 
-		// 
-		//       The regex compiler will still have to do something different here.
-		// 
-		//       As far as nested sequences, sets or alternatives go, these are already directly compiled
-		//       by processing the parse tree.  The only good effect of doing it here is to produce nicer
-		//       parse trees for display, but manipulating the parse tree before compilation is probably no
-		//       faster and is possibly slower than just compiling the values directly.  The only exception
-		//       might be if it were more efficient to match something represented by the structure of the
-		//       parse tree (e.g. a set of two ranges) rather than collapsing all the values up into the root set.
-		
-	}
-	
-
 }
