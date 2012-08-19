@@ -50,46 +50,16 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 	public Object create(Token payload) {
 		switch (payload.getType()) {
 
-		case AntlrRegexParser.BYTE: {
-			return new HexByteAdaptor(payload, ParseTreeType.BYTE);
-		}
-
-		case AntlrRegexParser.ALL_BITMASK: {
-			return new ChildHexByteAdaptor(payload, ParseTreeType.ALL_BITMASK);
-		}
-
-		case AntlrRegexParser.ANY_BITMASK: {
-			return new ChildHexByteAdaptor(payload, ParseTreeType.ANY_BITMASK);
-		}
-
-		case AntlrRegexParser.CASE_INSENSITIVE_STRING: {
-			return new QuotedTextAdaptor(payload, ParseTreeType.CASE_INSENSITIVE_STRING);
-		}
-
-		case AntlrRegexParser.CASE_SENSITIVE_STRING: {
-			return new QuotedTextAdaptor(payload, ParseTreeType.CASE_SENSITIVE_STRING);
-		}
-
-		case AntlrRegexParser.ANY: {
-			return new InvertibleNode(payload, ParseTreeType.ANY);
-		}		
-		
-		case AntlrRegexParser.SET: {
-			return new InvertibleNode(payload, ParseTreeType.SET, false);
-		}
-
-		case AntlrRegexParser.INVERTED_SET: {
-			return new InvertibleNode(payload, ParseTreeType.SET, true);
-		}
-
-		case AntlrRegexParser.RANGE: {
-			return new InvertibleNode(payload, ParseTreeType.RANGE);
-		}
-
-		case AntlrRegexParser.NUMBER: {
-			return new IntAdaptor(payload, ParseTreeType.INTEGER);
-		}
-
+		case AntlrRegexParser.BYTE:							return new HexByteAdaptor(payload, ParseTreeType.BYTE);
+		case AntlrRegexParser.ALL_BITMASK:					return new ChildHexByteAdaptor(payload, ParseTreeType.ALL_BITMASK);
+		case AntlrRegexParser.ANY_BITMASK:					return new ChildHexByteAdaptor(payload, ParseTreeType.ANY_BITMASK);
+		case AntlrRegexParser.CASE_INSENSITIVE_STRING:		return new QuotedTextAdaptor(payload, ParseTreeType.CASE_INSENSITIVE_STRING);
+		case AntlrRegexParser.CASE_SENSITIVE_STRING:		return new QuotedTextAdaptor(payload, ParseTreeType.CASE_SENSITIVE_STRING);
+		case AntlrRegexParser.ANY:							return new InvertibleNode(payload, ParseTreeType.ANY);
+		case AntlrRegexParser.SET:							return new InvertibleNode(payload, ParseTreeType.SET, false);
+		case AntlrRegexParser.INVERTED_SET:					return new InvertibleNode(payload, ParseTreeType.SET, true);
+		case AntlrRegexParser.RANGE:						return new InvertibleNode(payload, ParseTreeType.RANGE);
+		case AntlrRegexParser.NUMBER:						return new IntAdaptor(payload, ParseTreeType.INTEGER);
 		default:
 			//TODO: should we throw an exception here instead of creating a node with no type...?
 			return new StructuralNode(payload, null);
@@ -209,133 +179,6 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 			return str.substring(1, str.length() - 1);
 		}
 	}
-
-	/*
-	public static class RangeAdaptor extends ParseTreeAdaptor {
-
-		public RangeAdaptor(Token payload, ParseTreeType type) {
-			super(payload, type);
-		}
-
-		
-		@Override
-		public Collection<Byte> getByteSetValue() throws ParseException {
-			final ParseTree firstChild = (ParseTree) getChild(0);
-			final ParseTree secondChild = (ParseTree) getChild(1);
-			int minValue, maxValue;
-			if (firstChild.getParseTreeType() == ParseTreeType.BYTE) {
-				minValue = firstChild.getByteValue() & 0xFF;
-				maxValue = secondChild.getByteValue() & 0xFF;
-			} else if (firstChild.getParseTreeType() == ParseTreeType.CASE_SENSITIVE_STRING) {
-				final String firstTextValue = firstChild.getTextValue();
-				if (firstTextValue.length() != 1) {
-					throw new ParseException("Only a single character is allowed for range values:"
-							+ firstTextValue);
-				}
-				final String secondTextValue = secondChild.getTextValue();
-				if (secondTextValue.length() != 1) {
-					throw new ParseException("Only a single character is allowed for range values:"
-							+ secondTextValue);
-				}
-				minValue = firstTextValue.charAt(0);
-				maxValue = secondTextValue.charAt(0);
-			} else {
-				throw new ParseException(
-						"Only bytes and case sensitive strings are allowed for ranges.");
-			}
-			if (minValue > maxValue) {
-				final int tempSwap = minValue;
-				minValue = maxValue;
-				maxValue = tempSwap;
-			}
-			if (minValue < 0 || maxValue > 255) {
-				throw new ParseException("Only range values from 0 to 255 are allowed.");
-			}
-			return buildRange(minValue, maxValue);
-		}
-		
-
-		private List<Byte> buildRange(final int from, final int to) {
-			final int rangeLength = from - to + 1;
-			final List<Byte> byteRange = new ArrayList<Byte>(rangeLength);
-			for (int rangeValue = from; rangeValue <= to; rangeValue++) {
-				byteRange.add((byte) rangeValue);
-			}
-			return byteRange;
-		}
-		
-
-	}
-*/
-	/*
-	public static class SetAdaptor extends ParseTreeAdaptor {
-
-		public SetAdaptor(Token payload, ParseTreeType type, boolean isInverted) {
-			super(payload, type);
-		}
-
-		/*
-		@Override
-		public Set<Byte> getByteSetValue() throws ParseException {
-		    final Set<Byte> setValues = new LinkedHashSet<Byte>(320);
-		    for (final ParseTree child : getChildren()) {
-		      switch (child.getParseTreeType()) {
-	
-	          case BYTE: {
-	  	        setValues.add(child.getByteValue());
-	  	        break;
-	  	      }
-	  	      
-	  	      case RANGE:
-	  	      case ALL_BITMASK:
-	  	      case ANY_BITMASK:
-	  	      case SET:
-	  	      {
-	  	    	if (child.isValueInverted()) {
-	  	    		setValues.addAll(ByteUtilities.invertedSet(child.getByteSetValue()))
-	  	    	} else {
-	  	    		setValues.addAll(child.getByteSetValue());
-	  	    	}
-	  	        break;
-	  	      }     
-	  
-	  	      case CASE_SENSITIVE_STRING: {
-	  	        try {
-	  	          final byte[] utf8Value = child.getTextValue().getBytes("US-ASCII");
-	  	          ByteUtilities.addAll(utf8Value, setValues);
-	  	        } catch (UnsupportedEncodingException e) {
-	  	          throw new ParseException(e);
-	  	        }
-	  	        break;
-	  	      }
-	  
-	  	      case CASE_INSENSITIVE_STRING: {
-	  	        final String stringValue = child.getTextValue();
-	  	        for (int position = 0; position < stringValue.length(); position++) {
-	  	          final char charAtPos = stringValue.charAt(position);
-	  	          if (charAtPos >= 'a' && charAtPos <= 'z') {
-	  	            setValues.add((byte) Character.toUpperCase(charAtPos));
-	  
-	  	          } else if (charAtPos >= 'A' && charAtPos <= 'A') {
-	  	            setValues.add((byte) Character.toLowerCase(charAtPos));
-	  	          }
-	  	          setValues.add((byte) charAtPos);
-	  	        }
-	  	        break;
-	  	      }
-	  
-	  	      default: {
-	  	        final ParseTreeType type = child.getParseTreeType();
-	  	        final String message = String.format(TYPE_ERROR, type, type.getDescription());
-	  	        throw new ParseException(message);
-	  	      }
-		      }
-		    }
-		    return setValues;
-	    }
-	    
-	}
-*/
 
 	private final static class IntAdaptor extends StructuralNode {
 
