@@ -31,19 +31,13 @@
 
 package net.domesdaybook.parser.regex;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
 import net.domesdaybook.parser.tree.ParseTree;
 
 import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
 
 /**
  * Parses a regular expression into an Abstract Syntax Tree (ast), using ANTLR
@@ -126,146 +120,6 @@ public class RegexParser implements Parser<ParseTree> {
 				lexer.getNumberOfSyntaxErrors(), expression));
 	}
 
-
-	/**
-	 * Optimises AST tree structures in several ways:
-	 * 
-	 * 1) Looks for alternate lists with more than one single byte alternatives.
-	 * These can be more efficiently be represented as a set of bytes.
-	 * 2) If there are existing alternate sets of bytes, they can also be merged.
-	 * 3) If all the alternatives are single bytes, then the entire alternative can
-	 * be replaced by the set. 
-	 * 4) Finds children of exactly the same type as the parent, and merges the children
-	 * (e.g. a sequence with a sequence in it the children of the child sequence can be pulled 
-	 * 'up' into the parent sequence.
-	 * 
-	 * @param treeNode
-	 *            The abstract syntax tree root to optimise.
-	 * @return Tree an AST with the alternatives optimised.
-	 * @throws ParseException
-	 */
-	public Tree optimiseAST(final Tree treeNode) throws ParseException {
-		if (treeNode == null) {
-			throw new ParseException (
-					"Null node passed in to AstParser.optimiseAST");
-		}
-		Tree result = treeNode;
-		// Recursively invoke on children of tree node, to walk the tree:
-		for (int childIndex = 0; childIndex < treeNode.getChildCount(); childIndex++) {
-			Tree childNode = treeNode.getChild(childIndex);
-
-			// If a child is exactly equivalent to its parent, then
-			// replace it with its own children, unless it is a repeat node,
-			// which can have repeats of repeats
-			// TODO: optimise repeats of repeats.
-			if (equivalent(treeNode, childNode)
-					&& treeNode.getType() != AntlrRegexParser.REPEAT) {
-				treeNode.replaceChildren(childIndex, childIndex,
-						getChildList(childNode));
-				childNode = treeNode.getChild(childIndex);
-			}
-
-			final Tree resultNode = optimiseAST(childNode);
-			if (resultNode != childNode) {
-				treeNode.setChild(childIndex, resultNode);
-			}
-		}
-
-		// If the current node is an alternative node:
-		if (treeNode.getType() == AntlrRegexParser.ALT) {
-			result = optimiseSingleByteAlternatives(treeNode);
-		}
-
-		return result;
-	}	
-	
-	
-	/**
-	 * Transforms alternatives containing single bytes into a set of bytes to
-	 * match, which is a more efficient representation.
-	 * 
-	 * @param treeNode
-	 *            The alternative parent node.
-	 * @return A node optimised as far as possible to collapse single-byte
-	 *         alternatives into sets. If all the alternatives are single bytes,
-	 *         then the entire node is replaced by a set.
-	 */
-	//FIXME: this optimisation doesn't belong here; it needs to move into the general
-	//       ParseTree, or even in to the compiler as a compile-stage optimisation.
-	private Tree optimiseSingleByteAlternatives(final Tree treeNode) {
-
-		Tree result = treeNode;
-
-		// Determine which children can be optimised:
-		final List<Integer> childrenToMerge = new ArrayList<Integer>();
-		final int childCount = treeNode.getChildCount();
-		for (int childIndex = childCount - 1; childIndex >= 0; childIndex--) {
-			if (isSingleByteNode(treeNode.getChild(childIndex))) {
-				childrenToMerge.add(childIndex);
-			}
-		}
-
-		// If there is more than one candidate child node to merge, then merge
-		// them
-		// into a set-based byte test, rather than different alternatives:
-		if (childrenToMerge.size() > 1) {
-
-			final CommonTree mergeSet = createNode(AntlrRegexParser.SET);
-			for (int mergeIndex = 0; mergeIndex < childrenToMerge.size(); mergeIndex++) {
-				final int childIndex = childrenToMerge.get(mergeIndex);
-				Tree mergeNode = treeNode.getChild(childIndex);
-
-				// If any of the children of the alternative we are changing
-				// to a set is also a set, merge its children into the set
-				// instead of adding a set child to a set.
-				if (mergeNode.getType() == AntlrRegexParser.SET) {
-					mergeNode = getChildList(mergeNode);
-				}
-				mergeSet.addChild(mergeNode);
-				treeNode.deleteChild(childIndex);
-			}
-
-			// If all the children are merged, the entire alternative
-			// is really a single set - change the type of the node:
-			if (childrenToMerge.size() == childCount) {
-				result = mergeSet;
-			} else { // just add the set to the alternative node:
-				treeNode.addChild(mergeSet);
-			}
-		}
-
-		return result;
-	}
-
-	private CommonTree createNode(final int type) {
-		final String text = AntlrRegexParser.tokenNames[type];
-		return new CommonTree(new CommonToken(type, text));
-	}
-
-	private boolean equivalent(final Tree node1, final Tree node2) {
-		return node1.getType() == node2.getType()
-				&& node1.getText().equals(node2.getText());
-	}
-
-	private Tree getChildList(final Tree parent) {
-		// nodes with no token are "nil" nodes in antlr,
-		// which act as lists of children.
-		final Tree listNode = new CommonTree();
-		for (int childIndex = 0; childIndex < parent.getChildCount(); childIndex++) {
-			listNode.addChild(parent.getChild(childIndex));
-		}
-		return listNode;
-	}
-
-	private boolean isSingleByteNode(final Tree node) {
-		final int nodeType = node.getType();
-		return nodeType == AntlrRegexParser.BYTE
-				|| nodeType == AntlrRegexParser.SET
-				|| nodeType == AntlrRegexParser.ALL_BITMASK
-				|| nodeType == AntlrRegexParser.ANY_BITMASK
-				|| ((nodeType == AntlrRegexParser.CASE_SENSITIVE_STRING || nodeType == AntlrRegexParser.CASE_INSENSITIVE_STRING) && node
-						.getText().length() == 1);
-	}
 
 	private static class ParseErrorException extends RuntimeException {
 		public ParseErrorException(final String message) {
