@@ -41,11 +41,23 @@ import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
 /**
+ * An adaptor class which translates between the token types defined in the ANTLR regular expression
+ * parser, and the ParseTree interface defined in byteseek.
+ * <p>
+ * Setting this adaptor on the ANTLR regular expression parser causes it to emit objects which implement
+ * the correct ParseTree types, and also extend the ANTLR tree types.  These objects are defined as 
+ * package-private static classes at the end of this class.  They are package private to facilitate testing,
+ * but have no need to be generally available.
+ * 
  * @author Matt Palmer
  *
  */
 public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 
+	/**
+	 * Given a Token object, this method creates an appropriate CommonTree object that
+	 * also implements the ParseTree interface correctly for its type.
+	 */
 	@Override
 	public Object create(Token payload) {
 		switch (payload.getType()) {
@@ -63,7 +75,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 			return new QuotedTextAdaptor(payload, 		ParseTreeType.CASE_INSENSITIVE_STRING);
 			
 		case AntlrRegexParser.CASE_SENSITIVE_STRING:
-			return new QuotedTextAdaptor(payload, 		ParseTreeType.CASE_SENSITIVE_STRING);
+			return new QuotedTextAdaptor(payload, 		ParseTreeType.STRING);
 			
 		case AntlrRegexParser.ANY:
 			return new InvertibleNode(payload, 		ParseTreeType.ANY);
@@ -104,7 +116,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		}
 	}
 
-	private static class StructuralNode extends CommonTree implements ParseTree {
+	static class StructuralNode extends CommonTree implements ParseTree {
 
 		private final ParseTreeType	nodeType;
 
@@ -155,7 +167,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 
 	}
 	
-	private static class InvertibleNode extends StructuralNode {
+	static class InvertibleNode extends StructuralNode {
 		
 		private final boolean inverted;
 		
@@ -175,7 +187,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		}
 	}
 
-	private final static class HexByteAdaptor extends InvertibleNode {
+	final static class HexByteAdaptor extends InvertibleNode {
 
 		public HexByteAdaptor(Token payload, ParseTreeType type) {
 			super(payload, type);
@@ -188,7 +200,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 
 	}
 
-	private final static class ChildHexByteAdaptor extends InvertibleNode {
+	final static class ChildHexByteAdaptor extends InvertibleNode {
 
 		public ChildHexByteAdaptor(Token payload, ParseTreeType type) {
 			super(payload, type);
@@ -202,7 +214,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 
 	}
 	
-	private final static class QuotedTextAdaptor extends StructuralNode {
+	final static class QuotedTextAdaptor extends StructuralNode {
 
 		public QuotedTextAdaptor(Token payload, ParseTreeType type) {
 			super(payload, type);
@@ -218,7 +230,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		}
 	}
 
-	private final static class IntAdaptor extends StructuralNode {
+	final static class IntAdaptor extends StructuralNode {
 
 		public IntAdaptor(Token payload, ParseTreeType type) {
 			super(payload, type);
