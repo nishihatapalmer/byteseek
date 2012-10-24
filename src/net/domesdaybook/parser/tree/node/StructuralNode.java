@@ -39,14 +39,12 @@ public class StructuralNode extends BaseNode {
 
 	private final List<ParseTree> children;	
 	
-	public StructuralNode(final ParseTreeType type,
-							   final List<ParseTree> children) {
+	public StructuralNode(final ParseTreeType type, final List<ParseTree> children) {
 		this(type, children, false);
 	}
 	
-	public StructuralNode(final ParseTreeType type, 
-							   final List<ParseTree> children,
-							   final boolean inverted) {
+	public StructuralNode(final ParseTreeType type, final List<ParseTree> children,
+						   final boolean inverted) {
 		super(type, inverted);
 		this.children = children;
 	}
