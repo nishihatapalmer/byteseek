@@ -49,8 +49,7 @@ public class BaseNode implements ParseTree {
     this(type, false);
   }
   
-  public BaseNode(final ParseTreeType type, 
-                      final boolean inverted) {
+  public BaseNode(final ParseTreeType type, final boolean inverted) {
     this.type = type;
     this.inverted = inverted;
   }
