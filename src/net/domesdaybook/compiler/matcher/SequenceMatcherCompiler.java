@@ -253,7 +253,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     		case ALL_BITMASK:   			addAllBitmaskMatcher(				matcherNode, sequenceList); break;
     		case ANY_BITMASK:   			addAnyBitmaskMatcher(				matcherNode, sequenceList); break;
     		case RANGE:       				addRangeMatcher(					matcherNode, sequenceList); break;
-    		case CASE_SENSITIVE_STRING:   	addStringMatcher(					matcherNode, sequenceList); break;
+    		case STRING:   					addStringMatcher(					matcherNode, sequenceList); break;
     		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(	matcherNode, sequenceList); break;
     		case SEQUENCE:          		addSequenceMatcher(					matcherNode, sequenceList); break;
     		case REPEAT:          			addRepeatedSequence(				matcherNode, sequenceList); break;
