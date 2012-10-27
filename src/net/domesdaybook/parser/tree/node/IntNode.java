@@ -40,16 +40,11 @@ public class IntNode extends BaseNode {
   private int value;
 
   public IntNode() {
-    this(0, false);
+    this(0);
   }
   
   public IntNode(final int value) {
-    this(value, false);
-  }
-
-  public IntNode(final int value,
-                  final boolean inverted) {
-    super(ParseTreeType.INTEGER, inverted);
+	super(ParseTreeType.INTEGER);
     this.value = value;
   }
 
@@ -61,5 +56,5 @@ public class IntNode extends BaseNode {
   public void setIntValue(final int value) {
     this.value = value;
   }
-
+  
 }
