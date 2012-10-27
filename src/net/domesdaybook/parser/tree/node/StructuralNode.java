@@ -30,6 +30,7 @@
  */
 package net.domesdaybook.parser.tree.node;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.domesdaybook.parser.tree.ParseTree;
@@ -37,7 +38,15 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 
 public class StructuralNode extends BaseNode {
 
-	private final List<ParseTree> children;	
+	private List<ParseTree> children;	
+	
+	public StructuralNode(final ParseTreeType type) {
+		this(type, new ArrayList<ParseTree>(), false);
+	}
+	
+	public StructuralNode(final ParseTreeType type, final boolean isInverted) {
+		this(type, new ArrayList<ParseTree>(), isInverted);
+	}
 	
 	public StructuralNode(final ParseTreeType type, final List<ParseTree> children) {
 		this(type, children, false);
@@ -52,6 +61,18 @@ public class StructuralNode extends BaseNode {
 	@Override
 	public List<ParseTree> getChildren() {
 		return children;
+	}
+	
+	public void setChildren(List<ParseTree> children) {
+		this.children = children;
+	}
+	
+	public boolean addChild(final ParseTree child) {
+		return children.add(child);
+	}
+	
+	public boolean removeChild(final ParseTree child) {
+		return children.remove(child);
 	}
 
 }
