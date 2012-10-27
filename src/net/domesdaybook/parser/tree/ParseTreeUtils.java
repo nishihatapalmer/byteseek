@@ -65,13 +65,19 @@ public final class ParseTreeUtils {
 	 * @param hexByte
 	 *            a hexadecimal representation of a byte.
 	 * @return the byte encoded by the hex representation.
-	 * @throws ParseException if the string cannot be parsed.
+	 * @throws ParseException if the string cannot be parsed as a hex byte, or is null or empty.
 	 */
 	public static byte parseHexByte(final String hexByte) throws ParseException {
 		try {
-			return (byte) Integer.parseInt(hexByte, 16);
+			final int value = Integer.parseInt(hexByte, 16);
+			if (value < 0 || value > 255) {
+				throw new ParseException("The hex string [" + hexByte +
+										  "] is not a byte value between 0 and 255 inclusive: "
+										  + value);
+			}
+			return (byte) value;
 		} catch (NumberFormatException nfe) {
-			throw new ParseException("Could not parse into a hex byte: " + hexByte);
+			throw new ParseException("Could not parse into a hex byte: [" + hexByte + "]");
 		}
 	}
 	
@@ -81,7 +87,7 @@ public final class ParseTreeUtils {
 	    return children.get(0);
 	  }
 	  throw new ParseException("No children exist for node type: " +
-	                           node.getParseTreeType().name());
+	                            node.getParseTreeType().name());
 	}
 
 	public static int getFirstRangeValue(final ParseTree rangeNode) throws ParseException {
@@ -235,7 +241,7 @@ public final class ParseTreeUtils {
 				case RANGE: 					setValues.addAll(getRangeValues(child));						break;
 				case ALL_BITMASK:				setValues.addAll(getAllBitmaskValues(child));					break;
 				case ANY_BITMASK:				setValues.addAll(getAnyBitmaskValues(child));					break;
-				case CASE_SENSITIVE_STRING:		setValues.addAll(getStringAsSet(child));						break;
+				case STRING:					setValues.addAll(getStringAsSet(child));						break;
 				case CASE_INSENSITIVE_STRING:	setValues.addAll(getCaseInsensitiveStringAsSet(child));			break;
 				default: throw new ParseException(getTypeError(child));
 			}
