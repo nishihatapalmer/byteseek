@@ -49,7 +49,7 @@ public class TextNode extends BaseNode {
 
   public TextNode(final String value,
                   final boolean inverted) {
-    super(ParseTreeType.CASE_SENSITIVE_STRING, inverted);
+    super(ParseTreeType.STRING, inverted);
     this.value = value;
   }
 
