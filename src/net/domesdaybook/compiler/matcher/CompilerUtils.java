@@ -127,6 +127,7 @@ public final class CompilerUtils {
 				case ALL_BITMASK: 	return createAllBitmaskMatcher(singleElement, isInverted);
 				case ANY_BITMASK: 	return createAnyBitmaskMatcher(singleElement, isInverted);
 				case RANGE: 		return createRangeMatcher(singleElement, isInverted);
+				//FIXME: inversion of set doesn't look right - ignores current inversion status.
 				case SET:			return createMatcherFromSet(singleElement, singleElement.isValueInverted(), matcherFactory);
 			}
 		}
