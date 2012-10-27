@@ -38,10 +38,6 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 public class IntNode extends BaseNode {
 
   private int value;
-
-  public IntNode() {
-    this(0);
-  }
   
   public IntNode(final int value) {
 	super(ParseTreeType.INTEGER);
