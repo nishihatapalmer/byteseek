@@ -104,15 +104,15 @@ public class RegexParser implements Parser<ParseTree> {
 					tokens) {
 				@Override
 				public void emitErrorMessage(final String msg) {
-					throw new ParseErrorException(msg);
+					throw new AntlrParseException(msg);
 				}
 			};
 			try {
 				parser.setTreeAdaptor(new AntlrParseTreeAdaptor());
 				final AntlrRegexParser.start_return ret = parser.start();
 				return (ParseTree) ret.getTree();
-			} catch (final ParseErrorException e) {
-				throw new ParseException(e.getMessage());
+			} catch (final AntlrParseException e) {
+				throw new ParseException(e.getMessage(), e);
 			}
 		}
 		throw new ParseException(String.format(
@@ -121,8 +121,8 @@ public class RegexParser implements Parser<ParseTree> {
 	}
 
 
-	private static class ParseErrorException extends RuntimeException {
-		public ParseErrorException(final String message) {
+	private static class AntlrParseException extends RuntimeException {
+		public AntlrParseException(final String message) {
 			super(message);
 		}
 	}
