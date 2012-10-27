@@ -79,7 +79,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
      * Constructs a RegexCompiler, using the default {@link RegexBuilder} object.
      * The parser used will be the default parser defined in {@link AbstractCompiler}
      *
-     * By default, it uses the {@link ByteCollectionMatcherTransitionFactory} and
+     * By default, it uses the {@link ByteMatcherTransitionFactory} and
      * the {@link net.domesdaybook.automata.base.BaseStateFactory} to make a {@link GlushkovRegexBuilder} to
      * produce the NFA.
      */
@@ -154,7 +154,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
             case SET:
             case RANGE:
             case ANY:						return createTransitionAutomata(ast);
-            case CASE_SENSITIVE_STRING:		return createStringAutomata(ast);
+            case STRING:		return createStringAutomata(ast);
             case CASE_INSENSITIVE_STRING:	return createCaseInsensitiveStringAutomata(ast);
             case SEQUENCE:					return createSequenceAutomata(ast);
             case ALTERNATIVES:				return createAlternativesAutomata(ast);
