@@ -54,25 +54,34 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * A compiler which produces a {@link ByteMatcher} from an
  * abstract syntax tree provided by the {@link AbstractCompiler} class,
  * which it extends.
- *
- * It can only handle syntax which would result in a single byte being
- * matched. Multiple values of a single byte can be matched - just not a sequence
- * of bytes.  This means hex bytes, any byte (.), all bit-masks (&),
- * any bit-masks (~),single-character case 'sensitive' and `insensitive`
- * strings, and sets of bytes [].
- *
+ * <p>
+ * It will interpret all regular expression syntax, calculating the union
+ * of all byte values which the regular expression could match.
+ * Hence, any regular expression can be fed to this compiler,
+ * the resulting ByteMatcher matching any byte value which the full regular expression 
+ * could match at any point in the expression.
+ * <p>
+ * For example, the following byteseek regex syntax all produces a ByteMatcher which matches the same
+ * set of three bytes:
+ * <p><blockquote><pre><code>
+ *  01 02 03     # A sequence of three bytes: 01, 02 and 03.
+ *  01|02|03     # Alternative bytes: 01, 02 and 03.
+ * [01 02 03]    # A set of bytes: 01, 02 and 03.
+ * [01 -  03]    # A range of bytes from 01 to 03. 
+ * (01 02 03)+   # A sequence repeated from 1 to many times of three bytes: 01, 02 and 03.
+ * </code></pre></blockquote><p><p> 
  * @author Matt Palmer
  */
 public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree> {
 
-	// Private constants:
+	// Protected static final constants:
 
 	protected static final boolean		NOT_INVERTED	= false;
-	protected static final boolean		INVERTED			= true;
+	protected static final boolean		INVERTED		= true;
 
-	// Static fields and utility methods:
+	// Protected static fields:
 
-	protected static ByteMatcherCompiler defaultCompiler;
+	protected static ByteMatcherCompiler   defaultCompiler;
 	protected static ByteMatcherFactory	 defaultFactory;
 
 	/**
@@ -204,7 +213,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 			case ALL_BITMASK:				return CompilerUtils.createAllBitmaskMatcher(node);
 			case ANY_BITMASK:				return CompilerUtils.createAnyBitmaskMatcher(node);
 			case RANGE: 					return CompilerUtils.createRangeMatcher(node);
-			case CASE_SENSITIVE_STRING:		return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
+			case STRING:					return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
 			case CASE_INSENSITIVE_STRING:	return CompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
 			case SET: 						// drop through - sets, sequences and alternatives are all treated as sets.
 			case SEQUENCE:					
