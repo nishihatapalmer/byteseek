@@ -19,13 +19,34 @@ import org.junit.Test;
 public class IntNodeTest {
 
 	@Test
-	public final void testByteValue() {
+	public final void test256RandomIntValues() {
 		Random random = new Random();
 		for (int testNo = 0; testNo < 256; testNo++) {
-			final int value = random.nextInt();
-			final ParseTree node = new IntNode(value);
-			testNode(node, value);
+			testPosNegValues(random.nextInt());
 		}
+	}
+	
+	@Test
+	public final void testCommonIntValues() {
+		testPosNegValues(0);
+		testPosNegValues(1);
+		testPosNegValues(2);
+		testPosNegValues(15);			
+		testPosNegValues(16);		
+		testPosNegValues(255);
+		testPosNegValues(256);
+		testPosNegValues(1023);
+		testPosNegValues(1024);
+		testPosNegValues(10);
+		testPosNegValues(100);
+		testPosNegValues(1000);
+		testNode(new IntNode(Integer.MAX_VALUE), Integer.MAX_VALUE);
+		testNode(new IntNode(Integer.MIN_VALUE), Integer.MIN_VALUE);
+	}
+	
+	private void testPosNegValues(int value) {
+		testNode(new IntNode(value), value);
+		testNode(new IntNode(-value), -value);
 	}
 	
 	private void testNode(ParseTree node, int value) {
