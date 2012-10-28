@@ -11,14 +11,11 @@ import org.junit.Test;
 public class ByteNodeTest {
 
 	@Test
-	public final void testByteValue() {
-		ParseTree node = new ByteNode();
-		testNode(node, (byte)0, false);
-		
+	public final void testAllByteValues() {
 		for (int byteValue = 0; byteValue < 256; byteValue++) {
 			final byte value = (byte) byteValue;
 			
-			node = new ByteNode(value);
+			ParseTree node = new ByteNode(value);
 			testNode(node, value, false);
 			
 			node = new ByteNode(value, false);

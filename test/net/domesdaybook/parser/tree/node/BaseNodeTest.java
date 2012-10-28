@@ -11,23 +11,16 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 public class BaseNodeTest {
 	
 	@Test
-	public final void testBaseNode() {
+	public final void testAllParseTreeTypes() {
 		for (ParseTreeType type : ParseTreeType.values()) {
-			ParseTree node = new BaseNode(type);
-			testNode(node, type, false);
-
-			node = new BaseNode(type, false);
-			testNode(node, type, false);
-			
-			node = new BaseNode(type, true);
-			testNode(node, type, true);
+			testNode(new BaseNode(type), type);
 		}
 	}
 	
-	private void testNode(ParseTree node, ParseTreeType type, boolean isInverted) {
+	private void testNode(ParseTree node, ParseTreeType type) {
 		assertEquals("BaseNode has correct type: " + type, node.getParseTreeType(), type);
 		try {
-			assertEquals("BaseNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
+			assertFalse("BaseNode inversion should be false.", node.isValueInverted());
 		} catch (ParseException e) {
 			fail("BaseNode should not throw a ParseException if asked if the value is inverted.");
 		}
