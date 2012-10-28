@@ -35,21 +35,17 @@ import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
 
-public class TextNode extends BaseNode {
+public class StringNode extends BaseNode {
 
   private String value;
 
-  public TextNode() {
-    this("", false);
-  }
-  
-  public TextNode(final String value) {
+  public StringNode(final String value) {
     this(value, false);
   }
 
-  public TextNode(final String value,
-                  final boolean inverted) {
-    super(ParseTreeType.STRING, inverted);
+  public StringNode(final String value,
+                     final boolean isCaseSensitive) {
+    super(isCaseSensitive? ParseTreeType.STRING : ParseTreeType.CASE_INSENSITIVE_STRING);
     this.value = value;
   }
 
@@ -60,6 +56,10 @@ public class TextNode extends BaseNode {
   
   public void setTextValue(final String value) {
     this.value = value;
+  }
+  
+  public boolean isCaseSensitive() {
+	  return getParseTreeType() == ParseTreeType.STRING;
   }
 
 }
