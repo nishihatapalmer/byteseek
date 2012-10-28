@@ -38,19 +38,16 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 public class ByteNode extends BaseNode {
 
   private byte value;
-
-  public ByteNode() {
-    this((byte)0, false);
-  }
+  private boolean inverted; 
   
   public ByteNode(final byte value) {
     this(value, false);
   }
 
-  public ByteNode(final byte value,
-                  final boolean inverted) {
-    super(ParseTreeType.BYTE, inverted);
+  public ByteNode(final byte value, final boolean inverted) {
+    super(ParseTreeType.BYTE);
     this.value = value;
+    this.inverted = inverted;
   }
 
   @Override
@@ -61,5 +58,14 @@ public class ByteNode extends BaseNode {
   public void setByteValue(final byte value) {
     this.value = value;
   }
+  
+  @Override
+  public boolean isValueInverted() {
+	return inverted;
+  }
+
+  public void setValueInverted(final boolean isValueInverted) {
+	this.inverted = isValueInverted;
+  }	  
 
 }

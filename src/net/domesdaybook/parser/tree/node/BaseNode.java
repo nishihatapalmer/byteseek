@@ -40,40 +40,28 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 
 
 /**
- * A base implementation of ParseTree, that only has a type and whether the node is inverted or not.
+ * A base implementation of ParseTree, that only has a type.
  * This implementation is not particularly useful to instantiate directly, although that is not
  * prohibited.  This class is intended to be subclassed, with particular types of nodes implementing
  * their own specific functionality, with this class providing default behaviour.
  * <p>
  * Asking for a byte, int or text value will throw a {@link ParseException}.  Subclasses which 
  * provide those values need only override the specific method for their type of value.  
- * It will always provide an empty list of child nodes.
+ * It will always provide an empty list of child nodes, and false if asked if the value is inverted.
  * 
  * @author Matt Palmer
  */
 public class BaseNode implements ParseTree {
 
   private final ParseTreeType type;
-  private final boolean inverted; 
   
   /**
-   * Constructs a non-inverted base node of the given type.
+   * Constructs a base node of the given type.
    * 
    * @param type The type of the parse tree node.
    */
   public BaseNode(final ParseTreeType type) {
-    this(type, false);
-  }
-  
-  /**
-   * Constructs a base node of the given type and inversion.
-   * 
-   * @param type The type of the parse tree node.
-   * @param inverted Whether the node value is inverted or not.
-   */
-  public BaseNode(final ParseTreeType type, final boolean inverted) {
     this.type = type;
-    this.inverted = inverted;
   }
   
   /**
@@ -109,12 +97,11 @@ public class BaseNode implements ParseTree {
   }
 
   /**
-   * Returns whether the node value is inverted or not.
-   * This method will never throw a {@link ParseException}.
+   * Always returns false.
    */
   @Override
   public boolean isValueInverted() throws ParseException {
-    return inverted;
+    return false;
   }
   
   /**

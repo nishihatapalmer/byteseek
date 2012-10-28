@@ -38,7 +38,9 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 
 public class StructuralNode extends BaseNode {
 
-	private List<ParseTree> children;	
+	private List<ParseTree> children;
+	private boolean inverted; 
+	
 	
 	public StructuralNode(final ParseTreeType type) {
 		this(type, new ArrayList<ParseTree>(), false);
@@ -54,15 +56,16 @@ public class StructuralNode extends BaseNode {
 	
 	public StructuralNode(final ParseTreeType type, final List<ParseTree> children,
 						   final boolean inverted) {
-		super(type, inverted);
+		super(type);
 		this.children = children;
+		this.inverted = inverted;
 	}
 
 	@Override
 	public List<ParseTree> getChildren() {
 		return children;
 	}
-	
+
 	public void setChildren(List<ParseTree> children) {
 		this.children = children;
 	}
@@ -74,5 +77,15 @@ public class StructuralNode extends BaseNode {
 	public boolean removeChild(final ParseTree child) {
 		return children.remove(child);
 	}
+
+	@Override
+	public boolean isValueInverted() {
+		return inverted;
+	}
+	
+	public void setValueInverted(final boolean isValueInverted) {
+		this.inverted = isValueInverted;
+	}	
+	
 
 }
