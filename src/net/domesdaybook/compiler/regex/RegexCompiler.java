@@ -284,7 +284,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     private List<Automata<T>> getByteAutomataList(final String fromString) {
       final List<Automata<T>> automataList = new ArrayList<Automata<T>>(fromString.length());
-      final ByteNode byteValue = new ByteNode();
+      final ByteNode byteValue = new ByteNode((byte) 0);
       for (int i = 0; i < fromString.length(); i++) {
         byteValue.setByteValue((byte) fromString.charAt(i));
         automataList.add(createTransitionAutomata(byteValue));
@@ -320,8 +320,8 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     private ParseTree createTwoByteSet() {
      final List<ParseTree> setChildren = new ArrayList<ParseTree>(2);
-      setChildren.add(new ByteNode());
-      setChildren.add(new ByteNode());
+      setChildren.add(new ByteNode((byte) 0));
+      setChildren.add(new ByteNode((byte) 0));
       return new StructuralNode(ParseTreeType.SET, setChildren);
     }
     
