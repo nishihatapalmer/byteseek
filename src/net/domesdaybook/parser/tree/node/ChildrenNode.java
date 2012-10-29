@@ -51,12 +51,32 @@ public class ChildrenNode extends BaseNode {
 	private List<ParseTree> children;
 	private boolean inverted; 
 	
-	
+	/**
+	 * An enumeration to define two strategies when passing in lists of children.
+	 * Lists can either be copied when passed in, or the list given can be used
+	 * directly.
+	 * <p>
+	 * This is to support more efficient parsing when it is safe to pass in a list
+	 * of children you have already constructed, and to use that directly.
+	 * Note: this implementation always returns its internal list of children,
+	 * no matter what 
+	 * <p>
+	 * Design notes: it is possible this design is over complex.  
+	 * Possibly there should just be two ChildrenNode types - the normal one which does defensive
+	 * copying, and another Wrapping one when you know it's safe to use lists passed in an out.
+	 * 
+	 * @author Matt Palmer.
+	 */
 	public enum ListStrategy { 
 		
-		
+		/**
+		 * Copy the list of children passed in to the current internal list.
+		 */
 		COPY_LIST, 
 		
+		/**
+		 * Use the list of children passed in directly, replacing the current internal list.
+		 */
 		USE_GIVEN_LIST
 	};
 	
