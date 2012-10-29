@@ -3,7 +3,6 @@ package net.domesdaybook.parser.tree.node;
 import static org.junit.Assert.*;
 
 import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
 import org.junit.Test;
