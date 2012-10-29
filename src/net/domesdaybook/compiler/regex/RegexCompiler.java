@@ -47,7 +47,8 @@ import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;
 import net.domesdaybook.parser.tree.node.ByteNode;
-import net.domesdaybook.parser.tree.node.StructuralNode;
+import net.domesdaybook.parser.tree.node.ChildrenNode;
+import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 
 /**
  * A compiler which produces Non-deterministic Finite-state Automata (NFA)
@@ -265,7 +266,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     protected ParseTree joinExpressions(final List<ParseTree> expressions)
         throws ParseException, CompileException {
-      return new StructuralNode(ParseTreeType.ALTERNATIVES, expressions);
+      return new ChildrenNode(ParseTreeType.ALTERNATIVES, expressions, ListStrategy.USE_GIVEN_LIST);
     }
 
     
@@ -319,11 +320,12 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
 
     
     private ParseTree createTwoByteSet() {
-     final List<ParseTree> setChildren = new ArrayList<ParseTree>(2);
-      setChildren.add(new ByteNode((byte) 0));
-      setChildren.add(new ByteNode((byte) 0));
-      return new StructuralNode(ParseTreeType.SET, setChildren);
+      final ChildrenNode twoByteSet = new ChildrenNode(ParseTreeType.SET);
+      twoByteSet.addChild(new ByteNode((byte) 0));
+      twoByteSet.addChild(new ByteNode((byte) 0));
+      return twoByteSet;
     }
+    
     
     private String getTypeErrorMessage(final ParseTree ast) {
         final ParseTreeType type = ast.getParseTreeType();

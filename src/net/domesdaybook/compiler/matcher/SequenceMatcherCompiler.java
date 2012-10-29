@@ -49,7 +49,8 @@ import net.domesdaybook.parser.regex.RegexParser;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;
-import net.domesdaybook.parser.tree.node.StructuralNode;
+import net.domesdaybook.parser.tree.node.ChildrenNode;
+import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 
 /**
  * A compiler which produces a {@link SequenceMatcher} from an
@@ -385,7 +386,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     
 	@Override
 	protected ParseTree joinExpressions(List<ParseTree> expressions) throws ParseException, CompileException {
-		return new StructuralNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED);
+		return new ChildrenNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED, ListStrategy.USE_GIVEN_LIST);
     }    
 	
 	

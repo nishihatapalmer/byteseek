@@ -46,87 +46,95 @@ import net.domesdaybook.parser.tree.ParseTreeType;
  * 
  * @author Matt Palmer.
  */
-public class StructuralNode extends BaseNode {
+public class ChildrenNode extends BaseNode {
 
 	private List<ParseTree> children;
 	private boolean inverted; 
 	
-	public enum ListStrategy { COPY_LIST, USE_GIVEN_LIST };
+	
+	public enum ListStrategy { 
+		
+		
+		COPY_LIST, 
+		
+		USE_GIVEN_LIST
+	};
+	
 	
 	/**
-	 * Constructs a StructuralNode with no children and a given type.
+	 * Constructs a ChildrenNode with no children and a given type.
 	 * 
 	 * @param type The ParseTreeType of the node.
 	 */
-	public StructuralNode(final ParseTreeType type) {
+	public ChildrenNode(final ParseTreeType type) {
 		this(type, new ArrayList<ParseTree>(), false, ListStrategy.USE_GIVEN_LIST);
 	}
 	
 	/**
-	 * Constructs a StructuralNode with no children, a given type,
+	 * Constructs a ChildrenNode with no children, a given type,
 	 * and whether the value should be inverted or not.
 	 * 
 	 * @param type The ParseTreeType of the node.
 	 * @param isInverted Whether the value of the node is inverted or not.
 	 */
-	public StructuralNode(final ParseTreeType type, final boolean isInverted) {
+	public ChildrenNode(final ParseTreeType type, final boolean isInverted) {
 		this(type, new ArrayList<ParseTree>(), isInverted, ListStrategy.USE_GIVEN_LIST);
 	}
 	
 	/**
-	 * Constructs a StructuralNode with a given type, copying the list of children passed in.
+	 * Constructs a ChildrenNode with a given type, copying the list of children passed in.
 	 * <p>
 	 * 
-	 * @param type The ParseTreeType of this StructuralNode.
-	 * @param children The list of child ParseTrees for this StructuralNode.
+	 * @param type The ParseTreeType of this ChildrenNode.
+	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 */
-	public StructuralNode(final ParseTreeType type, final List<ParseTree> children) {
+	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children) {
 		this(type, children, false, ListStrategy.COPY_LIST);
 	}
 	
 	/**
-	 * Constructs a StructuralNode with a given type, copying the list of children passed in.
+	 * Constructs a ChildrenNode with a given type, copying the list of children passed in.
 	 * You can also specify whether the value of this node should be inverted or not.
 	 * 
-	 * @param type The ParseTreeType of this StructuralNode.
-	 * @param children The list of child ParseTrees for this StructuralNode.
+	 * @param type The ParseTreeType of this ChildrenNode.
+	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 * @param inverted Whether the value of this node should be inverted or not.
 	 */
-	public StructuralNode(final ParseTreeType type, final List<ParseTree> children,
+	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
 						   final boolean inverted) {
 		this(type, children, inverted, ListStrategy.COPY_LIST);
 	}
 	
 	
 	/**
-	 * Constructs a StructuralNode with a given type, and allows you to specify 
+	 * Constructs a ChildrenNode with a given type, and allows you to specify 
 	 * whether the list of children passed in should be copied, or just used directly as given.
 	 * <p>
 	 * Using a list passed in as given, without copying, allows this class to be used in areas 
 	 * where the list of internal children has already been built, and there is no advantage in
 	 * copying the list again.  To that extent, it is merely an optimisation. 
 	 * 
-	 * @param type The ParseTreeType of this StructuralNode.
-	 * @param children The list of child ParseTrees for this StructuralNode.
+	 * @param type The ParseTreeType of this ChildrenNode.
+	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 * @param listStrategy Whether to copy the list passed in, or to use it directly.
 	 */
-	public StructuralNode(final ParseTreeType type, final List<ParseTree> children, 
+	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children, 
 						   final ListStrategy listStrategy) {
 		this(type, children, false, listStrategy);
 	}
 	
 
 	/**
-	 * Constructs a StructuralNode with a given type, inversion status and list of child ParseTrees.
+	 * Constructs a ChildrenNode with a given type, inversion status and list of child ParseTrees.
 	 * You also specify the strategy to use with the list of child ParseTrees: whether to copy the
 	 * list, or to use it directly as given.
 	 * 
-	 * @param type The ParseTreeType of this StructuralNode.
-	 * @param children The list of child ParseTrees for this StructuralNode.
+	 * @param type The ParseTreeType of this ChildrenNode.
+	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 * @param inverted Whether the value of this node should be inverted or not.
 	 * @param listStrategy Whether to copy the list passed in, or to use it directly.
 	 */
-	public StructuralNode(final ParseTreeType type, final List<ParseTree> children,
+	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
 			   			   final boolean inverted,  final ListStrategy listStrategy) {
 		super(type);
 		this.children = listStrategy == ListStrategy.USE_GIVEN_LIST?
@@ -136,7 +144,7 @@ public class StructuralNode extends BaseNode {
 	
 	
 	/**
-	 * Returns the children of this StructuralNode as a list of ParseTree objects.
+	 * Returns the children of this ChildrenNode as a list of ParseTree objects.
 	 * The original list held by this class is returned; it is not defensively copied.
 	 * Therefore, you should not modify the list returned unless you are very sure
 	 * that this is safe to do.
