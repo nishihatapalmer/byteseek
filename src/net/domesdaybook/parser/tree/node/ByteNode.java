@@ -91,7 +91,7 @@ public class ByteNode extends BaseNode {
    * @return boolean True if the value should be inverted.
    */
   @Override
-  public boolean isValueInverted() {
+  public boolean isValueInverted() throws ParseException {
 	return inverted;
   }
 
