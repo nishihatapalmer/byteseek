@@ -36,53 +36,176 @@ import java.util.List;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
+/**
+ * A ParseTree node which has child ParseTrees.  The value of the node,
+ * if any, can be inverted.
+ * <p>
+ * The ParseTreeType defines what kind of children the node has and how
+ * to process them.  For example, a SET type will have child nodes
+ * defining the set value, and the set itself can be inverted or not.
+ * 
+ * @author Matt Palmer.
+ */
 public class StructuralNode extends BaseNode {
 
 	private List<ParseTree> children;
 	private boolean inverted; 
 	
+	public enum ListStrategy { COPY_LIST, USE_GIVEN_LIST };
 	
+	/**
+	 * Constructs a StructuralNode with no children and a given type.
+	 * 
+	 * @param type The ParseTreeType of the node.
+	 */
 	public StructuralNode(final ParseTreeType type) {
-		this(type, new ArrayList<ParseTree>(), false);
+		this(type, new ArrayList<ParseTree>(), false, ListStrategy.USE_GIVEN_LIST);
 	}
 	
+	/**
+	 * Constructs a StructuralNode with no children, a given type,
+	 * and whether the value should be inverted or not.
+	 * 
+	 * @param type The ParseTreeType of the node.
+	 * @param isInverted Whether the value of the node is inverted or not.
+	 */
 	public StructuralNode(final ParseTreeType type, final boolean isInverted) {
-		this(type, new ArrayList<ParseTree>(), isInverted);
+		this(type, new ArrayList<ParseTree>(), isInverted, ListStrategy.USE_GIVEN_LIST);
 	}
 	
+	/**
+	 * Constructs a StructuralNode with a given type, copying the list of children passed in.
+	 * <p>
+	 * 
+	 * @param type The ParseTreeType of this StructuralNode.
+	 * @param children The list of child ParseTrees for this StructuralNode.
+	 */
 	public StructuralNode(final ParseTreeType type, final List<ParseTree> children) {
-		this(type, children, false);
+		this(type, children, false, ListStrategy.COPY_LIST);
 	}
 	
+	/**
+	 * Constructs a StructuralNode with a given type, copying the list of children passed in.
+	 * You can also specify whether the value of this node should be inverted or not.
+	 * 
+	 * @param type The ParseTreeType of this StructuralNode.
+	 * @param children The list of child ParseTrees for this StructuralNode.
+	 * @param inverted Whether the value of this node should be inverted or not.
+	 */
 	public StructuralNode(final ParseTreeType type, final List<ParseTree> children,
 						   final boolean inverted) {
-		super(type);
-		this.children = children;
-		this.inverted = inverted;
+		this(type, children, inverted, ListStrategy.COPY_LIST);
 	}
+	
+	
+	/**
+	 * Constructs a StructuralNode with a given type, and allows you to specify 
+	 * whether the list of children passed in should be copied, or just used directly as given.
+	 * <p>
+	 * Using a list passed in as given, without copying, allows this class to be used in areas 
+	 * where the list of internal children has already been built, and there is no advantage in
+	 * copying the list again.  To that extent, it is merely an optimisation. 
+	 * 
+	 * @param type The ParseTreeType of this StructuralNode.
+	 * @param children The list of child ParseTrees for this StructuralNode.
+	 * @param listStrategy Whether to copy the list passed in, or to use it directly.
+	 */
+	public StructuralNode(final ParseTreeType type, final List<ParseTree> children, 
+						   final ListStrategy listStrategy) {
+		this(type, children, false, listStrategy);
+	}
+	
 
+	/**
+	 * Constructs a StructuralNode with a given type, inversion status and list of child ParseTrees.
+	 * You also specify the strategy to use with the list of child ParseTrees: whether to copy the
+	 * list, or to use it directly as given.
+	 * 
+	 * @param type The ParseTreeType of this StructuralNode.
+	 * @param children The list of child ParseTrees for this StructuralNode.
+	 * @param inverted Whether the value of this node should be inverted or not.
+	 * @param listStrategy Whether to copy the list passed in, or to use it directly.
+	 */
+	public StructuralNode(final ParseTreeType type, final List<ParseTree> children,
+			   			   final boolean inverted,  final ListStrategy listStrategy) {
+		super(type);
+		this.children = listStrategy == ListStrategy.USE_GIVEN_LIST?
+						 children : new ArrayList<ParseTree>(children);
+		this.inverted = inverted;
+	}		
+	
+	
+	/**
+	 * Returns the children of this StructuralNode as a list of ParseTree objects.
+	 * The original list held by this class is returned; it is not defensively copied.
+	 * Therefore, you should not modify the list returned unless you are very sure
+	 * that this is safe to do.
+	 * 
+	 * @return The internal list of child ParseTree objects.
+	 */
 	@Override
 	public List<ParseTree> getChildren() {
 		return children;
 	}
 
-	public void setChildren(List<ParseTree> children) {
-		this.children = children;
+	/**
+	 * Sets a new list of children, by copying the list of children passed in, and
+	 * replacing any previous children.
+	 * 
+	 * @param children The list of children to copy in to this node, replacing any previous children.
+	 */
+	public void setChildren(final List<ParseTree> children) {
+		setChildren(children, ListStrategy.COPY_LIST);
 	}
 	
+	
+	/**
+	 * Sets a new list of children, replacing any previous children, either copying the
+	 * list or using it directly depending on the list strategy specified.
+	 * 
+	 * @param children The list of children to use in to this node, replacing any previous children.
+	 * @param listStrategy Whether to copy the list or just use the one given.
+	 */
+	public void setChildren(final List<ParseTree> children, final ListStrategy listStrategy) {
+		this.children = listStrategy == ListStrategy.USE_GIVEN_LIST?
+				children : new ArrayList<ParseTree>(children);
+	}
+	
+	
+	/**
+	 * Adds a new child ParseTree to the list of children in this node
+	 * 
+	 * @param child The new child ParseTree.
+	 * @return boolean Returns true or false in the same way as Collections.add specifies.
+	 */
 	public boolean addChild(final ParseTree child) {
 		return children.add(child);
 	}
 	
+	/**
+	 * Removes a child ParseTree from the list of children in this node.
+	 * 
+	 * @param child The child ParseTree to remove.
+	 * @return boolean Returns true or false in the same way as Collections.remove specifies.
+	 */
 	public boolean removeChild(final ParseTree child) {
 		return children.remove(child);
 	}
 
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isValueInverted() {
 		return inverted;
 	}
 	
+	/**
+	 * Sets whether the value of this node should be inverted or not.
+	 * 
+	 * @param isValueInverted Whether to invert the value of this node or not.
+	 */
 	public void setValueInverted(final boolean isValueInverted) {
 		this.inverted = isValueInverted;
 	}	

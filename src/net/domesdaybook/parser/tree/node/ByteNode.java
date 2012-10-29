@@ -34,36 +34,72 @@ package net.domesdaybook.parser.tree.node;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
-
+/**
+ * A ParseTree node that has a byte value.  The value can optionally also be inverted.
+ * ByteNodes have a ParseTreeType of ParseTreeType.BYTE.
+ * <p>
+ * ByteNodes have no children, and will return an empty list of children.  
+ * 
+ * @author Matt Palmer
+ *
+ */
 public class ByteNode extends BaseNode {
 
   private byte value;
   private boolean inverted; 
   
+  /**
+   * Constructs a ByteNode with the given value.
+   * 
+   * @param value The value of the ByteNode.
+   */
   public ByteNode(final byte value) {
     this(value, false);
   }
 
+  /**
+   * Constructs a ByteNode with the given value and inversion status.
+   * 
+   * @param value The value of the ByteNode.
+   * @param inverted Whether the value should be inverted or not.
+   */
   public ByteNode(final byte value, final boolean inverted) {
     super(ParseTreeType.BYTE);
     this.value = value;
     this.inverted = inverted;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public byte getByteValue() throws ParseException {
     return value;
   }
   
+  /**
+   * Sets the value of the ByteNode.
+   * 
+   * @param value The new value of the ByteNode.
+   */
   public void setByteValue(final byte value) {
     this.value = value;
   }
   
+  /**
+   * Returns whether the value of the byte node should be inverted or not.
+   * @return boolean True if the value should be inverted.
+   */
   @Override
   public boolean isValueInverted() {
 	return inverted;
   }
 
+  /**
+   * Sets whether the value of the byte node should be inverted.
+   * 
+   * @param isValueInverted Whether the value of the byte node should be inverted.
+   */
   public void setValueInverted(final boolean isValueInverted) {
 	this.inverted = isValueInverted;
   }	  

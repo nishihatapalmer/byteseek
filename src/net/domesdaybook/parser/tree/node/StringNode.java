@@ -35,29 +35,71 @@ import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
 
+/**
+ * A ParseTree node that has a string value.
+ * <p>
+ * The ParseTreeType is normally ParseTreeType.STRING, unless the node
+ * should match case-insensitively, in which case the ParseTreeType 
+ * will be ParseTreeType.CASE_INSENSITIVE_STRING.
+ * <p>
+ * StringNodes have no children, and will always return an empty list of
+ * ParseTrees.
+ * 
+ * @author Matt Palmer
+ *
+ */
 public class StringNode extends BaseNode {
 
   private String value;
 
+  /**
+   * Constructs a StringNode with the given String.
+   * 
+   * @param value The String for this StringNode.
+   */
   public StringNode(final String value) {
     this(value, false);
   }
-
+  
+  /**
+   * Constructs a StringNode with the given String and whether the node
+   * should match case sensitively or not.
+   * 
+   * @param value The String for this StringNode.
+   * @param isCaseSensitive True if the string is case sensitive (ParseTreeType.STRING),
+   *                         False if the string is case-insensitive (ParseTreeType.CASE_INSENSITIVE_STRING).
+   */
   public StringNode(final String value,
                      final boolean isCaseSensitive) {
     super(isCaseSensitive? ParseTreeType.STRING : ParseTreeType.CASE_INSENSITIVE_STRING);
     this.value = value;
   }
 
+  /**
+   * Gets the text value of this StringNode.
+   * 
+   * @return String the String of this StringNode.
+   */
   @Override
   public String getTextValue() throws ParseException {
     return value;
   }
   
+  /**
+   * Sets the text value of this StringNode.
+   * 
+   * @param value The new String of this StringNode.
+   */
   public void setTextValue(final String value) {
     this.value = value;
   }
   
+  /**
+   * Returns whether the string matches case sensitively or not.
+   * 
+   * @return boolean True if the string matches case-sensitively (ParseTreeType.STRING), 
+   *                  False if the string is case-insensitive (ParseTreeType.CASE_INSENSITIVE_STRING).
+   */
   public boolean isCaseSensitive() {
 	  return getParseTreeType() == ParseTreeType.STRING;
   }
