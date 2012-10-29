@@ -13,12 +13,13 @@ import net.domesdaybook.parser.tree.ParseTree;
 
 import org.junit.Test;
 import net.domesdaybook.parser.tree.ParseTreeType;
+import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 
 /**
  * @author Matt Palmer
  *
  */
-public class StructuralNodeTest {
+public class ChildrenNodeTest {
 
 	//TODO: add tests for setChildren, addChild, removeChild
 	//      and constructors which create their own lists of children.
@@ -35,26 +36,25 @@ public class StructuralNodeTest {
 		runTests(children, 2);
 	}
 	
-	
 	private void runTests(List<ParseTree> children, int numChildren) {
 		for (ParseTreeType type : ParseTreeType.values()) {
-			ParseTree node = new StructuralNode(type, children);
+			ParseTree node = new ChildrenNode(type, children);
 			testNode(node, type, numChildren, false);
 
-			node = new StructuralNode(type, children, false);
+			node = new ChildrenNode(type, children, false);
 			testNode(node, type, numChildren, false);
 			
-			node = new StructuralNode(type, children, true);
+			node = new ChildrenNode(type, children, true);
 			testNode(node, type, numChildren, true);
 		}		
 	}
 	
 	private void testNode(ParseTree node, ParseTreeType type, int numChildren, boolean isInverted) {
-		assertEquals("StructuralNode has correct type: " + type, node.getParseTreeType(), type);
+		assertEquals("ChildrenNode has correct type: " + type, node.getParseTreeType(), type);
 		try {
-			assertEquals("StructuralNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
+			assertEquals("ChildrenNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
 		} catch (ParseException e) {
-			fail("StructuralNode should not throw a ParseException if asked if the value is inverted.");
+			fail("ChildrenNode should not throw a ParseException if asked if the value is inverted.");
 		}
 		
 		try { 
