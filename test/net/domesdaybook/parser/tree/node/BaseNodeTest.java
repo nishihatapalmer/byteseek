@@ -17,7 +17,7 @@ public class BaseNodeTest {
 		}
 	}
 	
-	private void testNode(ParseTree node, ParseTreeType type) {
+	private void testNode(BaseNode node, ParseTreeType type) {
 		assertEquals("BaseNode has correct type: " + type, node.getParseTreeType(), type);
 		try {
 			assertFalse("BaseNode inversion should be false.", node.isValueInverted());

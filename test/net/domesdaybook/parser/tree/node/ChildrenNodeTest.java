@@ -13,7 +13,6 @@ import net.domesdaybook.parser.tree.ParseTree;
 
 import org.junit.Test;
 import net.domesdaybook.parser.tree.ParseTreeType;
-import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 
 /**
  * @author Matt Palmer
@@ -25,7 +24,7 @@ public class ChildrenNodeTest {
 	//      and constructors which create their own lists of children.
 	
 	@Test
-	public final void testStructuralNode() {
+	public final void testChildrenNode() {
 		List<ParseTree> children = new ArrayList<ParseTree>();
 		runTests(children, 0);
 		
@@ -38,18 +37,22 @@ public class ChildrenNodeTest {
 	
 	private void runTests(List<ParseTree> children, int numChildren) {
 		for (ParseTreeType type : ParseTreeType.values()) {
-			ParseTree node = new ChildrenNode(type, children);
-			testNode(node, type, numChildren, false);
-
-			node = new ChildrenNode(type, children, false);
-			testNode(node, type, numChildren, false);
-			
-			node = new ChildrenNode(type, children, true);
-			testNode(node, type, numChildren, true);
+			testInvertedStatus(type, children, numChildren);
 		}		
 	}
 	
-	private void testNode(ParseTree node, ParseTreeType type, int numChildren, boolean isInverted) {
+	private void testInvertedStatus(ParseTreeType type, List<ParseTree> children, int numChildren) {
+		ChildrenNode node = new ChildrenNode(type, children);
+		testNode(node, type, numChildren, false);
+
+		node = new ChildrenNode(type, children, false);
+		testNode(node, type, numChildren, false);
+		
+		node = new ChildrenNode(type, children, true);
+		testNode(node, type, numChildren, true);		
+	}
+	
+	private void testNode(ChildrenNode node, ParseTreeType type, int numChildren, boolean isInverted) {
 		assertEquals("ChildrenNode has correct type: " + type, node.getParseTreeType(), type);
 		try {
 			assertEquals("ChildrenNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());

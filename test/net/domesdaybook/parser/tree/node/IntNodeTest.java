@@ -49,7 +49,7 @@ public class IntNodeTest {
 		testNode(new IntNode(-value), -value);
 	}
 	
-	private void testNode(ParseTree node, int value) {
+	private void testNode(IntNode node, int value) {
 		assertEquals("IntNode has correct type: ", ParseTreeType.INTEGER, node.getParseTreeType());
 		try {
 			assertEquals("IntNode has correct value:" + value, value, node.getIntValue());

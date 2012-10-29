@@ -15,7 +15,7 @@ public class ByteNodeTest {
 		for (int byteValue = 0; byteValue < 256; byteValue++) {
 			final byte value = (byte) byteValue;
 			
-			ParseTree node = new ByteNode(value);
+			ByteNode node = new ByteNode(value);
 			testNode(node, value, false);
 			
 			node = new ByteNode(value, false);
@@ -26,7 +26,7 @@ public class ByteNodeTest {
 		}
 	}
 	
-	private void testNode(ParseTree node, byte value, boolean isInverted) {
+	private void testNode(ByteNode node, byte value, boolean isInverted) {
 		assertEquals("ByteNode has correct type: ", ParseTreeType.BYTE, node.getParseTreeType());
 		try {
 			assertEquals("ByteNode has correct value:" + value, value, node.getByteValue());
