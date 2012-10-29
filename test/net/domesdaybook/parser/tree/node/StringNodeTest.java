@@ -2,68 +2,75 @@ package net.domesdaybook.parser.tree.node;
 
 import static org.junit.Assert.*;
 
+import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeType;
+
 import org.junit.Test;
 
 public class StringNodeTest {
 
 	@Test
-	public final void testGetTextValue() {
-		fail("Not yet implemented"); // TODO
+	public final void testTextValues() {
+		testNodes("");
+		testNodes("                                                                           ");
+		testNodes("Oberon");
+		testNodes("Titania");
+		testNodes("I know a bank where the wild thyme grows,");
+		testNodes(getAllCharsFromZeroTo255());
 	}
-
-	@Test
-	public final void testTextNode() {
-		fail("Not yet implemented"); // TODO
+	
+	private String getAllCharsFromZeroTo255() {
+		StringBuilder builder = new StringBuilder(256);
+		for (char c = 0; c < 256; c++) {
+			builder.append(c);
+		}
+		return builder.toString();
 	}
-
-	@Test
-	public final void testTextNodeString() {
-		fail("Not yet implemented"); // TODO
+	
+	private void testNodes(String value) {
+		testNode("Default case sensitive: ",     new StringNode(value),         false, value);
+		testNode("Specified case sensitive: ",   new StringNode(value, false), false, value);
+		testNode("Specified case insensitive: ", new StringNode(value, true),  true, value);
 	}
-
-	@Test
-	public final void testTextNodeStringBoolean() {
-		fail("Not yet implemented"); // TODO
+	
+	private void testNode(String description, StringNode node, boolean isCaseSensitive, String value) {
+		testNodeAttributes(description + "(original value) ", node, isCaseSensitive, value);
+		node.setTextValue(value + value);
+		testNodeAttributes(description + "(doubled value) ", node, isCaseSensitive, value + value);
+		node.setTextValue("");    
+		testNodeAttributes(description + "(blank value) ", node, isCaseSensitive, "");
 	}
-
-	@Test
-	public final void testSetTextValue() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public final void testBaseNodeParseTreeType() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public final void testBaseNodeParseTreeTypeBoolean() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public final void testGetParseTreeType() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public final void testGetByteValue() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public final void testGetIntValue() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public final void testIsValueInverted() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public final void testGetChildren() {
-		fail("Not yet implemented"); // TODO
+	
+	private void testNodeAttributes(String description, ParseTree node, boolean isCaseSensitive, String value) {
+		
+		ParseTreeType expectedType = isCaseSensitive? ParseTreeType.STRING : ParseTreeType.CASE_INSENSITIVE_STRING;
+		assertEquals(description + "Node has correct type - is case sensitive?: " + isCaseSensitive, expectedType, node.getParseTreeType());
+		
+		try {
+			assertEquals(description + "Node has correct string value: [" + value + ']', value, node.getTextValue());
+		} catch (ParseException e) {
+			fail(description + "Should not throw ParseException requesting text value.");
+		}
+		
+		try { 
+			assertFalse(description + "Node is not inverted.", node.isValueInverted());
+		} catch (ParseException e) {
+			fail(description + "Should not throw ParseException requesting inversion status.");
+		}		
+		
+		try { 
+			node.getByteValue();
+			fail(description + "Expected a ParseException if asked for the byte value");
+		} catch (ParseException allIsFine) {};
+		
+		try { 
+			node.getIntValue();
+			fail(description + "Expected a ParseException if asked for the int value");
+		} catch (ParseException allIsFine) {};
+		
+		assertNotNull(description + "Child list is not null", node.getChildren());
+		assertTrue(description + "Child list is empty", node.getChildren().isEmpty());		
 	}
 
 }
