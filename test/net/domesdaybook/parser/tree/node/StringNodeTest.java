@@ -42,10 +42,11 @@ public class StringNodeTest {
 		testNodeAttributes(description + "(blank value) ", node, isCaseSensitive, "");
 	}
 	
-	private void testNodeAttributes(String description, ParseTree node, boolean isCaseSensitive, String value) {
+	private void testNodeAttributes(String description, StringNode node, boolean isCaseSensitive, String value) {
 		
 		ParseTreeType expectedType = isCaseSensitive? ParseTreeType.STRING : ParseTreeType.CASE_INSENSITIVE_STRING;
-		assertEquals(description + "Node has correct type - is case sensitive?: " + isCaseSensitive, expectedType, node.getParseTreeType());
+		assertEquals(description + "Node is case sensitive?: " + isCaseSensitive, expectedType, node.getParseTreeType());
+		assertEquals(description + "Node agrees its case sensitive status:" + isCaseSensitive, isCaseSensitive, node.isCaseSensitive());
 		
 		try {
 			assertEquals(description + "Node has correct string value: [" + value + ']', value, node.getTextValue());
