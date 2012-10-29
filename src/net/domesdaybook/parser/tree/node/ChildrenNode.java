@@ -33,6 +33,7 @@ package net.domesdaybook.parser.tree.node;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
@@ -225,7 +226,7 @@ public class ChildrenNode extends BaseNode {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isValueInverted() {
+	public boolean isValueInverted() throws ParseException {
 		return inverted;
 	}
 	
