@@ -39,8 +39,8 @@ import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
-import net.domesdaybook.matcher.sequence.OptimisingSequenceMatcherFactory;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
+import net.domesdaybook.matcher.sequence.OptimisingSequenceMatcherFactory;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcherFactory;
 import net.domesdaybook.parser.ParseException;
@@ -50,7 +50,6 @@ import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;
 import net.domesdaybook.parser.tree.node.ChildrenNode;
-import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 
 /**
  * A compiler which produces a {@link SequenceMatcher} from an
@@ -386,7 +385,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     
 	@Override
 	protected ParseTree joinExpressions(List<ParseTree> expressions) throws ParseException, CompileException {
-		return new ChildrenNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED, ListStrategy.USE_GIVEN_LIST);
+		return new ChildrenNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED);
     }    
 	
 	

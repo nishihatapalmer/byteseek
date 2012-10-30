@@ -48,7 +48,6 @@ import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;
 import net.domesdaybook.parser.tree.node.ChildrenNode;
-import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -233,7 +232,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	@Override
 	protected ParseTree joinExpressions(List<ParseTree> expressions) 
 			throws ParseException, CompileException {
-		return new ChildrenNode(ParseTreeType.SET, expressions, NOT_INVERTED, ListStrategy.USE_GIVEN_LIST);
+		return new ChildrenNode(ParseTreeType.SET, expressions, NOT_INVERTED);
 	}
 	
 	
