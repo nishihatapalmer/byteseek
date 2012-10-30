@@ -375,7 +375,12 @@ public enum ParseTreeType {
 	 */		
   	OPTIONAL("The child ParseTree is optional (repeat zero to one times).");
   
-  private final String description;
+    
+	//////////////////////
+	// Class definition //
+	//////////////////////
+    
+    private final String description;
 	
 	private ParseTreeType(final String description) {
 		this.description = description;
