@@ -38,6 +38,7 @@ import net.domesdaybook.parser.tree.ParseTree;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.CommonTreeAdaptor;
 
 /**
  * Parses a regular expression into an Abstract Syntax Tree (ast), using ANTLR
@@ -53,6 +54,8 @@ import org.antlr.runtime.RecognitionException;
  */
 public class RegexParser implements Parser<ParseTree> {
 
+	private static CommonTreeAdaptor antlrParseTreeAdaptor = new AntlrParseTreeAdaptor();
+	
 	/**
      * 
      */
@@ -98,26 +101,23 @@ public class RegexParser implements Parser<ParseTree> {
 		final ANTLRStringStream input = new ANTLRStringStream(expression);
 		final AntlrRegexLexer lexer = new AntlrRegexLexer(input);
 		if (lexer.getNumberOfSyntaxErrors() == 0) {
-
 			final CommonTokenStream tokens = new CommonTokenStream(lexer);
-			final AntlrRegexParser parser = new AntlrRegexParser(
-					tokens) {
+			final AntlrRegexParser parser = new AntlrRegexParser(tokens) {
 				@Override
 				public void emitErrorMessage(final String msg) {
 					throw new AntlrParseException(msg);
 				}
 			};
+			
 			try {
-				parser.setTreeAdaptor(new AntlrParseTreeAdaptor());
-				final AntlrRegexParser.start_return ret = parser.start();
-				return (ParseTree) ret.getTree();
+				parser.setTreeAdaptor(antlrParseTreeAdaptor);
+				return (ParseTree) parser.start().getTree();
 			} catch (final AntlrParseException e) {
 				throw new ParseException(e.getMessage(), e);
 			}
 		}
-		throw new ParseException(String.format(
-				"Parse error: %d syntax errors in %s",
-				lexer.getNumberOfSyntaxErrors(), expression));
+		throw new ParseException("Parse error: " + lexer.getNumberOfSyntaxErrors() +
+							      " syntax errors in " + expression);
 	}
 
 
