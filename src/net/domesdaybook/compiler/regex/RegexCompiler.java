@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 import net.domesdaybook.automata.Automata;
+import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
 import net.domesdaybook.automata.regex.RegexBuilder;
 import net.domesdaybook.compiler.AbstractCompiler;
@@ -48,7 +49,6 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;
 import net.domesdaybook.parser.tree.node.ByteNode;
 import net.domesdaybook.parser.tree.node.ChildrenNode;
-import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 
 /**
  * A compiler which produces Non-deterministic Finite-state Automata (NFA)
@@ -266,7 +266,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     protected ParseTree joinExpressions(final List<ParseTree> expressions)
         throws ParseException, CompileException {
-      return new ChildrenNode(ParseTreeType.ALTERNATIVES, expressions, ListStrategy.USE_GIVEN_LIST);
+      return new ChildrenNode(ParseTreeType.ALTERNATIVES, expressions);
     }
 
     
