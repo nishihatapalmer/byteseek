@@ -3,17 +3,18 @@
  */
 package net.domesdaybook.parser.tree.node;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTree;
+import net.domesdaybook.parser.tree.ParseTreeType;
 
 import org.junit.Test;
-import net.domesdaybook.parser.tree.ParseTreeType;
-import net.domesdaybook.parser.tree.node.ChildrenNode.ListStrategy;
 
 /**
  * @author Matt Palmer
@@ -38,12 +39,12 @@ public class ChildrenNodeTest {
 	
 	private void runTests(List<ParseTree> children, int numChildren) {
 		for (ParseTreeType type : ParseTreeType.values()) {
-			testConstructors(type, children, numChildren);
+			testConstruction(type, children, numChildren);
 			testChangingChildren(type, children, numChildren);
 		}		
 	}
 	
-	private void testConstructors(ParseTreeType type, List<ParseTree> children, int numChildren) {
+	private void testConstruction(ParseTreeType type, List<ParseTree> children, int numChildren) {
 		ChildrenNode node = new ChildrenNode(type, children);
 		testNode("Default false inversion: ", node, type, numChildren, false);
 
@@ -58,43 +59,26 @@ public class ChildrenNodeTest {
 		List<ParseTree> childrenToTest = new ArrayList<ParseTree>(children);
 		
 		ChildrenNode defaultNode = new ChildrenNode(type, childrenToTest); 
-		ChildrenNode copyNode    = new ChildrenNode(type, childrenToTest, ListStrategy.COPY_LIST);
-		ChildrenNode givenNode   = new ChildrenNode(type, childrenToTest, ListStrategy.USE_GIVEN_LIST);
 
-		assertEquals("Before change: Default behaviour is to copy the child list.", numChildren, defaultNode.getChildren().size());
-		assertEquals("Before change: Specified copy behaviour also copies the list.", numChildren, copyNode.getChildren().size());
-		assertEquals("Before change: Specified use given behaviour has same children now.", numChildren, givenNode.getChildren().size());
+		assertEquals("Before change, size is correct: ", numChildren, defaultNode.getChildren().size());
 		
 		ParseTree nodeToAdd = new StringNode("Node to add");
 		childrenToTest.add(nodeToAdd);
 		
-		assertEquals("Add to test list: Default behaviour is to copy the child list.", numChildren, defaultNode.getChildren().size());
-		assertEquals("Add to test list: Specified copy behaviour also copies the list.", numChildren, copyNode.getChildren().size());
-		assertEquals("Add to test list: Specified use given behaviour has more children now.", numChildren + 1, givenNode.getChildren().size());
+		assertEquals("Add to test list: size is unchanged.", numChildren, defaultNode.getChildren().size());
 		
 		ParseTree nodeToAdd2 = new StringNode("Second node to add");
 		defaultNode.addChild(nodeToAdd2);
-		copyNode.addChild(nodeToAdd2);
-		givenNode.addChild(nodeToAdd2);
 		
-		assertEquals("Add to default node: Default behaviour is to copy the child list.", numChildren + 1, defaultNode.getChildren().size());
-		assertEquals("Add to copy node: Specified copy behaviour also copies the list.", numChildren + 1, copyNode.getChildren().size());
-		assertEquals("Add to given node: Specified use given behaviour has more children now.", numChildren + 2, givenNode.getChildren().size());
-		assertEquals("Add to given node: test list is also increased", numChildren + 2, childrenToTest.size());
+		assertEquals("Add default node: size is correct: ", numChildren + 1, defaultNode.getChildren().size());
 		
 		childrenToTest.remove(nodeToAdd);
 		
-		assertEquals("Remove node from test list: Default behaviour is to copy the child list.", numChildren + 1, defaultNode.getChildren().size());
-		assertEquals("Remove node from test list: Specified copy behaviour also copies the list.", numChildren + 1, copyNode.getChildren().size());
-		assertEquals("Remove node from test list: Specified use given behaviour has less children now.", numChildren + 1, givenNode.getChildren().size());
+		assertEquals("Remove node from test list: size is correct: ", numChildren + 1, defaultNode.getChildren().size());
 
 		defaultNode.removeChild(nodeToAdd2);
-		copyNode.removeChild(nodeToAdd2);
-		givenNode.removeChild(nodeToAdd2);
 		
 		assertEquals("Remove from default node: Default behaviour is is back to start", numChildren, defaultNode.getChildren().size());
-		assertEquals("Remove from copy node: Specified copy behaviour is back to start.", numChildren, copyNode.getChildren().size());
-		assertEquals("Remove from given node: Specified use given behaviour is back to start.", numChildren, givenNode.getChildren().size());
 		assertEquals("Remove from given node: test list is back to start", numChildren, childrenToTest.size());
 	}
 	
