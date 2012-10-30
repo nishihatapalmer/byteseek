@@ -86,13 +86,10 @@ public class ChildrenNode extends BaseNode {
 
 	/**
 	 * Constructs a ChildrenNode with a given type, inversion status and list of child ParseTrees.
-	 * You also specify the strategy to use with the list of child ParseTrees: whether to copy the
-	 * list, or to use it directly as given.
 	 * 
 	 * @param type The ParseTreeType of this ChildrenNode.
 	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 * @param inverted Whether the value of this node should be inverted or not.
-	 * @param listStrategy Whether to copy the list passed in, or to use it directly.
 	 */
 	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
 			   			 final boolean inverted) {
