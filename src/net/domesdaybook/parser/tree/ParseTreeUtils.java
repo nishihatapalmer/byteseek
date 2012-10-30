@@ -52,7 +52,6 @@ public final class ParseTreeUtils {
 	///////////////
 	
 	private static final String TYPE_ERROR = "Parse tree type id [&d] with description [%s] is not supported by the parser.";
-	private static final String QUOTE = "\'";
 
 	
 	/////////////////
