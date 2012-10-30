@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012 All rights reserved.
+ * Copyright Matt Palmer 2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -29,36 +29,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
- This text describes the structure of the abstract syntax trees, represented by the 
- ParseTree interface using the built-in ParseTreeType types.  
- 
- There are two main types of ParseTree nodes: leaf nodes, which have values and structural
- nodes, which have no direct value but do have child ParseTrees.
- 
- Value-carrying ParseTrees:
- ---------------------------
- 
- 	ANY						Matches any byte.
- 
- The following types can be flagged as being inverted.
-	 
- 	BYTE					Has a single byte value
-	ALL_BITMASK				Has a single byte value, used to compare against all of its bits.
-	ANY_BITMASK				Has a single byte value, used to compare against any of its bits.
-	SET						A set of byte values.
-	
-	
-	CASE_SENSITIVE_STRING	Defines a string from which bytes are 
-	CASE_INSENSITIVE_STRING Matches the bytes in the string ... ?
-	
-	
-	RANGE					Defines a range of byte values. 
-	SEQUENCE
-	REPEAT
-	INTEGER
-	ALT
-	MANY
-	ONE_TO_MANY
-	OPTIONAL
-	
-	
+ /**
+  * net.domesdaybook.parser.tree is a package containing an interface for an 
+  * Abstract Syntax Tree, and a sub-package containing an implementation of it.
+  * A static utility class {@link ParseTreeUtils} simplifies the parsing of some of 
+  * the abstract syntax tree structure and values. 
+  * <p>
+  * The {@link ParseTree} interface defines a tree node which can have child tree nodes,
+  * and which may return a byte, integer or text value.  Byte values and nodes with children
+  * may also be inverted.
+  * <p>
+  * In addition, an enumeration {@link ParseTreeType} defines all the different types of
+  * ParseTree node. These range from simple nodes like BYTE, having a byte value, to
+  * SET, which may have many child nodes defining a set of bytes, to imperative nodes
+  * like REPEAT or ONE_TO_MANY.  Their structure is defined in the JavaDoc for each 
+  * enumeration value.
+  */
+ package net.domesdaybook.parser.tree;
