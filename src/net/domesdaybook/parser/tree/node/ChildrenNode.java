@@ -52,35 +52,6 @@ public class ChildrenNode extends BaseNode {
 	private List<ParseTree> children;
 	private boolean inverted; 
 	
-	/**
-	 * An enumeration to define two strategies when passing in lists of children.
-	 * Lists can either be copied when passed in, or the list given can be used
-	 * directly.
-	 * <p>
-	 * This is to support more efficient parsing when it is safe to pass in a list
-	 * of children you have already constructed, and to use that directly.
-	 * Note: this implementation always returns its internal list of children,
-	 * no matter what 
-	 * <p>
-	 * Design notes: it is possible this design is over complex.  
-	 * Possibly there should just be two ChildrenNode types - the normal one which does defensive
-	 * copying, and another Wrapping one when you know it's safe to use lists passed in an out.
-	 * 
-	 * @author Matt Palmer.
-	 */
-	public enum ListStrategy { 
-		
-		/**
-		 * Copy the list of children passed in to the current internal list.
-		 */
-		COPY_LIST, 
-		
-		/**
-		 * Use the list of children passed in directly, replacing the current internal list.
-		 */
-		USE_GIVEN_LIST
-	};
-	
 	
 	/**
 	 * Constructs a ChildrenNode with no children and a given type.
@@ -88,7 +59,7 @@ public class ChildrenNode extends BaseNode {
 	 * @param type The ParseTreeType of the node.
 	 */
 	public ChildrenNode(final ParseTreeType type) {
-		this(type, new ArrayList<ParseTree>(), false, ListStrategy.USE_GIVEN_LIST);
+		this(type,  null, false);
 	}
 	
 	/**
@@ -99,7 +70,7 @@ public class ChildrenNode extends BaseNode {
 	 * @param isInverted Whether the value of the node is inverted or not.
 	 */
 	public ChildrenNode(final ParseTreeType type, final boolean isInverted) {
-		this(type, new ArrayList<ParseTree>(), isInverted, ListStrategy.USE_GIVEN_LIST);
+		this(type, null, isInverted);
 	}
 	
 	/**
@@ -110,40 +81,8 @@ public class ChildrenNode extends BaseNode {
 	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 */
 	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children) {
-		this(type, children, false, ListStrategy.COPY_LIST);
+		this(type, children, false);
 	}
-	
-	/**
-	 * Constructs a ChildrenNode with a given type, copying the list of children passed in.
-	 * You can also specify whether the value of this node should be inverted or not.
-	 * 
-	 * @param type The ParseTreeType of this ChildrenNode.
-	 * @param children The list of child ParseTrees for this ChildrenNode.
-	 * @param inverted Whether the value of this node should be inverted or not.
-	 */
-	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
-						   final boolean inverted) {
-		this(type, children, inverted, ListStrategy.COPY_LIST);
-	}
-	
-	
-	/**
-	 * Constructs a ChildrenNode with a given type, and allows you to specify 
-	 * whether the list of children passed in should be copied, or just used directly as given.
-	 * <p>
-	 * Using a list passed in as given, without copying, allows this class to be used in areas 
-	 * where the list of internal children has already been built, and there is no advantage in
-	 * copying the list again.  To that extent, it is merely an optimisation. 
-	 * 
-	 * @param type The ParseTreeType of this ChildrenNode.
-	 * @param children The list of child ParseTrees for this ChildrenNode.
-	 * @param listStrategy Whether to copy the list passed in, or to use it directly.
-	 */
-	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children, 
-						   final ListStrategy listStrategy) {
-		this(type, children, false, listStrategy);
-	}
-	
 
 	/**
 	 * Constructs a ChildrenNode with a given type, inversion status and list of child ParseTrees.
@@ -156,10 +95,9 @@ public class ChildrenNode extends BaseNode {
 	 * @param listStrategy Whether to copy the list passed in, or to use it directly.
 	 */
 	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
-			   			   final boolean inverted,  final ListStrategy listStrategy) {
+			   			 final boolean inverted) {
 		super(type);
-		this.children = listStrategy == ListStrategy.USE_GIVEN_LIST?
-						 children : new ArrayList<ParseTree>(children);
+		this.children = new ArrayList<ParseTree>(children);
 		this.inverted = inverted;
 	}		
 	
@@ -184,20 +122,7 @@ public class ChildrenNode extends BaseNode {
 	 * @param children The list of children to copy in to this node, replacing any previous children.
 	 */
 	public void setChildren(final List<ParseTree> children) {
-		setChildren(children, ListStrategy.COPY_LIST);
-	}
-	
-	
-	/**
-	 * Sets a new list of children, replacing any previous children, either copying the
-	 * list or using it directly depending on the list strategy specified.
-	 * 
-	 * @param children The list of children to use in to this node, replacing any previous children.
-	 * @param listStrategy Whether to copy the list or just use the one given.
-	 */
-	public void setChildren(final List<ParseTree> children, final ListStrategy listStrategy) {
-		this.children = listStrategy == ListStrategy.USE_GIVEN_LIST?
-				children : new ArrayList<ParseTree>(children);
+		this.children = new ArrayList<ParseTree>(children);
 	}
 	
 	
