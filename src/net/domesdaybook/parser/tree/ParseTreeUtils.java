@@ -47,18 +47,30 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  */
 public final class ParseTreeUtils {
 
-	/**
-     * 
-     */
-	public static final String TYPE_ERROR = "Parse tree type id [&d] with description [%s] is not supported by the parser.";
-	/**
-     * 
-     */
-	public static final String QUOTE = "\'";
+	///////////////
+	// Constants //
+	///////////////
+	
+	private static final String TYPE_ERROR = "Parse tree type id [&d] with description [%s] is not supported by the parser.";
+	private static final String QUOTE = "\'";
 
+	
+	/////////////////
+	// Constructor //
+	/////////////////
+	
+	/**
+	 * Private constructor as this is a static utility class, so should not be
+	 * constructed.
+	 */
 	private ParseTreeUtils() {
 	}
 
+	
+	///////////////////////////
+	// Public static methods //
+	///////////////////////////
+	
 	/**
 	 * Returns a byte from its hexadecimal string representation.
 	 * 
@@ -81,6 +93,15 @@ public final class ParseTreeUtils {
 		}
 	}
 	
+	
+	/**
+	 * Returns the first child of a node, or throws a ParseException if
+	 * there is no such child.
+	 * 
+	 * @param node The node to get the first child of.
+	 * @return A node which is the first child of the node passed in.
+	 * @throws ParseException If there is no such child node.
+	 */
 	public static ParseTree getFirstChild(final ParseTree node) throws ParseException {
 	  final List<ParseTree> children = node.getChildren();
 	  if (children.size() > 0) {
@@ -90,66 +111,48 @@ public final class ParseTreeUtils {
 	                            node.getParseTreeType().name());
 	}
 
+	
+	/**
+	 * Returns the first range value of a node passed in.  A range is defined by
+	 * a node with two integer child nodes.  Each range value must be an integer
+	 * in the range 0 to 255, as they define byte values, and the node passed in
+	 * must have the type {@link net.domesdaybook.parser.tree.ParseTreeType.RANGE}.
+	 * 
+	 * @param rangeNode The node with two integer child nodes defining a range.
+	 * @return The integer value of the first range value.
+	 * @throws ParseException If a problem occurs parsing the range value,
+	 *                         or the range node or value is not correct.
+	 */
 	public static int getFirstRangeValue(final ParseTree rangeNode) throws ParseException {
 		return getRangeValue(rangeNode, 0);
 	}
 	
+	
+	/**
+	 * Returns the second range value of a node passed in.  A range is defined by
+	 * a node with two integer child nodes.  Each range value must be an integer
+	 * in the range 0 to 255, as they define byte values, and the node passed in
+	 * must have the type {@link net.domesdaybook.parser.tree.ParseTreeType.RANGE}.
+	 * 
+	 * @param rangeNode The node with two integer child nodes defining a range.
+	 * @return The integer value of the second range value.
+	 * @throws ParseException If a problem occurs parsing the range value,
+	 *                         or the range node or value is not correct.
+	 */
 	public static int getSecondRangeValue(final ParseTree rangeNode) throws ParseException {
 		return getRangeValue(rangeNode, 1);
-	}	
-	
-	private static int getRangeValue(final ParseTree rangeNode, final int valueIndex) throws ParseException {
-		final List<ParseTree> rangeChildren = rangeNode.getChildren();
-		if (rangeChildren.size() != 2) {
-			throw new ParseException("Ranges must have two integer values as child nodes." +
-			                          "Actual number of children was: " + rangeChildren.size());			
-		}
-		final int rangeValue = rangeChildren.get(0).getIntValue();
-		if (rangeValue < 0 || rangeValue > 255) {
-			throw new ParseException("Range values must be between 0 and 255." +
-			                          "Actual value was: " + rangeValue);
-		}
-		return rangeValue;		
-	}
-	
-	public static int getFirstRepeatValue(final ParseTree repeatNode) throws ParseException {
-		return getRepeatValue(repeatNode, 0);
-	}
-	
-	public static int getSecondRepeatValue(final ParseTree repeatNode) throws ParseException {
-		return getRepeatValue(repeatNode, 1);
-	}	
-	
-	public static ParseTree getNodeToRepeat(final ParseTree repeatNode) throws ParseException {
-		final List<ParseTree> repeatChildren = repeatNode.getChildren();
-		if (repeatChildren.size() != 3) {
-			throw new ParseException("Repeats must have three child nodes. " +
-			                          "Actual number of children was: " + repeatChildren.size());			
-		}
-		return repeatChildren.get(2);
-	}
-	
-	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
-		final List<ParseTree> repeatChildren = repeatNode.getChildren();
-		if (repeatChildren.size() != 3) {
-			throw new ParseException("Repeats must have three child nodes. " +
-			                          "Actual number of children was: " +repeatChildren.size());			
-		}
-		final ParseTree repeatValue = repeatChildren.get(valueIndex);
-		if (repeatValue.getParseTreeType() == ParseTreeType.INTEGER) {
-		  final int intValue = repeatValue.getIntValue();
-	    if (intValue < 1) {
-	      throw new ParseException("Repeat integer values must be at least one. " +
-	                                "Actual value was: " + intValue);
-	    }
-	    return intValue;
-		}
-		return -1; //FIXME: need to test for MANY node, which doesn't exist at the moment...	
-		//          But this function should return a negative number for a many node,
-		//          and throw a ParseException if the node isn't an integer or a many node.
 	}
 	
 	
+	/**
+	 * Returns a collection of unique Bytes representing all the bytes covered by the inclusive
+	 * range node passed in.
+	 * 
+	 * @param range The range node passed in.
+	 * @return A collection of unique bytes representing all the bytes in a range node passed in.
+	 * @throws ParseException If the node is not a range node, or does not have correct range
+	 *                         values as child nodes, or if another problem occurs parsing the node.
+	 */
 	public static Collection<Byte> getRangeValues(final ParseTree range) throws ParseException {
 		final int range1 = getFirstRangeValue(range);
 		final int range2 = getSecondRangeValue(range);
@@ -159,20 +162,105 @@ public final class ParseTreeUtils {
 	}	
 	
 	
+	/**
+	 * Returns the first repeat value of a node passed in.  A repeat is defined by
+	 * a node with three child nodes.  The first node is always an integer node, defining
+	 * the minimum number of repeats.  The second node can either be an integer node, 
+	 * or a Many node type, defining the maximum number of repeats.  The third node
+	 * is the node which must be repeated.
+	 * 
+	 * @param repeatNode The node defining a repeat.
+	 * @return The first repeat value (minimum number of repeats) for the repeat node.
+	 * @throws ParseException If the node passed in does not have type 
+	 *                         {@link net.domesdaybook.parser.tree.ParseTreeType.REPEAT},
+	 *                         the number of child nodes is not correct, there is no
+	 *                         first repeat value, or another problem occurs parsing.
+	 */
+	public static int getFirstRepeatValue(final ParseTree repeatNode) throws ParseException {
+		return getRepeatValue(repeatNode, 0);
+	}
+	
+	
+	/**
+	 * Returns the second repeat value of a node passed in.  A repeat is defined by
+	 * a node with three child nodes.  The first node is always an integer node, defining
+	 * the minimum number of repeats.  The second node can either be an integer node, 
+	 * or a Many node type, defining the maximum number of repeats.  The third node
+	 * is the node which must be repeated.
+	 * <p>
+	 * If the maximum value is MANY, rather than a specified integer, then this method
+	 * will return -1 to indicate that the number of repeats is unlimited.
+	 * 
+	 * @param repeatNode The node defining a repeat.
+	 * @return The second repeat value (maximum number of repeats) for the repeat node.
+	 * @throws ParseException If the node passed in does not have type 
+	 *                         {@link net.domesdaybook.parser.tree.ParseTreeType.REPEAT},
+	 *                         the number of child nodes is not correct, there is no
+	 *                         second repeat value, or another problem occurs parsing.
+	 */	
+	public static int getSecondRepeatValue(final ParseTree repeatNode) throws ParseException {
+		return getRepeatValue(repeatNode, 1);
+	}	
+	
+	
+	/**
+	 * Returns the node which should be repeated by a node of type 
+	 * {@link net.domesdaybook.parser.tree.ParseTreeType.REPEAT}.
+	 * 
+	 * @param repeatNode The parent repeat instruction node.
+	 * @return The node which should be repeated.
+	 * @throws ParseException
+	 */
+	public static ParseTree getNodeToRepeat(final ParseTree repeatNode) throws ParseException {
+		final List<ParseTree> repeatChildren = repeatNode.getChildren();
+		if (repeatChildren.size() != 3) {
+			throw new ParseException("Repeats must have three child nodes. " +
+			                          "Actual number of children was: " + repeatChildren.size());			
+		}
+		return repeatChildren.get(2);
+	}
+	
+	
+	/**
+	 * Returns a collection of unique byte values matching a bitmask, where all the bits
+	 * must match the bitmask.
+	 * 
+	 * @param allBitmask The all bitmask node.
+	 * @return A collection of bytes which match the all-bits bitmask.
+	 * @throws ParseException If there is no bitmask byte value or another problem occurs
+	 *                         parsing the value.
+	 */
 	public static Collection<Byte> getAllBitmaskValues(final ParseTree allBitmask) throws ParseException {
 		return ByteUtilities.getBytesMatchingAllBitMask(allBitmask.getByteValue());
 	}	
 	
 	
+	/**
+	 * Returns a collection of unique byte values matching a bitmask, where any of the bits
+	 * must match the bitmask.
+	 * 
+	 * @param allBitmask The any bitmask node.
+	 * @return A collection of bytes which match the any-bits bitmask.
+	 * @throws ParseException If there is no bitmask byte value or another problem occurs
+	 *                         parsing the value.
+	 */
 	public static Collection<Byte> getAnyBitmaskValues(final ParseTree anyBitmask) throws ParseException {
 		return ByteUtilities.getBytesMatchingAnyBitMask(anyBitmask.getByteValue());		
 	}		
 
 	
+	/**
+	 * Returns a collection of unique byte values which consist of the byte values of the 
+	 * String passed in, when encoded as ISO 8859-1 bytes.
+	 * 
+	 * @param string The string to get the bytes for.
+	 * @return A collection of bytes representing the unique bytes defined in the string passed in.
+	 * @throws ParseException If the string cannot be converted to ISO 8859-1 encoding.
+	 */
 	public static Collection<Byte> getStringAsSet(final ParseTree string) throws ParseException {
 		final Set<Byte> values = new LinkedHashSet<Byte>();
 		try {
-			final byte[] utf8Value = string.getTextValue().getBytes("US-ASCII");
+			final byte[] utf8Value = string.getTextValue().getBytes("ISO-8859-1");
 			ByteUtilities.addAll(utf8Value, values);
 			return values;
 		} catch (UnsupportedEncodingException e) {
@@ -181,23 +269,53 @@ public final class ParseTreeUtils {
 	}
 	
 	
+	/**
+	 * Returns a collection of unique byte values that represent all the byte values
+	 * in a String when encoded as ISO 8859-1 bytes.  Any lower or upper case characters
+	 * will have their counterpart added to the collection, ensuring case-insensitivity.
+	 * 
+	 * @param caseInsensitive The string to get a set of case insensitive byte values for.
+	 * @return A collection of bytes giving all the case insensitive bytes that string might match.
+	 * @throws ParseException If the string cannot be encoded in ISO 8859-1.
+	 */
 	public static Collection<Byte> getCaseInsensitiveStringAsSet(final ParseTree caseInsensitive) throws ParseException {
-		final Set<Byte> values = new LinkedHashSet<Byte>();
-		final String stringValue = caseInsensitive.getTextValue();
-		for (int charIndex = 0; charIndex < stringValue.length(); charIndex++) {
-			final char charAt = stringValue.charAt(charIndex);
-			if (charAt >= 'a' && charAt <= 'z') {
-				values.add((byte) Character.toUpperCase(charAt));
-
-			} else if (charAt >= 'A' && charAt <= 'A') {
-				values.add((byte) Character.toLowerCase(charAt));
+		try {
+			final byte[] byteValues = caseInsensitive.getTextValue().getBytes("ISO-8859-1");
+			final Set<Byte> values = new LinkedHashSet<Byte>();		
+			for (int charIndex = 0; charIndex < byteValues.length; charIndex++) {
+				final byte charAt = byteValues[charIndex];
+				if (charAt >= 'a' && charAt <= 'z') {
+					values.add((byte) Character.toUpperCase(charAt));
+				} else if (charAt >= 'A' && charAt <= 'A') {
+					values.add((byte) Character.toLowerCase(charAt));
+				}
+				values.add(charAt);
 			}
-			values.add((byte) charAt);
-		}
-		return values;
+			return values;
+		} catch (UnsupportedEncodingException e) {
+			throw new ParseException(e);
+		}		
 	}
 	
 	
+	/**
+	 * Calculates the value of a set given the parent set node (or inverted set
+	 * node).  Sets can contain bytes, strings (case sensitive & insensitive),
+	 * ranges, other sets nested inside them (both normal and inverted) and
+	 * bitmasks.
+	 * <p>
+	 * This method does invert the set of bytes returned if the set node passed in
+	 * is inverted.  If you want to calculate the values of the set as defined in 
+	 * the set (regardless of whether the set node itself is inverted), then
+	 * use the method {@link #getSetValues(ParseTree)}.
+	 * 
+	 * @param set
+	 * 				The set node to calculate a set of byte values for, taking into
+	 *              account whether the set node is inverted or not.
+	 * @return A set of byte values defined by the node.
+	 * @throws ParseException 
+	 *        		If a problem occurs parsing the node.
+	 */
 	public static Set<Byte> calculateSetValues(final ParseTree set) throws ParseException {
 		final Set<Byte> setValues = getSetValues(set);
 		if (set.isValueInverted()) {
@@ -209,17 +327,20 @@ public final class ParseTreeUtils {
 	
 	/**
 	 * Calculates a value of a set given the parent set node (or inverted set
-	 * node) Sets can contain bytes, strings (case sensitive & insensitive),
+	 * node). Sets can contain bytes, strings (case sensitive & insensitive),
 	 * ranges, other sets nested inside them (both normal and inverted) and
 	 * bitmasks.
 	 * <p>
 	 * This method does not invert the set bytes returned if the root set node is inverted.
 	 * It preserves the bytes as-defined in the set, leaving the question of whether to
 	 * invert the bytes defined in the set passed in to any clients of the code.
-	 * 
+	 * <p>
+	 * If you want the set values calculating taking into account the inversion 
+	 * status of the set node itself, please call the method {@link #calculateSetValues(ParseTree)}.
+	 * <p>
 	 * This can be recursive procedure if sets are nested within one another.
 	 * 
-	 * @param node
+	 * @param set
 	 *            The set node to calculate a set of byte values for.
 	 * @return A set of byte values defined by the node.
 	 * @throws ParseException
@@ -250,6 +371,83 @@ public final class ParseTreeUtils {
 	}
 
 	
+	////////////////////////////
+	// Private static methods //
+	////////////////////////////
+	
+	/**
+	 * Private utility method which gets the nominated range value and validates it
+	 * to make sure it is between 0 and 255.  Also validates that the range node itself
+	 * only has two children, and that the range node has type ParseTreeType.RANGE.
+	 * 
+	 * @param rangeNode The range node to get a value for.
+	 * @param valueIndex The number of the range value (first: 0 or second: 1).
+	 * @return The integer value of the first or second range value.
+	 * @throws ParseException If a problem occurs parsing the range value, 
+	 *                         or the range node or value is not correct.
+	 */
+	private static int getRangeValue(final ParseTree rangeNode, final int valueIndex) throws ParseException {
+		if (rangeNode.getParseTreeType() != ParseTreeType.RANGE) {
+			throw new ParseException("Node is not a RANGE node.  It has type: " + rangeNode.getParseTreeType());
+		}
+		final List<ParseTree> rangeChildren = rangeNode.getChildren();
+		if (rangeChildren.size() != 2) {
+			throw new ParseException("Ranges must have two integer values as child nodes." +
+			                          "Actual number of children was: " + rangeChildren.size());			
+		}
+		final int rangeValue = rangeChildren.get(0).getIntValue();
+		if (rangeValue < 0 || rangeValue > 255) {
+			throw new ParseException("Range values must be between 0 and 255." +
+			                          "Actual value was: " + rangeValue);
+		}
+		return rangeValue;		
+	}
+	
+
+	/**
+	 * Private utility method which gets the nominated repeat value and validates it
+	 * to make sure it is either a positive integer, or a MANY node.  Also validates that
+	 * the repeat node itself has three children, and that the repeat node has type
+	 * ParseTreetype.REPEAT.
+	 * 
+	 * @param repeatNode The repeat node to get a repeat value for.
+	 * @param valueIndex the number of the repeat value (min:0, max: 1).
+	 * @return An integer value of the min or max repeat.  If the max repeat is unlimited,
+	 *          then -1 will be returned.
+	 * @throws ParseException If the repeat node does not have type ParseTreeType.REPEAT,
+	 *                         it does not have three children, or an integer value supplied
+	 *                         is not positive.
+	 */
+	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
+		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT) {
+			throw new ParseException("Node is not a REPEAT node.  It has type: " + repeatNode.getParseTreeType());
+		}
+		final List<ParseTree> repeatChildren = repeatNode.getChildren();
+		if (repeatChildren.size() != 3) {
+			throw new ParseException("Repeats must have three child nodes. " +
+			                          "Actual number of children was: " +repeatChildren.size());			
+		}
+		final ParseTree repeatValue = repeatChildren.get(valueIndex);
+		if (repeatValue.getParseTreeType() == ParseTreeType.INTEGER) {
+		    final int intValue = repeatValue.getIntValue();
+		    if (intValue < 1) {
+		      throw new ParseException("Repeat integer values must be at least one. " +
+		                                "Actual value was: " + intValue);
+		    }
+		    return intValue;
+		}
+		return -1; //FIXME: need to test for MANY node, which doesn't exist at the moment...	
+		//          But this function should return a negative number for a many node,
+		//          and throw a ParseException if the node isn't an integer or a many node.
+	}
+	
+	
+	/**
+	 * Returns a nicely formatted type error message given a node.
+	 * 
+	 * @param node The node to get a type error message for.
+	 * @return A type error message for that node.
+	 */
 	private static String getTypeError(final ParseTree node) {
 		final ParseTreeType type = node.getParseTreeType();
 		return String.format(TYPE_ERROR, type, type.getDescription());
