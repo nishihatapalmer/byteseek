@@ -30,6 +30,7 @@
  */
 package net.domesdaybook.parser.regex;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.antlr.runtime.Token;
@@ -60,6 +61,11 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 	 */
 	@Override
 	public Object create(Token payload) {
+		
+		if (payload == null) {
+			return new StructuralNode(null, null);
+		}
+		
 		switch (payload.getType()) {
 
 		case AntlrRegexParser.BYTE:
@@ -154,14 +160,18 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		// We know that all tree nodes are ParseTree implementations.
 		@Override
 		public List<ParseTree> getChildren() {
-			return super.getChildren();
+			List<ParseTree> children = super.getChildren();
+			return children == null? Collections.EMPTY_LIST : children;
 		}
 
 		protected final byte parseHexByte(final String hexByte) throws ParseException {
+			if (hexByte == null || hexByte.length() != 2) {
+				throw new ParseException("Not a hex byte: [" + hexByte + ']');
+			}
 			try {
-				return Byte.parseByte(hexByte, 16);
+				return (byte) Integer.parseInt(hexByte, 16);
 			} catch (NumberFormatException nfe) {
-				throw new ParseException("Not a hex byte", nfe);
+				throw new ParseException("Not a hex byte: [" + hexByte + ']', nfe);
 			}
 		}
 
