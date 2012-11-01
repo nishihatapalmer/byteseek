@@ -99,31 +99,40 @@ public class RegexParser implements Parser<ParseTree> {
 	private ParseTree parseToAbstractSyntaxTree(final String expression)
 			throws ParseException, RecognitionException {
 		final ANTLRStringStream input = new ANTLRStringStream(expression);
-		final AntlrRegexLexer lexer = new AntlrRegexLexer(input);
-		if (lexer.getNumberOfSyntaxErrors() == 0) {
-			final CommonTokenStream tokens = new CommonTokenStream(lexer);
-			final AntlrRegexParser parser = new AntlrRegexParser(tokens) {
+		try {
+			final AntlrRegexLexer lexer = new AntlrRegexLexer(input) {
 				@Override
-				public void emitErrorMessage(final String msg) {
-					throw new AntlrParseException(msg);
+				public void reportError(RecognitionException e) {
+					throw new AntlrParseException(e.getMessage(), e);
 				}
 			};
 			
-			try {
+			if (lexer.getNumberOfSyntaxErrors() == 0) {
+				final CommonTokenStream tokens = new CommonTokenStream(lexer);
+				final AntlrRegexParser parser = new AntlrRegexParser(tokens) {
+					@Override
+					public void emitErrorMessage(final String msg) {
+						throw new AntlrParseException(msg);
+					}
+				};
+				
 				parser.setTreeAdaptor(antlrParseTreeAdaptor);
-				return (ParseTree) parser.start().getTree();
-			} catch (final AntlrParseException e) {
-				throw new ParseException(e.getMessage(), e);
+				AntlrRegexParser.start_return result = parser.start();
+				return (ParseTree) result.getTree();
 			}
+		} catch (final AntlrParseException e) {
+			throw new ParseException(e.getMessage(), e);
 		}
-		throw new ParseException("Parse error: " + lexer.getNumberOfSyntaxErrors() +
-							      " syntax errors in " + expression);
+		throw new ParseException("Unknown problem occurred parsing: " + expression);
 	}
 
 
-	private static class AntlrParseException extends RuntimeException {
+	private static final class AntlrParseException extends RuntimeException {
 		public AntlrParseException(final String message) {
 			super(message);
+		}
+		public AntlrParseException(final String message, final Throwable cause) {
+			super(message, cause);
 		}
 	}
 
