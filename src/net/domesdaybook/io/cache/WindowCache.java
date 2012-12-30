@@ -29,12 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader.cache;
+package net.domesdaybook.io.cache;
 
-import net.domesdaybook.reader.Window;
+import net.domesdaybook.io.Window;
 
 /**
- * A interface for classes which cache {@link net.domesdaybook.reader.Window} objects.
+ * A interface for classes which cache {@link net.domesdaybook.io.Window} objects.
  * It also provides the ability to subscribe for notifications that a
  * Window object is leaving the cache.
  * 
@@ -44,7 +44,7 @@ public interface WindowCache {
     
     
     /**
-     * Returns the {@link net.domesdaybook.reader.Window} at the position specified.
+     * Returns the {@link net.domesdaybook.io.Window} at the position specified.
      * The position must be one at which a Window object begins.  It will not return
      * a Window for a position which simply exists within a Window.  If no Window
      * exists in the cache at the exact position specified, then null is returned.
@@ -56,7 +56,7 @@ public interface WindowCache {
     
     
     /**
-     * Adds a {@link net.domesdaybook.reader.Window} to the cache.
+     * Adds a {@link net.domesdaybook.io.Window} to the cache.
      * 
      * @param window The Window to add to the cache.
      */
@@ -64,14 +64,14 @@ public interface WindowCache {
     
     
     /**
-     * Clears all {@link net.domesdaybook.reader.Window}s from the cache.
+     * Clears all {@link net.domesdaybook.io.Window}s from the cache.
      */
     public void clear();
     
     
     /**
      * Subscribes a {@link WindowObserver} to this cache for notification when a
-     * {@link net.domesdaybook.reader.Window} leaves it.
+     * {@link net.domesdaybook.io.Window} leaves it.
      * 
      * @param observer The observer who wants notification that a Window is leaving the cache.
      */
@@ -90,13 +90,13 @@ public interface WindowCache {
     
     
     /**
-     * An interface for objects which want notification when a {@link net.domesdaybook.reader.Window}
+     * An interface for objects which want notification when a {@link net.domesdaybook.io.Window}
      * is leaving a cache.
      */
     public interface WindowObserver {
         
         /**
-         * A method which is called on the WindowObserver when a {@link net.domesdaybook.reader.Window}
+         * A method which is called on the WindowObserver when a {@link net.domesdaybook.io.Window}
          * leaves a cache.
          * @param window The Window which is leaving a cache.
          * @param fromCache The cache that the Window is leaving.

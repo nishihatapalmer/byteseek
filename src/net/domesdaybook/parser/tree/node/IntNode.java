@@ -36,10 +36,7 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 
 
 /**
- * A ParseTree node that has an int value.  They have a ParseTreeType of
- * ParseTreeType.INTEGER.
-* <p>
- * IntNodes have no children, and will return an empty list of children.  
+ * A ParseTree node that has an int value and a type of INTEGER.
  *  
  * @author Matt Palmer.
  *
@@ -55,9 +52,9 @@ public class IntNode extends BaseNode {
    */
   public IntNode(final int value) {
 	super(ParseTreeType.INTEGER);
-    this.value = value;
+	this.value = value;
   }
-
+  
   /**
    * Returns the integer value of this IntNode.
    * @return int The integer value of this IntNode.
@@ -74,6 +71,12 @@ public class IntNode extends BaseNode {
    */
   public void setIntValue(final int value) {
     this.value = value;
+  }
+  
+  
+  @Override
+  public String toString() {
+	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + ']';
   }
   
 }

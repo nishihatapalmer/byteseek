@@ -35,10 +35,11 @@ import net.domesdaybook.util.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
@@ -107,7 +108,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
+    public List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Initialise
@@ -201,7 +202,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
+    public List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
          // Initialise 

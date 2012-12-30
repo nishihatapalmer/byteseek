@@ -42,6 +42,8 @@ package net.domesdaybook.parser.tree;
  */
 public enum ParseTreeType {
 	
+	//TODO: javadoc now incorrect?  Don't throw ParseException for isValueInverted.
+	
 	/////////////////////////////////////////////////
 	// Value-specifying leaf node types            //
 	//											   //
@@ -69,9 +71,9 @@ public enum ParseTreeType {
      * An INTEGER type has a single integer value, which is accessible via a call to 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()}.
 	 * <p>
-	 * The value can be inverted, meaning it will match all other integer values.
+	 * The value can not be inverted.
 	 * Calling {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
-	 * tells you if the value of the node is inverted.  
+	 * will always return false.
 	 * <p>
 	 * Implementations should throw a {@link net.domesdaybook.parser.ParseException} 
 	 * if calls are made to either {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()} or
@@ -157,12 +159,7 @@ public enum ParseTreeType {
 	 * <p>
 	 * Implementations should throw a {@link net.domesdaybook.parser.ParseException} if calls are made to 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()} or
-	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()}.  Since a STRING can not be inverted, 
-	 * calls to {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
-	 * should also throw a ParseException.
-	 * TODO: should things which cannot be inverted throw an exception if asked, or just return false?
-	 *        Pro throwing:  you shouldn't be calling this on something which can't be inverted in the first place.
-	 *        Cons throwing: it has a value (unlike say SEQUENCE), it's just that the value is not ever invertible.
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()}.  
 	 * <p>
 	 * A STRING type has no children, and must return an empty list of child nodes if 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getChildren()} is called.
@@ -298,12 +295,19 @@ public enum ParseTreeType {
 	 */
 	SEQUENCE("An ordered sequence of child nodes to match"),
 
-	//TODO: repeat nodes can have a MANY node... still not implemented.
-	//      Or should we have a REPEAT_MIN_TO_MANY node type, then the nodes will simply mean different things.
-	//      Should also consider reordering the child positions to be the node to repeat first, with min/max nodes following.
-	//TODO: Check implementation of repeat in parsers / compilers so they support MANY nodes properly.
-	REPEAT("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER or MANY child) number of times."),
+	//TODO: javadoc for these types.
+	
+	//TODO: update compilers to work with the new ast types.
+	
+	REPEAT("Repeat the child node the number of times contained in this node with an int value."),
+	
+	
+	REPEAT_MIN_TO_MANY("Repeat the child node at least the number of times contained in this node with an int value, but which could repeat more than that."),
 
+	
+	REPEAT_MIN_TO_MAX("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER or MANY child) number of times."),
+	
+	
 	/**
 	 * An ALTERNATIVES type specifies that each of its children should be treated as alternatives.
 	 * <p>

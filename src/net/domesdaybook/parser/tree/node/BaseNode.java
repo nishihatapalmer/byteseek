@@ -55,6 +55,8 @@ public class BaseNode implements ParseTree {
 
   private final ParseTreeType type;
   
+  public static final ParseTree ANY_NODE = new BaseNode(ParseTreeType.ANY);
+  
   /**
    * Constructs a base node of the given type.
    * 
@@ -100,7 +102,7 @@ public class BaseNode implements ParseTree {
    * Always returns false.
    */
   @Override
-  public boolean isValueInverted() throws ParseException {
+  public boolean isValueInverted() {
     return false;
   }
   
@@ -110,6 +112,12 @@ public class BaseNode implements ParseTree {
   @Override
   public List<ParseTree> getChildren() {
     return Collections.emptyList();
+  }
+  
+  
+  @Override
+  public String toString() {
+	  return getClass().getSimpleName() + "[" + type + ']';
   }
 
 }

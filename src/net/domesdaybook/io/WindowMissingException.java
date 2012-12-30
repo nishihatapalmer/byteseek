@@ -29,12 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.IOException;
 
 /**
- * An exception thrown when a {@link Reader} cannot access a Window which it
+ * An exception thrown when a {@link WindowReader} cannot access a Window which it
  * should be able to return. It extends {@link java.io.IOException}, which means
  * it is a checked exception. However, it will be thrown from methods which can
  * also throw IOExceptions for other reasons, so no specific catch block is
@@ -42,8 +42,8 @@ import java.io.IOException;
  * you want to know that this specific problem has occurred.
  * <p>
  * This may be because an inappropriate
- * {@link net.domesdaybook.reader.cache.WindowCache} object was used for the
- * input source of the Reader and the access pattern used with it.
+ * {@link net.domesdaybook.io.cache.WindowCache} object was used for the
+ * input source of the WindowReader and the access pattern used with it.
  * 
  * @author Matt Palmer.
  */

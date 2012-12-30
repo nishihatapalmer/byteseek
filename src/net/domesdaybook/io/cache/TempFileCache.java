@@ -29,19 +29,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-package net.domesdaybook.reader.cache;
+package net.domesdaybook.io.cache;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
-import net.domesdaybook.reader.ReadUtils;
-import net.domesdaybook.reader.Window;
+
+import net.domesdaybook.io.ReadUtils;
+import net.domesdaybook.io.Window;
 
 
 /**
- * A {@link WindowCache} which stores {@link net.domesdaybook.reader.Window} objects
+ * A {@link WindowCache} which stores {@link net.domesdaybook.io.Window} objects
  * into a temporary file for later retrieval.  It maintains a map of the start positions
  * of each window against the position in the file where the Window was stored.
  * <p>

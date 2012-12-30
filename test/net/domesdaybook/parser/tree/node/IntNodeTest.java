@@ -88,11 +88,7 @@ public class IntNodeTest {
 			fail("IntNode should not throw a ParseException if asked for the byte value.");
 		}
 		
-		try {
-			assertFalse("IntNode value is not inverted: " , node.isValueInverted());
-		} catch (ParseException e) {
-			fail("IntNode should not throw a ParseException if asked if the value is inverted.");
-		}
+		assertFalse("IntNode value is not inverted: " , node.isValueInverted());
 		
 		try { 
 			node.getByteValue();

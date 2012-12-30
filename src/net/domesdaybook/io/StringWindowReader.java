@@ -29,30 +29,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
-import net.domesdaybook.reader.cache.NoCache;
+import net.domesdaybook.io.cache.NoCache;
 
 /**
- * A {@link Reader} which gives access to the bytes of a String, either using
+ * A {@link WindowReader} which gives access to the bytes of a String, either using
  * the default platform encoding, or using a specific
  * {@link java.nio.charset.Charset}.
  * <p>
- * This Reader is thread-safe, as it is immutable.
+ * This WindowReader is thread-safe, as it is immutable.
  * 
  * @author Matt Palmer
  */
-public class StringReader extends AbstractReader {
+public class StringWindowReader extends AbstractWindowReader {
 
 	private final byte[] bytes;
 	private final Charset charset;
 
 	/**
-	 * Constructs a StringReader from a {@link java.lang.String}, using the
+	 * Constructs a StringWindowReader from a {@link java.lang.String}, using the
 	 * platform default {@link java.nio.charset.Charset} to encode the bytes of
 	 * the String.
 	 * 
@@ -60,12 +60,12 @@ public class StringReader extends AbstractReader {
 	 *            The String to read using the platform specific charset
 	 *            encoding.
 	 */
-	public StringReader(final String string) {
+	public StringWindowReader(final String string) {
 		this(string, Charset.defaultCharset());
 	}
 
 	/**
-	 * Constructs a StringReader from a {@link java.lang.String}, using the
+	 * Constructs a StringWindowReader from a {@link java.lang.String}, using the
 	 * supplied {@link java.nio.charset.Charset} to encode the bytes of the
 	 * String.
 	 * 
@@ -77,28 +77,28 @@ public class StringReader extends AbstractReader {
 	 * @throws UnsupportedCharsetException
 	 *             If the charset name is not supported.
 	 */
-	public StringReader(final String string, final String charsetName) {
+	public StringWindowReader(final String string, final String charsetName) {
 		this(string, Charset.forName(charsetName));
 	}
 
 	/**
 	 * Does not need a cache, as we will create a single window large enough to
-	 * store the entire string. The AbstractReader already holds on to the last
+	 * store the entire string. The AbstractWindowReader already holds on to the last
 	 * Window created, or creates it if it's not already there. So no further
 	 * caching is required.
 	 * 
 	 * @param string
 	 * @param charset
 	 */
-	public StringReader(final String string, final Charset charset) {
+	public StringWindowReader(final String string, final Charset charset) {
 		super(string == null ? 0 : string.length(), NoCache.NO_CACHE);
 		if (string == null) {
 			throw new IllegalArgumentException(
-					"Null string passed in to StringReader.");
+					"Null string passed in to StringWindowReader.");
 		}
 		if (charset == null) {
 			throw new IllegalArgumentException(
-					"Null charset passed in to StringReader.");
+					"Null charset passed in to StringWindowReader.");
 		}
 		bytes = string.getBytes(charset);
 		this.charset = charset;
@@ -128,7 +128,7 @@ public class StringReader extends AbstractReader {
 	 * Returns a new String based on the byte encoding and Charset used.
 	 * 
 	 * @return A new String that replicates the original String used to
-	 *         construct this Reader.
+	 *         construct this WindowReader.
 	 */
 	public String getString() {
 		return new String(bytes, charset);
@@ -136,9 +136,9 @@ public class StringReader extends AbstractReader {
 
 	/**
 	 * Returns the {@link java.nio.charset.Charset} used to encode the bytes in
-	 * this Reader.
+	 * this WindowReader.
 	 * 
-	 * @return The Charset used to encode the bytes in this Reader.
+	 * @return The Charset used to encode the bytes in this WindowReader.
 	 */
 	public Charset getCharset() {
 		return charset;

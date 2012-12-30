@@ -36,6 +36,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
@@ -44,8 +47,6 @@ import net.domesdaybook.matcher.multisequence.MultiSequenceUtils;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.util.object.LazyObject;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.sequence.BoyerMooreHorspoolSearcher;
@@ -148,7 +149,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, final long fromPosition, 
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, final long fromPosition, 
         final long toPosition) throws IOException {
             
         // Get the objects needed to search:
@@ -267,7 +268,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Initialise
@@ -290,7 +291,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                                      (int) distanceToEnd : 0;
             int arraySearchPosition = arrayStartPosition;
             
-            // Search using the byte array for shifts, using the Reader
+            // Search using the byte array for shifts, using the WindowReader
             // for verifiying the sequence with the sequences:          
             ARRAY_SEARCH: while (arraySearchPosition >= lastSearchPosition) {
                 

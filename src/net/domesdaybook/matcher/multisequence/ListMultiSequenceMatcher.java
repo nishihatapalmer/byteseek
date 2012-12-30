@@ -36,9 +36,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 
 /**
  * A very simple MultiSequenceMatcher which simply tries all of the
@@ -147,7 +148,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) 
+    public List<SequenceMatcher> allMatches(final WindowReader reader, final long matchPosition) 
         throws IOException {
         List<SequenceMatcher> result = Collections.emptyList();         
         final List<SequenceMatcher> localMatchers = matchers;
@@ -202,7 +203,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */ 
     @Override
-    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, 
+    public Collection<SequenceMatcher> allMatchesBackwards(final WindowReader reader, 
             final long matchPosition) throws IOException {
         List<SequenceMatcher> result = Collections.emptyList();         
         final List<SequenceMatcher> localMatchers = matchers;
@@ -258,7 +259,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */   
     @Override
-    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) 
+    public SequenceMatcher firstMatch(final WindowReader reader, final long matchPosition) 
             throws IOException {
         final List<SequenceMatcher> localMatchers = matchers;
         for (final SequenceMatcher sequence : localMatchers) {
@@ -300,7 +301,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */ 
     @Override 
-    public SequenceMatcher firstMatchBackwards(final Reader reader, 
+    public SequenceMatcher firstMatchBackwards(final WindowReader reader, 
             final long matchPosition) throws IOException {
         final List<SequenceMatcher> localMatchers = matchers;
         final long onePastMatchPosition = matchPosition + 1;
@@ -344,7 +345,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */ 
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) 
+    public boolean matches(final WindowReader reader, final long matchPosition) 
             throws IOException {
         final List<SequenceMatcher> localMatchers = matchers;
         for (final SequenceMatcher sequence : localMatchers) {
@@ -386,7 +387,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */ 
     @Override
-    public boolean matchesBackwards(final Reader reader, final long matchPosition) throws IOException { 
+    public boolean matchesBackwards(final WindowReader reader, final long matchPosition) throws IOException { 
         final List<SequenceMatcher> localMatchers = matchers;
         final long onePastMatchPosition = matchPosition + 1;
         for (final SequenceMatcher sequence : localMatchers) {

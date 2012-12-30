@@ -36,7 +36,8 @@ import net.domesdaybook.parser.tree.ParseTreeType;
 
 /**
  * A ParseTree node that has a byte value.  The value can optionally also be inverted.
- * ByteNodes have a ParseTreeType of ParseTreeType.BYTE.
+ * ByteNodes have a ParseTreeType of ParseTreeType.BYTE by default, but can also be of
+ * type ANY_BITMASK and ALL_BITMASK.
  * <p>
  * ByteNodes have no children, and will return an empty list of children.  
  * 
@@ -48,6 +49,29 @@ public class ByteNode extends BaseNode {
   private byte value;
   private boolean inverted; 
   
+  
+  private static class NodeCache {
+	  
+	  static final ByteNode[] values = new ByteNode[256];
+	  
+	  static {
+		  for (int i = 0; i < 256; i++) {
+			  values[i] = new ByteNode((byte) (i & 0xFF));
+		  }
+	  }
+	  
+  }
+  
+  public static ByteNode valueOf(final byte value) {
+	  return NodeCache.values[value & 0xff];
+  }
+  
+  
+  public static ByteNode valueOf(final byte value, final boolean inverted) {
+	  return inverted? new ByteNode(value, inverted) : valueOf(value);
+  }
+  
+  
   /**
    * Constructs a ByteNode with the given value.
    * 
@@ -56,6 +80,17 @@ public class ByteNode extends BaseNode {
   public ByteNode(final byte value) {
     this(value, false);
   }
+  
+  
+  /**
+   * Constructs a ByteNode with the given type and value.
+   * @param type
+   * @param value
+   */
+  public ByteNode(final ParseTreeType type, final byte value) {
+	  this(type, value, false);
+  }
+  
 
   /**
    * Constructs a ByteNode with the given value and inversion status.
@@ -64,11 +99,24 @@ public class ByteNode extends BaseNode {
    * @param inverted Whether the value should be inverted or not.
    */
   public ByteNode(final byte value, final boolean inverted) {
-    super(ParseTreeType.BYTE);
-    this.value = value;
-    this.inverted = inverted;
+    this(ParseTreeType.BYTE, value, inverted);
   }
 
+  
+  /**
+   * Constructs a ByteNode with the given type, value and inversion status.
+   * 
+   * @param type The type of the ByteNode. Allowed values are BYTE, ANY_BITMASK and ALL_BITMASK.
+   * @param value The value of the ByteNode.
+   * @param inverted Whether the value should be inverted or not.
+   */
+  public ByteNode(final ParseTreeType type, final byte value, final boolean inverted) {
+	  super(type);
+	  this.value = value;
+	  this.inverted = inverted;
+  }
+
+  
   /**
    * {@inheritDoc}
    */
@@ -91,7 +139,7 @@ public class ByteNode extends BaseNode {
    * @return boolean True if the value should be inverted.
    */
   @Override
-  public boolean isValueInverted() throws ParseException {
+  public boolean isValueInverted() {
 	return inverted;
   }
 
@@ -103,5 +151,10 @@ public class ByteNode extends BaseNode {
   public void setValueInverted(final boolean isValueInverted) {
 	this.inverted = isValueInverted;
   }	  
+  
+  @Override
+  public String toString() {
+	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + " inverted: " + inverted + ']';
+  }
 
 }

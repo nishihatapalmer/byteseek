@@ -59,7 +59,7 @@ import net.domesdaybook.util.object.LazyObject;
  * <p>
  * It is similar in principle to the {@link SetHorspoolSearcher}, in that it calculates
  * a table of safe shifts it can make working from the ends of the sequences (not the start).
- * It scans along, shifting across the Reader or byte array until it finds a shift of zero, 
+ * It scans along, shifting across the WindowReader or byte array until it finds a shift of zero, 
  * when it has to verify whether there is genuinely a match at that position.
  * <p>
  * However, it performs much better for large numbers of sequences than Set Horspool.

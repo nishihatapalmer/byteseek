@@ -17,8 +17,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.domesdaybook.reader.FileReader;
-import net.domesdaybook.reader.Reader;
+import net.domesdaybook.io.FileWindowReader;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.searcher.BackwardSearchIterator;
 import net.domesdaybook.searcher.ForwardSearchIterator;
 import net.domesdaybook.searcher.SearchResult;
@@ -67,11 +67,11 @@ public final class SearcherProfiler {
 		final ProfileResults results = new ProfileResults();
 
 		//System.out.println("Profiling " + searcher + " over ASCII file.");
-		FileReader reader = new FileReader(getFile("/TestASCII.txt"));
+		FileWindowReader reader = new FileWindowReader(getFile("/TestASCII.txt"));
 		results.profile("ASCII file", reader, searcher, numberOfSearches);
 
 		//System.out.println("Profiling " + searcher + " over ZIP file.");
-		//FileReader reader2 = new FileReader(getFile("/TestASCII.zip"));
+		//FileWindowReader reader2 = new FileWindowReader(getFile("/TestASCII.zip"));
 		//results.profile("ZIP file", reader2, searcher, numberOfSearches);        
 
 		return results;
@@ -98,7 +98,7 @@ public final class SearcherProfiler {
 			return results;
 		}
 
-		private void profile(String profileDescription, Reader reader, Searcher<?> searcher,
+		private void profile(String profileDescription, WindowReader reader, Searcher<?> searcher,
 				int numberOfSearches) throws IOException {
 			startProfiling(profileDescription);
 			currentProfile.profile(searcher, reader, numberOfSearches);
@@ -202,7 +202,7 @@ public final class SearcherProfiler {
 		 * @param reader
 		 * @throws IOException
 		 */
-		public void profile(Searcher<?> searcher, Reader reader, int numberOfSearches)
+		public void profile(Searcher<?> searcher, WindowReader reader, int numberOfSearches)
 				throws IOException {
 
 			// log forward preparation time.
@@ -258,7 +258,7 @@ public final class SearcherProfiler {
 			return positions;
 		}
 
-		private List<SearchResult<?>> searchEntireReaderForwards(Searcher<?> searcher, Reader reader)
+		private List<SearchResult<?>> searchEntireReaderForwards(Searcher<?> searcher, WindowReader reader)
 				throws IOException {
 			final List<SearchResult<?>> positions = new ArrayList<SearchResult<?>>();
 			final ForwardSearchIterator<?> iterator = new ForwardSearchIterator(searcher, reader);
@@ -278,7 +278,7 @@ public final class SearcherProfiler {
 		}
 
 		private List<SearchResult<?>> searchEntireReaderBackwards(Searcher<?> searcher,
-				Reader reader) throws IOException {
+				WindowReader reader) throws IOException {
 			final List<SearchResult<?>> positions = new ArrayList<SearchResult<?>>();
 			final BackwardSearchIterator<?> iterator = new BackwardSearchIterator(searcher, reader);
 			while (iterator.hasNext()) {

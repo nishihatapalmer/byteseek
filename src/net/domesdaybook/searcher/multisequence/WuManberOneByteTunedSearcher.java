@@ -33,10 +33,11 @@ package net.domesdaybook.searcher.multisequence;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.SearchUtils;
 
@@ -160,7 +161,7 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
@@ -265,7 +266,7 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Get the objects needed to search:
         final SearchInfo info = backwardInfo.get();
@@ -288,7 +289,7 @@ public class WuManberOneByteTunedSearcher extends AbstractWuManberTunedSearcher 
                                      (int) distanceToEnd : 0;
             int arraySearchPosition = arrayStartPosition;
 
-            // Search using the byte array for shifts, using the Reader
+            // Search using the byte array for shifts, using the WindowReader
             // for verifiying the sequence with the sequences:          
             while (arraySearchPosition >= lastSearchPosition) {
 

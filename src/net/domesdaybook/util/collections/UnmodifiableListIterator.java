@@ -43,8 +43,8 @@ import java.util.NoSuchElementException;
  */
 public class UnmodifiableListIterator<T> implements Iterator<T> {
 
-	private final List<T>	list;
-	private int				index;
+	private final List<T> list;
+	private int           index;
 
 	/**
 	 * Constructs an UnmodifiableListIterator.

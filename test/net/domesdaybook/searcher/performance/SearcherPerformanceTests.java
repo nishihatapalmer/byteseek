@@ -66,7 +66,7 @@ import net.domesdaybook.searcher.sequence.SundayQuickSearcher;
 /**
  * Runs the searchers against different files and inputs to search for,
  * and collects average search times for searching forwards and backwards
- * over byte arrays and using the Reader interface.
+ * over byte arrays and using the WindowReader interface.
  * <p>
  * Warms up the searchers first before getting final performance results
  * in order that the JIT compiler has reached a steady state before 

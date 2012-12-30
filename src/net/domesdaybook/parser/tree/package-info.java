@@ -37,7 +37,7 @@
   * <p>
   * The {@link ParseTree} interface defines a tree node which can have child tree nodes,
   * and which may return a byte, integer or text value.  Byte values and nodes with children
-  * may also be inverted.
+  * may also be inverted, which means they should match all other values than the one they define.
   * <p>
   * In addition, an enumeration {@link ParseTreeType} defines all the different types of
   * ParseTree node. These range from simple nodes like BYTE, having a byte value, to

@@ -33,9 +33,9 @@ package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
 import net.domesdaybook.util.bytes.ByteUtilities;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.sequence.FixedGapMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 
 /**
  * A {@link ByteMatcher} which matches any byte at all.
@@ -93,7 +93,7 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         return reader.readByte(matchPosition) >= 0;
     }
     

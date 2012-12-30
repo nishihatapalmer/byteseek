@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.File;
 import java.io.FileOutputStream;

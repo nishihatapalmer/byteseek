@@ -33,11 +33,12 @@ package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.bytes.CaseInsensitiveByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 
 /**
  * An immutable class which matches an ASCII string case insensitively.
@@ -140,7 +141,7 @@ public final class CaseInsensitiveSequenceMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         final int localLength = length;
         final ByteMatcher[] matchList = charMatchList;   
         Window window = reader.getWindow(matchPosition);

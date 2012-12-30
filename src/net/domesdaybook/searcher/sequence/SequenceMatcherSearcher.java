@@ -32,9 +32,10 @@ package net.domesdaybook.searcher.sequence;
 
 import java.io.IOException;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
@@ -51,7 +52,7 @@ import net.domesdaybook.searcher.SearchResult;
  * the less efficient reader interface when the sequence crosses over windows.
  * <p>
  * Thread safety: this class is immutable, so it is safe to use this
- * searcher in multiple threads simultaneously. However, note that {@link Reader}
+ * searcher in multiple threads simultaneously. However, note that {@link WindowReader}
  * implementations passed in to search methods may not be thread-safe.  If byte
  * arrays are being searched, they must not be modified during searching.
  *
@@ -100,7 +101,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, final long fromPosition, 
+    public List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, final long fromPosition, 
             final long toPosition) throws IOException {
         // Initialise:
         final SequenceMatcher sequence = matcher;  
@@ -160,7 +161,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, final long fromPosition, 
+    public List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, final long fromPosition, 
             final long toPosition) throws IOException {
         // Initialise:
         final SequenceMatcher sequence = matcher;

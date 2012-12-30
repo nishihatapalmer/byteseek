@@ -42,9 +42,9 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.trie.SequenceMatcherTrieFactory;
 import net.domesdaybook.automata.trie.Trie;
 import net.domesdaybook.automata.trie.TrieFactory;
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 
 /**
  * A {@link MultiSequenceMatcher} uses a {@link Trie} structure to match 
@@ -105,7 +105,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition)
+	public Collection<SequenceMatcher> allMatches(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		List<SequenceMatcher> result = Collections.emptyList();
 		State<SequenceMatcher> state = trie.getInitialState();
@@ -165,7 +165,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader,
+	public Collection<SequenceMatcher> allMatchesBackwards(final WindowReader reader,
 			final long matchPosition) throws IOException {
 		List<SequenceMatcher> result = Collections.emptyList();
 		State<SequenceMatcher> state = trie.getInitialState();
@@ -226,7 +226,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SequenceMatcher firstMatch(final Reader reader, final long matchPosition)
+	public SequenceMatcher firstMatch(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		State<SequenceMatcher> state = trie.getInitialState();
 		long currentPosition = matchPosition;
@@ -275,7 +275,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition)
+	public SequenceMatcher firstMatchBackwards(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		State<SequenceMatcher> state = trie.getInitialState();
 		long currentPosition = matchPosition;
@@ -324,7 +324,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+	public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
 		return firstMatch(reader, matchPosition) != null;
 	}
 
@@ -340,7 +340,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean matchesBackwards(final Reader reader, final long matchPosition)
+	public boolean matchesBackwards(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		return firstMatchBackwards(reader, matchPosition) != null;
 	}

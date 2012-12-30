@@ -155,7 +155,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
             case SET:
             case RANGE:
             case ANY:						return createTransitionAutomata(ast);
-            case STRING:		return createStringAutomata(ast);
+            case STRING:					return createStringAutomata(ast);
             case CASE_INSENSITIVE_STRING:	return createCaseInsensitiveStringAutomata(ast);
             case SEQUENCE:					return createSequenceAutomata(ast);
             case ALTERNATIVES:				return createAlternativesAutomata(ast);

@@ -34,9 +34,10 @@ package net.domesdaybook.matcher.multisequence;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.Matcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 
 /**
  * An interface for matchers which can match more than one
@@ -50,12 +51,12 @@ public interface MultiSequenceMatcher extends Matcher {
      * Returns all the SequenceMatcher objects which matched.
      * Should never return null - always returns a collection, even if empty.
      *
-     * @param reader The {@link Reader} to read from.
+     * @param reader The {@link WindowReader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      * @throws IOException If the reader encounters a problem reading bytes.
      */
-    public Collection<SequenceMatcher> allMatches(Reader reader, long matchPosition)
+    public Collection<SequenceMatcher> allMatches(WindowReader reader, long matchPosition)
             throws IOException;
 
     
@@ -77,12 +78,12 @@ public interface MultiSequenceMatcher extends Matcher {
      * 
      * Should never return null - always returns a collection, even if empty.
      *
-     * @param reader The {@link Reader} to read from.
+     * @param reader The {@link WindowReader} to read from.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      * @throws IOException If the reader encounters a problem reading bytes.
      */
-    public Collection<SequenceMatcher> allMatchesBackwards(Reader reader, 
+    public Collection<SequenceMatcher> allMatchesBackwards(WindowReader reader, 
             long matchPosition) throws IOException;
 
     
@@ -102,12 +103,12 @@ public interface MultiSequenceMatcher extends Matcher {
     /**
      * Returns the first matching sequence, or null if no sequence matched.
      * 
-     * @param reader The {@link Reader} to read from.
+     * @param reader The {@link WindowReader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      * @throws IOException If the reader encounters a problem reading bytes.
      */
-    public SequenceMatcher firstMatch(Reader reader, long matchPosition)
+    public SequenceMatcher firstMatch(WindowReader reader, long matchPosition)
        throws IOException;
   
     
@@ -126,12 +127,12 @@ public interface MultiSequenceMatcher extends Matcher {
      * Returns the first matching sequence backwards from the matchPosition,
      * or null if no sequence matched.
      * 
-     * @param reader The {@link Reader} to read from.
+     * @param reader The {@link WindowReader} to read from.
      * @param matchPosition matchPosition The position to test for a match.
      * @return The SequenceMatcher which matched at that position, or null if none matched.
      * @throws IOException If the reader encounters a problem reading bytes.
      */
-    public SequenceMatcher firstMatchBackwards(Reader reader, long matchPosition)
+    public SequenceMatcher firstMatchBackwards(WindowReader reader, long matchPosition)
         throws IOException;
     
 
@@ -149,12 +150,12 @@ public interface MultiSequenceMatcher extends Matcher {
     /**
      * Returns whether or not there is a match backwards from the matchPosition
      * 
-     * @param reader The {@link Reader} to read from.
+     * @param reader The {@link WindowReader} to read from.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      * @throws IOException If the reader encounters a problem reading bytes.
      */    
-    public boolean matchesBackwards(Reader reader, long matchPosition)
+    public boolean matchesBackwards(WindowReader reader, long matchPosition)
          throws IOException;;
     
     

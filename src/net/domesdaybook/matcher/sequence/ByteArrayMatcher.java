@@ -36,11 +36,12 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;
 import net.domesdaybook.util.bytes.ByteUtilities;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 
 /**
  * An immutable class which matches a sequence of bytes.
@@ -306,7 +307,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition)
+    public boolean matches(final WindowReader reader, final long matchPosition)
             throws IOException {
         final byte[] matchArray = byteArray;          
         final int matchStart = startArrayIndex;
@@ -598,7 +599,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          * {@inheritDoc}
          */
         @Override
-        public boolean matches(final Reader reader, final long matchPosition)
+        public boolean matches(final WindowReader reader, final long matchPosition)
                 throws IOException {
             final int matchStart = startArrayIndex;
             final int matchLength = endArrayIndex - startArrayIndex;

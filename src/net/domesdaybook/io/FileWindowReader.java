@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.EOFException;
 import java.io.File;
@@ -37,28 +37,28 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import net.domesdaybook.reader.cache.MostRecentlyUsedCache;
-import net.domesdaybook.reader.cache.WindowCache;
+import net.domesdaybook.io.cache.MostRecentlyUsedCache;
+import net.domesdaybook.io.cache.WindowCache;
 
 /**
- * A Reader extending {@link AbstractReader} which reads a random access file
+ * A WindowReader extending {@link AbstractWindowReader} which reads a random access file
  * into cached byte arrays.
  * <p>
  * This class (like the underlying RandomAccessFile) is not thread-safe.
  * 
  * @author matt
  */
-public class FileReader extends AbstractReader {
+public class FileWindowReader extends AbstractWindowReader {
 
 	private final static String READ_ONLY = "r";
-	private final static String NULL_ARGUMENTS = "Null file passed to FileReader";
+	private final static String NULL_ARGUMENTS = "Null file passed to FileWindowReader";
 
 	private final File file;
 	private final RandomAccessFile randomAccessFile;
 	private final long length;
 
 	/**
-	 * Constructs a FileReader which defaults to an array size of 4096, caching
+	 * Constructs a FileWindowReader which defaults to an array size of 4096, caching
 	 * the last 32 most recently used Windows in a {@link MostRecentlyUsedCache}
 	 * .
 	 * 
@@ -69,13 +69,13 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final File file) throws FileNotFoundException {
+	public FileWindowReader(final File file) throws FileNotFoundException {
 		this(file, DEFAULT_WINDOW_SIZE, new MostRecentlyUsedCache(
 				DEFAULT_CAPACITY));
 	}
 
 	/**
-	 * Constructs a FileReader which defaults to a {@link Window} size of 4096
+	 * Constructs a FileWindowReader which defaults to a {@link Window} size of 4096
 	 * using the WindowCache passed in to cache ArrayWindows.
 	 * 
 	 * @param file
@@ -87,13 +87,13 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final File file, final WindowCache cache)
+	public FileWindowReader(final File file, final WindowCache cache)
 			throws FileNotFoundException {
 		this(file, DEFAULT_WINDOW_SIZE, cache);
 	}
 
 	/**
-	 * Constructs a FileReader using the {@link Window} size passed in, and
+	 * Constructs a FileWindowReader using the {@link Window} size passed in, and
 	 * caches the last 32 Windows in a {@link MostRecentlyUsedCache}.
 	 * 
 	 * @param file
@@ -105,13 +105,13 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final File file, final int windowSize)
+	public FileWindowReader(final File file, final int windowSize)
 			throws FileNotFoundException {
 		this(file, windowSize, new MostRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
 	/**
-	 * Constructs a FileReader using the array size passed in, and caches the
+	 * Constructs a FileWindowReader using the array size passed in, and caches the
 	 * last most recently used Windows up to the capacity specified in a
 	 * {@link MostRecentlyUsedCache}.
 	 * 
@@ -127,13 +127,13 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final File file, final int windowSize, final int capacity)
+	public FileWindowReader(final File file, final int windowSize, final int capacity)
 			throws FileNotFoundException {
 		this(file, windowSize, new MostRecentlyUsedCache(capacity));
 	}
 
 	/**
-	 * Constructs a FileReader which defaults to a {@link Window} size of 4096,
+	 * Constructs a FileWindowReader which defaults to a {@link Window} size of 4096,
 	 * caching the last 32 most recently used {@link Window}s in a
 	 * {@link MostRecentlyUsedCache}.
 	 * 
@@ -144,13 +144,13 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final String path) throws FileNotFoundException {
+	public FileWindowReader(final String path) throws FileNotFoundException {
 		this(new File(path), DEFAULT_WINDOW_SIZE, new MostRecentlyUsedCache(
 				DEFAULT_CAPACITY));
 	}
 
 	/**
-	 * Constructs a FileReader which defaults to a {@link Window} size of 4096
+	 * Constructs a FileWindowReader which defaults to a {@link Window} size of 4096
 	 * using the {@link WindowCache} passed in to cache Windows.
 	 * 
 	 * @param path
@@ -162,13 +162,13 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final String path, final WindowCache cache)
+	public FileWindowReader(final String path, final WindowCache cache)
 			throws FileNotFoundException {
 		this(new File(path), DEFAULT_WINDOW_SIZE, cache);
 	}
 
 	/**
-	 * Constructs a FileReader using the {@link Window} size passed in, and
+	 * Constructs a FileWindowReader using the {@link Window} size passed in, and
 	 * caches the last 32 Windows in a {@link MostRecentlyUsedCache}.
 	 * 
 	 * @param path
@@ -180,14 +180,14 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final String path, final int windowSize)
+	public FileWindowReader(final String path, final int windowSize)
 			throws FileNotFoundException {
 		this(new File(path), windowSize, new MostRecentlyUsedCache(
 				DEFAULT_CAPACITY));
 	}
 
 	/**
-	 * Constructs a FileReader using the {@link Window} size passed in, and
+	 * Constructs a FileWindowReader using the {@link Window} size passed in, and
 	 * caches the last Windows up to the capacity supplied using a
 	 * {@link MostRecentlyUsedCache}.
 	 * 
@@ -203,13 +203,13 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final String path, final int windowSize,
+	public FileWindowReader(final String path, final int windowSize,
 			final int capacity) throws FileNotFoundException {
 		this(new File(path), windowSize, new MostRecentlyUsedCache(capacity));
 	}
 
 	/**
-	 * Constructs a FileReader which reads the file into {@link Window}s of the
+	 * Constructs a FileWindowReader which reads the file into {@link Window}s of the
 	 * specified size, using the {@link WindowCache} supplied to cache them.
 	 * 
 	 * @param file
@@ -223,7 +223,7 @@ public class FileReader extends AbstractReader {
 	 * @throws IllegalArgumentException
 	 *             if the file passed in is null.
 	 */
-	public FileReader(final File file, final int windowSize,
+	public FileWindowReader(final File file, final int windowSize,
 			final WindowCache cache) throws FileNotFoundException {
 		super(windowSize, cache);
 		if (file == null) {
@@ -263,7 +263,7 @@ public class FileReader extends AbstractReader {
 
 	/**
 	 * Closes the underlying {@link java.io.RandomAccessFile}, then clears any
-	 * cache associated with this Reader.
+	 * cache associated with this WindowReader.
 	 */
 	@Override
 	public void close() throws IOException {
@@ -275,9 +275,9 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Returns the {@link java.io.File} object accessed by this Reader.
+	 * Returns the {@link java.io.File} object accessed by this WindowReader.
 	 * 
-	 * @return The File object accessed by this Reader.
+	 * @return The File object accessed by this WindowReader.
 	 */
 	public final File getFile() {
 		return file;

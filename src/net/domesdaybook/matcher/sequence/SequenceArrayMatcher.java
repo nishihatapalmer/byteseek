@@ -32,12 +32,13 @@
 package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.reader.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import net.domesdaybook.reader.Window;
 
 /**
  * An immutable sequence matcher which matches sequences of other sequence matchers.
@@ -136,7 +137,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         final int localLength = length;
         final SequenceMatcher[] localArray = matchers;        
         Window window = reader.getWindow(matchPosition);

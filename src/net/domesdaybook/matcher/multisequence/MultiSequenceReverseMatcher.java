@@ -36,8 +36,9 @@ import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 
 //TODO: should this simply be a translation class with no knowledge of the
 //      reversal process?  Mapping the sequences in one multisequencematcher
@@ -91,7 +92,7 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public Collection<SequenceMatcher> allMatches(Reader reader, long matchPosition) throws IOException {
+    public Collection<SequenceMatcher> allMatches(WindowReader reader, long matchPosition) throws IOException {
         return getOriginalSequences(reversed.allMatches(reader, matchPosition));
     }
 
@@ -109,7 +110,7 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */    
     @Override
-    public Collection<SequenceMatcher> allMatchesBackwards(Reader reader, long matchPosition) throws IOException {
+    public Collection<SequenceMatcher> allMatchesBackwards(WindowReader reader, long matchPosition) throws IOException {
         return getOriginalSequences(reversed.allMatchesBackwards(reader, matchPosition));
     }
 
@@ -127,7 +128,7 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */    
     @Override
-    public SequenceMatcher firstMatch(Reader reader, long matchPosition) throws IOException {
+    public SequenceMatcher firstMatch(WindowReader reader, long matchPosition) throws IOException {
         return getOriginalSequence(reversed.firstMatch(reader, matchPosition));
     }
 
@@ -145,7 +146,7 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */    
     @Override
-    public SequenceMatcher firstMatchBackwards(Reader reader, long matchPosition) throws IOException {
+    public SequenceMatcher firstMatchBackwards(WindowReader reader, long matchPosition) throws IOException {
         return getOriginalSequence(reversed.firstMatchBackwards(reader, matchPosition));
     }
 
@@ -163,7 +164,7 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */    
     @Override
-    public boolean matchesBackwards(Reader reader, long matchPosition) throws IOException {
+    public boolean matchesBackwards(WindowReader reader, long matchPosition) throws IOException {
         return reversed.matchesBackwards(reader, matchPosition);
     }
     
@@ -226,7 +227,7 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
      * {@inheritDoc}
      */    
     @Override
-    public boolean matches(Reader reader, long matchPosition) throws IOException {
+    public boolean matches(WindowReader reader, long matchPosition) throws IOException {
         return reversed.matches(reader, matchPosition);
     }
     

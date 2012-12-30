@@ -58,7 +58,7 @@ public class StringNode extends BaseNode {
    * @param value The String for this StringNode.
    */
   public StringNode(final String value) {
-    this(value, false);
+    this(value, ParseTreeType.STRING);
   }
   
   /**
@@ -66,12 +66,15 @@ public class StringNode extends BaseNode {
    * should match case sensitively or not.
    * 
    * @param value The String for this StringNode.
-   * @param isCaseSensitive True if the string is case sensitive (ParseTreeType.STRING),
-   *                         False if the string is case-insensitive (ParseTreeType.CASE_INSENSITIVE_STRING).
+   * @param type The ParseTreeType of the StringNode.  It can only be STRING or CASE_INSENSITIVE_STRING.
+   * @throws IllegalArgumentException if type is not STRING or CASE_INSENSITIVE_STRING.
    */
-  public StringNode(final String value,
-                     final boolean isCaseSensitive) {
-    super(isCaseSensitive? ParseTreeType.STRING : ParseTreeType.CASE_INSENSITIVE_STRING);
+  public StringNode(final String value, final ParseTreeType type) {
+    super(type);
+    if (type != ParseTreeType.STRING && type != ParseTreeType.CASE_INSENSITIVE_STRING) {
+    	throw new IllegalArgumentException("A StringNode can only be of type STRING or CASE_INSENSITIVE_STRING. " + 
+    										"The type passed in was [" + type + ']');
+    }
     this.value = value;
   }
 
@@ -84,6 +87,7 @@ public class StringNode extends BaseNode {
   public String getTextValue() throws ParseException {
     return value;
   }
+  
   
   /**
    * Sets the text value of this StringNode.
@@ -102,6 +106,11 @@ public class StringNode extends BaseNode {
    */
   public boolean isCaseSensitive() {
 	  return getParseTreeType() == ParseTreeType.STRING;
+  }
+  
+  @Override
+  public String toString() {
+	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + ']';
   }
 
 }

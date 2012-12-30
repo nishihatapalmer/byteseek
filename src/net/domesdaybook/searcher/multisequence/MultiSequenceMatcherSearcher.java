@@ -34,11 +34,12 @@ package net.domesdaybook.searcher.multisequence;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
@@ -46,7 +47,7 @@ import net.domesdaybook.searcher.SearchResult;
  * This class implements the {@link net.domesdaybook.searcher.Searcher} interface,
  * extending {@link AbstractMultiSequenceSearcher}.
  * <p>
- * It searches across a byte array or a {@link Reader} for a {@link MultiSequenceMatcher},
+ * It searches across a byte array or a {@link WindowReader} for a {@link MultiSequenceMatcher},
  * using the naive technique of searching for the MultiSequenceMatcher at each position,
  * until it either finds a match or runs out of search space.
  * <p>
@@ -76,7 +77,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader,
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader,
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final MultiSequenceMatcher matcher = sequences;  
@@ -141,7 +142,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
      * {@inheritDoc}
      */    
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final MultiSequenceMatcher matcher = sequences;

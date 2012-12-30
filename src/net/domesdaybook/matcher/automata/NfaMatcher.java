@@ -38,9 +38,9 @@ import java.util.Set;
 
 import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.State;
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.MatchResult;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 
 /**
  * 
@@ -66,7 +66,7 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 	 * @throws IOException
 	 */
 	@Override
-	public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+	public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
 		// Setup 
 		long currentPosition = matchPosition;
 		Set<State<T>> nextStates = new LinkedHashSet<State<T>>();
@@ -154,19 +154,19 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 	}
 
 	@Override
-	public MatchResult<T> firstMatch(Reader reader, long matchPosition) throws IOException {
+	public MatchResult<T> firstMatch(WindowReader reader, long matchPosition) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MatchResult<T> nextMatch(Reader reader, MatchResult<T> lastMatch) throws IOException {
+	public MatchResult<T> nextMatch(WindowReader reader, MatchResult<T> lastMatch) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<MatchResult<T>> allMatches(Reader reader, long matchPosition)
+	public Collection<MatchResult<T>> allMatches(WindowReader reader, long matchPosition)
 			throws IOException {
 		// TODO Auto-generated method stub
 		return null;

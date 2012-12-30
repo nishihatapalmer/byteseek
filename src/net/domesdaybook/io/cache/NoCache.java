@@ -29,12 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader.cache;
+package net.domesdaybook.io.cache;
 
-import net.domesdaybook.reader.Window;
+import net.domesdaybook.io.Window;
 
 /**
- * A {@link WindowCache} which holds on to no {@link net.domesdaybook.reader.Window}
+ * A {@link WindowCache} which holds on to no {@link net.domesdaybook.io.Window}
  * objects.
  * 
  * @author Matt Palmer
@@ -51,7 +51,7 @@ public final class NoCache extends AbstractCache {
     /**
      * Always returns null, as no Windows are cached.
      * 
-     * @param position The position for which a {@link net.domesdaybook.reader.Window} is requested.
+     * @param position The position for which a {@link net.domesdaybook.io.Window} is requested.
      * @return Window null in all cases.
      */
     @Override
@@ -61,7 +61,7 @@ public final class NoCache extends AbstractCache {
 
     
     /**
-     * Does not actually add the {@link net.domesdaybook.reader.Window} to the
+     * Does not actually add the {@link net.domesdaybook.io.Window} to the
      * cache, as the NoCache object performs no caching.
      * 
      * @param window A Window to add (which it will not be).

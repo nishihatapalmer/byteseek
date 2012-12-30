@@ -44,9 +44,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.domesdaybook.io.ByteArrayWindowReader;
+import net.domesdaybook.io.FileWindowReader;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.reader.ByteArrayReader;
-import net.domesdaybook.reader.FileReader;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -69,7 +69,7 @@ public class ByteArrayMatcherTest {
 
 	private final static Random	rand	= new Random();
 
-	private FileReader			reader;
+	private FileWindowReader			reader;
 	private byte[]				bytes;
 
 	public ByteArrayMatcherTest() {
@@ -100,7 +100,7 @@ public class ByteArrayMatcherTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		reader = new FileReader(getFile("/TestASCII.txt"));
+		reader = new FileWindowReader(getFile("/TestASCII.txt"));
 		bytes = reader.getWindow(0).getArray();
 	}
 
@@ -133,7 +133,7 @@ public class ByteArrayMatcherTest {
 			byte[] testArray = new byte[] { (byte) byteValue };
 			assertTrue("matches that byte value in an array", matcher.matches(testArray, 0));
 
-			ByteArrayReader wrapped = new ByteArrayReader(testArray);
+			ByteArrayWindowReader wrapped = new ByteArrayWindowReader(testArray);
 			assertTrue("matches that byte value in a reader", matcher.matches(wrapped, 0));
 
 			int differentValue = rand.nextInt(256);
@@ -144,7 +144,7 @@ public class ByteArrayMatcherTest {
 			assertFalse("does not match a different byte value in an array",
 					matcher.matches(different, 0));
 
-			wrapped = new ByteArrayReader(different);
+			wrapped = new ByteArrayWindowReader(different);
 			assertFalse("does not match a different byte value in a reader",
 					matcher.matches(wrapped, 0));
 		}
@@ -322,7 +322,7 @@ public class ByteArrayMatcherTest {
 
 	/**
 	 * Test matching successfully over a window boundary.  
-	 * A FileReader uses a default window size of 4096,
+	 * A FileWindowReader uses a default window size of 4096,
 	 * so the last position in the first window is 4095.
 	 * 
 	 * @throws FileNotFoundException 
@@ -550,7 +550,7 @@ public class ByteArrayMatcherTest {
 
 	/**
 	 * Tests that a sequence matcher matches at a series of positions, but not
-	 * immediately surrounding them using a Reader interface.
+	 * immediately surrounding them using a WindowReader interface.
 	 * 
 	 * Also tests that the reverse of the reverse of the matcher has identical
 	 * behaviour.
@@ -567,7 +567,7 @@ public class ByteArrayMatcherTest {
 
 	/**
 	 * Tests that a sequence matcher matches at a series of positions, but not
-	 * immediately surrounding them, using a Reader interface.
+	 * immediately surrounding them, using a WindowReader interface.
 	 * 
 	 * @param matcher
 	 * @param positions
@@ -583,7 +583,7 @@ public class ByteArrayMatcherTest {
 	/**
 	 * Tests that the reverse of the reverse of a sequence matcher matches 
 	 * at a series of positions, but not immediately surrounding them, 
-	 * using a Reader interface.
+	 * using a WindowReader interface.
 	 * 
 	 * @param matcher
 	 * @param positions
@@ -669,7 +669,7 @@ public class ByteArrayMatcherTest {
 	/**
 	 * Tests that:
 	 * 
-	 * - a matcher matches at a given position in a FileReader.
+	 * - a matcher matches at a given position in a FileWindowReader.
 	 * - it does not match one position behind that position.
 	 * - it does not match one position ahead of that position.
 	 * 

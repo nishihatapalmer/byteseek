@@ -3,10 +3,14 @@
  *
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.File;
 import java.io.IOException;
+
+import net.domesdaybook.io.FileWindowReader;
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 
 /**
  *
@@ -34,7 +38,7 @@ public class Utilities {
      * @throws IOException
      */
     public static byte[] getByteArray(final File file) throws IOException {
-        final Reader reader = new FileReader(file);
+        final WindowReader reader = new FileWindowReader(file);
         final Window window = reader.getWindow(0);
         return window.getArray();
     }

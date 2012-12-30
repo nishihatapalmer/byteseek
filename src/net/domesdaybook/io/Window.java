@@ -29,22 +29,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 /**
  * A Window is essentially a wrapper for a byte array containing bytes from the
- * {@link Reader} that creates it, at a specified position in the Reader.
- * Windows contain the position in the Reader they begin from, and how long the
+ * {@link WindowReader} that creates it, at a specified position in the WindowReader.
+ * Windows contain the position in the WindowReader they begin from, and how long the
  * Window is.
  * <p>
  * The byte array is not copied, which means that mutable state is directly
  * wrapped by this class, although the Window itself is immutable. The entire
  * reason for having a Window is to facilitate direct access to the underlying
- * byte arrays taken from a Reader in order to optimise read performance.
+ * byte arrays taken from a WindowReader in order to optimise read performance.
  * <p>
  * Note that the length of the Window may be less than the byte array backing
  * it, so only bytes up to the length of the Window will be from the actual
- * Reader. For example, the last Window read from a file will almost certainly
+ * WindowReader. For example, the last Window read from a file will almost certainly
  * be shorter than the byte array that backs it.
  * 
  * @author Matt Palmer
@@ -57,14 +57,14 @@ public final class Window {
 
 	/**
 	 * Constructs a Window using the byte array provided, recording the position
-	 * in the Reader from which the bytes provided were read, and the length of
+	 * in the WindowReader from which the bytes provided were read, and the length of
 	 * the Window (which may be shorter than the length of the backing byte
 	 * array).
 	 * <p>
 	 * The byte array is not copied, which means that mutable state is directly
 	 * wrapped by this class, although the Window itself is immutable. The
 	 * entire reason for having a Window is to facilitate direct access to the
-	 * underlying byte arrays taken from a Reader in order to optimise read
+	 * underlying byte arrays taken from a WindowReader in order to optimise read
 	 * performance. = *
 	 * 
 	 * @param bytes
@@ -88,7 +88,7 @@ public final class Window {
 
 	/**
 	 * Gets a byte from the Window relative to the start of the Window (not
-	 * relative to the start of the Reader). It simply returns the byte at the
+	 * relative to the start of the WindowReader). It simply returns the byte at the
 	 * position in the byte array that backs the Window.
 	 * <p>
 	 * Note that no bounds checking is done by this method. It is possible to
@@ -121,9 +121,9 @@ public final class Window {
 	}
 
 	/**
-	 * Returns the position in the Reader that this Window was read from.
+	 * Returns the position in the WindowReader that this Window was read from.
 	 * 
-	 * @return The position in the Reader that this Window was read from.
+	 * @return The position in the WindowReader that this Window was read from.
 	 */
 	public long getWindowPosition() {
 		return windowPosition;

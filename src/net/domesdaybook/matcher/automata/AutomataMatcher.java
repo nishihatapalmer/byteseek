@@ -33,9 +33,9 @@ package net.domesdaybook.matcher.automata;
 import java.io.IOException;
 import java.util.Collection;
 
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.MatchResult;
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.reader.Reader;
 
 /**
  * An interface for matchers which match Automata, extending the Matcher
@@ -52,67 +52,67 @@ public interface AutomataMatcher<T> extends Matcher {
 
 	/**
 	 * Returns the first {@link MatchResult} for the position given, or null if no objects matched. 
-	 * If the position is out of bounds for the Reader (before the start or after the end), 
+	 * If the position is out of bounds for the WindowReader (before the start or after the end), 
 	 * then no match will be found, and no exception will be thrown.
 	 * <p>
 	 * This method will only return the first match it finds. An automata can
 	 * match more than one set of objects, which may exist in later States of the 
-	 * Automata (but at the same fundamental position in the Reader). To match the next
-	 * match in the Automata, call {@link #nextMatch(Reader, MatchResult).
+	 * Automata (but at the same fundamental position in the WindowReader). To match the next
+	 * match in the Automata, call {@link #nextMatch(WindowReader, MatchResult).
 	 * To match all objects the automata can match at the given position, use the method
-	 * {@link #allMatches(Reader, long).
+	 * {@link #allMatches(WindowReader, long).
 	 * 
 	 * @param reader
-	 *            The {@link Reader} to match in.
+	 *            The {@link WindowReader} to match in.
 	 * @param matchPosition
 	 *            The position to attempt a match at.
 	 * @return A MatchResult, or null if no match occurred.
 	 * 
 	 * @throws IOException
-	 *             If there was a problem reading bytes in the Reader.
+	 *             If there was a problem reading bytes in the WindowReader.
 	 */
-	public MatchResult<T> firstMatch(Reader reader, long matchPosition) throws IOException;
+	public MatchResult<T> firstMatch(WindowReader reader, long matchPosition) throws IOException;
 
 	/**
 	 * Returns the next {@link MatchResult} for the last MatchResult given, or null if no objects matched. 
 	 * <p>
 	 * This method will only return the next match it finds. An automata can
 	 * match more than one set of objects, which may exist in later States of the 
-	 * Automata (but at the same fundamental position in the Reader). 
+	 * Automata (but at the same fundamental position in the WindowReader). 
 	 * To match all objects the automata can match at the given position, use the method
-	 * {@link #allMatches(Reader, long)
+	 * {@link #allMatches(WindowReader, long)
 	 *
 	 * @param reader
-	 *            The {@link Reader} to match in.
+	 *            The {@link WindowReader} to match in.
 	 * @param lastMatch
 	 *            The last MatchResult you have.
 	 * @return A MatchResult, or null if no match occurred.
 	 * 
 	 * @throws IOException
-	 *             If there was a problem reading bytes in the Reader.
+	 *             If there was a problem reading bytes in the WindowReader.
 	 */
-	public MatchResult<T> nextMatch(Reader reader, MatchResult<T> lastMatch) throws IOException;
+	public MatchResult<T> nextMatch(WindowReader reader, MatchResult<T> lastMatch) throws IOException;
 
 	/**
 	 * Returns a collection of {@link MatchResult}s at the position given, or an
 	 * empty collection if no objects matched. If the position is out of bounds
-	 * for the Reader (before the start or after the end), then no match will be
+	 * for the WindowReader (before the start or after the end), then no match will be
 	 * found, and no exception will be thrown.
 	 * <p>
 	 * This method returns all the objects that the automata can match at the
-	 * given position in the Reader.
+	 * given position in the WindowReader.
 	 * 
 	 * @param reader
-	 * 				The {@link Reader} to match in.
+	 * 				The {@link WindowReader} to match in.
 	 * @param matchPosition
 	 * 				The position to attempt a match at.
 	 * @return A Collection of MatchResults, or an empty collection if no
 	 *         objects matched.
 	 * 
 	 * @throws IOException
-	 * 				If there was a problem reading bytes in the Reader.
+	 * 				If there was a problem reading bytes in the WindowReader.
 	 */
-	public Collection<MatchResult<T>> allMatches(Reader reader, long matchPosition)
+	public Collection<MatchResult<T>> allMatches(WindowReader reader, long matchPosition)
 			throws IOException;
 
 	/**
@@ -123,7 +123,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * <p>
 	 * This method will only return the first matches it finds. An automata can
 	 * match more than one set of objects, which may exist in later States of the 
-	 * Automata (but at the same fundamental position in the Reader). 
+	 * Automata (but at the same fundamental position in the WindowReader). 
 	 * To match all objects the automata can match at the given position, use the method
 	 * {@link #allMatches(byte[], int)
 	 * 
@@ -140,7 +140,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * <p>
 	 * This method will only return the next match it finds. An automata can
 	 * match more than one set of objects, which may exist in later States of the 
-	 * Automata (but at the same fundamental position in the Reader). 
+	 * Automata (but at the same fundamental position in the WindowReader). 
 	 * To match all objects the automata can match at the given position, use the method
 	 * {@link #allMatches(byte[], int)
 	 

@@ -34,11 +34,11 @@ package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
 
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.CaseInsensitiveSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -80,7 +80,7 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException{
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);     
         if (window != null) {
             final byte theByte = window.getByte(reader.getWindowOffset(matchPosition));

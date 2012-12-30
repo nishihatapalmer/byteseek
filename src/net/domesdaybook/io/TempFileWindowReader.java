@@ -29,32 +29,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.domesdaybook.reader.cache.WindowCache;
+import net.domesdaybook.io.cache.WindowCache;
 
 /**
- * A class which extends {@link FileReader} to create a temporary file from an
- * InputStream on construction, and to delete the temporary file when the Reader
+ * A class which extends {@link FileWindowReader} to create a temporary file from an
+ * InputStream on construction, and to delete the temporary file when the WindowReader
  * is closed.
  * 
  * @author Matt Palmer
  */
-public final class TempFileReader extends FileReader {
+public final class TempFileWindowReader extends FileWindowReader {
 
 	/**
-	 * Constructs a TempFileReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
 	 * <p> A default window size of 4096 will be used when creating
 	 * {@link Window} objects, and a default capacity of 32 will be used for the
-	 * {@link net.domesdaybook.reader.cache.MostRecentlyUsedCache}.
+	 * {@link net.domesdaybook.io.cache.MostRecentlyUsedCache}.
 	 * 
 	 * @param stream
 	 *            The InputStream to copy into the temporary file.
@@ -62,62 +62,62 @@ public final class TempFileReader extends FileReader {
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileReader(final InputStream stream) throws IOException {
+	TempFileWindowReader(final InputStream stream) throws IOException {
 		this(ReadUtils.createTempFile(stream));
 	}
 
 	/**
-	 * Constructs a TempFileReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
 	 * <p> The supplied window size will be used when creating {@link Window}
 	 * objects. and a default capacity of 32 will be used for the
-	 * {@link net.domesdaybook.reader.cache.MostRecentlyUsedCache}.
+	 * {@link net.domesdaybook.io.cache.MostRecentlyUsedCache}.
 	 * 
 	 * @param stream
 	 *            The InputStream to copy into the temporary file.
 	 * @param windowSize
-	 *            the size of Windows to create when accessing the Reader.
+	 *            the size of Windows to create when accessing the WindowReader.
 	 * @throws IOException
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileReader(final InputStream stream, final int windowSize)
+	TempFileWindowReader(final InputStream stream, final int windowSize)
 			throws IOException {
 		this(ReadUtils.createTempFile(stream), windowSize);
 	}
 
 	/**
-	 * Constructs a TempFileReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
 	 * <p> The supplied window size will be used when creating {@link Window}
 	 * objects. and the supplied capacity will be used for the
-	 * {@link net.domesdaybook.reader.cache.MostRecentlyUsedCache}.
+	 * {@link net.domesdaybook.io.cache.MostRecentlyUsedCache}.
 	 * 
 	 * @param stream
 	 *            The InputStream to copy into the temporary file.
 	 * @param windowSize
-	 *            the size of Windows to create when accessing the Reader.
+	 *            the size of Windows to create when accessing the WindowReader.
 	 * @param capacity
 	 *            The maximum number of Windows to cache.
 	 * @throws IOException
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileReader(final InputStream stream, final int windowSize,
+	TempFileWindowReader(final InputStream stream, final int windowSize,
 			final int capacity) throws IOException {
 		this(ReadUtils.createTempFile(stream), windowSize, capacity);
 	}
 
 	/**
-	 * Constructs a TempFileReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
-	 * <p> The supplied {@link net.domesdaybook.reader.cache.WindowCache} will
+	 * <p> The supplied {@link net.domesdaybook.io.cache.WindowCache} will
 	 * be used to cache {@link Window} objects. A default size of 4096 will be
 	 * used to create the Windows.
 	 * 
@@ -129,61 +129,61 @@ public final class TempFileReader extends FileReader {
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileReader(final InputStream stream, final WindowCache cache)
+	TempFileWindowReader(final InputStream stream, final WindowCache cache)
 			throws IOException {
 		this(ReadUtils.createTempFile(stream), cache);
 	}
 
 	/**
-	 * Constructs a TempFileReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
-	 * <p> The supplied {@link net.domesdaybook.reader.cache.WindowCache} will
+	 * <p> The supplied {@link net.domesdaybook.io.cache.WindowCache} will
 	 * be used to cache {@link Window} objects. The supplied window size will be
 	 * used to create the Windows.
 	 * 
 	 * @param stream
 	 *            The InputStream to copy into the temporary file.
 	 * @param windowSize
-	 *            The size of the Windows to create when accessing the Reader.
+	 *            The size of the Windows to create when accessing the WindowReader.
 	 * @param cache
 	 *            The WindowCache to use to cache Windows.
 	 * @throws IOException
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileReader(final InputStream stream, final int windowSize,
+	TempFileWindowReader(final InputStream stream, final int windowSize,
 			final WindowCache cache) throws IOException {
 		this(ReadUtils.createTempFile(stream), windowSize, cache);
 	}
 
-	private TempFileReader(final File tempFile) throws FileNotFoundException {
+	private TempFileWindowReader(final File tempFile) throws FileNotFoundException {
 		super(tempFile);
 	}
 
-	private TempFileReader(final File tempFile, final int windowSize)
+	private TempFileWindowReader(final File tempFile, final int windowSize)
 			throws FileNotFoundException {
 		super(tempFile, windowSize);
 	}
 
-	private TempFileReader(final File tempFile, final int windowSize,
+	private TempFileWindowReader(final File tempFile, final int windowSize,
 			final int capacity) throws FileNotFoundException {
 		super(tempFile, windowSize, capacity);
 	}
 
-	private TempFileReader(final File tempFile, final WindowCache cache)
+	private TempFileWindowReader(final File tempFile, final WindowCache cache)
 			throws FileNotFoundException {
 		super(tempFile, cache);
 	}
 
-	private TempFileReader(final File tempFile, final int windowSize,
+	private TempFileWindowReader(final File tempFile, final int windowSize,
 			final WindowCache cache) throws FileNotFoundException {
 		super(tempFile, windowSize, cache);
 	}
 
 	/**
-	 * Closes the underlying RandomAccessFile backing this TempFileReader, and
+	 * Closes the underlying RandomAccessFile backing this TempFileWindowReader, and
 	 * clears any cache associated with it. It then attempts to delete the
 	 * temporary file.
 	 * 

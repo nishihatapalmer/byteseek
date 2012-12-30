@@ -34,10 +34,10 @@ package net.domesdaybook.searcher;
 import java.io.IOException;
 import java.util.List;
 
-import net.domesdaybook.reader.Reader;
+import net.domesdaybook.io.WindowReader;
 
 /**
- * An interface for classes that search bytes provided by a {@link Reader}, or
+ * An interface for classes that search bytes provided by a {@link WindowReader}, or
  * on a byte array. Searching can be forwards or backwards.
  * <p>
  * Searching either returns the position at which a match was found, or a
@@ -51,7 +51,7 @@ import net.domesdaybook.reader.Reader;
 public interface Searcher<T> {
 
 	/**
-	 * Searches bytes forwards provided by a {@link Reader} object, from the
+	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to toPosition.
 	 * 
 	 * @param reader
@@ -64,11 +64,11 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchForwards(Reader reader,
+	public List<SearchResult<T>> searchForwards(WindowReader reader,
 			long fromPosition, long toPosition) throws IOException;
 
 	/**
-	 * Searches bytes forwards provided by a {@link Reader} object, from the
+	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to the end of the byte reader.
 	 * 
 	 * @param reader
@@ -79,12 +79,12 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchForwards(Reader reader, long fromPosition)
+	public List<SearchResult<T>> searchForwards(WindowReader reader, long fromPosition)
 			throws IOException;
 
 	/**
-	 * Searches bytes forwards provided by a {@link Reader} object, from the
-	 * start of the {@link Reader} to the end, if a match is not found.
+	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
+	 * start of the {@link WindowReader} to the end, if a match is not found.
 	 * 
 	 * @param reader
 	 *            The byte reader giving access to the bytes being searched.
@@ -92,7 +92,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchForwards(Reader reader)
+	public List<SearchResult<T>> searchForwards(WindowReader reader)
 			throws IOException;
 
 	/**
@@ -135,7 +135,7 @@ public interface Searcher<T> {
 	public List<SearchResult<T>> searchForwards(byte[] bytes);
 
 	/**
-	 * Searches bytes backwards provided by a {@link Reader} object, from the
+	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to toPosition.
 	 * 
 	 * @param reader
@@ -148,11 +148,11 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchBackwards(Reader reader,
+	public List<SearchResult<T>> searchBackwards(WindowReader reader,
 			long fromPosition, long toPosition) throws IOException;
 
 	/**
-	 * Searches bytes backwards provided by a {@link Reader} object, from the
+	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to the start of the reader.
 	 * 
 	 * @param reader
@@ -163,11 +163,11 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchBackwards(Reader reader,
+	public List<SearchResult<T>> searchBackwards(WindowReader reader,
 			long fromPosition) throws IOException;
 
 	/**
-	 * Searches bytes backwards provided by a {@link Reader} object, from the
+	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
 	 * end to the start.
 	 * 
 	 * @param reader
@@ -176,7 +176,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchBackwards(Reader reader)
+	public List<SearchResult<T>> searchBackwards(WindowReader reader)
 			throws IOException;
 
 	/**

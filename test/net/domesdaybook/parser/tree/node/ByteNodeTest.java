@@ -66,11 +66,7 @@ public class ByteNodeTest {
 			fail("ByteNode should not throw a ParseException if asked for the byte value.");
 		}
 		
-		try {
-			assertEquals("ByteNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
-		} catch (ParseException e) {
-			fail("ByteNode should not throw a ParseException if asked if the value is inverted.");
-		}
+		assertEquals("ByteNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
 		
 		try { 
 			node.getIntValue();

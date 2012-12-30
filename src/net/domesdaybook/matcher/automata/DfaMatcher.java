@@ -38,9 +38,9 @@ import java.util.Collections;
 
 import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.State;
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.MatchResult;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 
 /**
  * 
@@ -62,7 +62,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+	public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
 		// Setup
 		long currentPosition = matchPosition;
 		Window window = reader.getWindow(currentPosition);
@@ -123,7 +123,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MatchResult<T> firstMatch(final Reader reader, final long matchPosition)
+	public MatchResult<T> firstMatch(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		// Setup
 		long currentPosition = matchPosition;
@@ -160,7 +160,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MatchResult<T> nextMatch(final Reader reader, final MatchResult<T> lastMatch)
+	public MatchResult<T> nextMatch(final WindowReader reader, final MatchResult<T> lastMatch)
 			throws IOException {
 		if (lastMatch instanceof DfaMatchResult) {
 			final long matchPosition = lastMatch.getMatchPosition();
@@ -200,7 +200,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Collection<MatchResult<T>> allMatches(final Reader reader, final long matchPosition)
+	public Collection<MatchResult<T>> allMatches(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		// Setup
 		long currentPosition = matchPosition;

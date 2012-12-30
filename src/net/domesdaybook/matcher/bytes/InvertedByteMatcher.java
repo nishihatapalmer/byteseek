@@ -33,8 +33,9 @@
 package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -72,7 +73,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException{
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
         return window == null? false
                 : window.getByte(reader.getWindowOffset(matchPosition)) != byteToMiss;

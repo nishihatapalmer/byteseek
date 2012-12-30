@@ -36,8 +36,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 
 /**
  * A static utility class holding useful methods in processing searches and
@@ -78,7 +78,7 @@ public final class SearchUtils {
 	}
 
 	/**
-	 * Searches a {@link net.domesdaybook.reader.Reader} forwards for all
+	 * Searches a {@link net.domesdaybook.io.WindowReader} forwards for all
 	 * matches of a {@link Searcher}.
 	 * 
 	 * @param <T>
@@ -86,14 +86,14 @@ public final class SearchUtils {
 	 * @param searcher
 	 *            The Searcher to search with.
 	 * @param reader
-	 *            The Reader to search in.
+	 *            The WindowReader to search in.
 	 * @return A list of SearchResult objects containing all matches found in
-	 *         the Reader.
+	 *         the WindowReader.
 	 * @throws IOException
-	 *             if a problem occurred reading in the Reader.
+	 *             if a problem occurred reading in the WindowReader.
 	 */
 	public static <T> List<SearchResult<T>> searchAllForwards(
-			final Searcher<T> searcher, final Reader reader) {
+			final Searcher<T> searcher, final WindowReader reader) {
 		final List<SearchResult<T>> results = new ArrayList<SearchResult<T>>();
 		final ForwardSearchIterator<T> iterator = new ForwardSearchIterator<T>(
 				searcher, reader);
@@ -127,7 +127,7 @@ public final class SearchUtils {
 	}
 
 	/**
-	 * Searches a {@link net.domesdaybook.reader.Reader} forwards for all
+	 * Searches a {@link net.domesdaybook.io.WindowReader} forwards for all
 	 * matches of a {@link Searcher}.
 	 * 
 	 * @param <T>
@@ -135,14 +135,14 @@ public final class SearchUtils {
 	 * @param searcher
 	 *            The Searcher to search with.
 	 * @param reader
-	 *            The Reader to search in.
+	 *            The WindowReader to search in.
 	 * @return A list of SearchResult objects containing all matches found in
-	 *         the Reader.
+	 *         the WindowReader.
 	 * @throws IOException
-	 *             if a problem occurred reading in the Reader.
+	 *             if a problem occurred reading in the WindowReader.
 	 */
 	public static <T> List<SearchResult<T>> searchAllBackwards(
-			final Searcher<T> searcher, final Reader reader) throws IOException {
+			final Searcher<T> searcher, final WindowReader reader) throws IOException {
 		final List<SearchResult<T>> results = new ArrayList<SearchResult<T>>();
 		final BackwardSearchIterator<T> iterator = new BackwardSearchIterator<T>(
 				searcher, reader);
@@ -249,7 +249,7 @@ public final class SearchUtils {
 	 * SearchResult.
 	 * <p>
 	 * This is useful to translate a match relative to a Window into a match
-	 * relative to the entire Reader.
+	 * relative to the entire WindowReader.
 	 * 
 	 * @param <T>
 	 *            The type of object associated with a match in the Searcher.

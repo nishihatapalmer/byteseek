@@ -33,11 +33,11 @@ package net.domesdaybook.matcher;
 
 import java.io.IOException;
 
-import net.domesdaybook.reader.Reader;
+import net.domesdaybook.io.WindowReader;
 
 /**
  * An interface for classes that can match bytes from a given position, either
- * directly within a byte array, or through a Reader object.
+ * directly within a byte array, or through a WindowReader object.
  * 
  * @author Matt Palmer
  */
@@ -45,19 +45,19 @@ public interface Matcher {
 
 	/**
 	 * Returns whether there is a match or not at the given position in a
-	 * Reader. If the position to match at does not exist in the Reader, then no
+	 * WindowReader. If the position to match at does not exist in the WindowReader, then no
 	 * exception is thrown - there will simply be no match.
 	 * 
 	 * @param reader
-	 *            The {@link Reader} to read from.
+	 *            The {@link WindowReader} to read from.
 	 * @param matchPosition
 	 *            The position to try to match at.
 	 * @return Whether there is a match at the given position.
 	 * @throws IOException
-	 *             if the Reader cannot read (but not for reads past the end of
-	 *             the Reader).
+	 *             if the WindowReader cannot read (but not for reads past the end of
+	 *             the WindowReader).
 	 */
-	public boolean matches(Reader reader, long matchPosition)
+	public boolean matches(WindowReader reader, long matchPosition)
 			throws IOException;
 
 	/**

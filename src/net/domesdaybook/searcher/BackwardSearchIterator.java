@@ -37,10 +37,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.domesdaybook.reader.Reader;
+import net.domesdaybook.io.WindowReader;
 
 /**
- * An iterator which iterates over a {@link net.domesdaybook.reader.Reader} or a
+ * An iterator which iterates over a {@link net.domesdaybook.io.WindowReader} or a
  * byte array, using a provided {@link Searcher}. Each iteration returns the
  * next set of search results, searching backwards.
  * 
@@ -53,7 +53,7 @@ public class BackwardSearchIterator<T> implements
 
 	// immutable fields:
 	private final byte[] bytes;
-	private final Reader reader;
+	private final WindowReader reader;
 	private final long toPosition;
 	private final Searcher<T> searcher;
 
@@ -64,63 +64,63 @@ public class BackwardSearchIterator<T> implements
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
-	 * {@link net.domesdaybook.reader.Reader}, searching backwards from the end
-	 * of the Reader to the start of the Reader.
+	 * {@link net.domesdaybook.io.WindowReader}, searching backwards from the end
+	 * of the WindowReader to the start of the WindowReader.
 	 * 
 	 * @param searcher
 	 *            The Searcher to use.
 	 * @param reader
-	 *            The Reader to search in.
+	 *            The WindowReader to search in.
 	 * @throws IOException
-	 *             If determining the length of the Reader causes an error.
+	 *             If determining the length of the WindowReader causes an error.
 	 * @throws IllegalArgumentException
-	 *             if the Searcher or Reader is null.
+	 *             if the Searcher or WindowReader is null.
 	 */
 	public BackwardSearchIterator(final Searcher<T> searcher,
-			final Reader reader) throws IOException {
+			final WindowReader reader) throws IOException {
 		this(searcher, reader.length() - 1, 0, reader);
 	}
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
-	 * {@link net.domesdaybook.reader.Reader}, searching backwards from the
-	 * position specified in the Reader to the start of the Reader.
+	 * {@link net.domesdaybook.io.WindowReader}, searching backwards from the
+	 * position specified in the WindowReader to the start of the WindowReader.
 	 * 
 	 * @param searcher
 	 *            The Searcher to use.
 	 * @param reader
-	 *            The Reader to search in.
+	 *            The WindowReader to search in.
 	 * @param fromPosition
 	 *            The position to start searching backwards from.
 	 * @throws IllegalArgumentException
-	 *             if the Searcher or Reader is null.
+	 *             if the Searcher or WindowReader is null.
 	 */
 	public BackwardSearchIterator(final Searcher<T> searcher,
-			final Reader reader, final long fromPosition) {
+			final WindowReader reader, final long fromPosition) {
 		this(searcher, fromPosition, 0, reader);
 	}
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
-	 * {@link net.domesdaybook.reader.Reader}, searching backwards from the
-	 * position specified in the Reader to the final position specified in the
-	 * Reader.
+	 * {@link net.domesdaybook.io.WindowReader}, searching backwards from the
+	 * position specified in the WindowReader to the final position specified in the
+	 * WindowReader.
 	 * 
 	 * @param searcher
 	 *            The Searcher to use.
 	 * @param fromPosition
 	 *            The position to start searching backwards from.
 	 * @param toPosition
-	 *            The final position to search up to in the Reader.
+	 *            The final position to search up to in the WindowReader.
 	 * @param reader
-	 *            The Reader to search in.
+	 *            The WindowReader to search in.
 	 * @throws IOException
-	 *             If determining the length of the Reader causes an error.
+	 *             If determining the length of the WindowReader causes an error.
 	 * @throws IllegalArgumentException
-	 *             if the Searcher or Reader is null.
+	 *             if the Searcher or WindowReader is null.
 	 */
 	public BackwardSearchIterator(final Searcher<T> searcher,
-			final long fromPosition, final long toPosition, final Reader reader) {
+			final long fromPosition, final long toPosition, final WindowReader reader) {
 		if (searcher == null || reader == null) {
 			throw new IllegalArgumentException("Null searcher or byte reader.");
 		}

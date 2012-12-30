@@ -35,8 +35,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 
 
 /**
@@ -96,7 +97,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         maximumLength = currentMax;
     }
     
-    public Collection<SequenceMatcher> allMatches(final Reader reader, final long matchPosition) throws IOException {
+    public Collection<SequenceMatcher> allMatches(final WindowReader reader, final long matchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -104,7 +105,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Collection<SequenceMatcher> allMatchesBackwards(final Reader reader, final long matchPosition) throws IOException {
+    public Collection<SequenceMatcher> allMatchesBackwards(final WindowReader reader, final long matchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -112,7 +113,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public SequenceMatcher firstMatch(final Reader reader, final long matchPosition) throws IOException {
+    public SequenceMatcher firstMatch(final WindowReader reader, final long matchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -120,7 +121,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public SequenceMatcher firstMatchBackwards(final Reader reader, final long matchPosition) throws IOException {
+    public SequenceMatcher firstMatchBackwards(final WindowReader reader, final long matchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -128,7 +129,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean matchesBackwards(final Reader reader, final long matchPosition) throws IOException {
+    public boolean matchesBackwards(final WindowReader reader, final long matchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -161,7 +162,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean matches(Reader reader, long matchPosition) throws IOException {
+    public boolean matches(WindowReader reader, long matchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

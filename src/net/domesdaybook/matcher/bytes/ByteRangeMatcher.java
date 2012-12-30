@@ -33,8 +33,8 @@ package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
 import net.domesdaybook.util.bytes.ByteUtilities;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 
 /**
  * An immutable {@link ByteMatcher} which matches a range of bytes, 
@@ -82,7 +82,7 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) 
+    public boolean matches(final WindowReader reader, final long matchPosition) 
             throws IOException{
         final Window window = reader.getWindow(matchPosition);
         if (window != null) {

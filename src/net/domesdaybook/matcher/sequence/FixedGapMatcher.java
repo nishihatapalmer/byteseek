@@ -32,9 +32,10 @@
 package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
+
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.bytes.AnyByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.reader.Reader;
 
 /**
  * An immutable object which matches a gap of unknown bytes.
@@ -95,7 +96,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         return reader.getWindow(matchPosition) != null && 
                reader.getWindow(matchPosition + length - 1) != null;
     }

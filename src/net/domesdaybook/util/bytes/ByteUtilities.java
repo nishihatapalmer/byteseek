@@ -249,6 +249,17 @@ public final class ByteUtilities {
         return result;
     }
     
+    /**
+     * Returns an array of bytes from a list of byte parameters.
+     * 
+     * @param values The byte parameters
+     * @return A byte array of the parameters.
+     */
+    public static byte[] toArray(byte... values) {
+    	return values;
+    }
+    
+   
     
     /**
      * Reverses an array of bytes.

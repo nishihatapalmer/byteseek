@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.domesdaybook.parser.regex;
+package net.domesdaybook.parser.regex.antlr;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +40,7 @@ import org.antlr.runtime.tree.CommonTreeAdaptor;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
+import net.domesdaybook.parser.regex.antlr.AntlrRegexParser;
 
 /**
  * An adaptor class which translates between the token types defined in the ANTLR regular expression
@@ -152,8 +153,8 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		}
 
 		@Override
-		public boolean isValueInverted() throws ParseException {
-			throw new ParseException("No value exists which can be inverted.");
+		public boolean isValueInverted() {
+			return false;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -192,7 +193,7 @@ public class AntlrParseTreeAdaptor extends CommonTreeAdaptor {
 		}
 		
 		@Override
-		public final boolean isValueInverted() throws ParseException {
+		public final boolean isValueInverted() {
 			return inverted;
 		}
 	}

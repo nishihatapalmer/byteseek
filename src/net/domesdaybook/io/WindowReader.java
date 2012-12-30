@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -55,7 +55,7 @@ import java.io.IOException;
  * 
  * @author Matt Palmer
  */
-public interface Reader extends Closeable {
+public interface WindowReader extends Closeable {
 
 	/**
 	 * Read a byte from a given position.
@@ -67,7 +67,7 @@ public interface Reader extends Closeable {
 	 * @throws IOException
 	 *             if there was a problem reading the byte.
 	 */
-	int readByte(final long position) throws IOException;
+	int readByte(long position) throws IOException;
 
 	/**
 	 * Returns a {@link Window} for the given position.
@@ -88,7 +88,7 @@ public interface Reader extends Closeable {
 	 * @throws IOException
 	 *             if there was a problem reading byte into the Window.
 	 */
-	Window getWindow(final long position) throws IOException;
+	Window getWindow(long position) throws IOException;
 
 	/**
 	 * Returns the offset into a {@link Window} for a given position.
@@ -97,10 +97,10 @@ public interface Reader extends Closeable {
 	 *            The position which you want the Window offset of.
 	 * @return The offset into a Window matching the position given.
 	 */
-	int getWindowOffset(final long position);
+	int getWindowOffset(long position);
 
 	/**
-	 * Returns the total length of the bytes provided by this Reader.
+	 * Returns the total length of the bytes provided by this WindowReader.
 	 * 
 	 * @return long the length of the byte source accessed by the reader.
 	 * @throws IOException

@@ -33,10 +33,11 @@ package net.domesdaybook.searcher.multisequence;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.SearchUtils;
 
@@ -66,7 +67,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
@@ -207,7 +208,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
      */
     //FIXME: copy of do search forwards gradually evolving to a backwards search...
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader,
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader,
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise
         final SearchInfo info = forwardInfo.get();

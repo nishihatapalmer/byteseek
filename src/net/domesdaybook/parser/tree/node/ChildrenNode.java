@@ -33,7 +33,6 @@ package net.domesdaybook.parser.tree.node;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 
@@ -94,7 +93,8 @@ public class ChildrenNode extends BaseNode {
 	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
 			   			 final boolean inverted) {
 		super(type);
-		this.children = new ArrayList<ParseTree>(children);
+		this.children = children == null? new ArrayList<ParseTree>(2)
+									     : new ArrayList<ParseTree>(children);
 		this.inverted = inverted;
 	}		
 	
@@ -119,7 +119,8 @@ public class ChildrenNode extends BaseNode {
 	 * @param children The list of children to copy in to this node, replacing any previous children.
 	 */
 	public void setChildren(final List<ParseTree> children) {
-		this.children = new ArrayList<ParseTree>(children);
+		this.children = children == null? new ArrayList<ParseTree>(2)
+			     			   		     : new ArrayList<ParseTree>(children);
 	}
 	
 	
@@ -148,7 +149,7 @@ public class ChildrenNode extends BaseNode {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isValueInverted() throws ParseException {
+	public boolean isValueInverted() {
 		return inverted;
 	}
 	
@@ -159,7 +160,12 @@ public class ChildrenNode extends BaseNode {
 	 */
 	public void setValueInverted(final boolean isValueInverted) {
 		this.inverted = isValueInverted;
-	}	
+	}
 	
+	
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '[' + getParseTreeType() + ", num children:" + children.size() + ']';  
+    }
 
 }

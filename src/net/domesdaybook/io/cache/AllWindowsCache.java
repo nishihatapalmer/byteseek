@@ -29,11 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader.cache;
+package net.domesdaybook.io.cache;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.domesdaybook.reader.Window;
+
+import net.domesdaybook.io.Window;
 
 /**
  * A {@link WindowCache} which holds on to all {@link Window} objects.

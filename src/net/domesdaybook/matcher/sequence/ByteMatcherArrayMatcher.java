@@ -36,9 +36,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 
 /**
  * An immutable class which matches a sequence of {@link ByteMatcher} objects.
@@ -121,7 +122,7 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         final int localLength = length;
         final ByteMatcher[] matchList = this.matchers;        
         Window window = reader.getWindow(matchPosition);

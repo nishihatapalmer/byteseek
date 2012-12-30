@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.parser.regex;
+package net.domesdaybook.parser.regex.antlr;
 
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;

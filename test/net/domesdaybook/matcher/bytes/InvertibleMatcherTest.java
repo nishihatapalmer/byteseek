@@ -11,7 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import net.domesdaybook.reader.Reader;
+import net.domesdaybook.io.WindowReader;
 
 /**
  *
@@ -92,7 +92,7 @@ public class InvertibleMatcherTest {
 		}
 
 		@Override
-		public boolean matches(Reader reader, long matchPosition) {
+		public boolean matches(WindowReader reader, long matchPosition) {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
@@ -107,7 +107,7 @@ public class InvertibleMatcherTest {
 		 * @param matchPosition
 		 * @return
 		 */
-		public boolean matchesNoBoundsCheck(Reader reader, long matchPosition) {
+		public boolean matchesNoBoundsCheck(WindowReader reader, long matchPosition) {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 

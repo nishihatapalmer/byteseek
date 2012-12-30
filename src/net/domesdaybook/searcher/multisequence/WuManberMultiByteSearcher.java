@@ -33,9 +33,10 @@ package net.domesdaybook.searcher.multisequence;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
-import net.domesdaybook.reader.Reader;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.SearchUtils;
 
@@ -72,12 +73,12 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
     }        
 
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(WindowReader reader, long searchPosition, long lastSearchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(Reader reader, long searchPosition, long lastSearchPosition) throws IOException {
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(WindowReader reader, long searchPosition, long lastSearchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

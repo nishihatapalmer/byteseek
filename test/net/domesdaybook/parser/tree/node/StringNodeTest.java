@@ -59,9 +59,9 @@ public class StringNodeTest {
 	}
 	
 	private void testNodes(String value) {
-		testNode("Default case sensitive: ",     new StringNode(value),         false, value);
-		testNode("Specified case sensitive: ",   new StringNode(value, false), false, value);
-		testNode("Specified case insensitive: ", new StringNode(value, true),  true, value);
+		testNode("Default case sensitive: ",     new StringNode(value), true, value);
+		testNode("Specified case sensitive: ",   new StringNode(value, ParseTreeType.STRING), true, value);
+		testNode("Specified case insensitive: ", new StringNode(value, ParseTreeType.CASE_INSENSITIVE_STRING), false, value);
 	}
 	
 	private void testNode(String description, StringNode node, boolean isCaseSensitive, String value) {
@@ -84,11 +84,7 @@ public class StringNodeTest {
 			fail(description + "Should not throw ParseException requesting text value.");
 		}
 		
-		try { 
-			assertFalse(description + "Node is not inverted.", node.isValueInverted());
-		} catch (ParseException e) {
-			fail(description + "Should not throw ParseException requesting inversion status.");
-		}		
+		assertFalse(description + "Node is not inverted.", node.isValueInverted());
 		
 		try { 
 			node.getByteValue();

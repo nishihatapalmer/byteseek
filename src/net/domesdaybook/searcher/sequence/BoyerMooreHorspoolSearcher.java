@@ -35,11 +35,12 @@ import net.domesdaybook.util.object.LazyObject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.bytes.AnyByteMatcher;
-import net.domesdaybook.reader.Reader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
 
@@ -147,11 +148,11 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
     
     /**
      * Searches forward using the Boyer Moore Horspool algorithm, using 
-     * byte arrays from Windows to handle shifting, and the Reader interface
+     * byte arrays from Windows to handle shifting, and the WindowReader interface
      * on the SequenceMatcher to verify whether a match exists.
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final Reader reader, final long fromPosition, 
+    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, final long fromPosition, 
         final long toPosition) throws IOException {
             
         // Get the objects needed to search:
@@ -267,7 +268,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final Reader reader, 
+    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Initialise:
@@ -290,7 +291,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                                      (int) distanceToEnd : 0;
             int arraySearchPosition = arrayStartPosition;
             
-            // Search using the byte array for shifts, using the Reader
+            // Search using the byte array for shifts, using the WindowReader
             // for verifiying the sequence with the matcher:          
             ARRAY_SEARCH: while (arraySearchPosition >= lastSearchPosition) {
                 

@@ -36,8 +36,9 @@ package net.domesdaybook.matcher.bytes;
 import java.io.IOException;
 import net.domesdaybook.util.bytes.ByteUtilities;
 import java.util.List;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 
 /**
  * A {@link ByteMatcher} which matches a byte which
@@ -77,7 +78,7 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
      * {@inheritDoc}
      */
     @Override
-    public boolean matches(final Reader reader, final long matchPosition) throws IOException {
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         final Window window = reader.getWindow(matchPosition);
         return window == null? false
                : ((window.getByte(reader.getWindowOffset(matchPosition)) & mBitMaskValue) != 0) ^ inverted;

@@ -112,11 +112,7 @@ public class ChildrenNodeTest {
 	
 	private void testNode(String description, ChildrenNode node, ParseTreeType type, int numChildren, boolean isInverted) {
 		assertEquals(description + "ChildrenNode has correct type: " + type, node.getParseTreeType(), type);
-		try {
-			assertEquals(description + "ChildrenNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
-		} catch (ParseException e) {
-			fail(description + "ChildrenNode should not throw a ParseException if asked if the value is inverted.");
-		}
+		assertEquals(description + "ChildrenNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
 		
 		try { 
 			node.getByteValue();

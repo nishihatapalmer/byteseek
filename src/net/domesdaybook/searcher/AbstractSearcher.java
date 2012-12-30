@@ -34,7 +34,7 @@ package net.domesdaybook.searcher;
 import java.io.IOException;
 import java.util.List;
 
-import net.domesdaybook.reader.Reader;
+import net.domesdaybook.io.WindowReader;
 
 /**
  * An abstract searcher implementation which provides default implementations of
@@ -51,7 +51,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<SearchResult<T>> searchForwards(final Reader reader,
+	public List<SearchResult<T>> searchForwards(final WindowReader reader,
 			final long fromPosition) throws IOException {
 		return searchForwards(reader, fromPosition, Long.MAX_VALUE);
 	}
@@ -60,7 +60,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<SearchResult<T>> searchForwards(final Reader reader)
+	public List<SearchResult<T>> searchForwards(final WindowReader reader)
 			throws IOException {
 		return searchForwards(reader, 0, Long.MAX_VALUE);
 	}
@@ -86,7 +86,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<SearchResult<T>> searchBackwards(final Reader reader,
+	public List<SearchResult<T>> searchBackwards(final WindowReader reader,
 			final long fromPosition) throws IOException {
 		return searchBackwards(reader, fromPosition, 0);
 	}
@@ -95,7 +95,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<SearchResult<T>> searchBackwards(final Reader reader)
+	public List<SearchResult<T>> searchBackwards(final WindowReader reader)
 			throws IOException {
 		return searchBackwards(reader, reader.length() - 1, 0);
 	}
@@ -146,7 +146,7 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	 * @throws IOException
 	 *             if the reader cannot be read from.
 	 */
-	protected final long withinLength(final Reader reader, final long position)
+	protected final long withinLength(final WindowReader reader, final long position)
 			throws IOException {
 		final long positionToTry = position > 0 ? position : 0;
 		return reader.getWindow(positionToTry) != null ? positionToTry : reader

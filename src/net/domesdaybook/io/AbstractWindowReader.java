@@ -29,25 +29,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader;
+package net.domesdaybook.io;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import net.domesdaybook.reader.cache.WindowCache;
+import net.domesdaybook.io.cache.WindowCache;
 
 /**
- * An abstract implementation of the Reader interface, which also implements
- * Iterable<Window> to allow iterating over the Windows of a Reader.
+ * An abstract implementation of the WindowReader interface, which also implements
+ * Iterable<Window> to allow iterating over the Windows of a WindowReader.
  * <p>
  * It provides common Window and cache management services using a fixed Window
  * size, and a standard Window iterator
- * {@link net.domesdaybook.reader.AbstractReader.WindowIterator}.
+ * {@link net.domesdaybook.io.AbstractWindowReader.WindowIterator}.
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractReader implements Reader, Iterable<Window> {
+public abstract class AbstractWindowReader implements WindowReader, Iterable<Window> {
 
 	/**
 	 * A constant indicating that there is no byte at the position requested,
@@ -79,12 +79,12 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 	protected final int windowSize;
 
 	/**
-	 * The Window caching mechanism used by this Reader.
+	 * The Window caching mechanism used by this WindowReader.
 	 */
 	protected final WindowCache cache;
 
 	/**
-	 * The last window acquired in this Reader using the
+	 * The last window acquired in this WindowReader using the
 	 * {@link #getWindow(long)} method. Positions to read from are quite likely
 	 * to be consecutive or close to the previous byte read from. Recording the
 	 * last window therefore avoids the need to look it up in the cache if the
@@ -93,7 +93,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 	private Window lastWindow;
 
 	/**
-	 * Construct the Reader using a default window size, using the WindowCache
+	 * Construct the WindowReader using a default window size, using the WindowCache
 	 * provided.
 	 * 
 	 * @param cache
@@ -101,12 +101,12 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 	 * @throws IllegalArgumentException
 	 *             if the WindowCache is null.
 	 */
-	public AbstractReader(final WindowCache cache) {
+	public AbstractWindowReader(final WindowCache cache) {
 		this(DEFAULT_WINDOW_SIZE, cache);
 	}
 
 	/**
-	 * Constructs the Reader using the window size and window cache provided.
+	 * Constructs the WindowReader using the window size and window cache provided.
 	 * 
 	 * @param windowSize
 	 *            The size of Window to use.
@@ -116,7 +116,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 	 *             if the window size is less than one or the WindowCache is
 	 *             null.
 	 */
-	public AbstractReader(final int windowSize, final WindowCache cache) {
+	public AbstractWindowReader(final int windowSize, final WindowCache cache) {
 		if (windowSize < 1) {
 			throw new IllegalArgumentException(
 					"Window size must be at least one.");
@@ -151,7 +151,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 	/**
 	 * Returns a window onto the data for a given position. The position does
 	 * not have to be the beginning of a Window - but the Window returned must
-	 * include that position (if such a position exists in the Reader).
+	 * include that position (if such a position exists in the WindowReader).
 	 * 
 	 * @param position
 	 *            The position in the reader for which a Window is requested.
@@ -224,19 +224,19 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 	 * provided.
 	 * 
 	 * @param windowStart
-	 *            The position in the Reader at which the Window should begin.
+	 *            The position in the WindowReader at which the Window should begin.
 	 * @return A Window beginning at the position given. If no Window can be
 	 *         created at the position given (e.g. the position is negative, or
 	 *         past the end of the underlying byte source), then this method
 	 *         MUST return null.
 	 * @throws IOException
-	 *             If the Reader has an issue reading the bytes required for a
+	 *             If the WindowReader has an issue reading the bytes required for a
 	 *             valid Window.
 	 */
 	abstract Window createWindow(final long windowStart) throws IOException;
 
 	/**
-	 * An iterator of {@link Window}s over a {@link Reader}.
+	 * An iterator of {@link Window}s over a {@link WindowReader}.
 	 */
 	private class WindowIterator implements Iterator<Window> {
 
@@ -272,7 +272,7 @@ public abstract class AbstractReader implements Reader, Iterable<Window> {
 
 		/**
 		 * Always throws UnsupportedOperationException. It is not possible to
-		 * remove a Window from a Reader.
+		 * remove a Window from a WindowReader.
 		 * 
 		 * @throws UnsupportedOperationException
 		 *             Always throws this exception.

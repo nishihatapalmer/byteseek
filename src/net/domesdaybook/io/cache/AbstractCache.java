@@ -30,15 +30,16 @@
  */
 
 
-package net.domesdaybook.reader.cache;
+package net.domesdaybook.io.cache;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.domesdaybook.reader.Window;
+
+import net.domesdaybook.io.Window;
 
 /**
- * An AbstractCache implements the {@link net.domesdaybook.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
+ * An AbstractCache implements the {@link net.domesdaybook.io.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
  * providing subscription, unsubscription and notification services.
  * <p>
  * Observers can receive notifications that a Window is leaving a WindowCache.
@@ -61,7 +62,7 @@ public abstract class AbstractCache implements WindowCache {
     
     
     /**
-     * Subscribes a {@link net.domesdaybook.reader.cache.WindowCache.WindowObserver} to this {@link WindowCache}.
+     * Subscribes a {@link net.domesdaybook.io.cache.WindowCache.WindowObserver} to this {@link WindowCache}.
      * 
      * @param observer The WindowObserver to subscribe.
      */
@@ -75,7 +76,7 @@ public abstract class AbstractCache implements WindowCache {
     
     
     /**
-     * Unsubscribes a {@link net.domesdaybook.reader.cache.WindowCache.WindowObserver} from this {@link WindowCache}.
+     * Unsubscribes a {@link net.domesdaybook.io.cache.WindowCache.WindowObserver} from this {@link WindowCache}.
      * 
      * @param observer The WindowObserver to unsubscribe.
      * @return boolean True if the WindowObserver was unsubscribed.
@@ -91,7 +92,7 @@ public abstract class AbstractCache implements WindowCache {
     
     
     /**
-     * Notifies a {@link net.domesdaybook.reader.cache.WindowCache.WindowObserver} that a {@link Window} was removed from a
+     * Notifies a {@link net.domesdaybook.io.cache.WindowCache.WindowObserver} that a {@link Window} was removed from a
      * {@link WindowCache}.
      * 
      * @param window The Window which was removed from this cache.

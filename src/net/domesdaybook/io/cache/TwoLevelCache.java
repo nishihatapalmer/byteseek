@@ -29,13 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.reader.cache;
+package net.domesdaybook.io.cache;
 
-import net.domesdaybook.reader.Window;
-import net.domesdaybook.reader.cache.WindowCache.WindowObserver;
+import net.domesdaybook.io.Window;
+import net.domesdaybook.io.cache.WindowCache.WindowObserver;
 
 /**
- * A {@link WindowCache} which wraps two further WindowCaches.  When a {@link net.domesdaybook.reader.Window}
+ * A {@link WindowCache} which wraps two further WindowCaches.  When a {@link net.domesdaybook.io.Window}
  * leaves the primary cache, it is automatically added to the secondary cache.
  * Observers of this cache are notified when a Window leaves the secondary cache, 
  * but not when it leaves the primary one (as it is added immediately to the secondary).
@@ -115,7 +115,7 @@ import net.domesdaybook.reader.cache.WindowCache.WindowObserver;
      * Implementation of the {@link WindowObserver} method to receive 
      * notification that a Window is freed from a cache.
      * <p>
-     * If a {@link net.domesdaybook.reader.Window} leaves the primary
+     * If a {@link net.domesdaybook.io.Window} leaves the primary
      * cache, then it is automatically added to the secondary cache.
      * If it leaves the secondary cache, then any observer of this cache
      * is notified that the Window is no longer cached at all by this cache.

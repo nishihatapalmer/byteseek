@@ -33,9 +33,10 @@ package net.domesdaybook.searcher.matcher;
 
 import java.io.IOException;
 import java.util.List;
+
+import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.io.Window;
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.reader.Reader;
-import net.domesdaybook.reader.Window;
 import net.domesdaybook.searcher.AbstractSearcher;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
@@ -61,7 +62,7 @@ import net.domesdaybook.searcher.SearchResult;
  * matcher was used).
  * <p>
  * Thread safety: this class is immutable, so it is safe to use this
- * searcher in multiple threads simultaneously. However, note that {@link Reader}
+ * searcher in multiple threads simultaneously. However, note that {@link WindowReader}
  * implementations passed in to search methods may not be thread-safe.  If byte
  * arrays are being searched, they must not be modified during searching.
  * 
@@ -100,10 +101,10 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * whichever comes first.  If there are more windows left, then they are
      * searched in turn.  
      * 
-     * @throws IOException if a problem occurred reading bytes from the Reader.
+     * @throws IOException if a problem occurred reading bytes from the WindowReader.
      */
     @Override
-    public List<SearchResult<Matcher>> searchForwards(final Reader reader, final long fromPosition, 
+    public List<SearchResult<Matcher>> searchForwards(final WindowReader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         
         // Initialise search:
@@ -166,7 +167,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<Matcher>> searchBackwards(final Reader reader, final long fromPosition, 
+    public List<SearchResult<Matcher>> searchBackwards(final WindowReader reader, final long fromPosition, 
            final long toPosition) throws IOException {
         
         // Initialise search:

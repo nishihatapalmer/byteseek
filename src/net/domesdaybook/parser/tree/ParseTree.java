@@ -102,9 +102,8 @@ public interface ParseTree {
 	 * Returns whether the value of this node should be inverted or not.
 	 * 
 	 * @return boolean True if the value of this node should be inverted by a compiler.
-	 * @throws ParseException If a problem occurs determining the inversion status.
 	 */
-	public boolean isValueInverted() throws ParseException;
+	public boolean isValueInverted();
 
 	/**
 	 * Returns a list of child nodes for this node.  If there are no child nodes,
