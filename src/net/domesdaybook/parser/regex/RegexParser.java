@@ -172,7 +172,7 @@ public class RegexParser implements Parser<ParseTree> {
 		}
 		final int numAlternatives = alternatives.size();
 		if (numAlternatives < 1) {
-			throw new ParseException(addContext("No sequences were found.", expression));
+			throw new ParseException(addContext("No alternatives were found.", expression));
 		}
 		return numAlternatives == 1? alternatives.get(0)
 								    : new ChildrenNode(ParseTreeType.ALTERNATIVES, alternatives);
