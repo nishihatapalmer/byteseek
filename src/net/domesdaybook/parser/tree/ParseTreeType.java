@@ -276,7 +276,7 @@ public enum ParseTreeType {
 	 *   a b c d
 	 * </code></pre></blockquote><p><p>
 	 * A sequence can not be inverted, hence calls to {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
-	 * should throw a {@link net.domesdaybook.parser.ParseException}.
+	 * must always return false.
 	 * <p>
 	 * Since sequences do not have a direct value, implementations should also throw a  
 	 * {@link net.domesdaybook.parser.ParseException}
@@ -284,14 +284,9 @@ public enum ParseTreeType {
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()}.
 	 * <p>
-	 * TODO: check handling of empty sequences in byteseek parsers and compilers.
-	 * TODO: should an empty sequence node throw a ParseException anyway?
 	 * The child nodes of a sequence are the ParseTrees to match in the order they appear.
-	 * A sequence with no child nodes specifies nothing to match - but crucially does not create
-	 * a requirement to match nothing. Hence, a sequence with no child nodes can be ignored
-	 * by parsers or compilers without necessarily throwing an exception, depending on the
-	 * specific requirements of the parser or compiler involved.
-	 * 
+	 * There must be at least one child node, although note that a sequence with a single child node
+	 * can be directly replaced by that child node.
 	 */
 	SEQUENCE("An ordered sequence of child nodes to match"),
 
@@ -319,14 +314,9 @@ public enum ParseTreeType {
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()}. are called.
 	 * <p>
-	 * TODO: check handling of empty alternatives in byteseek parsers and compilers.
 	 * The child nodes of an ALTERNATIVES node are the set of ParseTrees to match, any of which can match.
 	 * No particular order is implied by being in a list of children.
-	 * <p>
-	 * An ALTERNATIVES node with no child nodes specifies nothing to match - but crucially does not create
-	 * a requirement to match nothing. Hence, an ALTERNATIVES node with no child nodes can be ignored
-	 * by parsers or compilers without necessarily throwing an exception, depending on the
-	 * specific requirements of the parser or compiler involved.
+	 * An ALTERNATIVES node must have at least one child.
 	 */
 	ALTERNATIVES("A set of alternatives as children of this ParseTree"),
 	
