@@ -40,6 +40,7 @@ public class Utilities {
     public static byte[] getByteArray(final File file) throws IOException {
         final WindowReader reader = new FileWindowReader(file);
         final Window window = reader.getWindow(0);
+        reader.close();
         return window.getArray();
     }
     
