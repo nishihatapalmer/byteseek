@@ -31,6 +31,9 @@
 
 package net.domesdaybook.compiler;
 
+//TODO: update compilers to work with the new ast REPEAT types.
+
+
 import java.util.Collection;
 
 /**
