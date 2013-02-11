@@ -339,7 +339,7 @@ public class RegexParserTest {
 		testAny(parser.parse(expression));
 	}
 	
-	private void testAny(ParseTree node) throws ParseException {
+	private void testAny(ParseTree node) {
 		assertEquals("Node " + node + " has ParseTreeType.ANY",
 				     ParseTreeType.ANY, node.getParseTreeType());
 		assertNotNull("Node " + node + " children not null", node.getChildren());
