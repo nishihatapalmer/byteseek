@@ -444,11 +444,7 @@ public class RegexParser implements Parser<ParseTree> {
 		if (setNodes.isEmpty()) {
 			throw new ParseException(addContext("Cannot have an empty set", expression));
 		}
-		//TODO: could optimise single byte / bitmask child nodes without enclosing set node?
-		//return setNodes.size() == 1 && !inverted ? setNodes.get(0)
-		// but can't return string node inside set even it's the only child (as string contents make
-		// a set of byte values, not a string outside the set - the meaning is different inside or
-		// outside the set.
+		
 		return new ChildrenNode(ParseTreeType.SET, setNodes, inverted);
 	}
 	
@@ -456,7 +452,6 @@ public class RegexParser implements Parser<ParseTree> {
 	private ParseTree matchQuantifiers(final int currentChar, 
 										final StringParseReader expression) throws ParseException {
 		switch (currentChar) {
-			//	TODO: need to check whether it is legal to make the last node a child of the one passed in...
 			case MANY: 			return new ChildrenNode(ParseTreeType.ZERO_TO_MANY);
 			case ONE_TO_MANY: 	return new ChildrenNode(ParseTreeType.ONE_TO_MANY);
 			case OPEN_REPEAT: 	return parseRepeat(expression);
