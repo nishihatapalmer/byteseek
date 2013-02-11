@@ -55,7 +55,7 @@ import net.domesdaybook.parser.tree.node.StringNode;
  */
 public class RegexParser implements Parser<ParseTree> {
 
-	//TODO: set subtraction: [ 'a'-'z' -['aeiou']] 
+	//FEATURE: set subtraction: [ 'a'-'z' -['aeiou']] 
 	
 	/*
 	 * Private syntactic character constants
@@ -151,7 +151,6 @@ public class RegexParser implements Parser<ParseTree> {
 	@Override
 	public ParseTree parse(final String expression) throws ParseException {
 		if (expression == null || expression.isEmpty()) {
-			//TODO: should return null?
 			throw new ParseException("Null or empty expression not allowed.");
 		}
 		return parseAlternatives(new StringParseReader(expression));
