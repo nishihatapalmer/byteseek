@@ -16,3 +16,15 @@ syntax: regexp
 [\.]hgignore
 syntax: regexp
 .hgignore
+syntax: regexp
+^antlr$
+syntax: regexp
+^bin$
+syntax: regexp
+^lib$
+syntax: regexp
+^antlr$
+syntax: regexp
+^antlr/classes$
+syntax: regexp
+^antlr$
