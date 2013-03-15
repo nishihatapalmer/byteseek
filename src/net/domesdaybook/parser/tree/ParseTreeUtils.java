@@ -417,6 +417,9 @@ public final class ParseTreeUtils {
 	 *                         it does not have three children, or an integer value supplied
 	 *                         is not positive.
 	 */
+	//FIXME: this utility method is probably useless now that we have explicit REPEAT, REPEAT_MIN_TO_MANY and
+	//       REPEAT_MIN_TO_MAX nodes.  Need to evaluate which of the utility methods are needed after refactoring
+	//       compilers to use the new repeat nodes.
 	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
 		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT) {
 			throw new ParseException("Node is not a REPEAT node.  It has type: " + repeatNode.getParseTreeType());
@@ -435,9 +438,7 @@ public final class ParseTreeUtils {
 		    }
 		    return intValue;
 		}
-		return -1; //FIXME: need to test for MANY node, which doesn't exist at the moment...	
-		//          But this function should return a negative number for a many node,
-		//          and throw a ParseException if the node isn't an integer or a many node.
+		return -1; 
 	}
 	
 	

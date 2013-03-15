@@ -42,8 +42,6 @@ package net.domesdaybook.parser.tree;
  */
 public enum ParseTreeType {
 	
-	//TODO: javadoc now incorrect?  Don't throw ParseException for isValueInverted.
-	
 	/////////////////////////////////////////////////
 	// Value-specifying leaf node types            //
 	//											   //
@@ -146,6 +144,10 @@ public enum ParseTreeType {
 	 * The text value of a STRING type is accessible by a call to 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getTextValue()}. 
 	 * <p>
+	 * The value can not be inverted.
+	 * Calling {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * will always return false.
+	 * <p>
 	 * The intention of this type is to make it easy to specify ASCII-style (single-byte encoded) text values
 	 * as byte strings to match.  However, there is no reason why other encodings (e.g. UTF-8 or UTF-16) could
 	 * not be used to convert to a byte sequence.
@@ -166,9 +168,25 @@ public enum ParseTreeType {
 	 */
 	STRING("A sequence of bytes represented as a string of text."),
 
-	//TODO: javadoc for case insensitive string.  The matching rules must be defined
-	//       single bytes which conform to lower case or upper case ASCII byte values
-	//       will be matched equivalently, any other byte values will match as they are.
+	/**
+	 * A CASE_INSENSITIVE_STRING type represents a sequence of bytes, expressed as a java String value.
+	 * The text value of a CASE_INSENSITIVE_STRING type is accessible by a call to 
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getTextValue()}. 
+	 * <p>
+	 * The value can not be inverted.
+	 * Calling {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * will always return false.
+	 * <p>
+	 * The intention of this type is to make it easy to specify ASCII-style (single-byte encoded) text values
+	 * as byte strings to match, where lower and upper case will match equivalently.
+	 * <p>
+	 * Implementations should throw a {@link net.domesdaybook.parser.ParseException} if calls are made to 
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()} or
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()}.  
+	 * <p>
+	 * A STRING type has no children, and must return an empty list of child nodes if 
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getChildren()} is called.
+	 */
 	CASE_INSENSITIVE_STRING("A case insensitive ASCII string"),
 	
 	
@@ -290,24 +308,86 @@ public enum ParseTreeType {
 	 */
 	SEQUENCE("An ordered sequence of child nodes to match"),
 
-	//TODO: javadoc for these types.
-	
-	//TODO: update compilers to work with the new ast types.
-	
-	REPEAT("Repeat the child node the number of times contained in this node with an int value."),
-	
-	
-	REPEAT_MIN_TO_MANY("Repeat the child node at least the number of times contained in this node with an int value, but which could repeat more than that."),
 
+	/**
+	 * A REPEAT node repeats another node a fixed number of times.  The number of times is given by 
+	 * the first child node of the repeat node, which is an INTEGER node.  The second child node of
+	 * the repeat node is the node to repeat, and this can be any other type of node.
+	 * For example, a node that repeats the byte 0x09 seven times is represented like this:
+	 * <p><blockquote><pre><code>
+	 * REPEAT
+	 *  |__ INTEGER (7)
+	 *  |__ BYTE (0x09)
+	 * </code></pre></blockquote><p><p>
+	 * <p>
+	 * A repeat node can not be inverted, hence calls to {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * must always return false.
+	 * <p>
+	 * Since repeats do not have a direct value, implementations should also throw a  
+	 * {@link net.domesdaybook.parser.ParseException}
+	 * if calls are made to either {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()},
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getTextValue()} or 
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()} or
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()}.
+ 	 */
+	REPEAT("Repeat the second child node the number of times contained in the first child INTEGER node."),
 	
-	REPEAT_MIN_TO_MAX("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER or MANY child) number of times."),
+	/**
+	 * A REPEAT_MIN_TO_MANY node repeats another node at least a fixed number of times, but can repeat more than this.
+	 * The minimum number of times is given by the first child node of the repeat node, which is an INTEGER node.  
+	 * The second child node of the repeat node is the node to repeat, and this can be any other type of node.
+	 * For example, a node that repeats the byte 0x09  at least seven times is represented like this:
+	 * <p><blockquote><pre><code>
+	 * REPEAT
+	 *  |__ INTEGER (7)
+	 *  |__ BYTE (0x09)
+	 * </code></pre></blockquote><p><p>
+	 * <p>
+	 * A REPEAT_MIN_TO_MANY node can not be inverted, hence calls to {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * must always return false.
+	 * <p>
+	 * Since REPEAT_MIN_TO_MANY nodes do not have a direct value, implementations should also throw a  
+	 * {@link net.domesdaybook.parser.ParseException}
+	 * if calls are made to either {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()},
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getTextValue()} or 
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()} or
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()}.
+ 	 */
+	REPEAT_MIN_TO_MANY("Repeat the second child node at least the number of times contained in the first child INTEGER node, but which could repeat more than that."),
+
+
+	/**
+	 * A REPEAT_MIN_TO_MAX node repeats another node at least a fixed number of times, but can repeat up to a maximum
+	 * number of times.  The minimum number of times is given by the first child node of the repeat node, which is an INTEGER node.
+	 * The maximum number of times is given by the second child node of the repeat node, which is an INTEGER node.  
+	 * The third child node of the repeat node is the node to repeat, and this can be any other type of node.
+	 * For example, a node that repeats the byte 0x09  at least seven times and no more than 12 times is represented like this:
+	 * <p><blockquote><pre><code>
+	 * REPEAT
+	 *  |__ INTEGER (7)
+	 *  |__ INTEGER (12)  
+	 *  |__ BYTE (0x09)
+	 * </code></pre></blockquote><p><p>
+	 * <p>
+	 * A REPEAT_MIN_TO_MAX node can not be inverted, hence calls to {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * must always return false.
+	 * <p>
+	 * Since REPEAT_MIN_TO_MAX nodes do not have a direct value, implementations should also throw a  
+	 * {@link net.domesdaybook.parser.ParseException}
+	 * if calls are made to either {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()},
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getTextValue()} or 
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getByteValue()} or
+	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()}.
+ 	 */
+	REPEAT_MIN_TO_MAX("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER child) number of times."),
 	
 	
 	/**
 	 * An ALTERNATIVES type specifies that each of its children should be treated as alternatives.
 	 * <p>
-	 * Alternatives can not be inverted, so implementations should throw a {@link net.domesdaybook.parser.ParseException}
-	 * if the method {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()} is called.  
+	 * The value can not be inverted. 
+	 * Calling {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * will always return false.
 	 * <p>
 	 * Since an alternatives node has no direct value, they should also throw this exception if any of 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()},
@@ -323,8 +403,9 @@ public enum ParseTreeType {
 	/**
 	 * A ZERO_TO_MANY type specifies that its single child node should appear zero to many times.
 	 * <p>
-	 * ZERO_TO_MANY types can not be inverted, so implementations should throw a {@link net.domesdaybook.parser.ParseException}
-	 * if the method {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()} is called.  
+	 * The value can not be inverted.
+	 * Calling {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * will always return false.
 	 * <p> 
 	 * Since a ZERO_TO_MANY node has no direct value, they should also throw this exception if any of 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()},
@@ -339,8 +420,9 @@ public enum ParseTreeType {
 	/**
 	 * A ONE_TO_MANY type specifies that its single child node should appear one to many times.
 	 * <p>
-	 * ONE_TO_MANY types can not be inverted, so implementations should throw a {@link net.domesdaybook.parser.ParseException}
-	 * if the method {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()} is called.  
+	 * The value can not be inverted.
+	 * Calling {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * will always return false.
 	 * <p> 
 	 * Since a ONE_TO_MANY node has no direct value, they should also throw this exception if any of 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()},
@@ -356,8 +438,9 @@ public enum ParseTreeType {
 	 * An OPTIONAL type specifies that its single child node may or may not appear.  
 	 * This is functionally equivalent to being repeated zero to one times.
 	 * <p>
-	 * OPTIONAL types can not be inverted, so implementations should throw a {@link net.domesdaybook.parser.ParseException}
-	 * if the method {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()} is called.  
+	 * The value can not be inverted.
+	 * Calling {@link net.domesdaybook.parser.tree.ParseTree#isValueInverted()}
+	 * will always return false.
 	 * <p> 
 	 * Since an OPTIONAL node has no direct value, they should also throw this exception if any of 
 	 * {@link net.domesdaybook.parser.tree.ParseTree#getIntValue()},
