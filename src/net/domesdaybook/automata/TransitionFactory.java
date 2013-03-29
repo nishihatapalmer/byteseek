@@ -35,6 +35,11 @@ package net.domesdaybook.automata;
 /**
  * A factory for {@link Transition} objects
  * 
+ * @param <T>
+ *            The type of objects each state will be associated with. 
+ * @param <S>
+ *            The type of object to create a transition from.     
+ * 
  * @author Matt Palmer
  * @see net.domesdaybook.automata.Transition
  */
