@@ -56,7 +56,7 @@ public final class CompilerUtils {
 		// Private constructor to prevent the construction of a static utility class.
 	}
 
-	public static boolean isInverted(final ParseTree node, final boolean currentInversion) throws ParseException {
+	public static boolean isInverted(final ParseTree node, final boolean currentInversion) {
 		return currentInversion ^ node.isValueInverted();
 	}
 	
