@@ -127,8 +127,8 @@ public final class CompilerUtils {
 				case ALL_BITMASK: 	return createAllBitmaskMatcher(singleElement, isInverted);
 				case ANY_BITMASK: 	return createAnyBitmaskMatcher(singleElement, isInverted);
 				case RANGE: 		return createRangeMatcher(singleElement, isInverted);
-				//FIXME: inversion of set doesn't look right - ignores current inversion status.
-				case SET:			return createMatcherFromSet(singleElement, singleElement.isValueInverted(), matcherFactory);
+				//FIXME: not sure that nested set inversions work correctly.  Ensure good tests for these cases.
+				case SET:			return createMatcherFromSet(singleElement, isInverted, matcherFactory);
 			}
 		}
 		// Not a simple set - build the bytes in the set and ask the matcher factory for a matcher.
