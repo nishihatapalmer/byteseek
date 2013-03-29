@@ -416,7 +416,7 @@ public final class ByteUtilities {
     	final int start = from < to? from : to;
     	final int end =   from < to? to : from;
     	for (int value = start; value <= end; value++) {
-    		bytes.add((byte) value);
+    		bytes.add(Byte.valueOf((byte) value));
     	}
     }
     
