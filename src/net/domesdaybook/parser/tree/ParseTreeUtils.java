@@ -210,13 +210,13 @@ public final class ParseTreeUtils {
 	 * @return The node which should be repeated.
 	 * @throws ParseException
 	 */
-	public static ParseTree getNodeToRepeat(final ParseTree repeatNode) throws ParseException {
-		final List<ParseTree> repeatChildren = repeatNode.getChildren();
-		if (repeatChildren.size() != 3) {
+	public static ParseTree getLastChild(final ParseTree repeatNode) throws ParseException {
+		final List<ParseTree> children = repeatNode.getChildren();
+		if (children.size() != 3) {
 			throw new ParseException("Repeats must have three child nodes. " +
-			                          "Actual number of children was: " + repeatChildren.size());			
+			                          "Actual number of children was: " + children.size());			
 		}
-		return repeatChildren.get(2);
+		return children.get(2);
 	}
 	
 	
@@ -356,7 +356,7 @@ public final class ParseTreeUtils {
 				case ZERO_TO_MANY:			    // function, and get the set of all byte values which *could* be
 				case ONE_TO_MANY:			    // matched by that expression.
 				case OPTIONAL:					setValues.addAll(calculateSetValues(child)); 					break;
-				case REPEAT:					setValues.addAll(calculateSetValues(getNodeToRepeat(child))); 	break;
+				case REPEAT:					setValues.addAll(calculateSetValues(getLastChild(child))); 	break;
 				case BYTE: 						setValues.add(child.getByteValue());  							break;
 				case RANGE: 					setValues.addAll(getRangeValues(child));						break;
 				case ALL_BITMASK:				setValues.addAll(getAllBitmaskValues(child));					break;

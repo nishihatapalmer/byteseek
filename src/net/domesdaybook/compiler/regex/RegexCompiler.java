@@ -212,14 +212,14 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
 
 
     private Automata<T> createRepeatedAutomata(final ParseTree ast) throws CompileException, ParseException {
-      final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      final Automata<T> automata = doCompile(ParseTreeUtils.getLastChild(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
       return regexBuilder.buildMinToMaxAutomata(minRepeat, minRepeat, automata);
     }
 
     
     private Automata<T> createRepeatMinToMaxAutomata(final ParseTree ast) throws CompileException, ParseException {
-      final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      final Automata<T> automata = doCompile(ParseTreeUtils.getLastChild(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
       final int maxRepeat = ParseTreeUtils.getSecondRepeatValue(ast);
       return regexBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, automata);
@@ -227,7 +227,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
 
     private Automata<T> createRepeatMinToManyAutomata(final ParseTree ast) throws CompileException, ParseException {
-      final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      final Automata<T> automata = doCompile(ParseTreeUtils.getLastChild(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
       return regexBuilder.buildMinToManyAutomata(minRepeat, automata);
     }    

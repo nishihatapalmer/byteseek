@@ -258,6 +258,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     		case SEQUENCE:          		addSequenceMatcher(					matcherNode, sequenceList); break;
     		case REPEAT:          			addRepeatedSequence(				matcherNode, sequenceList); break;
     		case SET: 						// drop through - sets and alternatives are both treated as sets.
+    		//TODO: should we really treat alternatives as sets?  Seems like stretching the syntax to the point of meaninglessness.
     		case ALTERNATIVES: 				addSetMatcher(						matcherNode, sequenceList); break;
     		
     		default: throw new ParseException(getTypeErrorMessage(matcherNode));
@@ -275,7 +276,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
                                      final List<SequenceMatcher> sequenceList)
         throws ParseException {
       final int timesToRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
-      final SequenceMatcher sequenceToRepeat = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      final SequenceMatcher sequenceToRepeat = doCompile(ParseTreeUtils.getLastChild(ast));
       for (int count = 1; count <= timesToRepeat; count++) {
       	sequenceList.add(sequenceToRepeat);
       }

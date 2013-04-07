@@ -221,7 +221,9 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 			case ZERO_TO_MANY:				// drop through - these special cases of repeated nodes
 			case ONE_TO_MANY:				// all just process their first child as a set of possible byte values to match.
 			case OPTIONAL:					return doCompile(ParseTreeUtils.getFirstChild(node));
-			case REPEAT:					return doCompile(ParseTreeUtils.getNodeToRepeat(node));
+			case REPEAT_MIN_TO_MANY:		// drop through - treat all repeats as just the node to
+			case REPEAT_MIN_TO_MAX:			// repeat (without doing any repeating).
+			case REPEAT:					return doCompile(ParseTreeUtils.getLastChild(node));
 		}
 		
 		// The node type wasn't understood by this compiler.
