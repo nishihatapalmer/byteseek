@@ -72,8 +72,7 @@ import net.domesdaybook.parser.tree.node.ChildrenNode;
 public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseTree> {
 
     private static final boolean NOT_YET_INVERTED = false;
-    private static final String MANY = "*";
-    
+ 
     private final RegexBuilder<T, ParseTree> regexBuilder;
 
     /**
@@ -160,6 +159,8 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
             case SEQUENCE:					return createSequenceAutomata(ast);
             case ALTERNATIVES:				return createAlternativesAutomata(ast);
             case REPEAT:					return createRepeatedAutomata(ast);
+            case REPEAT_MIN_TO_MAX:			return createRepeatMinToMaxAutomata(ast);
+            case REPEAT_MIN_TO_MANY:		return createRepeatMinToManyAutomata(ast);
             case ZERO_TO_MANY:				return createZeroToManyAutomata(ast);
             case ONE_TO_MANY:				return createOneToManyAutomata(ast);
             case OPTIONAL:					return createOptionalAutomata(ast);
@@ -256,12 +257,34 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     private Automata<T> createRepeatedAutomata(final ParseTree ast) throws CompileException, ParseException {
       final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
+      return regexBuilder.buildMinToMaxAutomata(minRepeat, minRepeat, automata);
+    }
+
+    
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     * @throws ParseException
+     */
+    private Automata<T> createRepeatMinToMaxAutomata(final ParseTree ast) throws CompileException, ParseException {
+      final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
       final int maxRepeat = ParseTreeUtils.getSecondRepeatValue(ast);
-      if (maxRepeat < 0) { //TODO: don't really like the convention of a negative max value indicating MANY...
-        return regexBuilder.buildMinToManyAutomata(minRepeat, automata);
-      }
       return regexBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, automata);
     }
+    
+    /**
+     * @param ast
+     * @return
+     * @throws CompileException
+     * @throws ParseException
+     */
+    private Automata<T> createRepeatMinToManyAutomata(final ParseTree ast) throws CompileException, ParseException {
+      final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
+      final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
+      return regexBuilder.buildMinToManyAutomata(minRepeat, automata);
+    }    
     
     
     protected ParseTree joinExpressions(final List<ParseTree> expressions)
