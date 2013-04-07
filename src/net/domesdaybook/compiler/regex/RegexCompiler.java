@@ -167,93 +167,50 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
             
             default: throw new CompileException(getTypeErrorMessage(ast));
         }
-   }
+    }
 
 
-    /**
-     * @param ast
-     * @return
-     */
     private Automata<T> createTransitionAutomata(final ParseTree ast) {
       return regexBuilder.buildTransitionAutomata(ast, NOT_YET_INVERTED);
     }    
     
 
-    /**
-     * 
-     */
     private Automata<T> createStringAutomata(final ParseTree ast) throws ParseException {
         return regexBuilder.buildSequenceAutomata(getByteAutomataList(ast.getTextValue()));
     }    
     
 
-    /**
-     * 
-     */
     private Automata<T> createCaseInsensitiveStringAutomata(final ParseTree ast) throws ParseException {
         return regexBuilder.buildSequenceAutomata(getCaseInsensitiveAutomataList(ast.getTextValue()));
     }
 
 
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     */
     private Automata<T> createSequenceAutomata(final ParseTree ast) throws ParseException, CompileException {
       return regexBuilder.buildSequenceAutomata(compileChildren(ast));
     }    
 
     
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     */
     private Automata<T> createAlternativesAutomata(final ParseTree ast) throws ParseException, CompileException {
     	//TODO: optimise alternatives which match single bytes into one set of bytes to match.
     	return regexBuilder.buildAlternativesAutomata(compileChildren(ast));
     }
 
     
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     * @throws ParseException 
-     */
     private Automata<T> createOptionalAutomata(final ParseTree ast) throws CompileException, ParseException {
       return regexBuilder.buildOptionalAutomata(compileFirstChild(ast));
     }
 
     
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     * @throws ParseException 
-     */
     private Automata<T> createOneToManyAutomata(final ParseTree ast) throws CompileException, ParseException {
       return regexBuilder.buildOneToManyAutomata(compileFirstChild(ast));
     }
 
 
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     */
     private Automata<T> createZeroToManyAutomata(final ParseTree ast) throws CompileException, ParseException {
       return regexBuilder.buildZeroToManyAutomata(compileFirstChild(ast));
     }
 
 
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     * @throws ParseException
-     */
     private Automata<T> createRepeatedAutomata(final ParseTree ast) throws CompileException, ParseException {
       final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
@@ -261,12 +218,6 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     }
 
     
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     * @throws ParseException
-     */
     private Automata<T> createRepeatMinToMaxAutomata(final ParseTree ast) throws CompileException, ParseException {
       final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
@@ -274,12 +225,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
       return regexBuilder.buildMinToMaxAutomata(minRepeat, maxRepeat, automata);
     }
     
-    /**
-     * @param ast
-     * @return
-     * @throws CompileException
-     * @throws ParseException
-     */
+
     private Automata<T> createRepeatMinToManyAutomata(final ParseTree ast) throws CompileException, ParseException {
       final Automata<T> automata = doCompile(ParseTreeUtils.getNodeToRepeat(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
@@ -317,10 +263,6 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     }
     
     
-    /**
-     * @param fromString
-     * @return
-     */
     private List<Automata<T>> getCaseInsensitiveAutomataList(final String fromString) {
       final List<Automata<T>> automataList = new ArrayList<Automata<T>>(fromString.length());
       final ParseTree set = createTwoByteSet();
