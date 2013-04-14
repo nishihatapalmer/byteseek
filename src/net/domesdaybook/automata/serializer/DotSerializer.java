@@ -31,7 +31,9 @@
 
 package net.domesdaybook.automata.serializer;
 
+import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.domesdaybook.automata.Automata;
@@ -70,42 +72,49 @@ public final class DotSerializer<T> implements AutomataSerializer<T, String> {
 	 * @return A String containing the automata serialised in DOT format.
 	 */
 	@Override
-	public String serialize(final Automata<T> automata, final String title) {
+	public String serialize(final Automata<T> automata, final boolean includeAssociatedObjects, final String title) {
 		final StringBuilder stringBuilder = new StringBuilder(256);
 		buildHeader(stringBuilder, title);
-		buildStates(stringBuilder, automata);
+		buildStates(stringBuilder, automata, includeAssociatedObjects);
 		buildFooter(stringBuilder);
 		return stringBuilder.toString();
 	}
 	
 	private void buildHeader(final StringBuilder builder, final String title) {
 	  builder.append(DOT_HEADER);
-    final String onelineTitle = title.replaceAll("\\s", " ");
-    builder.append(String.format(DOT_TITLE, onelineTitle));	  
+	  final String onelineTitle = title.replaceAll("\\s", " ");
+	  builder.append(String.format(DOT_TITLE, onelineTitle));	  
 	}
 	
-	private void buildStates(final StringBuilder builder, final Automata<T> automata) {
+	private void buildStates(final StringBuilder builder, final Automata<T> automata, final boolean includeAssociatedObjects) {
 	  final Map<State<T>, Integer> visitedStates = new IdentityHashMap<State<T>, Integer>();
-    buildDot(automata.getInitialState(), visitedStates, 0, builder);
+	  buildDot(automata.getInitialState(), includeAssociatedObjects, visitedStates, 0, builder);
 	}
 	
 	private void buildFooter(final StringBuilder builder) {
 	  builder.append(DOT_FOOTER);
 	}
 
-	private int buildDot(final State<T> state,
+	private int buildDot(final State<T> state, boolean includeAssociatedObjects,
 			final Map<State<T>, Integer> visitedStates, int nextStateNumber,
 			final StringBuilder builder) {
 		if (!visitedStates.containsKey(state)) {
 			visitedStates.put(state, nextStateNumber);
-			final String label = Integer.toString(nextStateNumber);
+			final String shapeDef = Integer.toString(nextStateNumber);
+			String label = shapeDef;
+			if (includeAssociatedObjects) {
+				final Collection<T> associatedObjects = state.getAssociations();
+				for (final T associated : associatedObjects) {
+					label += " [" + associated.toString() + ']';
+				}
+			}
 			final String shape = state.isFinal() ? FINAL_STATE_SHAPE : NON_FINAL_STATE_SHAPE;
-			builder.append(String.format(STATE_DEFINITION, label, label, shape));
+			builder.append(String.format(STATE_DEFINITION, shapeDef, label, shape));
 
 			// process its transitions:
 			for (final Transition<T> transition : state) {
 				final State<T> toState = transition.getToState();
-				final int processedNumber = buildDot(toState, visitedStates, nextStateNumber + 1,
+				final int processedNumber = buildDot(toState, includeAssociatedObjects, visitedStates, nextStateNumber + 1,
 						builder);
 				nextStateNumber = processedNumber > nextStateNumber ? processedNumber
 						: nextStateNumber;
