@@ -143,8 +143,8 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	}
 
 	/**
-	 * An abstract compile method which takes a parse tree created using the
-	 * ANTLR parse generator and uses it to build the compiled object of type T.
+	 * An abstract compile method which takes a parse tree and uses it to 
+	 * build the compiled object of type T.
 	 * <p>
 	 * Classes implementing this base class must implement this method to
 	 * perform the actual compilation.
