@@ -192,6 +192,10 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     private Automata<T> createAlternativesAutomata(final ParseTree ast) throws ParseException, CompileException {
     	//TODO: optimise alternatives which match single bytes into one set of bytes to match.
+    	//      Or should this be done here?  Possibly a global automata optimisation?
+    	//      e.g. any automata which results in more than one transition to the same
+    	//      state can collapse those into a single transition encompassing the set of
+    	//      all transition values.  
     	return regexBuilder.buildAlternativesAutomata(compileChildren(ast));
     }
 
