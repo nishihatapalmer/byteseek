@@ -46,8 +46,8 @@ public final class AutomataUtils {
 	private AutomataUtils() {
 	}
 	
-	public static <T> String toDot(Automata<T> automata, String title) {
-		return new DotSerializer<T>().serialize(automata, title);
+	public static <T> String toDot(Automata<T> automata, boolean includeAssociatedObjects, String title) {
+		return new DotSerializer<T>().serialize(automata, includeAssociatedObjects, title);
 	}
 	
 	public static <T> int countStates(Automata<T> automata) {
