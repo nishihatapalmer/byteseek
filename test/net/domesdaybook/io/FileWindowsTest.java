@@ -30,14 +30,14 @@ import net.domesdaybook.io.cache.NoCache;
  *
  * @author matt
  */
-public class FileReaderTest {
+public class FileWindowsTest {
 
 	private final static Random	rand	= new Random();
 
 	/**
 	 * 
 	 */
-	public FileReaderTest() {
+	public FileWindowsTest() {
 	}
 
 	/**
@@ -265,21 +265,21 @@ public class FileReaderTest {
 				try {
 					return new FileWIndows(filePath); // pure default
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else if (currentReader == 1) {
 				currentReader++;
 				try {
 					return new FileWIndows(filePath, new AllWindowsCache()); // all windows cache.
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else if (currentReader == 2) {
 				currentReader++;
 				try {
 					return new FileWIndows(filePath, new NoCache()); // no cacheing.
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else if (currentReader < numReaders) {
 				currentReader++;
@@ -289,7 +289,7 @@ public class FileReaderTest {
 							return new FileWIndows(filePath, sizes[currentSize++],
 									cachecapacity[currentCapacity]);
 						} catch (FileNotFoundException ex) {
-							Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE,
+							Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE,
 									null, ex);
 						}
 
@@ -300,7 +300,7 @@ public class FileReaderTest {
 								return new FileWIndows(filePath, sizes[currentSize],
 										cachecapacity[currentCapacity++]);
 							} catch (FileNotFoundException ex) {
-								Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE,
+								Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE,
 										null, ex);
 							}
 						}
