@@ -8,7 +8,7 @@ package net.domesdaybook.io;
 import java.io.File;
 import java.io.IOException;
 
-import net.domesdaybook.io.FileWIndows;
+import net.domesdaybook.io.FileReader;
 
 /**
  *
@@ -36,7 +36,7 @@ public class Utilities {
      * @throws IOException
      */
     public static byte[] getByteArray(final File file) throws IOException {
-        final WindowReader reader = new FileWIndows(file);
+        final WindowReader reader = new FileReader(file);
         final Window window = reader.getWindow(0);
         reader.close();
         return window.getArray();

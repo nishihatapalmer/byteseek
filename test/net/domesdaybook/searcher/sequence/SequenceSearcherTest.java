@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import net.domesdaybook.io.FileWIndows;
+import net.domesdaybook.io.FileReader;
 import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.bytes.AnyByteMatcher;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
@@ -76,7 +76,7 @@ public class SequenceSearcherTest {
 
 	private void findMatches(Searcher<SequenceMatcher> searcher, final long searchPosition)
 			throws FileNotFoundException, IOException {
-		final WindowReader reader = new FileWIndows(getFile("/TestASCII.txt"));
+		final WindowReader reader = new FileReader(getFile("/TestASCII.txt"));
 		final ForwardSearchIterator<SequenceMatcher> searchIterator = new ForwardSearchIterator<SequenceMatcher>(
 				searcher, reader, searchPosition);
 		while (searchIterator.hasNext()) {

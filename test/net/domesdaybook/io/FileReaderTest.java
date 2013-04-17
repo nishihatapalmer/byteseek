@@ -22,7 +22,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import net.domesdaybook.io.FileWIndows;
+import net.domesdaybook.io.FileReader;
 import net.domesdaybook.io.cache.AllWindowsCache;
 import net.domesdaybook.io.cache.NoCache;
 
@@ -30,14 +30,14 @@ import net.domesdaybook.io.cache.NoCache;
  *
  * @author matt
  */
-public class FileWindowsTest {
+public class FileReaderTest {
 
 	private final static Random	rand	= new Random();
 
 	/**
 	 * 
 	 */
-	public FileWindowsTest() {
+	public FileReaderTest() {
 	}
 
 	/**
@@ -62,21 +62,21 @@ public class FileWindowsTest {
 	}
 
 	/**
-	 * Test of length method, of class FileWIndows.  Also tests that the total length
+	 * Test of length method, of class FileReader.  Also tests that the total length
 	 * is correct when the file reader uses different window sizes and cache capacities.
 	 * 
 	 * @throws FileNotFoundException 
 	 */
 	@Test
 	public void testLength() throws FileNotFoundException {
-		FileWIndows reader = new FileWIndows(getFile("/TestASCII.txt"));
+		FileReader reader = new FileReader(getFile("/TestASCII.txt"));
 		assertEquals("length ASCII", 112280, reader.length());
 
 		// no matter how the file reader sets its window sizes or cache strategies,
 		// it must make no difference to the total length of the data read.
 		FileReaderIterator iterator = new FileReaderIterator("/TestASCII.txt");
 		while (iterator.hasNext()) {
-			FileWIndows aReader = iterator.next();
+			FileReader aReader = iterator.next();
 			long totalLength = 0;
 			for (Window window : aReader) {
 				totalLength += window.length();
@@ -84,12 +84,12 @@ public class FileWindowsTest {
 			assertEquals("sum of window lengths ASCII", 112280, totalLength);
 		}
 
-		reader = new FileWIndows(getFile("/TestASCII.zip"));
+		reader = new FileReader(getFile("/TestASCII.zip"));
 		assertEquals("length ZIP", 45846, reader.length());
 
 		iterator = new FileReaderIterator("/TestASCII.zip");
 		while (iterator.hasNext()) {
-			FileWIndows aReader = iterator.next();
+			FileReader aReader = iterator.next();
 			long totalLength = 0;
 			for (Window window : aReader) {
 				totalLength += window.length();
@@ -97,12 +97,12 @@ public class FileWindowsTest {
 			assertEquals("sum of window lengths ZIP", 45846, totalLength);
 		}
 
-		reader = new FileWIndows(getFile("/TestEmpty.empty"));
+		reader = new FileReader(getFile("/TestEmpty.empty"));
 		assertEquals("length empty", 0, reader.length());
 
 		iterator = new FileReaderIterator("/TestEmpty.empty");
 		while (iterator.hasNext()) {
-			FileWIndows aReader = iterator.next();
+			FileReader aReader = iterator.next();
 			long totalLength = 0;
 			for (Window window : aReader) {
 				totalLength += window.length();
@@ -112,7 +112,7 @@ public class FileWindowsTest {
 	}
 
 	/**
-	 * Test of readByte method, of class FileWIndows.
+	 * Test of readByte method, of class FileReader.
 	 * @throws FileNotFoundException 
 	 * @throws IOException 
 	 */
@@ -125,7 +125,7 @@ public class FileWindowsTest {
 
 		FileReaderIterator iterator = new FileReaderIterator("/TestASCII.txt");
 		while (iterator.hasNext()) {
-			FileWIndows reader = iterator.next();
+			FileReader reader = iterator.next();
 
 			// test known positions at and around the specified position:
 			test(reader, 112122, (byte) 0x50);
@@ -145,7 +145,7 @@ public class FileWindowsTest {
 
 		iterator = new FileReaderIterator("/TestASCII.zip");
 		while (iterator.hasNext()) {
-			FileWIndows reader = iterator.next();
+			FileReader reader = iterator.next();
 
 			// Test known positions at and around the specified position:
 			test(reader, 3, (byte) 0x04);
@@ -161,7 +161,7 @@ public class FileWindowsTest {
 		raf.close();
 	}
 
-	private void testRandomPositions(String description, RandomAccessFile raf, FileWIndows reader,
+	private void testRandomPositions(String description, RandomAccessFile raf, FileReader reader,
 			int fileLength) throws IOException {
 		// test randomly selected positions:
 		for (int count = 0; count < 500; count++) {
@@ -174,13 +174,13 @@ public class FileWindowsTest {
 	}
 
 	/**
-	 * Test of createWindow method, of class FileWIndows.
+	 * Test of createWindow method, of class FileReader.
 	 */
 	@Test
 	public void testCreateWindow() throws Exception {
 		System.out.println("createWindow");
 		long windowStart = 0L;
-		FileWIndows instance = null;
+		FileReader instance = null;
 		Window expResult = null;
 		Window result = instance.createWindow(windowStart);
 		assertEquals(expResult, result);
@@ -189,24 +189,24 @@ public class FileWindowsTest {
 	}
 
 	/**
-	 * Test of close method, of class FileWIndows.
+	 * Test of close method, of class FileReader.
 	 */
 	@Test
 	public void testClose() throws Exception {
 		System.out.println("close");
-		FileWIndows instance = null;
+		FileReader instance = null;
 		instance.close();
 		// TODO review the generated test code and remove the default call to fail.
 		fail("The test case is a prototype.");
 	}
 
 	/**
-	 * Test of getFile method, of class FileWIndows.
+	 * Test of getFile method, of class FileReader.
 	 */
 	@Test
 	public void testGetFile() {
 		System.out.println("getFile");
-		FileWIndows instance = null;
+		FileReader instance = null;
 		File expResult = null;
 		File result = instance.getFile();
 		assertEquals(expResult, result);
@@ -214,7 +214,7 @@ public class FileWindowsTest {
 		fail("The test case is a prototype.");
 	}
 
-	private void test(FileWIndows reader, long position, byte value) throws IOException {
+	private void test(FileReader reader, long position, byte value) throws IOException {
 		assertEquals(value, reader.readByte(position));
 	}
 
@@ -228,11 +228,11 @@ public class FileWindowsTest {
 
 	/**
 	 * Provides a variety of FileReaders using different window sizes, cache capacities
-	 * and cache strategies.  This enables us to test FileWIndows methods on many different
+	 * and cache strategies.  This enables us to test FileReader methods on many different
 	 * constructions, which should make no difference to the functionality of the file reader,
 	 * (except the non-functional requirement of performance).
 	 */
-	private class FileReaderIterator implements Iterator<FileWIndows> {
+	private class FileReaderIterator implements Iterator<FileReader> {
 
 		private final String	filePath;
 
@@ -259,37 +259,37 @@ public class FileWindowsTest {
 		}
 
 		@Override
-		public FileWIndows next() {
+		public FileReader next() {
 			if (currentReader == 0) {
 				currentReader++;
 				try {
-					return new FileWIndows(filePath); // pure default
+					return new FileReader(filePath); // pure default
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else if (currentReader == 1) {
 				currentReader++;
 				try {
-					return new FileWIndows(filePath, new AllWindowsCache()); // all windows cache.
+					return new FileReader(filePath, new AllWindowsCache()); // all windows cache.
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else if (currentReader == 2) {
 				currentReader++;
 				try {
-					return new FileWIndows(filePath, new NoCache()); // no cacheing.
+					return new FileReader(filePath, new NoCache()); // no cacheing.
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else if (currentReader < numReaders) {
 				currentReader++;
 				if (currentCapacity < cachecapacity.length) {
 					if (currentSize < sizes.length) {
 						try {
-							return new FileWIndows(filePath, sizes[currentSize++],
+							return new FileReader(filePath, sizes[currentSize++],
 									cachecapacity[currentCapacity]);
 						} catch (FileNotFoundException ex) {
-							Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE,
+							Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE,
 									null, ex);
 						}
 
@@ -297,10 +297,10 @@ public class FileWindowsTest {
 						currentSize = 0;
 						if (currentCapacity < cachecapacity.length) {
 							try {
-								return new FileWIndows(filePath, sizes[currentSize],
+								return new FileReader(filePath, sizes[currentSize],
 										cachecapacity[currentCapacity++]);
 							} catch (FileNotFoundException ex) {
-								Logger.getLogger(FileWindowsTest.class.getName()).log(Level.SEVERE,
+								Logger.getLogger(FileReaderTest.class.getName()).log(Level.SEVERE,
 										null, ex);
 							}
 						}
