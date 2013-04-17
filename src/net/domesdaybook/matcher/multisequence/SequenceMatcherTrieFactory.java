@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
- *
+ * Copyright Matt Palmer 2012, All rights reserved.
+ * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -28,32 +28,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package net.domesdaybook.matcher.multisequence;
 
-package net.domesdaybook.automata.base;
+import java.util.Collection;
 
-import net.domesdaybook.automata.StateFactory;
+import net.domesdaybook.automata.trie.Trie;
+import net.domesdaybook.automata.trie.TrieFactory;
+import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
- * A factory which creates {@link BaseState} objects, implementing the
- * {@link net.domesdaybook.automata.StateFactory} interface.
+ * An implementation of {@link TrieFactory} that produces {@link SequenceMatcherTrie} objects.
  * 
- * @param <T> The type of object associated with a {@link BaseState}
  * @author Matt Palmer
  */
-public final class BaseStateFactory<T> implements StateFactory<T> {
+public class SequenceMatcherTrieFactory implements TrieFactory<SequenceMatcher> {
 
-    
     /**
-     * Creates an instance of a {@link BaseState}.
+     * Creates a {@link SequenceMatcherTrie} given a collection of {@link SequenceMatcher}s.
      * 
-     * @param isFinal Whether the BaseState is final or not.
-     * @return A BaseState object.
-     * @see BaseState
+     * @param sequences A collection of SequenceMatchers.
+     * @return A SequenceMatcherTrie formed from the collection of SequenceMatchers.
      */
     @Override
-    public BaseState<T> create(boolean isFinal) {
-        return new BaseState<T>(isFinal);
+    public Trie<SequenceMatcher> create(Collection<? extends SequenceMatcher> sequences) {
+        return new SequenceMatcherTrie(sequences);
     }
     
 }
-

@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.trie.SequenceMatcherTrieFactory;
 import net.domesdaybook.automata.trie.Trie;
 import net.domesdaybook.automata.trie.TrieFactory;
 import net.domesdaybook.io.Window;

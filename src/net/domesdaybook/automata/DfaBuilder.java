@@ -40,11 +40,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory;
+import net.domesdaybook.automata.factory.ListStateFactory;
+import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
-import net.domesdaybook.automata.walker.StepAction;
+import net.domesdaybook.automata.walker.Action;
+import net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory;
 import net.domesdaybook.util.collections.IdentityHashSet;
 
 /**
@@ -63,9 +65,9 @@ public final class DfaBuilder<T> {
 
 	/**
 	 * Constructs a DfaBuilder using the default {@link StateFactory},
-	 * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
+	 * {@link net.domesdaybook.automata.factory.ListStateFactory}, and the default
 	 * {@link TransitionFactory},
-	 * {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+	 * {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
 	 */
 	public DfaBuilder() {
 		this(null, null);
@@ -74,7 +76,7 @@ public final class DfaBuilder<T> {
 	/**
 	 * Constructs a DfaBuilder using the supplied {@link StateFactory}, and the
 	 * default {@link TransitionFactory},
-	 * {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+	 * {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
 	 * 
 	 * @param stateFactory
 	 *            The StateFactory to use when building the DFA.
@@ -85,7 +87,7 @@ public final class DfaBuilder<T> {
 
 	/**
 	 * Constructs a DfaBuilder using the default {@link StateFactory},
-	 * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
+	 * {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied
 	 * {@link TransitionFactory}.
 	 * 
 	 * @param transitionFactory
@@ -106,7 +108,7 @@ public final class DfaBuilder<T> {
 	 */
 	public DfaBuilder(final StateFactory<T> stateFactory,
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
-		this.stateFactory = stateFactory == null ? new BaseStateFactory<T>() : stateFactory;
+		this.stateFactory = stateFactory == null ? new ListStateFactory<T>() : stateFactory;
 		this.transitionFactory = transitionFactory == null ?
 		      new ByteSetMatcherTransitionFactory<T>()
 				: transitionFactory;
@@ -256,9 +258,9 @@ public final class DfaBuilder<T> {
 	 * 				The new state to transition to.
 	 */
 	private void replaceReachableReferences(final State<T> oldState, final State<T> newState) {
-		final StepAction<T> replaceWithNewState = new StepAction<T>() {
+		final Action<T> replaceWithNewState = new Action<T>() {
 			@Override
-			public boolean take(final Step<T> step) {
+			public boolean process(final Step<T> step) {
 				final State<T> stateToUpdate = step.currentState;
 				// Make a defensive copy of the transitions in the state as they exist right now,
 				// as we will be replacing transitions in this state with new ones.

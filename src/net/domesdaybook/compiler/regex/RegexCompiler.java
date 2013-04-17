@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.List;
 
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.base.ByteMatcherTransitionFactory;
 import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
 import net.domesdaybook.automata.regex.RegexBuilder;
 import net.domesdaybook.compiler.AbstractCompiler;
@@ -80,7 +79,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
      * The parser used will be the default parser defined in {@link AbstractCompiler}
      *
      * By default, it uses the {@link ByteMatcherTransitionFactory} and
-     * the {@link net.domesdaybook.automata.base.BaseStateFactory} to make a {@link GlushkovRegexBuilder} to
+     * the {@link net.domesdaybook.automata.factory.ListStateFactory} to make a {@link GlushkovRegexBuilder} to
      * produce the NFA.
      */
     public RegexCompiler() {

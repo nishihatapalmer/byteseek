@@ -33,7 +33,7 @@ package net.domesdaybook.automata;
 
 import net.domesdaybook.automata.serializer.DotSerializer;
 import net.domesdaybook.automata.walker.StateChildWalker;
-import net.domesdaybook.automata.walker.CountStateStepAction;
+import net.domesdaybook.automata.walker.CountStateAction;
 import net.domesdaybook.automata.walker.Walker;
 
 /**
@@ -52,7 +52,7 @@ public final class AutomataUtils {
 	
 	public static <T> int countStates(Automata<T> automata) {
 		final Walker<T> stateWalker = new StateChildWalker<T>();
-		final CountStateStepAction<T> stateCounter = new CountStateStepAction<T>();
+		final CountStateAction<T> stateCounter = new CountStateAction<T>();
 		stateWalker.walk(automata.getInitialState(), stateCounter);
 		return stateCounter.getStateCount();
 	}

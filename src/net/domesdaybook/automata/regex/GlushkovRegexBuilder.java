@@ -36,12 +36,12 @@ import java.util.Collection;
 import java.util.List;
 
 import net.domesdaybook.automata.Automata;
+import net.domesdaybook.automata.GenericAutomata;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.TransitionFactory;
-import net.domesdaybook.automata.base.BaseAutomata;
-import net.domesdaybook.automata.base.BaseStateFactory;
+import net.domesdaybook.automata.factory.ListStateFactory;
+import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
 
 /**
  * This class helps to build an automata as it is invoked for each node of a regular 
@@ -87,9 +87,9 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	private final StateFactory<T>		stateFactory;
 
 	/**
-	 * Constructs a GlushkovRegexBuilder using the default {@link net.domesdaybook.automata.StateFactory},
-	 * {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied 
-	 * default {@link net.domesdaybook.automata.TransitionFactory}.
+	 * Constructs a GlushkovRegexBuilder using the default {@link net.domesdaybook.automata.factory.StateFactory},
+	 * {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied 
+	 * default {@link net.domesdaybook.automata.factory.TransitionFactory}.
 	 * 
 	 * @param transitionFactory The TransitionFactory to use when creating the NFA.
 	 * @throws IllegalArgumentException if the transition factory passed in is null.
@@ -100,9 +100,9 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 
 	/**
 	 * Constructs a GlushkovRegexBuilder using the supplied
-	 * {@link net.domesdaybook.automata.StateFactory},
+	 * {@link net.domesdaybook.automata.factory.StateFactory},
 	 * and the supplied 
-	 * default {@link net.domesdaybook.automata.TransitionFactory}.
+	 * default {@link net.domesdaybook.automata.factory.TransitionFactory}.
 	 * 
 	 * @param transitionFactory The TransitionFactory to use when creating the NFA.
 	 * @param stateFactory The StateFactory to use when creating the NFA.
@@ -115,7 +115,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 		}
 		this.transitionFactory = transitionFactory;
 		if (stateFactory == null) {
-			this.stateFactory = new BaseStateFactory<T>();
+			this.stateFactory = new ListStateFactory<T>();
 		} else {
 			this.stateFactory = stateFactory;
 		}
@@ -141,7 +141,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 		final Transition<T> transition =
 		    transitionFactory.create(source, inverted, finalState);
 		initialState.addTransition(transition);
-		return new BaseAutomata<T>(initialState);
+		return new GenericAutomata<T>(initialState);
 	}
 
 	/**

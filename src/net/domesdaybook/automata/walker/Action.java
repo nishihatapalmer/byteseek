@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,22 +29,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata;
-
+package net.domesdaybook.automata.walker;
 
 /**
- * A factory for {@link Transition} objects
- * 
- * @param <T>
- *            The type of objects each state will be associated with. 
- * @param <S>
- *            The type of object to create a transition from.     
+ * An interface for classes which take each step of a walk of an automata.
+ * <p>
+ * The walker controls which steps are sent to the observer (probably an implementation
+ * of the {@link Walker} interface.  Each step of the walk is encapsulated in a 
+ * {@link Step} object, which contains details of the step taken.
+ * <p>
+ * The Action can instruct the walker to stop the walk by returning false from the action.
  * 
  * @author Matt Palmer
- * @see net.domesdaybook.automata.Transition
  */
-public interface TransitionFactory<T, S> {
+public interface Action<T> {
 
-  public Transition<T> create(S source, boolean invert, State<T> toState);
-  
+	/**
+	 * Process the action invoked by taking a step in the walk of the automata.
+	 * 
+	 * @param step The step to take.
+	 * @return If false, then the walker should stop the walk.
+	 */
+	public boolean process(Step<T> step);
+
 }

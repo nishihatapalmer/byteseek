@@ -35,10 +35,10 @@ import net.domesdaybook.automata.State;
 
 /**
  * An interface for classes which walk an automata beginning at the start state
- * supplied.  It takes a {@link StepAction} as a parameter, which is the class
+ * supplied.  It takes a {@link Action} as a parameter, which is the class
  * that observes each step of the walk.
  * <p>
- * If any StepAction returns false from its {@link StepAction#take(Step)} method,
+ * If any Action returns false from its {@link Action#process(Step)} method,
  * then the walker should stop the walk.
  * <p>
  * Different implementations can walk the automata in different ways.  Some may
@@ -50,12 +50,12 @@ import net.domesdaybook.automata.State;
 public interface Walker<T> {
 
 	/**
-	 * Walks the automata beginning at the startState.  The {@link StepAction} 
+	 * Walks the automata beginning at the startState.  The {@link Action} 
 	 * is invoked for each step of the walk.
 	 * 
 	 * @param startState The state to begin walking at.
 	 * @param observer The class which takes action for each step of the walk.
 	 */
-	void walk(final State<T> startState, final StepAction<T> observer);
+	void walk(final State<T> startState, final Action<T> observer);
 
 }

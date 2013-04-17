@@ -29,27 +29,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata;
+package net.domesdaybook.automata.factory;
+
+import net.domesdaybook.automata.ListState;
 
 /**
- * An abstract factory for State objects.
- * <p>
- * Implementations of this interface should create the particular type of State
- * required.
+ * A factory which creates {@link ListState} objects, implementing the
+ * {@link net.domesdaybook.automata.factory.StateFactory} interface.
  * 
- * @param <T>
- *            The type of object which can be associated with each State.
+ * @param <T> The type of object associated with a {@link ListState}
  * @author Matt Palmer
  */
-public interface StateFactory<T> {
+public final class ListStateFactory<T> implements StateFactory<T> {
 
-	/**
-	 * Builds an {@link State} object.
-	 * 
-	 * @param isFinal
-	 *            Whether the state is final or not.
-	 * @return An object implementing the State interface.
-	 */
-	public State<T> create(boolean isFinal);
-
+    
+    /**
+     * Creates an instance of a {@link ListState}.
+     * 
+     * @param isFinal Whether the ListState is final or not.
+     * @return A ListState object.
+     * @see ListState
+     */
+    @Override
+    public ListState<T> create(boolean isFinal) {
+        return new ListState<T>(isFinal);
+    }
+    
 }
+

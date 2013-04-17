@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
- * 
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
+ *
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -28,27 +28,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.domesdaybook.automata.trie;
 
-import java.util.Collection;
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
+package net.domesdaybook.automata.factory;
+
+import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.Transition;
+
 
 /**
- * An implementation of {@link TrieFactory} that produces {@link SequenceMatcherTrie} objects.
+ * A factory for {@link Transition} objects
+ * 
+ * @param <T>
+ *            The type of objects each state will be associated with. 
+ * @param <S>
+ *            The type of object to create a transition from.     
  * 
  * @author Matt Palmer
+ * @see net.domesdaybook.automata.Transition
  */
-public class SequenceMatcherTrieFactory implements TrieFactory<SequenceMatcher> {
+public interface TransitionFactory<T, S> {
 
-    /**
-     * Creates a {@link SequenceMatcherTrie} given a collection of {@link SequenceMatcher}s.
-     * 
-     * @param sequences A collection of SequenceMatchers.
-     * @return A SequenceMatcherTrie formed from the collection of SequenceMatchers.
-     */
-    @Override
-    public Trie<SequenceMatcher> create(Collection<? extends SequenceMatcher> sequences) {
-        return new SequenceMatcherTrie(sequences);
-    }
-    
+  public Transition<T> create(S source, boolean invert, State<T> toState);
+  
 }

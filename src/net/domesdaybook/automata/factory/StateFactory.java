@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
- * 
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
+ *
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -29,30 +29,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata.base;
+package net.domesdaybook.automata.factory;
 
-import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.AutomataFactory;
 import net.domesdaybook.automata.State;
 
 /**
- * A factory for base automata, implementing the {@link net.domesdaybook.automata.AutomataFactory} interface.
+ * An abstract factory for State objects.
+ * <p>
+ * Implementations of this interface should create the particular type of State
+ * required.
  * 
- * @param <T> The type of object that can be associated with states of the automata.
- * 
+ * @param <T>
+ *            The type of object which can be associated with each State.
  * @author Matt Palmer
  */
-public class BaseAutomataFactory<T> implements AutomataFactory<T> {
+public interface StateFactory<T> {
 
-    /**
-     * Creates a {@link BaseAutomata} given an initial state.
-     * 
-     * @param initialState The initial state of the automata.
-     * @return A BaseAutomata object with the initial state provided.
-     */
-    @Override
-    public Automata<T> create(State<T> initialState) {
-        return new BaseAutomata<T>(initialState);
-    }
-    
+	/**
+	 * Builds an {@link State} object.
+	 * 
+	 * @param isFinal
+	 *            Whether the state is final or not.
+	 * @return An object implementing the State interface.
+	 */
+	public State<T> create(boolean isFinal);
+
 }

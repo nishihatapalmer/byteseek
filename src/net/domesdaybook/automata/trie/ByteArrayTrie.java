@@ -32,8 +32,8 @@ package net.domesdaybook.automata.trie;
 
 import java.util.Collection;
 
-import net.domesdaybook.automata.StateFactory;
-import net.domesdaybook.automata.TransitionFactory;
+import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
 
 
 /**
@@ -48,9 +48,9 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     /**
      * Constructs a SequenceMatcherTrie with no sequences added to it initially.
-     * using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the default
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      */
     public ByteArrayTrie() {
         this(null, null, null);
@@ -58,9 +58,9 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     
     /**
-     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the default
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences A collection of byte arrays to add to the Trie.
      */
@@ -70,8 +70,8 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     
      /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and the default {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      */
@@ -81,9 +81,9 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     
     /**
-     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
-     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
@@ -93,8 +93,8 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     
     /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and the default {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences The initial collection of byte arrays to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.
@@ -106,9 +106,9 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
 
     /**
-     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
-     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param sequences The initial collection of byte arrays to add to the Trie.
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
@@ -120,8 +120,8 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     
     /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
@@ -133,8 +133,8 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     
     /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param sequences The initial collection of byte arrays to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.

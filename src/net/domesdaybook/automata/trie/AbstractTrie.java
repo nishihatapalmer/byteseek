@@ -37,18 +37,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.domesdaybook.automata.GenericAutomata;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.StateFactory;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.TransitionFactory;
-import net.domesdaybook.automata.base.BaseAutomata;
-import net.domesdaybook.automata.base.BaseStateFactory;
-import net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory;
+import net.domesdaybook.automata.factory.ListStateFactory;
+import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
  * An abstract implementation of {@link Trie} providing most methods for
- * constructing a Trie from sequences provided to it.  It extends {@link net.domesdaybook.automata.base.BaseAutomata}.
+ * constructing a Trie from sequences provided to it.  It extends {@link net.domesdaybook.automata.GenericAutomata}.
  * <p>
  * Implementors only have to provide constructors equivalent to those in this class,
  * and override the methods {@link #getSequenceLength(java.lang.Object)} and 
@@ -58,7 +58,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T> {
+public abstract class AbstractTrie<T> extends GenericAutomata<T> implements Trie<T> {
 
 	private final StateFactory<T>		stateFactory;
 	private final TransitionFactory<T, Collection<Byte>>	transitionFactory;
@@ -69,17 +69,17 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 	private int							maximumLength	= 0;
 
 	/**
-	 * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-	 * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-	 * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+	 * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+	 * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the default
+	 * {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
 	 */
 	public AbstractTrie() {
 		this(null, null);
 	}
 
 	/**
-	 * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-	 * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+	 * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+	 * and the default {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
 	 * 
 	 * @param stateFactory The StateFactory to use to create States for the Trie.
 	 */
@@ -88,9 +88,9 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 	}
 
 	/**
-	 * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-	 * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
-	 * {@link net.domesdaybook.automata.TransitionFactory}.
+	 * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+	 * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied
+	 * {@link net.domesdaybook.automata.factory.TransitionFactory}.
 	 * 
 	 * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
 	 */
@@ -99,15 +99,15 @@ public abstract class AbstractTrie<T> extends BaseAutomata<T> implements Trie<T>
 	}
 
 	/**
-	 * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-	 * and {@link net.domesdaybook.automata.TransitionFactory}.
+	 * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+	 * and {@link net.domesdaybook.automata.factory.TransitionFactory}.
 	 * 
 	 * @param stateFactory The StateFactory to use to create States for the Trie.
 	 * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
 	 */
 	public AbstractTrie(final StateFactory<T> stateFactory,
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
-		this.stateFactory = stateFactory != null ? stateFactory : new BaseStateFactory<T>();
+		this.stateFactory = stateFactory != null ? stateFactory : new ListStateFactory<T>();
 		this.transitionFactory = transitionFactory != null ? transitionFactory
 				: new ByteSetMatcherTransitionFactory<T>();
 		this.sequences = new ArrayList<T>();

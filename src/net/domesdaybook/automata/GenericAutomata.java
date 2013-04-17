@@ -29,18 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata.base;
+package net.domesdaybook.automata;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
-import net.domesdaybook.automata.walker.StepAction;
+import net.domesdaybook.automata.walker.Action;
 import net.domesdaybook.util.object.DeepCopy;
 
 /**
@@ -50,7 +48,7 @@ import net.domesdaybook.util.object.DeepCopy;
  * 
  * @author Matt Palmer
  */
-public class BaseAutomata<T> implements Automata<T> {
+public class GenericAutomata<T> implements Automata<T> {
 
 	/**
 	 * The initial state of the automata.
@@ -60,7 +58,7 @@ public class BaseAutomata<T> implements Automata<T> {
 	/**
 	 * Constructs an empty Automata with no states.
 	 */
-	public BaseAutomata() {
+	public GenericAutomata() {
 	}
 
 	/**
@@ -68,7 +66,7 @@ public class BaseAutomata<T> implements Automata<T> {
 	 * 
 	 * @param initialState The initial state of the automata.
 	 */
-	public BaseAutomata(final State<T> initialState) {
+	public GenericAutomata(final State<T> initialState) {
 		this.initialState = initialState;
 	}
 
@@ -98,9 +96,9 @@ public class BaseAutomata<T> implements Automata<T> {
 			public boolean	isDeterministic	= true;
 		}
 		final MutableBoolean result = new MutableBoolean();
-		final StepAction<T> isDeterministic = new StepAction<T>() {
+		final Action<T> isDeterministic = new Action<T>() {
 			@Override
-			public boolean take(final Step<T> step) {
+			public boolean process(final Step<T> step) {
 				result.isDeterministic = step.currentState.isDeterministic();
 				// if any state is not deterministic, then the whole automata is not,
 				// so stop the walk.
@@ -120,9 +118,9 @@ public class BaseAutomata<T> implements Automata<T> {
 	@Override
 	public List<State<T>> getFinalStates() {
 		final List<State<T>> finalStates = new ArrayList<State<T>>();
-		final StepAction<T> findFinalStates = new StepAction<T>() {
+		final Action<T> findFinalStates = new Action<T>() {
 			@Override
-			public boolean take(final Step<T> step) {
+			public boolean process(final Step<T> step) {
 				if (step.currentState.isFinal()) {
 					finalStates.add(step.currentState);
 				}
@@ -137,7 +135,7 @@ public class BaseAutomata<T> implements Automata<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public BaseAutomata<T> deepCopy() {
+	public GenericAutomata<T> deepCopy() {
 		final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
 		return deepCopy(oldToNew);
 	}
@@ -146,8 +144,8 @@ public class BaseAutomata<T> implements Automata<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public BaseAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-		return new BaseAutomata<T>(initialState.deepCopy(oldToNewObjects));
+	public GenericAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+		return new GenericAutomata<T>(initialState.deepCopy(oldToNewObjects));
 	}
 
 }

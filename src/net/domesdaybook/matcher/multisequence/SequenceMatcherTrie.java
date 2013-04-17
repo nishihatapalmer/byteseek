@@ -29,12 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata.trie;
+package net.domesdaybook.matcher.multisequence;
 
 import java.util.Collection;
 
-import net.domesdaybook.automata.StateFactory;
-import net.domesdaybook.automata.TransitionFactory;
+import net.domesdaybook.automata.factory.StateFactory;
+import net.domesdaybook.automata.factory.TransitionFactory;
+import net.domesdaybook.automata.trie.AbstractTrie;
+import net.domesdaybook.automata.trie.Trie;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**
@@ -49,9 +51,9 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
 
     /**
      * Constructs a SequenceMatcherTrie with no sequences added to it initially.
-     * using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the default
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      */
     public SequenceMatcherTrie() {
         this(null, null, null);
@@ -59,9 +61,9 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     
     /**
-     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the default
-     * {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the default
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences A collection of SequenceMatchers to add to the Trie.
      */
@@ -71,8 +73,8 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     
     /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and the default {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      */
@@ -82,9 +84,9 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
  
     /**
-     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
-     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
@@ -94,8 +96,8 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     
     /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and the default {@link net.domesdaybook.automata.TransitionFactory}, {@link net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and the default {@link net.domesdaybook.automata.factory.TransitionFactory}, {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
      * 
      * @param sequences The initial collection of SequenceMatchers to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.
@@ -107,9 +109,9 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     
     /**
-     * Constructs a Trie using the default {@link net.domesdaybook.automata.StateFactory}
-     * , {@link net.domesdaybook.automata.base.BaseStateFactory}, and the supplied
-     * {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the default {@link net.domesdaybook.automata.factory.StateFactory}
+     * , {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied
+     * {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param sequences The initial collection of SequenceMatchers to add to the Trie.
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
@@ -121,8 +123,8 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
         
     
     /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
@@ -134,8 +136,8 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     
     /**
-     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.StateFactory}
-     * and {@link net.domesdaybook.automata.TransitionFactory}.
+     * Constructs a Trie using the supplied {@link net.domesdaybook.automata.factory.StateFactory}
+     * and {@link net.domesdaybook.automata.factory.TransitionFactory}.
      * 
      * @param sequences The initial collection of SequenceMatchers to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.

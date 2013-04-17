@@ -32,8 +32,7 @@ package net.domesdaybook.compiler.regex;
 
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.TransitionFactory;
-import net.domesdaybook.automata.base.ByteMatcherTransition;
+import net.domesdaybook.automata.factory.TransitionFactory;
 import net.domesdaybook.compiler.matcher.ByteMatcherCompilerUtils;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;

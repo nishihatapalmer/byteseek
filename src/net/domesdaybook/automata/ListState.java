@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata.base;
+package net.domesdaybook.automata;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,8 +42,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.Transition;
 import net.domesdaybook.util.collections.IdentityHashSet;
 import net.domesdaybook.util.object.DeepCopy;
 
@@ -68,7 +66,7 @@ import net.domesdaybook.util.object.DeepCopy;
  * @see net.domesdaybook.automata.Transition
  * @author Matt Palmer
  */
-public class BaseState<T> implements State<T> {
+public class ListState<T> implements State<T> {
 
 	private List<Transition<T>>	transitions;
 	private List<T>				associations;
@@ -80,31 +78,31 @@ public class BaseState<T> implements State<T> {
 	/////////////////
 
 	/**
-	 * The default constructor for BaseState, as a non-final state.
+	 * The default constructor for ListState, as a non-final state.
 	 */
-	public BaseState() {
+	public ListState() {
 		this(State.NON_FINAL);
 	}
 
 	/**
-	 * A constructor for BaseState taking a parameter determining whether the
+	 * A constructor for ListState taking a parameter determining whether the
 	 * state is final or not.
 	 * 
 	 * @param isFinal Whether the state is final or not.
 	 */
-	public BaseState(final boolean isFinal) {
+	public ListState(final boolean isFinal) {
 		this.isFinal = isFinal;
 		this.transitions = Collections.emptyList();
 		this.associations = Collections.emptyList(); // = new ArrayList<T>(0);
 	}
 
 	/**
-	 * A copy constructor for BaseState from another state.
+	 * A copy constructor for ListState from another state.
 	 * 
 	 * @param other The other State to copy from.
 	 * @throws IllegalArgumentException if the State passed in is null.
 	 */
-	public BaseState(final State<T> other) {
+	public ListState(final State<T> other) {
 		if (other == null) {
 			throw new IllegalArgumentException(
 					"Other state passed in to copy constructor was null.");
@@ -399,30 +397,30 @@ public class BaseState<T> implements State<T> {
 	 * This is a convenience method, providing the initial map to:
 	 * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
 	 *
-	 * @return BaseState a deep copy of this object.
+	 * @return ListState a deep copy of this object.
 	 * @see #deepCopy(java.util.Map) 
 	 */
 	@Override
-	public BaseState<T> deepCopy() {
+	public ListState<T> deepCopy() {
 		return deepCopy(new IdentityHashMap<DeepCopy, DeepCopy>());
 	}
 
 	/**
 	 * This method is inherited from the {@link DeepCopy} interface,
-	 * and is redeclared here with a return type of BaseState (rather than DeepCopy),
+	 * and is redeclared here with a return type of ListState (rather than DeepCopy),
 	 * to make using the method easier.
 	 *
 	 * @param oldToNewObjects A map of the original objects to their new deep copies.
-	 * @return BaseState A deep copy of this BaseState and any Transitions and States
+	 * @return ListState A deep copy of this ListState and any Transitions and States
 	 *         reachable from this State.
 	 */
 	@Override
-	public BaseState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+	public ListState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
 		@SuppressWarnings("unchecked")
 		// if there is a copy of this in the map, it will be of the same type.
-		BaseState<T> stateCopy = (BaseState<T>) oldToNewObjects.get(this);
+		ListState<T> stateCopy = (ListState<T>) oldToNewObjects.get(this);
 		if (stateCopy == null) {
-			stateCopy = new BaseState<T>(this.isFinal);
+			stateCopy = new ListState<T>(this.isFinal);
 			oldToNewObjects.put(this, stateCopy);
 			for (Transition<T> transition : transitions) {
 				final Transition<T> transitionCopy = transition.deepCopy(oldToNewObjects);

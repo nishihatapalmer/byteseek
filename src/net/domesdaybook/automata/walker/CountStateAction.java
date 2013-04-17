@@ -1,6 +1,6 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
- *
+ * Copyright Matt Palmer 2013, All rights reserved.
+ * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,27 +29,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 package net.domesdaybook.automata.walker;
 
-/**
- * An interface for classes which take each step of a walk of an automata.
- * <p>
- * The walker controls which steps are sent to the observer (probably an implementation
- * of the {@link Walker} interface.  Each step of the walk is encapsulated in a 
- * {@link Step} object, which contains details of the step taken.
- * <p>
- * The StepAction can instruct the walker to stop the walk by returning false from the action.
- * 
- * @author Matt Palmer
- */
-public interface StepAction<T> {
+public class CountStateAction<T> implements Action<T> {
+	
+	private int count;
 
-	/**
-	 * Takes a step of the walk of an automata.
-	 * 
-	 * @param step The step to take.
-	 * @return If false, then the walker should stop the walk.
-	 */
-	public boolean take(Step<T> step);
+	@Override
+	public boolean process(Step<T> step) {
+		count++;
+		return true;
+	}
+	
+	public int getStateCount() {
+		return count;
+	}
 
 }

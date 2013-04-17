@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -29,21 +29,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+package net.domesdaybook.automata.factory;
 
-package net.domesdaybook.automata.walker;
+import net.domesdaybook.automata.Automata;
+import net.domesdaybook.automata.GenericAutomata;
+import net.domesdaybook.automata.State;
 
-public class CountStateStepAction<T> implements StepAction<T> {
-	
-	private int count;
+/**
+ * A factory for base automata, implementing the {@link net.domesdaybook.automata.factory.AutomataFactory} interface.
+ * 
+ * @param <T> The type of object that can be associated with states of the automata.
+ * 
+ * @author Matt Palmer
+ */
+public class GenericAutomataFactory<T> implements AutomataFactory<T> {
 
-	@Override
-	public boolean take(Step<T> step) {
-		count++;
-		return true;
-	}
-	
-	public int getStateCount() {
-		return count;
-	}
-
+    /**
+     * Creates a {@link GenericAutomata} given an initial state.
+     * 
+     * @param initialState The initial state of the automata.
+     * @return A GenericAutomata object with the initial state provided.
+     */
+    @Override
+    public Automata<T> create(State<T> initialState) {
+        return new GenericAutomata<T>(initialState);
+    }
+    
 }
