@@ -43,11 +43,11 @@ import net.domesdaybook.io.cache.WindowCache;
  * <p>
  * It provides common Window and cache management services using a fixed Window
  * size, and a standard Window iterator
- * {@link net.domesdaybook.io.AbstractWindows.WindowIterator}.
+ * {@link net.domesdaybook.io.AbstractReader.WindowIterator}.
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractWindows implements WindowReader, Iterable<Window> {
+public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 
 	/**
 	 * A constant indicating that there is no byte at the position requested,
@@ -101,7 +101,7 @@ public abstract class AbstractWindows implements WindowReader, Iterable<Window> 
 	 * @throws IllegalArgumentException
 	 *             if the WindowCache is null.
 	 */
-	public AbstractWindows(final WindowCache cache) {
+	public AbstractReader(final WindowCache cache) {
 		this(DEFAULT_WINDOW_SIZE, cache);
 	}
 
@@ -116,7 +116,7 @@ public abstract class AbstractWindows implements WindowReader, Iterable<Window> 
 	 *             if the window size is less than one or the WindowCache is
 	 *             null.
 	 */
-	public AbstractWindows(final int windowSize, final WindowCache cache) {
+	public AbstractReader(final int windowSize, final WindowCache cache) {
 		if (windowSize < 1) {
 			throw new IllegalArgumentException(
 					"Window size must be at least one.");

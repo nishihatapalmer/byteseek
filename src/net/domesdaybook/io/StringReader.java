@@ -46,13 +46,13 @@ import net.domesdaybook.io.cache.NoCache;
  * 
  * @author Matt Palmer
  */
-public class StringWindows extends AbstractWindows {
+public class StringReader extends AbstractReader {
 
 	private final byte[] bytes;
 	private final Charset charset;
 
 	/**
-	 * Constructs a StringWindows from a {@link java.lang.String}, using the
+	 * Constructs a StringReader from a {@link java.lang.String}, using the
 	 * platform default {@link java.nio.charset.Charset} to encode the bytes of
 	 * the String.
 	 * 
@@ -60,12 +60,12 @@ public class StringWindows extends AbstractWindows {
 	 *            The String to read using the platform specific charset
 	 *            encoding.
 	 */
-	public StringWindows(final String string) {
+	public StringReader(final String string) {
 		this(string, Charset.defaultCharset());
 	}
 
 	/**
-	 * Constructs a StringWindows from a {@link java.lang.String}, using the
+	 * Constructs a StringReader from a {@link java.lang.String}, using the
 	 * supplied {@link java.nio.charset.Charset} to encode the bytes of the
 	 * String.
 	 * 
@@ -77,28 +77,28 @@ public class StringWindows extends AbstractWindows {
 	 * @throws UnsupportedCharsetException
 	 *             If the charset name is not supported.
 	 */
-	public StringWindows(final String string, final String charsetName) {
+	public StringReader(final String string, final String charsetName) {
 		this(string, Charset.forName(charsetName));
 	}
 
 	/**
 	 * Does not need a cache, as we will create a single window large enough to
-	 * store the entire string. The AbstractWindows already holds on to the last
+	 * store the entire string. The AbstractReader already holds on to the last
 	 * Window created, or creates it if it's not already there. So no further
 	 * caching is required.
 	 * 
 	 * @param string
 	 * @param charset
 	 */
-	public StringWindows(final String string, final Charset charset) {
+	public StringReader(final String string, final Charset charset) {
 		super(string == null ? 0 : string.length(), NoCache.NO_CACHE);
 		if (string == null) {
 			throw new IllegalArgumentException(
-					"Null string passed in to StringWindows.");
+					"Null string passed in to StringReader.");
 		}
 		if (charset == null) {
 			throw new IllegalArgumentException(
-					"Null charset passed in to StringWindows.");
+					"Null charset passed in to StringReader.");
 		}
 		bytes = string.getBytes(charset);
 		this.charset = charset;
