@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.searcher.multisequence;
+package net.domesdaybook.searcher.multisequence.sethorspool;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,8 +37,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceUtils;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
@@ -46,6 +46,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.util.object.LazyObject;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
+import net.domesdaybook.searcher.multisequence.AbstractMultiSequenceSearcher;
 
 /**
  * A class implementing the Set-Horspool Final-Flag algorithm. This is a variant

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.searcher.multisequence;
+package net.domesdaybook.searcher.multisequence.sethorspool;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,8 +37,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
@@ -49,6 +49,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.util.object.LazyObject;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
+import net.domesdaybook.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.domesdaybook.searcher.sequence.BoyerMooreHorspoolSearcher;
 
 /**

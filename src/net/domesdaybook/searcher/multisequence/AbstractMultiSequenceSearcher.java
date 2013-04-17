@@ -34,8 +34,8 @@ package net.domesdaybook.searcher.multisequence;
 import java.io.IOException;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.searcher.AbstractSearcher;

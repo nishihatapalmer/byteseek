@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import net.domesdaybook.searcher.SearchUtils;

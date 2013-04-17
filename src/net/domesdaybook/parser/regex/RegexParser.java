@@ -33,6 +33,7 @@ package net.domesdaybook.parser.regex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import net.domesdaybook.parser.ParseException;
@@ -169,15 +170,105 @@ public class RegexParser implements Parser<ParseTree> {
 				alternatives.add(sequence);
 			}
 		}
-		final int numAlternatives = alternatives.size();
-		if (numAlternatives < 1) {
-			throw new ParseException(addContext("No alternatives were found.", expression));
-		}
-		return numAlternatives == 1? alternatives.get(0)
-								    : new ChildrenNode(ParseTreeType.ALTERNATIVES, alternatives);
+		return optimisedAlternatives(alternatives, expression);
 	}
 	
 	
+	private ParseTree optimisedAlternatives(final List<ParseTree> alternatives, StringParseReader expression)
+			throws ParseException {
+		final int numAlternatives = alternatives.size();
+		
+		// If there are no alternatives, throw an error:
+		if (numAlternatives == 0) {
+			throw new ParseException(addContext("No alternatives were found.", expression));
+		}
+		
+		// If there is only a single alternative, then just return the alternative directly.
+		if (numAlternatives == 1) {
+			return alternatives.get(0);
+		}
+		
+		// See if there is more than one alternative that only matches sequences of length one.
+		// If there is, they can be more efficiently represented as a set match for those byte values.
+		final ParseTree optimisedSet = optimiseSingleByteAlternatives(alternatives);
+		
+		// If there are no remaining alternatives (all got put into the set), return the set directly:
+		if (alternatives.size() == 0) {
+			return optimisedSet;
+		}
+		
+		// If there is now an optimised set and some remaining alternatives, add it to the list of alternatives:
+		if (optimisedSet != null) {
+			alternatives.add(optimisedSet);
+		}
+		
+		// Return an alternatives type with the alternatives as children:
+		return new ChildrenNode(ParseTreeType.ALTERNATIVES, alternatives);
+	}
+	
+	
+	/**
+	 * Looks at a list of alternatives for alternatives that only match a sequence of length one each.
+	 * If there is more than one of them, they can be collapsed into a single SET ParseTree which 
+	 * matches all of the alternatives in a single set matching step.
+	 * <p>
+	 * If it discovers alternatives that can be optimised, it removes them from the list of alternatives
+	 * passed in, and returns a SET ParseTree consisting of the alternatives which can be treated as a set.
+	 * If there are no optimisations possible, it does not modify the list passed in, and returns null for
+	 * the set of alternatives.
+	 * 
+	 * @param alternatives The list of alternatives to optimise.
+	 * @return A SET ParseTree for the optimised alternatives (removing them from the original list passed in),
+	 *         or null if there are no optimisations possible.
+	 */
+	private ParseTree optimiseSingleByteAlternatives(final List<ParseTree> alternatives) throws ParseException {
+		// Find out if there is more than one alternative that matches only a sequence of length one:
+		int numOptimisableAlternatives = 0;
+		for (final ParseTree alternative : alternatives) { 
+			if (matchesSingleByteLength(alternative)) {
+				numOptimisableAlternatives++;
+			}
+		}
+		
+		// If there are, build a list of them, remove them from the original list of alternatives,
+		// and return a set node of the optimisable alternatives:
+		if (numOptimisableAlternatives > 1) {
+			final List<ParseTree> setChildren = new ArrayList<ParseTree>(numOptimisableAlternatives);
+			final Iterator<ParseTree> altIterator = alternatives.iterator();
+			while (altIterator.hasNext()) {
+				final ParseTree currentAlternative = altIterator.next();
+				if (matchesSingleByteLength(currentAlternative)) {
+					setChildren.add(currentAlternative);
+					altIterator.remove();
+				}
+			}
+			return new ChildrenNode(ParseTreeType.SET, setChildren);
+		}
+		
+		// No optimisable alternatives: return null and don't modify the original list of alternatives:
+		return null;
+	}
+	
+	
+	private boolean matchesSingleByteLength(final ParseTree node) throws ParseException {
+		switch (node.getParseTreeType()) {
+			case BYTE: 			
+			case RANGE:
+			case SET:		
+			case ANY:
+			case ALL_BITMASK:	
+			case ANY_BITMASK: {
+				return true;
+			}
+			case STRING:
+			case CASE_INSENSITIVE_STRING: {
+				return node.getTextValue().length() == 1;
+			}
+			default : return false;
+		}
+	}
+	
+
 	private ParseTree parseSequence(final StringParseReader expression) throws ParseException {
 		final List<ParseTree> sequenceNodes = new ArrayList<ParseTree>();
 		int currentChar = expression.read();
@@ -392,17 +483,17 @@ public class RegexParser implements Parser<ParseTree> {
 			case 'r': return inverted? ByteNode.valueOf((byte) '\r', INVERTED) 	: CARRIAGE_RETURN;
 			case 'v': return inverted? ByteNode.valueOf((byte) 0x0b, INVERTED) 	: VERTICAL_TAB;
 			case 'f': return inverted? ByteNode.valueOf((byte) 0x0c, INVERTED) 	: FORM_FEED;
-			case 'e': return inverted? ByteNode.valueOf((byte) 0x1e, INVERTED)		: ESCAPE;
+			case 'e': return inverted? ByteNode.valueOf((byte) 0x1e, INVERTED)	: ESCAPE;
 			case 'd': return inverted? NOT_DIGITS_RANGE    						: DIGITS_RANGE;
 			case 'D': return inverted? DIGITS_RANGE        						: NOT_DIGITS_RANGE;
-			case 'w': return inverted? NOT_WORD_CHAR_SET  							: WORD_CHAR_SET;
+			case 'w': return inverted? NOT_WORD_CHAR_SET  						: WORD_CHAR_SET;
 			case 'W': return inverted? WORD_CHAR_SET       						: NOT_WORD_CHAR_SET;
 			case 's': return inverted? NOT_WHITESPACE_SET  						: WHITESPACE_SET;
 			case 'S': return inverted? WHITESPACE_SET      						: NOT_WHITESPACE_SET;
 			case 'l': return inverted? NOT_LOWERCASE_RANGE 						: LOWERCASE_RANGE;
 			case 'L': return inverted? LOWERCASE_RANGE     						: NOT_LOWERCASE_RANGE;
 			case 'u': return inverted? NOT_UPPERCASE_RANGE 						: UPPERCASE_RANGE;
-			case 'U': return inverted? UPPERCASE_RANGE    							: NOT_UPPERCASE_RANGE;
+			case 'U': return inverted? UPPERCASE_RANGE    						: NOT_UPPERCASE_RANGE;
 			case 'i': return inverted? NOT_ASCII_RANGE     						: ASCII_RANGE;
 			case 'I': return inverted? ASCII_RANGE         						: NOT_ASCII_RANGE;
 			default: throw new ParseException(addContext("Unexpected shorthand character [" + 

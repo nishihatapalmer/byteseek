@@ -35,8 +35,8 @@ package net.domesdaybook.matcher.bytes;
 import java.io.IOException;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 

@@ -28,15 +28,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.domesdaybook.searcher.multisequence;
+package net.domesdaybook.searcher.multisequence.wumanber;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
+import net.domesdaybook.matcher.multisequence.HashMultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.searcher.multisequence.AbstractMultiSequenceSearcher;
+import net.domesdaybook.searcher.multisequence.sethorspool.SetHorspoolSearcher;
 import net.domesdaybook.util.bytes.BytePermutationIterator;
 import net.domesdaybook.util.bytes.ByteUtilities;
 import net.domesdaybook.util.object.LazyObject;
@@ -47,15 +50,7 @@ import net.domesdaybook.util.object.LazyObject;
  * taking a {@link MultiSequenceMatcher} containing the sequences to search for,
  * and which provides the matching capability to verify a match.
  * <p>
- * The Tuned version of the Wu-Manber search takes some of the ideas from the 
- * Tuned Boyer Moore Horspool search, which is really just an optimisation of
- * the search algorithm to unroll some loops.  However, it also requires that for any shift
- * which is calculated as zero, we additionally record the shift as it was before
- * setting it to zero, so we can jump further in the event that a match is not found.
- * This adds more space requirements, although we use a hash table to limit how
- * big our mismatch shift table needs to be.
- * <p>
- * A true Wu-Manber style search would use the {@link net.domesdaybook.matcher.multisequence.HashMultiSequenceMatcher}
+ * A true Wu-Manber style search would use the {@link HashMultiSequenceMatcher}
  * class as its matcher, which has a good time-space trade-off.  However, you can 
  * use any MultiSequenceMatcher in this searcher, for different trade-offs.
  * <p>
@@ -86,71 +81,54 @@ import net.domesdaybook.util.object.LazyObject;
  * The concrete sub-classes of this abstract class implement the Wu-Manber search algorithm
  * for different block sizes, in order to make each variation as efficient as possible:
  * <ul>
- * <li>A block size of one {@link WuManberOneByteTunedSearcher}
- * <li>A block size of two - NOT YET IMPLEMENTED.
- * <li>Block sizes greater than two - NOT YET IMPLEMENTED.
+ * <li>A block size of one {@link WuManberOneByteSearcher}
+ * <li>A block size of two {@link WuManberTwoByteSearcher}
+ * <li>Block sizes greater than two {@link WuManberMultiByteSearcher} - NOT YET FULLY IMPLEMENTED.
  * </ul>
  * You can use the utility methods defined in {@link WuManberUtils} to determine
  * an appropriate block size to use.
  * 
  * @see <a href="http://webglimpse.net/pubs/TR94-17.pdf">Wu-Manber paper (PDF)</a>
- * @see <a href="http://www-igm.univ-mlv.fr/~lecroq/string/tunedbm.html">Tuned Boyer Moore</a>
  * @author Matt Palmer
  */
-public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenceSearcher {
+public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSearcher {
         
     private static int HIGHEST_POWER_OF_TWO = 1073741824;
 
     /**
-     * A class holding the search information used in the Tuned Wu-Manber search.
+     * A class holding the search information used in the Wu-Manber search.
      */
     protected static final class SearchInfo {
         
-        
         /**
-         * The main hash-table of safe shifts.  This table will be constructed
+         * The hash-table of safe shifts.  This table will be constructed
          * to be a power of two, making the hash calculation easy by masking
          * the hash values by length - 1.  A shift of zero in this table
          * indicates that we may have a potential match.
          */
         public final int[] shifts;
         
-        
-        /**
-         * The smaller hash table to use when encountering a mismatch, recording
-         * in it the shift which would have appeared in the shifts table before
-         * setting it to zero.  We are using this table to record a hopefully bigger 
-         * shift to use in the event of a mismatch (when the shift in the table above  
-         * was zero and we didn't find a match).
-         */
-        public final int[] finalShifts;
-        
-        
         /**
          * The MultiSequenceMatcher to use to verify a match.
          */
         public final MultiSequenceMatcher matcher;
 
+        
         /**
          * Constructs a SearchInfo objecxt with the shifts and matcher to use
          * when searching.
          * 
          * @param shifts The hash-table containing the safe shifts.
-         * @param finalShifts The smaller hash-table to use when the shifts table has
-         *        a zero in it, and we did not find a match.
          * @param matcher The matcher to use to verify whether a match exists.
          */
-        public SearchInfo(final int[] shifts, final int[] finalShifts,
-                          final MultiSequenceMatcher matcher) {
+        public SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
             this.shifts = shifts;
-            this.finalShifts = finalShifts;
             this.matcher = matcher;
         }
     }
 
-    
     /**
-     * The block size to use in the Tuned Wu-Manber search.
+     * The block size to use in the Wu-Manber search.
      */
     protected final int blockSize;
     
@@ -170,13 +148,13 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
 
     
     /**
-     * Constructs an abstract TunedWuManberSearcher from a {@link MultiSequenceMatcher} and 
+     * Constructs an abstract WuManberSearcher from a {@link MultiSequenceMatcher} and 
      * a block size.
      * 
      * @param matcher A MultiSequenceMatcher containing the sequences to search for.
      * @param blockSize The block size of the Wu-Manber searcher.
      */
-    public AbstractWuManberTunedSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
+    public AbstractWuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
         super(matcher);
         this.blockSize = blockSize;
         forwardInfo = new ForwardSearchInfo();
@@ -186,7 +164,7 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
     
     /**
      * Forces the initialisation of the forward search info.
-     */    
+     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
@@ -195,7 +173,7 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
     
     /**
      * Forces the initialisation of the backward search info.
-     */    
+     */
     @Override
     public void prepareBackwards() {
         backwardInfo.get();
@@ -208,7 +186,7 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
      * @param position The end of the block to get the byte values for.
      * @param matcher The SequenceMatcher to build the list of byte arrays for.
      * @return A list of byte arrays containing the matching byte values for a block in the SequenceMatcher.
-     */    
+     */
     private List<byte[]> getBlockByteList(final int position, final SequenceMatcher matcher) {
         final List<byte[]> byteList = new ArrayList<byte[]>(blockSize);
         for (int blockIndex = position - blockSize + 1; blockIndex <= position; blockIndex++) {
@@ -218,13 +196,13 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
         return byteList;
     }
 
-    
+
     /**
      * Given a block as a byte array, calculate its block hash value.
      * 
      * @param block The block to calculate a hash value for.
      * @return The hash value of a block.
-     */    
+     */
     private static int getBlockHash(final byte[] block) {
         int hashCode = 0;
         for (final byte b : block) {
@@ -240,28 +218,13 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
      * 
      * @param defaultShift The default shift to use (the minimum length of all the sequences).
      * @return A shift table filled with the default shift value.
-     */    
+     */
     private int[] createShiftHashTable(final int defaultShift) {
         final int possibleTableSize = guessTableSize();
         final int optimumTableSize = chooseOptimumSize(possibleTableSize);
         final int[] shifts = new int[optimumTableSize];
         Arrays.fill(shifts, defaultShift);  
         return shifts;
-    }
-    
-    
-    /**
-     * Creates the smaller final shift table to use in the event of a mismatch when the
-     * main shift table has a shift of zero.
-     * 
-     * @param defaultShift The default shift to use in the final shift table.
-     * @return A shift table containing shifts to use in the event of a mismatch.
-     */
-    private int[] createFinalShiftHashTable(final int defaultShift) {
-        //TODO: figure out what a reasonable size is.
-        final int[] finalShifts = new int[32];
-        Arrays.fill(finalShifts, defaultShift);
-        return finalShifts;
     }
 
 
@@ -327,14 +290,13 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
     }
 
 
-    
     /**
      * Returns the maximum possible table size for a given block size.
      * For block sizes greater than three, default to the highest positive
      * power of two possible in an integer.
      * 
      * @return int The maximum possible table size for a given block size.
-     */    
+     */
     private int getMaxTableSize() {
         switch (blockSize) {
             case 1: return 256;       // 2 ^ 8
@@ -346,9 +308,9 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
 
 
     /**
-     * A class extending LazyObject<SearchInfo>, which calculates the shift,
-     * the final shift and matcher to use when searching forwards with the
-     * Tuned Wu-Manber search algorithm.
+     * A class extending LazyObject<SearchInfo>, which calculates the shift
+     * and matcher to use when searching forwards with the Wu-Manber search
+     * algorithm.
      */
     protected class ForwardSearchInfo extends LazyObject<SearchInfo> {
 
@@ -359,97 +321,69 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
          */
         @Override
         protected SearchInfo create() {
+            return new SearchInfo(getShifts(), getMatcher());
+        }
+
+        /**
+         * Creates the safe shifts for forward searching 
+         * 
+         * @return int[] the safe shifts for forward searching.
+         */
+        private int[] getShifts() {
             final int defaultShift = sequences.getMinimumLength() - blockSize + 1;        
             final int[] shifts = createShiftHashTable(defaultShift);
-            final int[] finalShifts = createFinalShiftHashTable(defaultShift);
             // (relies on shifts being a size which is a power of two):
             final int hashBitMask = shifts.length - 1; 
-            final int finalHashBitMask = finalShifts.length - 1;
 
             // For each sequence in our list:
             for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
                 final int matcherLength = sequence.length();
-                final int lastMatcherPosition = matcherLength - 1;
 
                 // For each block up to the end of the sequence, starting
                 // the minimum length of all sequences back from the end.
                 final int firstBlockEndPosition = matcherLength - sequences.getMinimumLength() + blockSize - 1; 
-                for (int blockEndPosition = firstBlockEndPosition; blockEndPosition < lastMatcherPosition; blockEndPosition++) {
+                for (int blockEndPosition = firstBlockEndPosition; blockEndPosition < matcherLength; blockEndPosition++) {
                     final int distanceFromEnd = matcherLength - blockEndPosition - 1;
 
                     // For each possible permutation of bytes in a block:
                     final List<byte[]> blockBytes = getBlockByteList(blockEndPosition, sequence);
                     final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                     while (permutation.hasNext()) {
-                        // Get the shift for the hash position of this permutation:
-                        final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
-                        final int currentShift = shifts[hashPos];
-                        
+
                         // Set the shift for the hash position of this permutation to be 
                         // the smaller of the existing shift and current distance from the end:
+                        final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
+                        final int currentShift = shifts[hashPos];
                         if (distanceFromEnd < currentShift) {
                             shifts[hashPos] = distanceFromEnd;
                         }
                     }
                 }
             }
-            
-            // Get the last shifts and map them to a smaller final shift hash table:
-            for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
-                final int matcherLength = sequence.length();
-                final int lastMatcherPosition = matcherLength - 1;
-                
-                // For each possible permutation of bytes in a block:
-                final List<byte[]> blockBytes = getBlockByteList(lastMatcherPosition, sequence);
-                final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
-                while (permutation.hasNext()) {
-                    // Get the shift for the hash position of this permutation:
-                    final int hashValue = getBlockHash(permutation.next());
-                    final int currentShift = shifts[hashValue & hashBitMask];
-                    // If not already reset to zero, see if its smaller than the 
-                    // final shift entry we have for this hash value.
-                    if (currentShift > 0) {
-                        final int finalShift = finalShifts[hashValue & finalHashBitMask];
-                        if (currentShift < finalShift) {
-                            finalShifts[hashValue & finalHashBitMask] = currentShift;
-                        }
-                    }
-                }           
-            }
-            
-            // Zero out the main shifts for the last bytes: 
-            for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
-                final int matcherLength = sequence.length();
-                final int lastMatcherPosition = matcherLength - 1;
-                
-                // For each possible permutation of bytes in a block:
-                final List<byte[]> blockBytes = getBlockByteList(lastMatcherPosition, sequence);
-                final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
-                while (permutation.hasNext()) {
-                    
-                    // Zero the shift for the last matcher position.
-                    final int hashValue = getBlockHash(permutation.next());
-                    shifts[hashValue & hashBitMask] = 0;
-                }           
-            }
-                
-            // Create a SearchInfo object to hold the data.
-            // We use a MultiSequenceReverseMatcher to match sequences searching
-            // forwards, as we want to match backwards from the ends of the sequences
-            // so we create a reversed matcher, which we match backwards.  It then
-            // translates the reversed sequences back into the original ones in the
-            // event of a match.
-            return new SearchInfo(shifts, 
-                                  finalShifts, 
-                                  new MultiSequenceReverseMatcher(sequences));
+            return shifts;
         }
+
+        
+        /**
+         * Creates the MultiSequenceMatcher used for forward searching.
+         * When searching forwards, we proceed from the right-aligned end of all
+         * the sequences, so we use a {@link MultiSequenceReverseMatcher} to
+         * match backwards from the ends of all the sequences, translating any 
+         * matches back into the original sequences which would have matched forwards.
+         * 
+         * @return A MultiSequenceReverseMatcher created from the original sequences.
+         */
+        private MultiSequenceMatcher getMatcher() {
+            return new MultiSequenceReverseMatcher(sequences);
+        }
+
     }
 
 
     /**
-     * A class extending LazyObject<SearchInfo>, which calculates the shift,
-     * the final shift and matcher to use when searching backwards with the
-     * Tuned Wu-Manber search algorithm.
+     * A class extending LazyObject<SearchInfo>, which calculates the shift
+     * and matcher to use when searching backwards with the Wu-Manber search
+     * algorithm.
      */
     protected class BackwardSearchInfo extends LazyObject<SearchInfo> {
 
@@ -460,14 +394,22 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
          */
         @Override
         protected SearchInfo create() {
+            return new SearchInfo(getShifts(), getMatcher());
+        }
+
+        
+        /**
+         * Creates the safe shifts for backward searching 
+         * 
+         * @return int[] the safe shifts for backward searching.
+         */        
+        private int[] getShifts() {
             final int minLength = sequences.getMinimumLength();
             final int defaultShift = minLength - blockSize + 1;        
             final int[] shifts = createShiftHashTable(defaultShift);
-            final int[] finalShifts = createFinalShiftHashTable(defaultShift);
             // (relies on shifts being a size which is a power of two):
             final int hashBitMask = shifts.length - 1; 
-            final int finalHashBitMask = finalShifts.length - 1;
-            
+
             // For each sequence in our list:
             for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
 
@@ -480,30 +422,30 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
                     final List<byte[]> blockBytes = getBlockByteList(blockEndPosition, sequence);
                     final BytePermutationIterator permutation = new BytePermutationIterator(blockBytes);
                     while (permutation.hasNext()) {
-                        // Get the shift for the hash position of this permutation:
-                        final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
-                        final int currentShift = shifts[hashPos];
-                        
-                        // If we're at the start, record the current shift in a smaller
-                        // hash table, if it is smaller than the current entry:
-                        if (distanceToStart == 0) {
-                            int finalShift = finalShifts[hashPos & finalHashBitMask];
-                            if (currentShift < finalShift) {
-                                finalShifts[hashPos & finalHashBitMask] = currentShift;
-                            }
-                        }
-                        
+
                         // Set the shift for the hash position of this permutation to be 
                         // the smaller of the current shift and the distance from the end:
+                        final int hashPos = getBlockHash(permutation.next()) & hashBitMask;
+                        final int currentShift = shifts[hashPos];
                         if (distanceToStart < currentShift) {
                             shifts[hashPos] = distanceToStart;
                         }
                     }
                 }
             }
-            return new SearchInfo(shifts, finalShifts, sequences);
+            return shifts;
         }
 
+        /**
+         * When searching backwards, searching proceeds from the start of the 
+         * sequences aligned to the left, so the original MultiSequenceMatcher
+         * provided to this abstract parent class on construction will work fine.
+         * 
+         * @return The original MultiSequenceMatcher provided on construction of the parent class.
+         */
+        private MultiSequenceMatcher getMatcher() {
+            return sequences;
+        }
     }
         
 }

@@ -37,7 +37,7 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.domesdaybook.io.ReadUtils;
+import net.domesdaybook.io.IOUtils;
 import net.domesdaybook.io.Window;
 
 
@@ -78,7 +78,7 @@ public final class TempFileCache extends AbstractCache {
         if (info != null) {
             final byte[] array = new byte[info.length];
             try {
-                ReadUtils.readBytes(file, array, info.filePosition);
+                IOUtils.readBytes(file, array, info.filePosition);
                 window = new Window(array, position, info.length);
             } catch (IOException justReturnNullWindow) {
             }
@@ -134,7 +134,7 @@ public final class TempFileCache extends AbstractCache {
         if (tempFile == null) {
             windowPositions.clear();
             nextFilePos = 0;
-            tempFile = ReadUtils.createTempFile();
+            tempFile = IOUtils.createTempFile();
             file = new RandomAccessFile(tempFile, "rw");
         }
     }

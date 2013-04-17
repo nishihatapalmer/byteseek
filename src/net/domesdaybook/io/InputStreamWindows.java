@@ -40,7 +40,7 @@ import net.domesdaybook.io.cache.TwoLevelCache;
 import net.domesdaybook.io.cache.WindowCache;
 
 /**
- * A WindowReader extending {@link AbstractWindowReader} over an {@link java.io.InputStream}
+ * A WindowReader extending {@link AbstractWindows} over an {@link java.io.InputStream}
  * .
  * <p>
  * The implementation is stream-friendly, in that it does not need to know the
@@ -51,7 +51,7 @@ import net.domesdaybook.io.cache.WindowCache;
  * explicitly call the {@link #length()} method, then the stream will be read
  * until the end is encountered and a length can be determined.
  * <p>
- * By default, the InputStreamWindowReader uses a {@link TwoLevelCache}, with a
+ * By default, the InputStreamWindows uses a {@link TwoLevelCache}, with a
  * {@link MostRecentlyUsedCache} as its primary cache, and a
  * {@link TempFileCache} as its secondary cache. If the input stream fits
  * entirely into the MostRecentlyUsedCache, then a temporary file will never be
@@ -72,14 +72,14 @@ import net.domesdaybook.io.cache.WindowCache;
  * 
  * @author Matt Palmer
  */
-public class InputStreamWindowReader extends AbstractWindowReader {
+public class InputStreamWindows extends AbstractWindows {
 
 	private final InputStream stream;
 	private long streamPos = 0;
 	private long length = UNKNOWN_LENGTH;
 
 	/**
-	 * Constructs an InputStreamWindowReader from an InputStream, using the default
+	 * Constructs an InputStreamWindows from an InputStream, using the default
 	 * window size of 4096 and a default capacity of 32, and a
 	 * {@link TwoLevelCache} with a {@link MostRecentlyUsedCache} as its primary
 	 * cache and a {@link TempFileCache} as the secondary cache.
@@ -89,12 +89,12 @@ public class InputStreamWindowReader extends AbstractWindowReader {
 	 * @throws IllegalArgumentException
 	 *             if the stream is null.
 	 */
-	public InputStreamWindowReader(final InputStream stream) {
+	public InputStreamWindows(final InputStream stream) {
 		this(stream, DEFAULT_WINDOW_SIZE, DEFAULT_CAPACITY);
 	}
 
 	/**
-	 * Constructs an InputStreamWindowReader from an InputStream using a default
+	 * Constructs an InputStreamWindows from an InputStream using a default
 	 * window size of 4096, and the {@link WindowCache} provided. The
 	 * WindowCache must ensure that it can provide any Window from a position in
 	 * the stream which has already been read, or you must be sure that you will
@@ -107,12 +107,12 @@ public class InputStreamWindowReader extends AbstractWindowReader {
 	 * @throws IllegalArgumentException
 	 *             if the stream or cache is null.
 	 */
-	public InputStreamWindowReader(final InputStream stream, final WindowCache cache) {
+	public InputStreamWindows(final InputStream stream, final WindowCache cache) {
 		this(stream, DEFAULT_WINDOW_SIZE, cache);
 	}
 
 	/**
-	 * Constructs an InputStreamWindowReader from an InputStream, using the window
+	 * Constructs an InputStreamWindows from an InputStream, using the window
 	 * size provided and a default capacity of 32, and a {@link TwoLevelCache}
 	 * with a {@link MostRecentlyUsedCache} as its primary cache and a
 	 * {@link TempFileCache} as the secondary cache.
@@ -124,12 +124,12 @@ public class InputStreamWindowReader extends AbstractWindowReader {
 	 * @throws IllegalArgumentException
 	 *             if the stream is null, or the window size is less than one.
 	 */
-	public InputStreamWindowReader(final InputStream stream, final int windowSize) {
+	public InputStreamWindows(final InputStream stream, final int windowSize) {
 		this(stream, windowSize, DEFAULT_CAPACITY);
 	}
 
 	/**
-	 * Constructs an InputStreamWindowReader from an InputStream, using the window
+	 * Constructs an InputStreamWindows from an InputStream, using the window
 	 * size provided, the capacity provided and a {@link TwoLevelCache} with a
 	 * {@link MostRecentlyUsedCache} as its primary cache and a
 	 * {@link TempFileCache} as the secondary cache.
@@ -144,14 +144,14 @@ public class InputStreamWindowReader extends AbstractWindowReader {
 	 *             if the stream is null, or the window size is less than one,
 	 *             or the capacity is less than zero.
 	 */
-	public InputStreamWindowReader(final InputStream stream, final int windowSize,
+	public InputStreamWindows(final InputStream stream, final int windowSize,
 			final int capacity) {
 		this(stream, windowSize, TwoLevelCache.create(
 				new MostRecentlyUsedCache(capacity), new TempFileCache()));
 	}
 
 	/**
-	 * Constructs an InputStreamWindowReader from an InputStream, using the window
+	 * Constructs an InputStreamWindows from an InputStream, using the window
 	 * size provided and the {@link WindowCache} provided. The WindowCache must
 	 * ensure that it can provide any Window from a position in the stream which
 	 * has already been read, or you must be sure that you will never request
@@ -167,7 +167,7 @@ public class InputStreamWindowReader extends AbstractWindowReader {
 	 *             if the stream or cache is null, or the window size is less
 	 *             than one.
 	 */
-	public InputStreamWindowReader(final InputStream stream, final int windowSize,
+	public InputStreamWindows(final InputStream stream, final int windowSize,
 			final WindowCache cache) {
 		super(windowSize, cache);
 		if (stream == null) {
@@ -219,7 +219,7 @@ public class InputStreamWindowReader extends AbstractWindowReader {
 		Window lastWindow = null;
 		while (readPos > streamPos && length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
-			final int totalRead = ReadUtils.readBytes(stream, bytes);
+			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
 				lastWindow = new Window(bytes, streamPos, totalRead);
 				streamPos += totalRead;
@@ -252,7 +252,7 @@ public class InputStreamWindowReader extends AbstractWindowReader {
 	public long length() throws IOException {
 		while (length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
-			final int totalRead = ReadUtils.readBytes(stream, bytes);
+			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
 				final Window lastWindow = new Window(bytes, streamPos,
 						totalRead);

@@ -38,8 +38,8 @@ import java.util.Collections;
 
 import net.domesdaybook.automata.Automata;
 import net.domesdaybook.automata.State;
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.MatchResult;
 
 /**

@@ -37,12 +37,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
+import net.domesdaybook.parser.tree.ParseTreeUtils;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 import org.junit.After;
@@ -154,39 +157,45 @@ public class RegexParserTest {
 		expectParseException("Illegal hex char",					"1g");
 		expectParseException("Whitespace and illegal hex chars",	" xy\t");
 
-		testByte("01", 						(byte) 0x01);
-		testByte("  01  ", 					(byte) 0x01); 
-		testByte("  01  # 0x01", 			(byte) 0x01); 
-		testByte("FF", 						(byte) 0xFF);
-		testByte("\tFF", 					(byte) 0xFF); 
-		testByte("00", 						(byte) 0x00);
-		testByte("\n\r00", 					(byte) 0x00);
-		testByte("cd", 						(byte) 0xcd); 
-		testByte("cd\t \n", 				(byte) 0xcd);
-		testByte("d4", 						(byte) 0xD4);
-		testByte(" \t   d4\t   ", 			(byte) 0xd4); 
-		testByte("fe", 						(byte) 0xfe);
-		testByte("fe   \r\t\n", 			(byte) 0xFE);  
-		testByte("fe   \r\t\n # a comment", (byte) 0xFE);  
-		testByte("7e", 						(byte) 0x7e);
-		testByte("7e            ",			(byte) 0x7e);
-		testByte("# a comment\ndd\t ",      (byte) 0xdd);
+		testByte("01", 						(byte) 0x01, true);
+		testByte("  01  ", 					(byte) 0x01, false); 
+		testByte("  01  # 0x01", 			(byte) 0x01, false); 
+		testByte("FF", 						(byte) 0xFF, true);
+		testByte("\tFF", 					(byte) 0xFF, false); 
+		testByte("00", 						(byte) 0x00, true);
+		testByte("\n\r00", 					(byte) 0x00, false);
+		testByte("cd", 						(byte) 0xcd, true); 
+		testByte("cd\t \n", 				(byte) 0xcd, true);
+		testByte("d4", 						(byte) 0xD4, true);
+		testByte(" \t   d4\t   ", 			(byte) 0xd4, false); 
+		testByte("fe", 						(byte) 0xfe, true);
+		testByte("fe   \r\t\n", 			(byte) 0xFE, true);  
+		testByte("fe   \r\t\n # a comment", (byte) 0xFE, true);  
+		testByte("7e", 						(byte) 0x7e, true);
+		testByte("7e            ",			(byte) 0x7e, true);
+		testByte("# a comment\ndd\t ",      (byte) 0xdd, false);
 	}
 	
-	private void testByte(String expression, byte value) throws ParseException {
-		testByte(parser.parse(expression), value);
+	private void testByte(String expression, byte value, boolean canInvert) throws ParseException {
+		testByte(parser.parse(expression), value, false);
+		if (canInvert) {
+			testByte(parser.parse('^' + expression), value, true);
+		} else {
+			expectParseException("Expression can't be inverted by prepending ^", '^' + expression);
+		}
 	}	
-	
-	private void testByte(ParseTree node, byte value) throws ParseException {
+
+
+	private void testByte(ParseTree node, byte value, boolean isInverted) throws ParseException {
 		assertEquals("Node [" + node + "] has type BYTE",
 					 ParseTreeType.BYTE, node.getParseTreeType());
-		testByteValue(node, value);
+		testByteValue(node, value, isInverted);
 	}
 	
-	private void testByteValue(ParseTree node, byte value) throws ParseException {
+	private void testByteValue(ParseTree node, byte value, boolean isInverted) throws ParseException {
 		assertEquals("Node " + node + " has byte value " + value,
                 	 value, node.getByteValue());
-		assertFalse("Node " + node + " is not inverted", node.isValueInverted());
+		assertEquals("Node " + node + " inversion should be " + isInverted, isInverted, node.isValueInverted());
 		assertNotNull("Node children is not null",
 				      node.getChildren());
 		assertEquals("Node " + node + " has no children",
@@ -204,28 +213,33 @@ public class RegexParserTest {
 		expectParseException("Bad hex value following", "&hex");
 		expectParseException("Space between", "& 01");
 		
-		testAllBitmask("&01", 				(byte) 0x01);
-		testAllBitmask("  &01   ", 			(byte) 0x01);
-		testAllBitmask("&FF",				(byte) 0xFF);
-		testAllBitmask("\t&ff", 			(byte) 0xff);
-		testAllBitmask("&00", 				(byte) 0x00);
-		testAllBitmask("\n\r     &00", 		(byte) 0x00);
-		testAllBitmask("&cd", 				(byte) 0xcd);
-		testAllBitmask("\n\r\n\r&cD\t   ",	(byte) 0xCd);
-		testAllBitmask("&d4",				(byte) 0xD4);
-		testAllBitmask("  &D4\t",			(byte) 0xd4);
-		testAllBitmask("&fe", 				(byte) 0xfe);
-		testAllBitmask(" \t\t \t&fE\r",		(byte) 0xfE);
+		testAllBitmask("&01", 				(byte) 0x01, true);
+		testAllBitmask("  &01   ", 			(byte) 0x01, false);
+		testAllBitmask("&FF",				(byte) 0xFF, true);
+		testAllBitmask("\t&ff", 			(byte) 0xff, false);
+		testAllBitmask("&00", 				(byte) 0x00, true);
+		testAllBitmask("\n\r     &00", 		(byte) 0x00, false);
+		testAllBitmask("&cd", 				(byte) 0xcd, true);
+		testAllBitmask("\n\r\n\r&cD\t   ",	(byte) 0xCd, false);
+		testAllBitmask("&d4",				(byte) 0xD4, true);
+		testAllBitmask("  &D4\t",			(byte) 0xd4, false);
+		testAllBitmask("&fe", 				(byte) 0xfe, true);
+		testAllBitmask(" \t\t \t&fE\r",		(byte) 0xfE, false);
 	}
 	
-	private void testAllBitmask(String expression, byte value) throws ParseException {
-		testAllBitmask(parser.parse(expression), value);
+	private void testAllBitmask(String expression, byte value, boolean canInvert) throws ParseException {
+		testAllBitmask(parser.parse(expression), value, false);
+		if (canInvert) {
+			testAllBitmask(parser.parse('^' + expression), value, true);
+		} else {
+			expectParseException("Expression can't be inverted by prepending ^", '^' + expression);
+		}
 	}
 	
-	private void testAllBitmask(ParseTree node, byte value) throws ParseException {
+	private void testAllBitmask(ParseTree node, byte value, boolean isInverted) throws ParseException {
 		assertEquals("Node [" + node + "] type is ParseTreeType.ALL_BITMASK",
                 ParseTreeType.ALL_BITMASK, node.getParseTreeType());
-		testByteValue(node, value);
+		testByteValue(node, value, isInverted);
 	}
 	
 	
@@ -239,24 +253,29 @@ public class RegexParserTest {
 		expectParseException("Bad hex value following", "~hex");
 		expectParseException("Space between", "~ 01");
 		
-		testAnyBitmask("~01",     (byte) 0x01);
-		testAnyBitmask(" ~21 ",   (byte) 0x21);
-		testAnyBitmask("~FF ",    (byte) 0xFF);
-		testAnyBitmask("\t~00",   (byte) 0x00);
-		testAnyBitmask("~cd\n",   (byte) 0xcd);
-		testAnyBitmask("\n~d4\r", (byte) 0xD4);
-		testAnyBitmask("~fe \t",  (byte) 0xfe);
+		testAnyBitmask("~01",     (byte) 0x01, true);
+		testAnyBitmask(" ~21 ",   (byte) 0x21, false);
+		testAnyBitmask("~FF ",    (byte) 0xFF, true);
+		testAnyBitmask("\t~00",   (byte) 0x00, false);
+		testAnyBitmask("~cd\n",   (byte) 0xcd, true);
+		testAnyBitmask("\n~d4\r", (byte) 0xD4, false);
+		testAnyBitmask("~fe \t",  (byte) 0xfe, true);
 	}
 		
-	private void testAnyBitmask(String expression, byte value) throws ParseException {
-		testAnyBitmask(parser.parse(expression), value);
+	private void testAnyBitmask(String expression, byte value, boolean canInvert) throws ParseException {
+		testAnyBitmask(parser.parse(expression), value, false);
+		if (canInvert) {
+			testAnyBitmask(parser.parse('^' + expression), value, true);
+		} else {
+			expectParseException("Expression can't be inverted by prepending ^", '^' + expression);
+		}
 	}	
 	
 	
-	private void testAnyBitmask(ParseTree node, byte value) throws ParseException {
+	private void testAnyBitmask(ParseTree node, byte value, boolean isInverted) throws ParseException {
 		assertEquals("Node [" + node + "] type is ParseTreeType.ANY_BITMASK",
                 ParseTreeType.ANY_BITMASK, node.getParseTreeType());
-		testByteValue(node, value);
+		testByteValue(node, value, isInverted);
 	}
 	
 	@Test
@@ -354,17 +373,57 @@ public class RegexParserTest {
 	 * Test ParseTreeType.SET
 	 */
 	public void testSet() throws ParseException {
-		testSet("[01]", new byte[] {(byte) 01});
+		// test simple sets
+		testSet("[01]",   new byte[] {(byte) 0x01}, true);
+		testSet("[ 01 ]",   new byte[] {(byte) 0x01}, true);
+		testSet("[0102]", new byte[] {(byte) 0x02, (byte) 0x01}, true);
+		testSet("[0201]", new byte[] {(byte) 0x02, (byte) 0x01}, true);
+		testSet("[0201^&03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, true);
+		testSet("[02 01 ~03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, true);
+		testSet("\t\r[0201]", new byte[] {(byte) 0x02, (byte) 0x01}, false);
+		testSet("   \n  [0201^&03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, false);
+		
+		//TODO: test sets with ranges
+		
+		
+		//TODO: test sets with strings
+		
+		
+		//TODO: test sets with case insensitive strings
+		
+		
+		//TODO: test nested sets with different inversions
+		
+		
 	}
 	
-	private void testSet(String expression, byte[] values) throws ParseException {
-		testSet(parser.parse(expression), values);
+	private void testSet(String expression, byte[] values, boolean canInvert) throws ParseException {
+		testSet(parser.parse(expression), false, values);
+		if (canInvert) {
+			testSet(parser.parse("^" + expression), true,  values);
+		} 
 	}
 	
-	private void testSet(ParseTree node, byte[] values) throws ParseException {
-		fail("not yet implemented");//todo: test set nodes.
+	private void testSet(ParseTree node, boolean isInverted, byte[] values) throws ParseException {
+		assertEquals("Node " + node + " has ParseTreeType.SET",
+			     ParseTreeType.SET, node.getParseTreeType());
+		assertNotNull("Node " + node + " children not null", node.getChildren());
+		assertEquals("Node " + node + " inversion is " + isInverted, isInverted, node.isValueInverted());
+		testSetValues(node, values);
+	}
+	
+	private void testSetValues(ParseTree node, byte[] values) throws ParseException {
+		Set<Byte> nodeVals = new HashSet<Byte>();
+		for (ParseTree child : node.getChildren()) {
+			nodeVals.add(child.getByteValue());
+		}
+		Set<Byte> vals = ByteUtilities.toSet(values);
+		assertEquals("Sets have the same number of values", nodeVals.size(), vals.size());
+		nodeVals.removeAll(vals);
+		assertEquals("Sets have the same values", 0, nodeVals.size());
 	}
 
+	
 	@Test
 	/**
 	 * Test simple sequences of nodes containing a single byte value.  This includes the types:
@@ -428,7 +487,6 @@ public class RegexParserTest {
 						 values[position++], member.getByteValue());
 		}	
 	}
-	
 
 	
 	@Test
@@ -506,15 +564,22 @@ public class RegexParserTest {
 		expectParseException("nothing to quantify", "*");
 		expectParseException("double many", "01**");
 		
-		testByte(testZeroToMany("01*"), (byte) 01);
-		testByte(testZeroToMany("(01)*"), (byte) 01);
-		testByte(testZeroToMany("(01 *)"), (byte) 01);
+		testByte(testZeroToMany("01*"),     (byte) 01, false);
+		testByte(testZeroToMany("(01)*"),   (byte) 01, false);
+		testByte(testZeroToMany("(01 *)"),  (byte) 01, false);
+		testByte(testZeroToMany("^01*"),    (byte) 01, true);
+		testByte(testZeroToMany("(^01)*"),  (byte) 01, true);
+		testByte(testZeroToMany("(^01 *)"), (byte) 01, true);
 		
-		testAllBitmask(testZeroToMany("&fe*"), (byte) 0xfe);
-		testAllBitmask(testZeroToMany("( &e1 )*"), (byte) 0xe1);
+		testAllBitmask(testZeroToMany("&fe*"),      (byte) 0xfe, false);
+		testAllBitmask(testZeroToMany("( &e1 )*"),  (byte) 0xe1, false);
+		testAllBitmask(testZeroToMany("^&fe*"),     (byte) 0xfe, true);
+		testAllBitmask(testZeroToMany("( ^&e1 )*"), (byte) 0xe1, true);
 		
-		testAnyBitmask(testZeroToMany("~34*"), (byte) 0x34);
-		testAnyBitmask(testZeroToMany("( ~99     )   *  "), ( byte) 0x99);
+		testAnyBitmask(testZeroToMany("~34*"),               (byte) 0x34, false);
+		testAnyBitmask(testZeroToMany("( ~99     )   *  "),  (byte) 0x99, false);
+		testAnyBitmask(testZeroToMany("^~34*"),              (byte) 0x34, true);
+		testAnyBitmask(testZeroToMany("( ^~99     )   *  "), (byte) 0x99, true);
 		
 		testAny(testZeroToMany(".*"));
 		testAny(testZeroToMany("(.)*"));
@@ -551,15 +616,22 @@ public class RegexParserTest {
 		expectParseException("nothing to quantify", "+");
 		expectParseException("double many", "01++");
 		
-		testByte(testOneToMany("01+"), (byte) 01);
-		testByte(testOneToMany("(01)+"), (byte) 01);
-		testByte(testOneToMany("(01 +)"), (byte) 01);
+		testByte(testOneToMany("01+"),     (byte) 01, false);
+		testByte(testOneToMany("(01)+"),   (byte) 01, false);
+		testByte(testOneToMany("(01 +)"),  (byte) 01, false);
+		testByte(testOneToMany("^01+"),    (byte) 01, true);
+		testByte(testOneToMany("(^01)+"),  (byte) 01, true);
+		testByte(testOneToMany("(^01 +)"), (byte) 01, true);
 		
-		testAllBitmask(testOneToMany("&fe+"), (byte) 0xfe);
-		testAllBitmask(testOneToMany("( &e1 )+"), (byte) 0xe1);
+		testAllBitmask(testOneToMany("&fe+"),      (byte) 0xfe, false);
+		testAllBitmask(testOneToMany("( &e1 )+"),  (byte) 0xe1, false);
+		testAllBitmask(testOneToMany("^&fe+"),     (byte) 0xfe, true);
+		testAllBitmask(testOneToMany("( ^&e1 )+"), (byte) 0xe1, true);
 		
-		testAnyBitmask(testOneToMany("~34+"), (byte) 0x34);
-		testAnyBitmask(testOneToMany("( ~99     )   +  "), ( byte) 0x99);
+		testAnyBitmask(testOneToMany("~34+"),               (byte) 0x34, false);
+		testAnyBitmask(testOneToMany("( ~99     )   +  "),  (byte) 0x99, false);
+		testAnyBitmask(testOneToMany("^~34+"),              (byte) 0x34, true);
+		testAnyBitmask(testOneToMany("( ^~99     )   +  "), (byte) 0x99, true);
 		
 		testAny(testOneToMany(".+"));
 		testAny(testOneToMany("(.)+"));
@@ -595,15 +667,22 @@ public class RegexParserTest {
 		expectParseException("nothing to make optional", "?");
 		expectParseException("double optional", "01??");
 		
-		testByte(testOptional("01?"), (byte) 01);
-		testByte(testOptional("(01)?"), (byte) 01);
-		testByte(testOptional("(01 ?)"), (byte) 01);
+		testByte(testOptional("01?"),    (byte) 01, false);
+		testByte(testOptional("(01)?"),  (byte) 01, false);
+		testByte(testOptional("(01 ?)"), (byte) 01, false);
+		testByte(testOptional("^01?"),    (byte) 01, true);
+		testByte(testOptional("(^01)?"),  (byte) 01, true);
+		testByte(testOptional("(^01 ?)"), (byte) 01, true);
+
+		testAllBitmask(testOptional("&fe?"),      (byte) 0xfe, false);
+		testAllBitmask(testOptional("( &e1 )?"),  (byte) 0xe1, false);
+		testAllBitmask(testOptional("^&fe?"),     (byte) 0xfe, true);
+		testAllBitmask(testOptional("( ^&e1 )?"), (byte) 0xe1, true);
 		
-		testAllBitmask(testOptional("&fe?"), (byte) 0xfe);
-		testAllBitmask(testOptional("( &e1 )?"), (byte) 0xe1);
-		
-		testAnyBitmask(testOptional("~34?"), (byte) 0x34);
-		testAnyBitmask(testOptional("( ~99     )   ?  "), ( byte) 0x99);
+		testAnyBitmask(testOptional("~34?"),               (byte) 0x34, false);
+		testAnyBitmask(testOptional("( ~99     )   ?  "),  (byte) 0x99, false);
+		testAnyBitmask(testOptional("^~34?"),              (byte) 0x34, true);
+		testAnyBitmask(testOptional("( ^~99     )   ?  "), (byte) 0x99, true);
 		
 		testAny(testOptional(".?"));
 		testAny(testOptional("(.)?"));
@@ -644,14 +723,20 @@ public class RegexParserTest {
 		expectParseException("Whitespace inside repeat", "fe{ 99}");
 		expectParseException("Whitespace inside repeat", "fe{99 }");
 		
-		testByte(testRepeats("01{3}", 3), (byte) 0x01);
-		testByte(testRepeats("  01  \n  {3}", 3), (byte) 0x01);
+		testByte(testRepeats("01{3}", 3),          (byte) 0x01, false);
+		testByte(testRepeats("  01  \n  {3}", 3),  (byte) 0x01, false);
+		testByte(testRepeats("^01{3}", 3),         (byte) 0x01, true);
+		testByte(testRepeats("  ^01  \n  {3}", 3), (byte) 0x01, true);
 		
-		testAllBitmask(testRepeats("&b3{999}", 999), (byte) 0xb3);
-		testAllBitmask(testRepeats("&b3\t{999}", 999), (byte) 0xb3);
+		testAllBitmask(testRepeats("&b3{999}",    999), (byte) 0xb3, false);
+		testAllBitmask(testRepeats("&b3\t{999}",  999), (byte) 0xb3, false);
+		testAllBitmask(testRepeats("^&b3{999}",   999), (byte) 0xb3, true);
+		testAllBitmask(testRepeats("^&b3\t{999}", 999), (byte) 0xb3, true);
 		
-		testAnyBitmask(testRepeats("~48{1}", 1), (byte) 0x48);
-		testAnyBitmask(testRepeats("~48  {1}", 1), (byte) 0x48);
+		testAnyBitmask(testRepeats("~48{1}", 1),    (byte) 0x48, false);
+		testAnyBitmask(testRepeats("~48  {1}", 1),  (byte) 0x48, false);
+		testAnyBitmask(testRepeats("^~48{1}", 1),   (byte) 0x48, true);
+		testAnyBitmask(testRepeats("^~48  {1}", 1), (byte) 0x48, true);
 		
 		testString(testRepeats("'Titania'{5}", 5),   "Titania");
 		testString(testRepeats("'Titania'   {5}", 5),   "Titania");
@@ -691,14 +776,20 @@ public class RegexParserTest {
 		expectParseException("Whitespace inside repeat", "fe{99,* }");
 		expectParseException("Whitespace inside repeat", "fe{99 , *}");
 		
-		testByte(testRepeatMinToMany("01{3,*}", 3), (byte) 0x01);
-		testByte(testRepeatMinToMany("  01  \n  {3,*}", 3), (byte) 0x01);
+		testByte(testRepeatMinToMany("01{3,*}", 3),          (byte) 0x01, false);
+		testByte(testRepeatMinToMany("  01  \n  {3,*}", 3),  (byte) 0x01, false);
+		testByte(testRepeatMinToMany("^01{3,*}", 3),         (byte) 0x01, true);
+		testByte(testRepeatMinToMany("  ^01  \n  {3,*}", 3), (byte) 0x01, true);
 		
-		testAllBitmask(testRepeatMinToMany("&b3{999,*}", 999), (byte) 0xb3);
-		testAllBitmask(testRepeatMinToMany("&b3\t{999,*}", 999), (byte) 0xb3);
+		testAllBitmask(testRepeatMinToMany("&b3{999,*}",    999), (byte) 0xb3, false);
+		testAllBitmask(testRepeatMinToMany("&b3\t{999,*}",  999), (byte) 0xb3, false);
+		testAllBitmask(testRepeatMinToMany("^&b3{999,*}",   999), (byte) 0xb3, true);
+		testAllBitmask(testRepeatMinToMany("^&b3\t{999,*}", 999), (byte) 0xb3, true);
 		
-		testAnyBitmask(testRepeatMinToMany("~48{1,*}", 1), (byte) 0x48);
-		testAnyBitmask(testRepeatMinToMany("~48  {1,*}", 1), (byte) 0x48);
+		testAnyBitmask(testRepeatMinToMany("~48{1,*}",    1), (byte) 0x48, false);
+		testAnyBitmask(testRepeatMinToMany("~48  {1,*}",  1), (byte) 0x48, false);
+		testAnyBitmask(testRepeatMinToMany("^~48{1,*}",   1), (byte) 0x48, true);
+		testAnyBitmask(testRepeatMinToMany("^~48  {1,*}", 1), (byte) 0x48, true);
 		
 		testString(testRepeatMinToMany("'Titania'{5,*}", 5),   "Titania");
 		testString(testRepeatMinToMany("'Titania'   {5,*}", 5),   "Titania");
@@ -738,14 +829,20 @@ public class RegexParserTest {
 		expectParseException("Whitespace inside repeat", "fe{99,100 }");
 		expectParseException("Whitespace inside repeat", "fe{99 , 45}");
 		
-		testByte(testRepeatMinToMax("01{3,6}", 3, 6), (byte) 0x01);
-		testByte(testRepeatMinToMax("  01  \n  {3,5}", 3, 5), (byte) 0x01);
+		testByte(testRepeatMinToMax("01{3,6}", 		    3, 6), (byte) 0x01, false);
+		testByte(testRepeatMinToMax("  01  \n  {3,5}",  3, 5), (byte) 0x01, false);
+		testByte(testRepeatMinToMax("^01{3,6}", 	    3, 6), (byte) 0x01, true);
+		testByte(testRepeatMinToMax("  ^01  \n  {3,5}", 3, 5), (byte) 0x01, true);
 		
-		testAllBitmask(testRepeatMinToMax("&b3{999,1000}", 999, 1000), (byte) 0xb3);
-		testAllBitmask(testRepeatMinToMax("&b3\t{999,2000}", 999, 2000), (byte) 0xb3);
+		testAllBitmask(testRepeatMinToMax("&b3{999,1000}",    999, 1000), (byte) 0xb3, false);
+		testAllBitmask(testRepeatMinToMax("&b3\t{999,2000}",  999, 2000), (byte) 0xb3, false);
+		testAllBitmask(testRepeatMinToMax("^&b3{999,1000}",   999, 1000), (byte) 0xb3, true);
+		testAllBitmask(testRepeatMinToMax("^&b3\t{999,2000}", 999, 2000), (byte) 0xb3, true);
 		
-		testAnyBitmask(testRepeatMinToMax("~48{1,5}", 1, 5), (byte) 0x48);
-		testAnyBitmask(testRepeatMinToMax("~48  {1,98}", 1, 98), (byte) 0x48);
+		testAnyBitmask(testRepeatMinToMax("~48{1,5}",    1, 5),   (byte) 0x48, false);
+		testAnyBitmask(testRepeatMinToMax("~48  {1,98}", 1, 98),  (byte) 0x48, false);
+		testAnyBitmask(testRepeatMinToMax("^~48{1,5}",    1, 5),  (byte) 0x48, true);
+		testAnyBitmask(testRepeatMinToMax("^~48  {1,98}", 1, 98), (byte) 0x48, true);
 		
 		testString(testRepeatMinToMax("'Titania'{5,5}", 5, 5),   "Titania");
 		testString(testRepeatMinToMax("'Titania'   {5,0}", 5, 0),   "Titania");
@@ -779,31 +876,34 @@ public class RegexParserTest {
 	/**
 	 * Test ParseTreeType.ALTERNATIVES
 	 */
-	public void testByteSequenceAlternatives() throws ParseException {
+	public void testAlternatives() throws ParseException {
 		expectParseException("No left alternative", "   |02");
 		expectParseException("No right alternative", "01|   ");
 		
-		byte[] values1 = ByteUtilities.toArray((byte) 0x00);
-		byte[] values2 = ByteUtilities.toArray((byte) 0x01);
-		testByteSequenceAlternatives("00|01", values1, values2);
-		testByteSequenceAlternatives("01|00", values2, values1);
-		testByteSequenceAlternatives("(01|00)", values2, values1);
+		// Note that all alternatives consisting of a match on a single
+		// byte position are optimised into a set type.
 		
+		byte[] values0 = ByteUtilities.toArray((byte) 0x00, (byte) 0x01);
+		testSet("00|01",   values0, false); 
+		testSet("01|00",   values0, false);
+		testSet("(01|00)", values0, false);
+		
+		byte[] values1 = ByteUtilities.toArray((byte) 0x00);
 		byte[] values3 = ByteUtilities.toArray((byte) 0x7f, (byte) 0x7f, (byte) 0x80, (byte) 0xff);
-		testByteSequenceAlternatives("00|01|7f 7f 80 ff", values1, values2, values3);
-		testByteSequenceAlternatives("7f 7f 80 ff|01|00", values3, values2, values1);
-		testByteSequenceAlternatives("(7f 7f 80 ff|01|00)", values3, values2, values1);
+		testByteSequenceAlternatives("00|01|7f 7f 80 ff", values3, values0);
+		testByteSequenceAlternatives("7f 7f 80 ff|01|00", values3, values0);
+		testByteSequenceAlternatives("(7f 7f 80 ff|01|00)", values3, values0);
 		
 		byte[] values4 = ByteUtilities.toArray((byte) 0xde, (byte) 0xad, (byte) 0xff);
 		testByteSequenceAlternatives("00|deadff|7f 7f 80 ff", values1, values4, values3);
-		testByteSequenceAlternatives("deadff|00|7f 7f 80 ff|01|00", values4, values1, values3, values2, values1);
+		testByteSequenceAlternatives("deadff|00|7f 7f 80 ff|01|00", values4, values3, values0);
 		testByteSequenceAlternatives("(00|deadff|7f 7f 80 ff)", values1, values4, values3);
-		testByteSequenceAlternatives("(deadff|00|7f 7f 80 ff|01|00)", values4, values1, values3, values2, values1);
+		testByteSequenceAlternatives("(deadff|00|7f 7f 80 ff|01|00)", values4, values3, values0);
 		
-		byte[] values5 = ByteUtilities.toArray((byte) 0x32);
+		byte[] values5 = ByteUtilities.toArray((byte) 0x32, (byte) 0x01);
 		byte[] values6 = ByteUtilities.toArray((byte) 0x6c, (byte) 0xff, (byte) 0xee, (byte) 0xdd);
-		testByteSequenceAlternatives("deadff|&32|  ~6cffeedd|01", values4, values5, values6, values2);
-		testByteSequenceAlternatives("(deadff|&32|  ~6cffeedd|01)", values4, values5, values6, values2);
+		testByteSequenceAlternatives("deadff|&32|  ~6cffeedd|01", values4, values6, values5);
+		testByteSequenceAlternatives("(deadff|&32|  ~6cffeedd|01)", values4, values6, values5);
 	}
 	
 	private void testByteSequenceAlternatives(String expression, byte[]... values) throws ParseException {
@@ -822,9 +922,10 @@ public class RegexParserTest {
 			if (alternative.getParseTreeType() == ParseTreeType.SEQUENCE) {
 				testByteSequenceValues(alternative.getChildren(), value);
 			} else if (alternative.getChildren().size() == 0) {
-				testByteValue(alternative, value[0]);
+				testByteValue(alternative, value[0], false);
 			} else {
-				throw new ParseException("Not a sequence but has children: [" + alternative + "]");
+				testSetValues(alternative, value);
+				//throw new ParseException("Not a sequence but has children: [" + alternative + "]");
 			}
 		}
 	}
@@ -839,9 +940,9 @@ public class RegexParserTest {
 		expectParseException("Empty group with whitespace",				"(    )");
 		expectParseException("Empty group comments and whitespace",		" (  #open\n \t  ) ");
 		
-		testByte("  (01)",   (byte) 1);
-		testByte(" ((01))",  (byte) 1);
-		testByte("(((01)))", (byte) 1);
+		testByte("  (01)",   (byte) 1, false);
+		testByte(" ((01))",  (byte) 1, false);
+		testByte("(((01)))", (byte) 1, false);
 		
 		byte[] values1 = ByteUtilities.toArray((byte) 1, (byte) 2, (byte) 3);
 		testByteSequence(" (01) (02) (03)",  values1);

@@ -33,8 +33,8 @@ package net.domesdaybook.matcher.sequence;
 
 import java.io.IOException;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 import java.util.ArrayList;
 import java.util.Collection;

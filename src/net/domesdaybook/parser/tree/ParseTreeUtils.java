@@ -203,20 +203,18 @@ public final class ParseTreeUtils {
 	
 	
 	/**
-	 * Returns the node which should be repeated by a node of type 
-	 * {@link net.domesdaybook.parser.tree.ParseTreeType.REPEAT}.
+	 * Returns the last child node of an ast node.
 	 * 
-	 * @param repeatNode The parent repeat instruction node.
-	 * @return The node which should be repeated.
+	 * @param parentNode The node to get the last child of.
+	 * @return The last child node of the node.
 	 * @throws ParseException
 	 */
-	public static ParseTree getLastChild(final ParseTree repeatNode) throws ParseException {
-		final List<ParseTree> children = repeatNode.getChildren();
-		if (children.size() != 3) {
-			throw new ParseException("Repeats must have three child nodes. " +
-			                          "Actual number of children was: " + children.size());			
+	public static ParseTree getLastChild(final ParseTree parentNode) throws ParseException {
+		final List<ParseTree> children = parentNode.getChildren();
+		if (children.size() == 0) {
+			throw new ParseException("Node has no children - cannot get last child node");			
 		}
-		return children.get(2);
+		return children.get(children.size() - 1);
 	}
 	
 	

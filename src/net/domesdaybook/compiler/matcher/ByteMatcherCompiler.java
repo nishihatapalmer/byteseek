@@ -208,16 +208,16 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	protected ByteMatcher doCompile(final ParseTree node) throws ParseException {
 
 		switch (node.getParseTreeType()) {
-			case BYTE: 						return CompilerUtils.createByteMatcher(node);
-			case ANY:						return CompilerUtils.createAnyMatcher(node);
-			case ALL_BITMASK:				return CompilerUtils.createAllBitmaskMatcher(node);
-			case ANY_BITMASK:				return CompilerUtils.createAnyBitmaskMatcher(node);
-			case RANGE: 					return CompilerUtils.createRangeMatcher(node);
-			case STRING:					return CompilerUtils.createSetMatcherFromString(node, matcherFactory);
-			case CASE_INSENSITIVE_STRING:	return CompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
+			case BYTE: 						return ByteMatcherCompilerUtils.createByteMatcher(node);
+			case ANY:						return ByteMatcherCompilerUtils.createAnyMatcher(node);
+			case ALL_BITMASK:				return ByteMatcherCompilerUtils.createAllBitmaskMatcher(node);
+			case ANY_BITMASK:				return ByteMatcherCompilerUtils.createAnyBitmaskMatcher(node);
+			case RANGE: 					return ByteMatcherCompilerUtils.createRangeMatcher(node);
+			case STRING:					return ByteMatcherCompilerUtils.createSetMatcherFromString(node, matcherFactory);
+			case CASE_INSENSITIVE_STRING:	return ByteMatcherCompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
 			case SET: 						// drop through - sets, sequences and alternatives are all treated as sets.
 			case SEQUENCE:					
-			case ALTERNATIVES:				return CompilerUtils.createMatcherFromSet(node, matcherFactory);
+			case ALTERNATIVES:				return ByteMatcherCompilerUtils.createMatcherFromSet(node, matcherFactory);
 			case ZERO_TO_MANY:				// drop through - these special cases of repeated nodes
 			case ONE_TO_MANY:				// all just process their first child as a set of possible byte values to match.
 			case OPTIONAL:					return doCompile(ParseTreeUtils.getFirstChild(node));

@@ -44,14 +44,14 @@ import java.io.RandomAccessFile;
  * 
  * @author M\tt Palmer
  */
-public final class ReadUtils {
+public final class IOUtils {
 
 	private static int DEFAULT_BUFFER_SIZE = 4096;
 
 	/**
 	 * Private constructor to prevent instantiating a utility class.
 	 */
-	private ReadUtils() {
+	private IOUtils() {
 	}
 
 	/**

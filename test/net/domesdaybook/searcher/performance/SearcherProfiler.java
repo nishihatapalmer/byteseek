@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.domesdaybook.io.FileWindowReader;
+import net.domesdaybook.io.FileWIndows;
 import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.searcher.BackwardSearchIterator;
 import net.domesdaybook.searcher.ForwardSearchIterator;
@@ -67,11 +67,11 @@ public final class SearcherProfiler {
 		final ProfileResults results = new ProfileResults();
 
 		//System.out.println("Profiling " + searcher + " over ASCII file.");
-		FileWindowReader reader = new FileWindowReader(getFile("/TestASCII.txt"));
+		FileWIndows reader = new FileWIndows(getFile("/TestASCII.txt"));
 		results.profile("ASCII file", reader, searcher, numberOfSearches);
 
 		//System.out.println("Profiling " + searcher + " over ZIP file.");
-		//FileWindowReader reader2 = new FileWindowReader(getFile("/TestASCII.zip"));
+		//FileWIndows reader2 = new FileWIndows(getFile("/TestASCII.zip"));
 		//results.profile("ZIP file", reader2, searcher, numberOfSearches);        
 
 		return results;

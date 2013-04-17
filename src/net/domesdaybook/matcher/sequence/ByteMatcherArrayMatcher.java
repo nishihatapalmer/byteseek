@@ -37,8 +37,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 
 /**

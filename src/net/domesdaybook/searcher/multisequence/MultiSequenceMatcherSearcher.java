@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
@@ -53,8 +53,8 @@ import net.domesdaybook.searcher.SearchResult;
  * <p>
  * Other MultiSequenceSearchers usually offer better performance (albeit with more memory
  * usage) for most cases, although when a large number of sequences are being searched
- * for using an efficient {@link MultiSequenceMatcher} such as a {@link TrieMultiSequenceMatcher}
- * then this may be more efficient for short searches.
+ * for using an efficient MultiSequenceMatcher such as a {@link TrieMultiSequenceMatcher}
+ * then this may be efficient for short searches.
  * <p>
  * No preparation needs to be done in order to search, so for one-off short searches
  * this may also be faster than other methods.

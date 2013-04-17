@@ -47,15 +47,15 @@ import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 import net.domesdaybook.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.searcher.MatcherSearcher;
 import net.domesdaybook.searcher.SearchResult;
 import net.domesdaybook.searcher.Searcher;
-import net.domesdaybook.searcher.matcher.MatcherSearcher;
 import net.domesdaybook.searcher.multisequence.MultiSequenceMatcherSearcher;
-import net.domesdaybook.searcher.multisequence.SetHorspoolFinalFlagSearcher;
-import net.domesdaybook.searcher.multisequence.SetHorspoolSearcher;
-import net.domesdaybook.searcher.multisequence.WuManberOneByteSearcher;
-import net.domesdaybook.searcher.multisequence.WuManberOneByteTunedSearcher;
-import net.domesdaybook.searcher.multisequence.WuManberTwoByteSearcher;
+import net.domesdaybook.searcher.multisequence.sethorspool.SetHorspoolFinalFlagSearcher;
+import net.domesdaybook.searcher.multisequence.sethorspool.SetHorspoolSearcher;
+import net.domesdaybook.searcher.multisequence.wumanber.WuManberOneByteSearcher;
+import net.domesdaybook.searcher.multisequence.wumanber.WuManberOneByteTunedSearcher;
+import net.domesdaybook.searcher.multisequence.wumanber.WuManberTwoByteSearcher;
 import net.domesdaybook.searcher.performance.SearcherProfiler.ProfileResult;
 import net.domesdaybook.searcher.performance.SearcherProfiler.ProfileResults;
 import net.domesdaybook.searcher.sequence.BoyerMooreHorspoolSearcher;
@@ -87,10 +87,10 @@ import net.domesdaybook.searcher.sequence.SundayQuickSearcher;
  */
 public class SearcherPerformanceTests {
 
-	public final static int	FIRST_WARMUP_TIMES	= 3;
-	public final static int	SECOND_WARMUP_TIMES	= 3;
-	public final static int	CYCLE_WARMUP_TIMES	= 3;
-	public final static int	TEST_TIMES			= 1;	//100; 
+	public final static int	FIRST_WARMUP_TIMES	= 100;
+	public final static int	SECOND_WARMUP_TIMES	= 100;
+	public final static int	CYCLE_WARMUP_TIMES	= 100;
+	public final static int	TEST_TIMES			= 100;	//100; 
 
 	public static void main(String[] args) throws InterruptedException {
 		System.out.println("Starting profiling");

@@ -29,13 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.compiler.matcher;
+package net.domesdaybook.compiler.sequence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
+import net.domesdaybook.compiler.matcher.ByteMatcherCompilerUtils;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
@@ -325,7 +326,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addSetMatcher(final ParseTree ast,
                                final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      sequenceList.add(CompilerUtils.createMatcherFromSet(ast, byteMatcherFactory));
+      sequenceList.add(ByteMatcherCompilerUtils.createMatcherFromSet(ast, byteMatcherFactory));
     }
 
     /**
@@ -336,7 +337,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addRangeMatcher(final ParseTree ast,
                                  final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      sequenceList.add(CompilerUtils.createRangeMatcher(ast));
+      sequenceList.add(ByteMatcherCompilerUtils.createRangeMatcher(ast));
     }
 
     /**
@@ -347,7 +348,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addAnyBitmaskMatcher(final ParseTree ast,
                                       final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      sequenceList.add(CompilerUtils.createAnyBitmaskMatcher(ast));
+      sequenceList.add(ByteMatcherCompilerUtils.createAnyBitmaskMatcher(ast));
     }
 
     /**
@@ -358,7 +359,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addAllBitmaskMatcher(final ParseTree ast,
                                       final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      sequenceList.add(CompilerUtils.createAllBitmaskMatcher(ast));
+      sequenceList.add(ByteMatcherCompilerUtils.createAllBitmaskMatcher(ast));
     }
 
     /**
@@ -369,7 +370,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addAnyMatcher(final ParseTree ast,
                                final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      sequenceList.add(CompilerUtils.createAnyMatcher(ast));
+      sequenceList.add(ByteMatcherCompilerUtils.createAnyMatcher(ast));
     }
 
     /**
@@ -380,7 +381,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addByteMatcher(final ParseTree ast,
                                 final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      sequenceList.add(CompilerUtils.createByteMatcher(ast));
+      sequenceList.add(ByteMatcherCompilerUtils.createByteMatcher(ast));
     }
     
     

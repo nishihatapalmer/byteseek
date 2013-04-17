@@ -37,8 +37,8 @@ import java.io.IOException;
 import net.domesdaybook.util.bytes.ByteUtilities;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 
 /**
  * A {@link ByteMatcher} which matches a byte which

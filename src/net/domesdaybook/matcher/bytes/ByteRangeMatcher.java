@@ -33,8 +33,8 @@ package net.domesdaybook.matcher.bytes;
 
 import java.io.IOException;
 import net.domesdaybook.util.bytes.ByteUtilities;
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 
 /**
  * An immutable {@link ByteMatcher} which matches a range of bytes, 

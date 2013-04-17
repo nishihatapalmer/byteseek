@@ -44,8 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import net.domesdaybook.io.ByteArrayWindowReader;
-import net.domesdaybook.io.FileWindowReader;
+import net.domesdaybook.io.ByteArrayWindows;
+import net.domesdaybook.io.FileWIndows;
 import net.domesdaybook.matcher.bytes.ByteMatcher;
 
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class ByteArrayMatcherTest {
 
 	private final static Random	rand	= new Random();
 
-	private FileWindowReader			reader;
+	private FileWIndows			reader;
 	private byte[]				bytes;
 
 	public ByteArrayMatcherTest() {
@@ -100,7 +100,7 @@ public class ByteArrayMatcherTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		reader = new FileWindowReader(getFile("/TestASCII.txt"));
+		reader = new FileWIndows(getFile("/TestASCII.txt"));
 		bytes = reader.getWindow(0).getArray();
 	}
 
@@ -133,7 +133,7 @@ public class ByteArrayMatcherTest {
 			byte[] testArray = new byte[] { (byte) byteValue };
 			assertTrue("matches that byte value in an array", matcher.matches(testArray, 0));
 
-			ByteArrayWindowReader wrapped = new ByteArrayWindowReader(testArray);
+			ByteArrayWindows wrapped = new ByteArrayWindows(testArray);
 			assertTrue("matches that byte value in a reader", matcher.matches(wrapped, 0));
 
 			int differentValue = rand.nextInt(256);
@@ -144,7 +144,7 @@ public class ByteArrayMatcherTest {
 			assertFalse("does not match a different byte value in an array",
 					matcher.matches(different, 0));
 
-			wrapped = new ByteArrayWindowReader(different);
+			wrapped = new ByteArrayWindows(different);
 			assertFalse("does not match a different byte value in a reader",
 					matcher.matches(wrapped, 0));
 		}
@@ -322,7 +322,7 @@ public class ByteArrayMatcherTest {
 
 	/**
 	 * Test matching successfully over a window boundary.  
-	 * A FileWindowReader uses a default window size of 4096,
+	 * A FileWIndows uses a default window size of 4096,
 	 * so the last position in the first window is 4095.
 	 * 
 	 * @throws FileNotFoundException 
@@ -669,7 +669,7 @@ public class ByteArrayMatcherTest {
 	/**
 	 * Tests that:
 	 * 
-	 * - a matcher matches at a given position in a FileWindowReader.
+	 * - a matcher matches at a given position in a FileWIndows.
 	 * - it does not match one position behind that position.
 	 * - it does not match one position ahead of that position.
 	 * 

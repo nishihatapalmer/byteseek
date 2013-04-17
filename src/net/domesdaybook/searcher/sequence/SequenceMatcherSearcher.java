@@ -33,8 +33,8 @@ package net.domesdaybook.searcher.sequence;
 import java.io.IOException;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.searcher.SearchUtils;
 import net.domesdaybook.searcher.SearchResult;
@@ -46,7 +46,7 @@ import net.domesdaybook.searcher.SearchResult;
  * determine there is no match.
  * <p>
  * The algorithm used by this search is exactly the same as that used for the
- * {@link net.domesdaybook.searcher.matcher.MatcherSearcher} searcher.  However, since we know that we are looking for
+ * {@link net.domesdaybook.searcher.MatcherSearcher} searcher.  However, since we know that we are looking for
  * a sequence with a defined length, the search can be more efficiently partitioned
  * between searching directly in byte arrays when the sequence fits, only using
  * the less efficient reader interface when the sequence crosses over windows.

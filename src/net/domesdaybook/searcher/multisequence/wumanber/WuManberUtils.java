@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.searcher.multisequence;
+package net.domesdaybook.searcher.multisequence.wumanber;
 
 import net.domesdaybook.matcher.multisequence.MultiSequenceMatcher;
 

@@ -48,11 +48,11 @@ import net.domesdaybook.parser.tree.ParseTreeUtils;
  * @author Matt Palmer
  *
  */
-public final class CompilerUtils {
+public final class ByteMatcherCompilerUtils {
 
   private final static boolean NOT_YET_INVERTED = false;
   
-	private CompilerUtils() {
+	private ByteMatcherCompilerUtils() {
 		// Private constructor to prevent the construction of a static utility class.
 	}
 

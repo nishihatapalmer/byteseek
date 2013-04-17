@@ -29,17 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.searcher.matcher;
+package net.domesdaybook.searcher;
 
 import java.io.IOException;
 import java.util.List;
 
-import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.io.Window;
+import net.domesdaybook.io.WindowReader;
 import net.domesdaybook.matcher.Matcher;
-import net.domesdaybook.searcher.AbstractSearcher;
-import net.domesdaybook.searcher.SearchUtils;
-import net.domesdaybook.searcher.SearchResult;
 
 
 /**

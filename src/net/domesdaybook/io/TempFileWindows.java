@@ -39,16 +39,16 @@ import java.io.InputStream;
 import net.domesdaybook.io.cache.WindowCache;
 
 /**
- * A class which extends {@link FileWindowReader} to create a temporary file from an
+ * A class which extends {@link FileWIndows} to create a temporary file from an
  * InputStream on construction, and to delete the temporary file when the WindowReader
  * is closed.
  * 
  * @author Matt Palmer
  */
-public final class TempFileWindowReader extends FileWindowReader {
+public final class TempFileWindows extends FileWIndows {
 
 	/**
-	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindows from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
@@ -62,12 +62,12 @@ public final class TempFileWindowReader extends FileWindowReader {
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileWindowReader(final InputStream stream) throws IOException {
-		this(ReadUtils.createTempFile(stream));
+	TempFileWindows(final InputStream stream) throws IOException {
+		this(IOUtils.createTempFile(stream));
 	}
 
 	/**
-	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindows from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
@@ -83,13 +83,13 @@ public final class TempFileWindowReader extends FileWindowReader {
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileWindowReader(final InputStream stream, final int windowSize)
+	TempFileWindows(final InputStream stream, final int windowSize)
 			throws IOException {
-		this(ReadUtils.createTempFile(stream), windowSize);
+		this(IOUtils.createTempFile(stream), windowSize);
 	}
 
 	/**
-	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindows from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
@@ -107,13 +107,13 @@ public final class TempFileWindowReader extends FileWindowReader {
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileWindowReader(final InputStream stream, final int windowSize,
+	TempFileWindows(final InputStream stream, final int windowSize,
 			final int capacity) throws IOException {
-		this(ReadUtils.createTempFile(stream), windowSize, capacity);
+		this(IOUtils.createTempFile(stream), windowSize, capacity);
 	}
 
 	/**
-	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindows from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
@@ -129,13 +129,13 @@ public final class TempFileWindowReader extends FileWindowReader {
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileWindowReader(final InputStream stream, final WindowCache cache)
+	TempFileWindows(final InputStream stream, final WindowCache cache)
 			throws IOException {
-		this(ReadUtils.createTempFile(stream), cache);
+		this(IOUtils.createTempFile(stream), cache);
 	}
 
 	/**
-	 * Constructs a TempFileWindowReader from an {@link java.io.InputStream), creating
+	 * Constructs a TempFileWindows from an {@link java.io.InputStream), creating
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
@@ -153,37 +153,37 @@ public final class TempFileWindowReader extends FileWindowReader {
 	 *             If a problem occurs creating the temp file or copying the
 	 *             contents of the InputStream into it.
 	 */
-	TempFileWindowReader(final InputStream stream, final int windowSize,
+	TempFileWindows(final InputStream stream, final int windowSize,
 			final WindowCache cache) throws IOException {
-		this(ReadUtils.createTempFile(stream), windowSize, cache);
+		this(IOUtils.createTempFile(stream), windowSize, cache);
 	}
 
-	private TempFileWindowReader(final File tempFile) throws FileNotFoundException {
+	private TempFileWindows(final File tempFile) throws FileNotFoundException {
 		super(tempFile);
 	}
 
-	private TempFileWindowReader(final File tempFile, final int windowSize)
+	private TempFileWindows(final File tempFile, final int windowSize)
 			throws FileNotFoundException {
 		super(tempFile, windowSize);
 	}
 
-	private TempFileWindowReader(final File tempFile, final int windowSize,
+	private TempFileWindows(final File tempFile, final int windowSize,
 			final int capacity) throws FileNotFoundException {
 		super(tempFile, windowSize, capacity);
 	}
 
-	private TempFileWindowReader(final File tempFile, final WindowCache cache)
+	private TempFileWindows(final File tempFile, final WindowCache cache)
 			throws FileNotFoundException {
 		super(tempFile, cache);
 	}
 
-	private TempFileWindowReader(final File tempFile, final int windowSize,
+	private TempFileWindows(final File tempFile, final int windowSize,
 			final WindowCache cache) throws FileNotFoundException {
 		super(tempFile, windowSize, cache);
 	}
 
 	/**
-	 * Closes the underlying RandomAccessFile backing this TempFileWindowReader, and
+	 * Closes the underlying RandomAccessFile backing this TempFileWindows, and
 	 * clears any cache associated with it. It then attempts to delete the
 	 * temporary file.
 	 * 

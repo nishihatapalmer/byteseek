@@ -42,12 +42,12 @@ import net.domesdaybook.io.cache.NoCache;
  * 
  * @author Matt Palmer
  */
-public class ByteArrayWindowReader extends AbstractWindowReader {
+public class ByteArrayWindows extends AbstractWindows {
 
 	private final byte[] bytes;
 
 	/**
-	 * Constructs a ByteArrayWindowReader from an array of bytes.
+	 * Constructs a ByteArrayWindows from an array of bytes.
 	 * <p>
 	 * The array passed in is not copied - the reader just wraps it to provide a
 	 * reader interface over it.
@@ -55,24 +55,24 @@ public class ByteArrayWindowReader extends AbstractWindowReader {
 	 * @param bytes
 	 *            The byte array to wrap in a reader interface.
 	 */
-	public ByteArrayWindowReader(final byte[] bytes) {
+	public ByteArrayWindows(final byte[] bytes) {
 		super(bytes == null ? 0 : bytes.length, NoCache.NO_CACHE);
 		if (bytes == null) {
 			throw new IllegalArgumentException(
-					"Null byte array passed in to ByteArrayWindowReader.");
+					"Null byte array passed in to ByteArrayWindows.");
 		}
 		this.bytes = bytes;
 	}
 
 	/**
-	 * Constructs a ByteArrayWindowReader from a single byte value.
+	 * Constructs a ByteArrayWindows from a single byte value.
 	 * <p>
 	 * A new array is created containing a single byte.
 	 * 
 	 * @param byteValue
 	 *            The byte value to wrap in a WindowReader interface.
 	 */
-	public ByteArrayWindowReader(final byte byteValue) {
+	public ByteArrayWindows(final byte byteValue) {
 		super(1, NoCache.NO_CACHE);
 		bytes = new byte[] { byteValue };
 	}
@@ -94,7 +94,7 @@ public class ByteArrayWindowReader extends AbstractWindowReader {
 	}
 
 	/**
-	 * Returns the byte array backing this ByteArrayWindowReader.
+	 * Returns the byte array backing this ByteArrayWindows.
 	 * <p>
 	 * While this exposes mutable state, the intention of this class is to wrap
 	 * a byte array in a WindowReader interface, not to protect the byte array wrapped
