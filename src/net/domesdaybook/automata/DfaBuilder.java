@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata.deterministic;
+package net.domesdaybook.automata;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -40,10 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.domesdaybook.automata.State;
-import net.domesdaybook.automata.StateFactory;
-import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.TransitionFactory;
 import net.domesdaybook.automata.base.BaseStateFactory;
 import net.domesdaybook.automata.base.ByteSetMatcherTransitionFactory;
 import net.domesdaybook.automata.walker.StateChildWalker;
