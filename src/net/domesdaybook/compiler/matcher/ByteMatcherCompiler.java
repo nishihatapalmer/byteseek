@@ -43,7 +43,7 @@ import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.regex.RegexParser;
+import net.domesdaybook.parser.RegexParser;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;

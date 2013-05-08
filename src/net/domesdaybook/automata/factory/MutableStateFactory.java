@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
- * 
+ * Copyright Matt Palmer 2009-2012, All rights reserved.
+ *
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -28,30 +28,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.domesdaybook.matcher.multisequence;
 
-import java.util.Collection;
+package net.domesdaybook.automata.factory;
 
-import net.domesdaybook.automata.trie.Trie;
-import net.domesdaybook.automata.trie.TrieFactory;
-import net.domesdaybook.matcher.sequence.SequenceMatcher;
+import net.domesdaybook.automata.MutableState;
 
 /**
- * An implementation of {@link TrieFactory} that produces {@link SequenceMatcherTrie} objects.
+ * A factory which creates {@link MutableState} objects, implementing the
+ * {@link net.domesdaybook.automata.factory.StateFactory} interface.
  * 
+ * @param <T> The type of object associated with a {@link MutableState}
  * @author Matt Palmer
  */
-public class SequenceMatcherTrieFactory implements TrieFactory<SequenceMatcher> {
+public final class MutableStateFactory<T> implements StateFactory<T> {
 
+    
     /**
-     * Creates a {@link SequenceMatcherTrie} given a collection of {@link SequenceMatcher}s.
+     * Creates an instance of a {@link MutableState}.
      * 
-     * @param sequences A collection of SequenceMatchers.
-     * @return A SequenceMatcherTrie formed from the collection of SequenceMatchers.
+     * @param isFinal Whether the MutableState is final or not.
+     * @return A MutableState object.
+     * @see MutableState
      */
     @Override
-    public Trie<SequenceMatcher> create(Collection<? extends SequenceMatcher> sequences) {
-        return new SequenceMatcherTrie(sequences);
+    public MutableState<T> create(boolean isFinal) {
+        return new MutableState<T>(isFinal);
     }
     
 }
+

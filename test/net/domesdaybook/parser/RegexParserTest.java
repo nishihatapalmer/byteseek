@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.parser.regex;
+package net.domesdaybook.parser;
 
 
 import static org.junit.Assert.assertEquals;
@@ -43,6 +43,7 @@ import java.util.Random;
 import java.util.Set;
 
 import net.domesdaybook.parser.ParseException;
+import net.domesdaybook.parser.RegexParser;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;

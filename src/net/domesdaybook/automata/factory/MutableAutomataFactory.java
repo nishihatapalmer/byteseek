@@ -32,7 +32,7 @@
 package net.domesdaybook.automata.factory;
 
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.GenericAutomata;
+import net.domesdaybook.automata.MutableAutomata;
 import net.domesdaybook.automata.State;
 
 /**
@@ -42,17 +42,17 @@ import net.domesdaybook.automata.State;
  * 
  * @author Matt Palmer
  */
-public class GenericAutomataFactory<T> implements AutomataFactory<T> {
+public class MutableAutomataFactory<T> implements AutomataFactory<T> {
 
     /**
-     * Creates a {@link GenericAutomata} given an initial state.
+     * Creates a {@link MutableAutomata} given an initial state.
      * 
      * @param initialState The initial state of the automata.
-     * @return A GenericAutomata object with the initial state provided.
+     * @return A MutableAutomata object with the initial state provided.
      */
     @Override
     public Automata<T> create(State<T> initialState) {
-        return new GenericAutomata<T>(initialState);
+        return new MutableAutomata<T>(initialState);
     }
     
 }

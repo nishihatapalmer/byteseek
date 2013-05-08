@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata;
+package net.domesdaybook.automata.builder;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -40,13 +40,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.domesdaybook.automata.factory.ListStateFactory;
+import net.domesdaybook.automata.State;
+import net.domesdaybook.automata.Transition;
+import net.domesdaybook.automata.factory.MutableStateFactory;
 import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.factory.TransitionFactory;
 import net.domesdaybook.automata.walker.StateChildWalker;
 import net.domesdaybook.automata.walker.Step;
 import net.domesdaybook.automata.walker.Action;
-import net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory;
+import net.domesdaybook.matcher.automata.ByteSetMatcherTransitionFactory;
 import net.domesdaybook.util.collections.IdentityHashSet;
 
 /**
@@ -65,9 +67,9 @@ public final class DfaBuilder<T> {
 
 	/**
 	 * Constructs a DfaBuilder using the default {@link StateFactory},
-	 * {@link net.domesdaybook.automata.factory.ListStateFactory}, and the default
+	 * {@link net.domesdaybook.automata.factory.MutableStateFactory}, and the default
 	 * {@link TransitionFactory},
-	 * {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
+	 * {@link net.domesdaybook.matcher.automata.ByteSetMatcherTransitionFactory}.
 	 */
 	public DfaBuilder() {
 		this(null, null);
@@ -76,7 +78,7 @@ public final class DfaBuilder<T> {
 	/**
 	 * Constructs a DfaBuilder using the supplied {@link StateFactory}, and the
 	 * default {@link TransitionFactory},
-	 * {@link net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory}.
+	 * {@link net.domesdaybook.matcher.automata.ByteSetMatcherTransitionFactory}.
 	 * 
 	 * @param stateFactory
 	 *            The StateFactory to use when building the DFA.
@@ -87,7 +89,7 @@ public final class DfaBuilder<T> {
 
 	/**
 	 * Constructs a DfaBuilder using the default {@link StateFactory},
-	 * {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied
+	 * {@link net.domesdaybook.automata.factory.MutableStateFactory}, and the supplied
 	 * {@link TransitionFactory}.
 	 * 
 	 * @param transitionFactory
@@ -106,9 +108,13 @@ public final class DfaBuilder<T> {
 	 * @param transitionFactory
 	 *            The TransitionFactory to use when building the DFA.
 	 */
+	//FIXME: give automata their own byte matching transitions.  These should be faster than
+	//       the byte matcher based ones (one less indirection).  Then we should use these by
+	//       default instead of ByteSetMatcherTransition objects, which create a dependency on
+	//       the matcher package from automata.
 	public DfaBuilder(final StateFactory<T> stateFactory,
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
-		this.stateFactory = stateFactory == null ? new ListStateFactory<T>() : stateFactory;
+		this.stateFactory = stateFactory == null ? new MutableStateFactory<T>() : stateFactory;
 		this.transitionFactory = transitionFactory == null ?
 		      new ByteSetMatcherTransitionFactory<T>()
 				: transitionFactory;

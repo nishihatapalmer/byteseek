@@ -29,14 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.compiler.sequence;
+package net.domesdaybook.compiler.matcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.compiler.matcher.ByteMatcherCompilerUtils;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.matcher.sequence.ByteArrayMatcher;
@@ -46,7 +45,7 @@ import net.domesdaybook.matcher.sequence.SequenceMatcher;
 import net.domesdaybook.matcher.sequence.SequenceMatcherFactory;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.regex.RegexParser;
+import net.domesdaybook.parser.RegexParser;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;
@@ -56,7 +55,7 @@ import net.domesdaybook.parser.tree.node.ChildrenNode;
  * A compiler which produces a {@link SequenceMatcher} from an
  * abstract syntax tree provided by a {@link Parser}.
  * <p>
- * It can handle nearly all the syntax processable by the {@link net.domesdaybook.parser.regex.RegexParser},
+ * It can handle nearly all the syntax processable by the {@link net.domesdaybook.parser.RegexParser},
  * but it cannot handle any syntax which would give variable lengths to
  * match, or which would have alternative sequences of bytes,
  * as a sequence matcher can only match a single defined sequence.

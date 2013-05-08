@@ -34,6 +34,7 @@ import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
 import net.domesdaybook.automata.factory.TransitionFactory;
 import net.domesdaybook.compiler.matcher.ByteMatcherCompilerUtils;
+import net.domesdaybook.matcher.automata.ByteMatcherTransition;
 import net.domesdaybook.matcher.bytes.ByteMatcherFactory;
 import net.domesdaybook.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.domesdaybook.parser.ParseException;

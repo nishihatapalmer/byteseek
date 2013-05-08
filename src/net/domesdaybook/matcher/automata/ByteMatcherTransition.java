@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.compiler.regex;
+package net.domesdaybook.matcher.automata;
 
 import java.util.Map;
 
@@ -90,7 +90,7 @@ public class ByteMatcherTransition<T> implements Transition<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final State<T> getStateForByte(byte theByte) {
+	public final State<T> getStateForByte(final byte theByte) {
 		return matcher.matches(theByte) ? toState : null;
 	}
 
@@ -114,7 +114,7 @@ public class ByteMatcherTransition<T> implements Transition<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Transition<T> newTransition(State<T> newState) {
+	public Transition<T> newTransition(final State<T> newState) {
 		return new ByteMatcherTransition<T>(matcher, newState);
 	}
 
@@ -128,7 +128,7 @@ public class ByteMatcherTransition<T> implements Transition<T> {
 	 *                    States and Transitions reachable from this Transition.
 	 */
 	@Override
-	public ByteMatcherTransition<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+	public ByteMatcherTransition<T> deepCopy(final Map<DeepCopy, DeepCopy> oldToNewObjects) {
 		@SuppressWarnings("unchecked")
 		// if there is an object copy of this in the map, it will be of the same type.
 		ByteMatcherTransition<T> transitionCopy = (ByteMatcherTransition<T>) oldToNewObjects

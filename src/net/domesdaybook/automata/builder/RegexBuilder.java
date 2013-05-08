@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata.regex;
+package net.domesdaybook.automata.builder;
 
 import java.util.List;
 

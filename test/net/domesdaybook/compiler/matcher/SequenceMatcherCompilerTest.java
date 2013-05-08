@@ -13,7 +13,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import net.domesdaybook.compiler.CompileException;
-import net.domesdaybook.compiler.sequence.SequenceMatcherCompiler;
 import net.domesdaybook.matcher.bytes.AllBitmaskMatcher;
 import net.domesdaybook.matcher.bytes.ByteRangeMatcher;
 import net.domesdaybook.matcher.bytes.OneByteMatcher;

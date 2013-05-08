@@ -43,6 +43,7 @@ import net.domesdaybook.automata.trie.Trie;
 import net.domesdaybook.automata.trie.TrieFactory;
 import net.domesdaybook.io.Window;
 import net.domesdaybook.io.WindowReader;
+import net.domesdaybook.matcher.automata.SequenceMatcherTrieFactory;
 import net.domesdaybook.matcher.sequence.SequenceMatcher;
 
 /**

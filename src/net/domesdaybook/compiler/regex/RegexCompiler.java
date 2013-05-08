@@ -36,13 +36,13 @@ import java.util.Collection;
 import java.util.List;
 
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.regex.GlushkovRegexBuilder;
-import net.domesdaybook.automata.regex.RegexBuilder;
+import net.domesdaybook.automata.builder.GlushkovRegexBuilder;
+import net.domesdaybook.automata.builder.RegexBuilder;
 import net.domesdaybook.compiler.AbstractCompiler;
 import net.domesdaybook.compiler.CompileException;
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.regex.RegexParser;
+import net.domesdaybook.parser.RegexParser;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.ParseTreeUtils;
@@ -77,10 +77,6 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     /**
      * Constructs a RegexCompiler, using the default {@link RegexBuilder} object.
      * The parser used will be the default parser defined in {@link AbstractCompiler}
-     *
-     * By default, it uses the {@link ByteMatcherTransitionFactory} and
-     * the {@link net.domesdaybook.automata.factory.ListStateFactory} to make a {@link GlushkovRegexBuilder} to
-     * produce the NFA.
      */
     public RegexCompiler() {
     	this(null, null);

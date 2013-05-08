@@ -48,7 +48,7 @@ import net.domesdaybook.util.object.DeepCopy;
  * 
  * @author Matt Palmer
  */
-public class GenericAutomata<T> implements Automata<T> {
+public class MutableAutomata<T> implements Automata<T> {
 
 	/**
 	 * The initial state of the automata.
@@ -58,7 +58,7 @@ public class GenericAutomata<T> implements Automata<T> {
 	/**
 	 * Constructs an empty Automata with no states.
 	 */
-	public GenericAutomata() {
+	public MutableAutomata() {
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class GenericAutomata<T> implements Automata<T> {
 	 * 
 	 * @param initialState The initial state of the automata.
 	 */
-	public GenericAutomata(final State<T> initialState) {
+	public MutableAutomata(final State<T> initialState) {
 		this.initialState = initialState;
 	}
 
@@ -135,7 +135,7 @@ public class GenericAutomata<T> implements Automata<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public GenericAutomata<T> deepCopy() {
+	public MutableAutomata<T> deepCopy() {
 		final Map<DeepCopy, DeepCopy> oldToNew = new IdentityHashMap<DeepCopy, DeepCopy>();
 		return deepCopy(oldToNew);
 	}
@@ -144,8 +144,8 @@ public class GenericAutomata<T> implements Automata<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public GenericAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
-		return new GenericAutomata<T>(initialState.deepCopy(oldToNewObjects));
+	public MutableAutomata<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+		return new MutableAutomata<T>(initialState.deepCopy(oldToNewObjects));
 	}
 
 }

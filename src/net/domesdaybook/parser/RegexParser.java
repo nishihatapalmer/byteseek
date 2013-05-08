@@ -29,16 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.parser.regex;
+package net.domesdaybook.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import net.domesdaybook.parser.ParseException;
-import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.StringParseReader;
 import net.domesdaybook.parser.tree.ParseTree;
 import net.domesdaybook.parser.tree.ParseTreeType;
 import net.domesdaybook.parser.tree.node.BaseNode;

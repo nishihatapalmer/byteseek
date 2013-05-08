@@ -37,13 +37,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.domesdaybook.automata.GenericAutomata;
+import net.domesdaybook.automata.MutableAutomata;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.factory.ListStateFactory;
+import net.domesdaybook.automata.factory.MutableStateFactory;
 import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.factory.TransitionFactory;
-import net.domesdaybook.compiler.regex.ByteSetMatcherTransitionFactory;
+import net.domesdaybook.matcher.automata.ByteSetMatcherTransitionFactory;
 import net.domesdaybook.util.bytes.ByteUtilities;
 
 /**
@@ -58,7 +58,7 @@ import net.domesdaybook.util.bytes.ByteUtilities;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractTrie<T> extends GenericAutomata<T> implements Trie<T> {
+public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie<T> {
 
 	private final StateFactory<T>		stateFactory;
 	private final TransitionFactory<T, Collection<Byte>>	transitionFactory;
@@ -105,9 +105,13 @@ public abstract class AbstractTrie<T> extends GenericAutomata<T> implements Trie
 	 * @param stateFactory The StateFactory to use to create States for the Trie.
 	 * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
 	 */
+	//FIXME: give automata their own byte matching transitions.  These should be faster than
+	//       the byte matcher based ones (one less indirection).  Then we should use these by
+	//       default instead of ByteSetMatcherTransition objects, which create a dependency on
+	//       the matcher package from automata.
 	public AbstractTrie(final StateFactory<T> stateFactory,
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
-		this.stateFactory = stateFactory != null ? stateFactory : new ListStateFactory<T>();
+		this.stateFactory = stateFactory != null ? stateFactory : new MutableStateFactory<T>();
 		this.transitionFactory = transitionFactory != null ? transitionFactory
 				: new ByteSetMatcherTransitionFactory<T>();
 		this.sequences = new ArrayList<T>();

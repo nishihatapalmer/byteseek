@@ -66,7 +66,7 @@ import net.domesdaybook.util.object.DeepCopy;
  * @see net.domesdaybook.automata.Transition
  * @author Matt Palmer
  */
-public class ListState<T> implements State<T> {
+public class MutableState<T> implements State<T> {
 
 	private List<Transition<T>>	transitions;
 	private List<T>				associations;
@@ -78,31 +78,31 @@ public class ListState<T> implements State<T> {
 	/////////////////
 
 	/**
-	 * The default constructor for ListState, as a non-final state.
+	 * The default constructor for MutableState, as a non-final state.
 	 */
-	public ListState() {
+	public MutableState() {
 		this(State.NON_FINAL);
 	}
 
 	/**
-	 * A constructor for ListState taking a parameter determining whether the
+	 * A constructor for MutableState taking a parameter determining whether the
 	 * state is final or not.
 	 * 
 	 * @param isFinal Whether the state is final or not.
 	 */
-	public ListState(final boolean isFinal) {
+	public MutableState(final boolean isFinal) {
 		this.isFinal = isFinal;
 		this.transitions = Collections.emptyList();
 		this.associations = Collections.emptyList(); // = new ArrayList<T>(0);
 	}
 
 	/**
-	 * A copy constructor for ListState from another state.
+	 * A copy constructor for MutableState from another state.
 	 * 
 	 * @param other The other State to copy from.
 	 * @throws IllegalArgumentException if the State passed in is null.
 	 */
-	public ListState(final State<T> other) {
+	public MutableState(final State<T> other) {
 		if (other == null) {
 			throw new IllegalArgumentException(
 					"Other state passed in to copy constructor was null.");
@@ -397,30 +397,30 @@ public class ListState<T> implements State<T> {
 	 * This is a convenience method, providing the initial map to:
 	 * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
 	 *
-	 * @return ListState a deep copy of this object.
+	 * @return MutableState a deep copy of this object.
 	 * @see #deepCopy(java.util.Map) 
 	 */
 	@Override
-	public ListState<T> deepCopy() {
+	public MutableState<T> deepCopy() {
 		return deepCopy(new IdentityHashMap<DeepCopy, DeepCopy>());
 	}
 
 	/**
 	 * This method is inherited from the {@link DeepCopy} interface,
-	 * and is redeclared here with a return type of ListState (rather than DeepCopy),
+	 * and is redeclared here with a return type of MutableState (rather than DeepCopy),
 	 * to make using the method easier.
 	 *
 	 * @param oldToNewObjects A map of the original objects to their new deep copies.
-	 * @return ListState A deep copy of this ListState and any Transitions and States
+	 * @return MutableState A deep copy of this MutableState and any Transitions and States
 	 *         reachable from this State.
 	 */
 	@Override
-	public ListState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
+	public MutableState<T> deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects) {
 		@SuppressWarnings("unchecked")
 		// if there is a copy of this in the map, it will be of the same type.
-		ListState<T> stateCopy = (ListState<T>) oldToNewObjects.get(this);
+		MutableState<T> stateCopy = (MutableState<T>) oldToNewObjects.get(this);
 		if (stateCopy == null) {
-			stateCopy = new ListState<T>(this.isFinal);
+			stateCopy = new MutableState<T>(this.isFinal);
 			oldToNewObjects.put(this, stateCopy);
 			for (Transition<T> transition : transitions) {
 				final Transition<T> transitionCopy = transition.deepCopy(oldToNewObjects);

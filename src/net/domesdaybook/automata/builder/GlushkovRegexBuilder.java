@@ -29,17 +29,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.domesdaybook.automata.regex;
+package net.domesdaybook.automata.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import net.domesdaybook.automata.Automata;
-import net.domesdaybook.automata.GenericAutomata;
+import net.domesdaybook.automata.MutableAutomata;
 import net.domesdaybook.automata.State;
 import net.domesdaybook.automata.Transition;
-import net.domesdaybook.automata.factory.ListStateFactory;
+import net.domesdaybook.automata.factory.MutableStateFactory;
 import net.domesdaybook.automata.factory.StateFactory;
 import net.domesdaybook.automata.factory.TransitionFactory;
 
@@ -88,7 +88,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 
 	/**
 	 * Constructs a GlushkovRegexBuilder using the default {@link net.domesdaybook.automata.factory.StateFactory},
-	 * {@link net.domesdaybook.automata.factory.ListStateFactory}, and the supplied 
+	 * {@link net.domesdaybook.automata.factory.MutableStateFactory}, and the supplied 
 	 * default {@link net.domesdaybook.automata.factory.TransitionFactory}.
 	 * 
 	 * @param transitionFactory The TransitionFactory to use when creating the NFA.
@@ -115,7 +115,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 		}
 		this.transitionFactory = transitionFactory;
 		if (stateFactory == null) {
-			this.stateFactory = new ListStateFactory<T>();
+			this.stateFactory = new MutableStateFactory<T>();
 		} else {
 			this.stateFactory = stateFactory;
 		}
@@ -141,7 +141,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 		final Transition<T> transition =
 		    transitionFactory.create(source, inverted, finalState);
 		initialState.addTransition(transition);
-		return new GenericAutomata<T>(initialState);
+		return new MutableAutomata<T>(initialState);
 	}
 
 	/**

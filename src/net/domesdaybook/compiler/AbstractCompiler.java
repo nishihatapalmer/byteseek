@@ -37,7 +37,6 @@ import java.util.List;
 
 import net.domesdaybook.parser.ParseException;
 import net.domesdaybook.parser.Parser;
-import net.domesdaybook.parser.regex.RegexParser;
 
 /**
  * An abstract base class for compilers which compile a String expression into
@@ -63,7 +62,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	}
 
 	/**
-	 * Turns an expression into a parse tree using an {@link RegexParser}. Then
+	 * Turns an expression into a parse tree using a {@link Parser}. Then
 	 * it invokes the abstract compile method with the resulting parse-tree, to
 	 * build and return a compiled object of type T.
 	 * <p>
