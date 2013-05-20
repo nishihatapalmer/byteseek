@@ -1,0 +1,66 @@
+Invert atoms
+
+Legal Syntax:
+
+ 01-02
+
+ ^01		Byte
+ ^&ff		All bitmask
+ ^~7f		Any bitmask
+ ^[01-02 04]		Set
+ 'a'		Single char string.
+ 'A'		Single char case insensitive string.
+
+Legal AST - any node specifying a one or more bytes to match at a single position.
+
+ inverted byte
+ inverted allbitmask
+ inverted anybitmask
+ inverted range
+ inverted set
+ inverted char
+ inverted case insensitive char
+
+Illegal AST - any node specifying zero bytes to match or a sequence of nodes to match.
+
+ ^. 	 illegal ANY - matches nothing.
+ ^(...) 	 illegal to match sequence of alternatives.
+ ^'a string'	 illegal for a string more than one char long
+ ^`a string`	 illegal for a case insensitive string more than one char long.
+ 
+
+Invert atoms and sequences:
+
+^01* ^(01 02 03)? ^[01 02 03]
+^'a string'
+
+
+^&01 
+
+[01]	= 01
+[01-02]	= 01-02
+
+
+[02 02]	= [01 02]
+
+
+Interface:
+	Cannot determine what each position in an inverted sequence could match,
+ 	as it depends on what has gone before.  If the first char matched, then
+	all the remaining positions can match anything.  If no char has matched 
+	to date, then at least one of the remaining ones must not match the
+	defined sequence position. 
+
+Match:
+	Can match an inverted sequence (just invert match result).
+	Can multi-match an inverted sequence using naive list based matcher.
+	
+	Trie-based matching won't work.
+
+
+Search:
+	Can search for an inverted sequence using naive searcher, trying all positions in turn.
+
+
+	Shift based searching won't work.  Each failure to match is a hit, meaning all skipped positions are hits too.	
+	
