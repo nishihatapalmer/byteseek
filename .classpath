@@ -5,6 +5,5 @@
 	<classpathentry excluding="resources/" kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/antlr-3.4-complete.jar" sourcepath="/home/matt/dev/search/byteseek/lib/antlr-runtime-3.4-sources.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
