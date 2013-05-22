@@ -20,7 +20,7 @@ import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
 import net.byteseek.matcher.sequence.ByteMatcherArrayMatcher;
-import net.byteseek.matcher.sequence.CaseInsensitiveSequenceMatcher;
+import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;
 import net.byteseek.matcher.sequence.FixedGapMatcher;
 import net.byteseek.matcher.sequence.SequenceArrayMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
@@ -100,7 +100,7 @@ public class SequenceMatcherCompilerTest {
 		basicTests(" [0102]", 1, ByteRangeMatcher.class);
 
 		basicTests("'a string'", 8, ByteArrayMatcher.class);
-		basicTests("`a string`", 8, CaseInsensitiveSequenceMatcher.class);
+		basicTests("`a string`", 8, CaseInsensitiveMatcher.class);
 		basicTests("01 'a string' 02", 10, ByteArrayMatcher.class);
 
 		basicTests("0102", 2, ByteArrayMatcher.class);

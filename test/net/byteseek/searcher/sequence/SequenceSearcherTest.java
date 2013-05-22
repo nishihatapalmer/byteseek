@@ -42,7 +42,7 @@ import net.byteseek.io.FileReader;
 import net.byteseek.io.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
-import net.byteseek.matcher.sequence.CaseInsensitiveSequenceMatcher;
+import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.ForwardSearchIterator;
 import net.byteseek.searcher.SearchResult;
@@ -62,12 +62,12 @@ public class SequenceSearcherTest {
 		Searcher<SequenceMatcher> searcher = new BoyerMooreHorspoolSearcher(matcher);
 		findMatches(searcher, 0);
 
-		SequenceMatcher caseMatcher = new CaseInsensitiveSequenceMatcher(
+		SequenceMatcher caseMatcher = new CaseInsensitiveMatcher(
 				"A Midsommer Nights Dreame");
 		Searcher<SequenceMatcher> caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
 		findMatches(caseSearcher, 0);
 
-		caseMatcher = new CaseInsensitiveSequenceMatcher("MIDSOMMER NIGHT"); // fails its own length from the end if you add the H.
+		caseMatcher = new CaseInsensitiveMatcher("MIDSOMMER NIGHT"); // fails its own length from the end if you add the H.
 		caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
 		findMatches(caseSearcher, 112236);
 

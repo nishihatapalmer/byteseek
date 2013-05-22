@@ -39,7 +39,7 @@ import net.byteseek.compiler.CompileException;
 import net.byteseek.matcher.bytes.ByteMatcherFactory;
 import net.byteseek.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
-import net.byteseek.matcher.sequence.CaseInsensitiveSequenceMatcher;
+import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;
 import net.byteseek.matcher.sequence.OptimisingSequenceMatcherFactory;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcherFactory;
@@ -303,7 +303,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addCaseInsensitiveStringMatcher(final ParseTree ast,
                                                  final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      sequenceList.add(new CaseInsensitiveSequenceMatcher(ast.getTextValue()));
+      sequenceList.add(new CaseInsensitiveMatcher(ast.getTextValue()));
     }
 
     /**

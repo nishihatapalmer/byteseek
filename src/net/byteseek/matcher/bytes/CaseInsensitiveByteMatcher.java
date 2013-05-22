@@ -37,7 +37,7 @@ import java.io.IOException;
 import net.byteseek.io.Window;
 import net.byteseek.io.WindowReader;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
-import net.byteseek.matcher.sequence.CaseInsensitiveSequenceMatcher;
+import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.util.bytes.ByteUtilities;
 
@@ -169,7 +169,7 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
         if (getNumberOfMatchingBytes() == 1) {
             return new ByteArrayMatcher(ByteUtilities.repeat(caseValues[0], numberOfRepeats));
         }
-        return new CaseInsensitiveSequenceMatcher(this, numberOfRepeats);
+        return new CaseInsensitiveMatcher(this, numberOfRepeats);
     }        
 
 

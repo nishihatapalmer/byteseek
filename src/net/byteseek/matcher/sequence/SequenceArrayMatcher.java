@@ -51,7 +51,7 @@ import java.util.List;
 public final class SequenceArrayMatcher implements SequenceMatcher {
 
     private final SequenceMatcher[] matchers;
-    private final int length;
+    private final int totalLength;
 
     
     /**
@@ -81,19 +81,29 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
         }
         if (numberOfRepeats == 1) {
             matchers = matcherCollection.toArray(new SequenceMatcher[matcherCollection.size() * numberOfRepeats]);
-            length = matchers.length;
+            totalLength = calculateTotalLength(matchers);
         } else {
-            length = matcherCollection.size() * numberOfRepeats;
+            int length = matcherCollection.size() * numberOfRepeats;
             final List<SequenceMatcher> allMatchers = new ArrayList<SequenceMatcher>(length);
             for (int count = 0; count < numberOfRepeats; count++) {
                 allMatchers.addAll(matcherCollection);
             }
             matchers = matcherCollection.toArray(new SequenceMatcher[length]);
+            totalLength = calculateTotalLength(matchers);
         }
     }
     
     
-    /**
+    private int calculateTotalLength(SequenceMatcher[] matchers) {
+		int totalLength = 0;
+		for (final SequenceMatcher matcher : matchers) {
+			totalLength += matcher.length();
+		}
+		return totalLength;
+	}
+
+
+	/**
      * Constructs a SequenceArrayMatcher from an array of SequenceMatchers.
      * 
      * @param matchArray The array of SequenceMatchers to construct from.
@@ -122,14 +132,15 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
         }
         if (numberOfRepeats == 1) {
             matchers = matchArray.clone();
-            length = matchers.length;
+            totalLength = calculateTotalLength(matchers);
         } else {
             final int numberOfMatchers = matchArray.length;
-            length = numberOfMatchers * numberOfRepeats;
+            int length = numberOfMatchers * numberOfRepeats;
             matchers = new SequenceMatcher[length];
             for (int repeat = 0; repeat < numberOfRepeats; repeat++) {
                 System.arraycopy(matchArray, 0, matchers, repeat * numberOfMatchers, numberOfMatchers);
             }
+            totalLength = calculateTotalLength(matchers);
         }
     }
 
@@ -139,14 +150,14 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
-        final int localLength = length;
+        final int localTotalLength = totalLength;
         final SequenceMatcher[] localArray = matchers;        
         Window window = reader.getWindow(matchPosition);
         int checkPos = 0;
         int matchIndex = 0;
         while (window != null) {
             final int offset = reader.getWindowOffset(matchPosition + checkPos);
-            final int endPos = Math.min(window.length(), offset + localLength - checkPos);
+            final int endPos = Math.min(window.length(), offset + localTotalLength - checkPos);
             final byte[] array = window.getArray();
             while (offset + checkPos < endPos) {
                 final SequenceMatcher matcher = localArray[matchIndex++];
@@ -163,7 +174,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
                 }
                 checkPos += matcherLength;
             }
-            if (checkPos == localLength) {
+            if (checkPos == localTotalLength) {
                 return true;
             }
             window = reader.getWindow(matchPosition + checkPos);
@@ -177,7 +188,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        if (matchPosition + length < bytes.length && matchPosition >= 0) {
+        if (matchPosition + totalLength < bytes.length && matchPosition >= 0) {
             int matchAt = matchPosition;
             final SequenceMatcher[] localMatchers = matchers;
             for (final SequenceMatcher matcher : localMatchers) {
@@ -216,7 +227,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      */
     @Override
     public int length() {
-        return length;
+        return totalLength;
     }
 
     
@@ -238,10 +249,10 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      */
     @Override
     public ByteMatcher getMatcherForPosition(final int position) {
-        if (position < 0 || position >= length) {
+        if (position < 0 || position >= totalLength) {
             throw new IndexOutOfBoundsException(
                     String.format("Position %d out of bounds in sequence of length %d",
-                                   position, length));            
+                                   position, totalLength));            
         }
         int currentPosition = 0;
         for (final SequenceMatcher matcher : matchers) {
@@ -252,8 +263,10 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
                 return matcher.getMatcherForPosition(matcherOffset);
             }
         }
+        
+        //TODO: throw Runtime, rewrite method...?
         final String badness = "A ByteMatcher for position %d in a SequenceArrayMatcher of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
-        throw new RuntimeException(String.format(badness, position, length));
+        throw new RuntimeException(String.format(badness, position, totalLength));
     }
 
 
@@ -284,12 +297,19 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
     /**
      * {@inheritDoc}
      */
-    @Override
+    // Suppress warnings about null in this method.  Eclipse believes that the startMatcher or
+    // the endMatcher could be null at the end of the loop.  This can only be true if there is a bug.
+    // It should not happen otherwise, as we already test that the beginIndex and endIndex are within
+    // the bounds of the SequenceArrayMatcher total length - the sum of all the SequenceMatchers in it.
+    // Therefore, a failure to find a SequenceMatcher within those bounds would represent a genuine 
+    // programming error somewhere, which could then result in a NullPointerException thrown in this method.
+    @SuppressWarnings("null")
+	@Override
     public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
         // Check it is a valid subsequence:
-        if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
+        if (beginIndex < 0 || endIndex > totalLength || beginIndex >= endIndex) {
             final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
-            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
+            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, totalLength));
         }
         
         // Locate info about the start and ending matchers for these index positions:
