@@ -43,7 +43,7 @@ import net.byteseek.automata.Transition;
 import net.byteseek.automata.factory.MutableStateFactory;
 import net.byteseek.automata.factory.StateFactory;
 import net.byteseek.automata.factory.TransitionFactory;
-import net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory;
+import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
 import net.byteseek.util.bytes.ByteUtilities;
 
 /**
@@ -113,7 +113,7 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
 		this.stateFactory = stateFactory != null ? stateFactory : new MutableStateFactory<T>();
 		this.transitionFactory = transitionFactory != null ? transitionFactory
-				: new ByteSetMatcherTransitionFactory<T>();
+				: new ByteMatcherTransitionFactory<T>();
 		this.sequences = new ArrayList<T>();
 		setInitialState(this.stateFactory.create(State.NON_FINAL));
 	}

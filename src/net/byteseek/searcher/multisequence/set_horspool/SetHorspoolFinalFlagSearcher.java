@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.multisequence.sethorspool;
+package net.byteseek.searcher.multisequence.set_horspool;
 
 import java.io.IOException;
 import java.util.Arrays;

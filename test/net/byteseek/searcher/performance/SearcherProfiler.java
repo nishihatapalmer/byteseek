@@ -71,8 +71,8 @@ public final class SearcherProfiler {
 		results.profile("ASCII file", reader, searcher, numberOfSearches);
 
 		//System.out.println("Profiling " + searcher + " over ZIP file.");
-		//FileReader reader2 = new FileReader(getFile("/TestASCII.zip"));
-		//results.profile("ZIP file", reader2, searcher, numberOfSearches);        
+		FileReader reader2 = new FileReader(getFile("/TestASCII.zip"));
+		results.profile("ZIP file", reader2, searcher, numberOfSearches);        
 
 		return results;
 	}

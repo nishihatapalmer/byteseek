@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.multisequence.wumanber;
+package net.byteseek.searcher.multisequence.wu_manber;
 
 import java.io.IOException;
 

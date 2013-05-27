@@ -48,7 +48,7 @@ import net.byteseek.automata.factory.TransitionFactory;
 import net.byteseek.automata.walker.Action;
 import net.byteseek.automata.walker.StateChildWalker;
 import net.byteseek.automata.walker.Step;
-import net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory;
+import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
 import net.byteseek.util.collections.IdentityHashSet;
 
 /**
@@ -69,7 +69,7 @@ public final class DfaBuilder<T> {
 	 * Constructs a DfaBuilder using the default {@link StateFactory},
 	 * {@link net.byteseek.automata.factory.MutableStateFactory}, and the default
 	 * {@link TransitionFactory},
-	 * {@link net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory}.
+	 * {@link net.byteseek.matcher.automata.ByteMatcherTransitionFactory}.
 	 */
 	public DfaBuilder() {
 		this(null, null);
@@ -78,7 +78,7 @@ public final class DfaBuilder<T> {
 	/**
 	 * Constructs a DfaBuilder using the supplied {@link StateFactory}, and the
 	 * default {@link TransitionFactory},
-	 * {@link net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory}.
+	 * {@link net.byteseek.matcher.automata.ByteMatcherTransitionFactory}.
 	 * 
 	 * @param stateFactory
 	 *            The StateFactory to use when building the DFA.
@@ -116,7 +116,7 @@ public final class DfaBuilder<T> {
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
 		this.stateFactory = stateFactory == null ? new MutableStateFactory<T>() : stateFactory;
 		this.transitionFactory = transitionFactory == null ?
-		      new ByteSetMatcherTransitionFactory<T>()
+		      new ByteMatcherTransitionFactory<T>()
 				: transitionFactory;
 	}
 

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.sequence;
+package net.byteseek.searcher.sequence.horspool;
 
 import net.byteseek.io.Window;
 import net.byteseek.io.WindowReader;
@@ -38,6 +38,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
+import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
 import net.byteseek.util.object.LazyObject;
 
 import java.io.IOException;

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.multisequence.wumanber;
+package net.byteseek.searcher.multisequence.wu_manber;
 
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 
@@ -40,8 +40,10 @@ import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
  * @author Matt Palmer
  */
 
-public class WuManberUtils {
+public final class WuManberUtils {
    
+	private WuManberUtils() {
+	}
 
     /**
      * Suggest a safe block size for a MultiSequenceMatcher, using a default alphabet

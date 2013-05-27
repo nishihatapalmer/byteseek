@@ -290,10 +290,14 @@ public interface State<T> extends Iterable<Transition<T>>, DeepCopy {
 	public void clearAssociations();
 
 	/**
-	 * This is a convenience method, providing the initial map to:
-	 * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
+	 * Returns a deep copy of this state, its transitions
+	 * and all the subsequent states reachable from this state.
+	 * Associated objects are not deep copied, but the associations
+	 * with them are.
 	 * 
-	 * @return State a deep copy of this object.
+	 * @return State An automata which is a deep copy of the automata reachable from the state passed in,
+	 *               with that state as its initial state.
+	 *               
 	 * @see #deepCopy(java.util.Map)
 	 */
 	public State<T> deepCopy();

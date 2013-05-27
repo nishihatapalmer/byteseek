@@ -51,17 +51,17 @@ import net.byteseek.searcher.MatcherSearcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.multisequence.MultiSequenceMatcherSearcher;
-import net.byteseek.searcher.multisequence.sethorspool.SetHorspoolFinalFlagSearcher;
-import net.byteseek.searcher.multisequence.sethorspool.SetHorspoolSearcher;
-import net.byteseek.searcher.multisequence.wumanber.WuManberOneByteSearcher;
-import net.byteseek.searcher.multisequence.wumanber.WuManberOneByteTunedSearcher;
-import net.byteseek.searcher.multisequence.wumanber.WuManberTwoByteSearcher;
+import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolFinalFlagSearcher;
+import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolSearcher;
+import net.byteseek.searcher.multisequence.wu_manber.WuManberOneByteSearcher;
+import net.byteseek.searcher.multisequence.wu_manber.WuManberOneByteTunedSearcher;
+import net.byteseek.searcher.multisequence.wu_manber.WuManberTwoByteSearcher;
 import net.byteseek.searcher.performance.SearcherProfiler.ProfileResult;
 import net.byteseek.searcher.performance.SearcherProfiler.ProfileResults;
-import net.byteseek.searcher.sequence.BoyerMooreHorspoolSearcher;
-import net.byteseek.searcher.sequence.HorspoolFinalFlagSearcher;
 import net.byteseek.searcher.sequence.SequenceMatcherSearcher;
-import net.byteseek.searcher.sequence.SundayQuickSearcher;
+import net.byteseek.searcher.sequence.horspool.BoyerMooreHorspoolSearcher;
+import net.byteseek.searcher.sequence.horspool.HorspoolFinalFlagSearcher;
+import net.byteseek.searcher.sequence.sunday.SundayQuickSearcher;
 
 /**
  * Runs the searchers against different files and inputs to search for,
@@ -87,10 +87,18 @@ import net.byteseek.searcher.sequence.SundayQuickSearcher;
  */
 public class SearcherPerformanceTests {
 
-	public final static int	FIRST_WARMUP_TIMES	= 100;
-	public final static int	SECOND_WARMUP_TIMES	= 100;
-	public final static int	CYCLE_WARMUP_TIMES	= 100;
-	public final static int	TEST_TIMES			= 100;	//100; 
+	//TODO:
+	// figure out bug in WuManberTwoByteSearcher - it misses a match right before a Window boundary.
+	// This is picked up by the mismatch analysis.
+	// Is this something to do with boundaries? Is the algorithm used by the AbstractWuManber searcher
+	// correct with block lengths greater than 1?
+	// The problem appears both in forwards and backwards searching - but for different sequences.
+	// Some kind of boundary issue...
+	
+	public final static int	FIRST_WARMUP_TIMES	= 10;
+	public final static int	SECOND_WARMUP_TIMES	= 10;
+	public final static int	CYCLE_WARMUP_TIMES	= 10;
+	public final static int	TEST_TIMES			= 10;	//100; 
 
 	public static void main(String[] args) throws InterruptedException {
 		System.out.println("Starting profiling");
@@ -132,12 +140,12 @@ public class SearcherPerformanceTests {
 
 	private Collection<Searcher<?>> getMultiSequenceSearchers(MultiSequenceMatcher multisequence) {
 		List<Searcher<?>> searchers = new ArrayList<Searcher<?>>();
-		searchers.add(new MatcherSearcher(multisequence));
-		searchers.add(new MultiSequenceMatcherSearcher(multisequence));
-		searchers.add(new SetHorspoolSearcher(multisequence));
-		searchers.add(new SetHorspoolFinalFlagSearcher(multisequence));
+		//searchers.add(new MatcherSearcher(multisequence));
+		//searchers.add(new MultiSequenceMatcherSearcher(multisequence));
+		//searchers.add(new SetHorspoolSearcher(multisequence));
+		//searchers.add(new SetHorspoolFinalFlagSearcher(multisequence));
 		searchers.add(new WuManberOneByteSearcher(multisequence));
-		searchers.add(new WuManberOneByteTunedSearcher(multisequence));
+		//searchers.add(new WuManberOneByteTunedSearcher(multisequence));
 		searchers.add(new WuManberTwoByteSearcher(multisequence));
 		//searchers.add(new WuManberOneByteFinalFlagSearcher(multisequence));
 		return searchers;
@@ -201,8 +209,8 @@ public class SearcherPerformanceTests {
 
 	public void profileMultiSequenceSearchers(int numberOfTimes) throws IOException {
 
-		//profileMultiSequence(numberOfTimes, "Midsommer", "and");
-		//profileMultiSequence(numberOfTimes, "Midsommer ", "and");
+		profileMultiSequence(numberOfTimes, "Midsommer", "and");
+		profileMultiSequence(numberOfTimes, "Midsommer ", "and");
 
 		profileMultiSequence(numberOfTimes, "Midsommer", "Oberon", "Titania", "Dreame", "heere",
 				"nothing", "perchance", "discretion", "smallest", "through", "enough", "Gentleman",

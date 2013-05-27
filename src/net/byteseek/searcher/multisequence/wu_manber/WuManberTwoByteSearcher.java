@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.searcher.multisequence.wumanber;
+package net.byteseek.searcher.multisequence.wu_manber;
 
 import java.io.IOException;
 import java.util.Collection;

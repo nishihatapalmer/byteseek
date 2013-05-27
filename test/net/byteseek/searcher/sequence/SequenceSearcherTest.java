@@ -47,7 +47,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.ForwardSearchIterator;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.Searcher;
-import net.byteseek.searcher.sequence.BoyerMooreHorspoolSearcher;
+import net.byteseek.searcher.sequence.horspool.BoyerMooreHorspoolSearcher;
 
 /**
  *

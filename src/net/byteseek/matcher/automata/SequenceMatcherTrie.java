@@ -53,7 +53,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
      * Constructs a SequenceMatcherTrie with no sequences added to it initially.
      * using the default {@link net.byteseek.automata.factory.StateFactory}
      * , {@link net.byteseek.automata.factory.MutableStateFactory}, and the default
-     * {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory}.
+     * {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteMatcherTransitionFactory}.
      */
     public SequenceMatcherTrie() {
         this(null, null, null);
@@ -63,7 +63,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     /**
      * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}
      * , {@link net.byteseek.automata.factory.MutableStateFactory}, and the default
-     * {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory}.
+     * {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteMatcherTransitionFactory}.
      * 
      * @param sequences A collection of SequenceMatchers to add to the Trie.
      */
@@ -74,7 +74,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     /**
      * Constructs a Trie using the supplied {@link net.byteseek.automata.factory.StateFactory}
-     * and the default {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory}.
+     * and the default {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteMatcherTransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      */
@@ -97,7 +97,7 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
     
     /**
      * Constructs a Trie using the supplied {@link net.byteseek.automata.factory.StateFactory}
-     * and the default {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteSetMatcherTransitionFactory}.
+     * and the default {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.matcher.automata.ByteMatcherTransitionFactory}.
      * 
      * @param sequences The initial collection of SequenceMatchers to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.

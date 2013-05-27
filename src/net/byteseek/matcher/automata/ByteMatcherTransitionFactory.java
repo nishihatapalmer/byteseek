@@ -47,7 +47,7 @@ import net.byteseek.matcher.bytes.SetAnalysisByteMatcherFactory;
  * 
  * @author Matt Palmer
  */
-public final class ByteSetMatcherTransitionFactory<T> implements TransitionFactory<T, Collection<Byte>> {
+public final class ByteMatcherTransitionFactory<T> implements TransitionFactory<T, Collection<Byte>> {
 
     private final ByteMatcherFactory matcherFactory;
 
@@ -56,7 +56,7 @@ public final class ByteSetMatcherTransitionFactory<T> implements TransitionFacto
      * Default constructor which used an underlying {@link SetAnalysisByteMatcherFactory}
      * to create {@link net.byteseek.matcher.bytes.ByteMatcher}s based on sets of bytes.
      */
-    public ByteSetMatcherTransitionFactory() {
+    public ByteMatcherTransitionFactory() {
         matcherFactory = new SetAnalysisByteMatcherFactory();
     }
 
@@ -67,7 +67,7 @@ public final class ByteSetMatcherTransitionFactory<T> implements TransitionFacto
      * 
      * @param factoryToUse The factory to create transitions based on sets of bytes.
      */
-    public ByteSetMatcherTransitionFactory(final ByteMatcherFactory factoryToUse) {
+    public ByteMatcherTransitionFactory(final ByteMatcherFactory factoryToUse) {
         matcherFactory = factoryToUse;
     }
     
