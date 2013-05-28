@@ -47,11 +47,12 @@ public final class ParseTreeTransitionFactory<T>
   private final ByteMatcherFactory matcherFactory;
   
   public ParseTreeTransitionFactory() {
-    this(new SetAnalysisByteMatcherFactory());
+    this(null);
   }
   
   public ParseTreeTransitionFactory(final ByteMatcherFactory matcherFactory) {
-    this.matcherFactory = matcherFactory;
+    this.matcherFactory = matcherFactory == null? new SetAnalysisByteMatcherFactory()
+    											: matcherFactory;
   }
   
   public Transition<T> create(final ParseTree source,
