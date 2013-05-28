@@ -302,6 +302,7 @@ import java.util.List;
         }
 
 
+        //TODO: profile these searchers to empirically investigate performance / space trade-offs.
         /**
          * This function is pure guesswork at present. 
          * 

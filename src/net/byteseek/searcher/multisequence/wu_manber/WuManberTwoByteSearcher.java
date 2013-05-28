@@ -159,7 +159,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
                                  toPosition : lastPossiblePosition;
         final int lastMinimumPosition = sequences.getMinimumLength() - 1;
         // Search position will always be greater than zero, as lastMinimumPosition
-        // must be at least one (minimum length of sequences must be at least 2).
+        // must be at least one (minimum length of sequences must be at least 2, enforced in constructor).
         int searchPosition = fromPosition > 0 ?
                              fromPosition + lastMinimumPosition : lastMinimumPosition;
 
