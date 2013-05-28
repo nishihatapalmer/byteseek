@@ -36,8 +36,8 @@ import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.automata.Automata;
-import net.byteseek.automata.builder.GlushkovRegexBuilder;
-import net.byteseek.automata.builder.RegexBuilder;
+import net.byteseek.automata.regex.GlushkovRegexBuilder;
+import net.byteseek.automata.regex.RegexBuilder;
 import net.byteseek.compiler.AbstractCompiler;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.parser.ParseException;

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.automata.builder;
+package net.byteseek.automata.deterministic;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;

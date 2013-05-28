@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.automata.builder;
+package net.byteseek.automata.regex;
 
 import java.util.ArrayList;
 import java.util.Collection;
