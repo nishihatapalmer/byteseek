@@ -47,7 +47,9 @@ import net.byteseek.automata.Transition;
  * @see net.byteseek.automata.Transition
  */
 public interface TransitionFactory<T, S> {
-
+  //TODO: maybe make this interface wider catering to specify types of input.
+  //      then can combine and nest transition factories without losing
+  //      specificity.
   public Transition<T> create(S source, boolean invert, State<T> toState);
   
 }
