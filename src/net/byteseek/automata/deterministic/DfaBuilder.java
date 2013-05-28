@@ -114,10 +114,10 @@ public final class DfaBuilder<T> {
 	//       the matcher package from automata.
 	public DfaBuilder(final StateFactory<T> stateFactory,
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
-		this.stateFactory = stateFactory == null ? new MutableStateFactory<T>() : stateFactory;
-		this.transitionFactory = transitionFactory == null ?
-		      new ByteMatcherTransitionFactory<T>()
-				: transitionFactory;
+		this.stateFactory = stateFactory == null ? new MutableStateFactory<T>() 
+				                                 : stateFactory;
+		this.transitionFactory = transitionFactory == null ? new ByteMatcherTransitionFactory<T>()
+				                                           : transitionFactory;
 	}
 
 	/**
