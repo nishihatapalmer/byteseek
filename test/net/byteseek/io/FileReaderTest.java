@@ -69,10 +69,10 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testLength() throws IOException {
+		@SuppressWarnings("resource")
 		FileReader reader = new FileReader(getFile("/TestASCII.txt"));
 		assertEquals("length ASCII", 112280, reader.length());
-		reader.close();
-		
+	
 		// no matter how the file reader sets its window sizes or cache strategies,
 		// it must make no difference to the total length of the data read.
 		FileReaderIterator iterator = new FileReaderIterator("/TestASCII.txt");
