@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.parser;
+package net.byteseek.parser.regex;
 
 
 import static org.junit.Assert.assertEquals;
@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import net.byteseek.parser.ParseException;
 import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
