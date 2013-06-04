@@ -29,21 +29,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.cache;
+package net.byteseek.io.reader.cache;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import net.byteseek.io.Window;
+import net.byteseek.io.reader.Window;
+
 
 /**
- * A {@link WindowCache} which holds on to all {@link Window} objects.
+ * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.Window}
+ * objects which were most recently used. The number of Windows which will be cached
+ * is configurable by its capacity.
  * 
  * @author Matt Palmer
  */
-public final class AllWindowsCache extends AbstractCache {
+public final class MostRecentlyUsedCache extends AbstractCache  {
 
-    private final Map<Long, Window> cache = new HashMap<Long, Window>();
+    private final static boolean ACCESS_ORDER = true;    
+    
+    private final Cache cache;
+    
+    
+    /**
+     * Creates a MostRecentlyUsedCache using the provided capacity.
+     * 
+     * @param capacity The number of Window objects to cache.
+     */
+    public MostRecentlyUsedCache(final int capacity) {
+        cache = new Cache(capacity + 1, 1.1f, ACCESS_ORDER);
+    }
+    
     
     /**
      * {@inheritDoc}
@@ -59,10 +75,13 @@ public final class AllWindowsCache extends AbstractCache {
      */
     @Override
     public void addWindow(final Window window) {
-        cache.put(window.getWindowPosition(), window);
+        final long windowPosition = window.getWindowPosition();
+        if (!cache.containsKey(windowPosition)) {
+            cache.put(windowPosition, window);
+        }
     }
-
     
+   
     /**
      * {@inheritDoc}
      */
@@ -70,5 +89,31 @@ public final class AllWindowsCache extends AbstractCache {
     public void clear() {
         cache.clear();
     }
+    
+    
+    /**
+     * A simple most recently used cache, which extends {@link java.util.LinkedHashMap}
+     * to provide caching services, and also provides notification to any
+     * {@link WindowObserver}s who are subscribed when a {@link Window} leaves it.
+     */    
+    private class Cache extends LinkedHashMap<Long, Window> {
+
+        private final int capacity;
+        
+        private Cache(int capacity, float loadFactor, boolean accessOrder) {
+            super(capacity, loadFactor, accessOrder);
+            this.capacity = capacity;
+        }
+        
+        @Override
+        protected boolean removeEldestEntry(final Map.Entry<Long, Window> eldest) {
+            final boolean remove = size() > capacity;
+            if (remove) {
+                notifyWindowFree(eldest.getValue(), MostRecentlyUsedCache.this);
+            }
+            return remove;
+        }   
+    }    
+        
     
 }

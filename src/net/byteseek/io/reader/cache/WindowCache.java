@@ -29,12 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.cache;
+package net.byteseek.io.reader.cache;
 
-import net.byteseek.io.Window;
+import net.byteseek.io.reader.Window;
+
 
 /**
- * A interface for classes which cache {@link net.byteseek.io.Window} objects.
+ * A interface for classes which cache {@link net.byteseek.io.reader.Window} objects.
  * It also provides the ability to subscribe for notifications that a
  * Window object is leaving the cache.
  * 
@@ -44,7 +45,7 @@ public interface WindowCache {
     
     
     /**
-     * Returns the {@link net.byteseek.io.Window} at the position specified.
+     * Returns the {@link net.byteseek.io.reader.Window} at the position specified.
      * The position must be one at which a Window object begins.  It will not return
      * a Window for a position which simply exists within a Window.  If no Window
      * exists in the cache at the exact position specified, then null is returned.
@@ -56,7 +57,7 @@ public interface WindowCache {
     
     
     /**
-     * Adds a {@link net.byteseek.io.Window} to the cache.
+     * Adds a {@link net.byteseek.io.reader.Window} to the cache.
      * 
      * @param window The Window to add to the cache.
      */
@@ -64,14 +65,14 @@ public interface WindowCache {
     
     
     /**
-     * Clears all {@link net.byteseek.io.Window}s from the cache.
+     * Clears all {@link net.byteseek.io.reader.Window}s from the cache.
      */
     public void clear();
     
     
     /**
      * Subscribes a {@link WindowObserver} to this cache for notification when a
-     * {@link net.byteseek.io.Window} leaves it.
+     * {@link net.byteseek.io.reader.Window} leaves it.
      * 
      * @param observer The observer who wants notification that a Window is leaving the cache.
      */
@@ -90,13 +91,13 @@ public interface WindowCache {
     
     
     /**
-     * An interface for objects which want notification when a {@link net.byteseek.io.Window}
+     * An interface for objects which want notification when a {@link net.byteseek.io.reader.Window}
      * is leaving a cache.
      */
     public interface WindowObserver {
         
         /**
-         * A method which is called on the WindowObserver when a {@link net.byteseek.io.Window}
+         * A method which is called on the WindowObserver when a {@link net.byteseek.io.reader.Window}
          * leaves a cache.
          * @param window The Window which is leaving a cache.
          * @param fromCache The cache that the Window is leaving.

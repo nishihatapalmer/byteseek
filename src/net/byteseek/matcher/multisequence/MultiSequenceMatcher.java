@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.Matcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 

@@ -37,10 +37,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.WindowReader;
 
 /**
- * An iterator which iterates over a {@link net.byteseek.io.WindowReader} or a
+ * An iterator which iterates over a {@link net.byteseek.io.reader.WindowReader} or a
  * byte array, using a provided {@link Searcher}. Each iteration returns the
  * next set of search results, searching forwards.
  * 
@@ -64,7 +64,7 @@ public class ForwardSearchIterator<T> implements
 
 	/**
 	 * Constructs a ForwardSearchIterator from a {@link Searcher} and
-	 * {@link net.byteseek.io.WindowReader}, searching forwards from the end
+	 * {@link net.byteseek.io.reader.WindowReader}, searching forwards from the end
 	 * of the WindowReader to the end of the WindowReader.
 	 * 
 	 * @param searcher
@@ -80,7 +80,7 @@ public class ForwardSearchIterator<T> implements
 
 	/**
 	 * Constructs a ForwardSearchIterator from a {@link Searcher} and
-	 * {@link net.byteseek.io.WindowReader}, searching forwards from the
+	 * {@link net.byteseek.io.reader.WindowReader}, searching forwards from the
 	 * position specified in the WindowReader to the end of the WindowReader.
 	 * 
 	 * @param searcher
@@ -99,7 +99,7 @@ public class ForwardSearchIterator<T> implements
 
 	/**
 	 * Constructs a ForwardSearchIterator from a {@link Searcher} and
-	 * {@link net.byteseek.io.WindowReader}, searching forwards from the
+	 * {@link net.byteseek.io.reader.WindowReader}, searching forwards from the
 	 * position specified to the final position.
 	 * 
 	 * @param searcher

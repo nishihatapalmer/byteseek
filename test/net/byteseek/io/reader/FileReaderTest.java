@@ -3,7 +3,7 @@
  *
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -22,10 +22,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import net.byteseek.io.FileReader;
-import net.byteseek.io.Window;
-import net.byteseek.io.cache.AllWindowsCache;
-import net.byteseek.io.cache.NoCache;
+import net.byteseek.io.reader.FileReader;
+import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.cache.AllWindowsCache;
+import net.byteseek.io.reader.cache.NoCache;
 
 /**
  *

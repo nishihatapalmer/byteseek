@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ import java.io.IOException;
  * you want to know that this specific problem has occurred.
  * <p>
  * This may be because an inappropriate
- * {@link net.byteseek.io.cache.WindowCache} object was used for the
+ * {@link net.byteseek.io.reader.cache.WindowCache} object was used for the
  * input source of the WindowReader and the access pattern used with it.
  * 
  * @author Matt Palmer.

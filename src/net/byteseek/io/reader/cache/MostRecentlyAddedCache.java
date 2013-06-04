@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,34 +29,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.cache;
+package net.byteseek.io.reader.cache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import net.byteseek.io.Window;
+import net.byteseek.io.reader.Window;
+
 
 /**
- * A {@link WindowCache} which holds on to the {@link net.byteseek.io.Window}
- * objects which were most recently used. The number of Windows which will be cached
+ * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.Window}
+ * objects which were most recently added. The number of Windows which will be cached
  * is configurable by its capacity.
  * 
  * @author Matt Palmer
  */
-public final class MostRecentlyUsedCache extends AbstractCache  {
+public final class MostRecentlyAddedCache extends AbstractCache  {
 
-    private final static boolean ACCESS_ORDER = true;    
+    private final static boolean INSERTION_ORDER = false;    
     
     private final Cache cache;
     
-    
     /**
-     * Creates a MostRecentlyUsedCache using the provided capacity.
+     * Creates a MostRecentlyAddedCache using the provided capacity.
      * 
      * @param capacity The number of Window objects to cache.
      */
-    public MostRecentlyUsedCache(final int capacity) {
-        cache = new Cache(capacity + 1, 1.1f, ACCESS_ORDER);
+    public MostRecentlyAddedCache(final int capacity) {
+        cache = new Cache(capacity + 1, 1.1f, INSERTION_ORDER);
     }
     
     
@@ -79,8 +79,8 @@ public final class MostRecentlyUsedCache extends AbstractCache  {
             cache.put(windowPosition, window);
         }
     }
+
     
-   
     /**
      * {@inheritDoc}
      */
@@ -91,10 +91,10 @@ public final class MostRecentlyUsedCache extends AbstractCache  {
     
     
     /**
-     * A simple most recently used cache, which extends {@link java.util.LinkedHashMap}
+     * A simple most recently added cache, which extends {@link java.util.LinkedHashMap}
      * to provide caching services, and also provides notification to any
      * {@link WindowObserver}s who are subscribed when a {@link Window} leaves it.
-     */    
+     */
     private class Cache extends LinkedHashMap<Long, Window> {
 
         private final int capacity;
@@ -108,7 +108,7 @@ public final class MostRecentlyUsedCache extends AbstractCache  {
         protected boolean removeEldestEntry(final Map.Entry<Long, Window> eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
-                notifyWindowFree(eldest.getValue(), MostRecentlyUsedCache.this);
+                notifyWindowFree(eldest.getValue(), MostRecentlyAddedCache.this);
             }
             return remove;
         }   

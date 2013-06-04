@@ -29,12 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.cache;
+package net.byteseek.io.reader.cache;
 
-import net.byteseek.io.Window;
+import net.byteseek.io.reader.Window;
+
 
 /**
- * A {@link WindowCache} which holds on to no {@link net.byteseek.io.Window}
+ * A {@link WindowCache} which holds on to no {@link net.byteseek.io.reader.Window}
  * objects.
  * 
  * @author Matt Palmer
@@ -51,7 +52,7 @@ public final class NoCache extends AbstractCache {
     /**
      * Always returns null, as no Windows are cached.
      * 
-     * @param position The position for which a {@link net.byteseek.io.Window} is requested.
+     * @param position The position for which a {@link net.byteseek.io.reader.Window} is requested.
      * @return Window null in all cases.
      */
     @Override
@@ -61,7 +62,7 @@ public final class NoCache extends AbstractCache {
 
     
     /**
-     * Does not actually add the {@link net.byteseek.io.Window} to the
+     * Does not actually add the {@link net.byteseek.io.reader.Window} to the
      * cache, as the NoCache object performs no caching.
      * 
      * @param window A Window to add (which it will not be).

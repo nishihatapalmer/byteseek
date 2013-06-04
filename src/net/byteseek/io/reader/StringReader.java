@@ -29,13 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
-import net.byteseek.io.cache.NoCache;
+import net.byteseek.io.reader.cache.NoCache;
 
 /**
  * A {@link WindowReader} which gives access to the bytes of a String, either using

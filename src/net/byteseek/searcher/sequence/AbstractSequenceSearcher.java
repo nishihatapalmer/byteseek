@@ -34,8 +34,8 @@ package net.byteseek.searcher.sequence;
 import java.io.IOException;
 import java.util.List;
 
-import net.byteseek.io.Window;
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.AbstractSearcher;
 import net.byteseek.searcher.SearchResult;
@@ -45,8 +45,8 @@ import net.byteseek.searcher.SearchUtils;
  * This abstract base class for sequence searchers holds the sequence to be
  * searched for and provides generic implementations of:
  * <ul>
- * <li>{@link #searchForwards(net.byteseek.io.WindowReader, long, long)}
- * <li>{@link #searchBackwards(net.byteseek.io.WindowReader, long, long)}
+ * <li>{@link #searchForwards(net.byteseek.io.reader.WindowReader, long, long)}
+ * <li>{@link #searchBackwards(net.byteseek.io.reader.WindowReader, long, long)}
  * </ul>
  * These allocate searching for sequences efficiently between searching in the
  * byte arrays provided by {@link Window}s when the sequence fits in a single window,
@@ -55,8 +55,8 @@ import net.byteseek.searcher.SearchUtils;
  * <p>
  * It defines two new abstract methods:
  * <ul>
- * <li>{@link #doSearchForwards(net.byteseek.io.WindowReader, long, long) }
- * <li>{@link #doSearchBackwards(net.byteseek.io.WindowReader, long, long) }
+ * <li>{@link #doSearchForwards(net.byteseek.io.reader.WindowReader, long, long) }
+ * <li>{@link #doSearchBackwards(net.byteseek.io.reader.WindowReader, long, long) }
  * </ul>
  * which require the implementor to use the reader interface on the sequence for
  * matching (or otherwise provide for searching sequences which cross window boundaries).
@@ -100,7 +100,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * This implementation of searchForwards allocates forward searching between
      * searching directly on a window byte array when the sequence fits inside
      * a window, and using the abstract search method:
-     * {@link #doSearchForwards(net.byteseek.io.WindowReader, long, long) }
+     * {@link #doSearchForwards(net.byteseek.io.reader.WindowReader, long, long) }
      * for searching across window boundaries.
      * <p>
      * This method does no searching itself - it simply calculates how to
@@ -188,7 +188,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
     
     /**
      * This method searches forwards crossing window boundaries.  It is
-     * called by the {@link #searchForwards(net.byteseek.io.WindowReader, long, long)}
+     * called by the {@link #searchForwards(net.byteseek.io.reader.WindowReader, long, long)}
      * method when it encounters a sequence which crosses from one window to another.
      * <p>
      * A simple way to implement this method is to use the WindowReader interface on the
@@ -217,7 +217,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * This implementation of searchBackwards allocates backwards searching between
      * searching directly on a window byte array when the sequence fits inside
      * a window, and using the abstract search method:
-     * {@link #doSearchBackwards(net.byteseek.io.WindowReader, long, long) }
+     * {@link #doSearchBackwards(net.byteseek.io.reader.WindowReader, long, long) }
      * for searching across window boundaries.
      * <p>
      * This method does no searching itself - it simply calculates how to
@@ -315,7 +315,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
 
    /**
      * This abstract method searches backwards crossing window boundaries.  It is
-     * called by the {@link #searchBackwards(net.byteseek.io.WindowReader, long, long)}
+     * called by the {@link #searchBackwards(net.byteseek.io.reader.WindowReader, long, long)}
      * method when it encounters s sequence which crosses from one window to another.
      * <p>
      * A simple way to implement this method is to use the WindowReader interface on the

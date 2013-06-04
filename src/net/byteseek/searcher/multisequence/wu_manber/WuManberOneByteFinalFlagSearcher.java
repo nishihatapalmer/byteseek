@@ -33,8 +33,8 @@ package net.byteseek.searcher.multisequence.wu_manber;
 
 import java.io.IOException;
 
-import net.byteseek.io.Window;
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;

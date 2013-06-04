@@ -17,8 +17,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.byteseek.io.FileReader;
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.FileReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.searcher.BackwardSearchIterator;
 import net.byteseek.searcher.ForwardSearchIterator;
 import net.byteseek.searcher.SearchResult;

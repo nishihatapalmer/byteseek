@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 /**
@@ -78,7 +78,7 @@ public final class SearchUtils {
 	}
 
 	/**
-	 * Searches a {@link net.byteseek.io.WindowReader} forwards for all
+	 * Searches a {@link net.byteseek.io.reader.WindowReader} forwards for all
 	 * matches of a {@link Searcher}.
 	 * 
 	 * @param <T>
@@ -127,7 +127,7 @@ public final class SearchUtils {
 	}
 
 	/**
-	 * Searches a {@link net.byteseek.io.WindowReader} forwards for all
+	 * Searches a {@link net.byteseek.io.reader.WindowReader} forwards for all
 	 * matches of a {@link Searcher}.
 	 * 
 	 * @param <T>

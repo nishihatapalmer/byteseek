@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 /**
  * A Window is essentially a wrapper for a byte array containing bytes from the

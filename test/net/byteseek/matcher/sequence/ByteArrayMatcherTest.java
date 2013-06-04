@@ -44,8 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import net.byteseek.io.ByteArrayReader;
-import net.byteseek.io.FileReader;
+import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;

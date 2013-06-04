@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-package net.byteseek.io.cache;
+package net.byteseek.io.reader.cache;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,11 +38,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.byteseek.io.IOUtils;
-import net.byteseek.io.Window;
+import net.byteseek.io.reader.Window;
 
 
 /**
- * A {@link WindowCache} which stores {@link net.byteseek.io.Window} objects
+ * A {@link WindowCache} which stores {@link net.byteseek.io.reader.Window} objects
  * into a temporary file for later retrieval.  It maintains a map of the start positions
  * of each window against the position in the file where the Window was stored.
  * <p>

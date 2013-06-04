@@ -41,8 +41,8 @@ import java.util.List;
 import net.byteseek.automata.State;
 import net.byteseek.automata.trie.Trie;
 import net.byteseek.automata.trie.TrieFactory;
-import net.byteseek.io.Window;
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.automata.SequenceMatcherTrieFactory;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 

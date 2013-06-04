@@ -37,7 +37,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 //TODO: should this simply be a translation class with no knowledge of the

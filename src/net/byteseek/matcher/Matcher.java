@@ -33,7 +33,7 @@ package net.byteseek.matcher;
 
 import java.io.IOException;
 
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.WindowReader;
 
 /**
  * An interface for classes that can match bytes from a given position, either

@@ -29,13 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import net.byteseek.io.cache.WindowCache;
+import net.byteseek.io.reader.cache.WindowCache;
 
 /**
  * An abstract implementation of the WindowReader interface, which also implements
@@ -43,7 +43,7 @@ import net.byteseek.io.cache.WindowCache;
  * <p>
  * It provides common Window and cache management services using a fixed Window
  * size, and a standard Window iterator
- * {@link net.byteseek.io.AbstractReader.WindowIterator}.
+ * {@link net.byteseek.io.reader.AbstractReader.WindowIterator}.
  * 
  * @author Matt Palmer
  */

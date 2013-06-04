@@ -29,13 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.cache;
+package net.byteseek.io.reader.cache;
 
-import net.byteseek.io.Window;
-import net.byteseek.io.cache.WindowCache.WindowObserver;
+import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
 
 /**
- * A {@link WindowCache} which wraps two further WindowCaches.  When a {@link net.byteseek.io.Window}
+ * A {@link WindowCache} which wraps two further WindowCaches.  When a {@link net.byteseek.io.reader.Window}
  * leaves the primary cache, it is automatically added to the secondary cache.
  * Observers of this cache are notified when a Window leaves the secondary cache, 
  * but not when it leaves the primary one (as it is added immediately to the secondary).
@@ -115,7 +115,7 @@ import net.byteseek.io.cache.WindowCache.WindowObserver;
      * Implementation of the {@link WindowObserver} method to receive 
      * notification that a Window is freed from a cache.
      * <p>
-     * If a {@link net.byteseek.io.Window} leaves the primary
+     * If a {@link net.byteseek.io.reader.Window} leaves the primary
      * cache, then it is automatically added to the secondary cache.
      * If it leaves the secondary cache, then any observer of this cache
      * is notified that the Window is no longer cached at all by this cache.

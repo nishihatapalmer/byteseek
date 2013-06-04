@@ -29,15 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.byteseek.io.cache.MostRecentlyUsedCache;
-import net.byteseek.io.cache.TempFileCache;
-import net.byteseek.io.cache.TwoLevelCache;
-import net.byteseek.io.cache.WindowCache;
+import net.byteseek.io.IOUtils;
+import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
+import net.byteseek.io.reader.cache.TempFileCache;
+import net.byteseek.io.reader.cache.TwoLevelCache;
+import net.byteseek.io.reader.cache.WindowCache;
 
 /**
  * A WindowReader extending {@link AbstractReader} over an {@link java.io.InputStream}

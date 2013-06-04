@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 import java.io.EOFException;
 import java.io.File;
@@ -37,8 +37,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import net.byteseek.io.cache.MostRecentlyUsedCache;
-import net.byteseek.io.cache.WindowCache;
+import net.byteseek.io.IOUtils;
+import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
+import net.byteseek.io.reader.cache.WindowCache;
 
 /**
  * A WindowReader extending {@link AbstractReader} which reads a random access file

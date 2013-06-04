@@ -38,8 +38,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import net.byteseek.io.FileReader;
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.FileReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
 import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;

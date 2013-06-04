@@ -37,8 +37,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.byteseek.io.Window;
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 
 /**

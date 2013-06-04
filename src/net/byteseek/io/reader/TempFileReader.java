@@ -29,14 +29,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io;
+package net.byteseek.io.reader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.byteseek.io.cache.WindowCache;
+import net.byteseek.io.IOUtils;
+import net.byteseek.io.reader.cache.WindowCache;
 
 /**
  * A class which extends {@link FileReader} to create a temporary file from an
@@ -54,7 +55,7 @@ public final class TempFileReader extends FileReader {
 	 * InputStream into the temporary file.
 	 * <p> A default window size of 4096 will be used when creating
 	 * {@link Window} objects, and a default capacity of 32 will be used for the
-	 * {@link net.byteseek.io.cache.MostRecentlyUsedCache}.
+	 * {@link net.byteseek.io.reader.cache.MostRecentlyUsedCache}.
 	 * 
 	 * @param stream
 	 *            The InputStream to copy into the temporary file.
@@ -73,7 +74,7 @@ public final class TempFileReader extends FileReader {
 	 * InputStream into the temporary file.
 	 * <p> The supplied window size will be used when creating {@link Window}
 	 * objects. and a default capacity of 32 will be used for the
-	 * {@link net.byteseek.io.cache.MostRecentlyUsedCache}.
+	 * {@link net.byteseek.io.reader.cache.MostRecentlyUsedCache}.
 	 * 
 	 * @param stream
 	 *            The InputStream to copy into the temporary file.
@@ -95,7 +96,7 @@ public final class TempFileReader extends FileReader {
 	 * InputStream into the temporary file.
 	 * <p> The supplied window size will be used when creating {@link Window}
 	 * objects. and the supplied capacity will be used for the
-	 * {@link net.byteseek.io.cache.MostRecentlyUsedCache}.
+	 * {@link net.byteseek.io.reader.cache.MostRecentlyUsedCache}.
 	 * 
 	 * @param stream
 	 *            The InputStream to copy into the temporary file.
@@ -117,7 +118,7 @@ public final class TempFileReader extends FileReader {
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
-	 * <p> The supplied {@link net.byteseek.io.cache.WindowCache} will
+	 * <p> The supplied {@link net.byteseek.io.reader.cache.WindowCache} will
 	 * be used to cache {@link Window} objects. A default size of 4096 will be
 	 * used to create the Windows.
 	 * 
@@ -139,7 +140,7 @@ public final class TempFileReader extends FileReader {
 	 * a temporary file with a filename prefix of "byteseek" and extension of
 	 * ".tmp". The default buffer size of 4096 will be used to copy the
 	 * InputStream into the temporary file.
-	 * <p> The supplied {@link net.byteseek.io.cache.WindowCache} will
+	 * <p> The supplied {@link net.byteseek.io.reader.cache.WindowCache} will
 	 * be used to cache {@link Window} objects. The supplied window size will be
 	 * used to create the Windows.
 	 * 

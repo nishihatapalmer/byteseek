@@ -37,10 +37,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.io.WindowReader;
+import net.byteseek.io.reader.WindowReader;
 
 /**
- * An iterator which iterates over a {@link net.byteseek.io.WindowReader} or a
+ * An iterator which iterates over a {@link net.byteseek.io.reader.WindowReader} or a
  * byte array, using a provided {@link Searcher}. Each iteration returns the
  * next set of search results, searching backwards.
  * 
@@ -64,7 +64,7 @@ public class BackwardSearchIterator<T> implements
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
-	 * {@link net.byteseek.io.WindowReader}, searching backwards from the end
+	 * {@link net.byteseek.io.reader.WindowReader}, searching backwards from the end
 	 * of the WindowReader to the start of the WindowReader.
 	 * 
 	 * @param searcher
@@ -83,7 +83,7 @@ public class BackwardSearchIterator<T> implements
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
-	 * {@link net.byteseek.io.WindowReader}, searching backwards from the
+	 * {@link net.byteseek.io.reader.WindowReader}, searching backwards from the
 	 * position specified in the WindowReader to the start of the WindowReader.
 	 * 
 	 * @param searcher
@@ -102,7 +102,7 @@ public class BackwardSearchIterator<T> implements
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
-	 * {@link net.byteseek.io.WindowReader}, searching backwards from the
+	 * {@link net.byteseek.io.reader.WindowReader}, searching backwards from the
 	 * position specified in the WindowReader to the final position specified in the
 	 * WindowReader.
 	 * 
