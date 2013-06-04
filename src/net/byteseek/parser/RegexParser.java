@@ -364,7 +364,7 @@ public class RegexParser implements Parser<ParseTree> {
 				return true;
 			}
 			case COMMENT	: {
-				expression.readToChar('\n');
+				expression.readPastChar('\n');
 				return true;
 			}
 			default: return false;
