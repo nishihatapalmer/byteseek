@@ -45,7 +45,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcherFactory;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
-import net.byteseek.parser.RegexParser;
+import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.ParseTreeUtils;
@@ -55,7 +55,7 @@ import net.byteseek.parser.tree.node.ChildrenNode;
  * A compiler which produces a {@link SequenceMatcher} from an
  * abstract syntax tree provided by a {@link Parser}.
  * <p>
- * It can handle nearly all the syntax processable by the {@link net.byteseek.parser.RegexParser},
+ * It can handle nearly all the syntax processable by the {@link net.byteseek.parser.regex.RegexParser},
  * but it cannot handle any syntax which would give variable lengths to
  * match, or which would have alternative sequences of bytes,
  * as a sequence matcher can only match a single defined sequence.

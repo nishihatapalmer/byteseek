@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.util.bytes.ByteUtilities;

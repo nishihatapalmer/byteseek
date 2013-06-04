@@ -42,7 +42,7 @@ import net.byteseek.compiler.AbstractCompiler;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
-import net.byteseek.parser.RegexParser;
+import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.ParseTreeUtils;

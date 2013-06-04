@@ -43,7 +43,7 @@ import net.byteseek.matcher.bytes.ByteMatcherFactory;
 import net.byteseek.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
-import net.byteseek.parser.RegexParser;
+import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.ParseTreeUtils;

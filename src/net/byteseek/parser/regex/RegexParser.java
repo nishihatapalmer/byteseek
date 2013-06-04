@@ -29,13 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.parser;
+package net.byteseek.parser.regex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.byteseek.parser.ParseException;
+import net.byteseek.parser.Parser;
+import net.byteseek.parser.StringParseReader;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.node.BaseNode;
