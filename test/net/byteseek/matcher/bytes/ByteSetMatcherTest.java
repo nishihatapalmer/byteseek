@@ -36,7 +36,8 @@ public class ByteSetMatcherTest {
     /**
      * 
      */
-    @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("unused")
+	@Test(expected = IllegalArgumentException.class)
     public void testNullBitSetMatcher() {
         new SetBitsetMatcher(null, false);
     }
@@ -44,7 +45,8 @@ public class ByteSetMatcherTest {
     /**
      * 
      */
-    @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("unused")
+	@Test(expected = IllegalArgumentException.class)
     public void testNullBinarySearchMatcher() {
         new SetBinarySearchMatcher(null, false);
     }
@@ -52,7 +54,8 @@ public class ByteSetMatcherTest {
     /**
      * 
      */
-    @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("unused")
+	@Test(expected = IllegalArgumentException.class)
     public void testEmptyBitSetMatcher() {
         new SetBitsetMatcher(new LinkedHashSet<Byte>(), false);
     }
@@ -60,7 +63,8 @@ public class ByteSetMatcherTest {
     /**
      * 
      */
-    @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("unused")
+	@Test(expected = IllegalArgumentException.class)
     public void testEmptyBinarySearchMatcher() {
         new SetBinarySearchMatcher(new LinkedHashSet<Byte>(), false);
     }    

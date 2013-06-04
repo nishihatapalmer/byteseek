@@ -251,6 +251,7 @@ public final class SearcherProfiler {
 
 		private List<SearchResult<?>> searchEntireArrayForwards(Searcher<?> searcher, byte[] bytes) {
 			final List<SearchResult<?>> positions = new ArrayList<SearchResult<?>>();
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final ForwardSearchIterator<?> iterator = new ForwardSearchIterator(searcher, bytes);
 			while (iterator.hasNext()) {
 				positions.addAll(iterator.next());
@@ -258,9 +259,9 @@ public final class SearcherProfiler {
 			return positions;
 		}
 
-		private List<SearchResult<?>> searchEntireReaderForwards(Searcher<?> searcher, WindowReader reader)
-				throws IOException {
+		private List<SearchResult<?>> searchEntireReaderForwards(Searcher<?> searcher, WindowReader reader) {
 			final List<SearchResult<?>> positions = new ArrayList<SearchResult<?>>();
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final ForwardSearchIterator<?> iterator = new ForwardSearchIterator(searcher, reader);
 			while (iterator.hasNext()) {
 				positions.addAll(iterator.next());
@@ -270,6 +271,7 @@ public final class SearcherProfiler {
 
 		private List<SearchResult<?>> searchEntireArrayBackwards(Searcher<?> searcher, byte[] bytes) {
 			final List<SearchResult<?>> positions = new ArrayList<SearchResult<?>>();
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final BackwardSearchIterator<?> iterator = new BackwardSearchIterator(searcher, bytes);
 			while (iterator.hasNext()) {
 				positions.addAll(iterator.next());
@@ -280,6 +282,7 @@ public final class SearcherProfiler {
 		private List<SearchResult<?>> searchEntireReaderBackwards(Searcher<?> searcher,
 				WindowReader reader) throws IOException {
 			final List<SearchResult<?>> positions = new ArrayList<SearchResult<?>>();
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			final BackwardSearchIterator<?> iterator = new BackwardSearchIterator(searcher, reader);
 			while (iterator.hasNext()) {
 

@@ -85,6 +85,7 @@ import net.byteseek.searcher.sequence.sunday.SundayQuickSearcher;
  * 
  * @author Matt Palmer
  */
+@SuppressWarnings("unused")
 public class SearcherPerformanceTests {
 
 	//TODO:

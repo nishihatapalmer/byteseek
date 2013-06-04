@@ -250,36 +250,43 @@ public class ByteArrayMatcherTest {
 	//  construction failure tests  //
 	//////////////////////////////////
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructNoRepeats() {
 		new ByteArrayMatcher((byte) 0x8f, 0);
 	}
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructNullArray() {
 		new ByteArrayMatcher((byte[]) null);
 	}
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructEmptyArray() {
 		new ByteArrayMatcher(new byte[0]);
 	}
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructNullCollection() {
 		new ByteArrayMatcher((ArrayList<Byte>) null);
 	}
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructEmptyCollection() {
 		new ByteArrayMatcher(new ArrayList<Byte>());
 	}
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructNullList() {
 		new ByteArrayMatcher((ArrayList<ByteArrayMatcher>) null);
 	}
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructEmptyList() {
 		new ByteArrayMatcher(new ArrayList<ByteArrayMatcher>());

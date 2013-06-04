@@ -65,14 +65,14 @@ public class FileReaderTest {
 	/**
 	 * Test of length method, of class FileReader.  Also tests that the total length
 	 * is correct when the file reader uses different window sizes and cache capacities.
-	 * 
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
 	@Test
-	public void testLength() throws FileNotFoundException {
+	public void testLength() throws IOException {
 		FileReader reader = new FileReader(getFile("/TestASCII.txt"));
 		assertEquals("length ASCII", 112280, reader.length());
-
+		reader.close();
+		
 		// no matter how the file reader sets its window sizes or cache strategies,
 		// it must make no difference to the total length of the data read.
 		FileReaderIterator iterator = new FileReaderIterator("/TestASCII.txt");
