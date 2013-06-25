@@ -253,10 +253,8 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     private List<Automata<T>> getByteAutomataList(final String fromString) {
       final List<Automata<T>> automataList = new ArrayList<Automata<T>>(fromString.length());
-      final ByteNode byteValue = new ByteNode((byte) 0);
       for (int i = 0; i < fromString.length(); i++) {
-        byteValue.setByteValue((byte) fromString.charAt(i));
-        automataList.add(createTransitionAutomata(byteValue));
+        automataList.add(createTransitionAutomata(ByteNode.valueOf((byte) fromString.charAt(i))));
       }      
       return automataList;
     }
@@ -264,32 +262,22 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     private List<Automata<T>> getCaseInsensitiveAutomataList(final String fromString) {
       final List<Automata<T>> automataList = new ArrayList<Automata<T>>(fromString.length());
-      final ParseTree set = createTwoByteSet();
-      final ByteNode lowerByte = (ByteNode) set.getChildren().get(0);
-      final ByteNode upperByte = (ByteNode) set.getChildren().get(1);
       for (int i = 0; i < fromString.length(); i++) {
         final char character = fromString.charAt(i);
         final byte upper = (byte) Character.toUpperCase(character);
         final byte lower = (byte) Character.toLowerCase(character);
-        lowerByte.setByteValue(lower);
         if (lower == upper) {
-          automataList.add(createTransitionAutomata(lowerByte));
+          automataList.add(createTransitionAutomata(ByteNode.valueOf(lower)));
         } else {
-          upperByte.setByteValue(upper);
-          automataList.add(createTransitionAutomata(set));
+            final ChildrenNode set = new ChildrenNode(ParseTreeType.SET);
+            set.addChild(ByteNode.valueOf(lower));
+            set.addChild(ByteNode.valueOf(upper));
+        	automataList.add(createTransitionAutomata(set));
         }
       }      
       return automataList;      
     }
 
-    
-    private ParseTree createTwoByteSet() {
-      final ChildrenNode twoByteSet = new ChildrenNode(ParseTreeType.SET);
-      twoByteSet.addChild(new ByteNode((byte) 0));
-      twoByteSet.addChild(new ByteNode((byte) 0));
-      return twoByteSet;
-    }
-    
     
     private String getTypeErrorMessage(final ParseTree ast) {
         final ParseTreeType type = ast.getParseTreeType();

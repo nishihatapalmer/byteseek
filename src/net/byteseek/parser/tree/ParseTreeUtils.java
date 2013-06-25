@@ -51,7 +51,7 @@ public final class ParseTreeUtils {
 	// Constants //
 	///////////////
 	
-	private static final String TYPE_ERROR = "Parse tree type id [&d] with description [%s] is not supported by the parser.";
+	private static final String TYPE_ERROR = "Parse tree type [%s] with description [%s] is not supported by the parser.";
 
 	
 	/////////////////

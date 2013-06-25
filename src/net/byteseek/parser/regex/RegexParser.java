@@ -164,7 +164,7 @@ public class RegexParser implements Parser<ParseTree> {
 	
 	private ParseTree parseAlternatives(final StringParseReader expression) throws ParseException {
 		final List<ParseTree> alternatives = new ArrayList<ParseTree>(8);
-		while (!expression.atEnd() && expression.lastRead() != CLOSE_GROUP) {
+		while (!expression.atEnd() && expression.peekBehind() != CLOSE_GROUP) {
 			final ParseTree sequence = parseSequence(expression);
 			if (sequence != null) {
 				alternatives.add(sequence);
@@ -454,11 +454,19 @@ public class RegexParser implements Parser<ParseTree> {
 			}
 			
 			case STRING_QUOTE:	{
-				return new StringNode(expression.readString(STRING_QUOTE));
+				String stringValue = expression.readString(STRING_QUOTE);
+				if (stringValue.isEmpty()) {
+					throw new ParseException(addContext("Strings cannot be empty", expression));
+				}
+				return new StringNode(stringValue);
 			}
 			
 			case CASE_INSENSITIVE_QUOTE: {
-				return new StringNode(expression.readString(CASE_INSENSITIVE_QUOTE), ParseTreeType.CASE_INSENSITIVE_STRING);
+				String stringValue = expression.readString(CASE_INSENSITIVE_QUOTE);
+				if (stringValue.isEmpty()) {
+					throw new ParseException(addContext("Strings cannot be empty", expression));
+				}
+				return new StringNode(stringValue, ParseTreeType.CASE_INSENSITIVE_STRING);
 			}
 						               							   
 			case SHORTHAND_ESCAPE:	{

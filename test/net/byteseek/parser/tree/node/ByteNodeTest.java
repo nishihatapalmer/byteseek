@@ -37,7 +37,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.parser.tree.node.ByteNode;
 
 import org.junit.Test;
 
@@ -49,18 +48,31 @@ public class ByteNodeTest {
 			final byte value = (byte) byteValue;
 			
 			ByteNode node = new ByteNode(value);
-			testNode(node, value, false);
+			testNode(ParseTreeType.BYTE, node, value, false);
 			
 			node = new ByteNode(value, false);
-			testNode(node, value, false);
+			testNode(ParseTreeType.BYTE, node, value, false);
 			
 			node = new ByteNode(value, true);
-			testNode(node, value, true);
+			testNode(ParseTreeType.BYTE, node, value, true);
+			
+			node = new ByteNode(ParseTreeType.ALL_BITMASK, value);
+			testNode(ParseTreeType.ALL_BITMASK, node, value, false);
+			
+			node = ByteNode.valueOf(value);
+			testNode(ParseTreeType.BYTE, node, value, false);
+
+			node = ByteNode.valueOf(value, false);
+			testNode(ParseTreeType.BYTE, node, value, false);
+			
+			node = ByteNode.valueOf(value, true);
+			testNode(ParseTreeType.BYTE, node, value, true);
 		}
 	}
 	
-	private void testNode(ByteNode node, byte value, boolean isInverted) {
-		assertEquals("ByteNode has correct type: ", ParseTreeType.BYTE, node.getParseTreeType());
+
+	private void testNode(ParseTreeType type, ByteNode node, byte value, boolean isInverted) {
+		assertEquals("ByteNode has correct type: ", type, node.getParseTreeType());
 		try {
 			assertEquals("ByteNode has correct value:" + value, value, node.getByteValue());
 		} catch (ParseException e1) {
@@ -80,7 +92,8 @@ public class ByteNodeTest {
 		} catch (ParseException allIsFine) {};
 		
 		assertNotNull("Child list is not null", node.getChildren());
-		assertTrue("Child list is empty", node.getChildren().isEmpty());		
+		assertTrue("Child list is empty", node.getChildren().isEmpty());
+		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 
 }

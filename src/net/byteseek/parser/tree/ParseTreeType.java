@@ -412,7 +412,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}. are called.
 	 * <p> 
-	 * A ZERO_TO_MANY node has a single child node, which is the ParseTree to be match from zero to many times.
+	 * A ZERO_TO_MANY node has a single child node, which is the ParseTree to be matched from zero to many times.
 	 * A ParseException should be thrown if a ZERO_TO_MANY node has anything other than a single child node.
 	 */
 	ZERO_TO_MANY("Repeat the child ParseTree zero to many times"),
@@ -429,7 +429,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}. are called.
 	 * <p> 
-	 * A ONE_TO_MANY node has a single child node, which is the ParseTree to be match from one to many times.
+	 * A ONE_TO_MANY node has a single child node, which is the ParseTree to be matched from one to many times.
 	 * A ParseException should be thrown if a ONE_TO_MANY node has anything other than a single child node.
 	 */	
 	ONE_TO_MANY("Repeat the child ParseTree one to many times"),
@@ -447,7 +447,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}. are called.
 	 * <p> 
-	 * An OPTIONAL node has a single child node, which is the ParseTree to be match from zero to one times.
+	 * An OPTIONAL node has a single child node, which is the ParseTree to be matched from zero to one times.
 	 * A ParseException should be thrown if an OPTIONAL node has anything other than a single child node.
 	 */		
   	OPTIONAL("The child ParseTree is optional (repeat zero to one times).");

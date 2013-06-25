@@ -44,10 +44,10 @@ import net.byteseek.parser.tree.ParseTreeType;
  * @author Matt Palmer
  *
  */
-public class ByteNode extends BaseNode {
+public final class ByteNode extends BaseNode {
 
-  private byte value;
-  private boolean inverted; 
+  private final byte value;
+  private final boolean inverted; 
   
   
   private static class NodeCache {
@@ -84,8 +84,8 @@ public class ByteNode extends BaseNode {
   
   /**
    * Constructs a ByteNode with the given type and value.
-   * @param type
-   * @param value
+   * @param type The type of the ByteNode
+   * @param value The byte value of the byte node.
    */
   public ByteNode(final ParseTreeType type, final byte value) {
 	  this(type, value, false);
@@ -125,15 +125,7 @@ public class ByteNode extends BaseNode {
     return value;
   }
   
-  /**
-   * Sets the value of the ByteNode.
-   * 
-   * @param value The new value of the ByteNode.
-   */
-  public void setByteValue(final byte value) {
-    this.value = value;
-  }
-  
+ 
   /**
    * Returns whether the value of the byte node should be inverted or not.
    * @return boolean True if the value should be inverted.
@@ -143,15 +135,7 @@ public class ByteNode extends BaseNode {
 	return inverted;
   }
 
-  /**
-   * Sets whether the value of the byte node should be inverted.
-   * 
-   * @param isValueInverted Whether the value of the byte node should be inverted.
-   */
-  public void setValueInverted(final boolean isValueInverted) {
-	this.inverted = isValueInverted;
-  }	  
-  
+
   @Override
   public String toString() {
 	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + " inverted: " + inverted + ']';
