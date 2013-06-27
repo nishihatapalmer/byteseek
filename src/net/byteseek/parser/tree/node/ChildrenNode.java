@@ -48,8 +48,8 @@ import net.byteseek.parser.tree.ParseTreeType;
  */
 public class ChildrenNode extends BaseNode {
 
-	private List<ParseTree> children;
-	private boolean inverted; 
+	private final List<ParseTree> children;
+	private final boolean inverted; 
 	
 	
 	/**
@@ -91,7 +91,7 @@ public class ChildrenNode extends BaseNode {
 	 * @param inverted Whether the value of this node should be inverted or not.
 	 */
 	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
-			   			 final boolean inverted) {
+			   			final boolean inverted) {
 		super(type);
 		this.children = children == null? new ArrayList<ParseTree>(2)
 									     : new ArrayList<ParseTree>(children);
@@ -112,17 +112,6 @@ public class ChildrenNode extends BaseNode {
 		return children;
 	}
 
-	/**
-	 * Sets a new list of children, by copying the list of children passed in, and
-	 * replacing any previous children.
-	 * 
-	 * @param children The list of children to copy in to this node, replacing any previous children.
-	 */
-	public void setChildren(final List<ParseTree> children) {
-		this.children = children == null? new ArrayList<ParseTree>(2)
-			     			   		     : new ArrayList<ParseTree>(children);
-	}
-	
 	
 	/**
 	 * Adds a new child ParseTree to the list of children in this node
@@ -133,6 +122,7 @@ public class ChildrenNode extends BaseNode {
 	public boolean addChild(final ParseTree child) {
 		return children.add(child);
 	}
+	
 	
 	/**
 	 * Removes a child ParseTree from the list of children in this node.
@@ -153,16 +143,7 @@ public class ChildrenNode extends BaseNode {
 		return inverted;
 	}
 	
-	/**
-	 * Sets whether the value of this node should be inverted or not.
-	 * 
-	 * @param isValueInverted Whether to invert the value of this node or not.
-	 */
-	public void setValueInverted(final boolean isValueInverted) {
-		this.inverted = isValueInverted;
-	}
-	
-	
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + '[' + getParseTreeType() + ", num children:" + children.size() + ']';  

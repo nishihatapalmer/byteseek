@@ -33,6 +33,7 @@ package net.byteseek.parser.tree.node;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -76,7 +77,16 @@ public class ChildrenNodeTest {
 	}
 	
 	private void testConstruction(ParseTreeType type, List<ParseTree> children, int numChildren) {
-		ChildrenNode node = new ChildrenNode(type, children);
+		ChildrenNode node = new ChildrenNode(type);
+		testNode("Just a type", node, type, 0, false);
+		
+		node = new ChildrenNode(type, true);
+		testNode("Type and inverted", node, type, 0, true);
+		
+		node = new ChildrenNode(type, null);
+		testNode("Type and null children", node, type, 0, false);
+		
+		node = new ChildrenNode(type, children);
 		testNode("Default false inversion: ", node, type, numChildren, false);
 
 		node = new ChildrenNode(type, children, false);
@@ -134,6 +144,7 @@ public class ChildrenNodeTest {
 		
 		assertNotNull(description + "Child list is not null", node.getChildren());
 		assertEquals(description + "Child list has correct number of children " + numChildren, numChildren, node.getChildren().size());
+		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 
 }
