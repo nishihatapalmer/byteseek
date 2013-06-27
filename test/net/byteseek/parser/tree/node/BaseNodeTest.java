@@ -72,6 +72,7 @@ public class BaseNodeTest {
 		
 		assertNotNull("Child list is not null", node.getChildren());
 		assertTrue("Child list is empty", node.getChildren().isEmpty());
+		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 	
 }
