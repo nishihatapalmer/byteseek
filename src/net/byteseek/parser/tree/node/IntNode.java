@@ -41,9 +41,9 @@ import net.byteseek.parser.tree.ParseTreeType;
  * @author Matt Palmer.
  *
  */
-public class IntNode extends BaseNode {
+public final class IntNode extends BaseNode {
 
-  private int value;
+  private final int value;
   
   /**
    * Constructs an IntNode with the given value.
@@ -63,16 +63,6 @@ public class IntNode extends BaseNode {
   public int getIntValue() throws ParseException {
     return value;
   }
-  
-  /**
-   * Sets the integer value of this IntNode.
-   * 
-   * @param value The new value of the IntNode.
-   */
-  public void setIntValue(final int value) {
-    this.value = value;
-  }
-  
   
   @Override
   public String toString() {
