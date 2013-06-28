@@ -392,8 +392,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 	
 	private String getTypeErrorMessage(final ParseTree ast) {
 		final ParseTreeType type = ast.getParseTreeType();
-		return String.format("Unknown type, id %s with description: %s", 
-		                       type, type.getDescription());
+		return String.format("Unknown type %s ", type); 
 	}    	
 	
    

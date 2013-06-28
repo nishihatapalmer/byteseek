@@ -240,8 +240,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	
 	private String getTypeErrorMessage(final ParseTree node) {
 		final ParseTreeType type = node.getParseTreeType();
-		return String.format("Unknown syntax tree node, type [%s] with description: [%s]", 
-							  type, type.getDescription());	
+		return String.format("Unknown syntax tree node, type [%s]", type);	
 	}
 
 }

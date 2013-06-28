@@ -71,35 +71,13 @@ public final class ParseTreeUtils {
 	///////////////////////////
 	
 	/**
-	 * Returns a byte from its hexadecimal string representation.
-	 * 
-	 * @param hexByte
-	 *            a hexadecimal representation of a byte.
-	 * @return the byte encoded by the hex representation.
-	 * @throws ParseException if the string cannot be parsed as a hex byte, or is null or empty.
-	 */
-	public static byte parseHexByte(final String hexByte) throws ParseException {
-		try {
-			final int value = Integer.parseInt(hexByte, 16);
-			if (value < 0 || value > 255) {
-				throw new ParseException("The hex string [" + hexByte +
-										  "] is not a byte value between 0 and 255 inclusive: "
-										  + value);
-			}
-			return (byte) value;
-		} catch (NumberFormatException nfe) {
-			throw new ParseException("Could not parse into a hex byte: [" + hexByte + "]");
-		}
-	}
-	
-	
-	/**
 	 * Returns the first child of a node, or throws a ParseException if
 	 * there is no such child.
 	 * 
 	 * @param node The node to get the first child of.
 	 * @return A node which is the first child of the node passed in.
 	 * @throws ParseException If there is no such child node.
+	 * @throws NullPointerException if node is null.
 	 */
 	public static ParseTree getFirstChild(final ParseTree node) throws ParseException {
 	  final List<ParseTree> children = node.getChildren();

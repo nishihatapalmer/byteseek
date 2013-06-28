@@ -63,7 +63,7 @@ public enum ParseTreeType {
 	 * A BYTE type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
 	 */
-    BYTE("A byte value"),
+    BYTE,
     
     /**
      * An INTEGER type has a single integer value, which is accessible via a call to 
@@ -80,7 +80,7 @@ public enum ParseTreeType {
 	 * An INTEGER type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
 	 */
-	INTEGER("An integer value"),    
+	INTEGER,    
 
 	/**
 	 * An ALL_BITMASK type defines a bit-mask for which all the bits must match.
@@ -98,7 +98,7 @@ public enum ParseTreeType {
 	 * An ALL_BITMASK type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
 	 */	
-	ALL_BITMASK("A bitmask for matching all of its bits"),
+	ALL_BITMASK,
 
 	/**
 	 * An ANY_BITMASK type defines a bit-mask for which any of the bits must match.
@@ -116,7 +116,7 @@ public enum ParseTreeType {
 	 * An ANY_BITMASK type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
 	 */		
-	ANY_BITMASK("A bitmask for matching any of its bits"),
+	ANY_BITMASK,
 
 	/**
 	 * An ANY type defines a wild-card node which matches all bytes.
@@ -137,7 +137,7 @@ public enum ParseTreeType {
 	 * An ANY type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
 	 */		
-	ANY("A wildcard matching any byte value"),
+	ANY,
 
 	/**
 	 * A STRING type represents a sequence of bytes, expressed as a java String value.
@@ -166,7 +166,7 @@ public enum ParseTreeType {
 	 * A STRING type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
 	 */
-	STRING("A sequence of bytes represented as a string of text."),
+	STRING,
 
 	/**
 	 * A CASE_INSENSITIVE_STRING type represents a sequence of bytes, expressed as a java String value.
@@ -187,7 +187,7 @@ public enum ParseTreeType {
 	 * A STRING type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
 	 */
-	CASE_INSENSITIVE_STRING("A case insensitive ASCII string"),
+	CASE_INSENSITIVE_STRING,
 	
 	
 	////////////////////////////////////////////////
@@ -208,22 +208,21 @@ public enum ParseTreeType {
 	 * if calls are made to either {@link net.byteseek.parser.tree.ParseTree#getIntValue()},
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}.
-	 * <p> 
-	 * It has two child nodes defining an inclusive range of values.  
-	 * Each child node must be  able to return a byte value defining one end of the range.
-	 * This means that currently a child node must be either a BYTE node, or a 
-	 * STRING node with a text value of one single-byte-encoded character.
-	 * For example, a range from 'A' (0x41) to 'z' (0x7a) could be specified as:
+	 * <p>
+	 * FIXME: now has two int nodes in the range 0 - 255.  The syntax that produces
+	 * a range is independant of its meaning.
+	 *  
+	 * It has two child INTEGER nodes defining an inclusive range of values between 0 and 255.  
 	 * <p><blockquote><pre><code>
 	 *    RANGE
 	 *     /&nbsp;&nbsp;&nbsp;&nbsp;\
-	 *  BYTE STRING
-	 *  0x41   'z'
+	 *  INTEGER INTEGER
+	 *   32        254
 	 * </code></pre></blockquote><p><p>
-	 * The range does not have to be specified in any particular order - a bigger byte value 
+	 * The range does not have to be specified in any particular order - a bigger value 
 	 * can appear before a smaller one, or vice versa.  
 	 */
-	RANGE("A range of byte values."),
+	RANGE,
 	
 	/**
 	 * A SET type defines an arbitrary set of byte values to match.
@@ -256,7 +255,7 @@ public enum ParseTreeType {
 	 * Some compilers may throw an exception if asked to produce a matcher that never matches anything.
 	 * All of the compilers in the byteseek library will do this.
 	 */
-	SET("A set of byte values, bitmasks, ranges, or other sets of bytes as children of this node"),
+	SET,
 	
 	
 	/////////////////////////////////////////////
@@ -306,7 +305,7 @@ public enum ParseTreeType {
 	 * There must be at least one child node, although note that a sequence with a single child node
 	 * can be directly replaced by that child node.
 	 */
-	SEQUENCE("An ordered sequence of child nodes to match"),
+	SEQUENCE,
 
 
 	/**
@@ -330,7 +329,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()} or
 	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()}.
  	 */
-	REPEAT("Repeat the second child node the number of times contained in the first child INTEGER node."),
+	REPEAT,
 	
 	/**
 	 * A REPEAT_MIN_TO_MANY node repeats another node at least a fixed number of times, but can repeat more than this.
@@ -353,7 +352,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()} or
 	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()}.
  	 */
-	REPEAT_MIN_TO_MANY("Repeat the second child node at least the number of times contained in the first child INTEGER node, but which could repeat more than that."),
+	REPEAT_MIN_TO_MANY,
 
 
 	/**
@@ -379,7 +378,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()} or
 	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()}.
  	 */
-	REPEAT_MIN_TO_MAX("Repeat the third child ParseTree from a minimum (first INTEGER child) to a maximum (second INTEGER child) number of times."),
+	REPEAT_MIN_TO_MAX,
 	
 	
 	/**
@@ -398,7 +397,7 @@ public enum ParseTreeType {
 	 * No particular order is implied by being in a list of children.
 	 * An ALTERNATIVES node must have at least one child.
 	 */
-	ALTERNATIVES("A set of alternatives as children of this ParseTree"),
+	ALTERNATIVES,
 	
 	/**
 	 * A ZERO_TO_MANY type specifies that its single child node should appear zero to many times.
@@ -415,7 +414,7 @@ public enum ParseTreeType {
 	 * A ZERO_TO_MANY node has a single child node, which is the ParseTree to be matched from zero to many times.
 	 * A ParseException should be thrown if a ZERO_TO_MANY node has anything other than a single child node.
 	 */
-	ZERO_TO_MANY("Repeat the child ParseTree zero to many times"),
+	ZERO_TO_MANY,
 
 	/**
 	 * A ONE_TO_MANY type specifies that its single child node should appear one to many times.
@@ -432,7 +431,7 @@ public enum ParseTreeType {
 	 * A ONE_TO_MANY node has a single child node, which is the ParseTree to be matched from one to many times.
 	 * A ParseException should be thrown if a ONE_TO_MANY node has anything other than a single child node.
 	 */	
-	ONE_TO_MANY("Repeat the child ParseTree one to many times"),
+	ONE_TO_MANY,
 	
 	/**
 	 * An OPTIONAL type specifies that its single child node may or may not appear.  
@@ -450,22 +449,8 @@ public enum ParseTreeType {
 	 * An OPTIONAL node has a single child node, which is the ParseTree to be matched from zero to one times.
 	 * A ParseException should be thrown if an OPTIONAL node has anything other than a single child node.
 	 */		
-  	OPTIONAL("The child ParseTree is optional (repeat zero to one times).");
-  
+  	OPTIONAL;
     
-	//////////////////////
-	// Class definition //
-	//////////////////////
-    
-    private final String description;
-	
-	private ParseTreeType(final String description) {
-		this.description = description;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
 
 }
 

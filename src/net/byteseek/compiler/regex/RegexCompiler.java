@@ -281,8 +281,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     private String getTypeErrorMessage(final ParseTree ast) {
         final ParseTreeType type = ast.getParseTreeType();
-        return String.format("Unknown parse tree type %s with description: %s", 
-                              type, type.getDescription());
+        return String.format("Unknown parse tree type %s", type);
     }
     
 }
