@@ -99,21 +99,6 @@ public class ChildrenNode extends BaseNode {
 		this.inverted = inverted;
 	}		
 	
-	
-	/**
-	 * Returns the children of this ChildrenNode as a list of ParseTree objects.
-	 * The original list held by this class is returned; it is not defensively copied.
-	 * Therefore, you should not modify the list returned unless you are very sure
-	 * that this is safe to do.
-	 * 
-	 * @return The internal list of child ParseTree objects.
-	 */
-	//@Override
-	//public List<ParseTree> getChildren() {
-	//	return children;
-	//}
-
-	
 	@Override
 	public int getNumChildren() {
 		return children.size();
@@ -127,25 +112,14 @@ public class ChildrenNode extends BaseNode {
 		return children.get(childIndex);
 	}
 	
-	/**
-	 * Adds a new child ParseTree to the list of children in this node
-	 * 
-	 * @param child The new child ParseTree.
-	 * @return boolean Returns true or false in the same way as Collections.add specifies.
-	 */
 	public boolean addChild(final ParseTree child) {
 		return children.add(child);
 	}
 	
 	
-	/**
-	 * Removes a child ParseTree from the list of children in this node.
-	 * 
-	 * @param child The child ParseTree to remove.
-	 * @return boolean Returns true or false in the same way as Collections.remove specifies.
-	 */
-	public boolean removeChild(final ParseTree child) {
-		return children.remove(child);
+	@Override
+	public ParseTree removeChild(final int childIndex) {
+		return children.remove(childIndex);
 	}
 
 	@Override

@@ -133,13 +133,14 @@ public interface ParseTree extends Iterable<ParseTree> {
 	
 	
 	/**
-	 * Removes a child node from this node.
+	 * Removes a child node from this node at the given index position
 	 * 
-	 * @param child The child ParseTree to remove.
-	 * @return boolean True if the child ParseTree was removed.
+	 * @param childIndex The index of the child ParseTree to remove.
+	 * @return ParseTree The child ParseTree removed from this node.
 	 * @throws UnsupportedOperationException if the implementation cannot remove child nodes.
+	 * @throws IndexOutOfBoundsException if the childIndex is less than zero or greater than or equal to the number of children.
 	 */
-	public boolean removeChild(ParseTree child);
+	public ParseTree removeChild(int childIndex);
 
 }
 

@@ -113,7 +113,7 @@ public class ChildrenNodeTest {
 		
 		assertEquals("Remove node from test list: size is correct: ", numChildren + 1, defaultNode.getNumChildren());
 
-		defaultNode.removeChild(nodeToAdd2);
+		defaultNode.removeChild(0);
 		
 		assertEquals("Remove from default node: Default behaviour is is back to start", numChildren, defaultNode.getNumChildren());
 		assertEquals("Remove from given node: test list is back to start", numChildren, childrenToTest.size());

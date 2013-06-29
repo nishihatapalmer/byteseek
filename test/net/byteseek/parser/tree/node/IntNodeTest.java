@@ -99,7 +99,7 @@ public class IntNodeTest {
 			fail("Expected a ParseException if asked for the text value");
 		} catch (ParseException allIsFine) {};
 		
-		assertEquals("Child list is empty", node.getNumChildren());	
+		assertEquals("Child list is empty", 0, node.getNumChildren());	
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 }

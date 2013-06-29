@@ -130,7 +130,7 @@ public class BaseNode implements ParseTree {
   }
   
   @Override
-  public boolean removeChild(final ParseTree child) {
+  public ParseTree removeChild(final int childIndex) {
 	  throw new UnsupportedOperationException("The node does not support removing child nodes, type:" + type);
   }
   
