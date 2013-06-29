@@ -33,28 +33,190 @@ package net.byteseek.parser.tree;
 
 import static org.junit.Assert.*;
 
+import net.byteseek.parser.ParseException;
+import net.byteseek.parser.tree.node.BaseNode;
+import net.byteseek.parser.tree.node.ChildrenNode;
+import net.byteseek.parser.tree.node.IntNode;
+import net.byteseek.parser.tree.node.StringNode;
+
 import org.junit.Test;
 
 public class ParseTreeUtilsTest {
 
 	@Test
-	public final void testParseHexByte() {
-		fail("Not yet implemented"); // TODO
+	public final void testGetFirstChild() throws ParseException {
+		ChildrenNode parent = new ChildrenNode(ParseTreeType.SET);
+		parent.addChild(new IntNode(1));
+		parent.addChild(new StringNode("A string"));
+		
+		ParseTree firstChild = ParseTreeUtils.getFirstChild(parent);
+		assertEquals("First child is integer", ParseTreeType.INTEGER, firstChild.getParseTreeType());
+		assertEquals("First child value is 1", 1, firstChild.getIntValue());
+
+		parent = new ChildrenNode(ParseTreeType.SET);
+		parent.addChild(new StringNode("A string"));
+		parent.addChild(new IntNode(1));
+		
+		firstChild = ParseTreeUtils.getFirstChild(parent);
+		assertEquals("First child is String", ParseTreeType.STRING, firstChild.getParseTreeType());
+		assertEquals("First child value is 'A string'", "A string", firstChild.getTextValue());
+		
+		try {
+			firstChild = ParseTreeUtils.getFirstChild(null);
+			fail("Expected a null pointeger exception");
+		} catch (NullPointerException expected) {
+		}
+		
+		try {
+			parent = new ChildrenNode(ParseTreeType.SET);
+			firstChild = ParseTreeUtils.getFirstChild(parent);
+			fail("Expected a parse exception if there are no children");
+		} catch (ParseException expected) {
+		}
+		
 	}
+	
 
 	@Test
-	public final void testGetFirstChild() {
-		fail("Not yet implemented"); // TODO
+	public final void testGetFirstRangeValue() throws ParseException {
+		ChildrenNode parent = new ChildrenNode(ParseTreeType.RANGE);
+		parent.addChild(new IntNode(1));
+		parent.addChild(new IntNode(1));
+		assertEquals("Value is 1", 1, ParseTreeUtils.getFirstRangeValue(parent));
+		
+		parent = new ChildrenNode(ParseTreeType.RANGE);
+		parent.addChild(new IntNode(242));
+		parent.addChild(new IntNode(10));
+		assertEquals("Value is 257", 242, ParseTreeUtils.getFirstRangeValue(parent));
+		
+		for (ParseTreeType type : ParseTreeType.values()) {
+			if (type != ParseTreeType.RANGE) {
+				try {
+					ParseTreeUtils.getFirstRangeValue(new ChildrenNode(type));
+					fail("Expected a ParseException if the type was not Range.  Type is " + type);
+				} catch (ParseException expected) {
+				}
+			}
+
+			if (type != ParseTreeType.INTEGER) {
+				parent = new ChildrenNode(ParseTreeType.RANGE);
+				parent.addChild(new BaseNode(type));
+				parent.addChild(new IntNode(96));
+				try {
+					ParseTreeUtils.getFirstRangeValue(parent);
+					fail("Expected a ParseException if the child type was not INTEGER.  Type is " + type);
+				} catch (ParseException excepted) {
+				}
+			}
+		}
+		
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(-1));
+			parent.addChild(new IntNode(30));
+			ParseTreeUtils.getFirstRangeValue(parent);
+			fail("Expected a ParseException if a value is less than 0");
+		} catch (ParseException expected) {
+		}
+
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(256));
+			parent.addChild(new IntNode(30));
+			ParseTreeUtils.getFirstRangeValue(parent);
+			fail("Expected a ParseException if a value is greater than 255");
+		} catch (ParseException expected) {
+		}
+		
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(256));
+			ParseTreeUtils.getFirstRangeValue(parent);
+			fail("Expected a ParseException with only one child");
+		} catch (ParseException expected) {
+		}
+		
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(0));
+			parent.addChild(new IntNode(64));
+			parent.addChild(new IntNode(92));
+			ParseTreeUtils.getFirstRangeValue(parent);
+			fail("Expected a ParseException with three children");
+		} catch (ParseException expected) {
+		}
+
 	}
+	
 
 	@Test
-	public final void testGetFirstRangeValue() {
-		fail("Not yet implemented"); // TODO
-	}
+	public final void testGetSecondRangeValue() throws ParseException {
+		ChildrenNode parent = new ChildrenNode(ParseTreeType.RANGE);
+		parent.addChild(new IntNode(1));
+		parent.addChild(new IntNode(1));
+		assertEquals("Value is 1", 1, ParseTreeUtils.getSecondRangeValue(parent));
+		
+		parent = new ChildrenNode(ParseTreeType.RANGE);
+		parent.addChild(new IntNode(242));
+		parent.addChild(new IntNode(10));
+		assertEquals("Value is 257", 242, ParseTreeUtils.getSecondRangeValue(parent));
+		
+		for (ParseTreeType type : ParseTreeType.values()) {
+			if (type != ParseTreeType.RANGE) {
+				try {
+					ParseTreeUtils.getSecondRangeValue(new ChildrenNode(type));
+					fail("Expected a ParseException if the type was not Range.  Type is " + type);
+				} catch (ParseException expected) {
+				}
+			}
 
-	@Test
-	public final void testGetSecondRangeValue() {
-		fail("Not yet implemented"); // TODO
+			if (type != ParseTreeType.INTEGER) {
+				parent = new ChildrenNode(ParseTreeType.RANGE);
+				parent.addChild(new BaseNode(type));
+				parent.addChild(new IntNode(96));
+				try {
+					ParseTreeUtils.getSecondRangeValue(parent);
+					fail("Expected a ParseException if the child type was not INTEGER.  Type is " + type);
+				} catch (ParseException excepted) {
+				}
+			}
+		}
+		
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(-1));
+			parent.addChild(new IntNode(30));
+			ParseTreeUtils.getSecondRangeValue(parent);
+			fail("Expected a ParseException if a value is less than 0");
+		} catch (ParseException expected) {
+		}
+
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(256));
+			parent.addChild(new IntNode(30));
+			ParseTreeUtils.getSecondRangeValue(parent);
+			fail("Expected a ParseException if a value is greater than 255");
+		} catch (ParseException expected) {
+		}
+		
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(256));
+			ParseTreeUtils.getSecondRangeValue(parent);
+			fail("Expected a ParseException with only one child");
+		} catch (ParseException expected) {
+		}
+		
+		try {
+			parent = new ChildrenNode(ParseTreeType.RANGE);
+			parent.addChild(new IntNode(0));
+			parent.addChild(new IntNode(64));
+			parent.addChild(new IntNode(92));
+			ParseTreeUtils.getSecondRangeValue(parent);
+			fail("Expected a ParseException with three children");
+		} catch (ParseException expected) {
+		}
 	}
 
 	@Test
@@ -106,5 +268,6 @@ public class ParseTreeUtilsTest {
 	public final void testGetSetValues() {
 		fail("Not yet implemented"); // TODO
 	}
+
 
 }

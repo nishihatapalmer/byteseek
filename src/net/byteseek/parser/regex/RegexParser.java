@@ -595,10 +595,10 @@ public class RegexParser implements Parser<ParseTree> {
 	
 	
 	private void makeLastNodeAChildOf(final ParseTree parentNode, final List<ParseTree> sequence,
-									   final StringParseReader expression) throws ParseException {
+									  final StringParseReader expression) throws ParseException {
 		if (sequence.size() > 0) {
 			final ParseTree lastNode = sequence.remove(sequence.size() - 1);
-			parentNode.getChildren().add(lastNode);
+			parentNode.addChild(lastNode);
 			sequence.add(parentNode);
 		} else {
 			throw new ParseException(addContext("Needed the last node in a sequence to make a child of " + parentNode + 

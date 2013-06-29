@@ -32,7 +32,6 @@
 package net.byteseek.parser.tree.node;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -42,9 +41,6 @@ import java.util.List;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.parser.tree.node.BaseNode;
-import net.byteseek.parser.tree.node.ChildrenNode;
-import net.byteseek.parser.tree.node.StringNode;
 
 import org.junit.Test;
 
@@ -101,25 +97,25 @@ public class ChildrenNodeTest {
 		
 		ChildrenNode defaultNode = new ChildrenNode(type, childrenToTest); 
 
-		assertEquals("Before change, size is correct: ", numChildren, defaultNode.getChildren().size());
+		assertEquals("Before change, size is correct: ", numChildren, defaultNode.getNumChildren());
 		
 		ParseTree nodeToAdd = new StringNode("Node to add");
 		childrenToTest.add(nodeToAdd);
 		
-		assertEquals("Add to test list: size is unchanged.", numChildren, defaultNode.getChildren().size());
+		assertEquals("Add to test list: size is unchanged.", numChildren, defaultNode.getNumChildren());
 		
 		ParseTree nodeToAdd2 = new StringNode("Second node to add");
 		defaultNode.addChild(nodeToAdd2);
 		
-		assertEquals("Add default node: size is correct: ", numChildren + 1, defaultNode.getChildren().size());
+		assertEquals("Add default node: size is correct: ", numChildren + 1, defaultNode.getNumChildren());
 		
 		childrenToTest.remove(nodeToAdd);
 		
-		assertEquals("Remove node from test list: size is correct: ", numChildren + 1, defaultNode.getChildren().size());
+		assertEquals("Remove node from test list: size is correct: ", numChildren + 1, defaultNode.getNumChildren());
 
 		defaultNode.removeChild(nodeToAdd2);
 		
-		assertEquals("Remove from default node: Default behaviour is is back to start", numChildren, defaultNode.getChildren().size());
+		assertEquals("Remove from default node: Default behaviour is is back to start", numChildren, defaultNode.getNumChildren());
 		assertEquals("Remove from given node: test list is back to start", numChildren, childrenToTest.size());
 	}
 	
@@ -142,8 +138,7 @@ public class ChildrenNodeTest {
 			fail(description + "Expected a ParseException if asked for the text value");
 		} catch (ParseException allIsFine) {};
 		
-		assertNotNull(description + "Child list is not null", node.getChildren());
-		assertEquals(description + "Child list has correct number of children " + numChildren, numChildren, node.getChildren().size());
+		assertEquals(description + "Child list has correct number of children " + numChildren, numChildren, node.getNumChildren());
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 

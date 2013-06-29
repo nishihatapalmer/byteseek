@@ -111,8 +111,7 @@ public class StringNodeTest {
 			fail(description + "Expected a ParseException if asked for the int value");
 		} catch (ParseException allIsFine) {};
 		
-		assertNotNull(description + "Child list is not null", node.getChildren());
-		assertTrue(description + "Child list is empty", node.getChildren().isEmpty());	
+		assertEquals(description + "Child list is empty", 0, node.getNumChildren());	
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 

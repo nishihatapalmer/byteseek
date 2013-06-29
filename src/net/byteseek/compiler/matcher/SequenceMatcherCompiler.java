@@ -290,7 +290,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     private void addSequenceMatcher(final ParseTree ast,
                                     final List<SequenceMatcher> sequenceList)
         throws ParseException {
-      for (final ParseTree child : ast.getChildren()) {
+      for (final ParseTree child : ast) {
       	buildSequenceList(child, sequenceList);
       }
     }

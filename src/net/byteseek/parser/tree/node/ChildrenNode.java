@@ -31,6 +31,7 @@
 package net.byteseek.parser.tree.node;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.byteseek.parser.tree.ParseTree;
@@ -107,11 +108,24 @@ public class ChildrenNode extends BaseNode {
 	 * 
 	 * @return The internal list of child ParseTree objects.
 	 */
-	@Override
-	public List<ParseTree> getChildren() {
-		return children;
-	}
+	//@Override
+	//public List<ParseTree> getChildren() {
+	//	return children;
+	//}
 
+	
+	@Override
+	public int getNumChildren() {
+		return children.size();
+	}
+	
+	@Override
+	public ParseTree getChild(final int childIndex) {
+		if (childIndex < 0 || childIndex >= children.size()) {
+			throw new IndexOutOfBoundsException("Cannot access child with index " + childIndex + " in node with " + children.size() + " children ");
+		}
+		return children.get(childIndex);
+	}
 	
 	/**
 	 * Adds a new child ParseTree to the list of children in this node
@@ -134,6 +148,10 @@ public class ChildrenNode extends BaseNode {
 		return children.remove(child);
 	}
 
+	@Override
+	public Iterator<ParseTree> iterator() {
+		return children.iterator();
+	}
 	
 	/**
 	 * {@inheritDoc}

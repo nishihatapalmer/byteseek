@@ -32,7 +32,7 @@
 package net.byteseek.parser.tree.node;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTree;
@@ -109,15 +109,39 @@ public class BaseNode implements ParseTree {
   /**
    * Always returns an empty list of child ParseTrees.
    */
+  //@Override
+  //public List<ParseTree> getChildren() {
+  //  return Collections.emptyList();
+  //}
+  
   @Override
-  public List<ParseTree> getChildren() {
-    return Collections.emptyList();
+  public int getNumChildren() {
+	  return 0;
   }
   
+  @Override
+  public ParseTree getChild(final int childIndex) {
+	  throw new IndexOutOfBoundsException("There are no children in the node of type:" + type);
+  }
+
+  @Override
+  public boolean addChild(final ParseTree child) {
+	  throw new UnsupportedOperationException("The node does not support adding child nodes, type:" + type);
+  }
+  
+  @Override
+  public boolean removeChild(final ParseTree child) {
+	  throw new UnsupportedOperationException("The node does not support removing child nodes, type:" + type);
+  }
   
   @Override
   public String toString() {
 	  return getClass().getSimpleName() + "[" + type + ']';
   }
+
+	@Override
+	public Iterator<ParseTree> iterator() {
+		return Collections.<ParseTree>emptyList().iterator();
+	}
 
 }

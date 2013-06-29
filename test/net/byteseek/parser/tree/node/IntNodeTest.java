@@ -33,7 +33,6 @@ package net.byteseek.parser.tree.node;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -41,7 +40,6 @@ import java.util.Random;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.parser.tree.node.IntNode;
 
 import org.junit.Test;
 
@@ -101,8 +99,7 @@ public class IntNodeTest {
 			fail("Expected a ParseException if asked for the text value");
 		} catch (ParseException allIsFine) {};
 		
-		assertNotNull("Child list is not null", node.getChildren());
-		assertTrue("Child list is empty", node.getChildren().isEmpty());	
+		assertEquals("Child list is empty", node.getNumChildren());	
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 }

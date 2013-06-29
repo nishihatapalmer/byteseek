@@ -196,10 +196,8 @@ public class RegexParserTest {
 		assertEquals("Node " + node + " has byte value " + value,
                 	 value, node.getByteValue());
 		assertEquals("Node " + node + " inversion should be " + isInverted, isInverted, node.isValueInverted());
-		assertNotNull("Node children is not null",
-				      node.getChildren());
 		assertEquals("Node " + node + " has no children",
-	                 0, node.getChildren().size());
+	                 0, node.getNumChildren());
 	}
 	
 
@@ -307,7 +305,7 @@ public class RegexParserTest {
 		assertEquals("Node " + node + " value is: " + value, 
 					 value, node.getTextValue());
 		assertEquals("Node " + node + " has no children",
-				     0, node.getChildren().size());
+				     0, node.getNumChildren());
 	}
 	
 
@@ -339,7 +337,7 @@ public class RegexParserTest {
 		assertEquals("Node " + node + " has value: " + value, 
 					 value, node.getTextValue());
 		assertEquals("Node " + node + " has no children",
-					 0, node.getChildren().size());
+					 0, node.getNumChildren());
 	}		
 	
 	
@@ -361,10 +359,9 @@ public class RegexParserTest {
 	private void testAny(ParseTree node) {
 		assertEquals("Node " + node + " has ParseTreeType.ANY",
 				     ParseTreeType.ANY, node.getParseTreeType());
-		assertNotNull("Node " + node + " children not null", node.getChildren());
 		assertFalse("Node " + node + " is not inverted", node.isValueInverted());
 		assertEquals("Node " + node + " has zero children", 
-					 0, node.getChildren().size());
+					 0, node.getNumChildren());
 	}
 	
 
@@ -407,14 +404,13 @@ public class RegexParserTest {
 	private void testSet(ParseTree node, boolean isInverted, byte[] values) throws ParseException {
 		assertEquals("Node " + node + " has ParseTreeType.SET",
 			     ParseTreeType.SET, node.getParseTreeType());
-		assertNotNull("Node " + node + " children not null", node.getChildren());
 		assertEquals("Node " + node + " inversion is " + isInverted, isInverted, node.isValueInverted());
 		testSetValues(node, values);
 	}
 	
 	private void testSetValues(ParseTree node, byte[] values) throws ParseException {
 		Set<Byte> nodeVals = new HashSet<Byte>();
-		for (ParseTree child : node.getChildren()) {
+		for (ParseTree child : node) {
 			nodeVals.add(child.getByteValue());
 		}
 		Set<Byte> vals = ByteUtilities.toSet(values);
@@ -464,8 +460,8 @@ public class RegexParserTest {
 		assertEquals("Node " + node + " has type ParseTreeType.SEQUENCE", 
 				  ParseTreeType.SEQUENCE, node.getParseTreeType());
 		assertEquals("Node " + node + " has " + values.length + " children nodes",
-					values.length, node.getChildren().size());
-		testByteSequenceValues(node.getChildren(), values);
+					values.length, node.getNumChildren());
+		testByteSequenceValues(node, values);
 	}
 	
 	private void testRandomByteSequence() throws ParseException {
@@ -480,7 +476,7 @@ public class RegexParserTest {
 		testByteSequence(builder.toString(), values);
 	}
 	
-	private void testByteSequenceValues(List<ParseTree> sequence, byte[] values) throws ParseException {
+	private void testByteSequenceValues(ParseTree sequence, byte[] values) throws ParseException {
 		int position = 0;
 		for (ParseTree member : sequence) {
 			assertEquals("Byte sequence node position " + position + " value is " + values[position],
@@ -529,20 +525,20 @@ public class RegexParserTest {
 	}
 	
 	private void testRangeSequence(String expression, byte value1, byte value2, int index) throws ParseException {
-		final ParseTree sequenceRangeValue = parser.parse(expression).getChildren().get(index);
+		final ParseTree sequenceRangeValue = parser.parse(expression).getChild(index);
 		testRange(sequenceRangeValue, value1, value2);
 	}
 	
 	private void testRangeSet(String expression, byte value1, byte value2, int index) throws ParseException {
-		final ParseTree setRangeValue = parser.parse(expression).getChildren().get(index);
+		final ParseTree setRangeValue = parser.parse(expression).getChild(index);
 		testRange(setRangeValue, value1, value2);
 	}
 
 	private void testRange(ParseTree rangeNode, byte value1, byte value2) throws ParseException {
 		assertEquals("Node " + rangeNode + " has type ParseTreeType.RANGE", 
 			  	 ParseTreeType.RANGE, rangeNode.getParseTreeType());
-		testRangeValueNode(rangeNode.getChildren().get(0), value1);
-		testRangeValueNode(rangeNode.getChildren().get(1), value2);
+		testRangeValueNode(rangeNode.getChild(0), value1);
+		testRangeValueNode(rangeNode.getChild(1), value2);
 	}
 	
 	private void testRangeValueNode(ParseTree rangeValueNode, byte value) throws ParseException {
@@ -603,8 +599,8 @@ public class RegexParserTest {
 		assertEquals("Expression " + expression + " has type ParseTreeType.ZERO_TO_MANY", 
 				  	 ParseTreeType.ZERO_TO_MANY, node.getParseTreeType());
 		assertEquals("Expression " + expression + " has one child node",
-			         1, node.getChildren().size());		
-		return node.getChildren().get(0);		
+			         1, node.getNumChildren());		
+		return node.getChild(0);		
 	}
 	
 	
@@ -654,8 +650,8 @@ public class RegexParserTest {
 		assertEquals("Expression " + expression + " has type ParseTreeType.ONE_TO_MANY", 
 				  	 ParseTreeType.ONE_TO_MANY, node.getParseTreeType());
 		assertEquals("Expression " + expression + " has one child node",
-			         1, node.getChildren().size());		
-		return node.getChildren().get(0);		
+			         1, node.getNumChildren());		
+		return node.getChild(0);		
 	}
 	
 	
@@ -705,8 +701,8 @@ public class RegexParserTest {
 		assertEquals("Expression " + expression + " has type ParseTreeType.OPTIONAL", 
 				  	 ParseTreeType.OPTIONAL, node.getParseTreeType());
 		assertEquals("Expression " + expression + " has one child node",
-			         1, node.getChildren().size());		
-		return node.getChildren().get(0);		
+			         1, node.getNumChildren());		
+		return node.getChild(0);		
 	}
 	
 	
@@ -757,10 +753,10 @@ public class RegexParserTest {
 		assertEquals("Expression " + expression + " has type ParseTreeType.REPEAT", 
 				  	 ParseTreeType.REPEAT, node.getParseTreeType());
 		assertEquals("Expression " + expression + " has two child nodes",
-			     2, node.getChildren().size());		
+			     2, node.getNumChildren());		
 		assertEquals("Expression " + expression + " has repeat value " + repeats,
-					 repeats, node.getChildren().get(0).getIntValue());
-		return node.getChildren().get(1);
+					 repeats, node.getChild(0).getIntValue());
+		return node.getChild(1);
 	}
 	
 	
@@ -810,10 +806,10 @@ public class RegexParserTest {
 		assertEquals("Expression " + expression + " has type ParseTreeType.REPEAT_MIN_TO_MANY", 
 				  	 ParseTreeType.REPEAT_MIN_TO_MANY, node.getParseTreeType());
 		assertEquals("Expression " + expression + " has two child nodes",
-			     2, node.getChildren().size());		
+			     2, node.getNumChildren());		
 		assertEquals("Expression " + expression + " has repeat value " + repeats,
-					 repeats, node.getChildren().get(0).getIntValue());
-		return node.getChildren().get(1);
+					 repeats, node.getChild(0).getIntValue());
+		return node.getChild(1);
 	}
 
 	
@@ -863,12 +859,12 @@ public class RegexParserTest {
 		assertEquals("Expression " + expression + " has type ParseTreeType.REPEAT_MIN_TO_MAX", 
 				  	 ParseTreeType.REPEAT_MIN_TO_MAX, node.getParseTreeType());
 		assertEquals("Expression " + expression + " has three child nodes",
-			     3, node.getChildren().size());		
+			     3, node.getNumChildren());		
 		assertEquals("Expression " + expression + " has min repeat value " + minRepeat,
-					 minRepeat, node.getChildren().get(0).getIntValue());
+					 minRepeat, node.getChild(0).getIntValue());
 		assertEquals("Expression " + expression + " has max repeat value " + minRepeat,
-					 maxRepeat, node.getChildren().get(1).getIntValue());
-		return node.getChildren().get(2);
+					 maxRepeat, node.getChild(1).getIntValue());
+		return node.getChild(2);
 	}
 	
 
@@ -911,17 +907,17 @@ public class RegexParserTest {
 		assertEquals("Expression " + expression + " has type ParseTreeType.ALTERNATIVES",
 				     ParseTreeType.ALTERNATIVES, node.getParseTreeType());
 		assertEquals("Expression " + expression + " has " + values.length + " children nodes",
-					 values.length, node.getChildren().size());
-		testByteSequenceAlternativesValues(node.getChildren(), values);
+					 values.length, node.getNumChildren());
+		testByteSequenceAlternativesValues(node, values);
 	}
 	
-	private void testByteSequenceAlternativesValues(List<ParseTree> alternatives, byte[][] values) throws ParseException {
+	private void testByteSequenceAlternativesValues(ParseTree alternatives, byte[][] values) throws ParseException {
 		int position = 0;
 		for (ParseTree alternative : alternatives) {
 			byte[] value = values[position++];
 			if (alternative.getParseTreeType() == ParseTreeType.SEQUENCE) {
-				testByteSequenceValues(alternative.getChildren(), value);
-			} else if (alternative.getChildren().size() == 0) {
+				testByteSequenceValues(alternative, value);
+			} else if (alternative.getNumChildren() == 0) {
 				testByteValue(alternative, value[0], false);
 			} else {
 				testSetValues(alternative, value);

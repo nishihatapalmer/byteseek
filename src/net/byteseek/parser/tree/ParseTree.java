@@ -30,8 +30,6 @@
  */
 package net.byteseek.parser.tree;
 
-import java.util.List;
-
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
 
@@ -54,7 +52,7 @@ import net.byteseek.parser.Parser;
  * @author Matt Palmer
  *
  */
-public interface ParseTree {
+public interface ParseTree extends Iterable<ParseTree> {
 
   /**
    * Returns the type of the ParseTree node. The {@link ParseTreeType} of a
@@ -105,22 +103,43 @@ public interface ParseTree {
 	 */
 	public boolean isValueInverted();
 
+
 	/**
-	 * Returns a list of child nodes for this node.  If there are no child nodes,
-	 * then this method will return an empty list.
-	 * <p>
-	 * No assumptions should be made concerning the mutability of the list of
-	 * child nodes returned (an immutable list could be returned).  Equally,
-	 * no assumptions should be made as to whether the list has been defensively
-	 * copied by the ParseTree or not.  It may be mutable, but an internal list.
-	 * <p>
-	 * Extreme care must be taken if deciding the modify a list returned by this method,
-	 * and in general should not be done unless you are very sure that there will
-	 * be no adverse side-effects.
+	 * Returns the number of child nodes this node has.
 	 * 
-	 * @return A list of child nodes, or an empty list if there are no child nodes.
+	 * @return int The number of child nodes this node has.
 	 */
-	public List<ParseTree> getChildren();
+	public int getNumChildren();
+	
+	
+	/**
+	 * Returns the child node at the given index position.
+	 * 
+	 * @param childIndex The index of the child to get.
+	 * @return ParseTree the child node at the given index position.
+	 * @throws IndexOutOfBoundsException if childIndex is less than zero or greater than or equal to the number of child nodes.
+	 */
+	public ParseTree getChild(int childIndex);
+	
+	
+	/**
+	 * Adds a child node to this node.
+	 * 
+	 * @param child The child ParseTree to add.
+	 * @return boolean if the ParseTree child was successfully added.
+	 * @throws UnsupportedOperationException if the implementation cannot add child nodes.
+	 */
+	public boolean addChild(ParseTree child);
+	
+	
+	/**
+	 * Removes a child node from this node.
+	 * 
+	 * @param child The child ParseTree to remove.
+	 * @return boolean True if the child ParseTree was removed.
+	 * @throws UnsupportedOperationException if the implementation cannot remove child nodes.
+	 */
+	public boolean removeChild(ParseTree child);
 
 }
 

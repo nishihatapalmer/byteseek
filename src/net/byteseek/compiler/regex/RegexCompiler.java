@@ -244,7 +244,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
 
     private List<Automata<T>> compileChildren(final ParseTree ast) throws CompileException, ParseException {
       final List<Automata<T>> automataList = new ArrayList<Automata<T>>();
-      for (final ParseTree child : ast.getChildren()) {
+      for (final ParseTree child : ast) {
         automataList.add(doCompile(child));
       }      
       return automataList;

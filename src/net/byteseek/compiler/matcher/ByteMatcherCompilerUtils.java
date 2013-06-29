@@ -30,8 +30,6 @@
  */
 package net.byteseek.compiler.matcher;
 
-import java.util.List;
-
 import net.byteseek.matcher.bytes.AllBitmaskMatcher;
 import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
@@ -115,12 +113,11 @@ public final class ByteMatcherCompilerUtils {
 												   final boolean currentInversion,
 												   final ByteMatcherFactory matcherFactory) throws ParseException {
 		final boolean isInverted = isInverted(node, currentInversion);
-		final List<ParseTree> setElements = node.getChildren();
 		// If the set only has one element, it may be something we can directly represent
 		// with a dedicated matcher, rather than using the slower matcherFactory (as we
 		// are forced to calculate the set of byte values in the set to use it).
-		if (setElements.size() == 1) {
-			final ParseTree singleElement = setElements.get(0);
+		if (node.getNumChildren() == 1) {
+			final ParseTree singleElement = node.getChild(0);
 			switch (singleElement.getParseTreeType()) {
 				case BYTE: 			return createByteMatcher(singleElement, isInverted);
 				case ANY:  			return createAnyMatcher(singleElement, isInverted);
