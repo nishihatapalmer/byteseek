@@ -36,6 +36,7 @@ import java.util.List;
 
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
+import net.byteseek.util.collections.UnmodifiableListIterator;
 
 /**
  * A ParseTree node which has child ParseTrees.  The value of the node,
@@ -124,7 +125,7 @@ public class ChildrenNode extends BaseNode {
 
 	@Override
 	public Iterator<ParseTree> iterator() {
-		return children.iterator();
+		return new UnmodifiableListIterator<ParseTree>(children);
 	}
 	
 	/**
