@@ -34,7 +34,6 @@ package net.byteseek.parser.tree;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import net.byteseek.parser.ParseException;
@@ -368,10 +367,6 @@ public final class ParseTreeUtils {
 		if (numChildren != 2) {
 			throw new ParseException("Ranges must have two integer values as child nodes. " +
 			                          "Actual number of children was: " + numChildren);			
-		}
-		if (valueIndex < 0 || valueIndex > 1) {
-			throw new ParseException("Value index out of bounds - must be 0 or 1 ." +
-							         "Actual value was: " + valueIndex);
 		}
 		final int rangeValue = rangeNode.getChild(valueIndex).getIntValue();
 		if (rangeValue < 0 || rangeValue > 255) {

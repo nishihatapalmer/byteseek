@@ -50,15 +50,16 @@ public enum ParseTreeType {
 		
 	/**
 	 * A BYTE type has a single byte value, which is accessible via a call to 
-	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}.
+	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}.  A call to
+	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()} should return the
+	 * integer value of the byte.
 	 * <p>
 	 * The value can be inverted, meaning it will match all other byte values.
 	 * Calling {@link net.byteseek.parser.tree.ParseTree#isValueInverted()}
 	 * tells you if the value of the node is inverted.
 	 * <p>
 	 * Implementations should throw a {@link net.byteseek.parser.ParseException} 
-	 * if calls are made to either {@link net.byteseek.parser.tree.ParseTree#getIntValue()} or
-	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()}.
+	 * if calls are made to {@link net.byteseek.parser.tree.ParseTree#getTextValue()}.
 	 * <p>
 	 * A BYTE type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.

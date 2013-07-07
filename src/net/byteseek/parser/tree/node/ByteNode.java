@@ -125,6 +125,15 @@ public final class ByteNode extends BaseNode {
     return value;
   }
   
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int getIntValue() throws ParseException {
+    return value & 0xFF;
+  }
+  
  
   /**
    * Returns whether the value of the byte node should be inverted or not.

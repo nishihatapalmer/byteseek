@@ -93,7 +93,7 @@ public class ParseTreeUtilsTest {
 			if (type != ParseTreeType.RANGE) {
 				try {
 					ParseTreeUtils.getFirstRangeValue(new ChildrenNode(type));
-					fail("Expected a ParseException if the type was not Range.  Type is " + type);
+					fail("Expected a ParseException if the range node type is not RANGE.  Type is " + type);
 				} catch (ParseException expected) {
 				}
 			}
@@ -104,7 +104,7 @@ public class ParseTreeUtilsTest {
 				parent.addChild(new IntNode(96));
 				try {
 					ParseTreeUtils.getFirstRangeValue(parent);
-					fail("Expected a ParseException if the child type was not INTEGER.  Type is " + type);
+					fail("Expected a ParseException if the child type has no integer value.  Type is " + type);
 				} catch (ParseException excepted) {
 				}
 			}
@@ -159,7 +159,7 @@ public class ParseTreeUtilsTest {
 		parent = new ChildrenNode(ParseTreeType.RANGE);
 		parent.addChild(new IntNode(242));
 		parent.addChild(new IntNode(10));
-		assertEquals("Value is 257", 242, ParseTreeUtils.getSecondRangeValue(parent));
+		assertEquals("Value is 10", 10, ParseTreeUtils.getSecondRangeValue(parent));
 		
 		for (ParseTreeType type : ParseTreeType.values()) {
 			if (type != ParseTreeType.RANGE) {
@@ -172,11 +172,11 @@ public class ParseTreeUtilsTest {
 
 			if (type != ParseTreeType.INTEGER) {
 				parent = new ChildrenNode(ParseTreeType.RANGE);
-				parent.addChild(new BaseNode(type));
 				parent.addChild(new IntNode(96));
+				parent.addChild(new BaseNode(type));
 				try {
 					ParseTreeUtils.getSecondRangeValue(parent);
-					fail("Expected a ParseException if the child type was not INTEGER.  Type is " + type);
+					fail("Expected a ParseException if the second child type has no integer value.  Type is " + type);
 				} catch (ParseException excepted) {
 				}
 			}
@@ -184,8 +184,8 @@ public class ParseTreeUtilsTest {
 		
 		try {
 			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(-1));
 			parent.addChild(new IntNode(30));
+			parent.addChild(new IntNode(-1));
 			ParseTreeUtils.getSecondRangeValue(parent);
 			fail("Expected a ParseException if a value is less than 0");
 		} catch (ParseException expected) {
@@ -193,8 +193,8 @@ public class ParseTreeUtilsTest {
 
 		try {
 			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(256));
 			parent.addChild(new IntNode(30));
+			parent.addChild(new IntNode(256));
 			ParseTreeUtils.getSecondRangeValue(parent);
 			fail("Expected a ParseException if a value is greater than 255");
 		} catch (ParseException expected) {

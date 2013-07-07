@@ -74,16 +74,12 @@ public class ByteNodeTest {
 		assertEquals("ByteNode has correct type: ", type, node.getParseTreeType());
 		try {
 			assertEquals("ByteNode has correct value:" + value, value, node.getByteValue());
+			assertEquals("ByteNode has correct integer value: " + (value & 0xFF), value & 0xFF, node.getIntValue());
 		} catch (ParseException e1) {
 			fail("ByteNode should not throw a ParseException if asked for the byte value.");
 		}
 		
 		assertEquals("ByteNode value is correct inversion: " + isInverted, isInverted, node.isValueInverted());
-		
-		try { 
-			node.getIntValue();
-			fail("Expected a ParseException if asked for the int value");
-		} catch (ParseException allIsFine) {};
 		
 		try { 
 			node.getTextValue();
