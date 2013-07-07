@@ -35,7 +35,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.Iterator;
+
 import net.byteseek.parser.ParseException;
+import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 
 import org.junit.Test;
@@ -67,6 +71,24 @@ public class BaseNodeTest {
 			node.getTextValue();
 			fail("Expected a ParseException if asked for the text value");
 		} catch (ParseException allIsFine) {};
+		
+		try {
+			node.addChild(new BaseNode(ParseTreeType.ALL_BITMASK));
+			fail("Expected an UnsupportedOperationException when adding a child");
+		} catch (UnsupportedOperationException expected) {}
+		
+		try {
+			node.removeChild(0);
+			fail("Expected an UnsupportedOperationException when removing a child");
+		} catch (UnsupportedOperationException expected) {}
+		
+		try {
+			node.getChild(0);
+			fail("Expected an IndexOutOfBoundsException when getting a child");
+		} catch (IndexOutOfBoundsException expected) {}
+		
+		Iterator<ParseTree> iterator = node.iterator();
+		assertFalse("Iterator has no child nodes", iterator.hasNext());
 		
 		assertEquals("Child list is empty", 0, node.getNumChildren());
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));

@@ -51,7 +51,7 @@ public final class ParseTreeUtils {
 	// Constants //
 	///////////////
 	
-	private static final String TYPE_ERROR = "Parse tree type [%s] with description [%s] is not supported by the parser.";
+	private static final String TYPE_ERROR = "Parse tree type [%s] is not supported by the parser.";
 
 	
 	/////////////////
@@ -80,9 +80,8 @@ public final class ParseTreeUtils {
 	 * @throws NullPointerException if node is null.
 	 */
 	public static ParseTree getFirstChild(final ParseTree node) throws ParseException {
-	  final List<ParseTree> children = node.getChildren();
-	  if (children.size() > 0) {
-	    return children.get(0);
+	  if (node.getNumChildren() > 0) {
+	    return node.getChild(0);
 	  }
 	  throw new ParseException("No children exist for node type: " +
 	                            node.getParseTreeType().name());
@@ -188,11 +187,11 @@ public final class ParseTreeUtils {
 	 * @throws ParseException
 	 */
 	public static ParseTree getLastChild(final ParseTree parentNode) throws ParseException {
-		final List<ParseTree> children = parentNode.getChildren();
-		if (children.size() == 0) {
+		final int numChildren = parentNode.getNumChildren();
+		if (numChildren == 0) {
 			throw new ParseException("Node has no children - cannot get last child node");			
 		}
-		return children.get(children.size() - 1);
+		return parentNode.getChild(numChildren - 1);
 	}
 	
 	
@@ -324,7 +323,7 @@ public final class ParseTreeUtils {
 	public static Set<Byte> getSetValues(final ParseTree set)
 			throws ParseException {
 		final Set<Byte> setValues = new LinkedHashSet<Byte>(192);
-		for (final ParseTree child : set.getChildren()) {
+		for (final ParseTree child : set) {
 			switch (child.getParseTreeType()) {
 				case SEQUENCE:				    // Drop through: treat all possible types of node which may hold
 				case ALTERNATIVES:			    // byte value bearing children as just containers of those values.
@@ -365,14 +364,18 @@ public final class ParseTreeUtils {
 		if (rangeNode.getParseTreeType() != ParseTreeType.RANGE) {
 			throw new ParseException("Node is not a RANGE node.  It has type: " + rangeNode.getParseTreeType());
 		}
-		final List<ParseTree> rangeChildren = rangeNode.getChildren();
-		if (rangeChildren.size() != 2) {
-			throw new ParseException("Ranges must have two integer values as child nodes." +
-			                          "Actual number of children was: " + rangeChildren.size());			
+		final int numChildren = rangeNode.getNumChildren();
+		if (numChildren != 2) {
+			throw new ParseException("Ranges must have two integer values as child nodes. " +
+			                          "Actual number of children was: " + numChildren);			
 		}
-		final int rangeValue = rangeChildren.get(0).getIntValue();
+		if (valueIndex < 0 || valueIndex > 1) {
+			throw new ParseException("Value index out of bounds - must be 0 or 1 ." +
+							         "Actual value was: " + valueIndex);
+		}
+		final int rangeValue = rangeNode.getChild(valueIndex).getIntValue();
 		if (rangeValue < 0 || rangeValue > 255) {
-			throw new ParseException("Range values must be between 0 and 255." +
+			throw new ParseException("Range values must be between 0 and 255. " +
 			                          "Actual value was: " + rangeValue);
 		}
 		return rangeValue;		
@@ -400,12 +403,12 @@ public final class ParseTreeUtils {
 		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT) {
 			throw new ParseException("Node is not a REPEAT node.  It has type: " + repeatNode.getParseTreeType());
 		}
-		final List<ParseTree> repeatChildren = repeatNode.getChildren();
-		if (repeatChildren.size() != 3) {
+		final int numChildren = repeatNode.getNumChildren();
+		if (numChildren != 3) {
 			throw new ParseException("Repeats must have three child nodes. " +
-			                          "Actual number of children was: " +repeatChildren.size());			
+			                          "Actual number of children was: " + numChildren);			
 		}
-		final ParseTree repeatValue = repeatChildren.get(valueIndex);
+		final ParseTree repeatValue = repeatNode.getChild(valueIndex);
 		if (repeatValue.getParseTreeType() == ParseTreeType.INTEGER) {
 		    final int intValue = repeatValue.getIntValue();
 		    if (intValue < 1) {
@@ -426,7 +429,7 @@ public final class ParseTreeUtils {
 	 */
 	private static String getTypeError(final ParseTree node) {
 		final ParseTreeType type = node.getParseTreeType();
-		return String.format(TYPE_ERROR, type, type.getDescription());
+		return String.format(TYPE_ERROR, type);
 	}
 	
 }

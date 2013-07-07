@@ -95,8 +95,28 @@ public class ChildrenNodeTest {
 	private void testChangingChildren(ParseTreeType type, List<ParseTree> children, int numChildren) {
 		List<ParseTree> childrenToTest = new ArrayList<ParseTree>(children);
 		
-		ChildrenNode defaultNode = new ChildrenNode(type, childrenToTest); 
+		ParseTree defaultNode = new ChildrenNode(type, childrenToTest); 
 
+		int count = 0;
+		for (ParseTree child : defaultNode) {
+			assertEquals("Children in new node are the same as list passed in", childrenToTest.get(count), child);
+			ParseTree getChild = defaultNode.getChild(count);
+			assertEquals("Iterator child is the same as get child", getChild, child);
+			count++;
+		}
+		assertEquals("Number of children in list are the same", childrenToTest.size(), count);
+		assertEquals("Number of children in node matches iterator count", count, defaultNode.getNumChildren());
+
+		try {
+			defaultNode.getChild(-1);
+			fail("Expected IndexOutOfBoundsException with negative index");
+		} catch (IndexOutOfBoundsException expected) {}
+		
+		try {
+			defaultNode.getChild(count);
+			fail("Expected IndexOutOfBoundsException with number of children");
+		} catch (IndexOutOfBoundsException expected) {}
+		
 		assertEquals("Before change, size is correct: ", numChildren, defaultNode.getNumChildren());
 		
 		ParseTree nodeToAdd = new StringNode("Node to add");
@@ -106,6 +126,9 @@ public class ChildrenNodeTest {
 		
 		ParseTree nodeToAdd2 = new StringNode("Second node to add");
 		defaultNode.addChild(nodeToAdd2);
+		
+		ParseTree addedNode = defaultNode.getChild(defaultNode.getNumChildren() - 1);
+		assertEquals("Last added node is correct", addedNode, nodeToAdd2);
 		
 		assertEquals("Add default node: size is correct: ", numChildren + 1, defaultNode.getNumChildren());
 		
