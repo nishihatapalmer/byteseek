@@ -86,6 +86,22 @@ public final class ParseTreeUtils {
 	                            node.getParseTreeType().name());
 	}
 
+	/**
+	 * Returns the last child node of a node.
+	 * 
+	 * @param parentNode The node to get the last child of.
+	 * @return The last child node of the node.
+	 * @throws ParseException if the node has no children.
+	 * @throws NullPointerException if the parentNode is null.
+	 */
+	public static ParseTree getLastChild(final ParseTree parentNode) throws ParseException {
+		final int numChildren = parentNode.getNumChildren();
+		if (numChildren == 0) {
+			throw new ParseException("Node has no children - cannot get last child node [" + parentNode + ']');			
+		}
+		return parentNode.getChild(numChildren - 1);
+	}
+	
 	
 	/**
 	 * Returns the first range value of a node passed in.  A range is defined by
@@ -148,8 +164,9 @@ public final class ParseTreeUtils {
 	 * @return The first repeat value (minimum number of repeats) for the repeat node.
 	 * @throws ParseException If the node passed in does not have type 
 	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT},
-	 *                         the number of child nodes is not correct, there is no
-	 *                         first repeat value, or another problem occurs parsing.
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MANY},
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX},
+     *                         there is no first repeat value.
 	 */
 	public static int getFirstRepeatValue(final ParseTree repeatNode) throws ParseException {
 		return getRepeatValue(repeatNode, 0);
@@ -162,36 +179,18 @@ public final class ParseTreeUtils {
 	 * the minimum number of repeats.  The second node can either be an integer node, 
 	 * or a Many node type, defining the maximum number of repeats.  The third node
 	 * is the node which must be repeated.
-	 * <p>
-	 * If the maximum value is MANY, rather than a specified integer, then this method
-	 * will return -1 to indicate that the number of repeats is unlimited.
 	 * 
 	 * @param repeatNode The node defining a repeat.
 	 * @return The second repeat value (maximum number of repeats) for the repeat node.
 	 * @throws ParseException If the node passed in does not have type 
 	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT},
-	 *                         the number of child nodes is not correct, there is no
-	 *                         second repeat value, or another problem occurs parsing.
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX} or
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX}, or
+	 *                         there is no second repeat value.
 	 */	
 	public static int getSecondRepeatValue(final ParseTree repeatNode) throws ParseException {
 		return getRepeatValue(repeatNode, 1);
 	}	
-	
-	
-	/**
-	 * Returns the last child node of an ast node.
-	 * 
-	 * @param parentNode The node to get the last child of.
-	 * @return The last child node of the node.
-	 * @throws ParseException
-	 */
-	public static ParseTree getLastChild(final ParseTree parentNode) throws ParseException {
-		final int numChildren = parentNode.getNumChildren();
-		if (numChildren == 0) {
-			throw new ParseException("Node has no children - cannot get last child node");			
-		}
-		return parentNode.getChild(numChildren - 1);
-	}
 	
 	
 	/**
@@ -231,13 +230,13 @@ public final class ParseTreeUtils {
 	 * @throws ParseException If the string cannot be converted to ISO 8859-1 encoding.
 	 */
 	public static Collection<Byte> getStringAsSet(final ParseTree string) throws ParseException {
-		final Set<Byte> values = new LinkedHashSet<Byte>();
 		try {
 			final byte[] utf8Value = string.getTextValue().getBytes("ISO-8859-1");
+			final Set<Byte> values = new LinkedHashSet<Byte>(utf8Value.length * 2);
 			ByteUtilities.addAll(utf8Value, values);
 			return values;
 		} catch (UnsupportedEncodingException e) {
-			throw new ParseException(e);
+			throw new ParseException("String cannot be converted to ISO-8859-1 encoding + '[' + string + ']'", e);
 		}		
 	}
 	
@@ -385,34 +384,27 @@ public final class ParseTreeUtils {
 	 * 
 	 * @param repeatNode The repeat node to get a repeat value for.
 	 * @param valueIndex the number of the repeat value (min:0, max: 1).
-	 * @return An integer value of the min or max repeat.  If the max repeat is unlimited,
-	 *          then -1 will be returned.
+	 * @return An integer value of the min or max repeat.  
 	 * @throws ParseException If the repeat node does not have type ParseTreeType.REPEAT,
-	 *                         it does not have three children, or an integer value supplied
-	 *                         is not positive.
+	 * 						  ParseTreeType.REPEAT_MIN_TO_MANY, ParseTreeType.REPEAT_MIN_TO_MAX,	
+	 *                        or an integer value supplied is not positive.
 	 */
 	//FIXME: this utility method is probably useless now that we have explicit REPEAT, REPEAT_MIN_TO_MANY and
 	//       REPEAT_MIN_TO_MAX nodes.  Need to evaluate which of the utility methods are needed after refactoring
 	//       compilers to use the new repeat nodes.
 	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
-		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT) {
-			throw new ParseException("Node is not a REPEAT node.  It has type: " + repeatNode.getParseTreeType());
-		}
-		final int numChildren = repeatNode.getNumChildren();
-		if (numChildren != 3) {
-			throw new ParseException("Repeats must have three child nodes. " +
-			                          "Actual number of children was: " + numChildren);			
+		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT &&
+			repeatNode.getParseTreeType() != ParseTreeType.REPEAT_MIN_TO_MANY &&
+			repeatNode.getParseTreeType() != ParseTreeType.REPEAT_MIN_TO_MAX) {
+			throw new ParseException("Node is not a REPEAT, REPEAT_MIN_TO_MANY or REPEAT_MIN_TO_MAX node.  It has type: " + repeatNode.getParseTreeType());
 		}
 		final ParseTree repeatValue = repeatNode.getChild(valueIndex);
-		if (repeatValue.getParseTreeType() == ParseTreeType.INTEGER) {
-		    final int intValue = repeatValue.getIntValue();
-		    if (intValue < 1) {
-		      throw new ParseException("Repeat integer values must be at least one. " +
-		                                "Actual value was: " + intValue);
-		    }
-		    return intValue;
-		}
-		return -1; 
+	    final int intValue = repeatValue.getIntValue();
+	    if (intValue < 1) {
+	      throw new ParseException("Repeat integer values must be at least one. " +
+	                                "Actual value was: " + intValue);
+	    }
+	    return intValue;
 	}
 	
 	
