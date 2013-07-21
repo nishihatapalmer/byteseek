@@ -33,7 +33,6 @@
 package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
-import java.util.List;
 
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -124,10 +123,8 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public byte[] getMatchingBytes() {
-        final List<Byte> bytes = inverted?
-                ByteUtilities.getBytesNotMatchingAllBitMask(mBitMaskValue) :
-                ByteUtilities.getBytesMatchingAllBitMask(mBitMaskValue);
-        return ByteUtilities.toArray(bytes);
+    	return inverted? ByteUtilities.getBytesNotMatchingAllBitMask(mBitMaskValue)
+    			       : ByteUtilities.getBytesMatchingAllBitMask(mBitMaskValue); 
     }
 
 

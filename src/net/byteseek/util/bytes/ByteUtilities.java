@@ -141,40 +141,113 @@ public final class ByteUtilities {
         return 256 - countBytesMatchingAllBits(bitmask);
     }
 
-
     /**
-     * Returns a list of bytes which would match all the bits in a given bitmask.
+     * Returns a byte array containing the byte values which match an all bitmask.
+     * 
+     * @param bitMask The bitmask to match.
+     * @return An array of bytes containing the bytes that matched the all bitmask.
+     */
+    public static byte[] getBytesMatchingAllBitMask(final byte bitMask) {
+    	final int numberOfBytes = countBytesMatchingAllBits(bitMask);
+    	final byte[] bytes = new byte[numberOfBytes];
+    	int arrayCount = 0;
+    	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+    		if ((byteIndex & bitMask) == bitMask) {
+    			bytes[arrayCount++] = (byte) byteIndex;
+    		}
+    	}
+    	return bytes;
+    }
+    
+    
+    /**
+     * Returns a byte array containing the byte values which do not match an all bitmask.
+     * 
+     * @param bitMask The bitmask to match.
+     * @return An array of bytes containing the bytes that did not match the all bitmask.
+     */
+    public static byte[] getBytesNotMatchingAllBitMask(final byte bitMask) {
+    	final int numberOfBytes = 256 - countBytesMatchingAllBits(bitMask);
+    	final byte[] bytes = new byte[numberOfBytes];
+    	int arrayCount = 0;
+    	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+    		if ((byteIndex & bitMask) != bitMask) {
+    			bytes[arrayCount++] = (byte) byteIndex;
+    		}
+    	}
+    	return bytes;
+    }
+    
+    
+    /**
+     * Returns a byte array containing the byte values which match an any bitmask.
+     * 
+     * @param bitMask The bitmask to match.
+     * @return An array of bytes containing the bytes that matched the any bitmask.
+     */
+    public static byte[] getBytesMatchingAnyBitMask(final byte bitMask) {
+    	final int numberOfBytes = countBytesMatchingAnyBit(bitMask);
+    	final byte[] bytes = new byte[numberOfBytes];
+    	int arrayCount = 0;
+    	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+    		if ((byteIndex & bitMask) > 0) {
+    			bytes[arrayCount++] = (byte) byteIndex;
+    		}
+    	}
+    	return bytes;
+    }
+    
+    
+    /**
+     * Returns a byte array containing the byte values which do not match an any bitmask.
+     * 
+     * @param bitMask The bitmask to match.
+     * @return An array of bytes containing the bytes that did not match the any bitmask.
+     */
+    public static byte[] getBytesNotMatchingAnyBitMask(final byte bitMask) {
+    	final int numberOfBytes = 256 - countBytesMatchingAnyBit(bitMask);
+    	final byte[] bytes = new byte[numberOfBytes];
+    	int arrayCount = 0;
+    	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+    		if ((byteIndex & bitMask) == 0) {
+    			bytes[arrayCount++] = (byte) byteIndex;
+    		}
+    	}
+    	return bytes;
+    }
+    
+    /**
+     * Adds the bytes which would match all the bits in a given bitmask to a 
+     * Collection of Byte.
      *
      * @param bitMask The bitmask to match.
-     * @return A list of bytes matching the bitmask.
+     * @param bytes The collection of bytes to add the Bytes to.
      */
-    public static List<Byte> getBytesMatchingAllBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>(countBytesMatchingAllBits(bitMask));
+    public static void addBytesMatchingAllBitMask(final byte bitMask, 
+    											  final Collection<Byte> bytes) {
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) == bitMask) {
                 bytes.add(Byte.valueOf(byteValue));
             }
         }
-        return bytes;
     }
 
     
     /**
-     * Returns a list of bytes which would not match all the bits in a given bitmask.
+     * Adds the bytes not matching an all-bit bitmask to a collection of Byte.
      *
      * @param bitMask The bitmask to not match.
-     * @return A list of bytes not matching the bitmask.
+     * @param bytes The collection of bytes to add the bytes to.
      */
-    public static List<Byte> getBytesNotMatchingAllBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>(countBytesMatchingAnyBit(bitMask));
+    public static void addBytesNotMatchingAllBitMask(final byte bitMask,
+    												 final Collection<Byte> bytes) {
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) != bitMask) {
                 bytes.add(Byte.valueOf(byteValue));
             }
         }
-        return bytes;
     }
     
 
@@ -190,7 +263,7 @@ public final class ByteUtilities {
     public static Byte getAllBitMaskForBytes(final byte[] bytes) {
         return getAllBitMaskForBytes(toSet(bytes));
     }
-
+    
 
     /**
      * Returns a set of bytes from an array of bytes.
@@ -399,8 +472,19 @@ public final class ByteUtilities {
     }
     
     
+    public static void addInvertedByteValues(final byte value, final Collection<Byte> bytes) {
+    	final int intValue = value & 0xFF;
+    	if (intValue > 0) {
+    		addBytesInRange(0, intValue - 1, bytes);
+    	}
+    	if (intValue < 255) {
+    		addBytesInRange(intValue + 1, 255, bytes);
+    	}
+    }
+    
+    
     /**
-     * Adds all the bytes in a range to a set.  The range can be specified
+     * Adds all the bytes in a range to a collection of Byte.  The range can be specified
      * either forwards or backwards.
      * 
      * @param from A number in the range from 0 to 255;
@@ -408,7 +492,7 @@ public final class ByteUtilities {
      * @param bytes A set of bytes to add the bytes in the range to.
      * @throws IllegalArgumentException if the from or to values are not between 0 and 255.
      */
-    public static void addBytesInRange(final int from, final int to, final Set<Byte> bytes) {
+    public static void addBytesInRange(final int from, final int to, final Collection<Byte> bytes) {
     	if (from < 0 || from > 255 || to < 0 || to > 255) {
     		final String message = "The from and to values must be in the range 0 to 255.  Values provided were %d and %d";
     		throw new IllegalArgumentException(String.format(message, from, to));
@@ -420,6 +504,31 @@ public final class ByteUtilities {
     	}
     }
     
+    
+    /**
+     * Adds all the bytes in an inverted range to a set.  The inverted range can be specified
+     * either forwards or backwards. An inverted range contains all bytes except for the ones
+     * specified in the range (which is inclusive).
+     * 
+     * @param from A number in the range from 0 to 255;
+     * @param to A number in the range from 0 to 255.
+     * @param bytes A set of bytes to add the bytes in the range to.
+     * @throws IllegalArgumentException if the from or to values are not between 0 and 255.
+     */
+    public static void addInvertedRangeBytes(final int from, final int to, final Set<Byte> bytes) {
+    	if (from < 0 || from > 255 || to < 0 || to > 255) {
+    		final String message = "The from and to values must be in the range 0 to 255.  Values provided were %d and %d";
+    		throw new IllegalArgumentException(String.format(message, from, to));
+    	}
+    	final int start = from < to? from : to;
+    	final int end =   from < to? to : from;
+    	for (int value = 0; value < start; value++) {
+    		bytes.add(Byte.valueOf((byte) value));
+    	}
+    	for (int value = end + 1; value < 256; value++) {
+    		bytes.add(Byte.valueOf((byte) value));
+    	}
+    }
     
     /**
      * Returns an inverted set of bytes.  This set of bytes contains all other
@@ -691,12 +800,14 @@ public final class ByteUtilities {
 
 
     /**
-     * Returns a list of bytes which would match any of the bits in a given bitmask.
+     * Adds the bytes matching an any bitmask (any of the bits can match) to 
+     * a collection of bytes.
+     * 
      * @param bitMask The bitmask to match.
-     * @return A list of all the bytes matching the any bitmask.
+     * @param bytes The collection of bytes to add the values to.
      */
-    public static List<Byte> getBytesMatchingAnyBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>(256);
+    public static void addBytesMatchingAnyBitMask(final byte bitMask,
+    											  final Collection<Byte> bytes) {
         // start loop at one - any bitmask matchers can never match the zero byte.
         for (int byteIndex = 1; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
@@ -704,25 +815,24 @@ public final class ByteUtilities {
                 bytes.add(Byte.valueOf((byte) byteIndex));
             }
         }
-        return bytes;
     }
     
     
     /**
-     * Returns a list of bytes which would not match any of the bits in a given bitmask.
+     * Adds the bytes not matching an any bitmask (no bits must match) to
+     * a collection of Byte.
      * 
-     * @param bitMask The bitmask to not match.
-     * @return A list of all the bytes not matching the any bitmask.
+     * @param bitMask The bitmask to not match any bits of.
+     * @param bytes The collection of Bytes to add the bytes to.
      */
-    public static List<Byte> getBytesNotMatchingAnyBitMask(final byte bitMask) {
-        final List<Byte> bytes = new ArrayList<Byte>(256);
+    public static void addBytesNotMatchingAnyBitMask(final byte bitMask,
+    											     Collection<Byte> bytes) {
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) == 0) {
                 bytes.add(Byte.valueOf((byte) byteIndex));
             }
         }
-        return bytes;
     }
 
     

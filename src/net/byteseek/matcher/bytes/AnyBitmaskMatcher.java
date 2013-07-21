@@ -39,8 +39,6 @@ import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.util.bytes.ByteUtilities;
 
-import java.util.List;
-
 
 /**
  * A {@link ByteMatcher} which matches a byte which
@@ -122,10 +120,9 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public byte[] getMatchingBytes() {
-        final List<Byte> bytes = inverted? 
+        return inverted? 
                 ByteUtilities.getBytesNotMatchingAnyBitMask(mBitMaskValue) :
                 ByteUtilities.getBytesMatchingAnyBitMask(mBitMaskValue);
-        return ByteUtilities.toArray(bytes);
     }
 
 
@@ -134,8 +131,9 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public int getNumberOfMatchingBytes() {
-        return inverted? 256 - ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue)
-                       : ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue);
+        return inverted? 
+        		256 - ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue) :
+                ByteUtilities.countBytesMatchingAnyBit(mBitMaskValue);
     }
 
 
