@@ -332,33 +332,68 @@ public class RegexParser implements Parser<ParseTree> {
 	
 	private void createRange(final List<ParseTree> sequence,
 						      final StringParseReader expression) throws ParseException {
-		final ParseTree secondRangeValue = getLastRangeValueNode(sequence, expression);
-		final ParseTree firstRangeValue  = getLastRangeValueNode(sequence, expression);
+		final ParseTree secondRangeValue = popLastRangeValueNode(sequence, expression);
+		final ParseTree firstRangeValue  = popLastRangeValueNode(sequence, expression);
 		final List<ParseTree> rangeChildren = new ArrayList<ParseTree>(2);
 		rangeChildren.add(firstRangeValue);
 		rangeChildren.add(secondRangeValue);
 		sequence.add(new ChildrenNode(ParseTreeType.RANGE, rangeChildren));
 	}
 	
-	private ParseTree getLastRangeValueNode(List<ParseTree> sequence, 
-											 StringParseReader expression) throws ParseException {
-		final int lastIndex = sequence.size() - 1;
-		if (lastIndex < 0) {
-			throw new ParseException(addContext("Needed a range value node, but no nodes are available", expression));
+	private ParseTree popLastRangeValueNode(List<ParseTree> sequence,
+										StringParseReader expression) throws ParseException {
+		// Pop the last node of the sequence list:
+		final ParseTree rangeValue = popLastNode(sequence, expression);
+
+		// Process the range node syntax (could be defined as a BYTE or a single character STRING)
+		return getRangeValueAsByteNode(rangeValue, expression);
+	}
+
+	
+	/**
+	 * Removes the last ParseTree node from a List of ParseTrees.
+	 */
+	private ParseTree popLastNode(List<ParseTree> sequence,
+							 StringParseReader expression) throws ParseException {
+		if (sequence.isEmpty()) {
+			throw new ParseException(addContext("Tried to remove the last node in a sequence, but it was empty", expression));
 		}
-		final ParseTree rangeValue = sequence.remove(lastIndex);
+		return sequence.remove(sequence.size() - 1);
+	}
+
+	
+	/**
+	 * Returns a range value as a BYTE node.
+	 * 
+	 * A range value is normally defined as a BYTE node.  Syntactic sugar is also provided
+	 * which interprets a STRING containing a single character with a value between 0 and
+	 * 255 as a byte value, allowing the specification of range values like this 'a'-'z'.
+	 */
+	private ParseTree getRangeValueAsByteNode(ParseTree rangeValue,
+											 StringParseReader expression) throws ParseException {
+		// Test for an un-inverted BYTE node - if found, return it directly.
 		if (rangeValue.getParseTreeType() == ParseTreeType.BYTE &&
 			rangeValue.isValueInverted()  == false) {
 			return rangeValue;
 		}
+		
+		// Syntactic sugar: if the node is a STRING type with a single character in it,
+		//                  then treat the char value as if it were a byte value.  This
+		//                  lets the user specify 'a'-'z' for a range.  or 'a'-FF, for that matter.
 		if (rangeValue.getParseTreeType() == ParseTreeType.STRING &&
 			rangeValue.getTextValue().length() == 1 &&
 			rangeValue.isValueInverted()       == false) {
-			return rangeValue;
+			final char charValue = rangeValue.getTextValue().charAt(0);
+			if (charValue > 255) {
+				throw new ParseException(addContext("Only characters with values from 0 to 255 are permitted to define a byte range value", expression));
+			}
+			return ByteNode.valueOf((byte) charValue);
 		}
+
+		// A type which is not recognised - throw an error:
 		throw new ParseException(addContext("A range value must be a single non-inverted byte or a non-inverted single character string.", expression));
 	}
-	
+			
 	
 	private boolean foundWhitespaceAndComments(final int currentChar,
 												 final StringParseReader expression) {

@@ -31,9 +31,13 @@
 
 package net.byteseek.parser.tree;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.node.BaseNode;
@@ -41,6 +45,7 @@ import net.byteseek.parser.tree.node.ByteNode;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.parser.tree.node.IntNode;
 import net.byteseek.parser.tree.node.StringNode;
+import net.byteseek.util.bytes.ByteUtilities;
 
 import org.junit.Test;
 
@@ -110,20 +115,19 @@ public class ParseTreeUtilsTest {
 			fail("Expected a parse exception if there are no children");
 		} catch (ParseException expected) {
 		}
-		
 	}
 
 	@Test
 	public final void testGetFirstRangeValue() throws ParseException {
 		ChildrenNode parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(new IntNode(1));
-		parent.addChild(new IntNode(1));
+		parent.addChild(ByteNode.valueOf((byte) 1));
+		parent.addChild(ByteNode.valueOf((byte) 1));
 		assertEquals("Value is 1", 1, ParseTreeUtils.getFirstRangeValue(parent));
 		
 		parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(new IntNode(242));
-		parent.addChild(new IntNode(10));
-		assertEquals("Value is 257", 242, ParseTreeUtils.getFirstRangeValue(parent));
+		parent.addChild(ByteNode.valueOf((byte) 242));
+		parent.addChild(ByteNode.valueOf((byte) 10));
+		assertEquals("Value is 242", 242, ParseTreeUtils.getFirstRangeValue(parent));
 		
 		for (ParseTreeType type : ParseTreeType.values()) {
 			if (type != ParseTreeType.RANGE) {
@@ -134,39 +138,22 @@ public class ParseTreeUtilsTest {
 				}
 			}
 
-			if (type != ParseTreeType.INTEGER) {
+			if (type != ParseTreeType.BYTE) {
 				parent = new ChildrenNode(ParseTreeType.RANGE);
 				parent.addChild(new BaseNode(type));
-				parent.addChild(new IntNode(96));
+				parent.addChild(ByteNode.valueOf((byte) 96));
 				try {
 					ParseTreeUtils.getFirstRangeValue(parent);
-					fail("Expected a ParseException if the child type has no integer value.  Type is " + type);
+					fail("Expected a ParseException if the child type is not a BYTE.  Type is " + type);
 				} catch (ParseException excepted) {
 				}
 			}
 		}
 		
-		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(-1));
-			parent.addChild(new IntNode(30));
-			ParseTreeUtils.getFirstRangeValue(parent);
-			fail("Expected a ParseException if a value is less than 0");
-		} catch (ParseException expected) {
-		}
-
-		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(256));
-			parent.addChild(new IntNode(30));
-			ParseTreeUtils.getFirstRangeValue(parent);
-			fail("Expected a ParseException if a value is greater than 255");
-		} catch (ParseException expected) {
-		}
 		
 		try {
 			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(256));
+			parent.addChild(ByteNode.valueOf((byte) 54));
 			ParseTreeUtils.getFirstRangeValue(parent);
 			fail("Expected a ParseException with only one child");
 		} catch (ParseException expected) {
@@ -174,9 +161,9 @@ public class ParseTreeUtilsTest {
 		
 		try {
 			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(0));
-			parent.addChild(new IntNode(64));
-			parent.addChild(new IntNode(92));
+			parent.addChild(ByteNode.valueOf((byte) 0));
+			parent.addChild(ByteNode.valueOf((byte) 64));
+			parent.addChild(ByteNode.valueOf((byte) 92));
 			ParseTreeUtils.getFirstRangeValue(parent);
 			fail("Expected a ParseException with three children");
 		} catch (ParseException expected) {
@@ -188,13 +175,13 @@ public class ParseTreeUtilsTest {
 	@Test
 	public final void testGetSecondRangeValue() throws ParseException {
 		ChildrenNode parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(new IntNode(1));
-		parent.addChild(new IntNode(1));
+		parent.addChild(ByteNode.valueOf((byte) 1));
+		parent.addChild(ByteNode.valueOf((byte)1));
 		assertEquals("Value is 1", 1, ParseTreeUtils.getSecondRangeValue(parent));
 		
 		parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(new IntNode(242));
-		parent.addChild(new IntNode(10));
+		parent.addChild(ByteNode.valueOf((byte) 242));
+		parent.addChild(ByteNode.valueOf((byte) 10));
 		assertEquals("Value is 10", 10, ParseTreeUtils.getSecondRangeValue(parent));
 		
 		for (ParseTreeType type : ParseTreeType.values()) {
@@ -206,39 +193,22 @@ public class ParseTreeUtilsTest {
 				}
 			}
 
-			if (type != ParseTreeType.INTEGER) {
+			if (type != ParseTreeType.BYTE) {
 				parent = new ChildrenNode(ParseTreeType.RANGE);
-				parent.addChild(new IntNode(96));
+				parent.addChild(ByteNode.valueOf((byte)96));
 				parent.addChild(new BaseNode(type));
 				try {
 					ParseTreeUtils.getSecondRangeValue(parent);
-					fail("Expected a ParseException if the second child type has no integer value.  Type is " + type);
+					fail("Expected a ParseException if the second child type has is not a BYTE.  Type is " + type);
 				} catch (ParseException excepted) {
 				}
 			}
 		}
 		
+	
 		try {
 			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(30));
-			parent.addChild(new IntNode(-1));
-			ParseTreeUtils.getSecondRangeValue(parent);
-			fail("Expected a ParseException if a value is less than 0");
-		} catch (ParseException expected) {
-		}
-
-		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(30));
-			parent.addChild(new IntNode(256));
-			ParseTreeUtils.getSecondRangeValue(parent);
-			fail("Expected a ParseException if a value is greater than 255");
-		} catch (ParseException expected) {
-		}
-		
-		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(256));
+			parent.addChild(ByteNode.valueOf((byte) 255));
 			ParseTreeUtils.getSecondRangeValue(parent);
 			fail("Expected a ParseException with only one child");
 		} catch (ParseException expected) {
@@ -246,9 +216,9 @@ public class ParseTreeUtilsTest {
 		
 		try {
 			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(new IntNode(0));
-			parent.addChild(new IntNode(64));
-			parent.addChild(new IntNode(92));
+			parent.addChild(ByteNode.valueOf((byte) 0));
+			parent.addChild(ByteNode.valueOf((byte) 64));
+			parent.addChild(ByteNode.valueOf((byte) 92));
 			ParseTreeUtils.getSecondRangeValue(parent);
 			fail("Expected a ParseException with three children");
 		} catch (ParseException expected) {
@@ -349,49 +319,246 @@ public class ParseTreeUtilsTest {
 	}
 
 	@Test
+	public final void testAddByteValues() throws ParseException {
+		for (int i = 0; i < 256; i++) {
+			testAddByteValues((byte) i);
+		}
+	}
+	
+	private void testAddByteValues(byte value) throws ParseException {
+		ParseTree byteNode = new ByteNode(value);
+		Set<Byte> set = new HashSet<Byte>();
+		ParseTreeUtils.addByteValues(byteNode, set);
+		assertEquals("Single byte value only has one value", 1, set.size());
+		assertTrue("Single byte value has correct value for byte " + value, set.contains(value));
+
+		byteNode = new ByteNode(value, false);
+		set = new HashSet<Byte>();
+		ParseTreeUtils.addByteValues(byteNode, set);
+		assertEquals("Single byte value not inverted only has one value", 1, set.size());
+		assertTrue("Single byte value not inverted has correct value for byte " + value, set.contains(value));
+		
+		byteNode = new ByteNode(value, true);
+		set = new HashSet<Byte>();
+		ParseTreeUtils.addByteValues(byteNode, set);
+		assertEquals("Single byte value inverted has 255 values", 255, set.size());
+		assertFalse("Single byte value inverted does not have original value " + value, set.contains(value));
+	}
+	
+	@Test
 	public final void testGetRangeValues() throws ParseException {
 		testRangeValues(0,0);
 		testRangeValues(0, 255);
+		testRangeValues(255, 255);
+		testRangeValues(1,2);
+		testRangeValues(254,255);
+		testRangeValues(32,127);
+		for (int i = 0; i < 256; i++) {
+			testRangeValues(0,i);
+			testRangeValues(i, 255-i);
+		}
 	}
 	
 	private void testRangeValues(int value1, int value2) throws ParseException {
 		ParseTree rangeNode = new ChildrenNode(ParseTreeType.RANGE);
-		rangeNode.addChild(new ByteNode((byte) value1));
-		rangeNode.addChild(new IntNode(value2));
-		Collection<Byte> values = ParseTreeUtils.getRangeValues(rangeNode);
+		rangeNode.addChild(ByteNode.valueOf((byte) value1));
+		rangeNode.addChild(ByteNode.valueOf((byte) value2));
+		Set<Byte> bytes = new HashSet<Byte>(256);
+		ParseTreeUtils.addBytesInRange(rangeNode, bytes);
+		validateRangeValues(bytes, value1, value2, false);
 		
-			
+		rangeNode = new ChildrenNode(ParseTreeType.RANGE);
+		rangeNode.addChild(ByteNode.valueOf((byte) value2));
+		rangeNode.addChild(ByteNode.valueOf((byte) value1));
+		bytes = new HashSet<Byte>(256);
+		ParseTreeUtils.addBytesInRange(rangeNode, bytes);
+		validateRangeValues(bytes, value1, value2, false);
+		
+		rangeNode = new ChildrenNode(ParseTreeType.RANGE, true);
+		rangeNode.addChild(ByteNode.valueOf((byte) value2));
+		rangeNode.addChild(ByteNode.valueOf((byte) value1));
+		bytes = new HashSet<Byte>(256);
+		ParseTreeUtils.addBytesInRange(rangeNode, bytes);
+		validateRangeValues(bytes, value1, value2, true);
+		
+		rangeNode = new ChildrenNode(ParseTreeType.RANGE, true);
+		rangeNode.addChild(ByteNode.valueOf((byte) value1));
+		rangeNode.addChild(ByteNode.valueOf((byte) value2));
+		bytes = new HashSet<Byte>(256);
+		ParseTreeUtils.addBytesInRange(rangeNode, bytes);
+		validateRangeValues(bytes, value1, value2, true);
+	}
+	
+	private void validateRangeValues(Set<Byte> values, int range1, int range2, boolean inverted) {
+		if (inverted) {
+			if (range1 > range2) {
+				for (int value = 0; value < range2; value++) {
+					Byte b = Byte.valueOf((byte) value);
+					assertTrue("Byte is in range", values.contains(b));
+					values.remove(b);
+				}
+				for (int value = range1 + 1; value < 256; value++) {
+					Byte b = Byte.valueOf((byte) value);
+					assertTrue("Byte is in range", values.contains(b));
+					values.remove(b);
+				}
+				assertTrue("No more bytes in values set", values.isEmpty());				
+			} else {
+				for (int value = 0; value < range1; value++) {
+					Byte b = Byte.valueOf((byte) value);
+					assertTrue("Byte is in range", values.contains(b));
+					values.remove(b);
+				}
+				for (int value = range2 + 1; value < 256; value++) {
+					Byte b = Byte.valueOf((byte) value);
+					assertTrue("Byte is in range", values.contains(b));
+					values.remove(b);
+				}
+				assertTrue("No more bytes in values set", values.isEmpty());
+			}
+		} else {
+			if (range1 > range2) {
+				for (int value = range2; value <= range1; value++) {
+					Byte b = Byte.valueOf((byte) value);
+					assertTrue("Byte is in range", values.contains(b));
+					values.remove(b);
+				}
+				assertTrue("No more bytes in values set", values.isEmpty());
+			} else {
+				for (int value = range1; value <= range2; value++) {
+					Byte b = Byte.valueOf((byte) value);
+					assertTrue("Byte is in range", values.contains(b));
+					values.remove(b);
+				}
+				assertTrue("No more bytes in values set", values.isEmpty());
+			}
+		}
 	}
 
 	@Test
-	public final void testGetAllBitmaskValues() {
-		fail("Not yet implemented"); // TODO
+	public final void testGetAllBitmaskValues() throws ParseException {
+		for (int i = 0; i < 256; i++) {
+			testAllBitmaskValues((byte) i);
+		}
+	}
+	
+	private void testAllBitmaskValues(byte bitmask) throws ParseException {
+		ParseTree allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask);
+		Set<Byte> allbitmaskBytes1 = new HashSet<Byte>();
+		Set<Byte> allbitmaskBytes2 = new HashSet<Byte>(); 
+		ParseTreeUtils.addBytesMatchingAllBitmask(allbitmask, allbitmaskBytes1);
+		ByteUtilities.addBytesMatchingAllBitMask(bitmask, allbitmaskBytes2);
+		assertEquals("All bitmask sets for bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
+
+		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, false);
+		allbitmaskBytes1.clear();
+		allbitmaskBytes2.clear();
+		ParseTreeUtils.addBytesMatchingAllBitmask(allbitmask, allbitmaskBytes1);
+		ByteUtilities.addBytesMatchingAllBitMask(bitmask, allbitmaskBytes2);
+		assertEquals("All bitmask sets for explicitly not inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
+		
+		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, true);
+		allbitmaskBytes1.clear();
+		allbitmaskBytes2.clear();
+		ParseTreeUtils.addBytesMatchingAllBitmask(allbitmask, allbitmaskBytes1);
+		ByteUtilities.addBytesNotMatchingAllBitMask(bitmask, allbitmaskBytes2);
+		assertEquals("All bitmask sets for inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 	}
 
 	@Test
-	public final void testGetAnyBitmaskValues() {
-		fail("Not yet implemented"); // TODO
+	public final void testGetAnyBitmaskValues() throws ParseException {
+		for (int i = 0; i < 256; i++) {
+			testAnyBitmaskValues((byte) i);
+		}
+	}
+	
+	private void testAnyBitmaskValues(byte bitmask) throws ParseException {
+		ParseTree allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask);
+		Set<Byte> allbitmaskBytes1 = new HashSet<Byte>();
+		Set<Byte> allbitmaskBytes2 = new HashSet<Byte>(); 
+		ParseTreeUtils.addBytesMatchingAnyBitmask(allbitmask, allbitmaskBytes1);
+		ByteUtilities.addBytesMatchingAnyBitMask(bitmask, allbitmaskBytes2);
+		assertEquals("Any bitmask sets for bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
+
+		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, false);
+		allbitmaskBytes1.clear();
+		allbitmaskBytes2.clear();
+		ParseTreeUtils.addBytesMatchingAnyBitmask(allbitmask, allbitmaskBytes1);
+		ByteUtilities.addBytesMatchingAnyBitMask(bitmask, allbitmaskBytes2);
+		assertEquals("Any bitmask sets for explicitly not inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
+		
+		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, true);
+		allbitmaskBytes1.clear();
+		allbitmaskBytes2.clear();
+		ParseTreeUtils.addBytesMatchingAnyBitmask(allbitmask, allbitmaskBytes1);
+		ByteUtilities.addBytesNotMatchingAnyBitMask(bitmask, allbitmaskBytes2);
+		assertEquals("Any bitmask sets for inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 	}
 
 	@Test
-	public final void testGetStringAsSet() {
-		fail("Not yet implemented"); // TODO
+	public final void testAddStringAsSet() throws ParseException {
+		testAddStringAsSet("123", new byte[] {'1', '2', '3'});
+		testAddStringAsSet("a", new byte[] {'a'});
+		testAddStringAsSet("abcdefghijklmnopqrstuvwxyz", new byte[] {'a', 'b','c', 'd', 'e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'});
+	}
+	
+	private void testAddStringAsSet(String string, byte[] bytes) throws ParseException {
+		ParseTree node = new StringNode(string);
+		Set<Byte> byteSet = new HashSet<Byte>();
+		ParseTreeUtils.addStringBytes(node, byteSet);
+		assertEquals("String " + string + " has correct bytes", ByteUtilities.toSet(bytes), byteSet);
+	}
+	
+
+	@Test
+	public final void testAddCaseStringAsSet() throws ParseException {
+		testAddCaseStringAsSet("123", new byte[] {'1', '2', '3'});
+		testAddCaseStringAsSet("a", new byte[] {'a', 'A'});
+		testAddCaseStringAsSet("abcdefghijklmnopqrstuvwxyz", 
+							  new byte[] {'a','b','c','d','e','f','g','h','i','j','k','l','m',
+										  'n','o','p','q','r','s','t','u','v','w','x','y','z', 
+										  'A','B','C','D','E','F','G','H','I','J','K','L','M',
+										  'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'});
+	}
+	
+	private void testAddCaseStringAsSet(String string, byte[] bytes) throws ParseException {
+		ParseTree node = new StringNode(string);
+		Set<Byte> byteSet = new HashSet<Byte>();
+		ParseTreeUtils.addCaseInsensitiveStringBytes(node, byteSet);
+		assertEquals("String " + string + " has correct bytes", ByteUtilities.toSet(bytes), byteSet);
 	}
 
 	@Test
-	public final void testGetCaseInsensitiveStringAsSet() {
-		fail("Not yet implemented"); // TODO
+	public final void testIllegalSetTypes() {
+		for (ParseTreeType type : ParseTreeType.values()) {
+			if (type != ParseTreeType.BYTE &&
+				type != ParseTreeType.SET &&
+				type != ParseTreeType.RANGE &&
+				type != ParseTreeType.ALL_BITMASK &&
+				type != ParseTreeType.ANY_BITMASK) {
+				ParseTree node = new ChildrenNode(ParseTreeType.SET);
+				node.addChild(new BaseNode(type));
+				try {
+					ParseTreeUtils.getSetValues(node);
+					fail("getSetValues: expected a parse exception for set child node of type " + type);
+				} catch (ParseException expected) {}
+				try {
+					ParseTreeUtils.calculateSetValues(node);
+					fail("calculateSetValues: expected a parse exception for set child node of type " + type);
+				} catch (ParseException expected) {}
+				try {
+					ParseTreeUtils.addSetValues(node, new HashSet<Byte>());
+					fail("addSetValues: expected a parse exception for set child node of type " + type);
+				} catch (ParseException expected) {}
+			}
+		}
 	}
-
+	
 	@Test
-	public final void testCalculateSetValues() {
-		fail("Not yet implemented"); // TODO
-	}
+	public final void testSetValues() {
 
-	@Test
-	public final void testGetSetValues() {
-		fail("Not yet implemented"); // TODO
 	}
+	
 
 
 }

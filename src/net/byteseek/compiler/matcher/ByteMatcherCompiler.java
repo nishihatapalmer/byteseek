@@ -46,7 +46,6 @@ import net.byteseek.parser.Parser;
 import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.parser.tree.ParseTreeUtils;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.util.bytes.ByteUtilities;
 
@@ -208,22 +207,12 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	protected ByteMatcher doCompile(final ParseTree node) throws ParseException {
 
 		switch (node.getParseTreeType()) {
-			case BYTE: 						return ByteMatcherCompilerUtils.createByteMatcher(node);
-			case ANY:						return ByteMatcherCompilerUtils.createAnyMatcher(node);
-			case ALL_BITMASK:				return ByteMatcherCompilerUtils.createAllBitmaskMatcher(node);
-			case ANY_BITMASK:				return ByteMatcherCompilerUtils.createAnyBitmaskMatcher(node);
-			case RANGE: 					return ByteMatcherCompilerUtils.createRangeMatcher(node);
-			case STRING:					return ByteMatcherCompilerUtils.createSetMatcherFromString(node, matcherFactory);
-			case CASE_INSENSITIVE_STRING:	return ByteMatcherCompilerUtils.createSetMatcherFromCaseInsensitiveString(node, matcherFactory);
-			case SET: 						// drop through - sets, sequences and alternatives are all treated as sets.
-			case SEQUENCE:					
-			case ALTERNATIVES:				return ByteMatcherCompilerUtils.createMatcherFromSet(node, matcherFactory);
-			case ZERO_TO_MANY:				// drop through - these special cases of repeated nodes
-			case ONE_TO_MANY:				// all just process their first child as a set of possible byte values to match.
-			case OPTIONAL:					return doCompile(ParseTreeUtils.getFirstChild(node));
-			case REPEAT_MIN_TO_MANY:		// drop through - treat all repeats as just the node to
-			case REPEAT_MIN_TO_MAX:			// repeat (without doing any repeating).
-			case REPEAT:					return doCompile(ParseTreeUtils.getLastChild(node));
+			case BYTE: 			return ByteMatcherCompilerUtils.createByteMatcher(node);
+			case ANY:			return ByteMatcherCompilerUtils.createAnyMatcher(node);
+			case ALL_BITMASK:	return ByteMatcherCompilerUtils.createAllBitmaskMatcher(node);
+			case ANY_BITMASK:	return ByteMatcherCompilerUtils.createAnyBitmaskMatcher(node);
+			case RANGE: 		return ByteMatcherCompilerUtils.createRangeMatcher(node);
+			case SET:			return ByteMatcherCompilerUtils.createMatcherFromSet(node, matcherFactory);
 		}
 		
 		// The node type wasn't understood by this compiler.

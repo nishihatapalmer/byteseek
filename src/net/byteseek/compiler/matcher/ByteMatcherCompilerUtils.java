@@ -132,29 +132,5 @@ public final class ByteMatcherCompilerUtils {
 		return matcherFactory.create(ParseTreeUtils.getSetValues(node), isInverted);
 	}
 	
-	public static ByteMatcher createSetMatcherFromString(final ParseTree node,
-	                                                  final ByteMatcherFactory matcherFactory) throws ParseException {
-	  return createSetMatcherFromString(node, NOT_YET_INVERTED, matcherFactory);
-	}
-	
-	public static ByteMatcher createSetMatcherFromString(final ParseTree node, 
-													  final boolean currentInversion,
-													  final ByteMatcherFactory matcherFactory) throws ParseException {
-		return matcherFactory.create(ParseTreeUtils.getStringAsSet(node), 
-									 isInverted(node, currentInversion));
-	}
-	
-	public static ByteMatcher createSetMatcherFromCaseInsensitiveString(final ParseTree node,
-	                                                          final ByteMatcherFactory matcherFactory) throws ParseException {
-	  return createSetMatcherFromCaseInsensitiveString(node, NOT_YET_INVERTED, matcherFactory);
-	}
-	
-	public static ByteMatcher createSetMatcherFromCaseInsensitiveString(final ParseTree node,
-																	 final boolean currentInversion,
-																	 final ByteMatcherFactory matcherFactory) throws ParseException {
-		return matcherFactory.create(ParseTreeUtils.getCaseInsensitiveStringAsSet(node),
-									 isInverted(node, currentInversion));
-	}	
-	
 	
 }

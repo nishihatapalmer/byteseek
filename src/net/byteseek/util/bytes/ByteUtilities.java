@@ -31,6 +31,7 @@
 
 package net.byteseek.util.bytes;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,6 +54,8 @@ import java.util.Set;
  * @author Matt Palmer
  */
 public final class ByteUtilities {
+	
+	private static final byte ASCII_CASE_DIFFERENCE = 32;
 
     private static final int QUOTE_CHARACTER_VALUE = 39;
     private static final int START_PRINTABLE_ASCII = 32;
@@ -284,7 +287,7 @@ public final class ByteUtilities {
      * @param bytes The array of bytes
      * @return A list of bytes
      */
-    public static Collection<? extends Byte> toList(byte[] bytes) {
+    public static List<Byte> toList(byte[] bytes) {
         final List<Byte> listOfBytes = new ArrayList<Byte>(bytes.length);
         for (final byte b : bytes) {
             listOfBytes.add(Byte.valueOf(b));
@@ -304,6 +307,41 @@ public final class ByteUtilities {
         for (int count = 0; count < size; count++) {
             toCollection.add(Byte.valueOf(bytes[count]));
         }
+    }
+    
+    
+    /**
+     * Adds the bytes in a string encoded as ISO-8859-1 bytes to a collection of bytes.
+     * 
+     * @param string The ISO-8859-1 string whose bytes should be added
+     * @param toCollection The collection to add the bytes to.
+     * @throws UnsupportedEncodingException If the string cannot be encoded as ISO-8859-1. 
+     */
+    public static void addStringBytes(final String string, final Collection<Byte> toCollection) throws UnsupportedEncodingException {
+    	addAll(string.getBytes("ISO-8859-1"), toCollection);
+    }
+    
+    
+    /**
+     * Adds the bytes in a string encoded as ISO-8859-1 to a collection of bytes.
+     * Upper and lower case bytes are also added if their counterpart is encountered.
+     * 
+     * @param string The ISO-8859-1 string whose bytes should be added
+     * @param toCollection The collection to add the bytes to.
+     * @throws UnsupportedEncodingException If the string cannot be encoded as ISO-8859-1. 
+     */
+    public static void addCaseInsensitiveStringBytes(final String string, final Collection<Byte> toCollection) throws UnsupportedEncodingException {
+		final byte[] byteValues = string.getBytes("ISO-8859-1");
+		for (int charIndex = 0; charIndex < byteValues.length; charIndex++) {
+			final byte charAt = byteValues[charIndex];
+			if (charAt >= 'a' && charAt <= 'z') {
+				toCollection.add(Byte.valueOf((byte) (charAt - ASCII_CASE_DIFFERENCE)));
+			} else if (charAt >= 'A' && charAt <= 'A') {
+				toCollection.add(Byte.valueOf((byte) (charAt + ASCII_CASE_DIFFERENCE)));
+			}
+			toCollection.add(Byte.valueOf(charAt));
+		}
+    	
     }
     
     

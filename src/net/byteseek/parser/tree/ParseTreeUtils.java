@@ -33,7 +33,7 @@ package net.byteseek.parser.tree;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import net.byteseek.parser.ParseException;
@@ -136,20 +136,36 @@ public final class ParseTreeUtils {
 	
 	
 	/**
-	 * Returns a collection of unique Bytes representing all the bytes covered by the inclusive
-	 * range node passed in.
+	 * Adds the bytes specified by a BYTE node (inverted or not) to a collection
+	 * of bytes.
+	 * 
+	 * @param byteNode The BYTE node
+	 * @param bytes The collection of bytes to add the byte or bytes to.
+	 * @throws ParseException If the node does not contain a byte value.
+	 */
+	public static void addByteValues(final ParseTree byteNode, final Set<Byte> bytes) throws ParseException {
+		if (byteNode.isValueInverted()) {
+			ByteUtilities.addInvertedByteValues(byteNode.getByteValue(), bytes);
+		} else {
+			bytes.add(byteNode.getByteValue());
+		}
+	}
+	
+	
+	/**
+	 * Adds the bytes defined in a range ParseTree node to a Set<Byte> passed in.
 	 * 
 	 * @param range The range node passed in.
-	 * @return A collection of unique bytes representing all the bytes in a range node passed in.
+	 * @param byteSet The set of bytes to add the byte range to.
 	 * @throws ParseException If the node is not a range node, or does not have correct range
 	 *                         values as child nodes, or if another problem occurs parsing the node.
 	 */
-	public static Collection<Byte> getRangeValues(final ParseTree range) throws ParseException {
-		final int range1 = getFirstRangeValue(range);
-		final int range2 = getSecondRangeValue(range);
-		final Set<Byte> values = new LinkedHashSet<Byte>(64);
-		ByteUtilities.addBytesInRange(range1, range2, values);
-		return values;
+	public static void addBytesInRange(final ParseTree range, Set<Byte> byteSet) throws ParseException {
+		if (range.isValueInverted()) {
+		    ByteUtilities.addInvertedRangeBytes(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
+		} else {
+			ByteUtilities.addBytesInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
+		}
 	}	
 	
 	
@@ -194,79 +210,145 @@ public final class ParseTreeUtils {
 	
 	
 	/**
-	 * Returns a collection of unique byte values matching a bitmask, where all the bits
+	 * Adds a collection of unique byte values matching a bitmask, where all the bits
 	 * must match the bitmask.
+	 * This method does not check whether the type of node passed in is actually an
+	 * ALL_BITMASK.  As long as there is a byte value to the node, it will be processed
+	 * as if it is an ALL_BITMASK.
 	 * 
 	 * @param allBitmask The all bitmask node.
-	 * @return A collection of bytes which match the all-bits bitmask.
+	 * @param set A set of bytes to add the values to.
 	 * @throws ParseException If there is no bitmask byte value or another problem occurs
 	 *                         parsing the value.
 	 */
-	public static Collection<Byte> getAllBitmaskValues(final ParseTree allBitmask) throws ParseException {
-		return ByteUtilities.getBytesMatchingAllBitMask(allBitmask.getByteValue());
+	public static void addBytesMatchingAllBitmask(final ParseTree allBitmask,
+												  final Collection<Byte> bytes) throws ParseException {
+		if (allBitmask.isValueInverted()) {
+			ByteUtilities.addBytesNotMatchingAllBitMask(allBitmask.getByteValue(), bytes);
+		} else {
+			ByteUtilities.addBytesMatchingAllBitMask(allBitmask.getByteValue(), bytes);
+		}
 	}	
 	
 	
 	/**
-	 * Returns a collection of unique byte values matching a bitmask, where any of the bits
-	 * must match the bitmask.
+	 * Adds a collection of unique byte values matching a bitmask, where any of the bits
+	 * must match the bitmask (or not if the bitmask node is inverted).
 	 * 
+	 * This method does not check whether the type of node passed in is actually an
+	 * ANY_BITMASK.  As long as there is a byte value to the node, it will be processed
+	 * as if it is an ANY_BITMASK.
+ 	 *
 	 * @param allBitmask The any bitmask node.
 	 * @return A collection of bytes which match the any-bits bitmask.
 	 * @throws ParseException If there is no bitmask byte value or another problem occurs
 	 *                         parsing the value.
 	 */
-	public static Collection<Byte> getAnyBitmaskValues(final ParseTree anyBitmask) throws ParseException {
-		return ByteUtilities.getBytesMatchingAnyBitMask(anyBitmask.getByteValue());		
+	public static void addBytesMatchingAnyBitmask(final ParseTree anyBitmask,
+												  final Collection<Byte> bytes) throws ParseException {
+		if (anyBitmask.isValueInverted()) {
+			ByteUtilities.addBytesNotMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
+		} else {
+			ByteUtilities.addBytesMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
+		}
 	}		
 
 	
 	/**
-	 * Returns a collection of unique byte values which consist of the byte values of the 
-	 * String passed in, when encoded as ISO 8859-1 bytes.
+	 * Adds the bytes from a string when encoded as ISO 8859-1 bytes to a collection of bytes.
 	 * 
-	 * @param string The string to get the bytes for.
-	 * @return A collection of bytes representing the unique bytes defined in the string passed in.
-	 * @throws ParseException If the string cannot be converted to ISO 8859-1 encoding.
+	 * @param string The text node to get the bytes for.
+	 * @param bytes The collection of Bytes to add the string bytes to.
+	 * @throws ParseException If the ISO 8859-1 encoding is not supported.
 	 */
-	public static Collection<Byte> getStringAsSet(final ParseTree string) throws ParseException {
+	public static void addStringBytes(final ParseTree string,
+									  final Collection<Byte> bytes) throws ParseException {
 		try {
-			final byte[] utf8Value = string.getTextValue().getBytes("ISO-8859-1");
-			final Set<Byte> values = new LinkedHashSet<Byte>(utf8Value.length * 2);
-			ByteUtilities.addAll(utf8Value, values);
-			return values;
+			ByteUtilities.addStringBytes(string.getTextValue(), bytes);
 		} catch (UnsupportedEncodingException e) {
-			throw new ParseException("String cannot be converted to ISO-8859-1 encoding + '[' + string + ']'", e);
+			throw new ParseException("ISO-8859-1 encoding is not supported. " + '[' + string + ']', e);
 		}		
 	}
 	
 	
 	/**
-	 * Returns a collection of unique byte values that represent all the byte values
-	 * in a String when encoded as ISO 8859-1 bytes.  Any lower or upper case characters
-	 * will have their counterpart added to the collection, ensuring case-insensitivity.
+	 * Adds the bytes that represent all the byte values in a String when encoded as ISO 8859-1 bytes.
+	 * Any lower or upper case characters will have their counterpart added to the collection, 
+	 * ensuring case-insensitivity.
 	 * 
-	 * @param caseInsensitive The string to get a set of case insensitive byte values for.
+	 * @param caseInsensitive The text node to get a set of case insensitive byte values for.
 	 * @return A collection of bytes giving all the case insensitive bytes that string might match.
-	 * @throws ParseException If the string cannot be encoded in ISO 8859-1.
+	 * @throws ParseException If the ISO 8859-1 encoding is not supported.
 	 */
-	public static Collection<Byte> getCaseInsensitiveStringAsSet(final ParseTree caseInsensitive) throws ParseException {
+	public static void addCaseInsensitiveStringBytes(final ParseTree caseInsensitive,
+													 final Collection<Byte> bytes) throws ParseException {
 		try {
-			final byte[] byteValues = caseInsensitive.getTextValue().getBytes("ISO-8859-1");
-			final Set<Byte> values = new LinkedHashSet<Byte>();		
-			for (int charIndex = 0; charIndex < byteValues.length; charIndex++) {
-				final byte charAt = byteValues[charIndex];
-				if (charAt >= 'a' && charAt <= 'z') {
-					values.add((byte) Character.toUpperCase(charAt));
-				} else if (charAt >= 'A' && charAt <= 'A') {
-					values.add((byte) Character.toLowerCase(charAt));
-				}
-				values.add(charAt);
-			}
-			return values;
+			ByteUtilities.addCaseInsensitiveStringBytes(caseInsensitive.getTextValue(), bytes);
 		} catch (UnsupportedEncodingException e) {
-			throw new ParseException(e);
+			throw new ParseException("ISO-8859-1 encoding is not supported. " + '[' + caseInsensitive + ']', e);
 		}		
+	}
+	
+	
+	/**
+	 * Calculates the set of Bytes specified by the parent set node passed in.
+	 * Sets can contain bytes, strings (case sensitive & insensitive),
+	 * ranges, other sets nested inside them (both normal and inverted) and
+	 * bitmasks.
+	 * <p>
+	 * This method does not invert the set bytes returned if the set node passed in is inverted.
+	 * It preserves the bytes as-defined in the set, leaving the question of whether to
+	 * invert the bytes defined in the set passed in to any clients of the code.
+	 * <p>
+	 * If you want the set values calculating taking into account the inversion 
+	 * status of the set node itself, please call the method {@link #calculateSetValues(ParseTree)}.
+	 * <p>
+	 * This can be recursive procedure if sets are nested within one another.
+	 * 
+	 * @param set
+	 *            The set node to calculate a set of byte values for.
+	 * @return A set of byte values defined by the node.
+	 * @throws ParseException
+	 *             If a problem occurs parsing the node.
+	 */
+	public static Set<Byte> getSetValues(final ParseTree set)
+			throws ParseException {
+		final Set<Byte> setValues = new HashSet<Byte>(192);
+		for (final ParseTree valueNode : set) {
+			switch (valueNode.getParseTreeType()) {
+				case SET:						addSetValues(valueNode, setValues);
+												break;
+				case BYTE:						addByteValues(valueNode, setValues); 						
+												break;
+				case RANGE: 					addBytesInRange(valueNode, setValues);
+												break;
+				case ALL_BITMASK:				addBytesMatchingAllBitmask(valueNode, setValues);					
+												break;
+				case ANY_BITMASK:				addBytesMatchingAnyBitmask(valueNode, setValues);
+												break;
+				case STRING:					addStringBytes(valueNode, setValues);						
+												break;
+				case CASE_INSENSITIVE_STRING:	addCaseInsensitiveStringBytes(valueNode, setValues);			
+												break;
+				default: 						throw new ParseException(getTypeError(valueNode));
+			}
+		}
+		return setValues;
+	}
+
+	
+	/**
+	 * Adds all the set values defined by the set node passed in to a collection of Byte.
+	 * If the set node is inverted, then the bytes added will be inverted from the values
+	 * defined under the set node. 
+	 * 
+	 * @param setNode The set node defining the set of bytes to add.
+	 * @param bytes The collection of bytes to add the bytes to.
+	 * @throws ParseException If the byte set nodes do not define a valid set.
+	 */
+	public static void addSetValues(final ParseTree setNode, 
+									final Collection<Byte> bytes) throws ParseException {
+		bytes.addAll(calculateSetValues(setNode));		
 	}
 	
 	
@@ -297,60 +379,15 @@ public final class ParseTreeUtils {
 	}
 	
 	
-	/**
-	 * Calculates a value of a set given the parent set node (or inverted set
-	 * node). Sets can contain bytes, strings (case sensitive & insensitive),
-	 * ranges, other sets nested inside them (both normal and inverted) and
-	 * bitmasks.
-	 * <p>
-	 * This method does not invert the set bytes returned if the root set node is inverted.
-	 * It preserves the bytes as-defined in the set, leaving the question of whether to
-	 * invert the bytes defined in the set passed in to any clients of the code.
-	 * <p>
-	 * If you want the set values calculating taking into account the inversion 
-	 * status of the set node itself, please call the method {@link #calculateSetValues(ParseTree)}.
-	 * <p>
-	 * This can be recursive procedure if sets are nested within one another.
-	 * 
-	 * @param set
-	 *            The set node to calculate a set of byte values for.
-	 * @return A set of byte values defined by the node.
-	 * @throws ParseException
-	 *             If a problem occurs parsing the node.
-	 */
-	public static Set<Byte> getSetValues(final ParseTree set)
-			throws ParseException {
-		final Set<Byte> setValues = new LinkedHashSet<Byte>(192);
-		for (final ParseTree child : set) {
-			switch (child.getParseTreeType()) {
-				case SEQUENCE:				    // Drop through: treat all possible types of node which may hold
-				case ALTERNATIVES:			    // byte value bearing children as just containers of those values.
-				case SET:					    // The idea is you can pass any regular expression node into this
-				case ZERO_TO_MANY:			    // function, and get the set of all byte values which *could* be
-				case ONE_TO_MANY:			    // matched by that expression.
-				case OPTIONAL:					setValues.addAll(calculateSetValues(child)); 					break;
-				case REPEAT:					setValues.addAll(calculateSetValues(getLastChild(child))); 	break;
-				case BYTE: 						setValues.add(child.getByteValue());  							break;
-				case RANGE: 					setValues.addAll(getRangeValues(child));						break;
-				case ALL_BITMASK:				setValues.addAll(getAllBitmaskValues(child));					break;
-				case ANY_BITMASK:				setValues.addAll(getAnyBitmaskValues(child));					break;
-				case STRING:					setValues.addAll(getStringAsSet(child));						break;
-				case CASE_INSENSITIVE_STRING:	setValues.addAll(getCaseInsensitiveStringAsSet(child));			break;
-				default: throw new ParseException(getTypeError(child));
-			}
-		}
-		return setValues;
-	}
-
-	
 	////////////////////////////
 	// Private static methods //
 	////////////////////////////
 	
 	/**
-	 * Private utility method which gets the nominated range value and validates it
-	 * to make sure it is between 0 and 255.  Also validates that the range node itself
-	 * only has two children, and that the range node has type ParseTreeType.RANGE.
+	 * Private utility method which gets the BYTE nominated range value,
+	 * and returns it as an integer between 0 and 255.
+	 * Also validates that the range node itself only has two children, 
+	 * and that the range node has type ParseTreeType.RANGE.
 	 * 
 	 * @param rangeNode The range node to get a value for.
 	 * @param valueIndex The number of the range value (first: 0 or second: 1).
@@ -364,15 +401,11 @@ public final class ParseTreeUtils {
 		}
 		final int numChildren = rangeNode.getNumChildren();
 		if (numChildren != 2) {
-			throw new ParseException("Ranges must have two integer values as child nodes. " +
-			                          "Actual number of children was: " + numChildren);			
+			throw new ParseException("Ranges must have two BYTE values as child nodes. " +
+			                         "Actual number of children was: " + numChildren);			
 		}
-		final int rangeValue = rangeNode.getChild(valueIndex).getIntValue();
-		if (rangeValue < 0 || rangeValue > 255) {
-			throw new ParseException("Range values must be between 0 and 255. " +
-			                          "Actual value was: " + rangeValue);
-		}
-		return rangeValue;		
+		final int rangeValue = rangeNode.getChild(valueIndex).getByteValue();
+		return rangeValue & 0xFF;		
 	}
 	
 
@@ -387,11 +420,8 @@ public final class ParseTreeUtils {
 	 * @return An integer value of the min or max repeat.  
 	 * @throws ParseException If the repeat node does not have type ParseTreeType.REPEAT,
 	 * 						  ParseTreeType.REPEAT_MIN_TO_MANY, ParseTreeType.REPEAT_MIN_TO_MAX,	
-	 *                        or an integer value supplied is not positive.
+	 *                        or an integer value supplied is not greater than zero.
 	 */
-	//FIXME: this utility method is probably useless now that we have explicit REPEAT, REPEAT_MIN_TO_MANY and
-	//       REPEAT_MIN_TO_MAX nodes.  Need to evaluate which of the utility methods are needed after refactoring
-	//       compilers to use the new repeat nodes.
 	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
 		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT &&
 			repeatNode.getParseTreeType() != ParseTreeType.REPEAT_MIN_TO_MANY &&
@@ -415,8 +445,7 @@ public final class ParseTreeUtils {
 	 * @return A type error message for that node.
 	 */
 	private static String getTypeError(final ParseTree node) {
-		final ParseTreeType type = node.getParseTreeType();
-		return String.format(TYPE_ERROR, type);
+		return String.format(TYPE_ERROR, node.getParseTreeType());
 	}
 	
 }

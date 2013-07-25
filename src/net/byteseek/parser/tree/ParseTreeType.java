@@ -201,24 +201,24 @@ public enum ParseTreeType {
 	/**
 	 * A RANGE type defines a contiguous, inclusive range of byte values.
 	 * <p>
-	 * The value can be inverted, meaning it will match bytes outside of the range.
+	 * The value can be inverted, meaning it will only match bytes outside of the range defined.
 	 * Calling {@link net.byteseek.parser.tree.ParseTree#isValueInverted()}
 	 * tells you if the value of the range is inverted.  
 	 * <p>
-	 * Implementations should throw a {@link net.byteseek.parser.ParseException} 
+	 * A RANGE type has no innate value, so implementations should throw a {@link net.byteseek.parser.ParseException} 
 	 * if calls are made to either {@link net.byteseek.parser.tree.ParseTree#getIntValue()},
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}.
 	 * <p>
-	 * FIXME: now has two int nodes in the range 0 - 255.  The syntax that produces
-	 * a range is independant of its meaning.
-	 *  
-	 * It has two child INTEGER nodes defining an inclusive range of values between 0 and 255.  
+	 * It must have two child BYTE nodes defining an inclusive range of values between 0 and 255.
+	 * This means that although the values are stored as Java bytes, which are signed, their values
+	 * are interpreted as meaning the more normal unsigned integer values of bytes from 0 to 255.
+     *
 	 * <p><blockquote><pre><code>
 	 *    RANGE
 	 *     /&nbsp;&nbsp;&nbsp;&nbsp;\
-	 *  INTEGER INTEGER
-	 *   32        254
+	 *  BYTE BYTE
+	 *   32        -1=255
 	 * </code></pre></blockquote><p><p>
 	 * The range does not have to be specified in any particular order - a bigger value 
 	 * can appear before a smaller one, or vice versa.  
