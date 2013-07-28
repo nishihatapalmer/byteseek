@@ -35,6 +35,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -553,7 +554,7 @@ public final class ByteUtilities {
      * @param bytes A set of bytes to add the bytes in the range to.
      * @throws IllegalArgumentException if the from or to values are not between 0 and 255.
      */
-    public static void addInvertedRangeBytes(final int from, final int to, final Set<Byte> bytes) {
+    public static void addBytesNotInRange(final int from, final int to, final Set<Byte> bytes) {
     	if (from < 0 || from > 255 || to < 0 || to > 255) {
     		final String message = "The from and to values must be in the range 0 to 255.  Values provided were %d and %d";
     		throw new IllegalArgumentException(String.format(message, from, to));
@@ -576,10 +577,54 @@ public final class ByteUtilities {
      * @return Set<Byte> A set of all other bytes.
      */
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
-        final Set<Byte> inverted = new LinkedHashSet<Byte>(320);
+        final Set<Byte> inverted = new HashSet<Byte>(bytes.size() + 32);
         buildInvertedSet(bytes, inverted);
         return inverted;
     }
+    
+    
+    /**
+     * Returns true if one set of bytes is the inverse of the other.
+     * 
+     * @param set The first set to test
+     * @param inverseSet The other set to test
+     * @return True if both sets are the inverse of each other.
+     */
+    public static boolean inverseOf(final Set<Byte> set, final Set<Byte> inverseSet) {
+    	// If the set sizes are compatible with being the inverse of each other:
+    	if (set.size() == 256 - inverseSet.size()) {
+    		// Go through all the bytes in the smaller set, to see if they appear in the
+    		// bigger set.
+    		final boolean setIsSmaller = set.size() < inverseSet.size();
+    		final Set<Byte> needle   = setIsSmaller? set : inverseSet;
+    		final Set<Byte> haystack = setIsSmaller? inverseSet : set;
+    		for (final Byte value : needle) {
+    			if (haystack.contains(value)) {
+    				return false;
+    			}
+    		}
+    		return true;
+    	}
+    	return false;
+    }
+    
+    /**
+     * Returns an inverted set of bytes containing all bytes except 
+     * for the value passed in.  
+     * 
+     * @param value The value which should not appear in the set of bytes.
+     * @return Set<Byte> A set of all other bytes.
+     */
+    public static Set<Byte> invertedSet(final byte value) {
+        final Set<Byte> inverted = new HashSet<Byte>(288);
+        final int intValue =  value & 0xFF;
+        for (int i = 0; i < 256; i ++) {
+        	if (i != intValue) {
+        		inverted.add(Byte.valueOf((byte) i));
+        	}
+        }
+        return inverted;
+    }    
     
 
     /**

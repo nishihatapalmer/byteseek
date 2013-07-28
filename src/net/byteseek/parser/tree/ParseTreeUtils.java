@@ -160,9 +160,9 @@ public final class ParseTreeUtils {
 	 * @throws ParseException If the node is not a range node, or does not have correct range
 	 *                         values as child nodes, or if another problem occurs parsing the node.
 	 */
-	public static void addBytesInRange(final ParseTree range, Set<Byte> byteSet) throws ParseException {
+	public static void addRangeBytes(final ParseTree range, Set<Byte> byteSet) throws ParseException {
 		if (range.isValueInverted()) {
-		    ByteUtilities.addInvertedRangeBytes(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
+		    ByteUtilities.addBytesNotInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
 		} else {
 			ByteUtilities.addBytesInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
 		}
@@ -320,7 +320,7 @@ public final class ParseTreeUtils {
 												break;
 				case BYTE:						addByteValues(valueNode, setValues); 						
 												break;
-				case RANGE: 					addBytesInRange(valueNode, setValues);
+				case RANGE: 					addRangeBytes(valueNode, setValues);
 												break;
 				case ALL_BITMASK:				addBytesMatchingAllBitmask(valueNode, setValues);					
 												break;
