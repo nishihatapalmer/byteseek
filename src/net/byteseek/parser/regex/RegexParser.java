@@ -165,10 +165,7 @@ public class RegexParser implements Parser<ParseTree> {
 	private ParseTree parseAlternatives(final StringParseReader expression) throws ParseException {
 		final List<ParseTree> alternatives = new ArrayList<ParseTree>(8);
 		while (!expression.atEnd() && expression.peekBehind() != CLOSE_GROUP) {
-			final ParseTree sequence = parseSequence(expression);
-			if (sequence != null) {
-				alternatives.add(sequence);
-			}
+			alternatives.add(parseSequence(expression));
 		}
 		return optimisedAlternatives(alternatives, expression);
 	}
