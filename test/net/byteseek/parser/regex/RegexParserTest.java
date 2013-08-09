@@ -277,13 +277,13 @@ public class RegexParserTest {
 	/**
 	 * Test ParseTreeType.STRING
 	 */	
-	//TODO: string nodes cannot be inverted by the parser, even if an inverted string is specified.
 	public final void testString() throws ParseException {
 		expectParseException("Empty string", "''");
 		expectParseException("Unclosed string", "'a string");
 		expectParseException("Unopened string", "abc'");
 		expectParseException("Unopened string", "An unopened'");
 		expectParseException("Mixed case quotes", "'Closed with case insensitive`");
+		expectParseException("Inverted string", "^'An inverted string'");
 
 		testString("' '"); 	
 		testString("'X'"); 	
@@ -316,7 +316,8 @@ public class RegexParserTest {
 		expectParseException("Unopened string", "abc`");
 		expectParseException("Unopened string", "An unopened`");
 		expectParseException("Mixed case quotes", "`Closed with case sensitive'");
-
+		expectParseException("Inverted case insensitive string", "^`Inverted case insensitive string`");
+		
 		testCaseInsensitiveString("` `"); 
 		testCaseInsensitiveString("`q`"); 	
 		testCaseInsensitiveString("`7`"); 		

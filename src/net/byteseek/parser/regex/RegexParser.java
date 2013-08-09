@@ -490,13 +490,19 @@ public class RegexParser implements Parser<ParseTree> {
 				if (stringValue.isEmpty()) {
 					throw new ParseException(addContext("Strings cannot be empty", expression));
 				}
+				if (inverted) {
+					throw new ParseException(addContext("Strings cannot be inverted", expression));
+				}
 				return new StringNode(stringValue);
 			}
 			
 			case CASE_INSENSITIVE_QUOTE: {
 				String stringValue = expression.readString(CASE_INSENSITIVE_QUOTE);
 				if (stringValue.isEmpty()) {
-					throw new ParseException(addContext("Strings cannot be empty", expression));
+					throw new ParseException(addContext("Case insensitive strings cannot be empty", expression));
+				}
+				if (inverted) {
+					throw new ParseException(addContext("Case insensitive strings cannot be inverted", expression));
 				}
 				return new StringNode(stringValue, ParseTreeType.CASE_INSENSITIVE_STRING);
 			}
