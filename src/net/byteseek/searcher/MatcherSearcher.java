@@ -235,7 +235,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '(' + matcher + ')';
+        return this.getClass().getSimpleName() + '[' + matcher + ']';
     }        
 
     

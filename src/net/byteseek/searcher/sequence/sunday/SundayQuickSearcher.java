@@ -274,6 +274,11 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         backwardInfo.get();
     }
     
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[sequence:" + matcher + ']'; 
+    }
+    
     
     private class ForwardSearchInfo extends LazyObject<int[]> {
 

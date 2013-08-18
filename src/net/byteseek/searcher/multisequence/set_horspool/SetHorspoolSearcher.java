@@ -343,6 +343,11 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         backwardInfo.get();
     }
     
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[sequences:" + sequences + ']'; 
+    }
+    
 
     /**
      * A class holding information needed to search.

@@ -270,6 +270,11 @@ import java.util.List;
             backwardInfo.get();
         }
         
+        @Override
+        public String toString() {
+        	return getClass().getSimpleName() + "[block size: " + blockSize + " sequences:" + sequences + ']'; 
+        }
+        
     
         private List<byte[]> getBlockByteList(final int position, final SequenceMatcher matcher) {
             final List<byte[]> byteList = new ArrayList<byte[]>(blockSize);

@@ -345,6 +345,12 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
     }
     
     
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[sequence:" + matcher + ']'; 
+    }
+
+    
     private static class SearchInfo {
         public int[] shifts;
         public ByteMatcher matcher;

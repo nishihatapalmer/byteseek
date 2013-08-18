@@ -76,5 +76,11 @@ public final class SearchResult<T> {
 	public T getMatchingObject() {
 		return matchingObject;
 	}
+	
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[match position:" + matchPosition +
+    										" matching object:" + matchingObject + ']';
+    }
 
 }

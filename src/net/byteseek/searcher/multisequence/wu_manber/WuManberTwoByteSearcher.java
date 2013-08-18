@@ -321,4 +321,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
         }
         return SearchUtils.noResults();
     }    
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[block size: " + blockSize + " sequences:" + sequences + ']'; 
+    }
 }

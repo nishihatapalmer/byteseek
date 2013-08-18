@@ -374,6 +374,12 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
     }
     
     
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[sequence:" + matcher + ']'; 
+    }
+
+    
     private static class SearchInfo {
         public int[] shifts;
         public SequenceMatcher verifier;
