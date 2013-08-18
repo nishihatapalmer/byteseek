@@ -31,6 +31,8 @@
 
 package net.byteseek.parser.tree.node;
 
+import java.io.UnsupportedEncodingException;
+
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
 
@@ -88,7 +90,7 @@ public class StringNode extends BaseNode {
     return value;
   }
   
-  
+
   /**
    * Sets the text value of this StringNode.
    * 
@@ -97,6 +99,29 @@ public class StringNode extends BaseNode {
   public void setTextValue(final String value) {
     this.value = value;
   }
+  
+  /**
+   * Returns a byte value of a single character STRING.  It will also
+   * return the byte value of a CASE_INSENSITIVE_STRING if it is not an
+   * alphabetic character.
+   * 
+   * @return byte The byte value of a single character string.
+   * @throws ParseException if the string does not have a length of one, or you request
+   *                        the byte value of an alphabetic character in a case insensitive string.
+   */
+  @Override
+  public byte getByteValue() throws ParseException {
+	  if (value.length() == 1) {
+		  try {
+			  final byte[] stringbytes = value.getBytes("ISO-8859-1");
+			  return stringbytes[0];
+		  } catch (UnsupportedEncodingException ex) {
+			  throw new ParseException("No support for ISO-8859-1 encoding for string [" + value + ']', ex);
+		  }
+	  }
+	  throw new ParseException("The string [" + this + "] must be of length 1");
+  }
+  
   
   /**
    * Returns whether the string matches case sensitively or not.

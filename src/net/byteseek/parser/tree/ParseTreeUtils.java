@@ -31,7 +31,6 @@
 
 package net.byteseek.parser.tree;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -263,11 +262,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addStringBytes(final ParseTree string,
 									  final Collection<Byte> bytes) throws ParseException {
-		try {
-			ByteUtilities.addStringBytes(string.getTextValue(), bytes);
-		} catch (UnsupportedEncodingException e) {
-			throw new ParseException("ISO-8859-1 encoding is not supported. " + '[' + string + ']', e);
-		}		
+		ByteUtilities.addStringBytes(string.getTextValue(), bytes);
 	}
 	
 	
@@ -282,11 +277,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addCaseInsensitiveStringBytes(final ParseTree caseInsensitive,
 													 final Collection<Byte> bytes) throws ParseException {
-		try {
-			ByteUtilities.addCaseInsensitiveStringBytes(caseInsensitive.getTextValue(), bytes);
-		} catch (UnsupportedEncodingException e) {
-			throw new ParseException("ISO-8859-1 encoding is not supported. " + '[' + caseInsensitive + ']', e);
-		}		
+		ByteUtilities.addCaseInsensitiveStringBytes(caseInsensitive.getTextValue(), bytes);
 	}
 	
 	
@@ -313,7 +304,7 @@ public final class ParseTreeUtils {
 	 */
 	public static Set<Byte> getSetValues(final ParseTree set)
 			throws ParseException {
-		final Set<Byte> setValues = new HashSet<Byte>(192);
+		final Set<Byte> setValues = new HashSet<Byte>(64);
 		for (final ParseTree valueNode : set) {
 			switch (valueNode.getParseTreeType()) {
 				case SET:						addSetValues(valueNode, setValues);
@@ -330,7 +321,12 @@ public final class ParseTreeUtils {
 												break;
 				case CASE_INSENSITIVE_STRING:	addCaseInsensitiveStringBytes(valueNode, setValues);			
 												break;
+				case ANY:						ByteUtilities.addAllBytes(setValues);
+											    break;
 				default: 						throw new ParseException(getTypeError(valueNode));
+			}
+			if (setValues.size() == 256) {
+				break; // don't bother adding more values if we're already at the maximum set size for Bytes.
 			}
 		}
 		return setValues;

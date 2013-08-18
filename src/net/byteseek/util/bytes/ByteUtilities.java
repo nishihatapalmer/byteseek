@@ -156,7 +156,7 @@ public final class ByteUtilities {
     	final byte[] bytes = new byte[numberOfBytes];
     	int arrayCount = 0;
     	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
-    		if ((byteIndex & bitMask) == bitMask) {
+    		if ((((byte) byteIndex) & bitMask) == bitMask) {
     			bytes[arrayCount++] = (byte) byteIndex;
     		}
     	}
@@ -175,7 +175,7 @@ public final class ByteUtilities {
     	final byte[] bytes = new byte[numberOfBytes];
     	int arrayCount = 0;
     	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
-    		if ((byteIndex & bitMask) != bitMask) {
+    		if ((((byte) byteIndex) & bitMask) != bitMask) {
     			bytes[arrayCount++] = (byte) byteIndex;
     		}
     	}
@@ -194,7 +194,7 @@ public final class ByteUtilities {
     	final byte[] bytes = new byte[numberOfBytes];
     	int arrayCount = 0;
     	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
-    		if ((byteIndex & bitMask) > 0) {
+    		if ((((byte) byteIndex) & bitMask) != 0) {
     			bytes[arrayCount++] = (byte) byteIndex;
     		}
     	}
@@ -213,7 +213,7 @@ public final class ByteUtilities {
     	final byte[] bytes = new byte[numberOfBytes];
     	int arrayCount = 0;
     	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
-    		if ((byteIndex & bitMask) == 0) {
+    		if ((((byte) byteIndex) & bitMask) == 0) {
     			bytes[arrayCount++] = (byte) byteIndex;
     		}
     	}
@@ -231,11 +231,21 @@ public final class ByteUtilities {
     											  final Collection<Byte> bytes) {
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
-            if ((byteValue & bitMask) == bitMask) {
+            if ((((byte) byteIndex) & bitMask) == bitMask) {
                 bytes.add(Byte.valueOf(byteValue));
             }
         }
     }
+    
+	/**
+	 * Adds all possible bytes to a collection of Byte.
+	 * @param bytes
+	 */
+	public static void addAllBytes(final Collection<Byte> bytes) {
+		for (int i = 0; i < 256; i++) {
+			bytes.add(Byte.valueOf((byte) i));
+		}
+	}
 
     
     /**
@@ -248,7 +258,7 @@ public final class ByteUtilities {
     												 final Collection<Byte> bytes) {
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
-            if ((byteValue & bitMask) != bitMask) {
+            if ((((byte) byteIndex) & bitMask) != bitMask) {
                 bytes.add(Byte.valueOf(byteValue));
             }
         }
@@ -282,6 +292,7 @@ public final class ByteUtilities {
     }
     
     
+
     /**
      * Returns a list of bytes from an array of bytes.
      * 
@@ -310,18 +321,50 @@ public final class ByteUtilities {
         }
     }
     
+    /**
+     * Adds all the bytes specified as byte parameters to the collection.
+     * @param toCollection The collection to add the bytes to.
+     * @param values The byte values as parameters.
+     */
+    public static void addBytes(final Collection<Byte> toCollection, final byte...values) {
+    	for (byte value : values) {
+    		toCollection.add(Byte.valueOf(value));
+    	}
+    }
+    
     
     /**
      * Adds the bytes in a string encoded as ISO-8859-1 bytes to a collection of bytes.
      * 
      * @param string The ISO-8859-1 string whose bytes should be added
      * @param toCollection The collection to add the bytes to.
-     * @throws UnsupportedEncodingException If the string cannot be encoded as ISO-8859-1. 
      */
-    public static void addStringBytes(final String string, final Collection<Byte> toCollection) throws UnsupportedEncodingException {
-    	addAll(string.getBytes("ISO-8859-1"), toCollection);
+    public static void addStringBytes(final String string, final Collection<Byte> toCollection) {
+    	try {
+    		addAll(string.getBytes("ISO-8859-1"), toCollection);
+    	} catch (UnsupportedEncodingException canNeverHappen) {
+    		// Support for ISO-8859-1 is mandatory for java implementations.
+    	}
     }
     
+    
+    /**
+     * Returns a byte array of the string passed in, encoded as ISO-8859-1.
+     * <p>
+     * If the string cannot be encoded as ISO-8859-1, then the behaviour of this
+     * method is undefined.
+     * 
+     * @param string The string to convert to a byte array encoded as ISO-8859-1
+     * @return The byte array representing the string encoded as ISO-8859-1
+     */
+    public static byte[] getBytes(final String string) {
+    	try {
+    		return string.getBytes("ISO-8859-1");
+    	} catch (UnsupportedEncodingException canNeverHappen) {
+    		// Support for ISO-8859-1 is mandatory for java implementations.
+    		return new byte[0];
+    	}
+    }
     
     /**
      * Adds the bytes in a string encoded as ISO-8859-1 to a collection of bytes.
@@ -331,16 +374,20 @@ public final class ByteUtilities {
      * @param toCollection The collection to add the bytes to.
      * @throws UnsupportedEncodingException If the string cannot be encoded as ISO-8859-1. 
      */
-    public static void addCaseInsensitiveStringBytes(final String string, final Collection<Byte> toCollection) throws UnsupportedEncodingException {
-		final byte[] byteValues = string.getBytes("ISO-8859-1");
-		for (int charIndex = 0; charIndex < byteValues.length; charIndex++) {
-			final byte charAt = byteValues[charIndex];
-			if (charAt >= 'a' && charAt <= 'z') {
-				toCollection.add(Byte.valueOf((byte) (charAt - ASCII_CASE_DIFFERENCE)));
-			} else if (charAt >= 'A' && charAt <= 'A') {
-				toCollection.add(Byte.valueOf((byte) (charAt + ASCII_CASE_DIFFERENCE)));
+    public static void addCaseInsensitiveStringBytes(final String string, final Collection<Byte> toCollection) {
+		try {
+			final byte[] byteValues = string.getBytes("ISO-8859-1");
+			for (int charIndex = 0; charIndex < byteValues.length; charIndex++) {
+				final byte charAt = byteValues[charIndex];
+				if (charAt >= 'a' && charAt <= 'z') {
+					toCollection.add(Byte.valueOf((byte) (charAt - ASCII_CASE_DIFFERENCE)));
+				} else if (charAt >= 'A' && charAt <= 'A') {
+					toCollection.add(Byte.valueOf((byte) (charAt + ASCII_CASE_DIFFERENCE)));
+				}
+				toCollection.add(Byte.valueOf(charAt));
 			}
-			toCollection.add(Byte.valueOf(charAt));
+		} catch (UnsupportedEncodingException canNeverHappen) {
+			//ISO 8859-1 encoding is mandatory in java implementations.
 		}
     	
     }
@@ -659,8 +706,8 @@ public final class ByteUtilities {
     
     
     /**
-     * Subtracts a set of bytes from another set of bytes, and adds the subtracted
-     * bytes to yet another set.
+     * Subtracts a set of bytes from another set of bytes, and records which 
+     * bytes were actually removed, since they were in the original set. 
      * 
      * @param bytes The set of bytes to subtract.
      * @param fromSet The set of bytes to subtract from.
@@ -1003,8 +1050,11 @@ public final class ByteUtilities {
                     byteValue >= START_PRINTABLE_ASCII &&
                     byteValue <= END_PRINTABLE_ASCII &&
                     byteValue != QUOTE_CHARACTER_VALUE) {
-                final String formatString = inString ? "%c" : " '%c";
-                hexString.append(String.format(formatString, (char) byteValue));
+            	if (inString) {
+            		hexString.append((char) byteValue);
+            	} else {
+            		hexString.append(" '").append((char) byteValue);
+            	}
                 inString = true;
             } else {
                 final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";

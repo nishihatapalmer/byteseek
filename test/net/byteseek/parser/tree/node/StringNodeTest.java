@@ -33,6 +33,8 @@ package net.byteseek.parser.tree.node;
 
 import static org.junit.Assert.*;
 
+import java.io.UnsupportedEncodingException;
+
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.node.StringNode;
@@ -42,8 +44,9 @@ import org.junit.Test;
 public class StringNodeTest {
 
 	@Test
-	public final void testTextValues() {
+	public final void testTextValues() throws ParseException {
 		testNodes("");
+		testNodes("a");
 		testNodes("                                                                           ");
 		testNodes("Oberon");
 		testNodes("Titania");
@@ -73,13 +76,13 @@ public class StringNodeTest {
 		return builder.toString();
 	}
 	
-	private void testNodes(String value) {
+	private void testNodes(String value) throws ParseException {
 		testNode("Default case sensitive: ",     new StringNode(value), true, value);
 		testNode("Specified case sensitive: ",   new StringNode(value, ParseTreeType.STRING), true, value);
 		testNode("Specified case insensitive: ", new StringNode(value, ParseTreeType.CASE_INSENSITIVE_STRING), false, value);
 	}
 	
-	private void testNode(String description, StringNode node, boolean isCaseSensitive, String value) {
+	private void testNode(String description, StringNode node, boolean isCaseSensitive, String value) throws ParseException {
 		testNodeAttributes(description + "(original value) ", node, isCaseSensitive, value);
 		node.setTextValue(value + value);
 		testNodeAttributes(description + "(doubled value) ", node, isCaseSensitive, value + value);
@@ -87,7 +90,7 @@ public class StringNodeTest {
 		testNodeAttributes(description + "(blank value) ", node, isCaseSensitive, "");
 	}
 	
-	private void testNodeAttributes(String description, StringNode node, boolean isCaseSensitive, String value) {
+	private void testNodeAttributes(String description, StringNode node, boolean isCaseSensitive, String value) throws ParseException {
 		
 		ParseTreeType expectedType = isCaseSensitive? ParseTreeType.STRING : ParseTreeType.CASE_INSENSITIVE_STRING;
 		assertEquals(description + "Node is case sensitive?: " + isCaseSensitive, expectedType, node.getParseTreeType());
@@ -100,11 +103,22 @@ public class StringNodeTest {
 		}
 		
 		assertFalse(description + "Node is not inverted.", node.isValueInverted());
-		
-		try { 
-			node.getByteValue();
-			fail(description + "Expected a ParseException if asked for the byte value");
-		} catch (ParseException allIsFine) {};
+	
+		if (node.getTextValue().length() == 1) {
+			byte bval = node.getByteValue();
+			byte[] bytes;
+			try {
+				bytes = node.getTextValue().getBytes("ISO-8859-1");
+				assertEquals("Byte value of string " + node + " is " + bval, bytes[0], bval);
+			} catch (UnsupportedEncodingException e) {
+				fail("Unsupported encoding exception " + e);
+			}
+		} else {
+			try { 
+				node.getByteValue();
+				fail(description + "Expected a ParseException if asked for the byte value");
+			} catch (ParseException allIsFine) {};
+		}
 		
 		try { 
 			node.getIntValue();

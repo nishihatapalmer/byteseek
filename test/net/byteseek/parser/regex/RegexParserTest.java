@@ -367,46 +367,116 @@ public class RegexParserTest {
 	/* 
 	 * Test ParseTreeType.SET
 	 */
-	public void testSet() throws ParseException {
+	public void testSetOfBytes() throws ParseException {
+		expectParseException("Empty set", "[]");
+		expectParseException("Unclosed set", "[01 02 03");
+		expectParseException("Opening bracket in set", "[01 (]");
+		expectParseException("Unclosed range in set", "[01-]");
+		
 		// test simple sets
-		testSet("[01]",   new byte[] {(byte) 0x01}, true);
-		testSet("[ 01 ]",   new byte[] {(byte) 0x01}, true);
-		testSet("[0102]", new byte[] {(byte) 0x02, (byte) 0x01}, true);
-		testSet("[0201]", new byte[] {(byte) 0x02, (byte) 0x01}, true);
-		testSet("[0201^&03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, true);
-		testSet("[02 01 ~03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, true);
-		testSet("\t\r[0201]", new byte[] {(byte) 0x02, (byte) 0x01}, false);
-		testSet("   \n  [0201^&03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, false);
-		
-		//TODO: test sets with ranges
-		
-		
-		//TODO: test sets with strings
-		
-		
-		//TODO: test sets with case insensitive strings
-		
-		
-		//TODO: test nested sets with different inversions
-		
-		
+		testSetOfBytes("[01]",   new byte[] {(byte) 0x01}, true);
+		testSetOfBytes("[ 01 ]",   new byte[] {(byte) 0x01}, true);
+		testSetOfBytes("[0102]", new byte[] {(byte) 0x02, (byte) 0x01}, true);
+		testSetOfBytes("[0201]", new byte[] {(byte) 0x02, (byte) 0x01}, true);
+		testSetOfBytes("[0201^&03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, true);
+		testSetOfBytes("[02 01 ~03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, true);
+		testSetOfBytes("\t\r[0201]", new byte[] {(byte) 0x02, (byte) 0x01}, false);
+		testSetOfBytes("   \n  [0201^&03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, false);
+	}
+
+	
+	@Test
+	public void testSetOfRanges() throws ParseException {
+		testSetOfRanges("[00-ff]",           false, 0, 255);
+		testSetOfRanges("[ 00-20  80-C0  ]", false, 0, 32, 128, 192);
+		testSetOfRanges("[ de-ad 'a'-'z'] ", false, 0xde, 0xad, 'a', 'z');
+		testSetOfRanges("[ 00-01 04-05 07-0A '0'-'9' ab-ad 1d-ea    ]", false, 0,1, 4,5, 7,10, '0','9', 0xab, 0xad, 0x1d, 0xea);
 	}
 	
-	private void testSet(String expression, byte[] values, boolean canInvert) throws ParseException {
-		testSet(parser.parse(expression), false, values);
+	private void testSetOfRanges(String expression, boolean inverted, int... rangeValues) throws ParseException {
+		testSetOfRanges(parser.parse(expression),       false, inverted, rangeValues);
+		testSetOfRanges(parser.parse('^' + expression), true,  inverted, rangeValues);
+	}
+	
+	private void testSetOfRanges(ParseTree node, boolean setInverted, boolean rangesInverted, int... rangeValues) throws ParseException {
+		assertEquals("Node type is SET", ParseTreeType.SET, node.getParseTreeType());
+		assertEquals("Node is correct inversion: " + setInverted, setInverted, node.isValueInverted());
+		int i = 0;
+		for (ParseTree range : node) {
+			assertEquals("First child of node has correct value " + rangeValues[i], (byte) rangeValues[i], range.getChild(0).getByteValue());
+			assertEquals("Second child of node has correct value " + rangeValues[i+1], (byte) rangeValues[i+1], range.getChild(1).getByteValue());
+			i += 2;
+		}
+	}
+	
+
+	@Test
+	public void testSetOfStrings() throws ParseException {
+		testSetOfStrings("['9']", "9");
+		testSetOfStrings("['abc' 'def' '012']", "abc", "def", "012");
+		testSetOfStrings("['I knowe a banke' '24680' ' \t any \n other \r whitespace?']", "I knowe a banke", "24680", " \t any \n other \r whitespace?");
+	}
+	
+	private void testSetOfStrings(String expression, String... values) throws ParseException {
+		testSetOfStrings(parser.parse(expression), false, values);
+		testSetOfStrings(parser.parse('^' + expression), true, values);
+	}
+
+	private void testSetOfStrings(ParseTree node, boolean inverted, String... values) throws ParseException {
+		assertEquals("Node type is set " + node, ParseTreeType.SET, node.getParseTreeType());
+		assertEquals("Node has correct inversion " + inverted, inverted, node.isValueInverted());
+		int childIndex = 0;
+		for (String value : values) {
+			ParseTree childNode = node.getChild(childIndex++);
+			assertEquals("Child node is a string " +childNode, ParseTreeType.STRING, childNode.getParseTreeType());
+			assertEquals("Child node " + childIndex + " has correct value " + value, value, childNode.getTextValue());
+		}
+	}
+	
+	@Test
+	public void testSetOfCaseStrings() throws ParseException {
+		testSetOfCaseStrings("[`9`]", "9");
+		testSetOfCaseStrings("[`abc` `def` `012`]", "abc", "def", "012");
+		testSetOfCaseStrings("[`I knowe a banke` `24680` ` \t any \n other \r whitespace?`]", "I knowe a banke", "24680", " \t any \n other \r whitespace?");
+	}
+	
+	private void testSetOfCaseStrings(String expression, String... values) throws ParseException {
+		testSetOfCaseStrings(parser.parse(expression), false, values);
+		testSetOfCaseStrings(parser.parse('^' + expression), true, values);
+	}
+
+	private void testSetOfCaseStrings(ParseTree node, boolean inverted, String... values) throws ParseException {
+		assertEquals("Node type is set " + node, ParseTreeType.SET, node.getParseTreeType());
+		assertEquals("Node has correct inversion " + inverted, inverted, node.isValueInverted());
+		int childIndex = 0;
+		for (String value : values) {
+			ParseTree childNode = node.getChild(childIndex++);
+			assertEquals("Child node is a case insensitive string " +childNode, ParseTreeType.CASE_INSENSITIVE_STRING, childNode.getParseTreeType());
+			assertEquals("Child node " + childIndex + " has correct value " + value, value, childNode.getTextValue());
+		}
+	}
+	
+	
+	//TODO: test nested sets with different inversions
+	
+	
+
+	
+	private void testSetOfBytes(String expression, byte[] values, boolean canInvert) throws ParseException {
+		testSetOfBytes(parser.parse(expression), false, values);
 		if (canInvert) {
-			testSet(parser.parse("^" + expression), true,  values);
+			testSetOfBytes(parser.parse("^" + expression), true,  values);
 		} 
 	}
 	
-	private void testSet(ParseTree node, boolean isInverted, byte[] values) throws ParseException {
+	private void testSetOfBytes(ParseTree node, boolean isInverted, byte[] values) throws ParseException {
 		assertEquals("Node " + node + " has ParseTreeType.SET",
 			     ParseTreeType.SET, node.getParseTreeType());
 		assertEquals("Node " + node + " inversion is " + isInverted, isInverted, node.isValueInverted());
-		testSetValues(node, values);
+		testSetByteValues(node, values);
 	}
 	
-	private void testSetValues(ParseTree node, byte[] values) throws ParseException {
+	private void testSetByteValues(ParseTree node, byte[] values) throws ParseException {
 		Set<Byte> nodeVals = new HashSet<Byte>();
 		for (ParseTree child : node) {
 			nodeVals.add(child.getByteValue());
@@ -482,13 +552,91 @@ public class RegexParserTest {
 		}	
 	}
 
+	/**
+	 * Test shorthand byte definitions.
+	 * @throws ParseException 
+	 */
 	
+	@Test
+	public void testShorthand() throws ParseException {
+		expectParseException("unknown shorthand", "\\k");
+		
+		testSingleByteShorthand("TAB", "\\t", (byte) 0x09);
+		testSingleByteShorthand("NEWLINE", "\\n", (byte) 0x0A);
+		testSingleByteShorthand("CARRIAGE RETURN", "\\r", (byte) 0x0d);
+		testSingleByteShorthand("VERTICAL TAB", "\\v", (byte) 0x0b);
+		testSingleByteShorthand("FORM FEED", "\\f", (byte) 0x0c);
+		testSingleByteShorthand("ESCAPE", "\\e", (byte) 0x1e);
+
+		testRangeShorthand("DIGITS",        "\\d", '0', '9', false);
+		testRangeShorthand("NOT DIGITS",    "\\D", '0', '9', true);
+		testRangeShorthand("LOWERCASE",     "\\l", 'a', 'z', false);
+		testRangeShorthand("NOT LOWERCASE", "\\L", 'a', 'z', true);
+		testRangeShorthand("UPPERCASE",     "\\u", 'A', 'Z', false);
+		testRangeShorthand("NOT UPPERCASE", "\\U", 'A', 'Z', true);
+		testRangeShorthand("ASCII",         "\\i",  0,  127, false);
+		testRangeShorthand("NOT ASCII",     "\\I",  0,  127, true);
+		
+		testSetShorthand("WORD CHARS",      "\\w", false, '0', '9', 'a', 'z', 'A', 'Z', '_', '_');
+		testSetShorthand("NOT WORD CHARS",  "\\W", true,  '0', '9', 'a', 'z', 'A', 'Z', '_', '_');
+		testSetShorthand("WHITESPACE",      "\\s", false, 32, 32, 9, 9, 10, 10, 13, 13);
+		testSetShorthand("NOT WHITESPACE",  "\\S", true , 32, 32, 9, 9, 10, 10, 13, 13);
+	}
+	
+	private void testSingleByteShorthand(String description, String expression, byte value) throws ParseException {
+		testSingleByteShorthand(description, parser.parse(expression), false, value);
+		testSingleByteShorthand(description, parser.parse('^' + expression), true, value);
+	}
+	
+	private void testSingleByteShorthand(String description, ParseTree node, boolean inverted, byte value) throws ParseException {
+		assertEquals(description + " Node is a byte " + node, ParseTreeType.BYTE, node.getParseTreeType());
+		assertEquals(description + " Node has correct value " + node, value, node.getByteValue());
+		assertEquals(description + " Node is correctly inverted " + node, inverted, node.isValueInverted());
+	}
+	
+	private void testRangeShorthand(String description, String expression, int rangeStart, int rangeEnd, boolean rangeInverted) throws ParseException {
+		testRangeShorthand(description, parser.parse(expression), rangeStart, rangeEnd, rangeInverted);
+		testRangeShorthand(description, parser.parse('^' + expression), rangeStart, rangeEnd, !rangeInverted);
+	}
+	
+	private void testRangeShorthand(String description, ParseTree node, int rangeStart, int rangeEnd, boolean rangeInverted) throws ParseException {
+		assertEquals(description + " Node is a range " + node, ParseTreeType.RANGE, node.getParseTreeType());
+		assertEquals(description + " Node is correctly inverted " + node, rangeInverted, node.isValueInverted());
+		assertEquals(description + " Node has correct first value " + rangeStart, rangeStart, node.getChild(0).getIntValue());
+		assertEquals(description + " Node has correct second value " + rangeEnd, rangeEnd, node.getChild(1).getIntValue());
+	}
+	
+	private void testSetShorthand(String description, String expression, boolean inverted, int... rangeValues) throws ParseException {
+		testSetShorthand(description, parser.parse(expression), inverted, rangeValues);
+		testSetShorthand(description, parser.parse('^' + expression), !inverted, rangeValues);
+	}
+	
+	private void testSetShorthand(String description, ParseTree node, boolean inverted, int... rangeValues) throws ParseException {
+		assertEquals(description + " Node is a set " + node, ParseTreeType.SET, node.getParseTreeType());
+		assertEquals(description + " Node is correctly inverted " + node, inverted, node.isValueInverted());
+		int childIndex = 0;
+		for (int i = 0; i < rangeValues.length; i+=2) {
+			int firstValue = rangeValues[i];
+			int secondValue = rangeValues[i+1];
+			if (firstValue == secondValue) {
+				testSingleByteShorthand(description, node.getChild(childIndex), false, (byte) firstValue);
+			} else {
+				testRangeShorthand(description, node.getChild(childIndex), firstValue, secondValue, false);
+			}
+			childIndex++;
+		}
+	}
+	
+	
+
 	@Test
 	/**
 	 * Test ParseTreeType.RANGE
 	 */
 	public void testRange() throws ParseException {
 		expectParseException("Unclosed range hex byte", "01-");
+		expectParseException("Unclosed range hex byte with a all bitmask following", "01- &fe");
+		expectParseException("Unclosed range hex byte with a group opened", "01- ('abcde'|ff");
 		expectParseException("Unclosed range character", "'q'- ");
 		expectParseException("Unclosed range bad comment", "01-#bad comment 02");
 		expectParseException("More than one char", "'aa'-'f'");
@@ -543,10 +691,8 @@ public class RegexParserTest {
 		if (rangeValueNode.getParseTreeType() == ParseTreeType.BYTE) {
 			assertEquals("Node " + rangeValueNode + " has byte value " + value,
 					     value, rangeValueNode.getByteValue());
-		} else if (rangeValueNode.getParseTreeType() == ParseTreeType.STRING) {
-			final char charValue = rangeValueNode.getTextValue().charAt(0);
-			assertEquals("Node " + rangeValueNode + " has byte value " + value,
-				     value, (byte) charValue);
+		} else {
+			fail("Range value node was not a byte " + rangeValueNode);
 		}
 	}
 	
@@ -873,19 +1019,22 @@ public class RegexParserTest {
 	public void testAlternatives() throws ParseException {
 		expectParseException("No left alternative", "   |02");
 		expectParseException("No right alternative", "01|   ");
+		expectParseException("            | ", "blank spaces");
 		
 		// Note that all alternatives consisting of a match on a single
 		// byte position are optimised into a set type.
 		
 		byte[] values0 = ByteUtilities.toArray((byte) 0x00, (byte) 0x01);
-		testSet("00|01",   values0, false); 
-		testSet("01|00",   values0, false);
-		testSet("(01|00)", values0, false);
+		testSetOfBytes("00|01",   values0, false); 
+		testSetOfBytes("01|00",   values0, false);
+		testSetOfBytes("(01|00)", values0, false);
+		testSetOfBytes("('\u0001'|'\u0000')", values0, false);
 		
 		byte[] values1 = ByteUtilities.toArray((byte) 0x00);
 		byte[] values3 = ByteUtilities.toArray((byte) 0x7f, (byte) 0x7f, (byte) 0x80, (byte) 0xff);
 		testByteSequenceAlternatives("00|01|7f 7f 80 ff", values3, values0);
 		testByteSequenceAlternatives("7f 7f 80 ff|01|00", values3, values0);
+		testByteSequenceAlternatives("'\u007f' '\u007f' `\u0080` ff|01|00", values3, values0);
 		testByteSequenceAlternatives("(7f 7f 80 ff|01|00)", values3, values0);
 		
 		byte[] values4 = ByteUtilities.toArray((byte) 0xde, (byte) 0xad, (byte) 0xff);
@@ -918,7 +1067,7 @@ public class RegexParserTest {
 			} else if (alternative.getNumChildren() == 0) {
 				testByteValue(alternative, value[0], false);
 			} else {
-				testSetValues(alternative, value);
+				testSetByteValues(alternative, value);
 				//throw new ParseException("Not a sequence but has children: [" + alternative + "]");
 			}
 		}
@@ -961,8 +1110,10 @@ public class RegexParserTest {
 	public void testComplexExpressions() throws ParseException {
 		parser.parse("((01)* 02 03 'a string')? ^[20-40 ^[45-6a 5f]]");
 		//TODO: add more complex expressions which test a good mixture of all available options.
-		//      try to break the parser by doing the unexpected.
+		//      try to break the parser by doing the unexpected. 
+		// 		Possibly create a random expression generator.
 	}
+	
 	
 	/*
 	 * Utility methods

@@ -46,6 +46,7 @@ import net.byteseek.parser.tree.node.ByteNode;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.parser.tree.node.IntNode;
 import net.byteseek.parser.tree.node.StringNode;
+import net.byteseek.util.bytes.ByteUtilities;
 
 /**
  * A hand-written regular expression parser for byteseek.
@@ -103,19 +104,19 @@ public class RegexParser implements Parser<ParseTree> {
 	/*
 	 * Public common sets of bytes as re-usable parse nodes.
 	 */
-	public static final ParseTree DIGITS_RANGE, 		NOT_DIGITS_RANGE;
+	public static final ParseTree DIGITS_RANGE, 	NOT_DIGITS_RANGE;
 	public static final ParseTree LOWERCASE_RANGE, 	NOT_LOWERCASE_RANGE;
 	public static final ParseTree UPPERCASE_RANGE, 	NOT_UPPERCASE_RANGE;
 	public static final ParseTree WHITESPACE_SET, 	NOT_WHITESPACE_SET;
-	public static final ParseTree WORD_CHAR_SET, 		NOT_WORD_CHAR_SET;
+	public static final ParseTree WORD_CHAR_SET, 	NOT_WORD_CHAR_SET;
 	public static final ParseTree ASCII_RANGE, 		NOT_ASCII_RANGE;
 	static {
 		DIGITS_RANGE 		= buildRange((byte) '0', (byte) '9', NOT_INVERTED);
 		NOT_DIGITS_RANGE 	= buildRange((byte) '0', (byte) '9', INVERTED);
 		LOWERCASE_RANGE 	= buildRange((byte) 'a', (byte) 'z', NOT_INVERTED);
 		NOT_LOWERCASE_RANGE = buildRange((byte) 'a', (byte) 'z', INVERTED);
-		UPPERCASE_RANGE		= buildRange((byte) 'A', (byte) 'A', NOT_INVERTED);
-		NOT_UPPERCASE_RANGE	= buildRange((byte) 'A', (byte) 'A', INVERTED);
+		UPPERCASE_RANGE		= buildRange((byte) 'A', (byte) 'Z', NOT_INVERTED);
+		NOT_UPPERCASE_RANGE	= buildRange((byte) 'A', (byte) 'Z', INVERTED);
 		ASCII_RANGE	        = buildRange((byte) 0x00, (byte) 0x7f, NOT_INVERTED);
 		NOT_ASCII_RANGE	    = buildRange((byte) 0x00, (byte) 0x7f, INVERTED);
 		WHITESPACE_SET	    = buildSet(SPACE, TAB, NEWLINE, CARRIAGE_RETURN);
@@ -257,8 +258,7 @@ public class RegexParser implements Parser<ParseTree> {
 			case ANY_BITMASK: {
 				return true;
 			}
-			case STRING:
-			case CASE_INSENSITIVE_STRING: {
+			case STRING: {
 				return node.getTextValue().length() == 1;
 			}
 			default : return false;
@@ -337,28 +337,16 @@ public class RegexParser implements Parser<ParseTree> {
 		sequence.add(new ChildrenNode(ParseTreeType.RANGE, rangeChildren));
 	}
 	
+	
 	private ParseTree popLastRangeValueNode(List<ParseTree> sequence,
-										StringParseReader expression) throws ParseException {
+			StringParseReader expression) throws ParseException {
 		// Pop the last node of the sequence list:
 		final ParseTree rangeValue = popLastNode(sequence, expression);
-
+		
 		// Process the range node syntax (could be defined as a BYTE or a single character STRING)
 		return getRangeValueAsByteNode(rangeValue, expression);
 	}
 
-	
-	/**
-	 * Removes the last ParseTree node from a List of ParseTrees.
-	 */
-	private ParseTree popLastNode(List<ParseTree> sequence,
-							 StringParseReader expression) throws ParseException {
-		if (sequence.isEmpty()) {
-			throw new ParseException(addContext("Tried to remove the last node in a sequence, but it was empty", expression));
-		}
-		return sequence.remove(sequence.size() - 1);
-	}
-
-	
 	/**
 	 * Returns a range value as a BYTE node.
 	 * 
@@ -380,17 +368,27 @@ public class RegexParser implements Parser<ParseTree> {
 		if (rangeValue.getParseTreeType() == ParseTreeType.STRING &&
 			rangeValue.getTextValue().length() == 1 &&
 			rangeValue.isValueInverted()       == false) {
-			final char charValue = rangeValue.getTextValue().charAt(0);
-			if (charValue > 255) {
-				throw new ParseException(addContext("Only characters with values from 0 to 255 are permitted to define a byte range value", expression));
-			}
-			return ByteNode.valueOf((byte) charValue);
+				final byte[] textBytes = ByteUtilities.getBytes(rangeValue.getTextValue());
+				return ByteNode.valueOf(textBytes[0]);
 		}
 
 		// A type which is not recognised - throw an error:
 		throw new ParseException(addContext("A range value must be a single non-inverted byte or a non-inverted single character string.", expression));
 	}
-			
+
+	
+	/**
+	 * Removes the last ParseTree node from a List of ParseTrees.
+	 */
+	private ParseTree popLastNode(List<ParseTree> sequence,
+							 StringParseReader expression) throws ParseException {
+		if (sequence.isEmpty()) {
+			throw new ParseException(addContext("Tried to remove the last node in a sequence, but it was empty", expression));
+		}
+		return sequence.remove(sequence.size() - 1);
+	}
+
+	
 	
 	private boolean foundWhitespaceAndComments(final int currentChar,
 												 final StringParseReader expression) {
@@ -581,7 +579,13 @@ public class RegexParser implements Parser<ParseTree> {
 		if (setNodes.isEmpty()) {
 			throw new ParseException(addContext("Cannot have an empty set", expression));
 		}
-		
+		// We do not try to optimise a set with a single child by just returning the child directly, as we
+		// do for sequences and alternatives.
+		// If the set is inverted, then the child should be inverted too from its current inversion status.
+		// We don't currently have an easy way to invert a node (could add a method to do so to the interface).
+		// Not all children have the same meaning outside of a set as inside one.  E.g. strings are interpreted
+		// as a set of bytes to match, not a sequence.  So for simplicity we leave sets exactly as they are
+		// syntactically defined.  
 		return new ChildrenNode(ParseTreeType.SET, setNodes, inverted);
 	}
 	
