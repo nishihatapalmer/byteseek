@@ -358,7 +358,7 @@ public class RegexParser implements Parser<ParseTree> {
 											 StringParseReader expression) throws ParseException {
 		// Test for an un-inverted BYTE node - if found, return it directly.
 		if (rangeValue.getParseTreeType() == ParseTreeType.BYTE &&
-			rangeValue.isValueInverted()  == false) {
+			!rangeValue.isValueInverted()) {
 			return rangeValue;
 		}
 		
@@ -367,7 +367,7 @@ public class RegexParser implements Parser<ParseTree> {
 		//                  lets the user specify 'a'-'z' for a range.  or 'a'-FF, for that matter.
 		if (rangeValue.getParseTreeType() == ParseTreeType.STRING &&
 			rangeValue.getTextValue().length() == 1 &&
-			rangeValue.isValueInverted()       == false) {
+			!rangeValue.isValueInverted()) {
 				final byte[] textBytes = ByteUtilities.getBytes(rangeValue.getTextValue());
 				return ByteNode.valueOf(textBytes[0]);
 		}
