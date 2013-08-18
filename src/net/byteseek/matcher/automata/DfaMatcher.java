@@ -41,7 +41,6 @@ import net.byteseek.automata.State;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
-import net.byteseek.util.bytes.ByteUtilities;
 
 /**
  * 
