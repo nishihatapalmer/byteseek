@@ -21,13 +21,13 @@ import static org.junit.Assert.*;
  *
  * @author Matt Palmer
  */
-public class ByteUtilitiesTest {
+public class ByteUtilsTest {
 
   
     /**
      * 
      */
-    public ByteUtilitiesTest() {
+    public ByteUtilsTest() {
     }
 
     /**
