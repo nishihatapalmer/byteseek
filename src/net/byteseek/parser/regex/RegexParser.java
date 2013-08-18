@@ -655,4 +655,9 @@ public class RegexParser implements Parser<ParseTree> {
 				"] in expression [" + expression + ']';
 	}
 	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();  
+	}
+	
 }
