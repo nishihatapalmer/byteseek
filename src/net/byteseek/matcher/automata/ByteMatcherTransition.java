@@ -151,15 +151,10 @@ public class ByteMatcherTransition<T> implements Transition<T> {
 		return matcher;
 	}
 
-	/**
-	 * Returns a regular-expression representation of the underlying
-	 * ByteMatcher, in byte-seek syntax.
-	 * 
-	 * @return String a byteSeek regular expression representation of this Transition.
-	 */
-	@Override
-	public String toString() {
-		return matcher.toRegularExpression(true);
-	}
 
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[matcher:" + matcher + 
+    										" to state: " + toState + ']';
+    }
 }

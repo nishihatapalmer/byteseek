@@ -178,4 +178,11 @@ public final class SequenceMatcherTrie extends AbstractTrie<SequenceMatcher> {
         return sequence.getMatcherForPosition(position).getMatchingBytes();
     }
     
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[num sequences" + getSequences().size() +
+    									    " min length:" + getMinimumLength() +
+    									    " max length:" + getMaximumLength() + ']';
+    }
+    
 }

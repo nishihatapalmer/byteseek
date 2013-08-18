@@ -189,5 +189,10 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[automata:" + automata + ']'; 
+    }
 
 }
