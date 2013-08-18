@@ -299,7 +299,7 @@ public final class CaseInsensitiveMatcher implements SequenceMatcher {
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + toRegularExpression(true) + ")";
+        return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
     }
     
     

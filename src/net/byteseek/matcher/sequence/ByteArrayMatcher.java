@@ -685,7 +685,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          */
         @Override
         public String toString() {
-            return "ByteArrayMatcher$" + getClass().getSimpleName() + "(" + toRegularExpression(true) + ")";
+            return getClass().getSimpleName() + "[" + toRegularExpression(true) + ']';
         }
 
 
