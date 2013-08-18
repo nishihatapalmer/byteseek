@@ -179,13 +179,7 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testCreateWindow() throws Exception {
-		System.out.println("createWindow");
-		long windowStart = 0L;
-		FileReader instance = null;
-		Window expResult = null;
-		Window result = instance.createWindow(windowStart);
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
+		
 		fail("The test case is a prototype.");
 	}
 
@@ -194,10 +188,6 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testClose() throws Exception {
-		System.out.println("close");
-		FileReader instance = null;
-		instance.close();
-		// TODO review the generated test code and remove the default call to fail.
 		fail("The test case is a prototype.");
 	}
 
@@ -206,17 +196,12 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testGetFile() {
-		System.out.println("getFile");
-		FileReader instance = null;
-		File expResult = null;
-		File result = instance.getFile();
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
 		fail("The test case is a prototype.");
 	}
 
 	private void test(FileReader reader, long position, byte value) throws IOException {
-		assertEquals(value, reader.readByte(position));
+		assertEquals("Reader " + reader + " reading at position " + position + " should have value " + value,
+				      value, (byte) reader.readByte(position));
 	}
 
 	private File getFile(final String resourceName) {

@@ -129,7 +129,7 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 	}
 
 	/**
-	 * Reads a byte in the file at the given position.
+	 * Reads a byte at the given position.
 	 * 
 	 * @param position
 	 *            The position in the reader to read a byte from.
