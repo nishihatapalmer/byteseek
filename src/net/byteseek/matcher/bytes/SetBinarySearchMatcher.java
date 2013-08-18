@@ -192,5 +192,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         }
         return regularExpression.toString();
     }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[bytes:" + ByteUtilities.toList(bytesToMatch) + 
+    										" inverted: " + inverted + ']';
+    }
 
 }

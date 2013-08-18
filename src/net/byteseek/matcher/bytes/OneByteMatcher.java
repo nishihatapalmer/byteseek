@@ -154,5 +154,10 @@ public final class OneByteMatcher extends AbstractByteMatcher {
         return new ByteArrayMatcher(byteToMatch, numberOfRepeats);
     }    
 
-
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[byte:" + byteToMatch + ']';
+    }
+    
+    
 }

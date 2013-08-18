@@ -145,5 +145,10 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
         return ((bytes[matchPosition] & mBitMaskValue) != 0) ^ inverted;
     }
     
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[bitmask:" + mBitMaskValue + " inverted:" + inverted + ']';
+    }
+
 
 }

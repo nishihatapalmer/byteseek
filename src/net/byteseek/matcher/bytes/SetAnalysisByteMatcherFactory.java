@@ -261,5 +261,5 @@ public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
         Collections.sort(sortedByteValues);
         return sortedByteValues;
     }
-
+    
 }

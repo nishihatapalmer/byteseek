@@ -44,14 +44,12 @@ import net.byteseek.util.bytes.ByteUtilities;
 /**
  * An immutable {@link ByteMatcher} which matches ASCII bytes case insensitively.
  *
- * <p>It will only work for ASCII characters in the range 0 - 127.
- * Other Unicode characters will not work, as all of the ByteMatcher
- * classes work at the byte level, so cannot deal with multi-byte characters.
- *
  * @author Matt Palmer
  */
 public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
 
+	//TODO: what about inverted case insensitive byte matcher?
+	
     private final static String ILLEGAL_ARGUMENTS = "Non-ASCII char passed in to CaseInsensitiveByteMatcher: %s";
 
     private final char value;
@@ -64,7 +62,8 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
      * @param asciiChar The ASCII character to match in a case insensitive way.
      */
     public CaseInsensitiveByteMatcher(final char asciiChar) {
-        // Precondition: must be an ASCII char:
+        //TODO: should be ASCII char, or ISO-8859-1?
+    	// Precondition: must be an ASCII char:
         if (asciiChar > 127 || asciiChar < 0) {
             final String message = String.format(ILLEGAL_ARGUMENTS, asciiChar);
             throw new IllegalArgumentException(message);
@@ -170,7 +169,17 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
             return new ByteArrayMatcher(ByteUtilities.repeat(caseValues[0], numberOfRepeats));
         }
         return new CaseInsensitiveMatcher(this, numberOfRepeats);
-    }        
+    }    
+    
+    
+    @Override
+    public String toString() {
+    	return getNumberOfMatchingBytes() == 1?
+    			getClass().getSimpleName() + "[byte:"   + caseValues[0] + ']'
+    		: 	getClass().getSimpleName() + "[byte 1:" + caseValues[0] + 
+    										 " byte 2:" + caseValues[1] + ']';
+    }
+
 
 
 }

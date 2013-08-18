@@ -186,5 +186,13 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         return inverted ? 255 - maxByteValue + minByteValue
                         : maxByteValue - minByteValue + 1;
     }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[start:" + minByteValue + 
+    								        " end: "  + maxByteValue +
+    								        " inverted:" + inverted + ']';
+    }
+
   
 }

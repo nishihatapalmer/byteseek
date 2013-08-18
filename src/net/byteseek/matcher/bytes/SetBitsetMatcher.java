@@ -175,5 +175,12 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     public int getNumberOfMatchingBytes() {
         return inverted ? 256 - byteValues.cardinality() : byteValues.cardinality();
     }
+    
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[bitset:" + byteValues + 
+    										" inverted: " + inverted + ']';
+    }
 
 }

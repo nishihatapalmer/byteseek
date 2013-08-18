@@ -140,5 +140,11 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
         }           
         return new FixedGapMatcher(numberOfRepeats);
     }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName();
+    }
+
 
 }
