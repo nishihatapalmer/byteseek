@@ -35,7 +35,7 @@ import java.io.IOException;
 
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -68,7 +68,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         if (bytes == null || bytes.isEmpty()) {
             throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
         }
-        this.bytesToMatch = ByteUtilities.toArray(bytes);
+        this.bytesToMatch = ByteUtils.toArray(bytes);
         Arrays.sort(this.bytesToMatch);
     }
 
@@ -156,7 +156,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
             regularExpression.append('^');
         }
         int byteIndex = 0;
-        int[] integers = ByteUtilities.toIntArray(bytesToMatch);
+        int[] integers = ByteUtils.toIntArray(bytesToMatch);
         Arrays.sort(integers);
         while (byteIndex < integers.length) {
             int byteValue = integers[byteIndex];
@@ -176,12 +176,12 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
             // If we have a range of more than 2 contiguous positions,
             // represent this as a range of values:
             if (lastValue - byteValue > 2) {
-                final String minValue = ByteUtilities.byteToString(prettyPrint, byteValue);
-                final String maxValue = ByteUtilities.byteToString(prettyPrint, lastValue);
+                final String minValue = ByteUtils.byteToString(prettyPrint, byteValue);
+                final String maxValue = ByteUtils.byteToString(prettyPrint, lastValue);
                 regularExpression.append( String.format("%s-%s", minValue, maxValue));
                 byteIndex = searchIndex + 1;
             } else { // just write out this byte.
-                final String byteVal = ByteUtilities.byteToString(prettyPrint, byteValue);
+                final String byteVal = ByteUtils.byteToString(prettyPrint, byteValue);
                 regularExpression.append(byteVal);
                 byteIndex++;
             }
@@ -195,7 +195,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[bytes:" + ByteUtilities.toList(bytesToMatch) + 
+    	return getClass().getSimpleName() + "[bytes:" + ByteUtils.toList(bytesToMatch) + 
     										" inverted: " + inverted + ']';
     }
 

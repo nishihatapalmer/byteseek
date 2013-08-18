@@ -38,7 +38,7 @@ import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 
 /**
@@ -69,7 +69,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
      * @throws IllegalArgumentException if the string is not a valid 2-digit hex byte.
      */
     public OneByteMatcher(final String hexByte) {
-        this.byteToMatch = ByteUtilities.byteFromHex(hexByte);
+        this.byteToMatch = ByteUtils.byteFromHex(hexByte);
     }
 
 
@@ -126,7 +126,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final String regex = ByteUtilities.byteToString(prettyPrint, byteToMatch & 0xFF);
+        final String regex = ByteUtils.byteToString(prettyPrint, byteToMatch & 0xFF);
         return prettyPrint? regex + " " : regex;
     }
 

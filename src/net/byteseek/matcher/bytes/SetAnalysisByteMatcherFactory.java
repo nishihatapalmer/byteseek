@@ -39,7 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * A fairly simple implementation of {@link ByteMatcherFactory}.  It attempts to build the
@@ -95,7 +95,7 @@ public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
         }
         // Produce the (possibly inverted) unique set of bytes:
         Set<Byte> uniqueValues = new LinkedHashSet<Byte>(bytes);
-        final  Set<Byte> values = matchInverse? ByteUtilities.invertedSet(uniqueValues) : uniqueValues;
+        final  Set<Byte> values = matchInverse? ByteUtils.invertedSet(uniqueValues) : uniqueValues;
 
         // See if some obvious byte matchers apply:
         ByteMatcher result = getSimpleCases(values);
@@ -108,7 +108,7 @@ public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
 
                 // They didn't match the set of bytes, but since we have invertible
                 // matchers, does the inverse set match any of them?
-                final Set<Byte> invertedValues = matchInverse? uniqueValues : ByteUtilities.invertedSet(uniqueValues);
+                final Set<Byte> invertedValues = matchInverse? uniqueValues : ByteUtils.invertedSet(uniqueValues);
                 result = getInvertibleCases(invertedValues, true);
                 if (result == null) {
 
@@ -177,11 +177,11 @@ public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
     private ByteMatcher getBitmaskMatchers(final Set<Byte> values, final boolean isInverted) {
         ByteMatcher result = null;
         // Determine if the bytes in the set can be matched by a bitmask:
-        Byte bitmask = ByteUtilities.getAllBitMaskForBytes(values);
+        Byte bitmask = ByteUtils.getAllBitMaskForBytes(values);
         if (bitmask != null) {
              result = new AllBitmaskMatcher(bitmask, isInverted);
         } else {
-             bitmask = ByteUtilities.getAnyBitMaskForBytes(values);
+             bitmask = ByteUtils.getAnyBitMaskForBytes(values);
              if (bitmask != null) {
                 result = new AnyBitmaskMatcher(bitmask, isInverted);
              }

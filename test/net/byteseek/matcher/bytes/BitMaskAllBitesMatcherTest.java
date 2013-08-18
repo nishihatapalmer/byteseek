@@ -6,7 +6,7 @@
 package net.byteseek.matcher.bytes;
 
 import net.byteseek.matcher.bytes.AllBitmaskMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -135,7 +135,7 @@ public class BitMaskAllBitesMatcherTest {
                 matcher.getMatchingBytes());
 
         matcher = new AllBitmaskMatcher(b(0));
-        assertArrayEquals("0x00 matches all bytes", ByteUtilities.getAllByteValues(), matcher.getMatchingBytes());
+        assertArrayEquals("0x00 matches all bytes", ByteUtils.getAllByteValues(), matcher.getMatchingBytes());
 
         matcher = new AllBitmaskMatcher(b(254));
         byte[] expected = new byte[] {b(254), b(255)};
@@ -149,7 +149,7 @@ public class BitMaskAllBitesMatcherTest {
         assertArrayEquals("0x03 matches 64 bytes with first two bits set", expected, matcher.getMatchingBytes());
 
         matcher = new AllBitmaskMatcher(b(128));
-        expected = ByteUtilities.getBytesInRange(128, 255);
+        expected = ByteUtils.getBytesInRange(128, 255);
         assertArrayEquals("0x80 matches all bytes from 128 to 255", expected, matcher.getMatchingBytes());
     }
 

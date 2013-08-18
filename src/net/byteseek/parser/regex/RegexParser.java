@@ -46,7 +46,7 @@ import net.byteseek.parser.tree.node.ByteNode;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.parser.tree.node.IntNode;
 import net.byteseek.parser.tree.node.StringNode;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * A hand-written regular expression parser for byteseek.
@@ -368,7 +368,7 @@ public class RegexParser implements Parser<ParseTree> {
 		if (rangeValue.getParseTreeType() == ParseTreeType.STRING &&
 			rangeValue.getTextValue().length() == 1 &&
 			!rangeValue.isValueInverted()) {
-				final byte[] textBytes = ByteUtilities.getBytes(rangeValue.getTextValue());
+				final byte[] textBytes = ByteUtils.getBytes(rangeValue.getTextValue());
 				return ByteNode.valueOf(textBytes[0]);
 		}
 

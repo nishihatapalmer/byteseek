@@ -9,7 +9,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.InvertibleMatcher;
 import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
 import net.byteseek.matcher.bytes.SetBitsetMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 import java.util.LinkedHashSet;
 import java.util.Random;
@@ -99,7 +99,7 @@ public class ByteSetMatcherTest {
     
     
     private void testSet(Set<Byte> testSet) {
-        Set<Byte> otherBytes = ByteUtilities.invertedSet(testSet);
+        Set<Byte> otherBytes = ByteUtils.invertedSet(testSet);
         
         SetBitsetMatcher matcherNotInverted = new SetBitsetMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
         testMatcher("BitSetMatcher", matcherNotInverted, testSet, otherBytes);

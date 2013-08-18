@@ -44,7 +44,7 @@ import net.byteseek.automata.factory.MutableStateFactory;
 import net.byteseek.automata.factory.StateFactory;
 import net.byteseek.automata.factory.TransitionFactory;
 import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * An abstract implementation of {@link Trie} providing most methods for
@@ -249,16 +249,16 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 	private List<State<T>> nextStates(final List<State<T>> currentStates, final byte[] bytes,
 			final boolean isFinal) {
 		final List<State<T>> nextStates = new ArrayList<State<T>>();
-		final Set<Byte> allBytesToTransitionOn = ByteUtilities.toSet(bytes);
+		final Set<Byte> allBytesToTransitionOn = ByteUtils.toSet(bytes);
 		for (final State<T> currentState : currentStates) {
 			final List<Transition<T>> stateTransitions = new ArrayList<Transition<T>>(currentState.getTransitions());
 			final Set<Byte> bytesToTransitionOn = new HashSet<Byte>(allBytesToTransitionOn);
 			for (final Transition<T> transition : stateTransitions) {
 
-				final Set<Byte> originalTransitionBytes = ByteUtilities
+				final Set<Byte> originalTransitionBytes = ByteUtils
 						.toSet(transition.getBytes());
 				final int originalTransitionBytesSize = originalTransitionBytes.size();
-				final Set<Byte> bytesInCommon = ByteUtilities.subtract(originalTransitionBytes,
+				final Set<Byte> bytesInCommon = ByteUtils.subtract(originalTransitionBytes,
 						bytesToTransitionOn);
 
 				// If the existing transition is the same or a subset of the new

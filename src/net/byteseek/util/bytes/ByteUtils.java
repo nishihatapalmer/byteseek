@@ -54,7 +54,7 @@ import java.util.Set;
  * 
  * @author Matt Palmer
  */
-public final class ByteUtilities {
+public final class ByteUtils {
 	
 	private static final byte ASCII_CASE_DIFFERENCE = 32;
 
@@ -69,7 +69,7 @@ public final class ByteUtilities {
     /**
      * Private constructor for static utility class.
      */
-    private ByteUtilities() {
+    private ByteUtils() {
     }
 
 
@@ -105,43 +105,32 @@ public final class ByteUtilities {
     /**
      * Returns the number of bytes which would match all the bits
      * in a given bitmask.
+     * <p>
+     * Note that if the bitmask is zero, then this will match all bytes, since
+     * the matching algorithm is byte & bitmask == bitmask.
+     * A bitmask of zero will always produce zero bits when ANDed with any byte.
      *
      * @param bitmask The bitmask.
      * @return The number of bytes matching all the bits in the bitmask.
      */
     public static int countBytesMatchingAllBits(final byte bitmask) {
-        // 00000000 - 1 << 8 = 256
-        // 00000001 - 1 << 7 = 128
-        // 00000011 - 1 << 6 = 64
-        // 00000111 - 1 << 5 = 32
-        // 00001111 - 1 << 4 = 16
-        // 00011111 - 1 << 3 = 8
-        // 00111111 - 1 << 2 = 4
-        // 01111111 - 1 << 1 = 2
-        // 11111111 - 1 << 0 = 1
-        // which particular bits are set or unset does not affect the calculation.
-        return 1 << countUnsetBits(bitmask);
+    	return 1 << countUnsetBits(bitmask);
     }
     
 
     /**
      * Returns the number of bytes which would match any of the bits
      * in a given bitmask.
+     * <p>
+     * Note that if the bitmask is zero, then this will never match any byte, since
+     * the matching algorithm is byte & bitmask != 0.
+     * A bitmask of zero will always produce zero bits when ANDed with any byte, and
+     * this can never be anything other than zero - which means no match.
      * 
      * @param bitmask The bitmask.
      * @return The number of bytes matching any of the bits in the bitmask.
      */
     public static int countBytesMatchingAnyBit(final byte bitmask) {
-        // 00000000 - 256 - 256 = 0    (no match: zero).
-        // 00000001 - 256 - 128 = 128  (no match: half the bytes where that bit is not set)
-        // 00000011 - 256 - 64  = 192  (no match: zero & 63 other possible values)
-        // 00000111 - 256 - 32  = 224  (no match: zero & 31 other possible values)
-        // 00001111 - 256 - 16  = 240  (no match: zero & 15 other possible values)
-        // 00011111 - 256 - 8   = 248  (no match: zero & 7 other possible values)
-        // 00111111 - 256 - 4   = 252  (no match: zero, 10000000, 11000000, 01000000)
-        // 01111111 - 256 - 2   = 254  (no match: zero and 10000000)
-        // 11111111 - 256 - 1   = 255  (no match: zero)
-        // which particular bits are set or unset does not affect the calculation.
         return 256 - countBytesMatchingAllBits(bitmask);
     }
 

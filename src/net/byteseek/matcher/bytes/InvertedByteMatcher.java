@@ -36,7 +36,7 @@ import java.io.IOException;
 
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * A class which matches all bytes except for the one provided.
@@ -65,7 +65,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
      * @throws IllegalArgumentException if the string is not a valid 2-digit hex byte.
      */
     public InvertedByteMatcher(final String hexByte) {
-        this.byteToMiss = ByteUtilities.byteFromHex(hexByte);
+        this.byteToMiss = ByteUtils.byteFromHex(hexByte);
     }    
 
 
@@ -132,7 +132,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
     public String toRegularExpression(final boolean prettyPrint) {
         final StringBuilder builder = new StringBuilder();
         builder.append(prettyPrint? " [^ " : "[^");
-        builder.append(ByteUtilities.byteToString(prettyPrint, byteToMiss & 0xFF));
+        builder.append(ByteUtils.byteToString(prettyPrint, byteToMiss & 0xFF));
         builder.append(prettyPrint? " ] " : ']');
         return builder.toString();
     }

@@ -38,7 +38,7 @@ import java.util.Set;
 
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * Some static utilities useful in processing collections of sequence matchers
@@ -90,7 +90,7 @@ public final class MultiSequenceUtils {
                 if (atPosition < sequence.length()) {
                     final ByteMatcher lastMatcher = sequence.getMatcherForPosition(atPosition);
                     final byte[] bytesForPosition = lastMatcher.getMatchingBytes();
-                    ByteUtilities.addAll(bytesForPosition, bytes);
+                    ByteUtils.addAll(bytesForPosition, bytes);
                 }
             }
         }
@@ -118,7 +118,7 @@ public final class MultiSequenceUtils {
                 if (sequencePosition >= 0) {
                     final ByteMatcher lastMatcher = sequence.getMatcherForPosition(sequencePosition);
                     final byte[] bytesForPosition = lastMatcher.getMatchingBytes();
-                    ByteUtilities.addAll(bytesForPosition, bytes);
+                    ByteUtils.addAll(bytesForPosition, bytes);
                 }
             }
         }

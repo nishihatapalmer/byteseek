@@ -41,7 +41,7 @@ import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * An immutable class which matches a sequence of bytes.
@@ -149,7 +149,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         if (numberOfRepeats < 1) {
             throw new IllegalArgumentException("The number of repeats is less than one.");
         }
-        this.byteArray = ByteUtilities.repeat(source, startIndex, endIndex, numberOfRepeats);
+        this.byteArray = ByteUtils.repeat(source, startIndex, endIndex, numberOfRepeats);
         this.startArrayIndex = 0;
         this.endArrayIndex = this.byteArray.length;
     }    
@@ -182,7 +182,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         if (byteList == null || byteList.isEmpty()) {
             throw new IllegalArgumentException("Null or empty byte list passed in to ByteArrayMatcher.");
         }
-        this.byteArray = ByteUtilities.toArray(byteList);
+        this.byteArray = ByteUtils.toArray(byteList);
         this.startArrayIndex = 0;
         this.endArrayIndex = byteArray.length;
     }
@@ -402,7 +402,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return ByteUtilities.bytesToString(prettyPrint, byteArray, startArrayIndex, endArrayIndex);
+        return ByteUtils.bytesToString(prettyPrint, byteArray, startArrayIndex, endArrayIndex);
     }
 
 
@@ -587,7 +587,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             if (numberOfRepeats < 1) {
                 throw new IllegalArgumentException("The number of repeats is less than one.");
             }
-            this.byteArray = ByteUtilities.repeat(source, startIndex, endIndex,
+            this.byteArray = ByteUtils.repeat(source, startIndex, endIndex,
                                                   numberOfRepeats);
             this.startArrayIndex = 0;
             this.endArrayIndex = this.byteArray.length;            
@@ -696,8 +696,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         public String toRegularExpression(final boolean prettyPrint) {
             //FIXME: can we have a reverseBytesToString method instead...?
             //       current method creates a new byte array just to print the bytes out.
-            return ByteUtilities.bytesToString(prettyPrint, 
-                    ByteUtilities.reverseArraySubsequence(byteArray, startArrayIndex, endArrayIndex));
+            return ByteUtils.bytesToString(prettyPrint, 
+                    ByteUtils.reverseArraySubsequence(byteArray, startArrayIndex, endArrayIndex));
         }
 
 

@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.byteseek.parser.ParseException;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * A utility class of static helper methods to use when parsing expressions.
@@ -144,7 +144,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addByteValues(final ParseTree byteNode, final Set<Byte> bytes) throws ParseException {
 		if (byteNode.isValueInverted()) {
-			ByteUtilities.addInvertedByteValues(byteNode.getByteValue(), bytes);
+			ByteUtils.addInvertedByteValues(byteNode.getByteValue(), bytes);
 		} else {
 			bytes.add(byteNode.getByteValue());
 		}
@@ -161,9 +161,9 @@ public final class ParseTreeUtils {
 	 */
 	public static void addRangeBytes(final ParseTree range, Set<Byte> byteSet) throws ParseException {
 		if (range.isValueInverted()) {
-		    ByteUtilities.addBytesNotInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
+		    ByteUtils.addBytesNotInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
 		} else {
-			ByteUtilities.addBytesInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
+			ByteUtils.addBytesInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
 		}
 	}	
 	
@@ -223,9 +223,9 @@ public final class ParseTreeUtils {
 	public static void addBytesMatchingAllBitmask(final ParseTree allBitmask,
 												  final Collection<Byte> bytes) throws ParseException {
 		if (allBitmask.isValueInverted()) {
-			ByteUtilities.addBytesNotMatchingAllBitMask(allBitmask.getByteValue(), bytes);
+			ByteUtils.addBytesNotMatchingAllBitMask(allBitmask.getByteValue(), bytes);
 		} else {
-			ByteUtilities.addBytesMatchingAllBitMask(allBitmask.getByteValue(), bytes);
+			ByteUtils.addBytesMatchingAllBitMask(allBitmask.getByteValue(), bytes);
 		}
 	}	
 	
@@ -246,9 +246,9 @@ public final class ParseTreeUtils {
 	public static void addBytesMatchingAnyBitmask(final ParseTree anyBitmask,
 												  final Collection<Byte> bytes) throws ParseException {
 		if (anyBitmask.isValueInverted()) {
-			ByteUtilities.addBytesNotMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
+			ByteUtils.addBytesNotMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
 		} else {
-			ByteUtilities.addBytesMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
+			ByteUtils.addBytesMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
 		}
 	}		
 
@@ -262,7 +262,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addStringBytes(final ParseTree string,
 									  final Collection<Byte> bytes) throws ParseException {
-		ByteUtilities.addStringBytes(string.getTextValue(), bytes);
+		ByteUtils.addStringBytes(string.getTextValue(), bytes);
 	}
 	
 	
@@ -277,7 +277,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addCaseInsensitiveStringBytes(final ParseTree caseInsensitive,
 													 final Collection<Byte> bytes) throws ParseException {
-		ByteUtilities.addCaseInsensitiveStringBytes(caseInsensitive.getTextValue(), bytes);
+		ByteUtils.addCaseInsensitiveStringBytes(caseInsensitive.getTextValue(), bytes);
 	}
 	
 	
@@ -321,7 +321,7 @@ public final class ParseTreeUtils {
 												break;
 				case CASE_INSENSITIVE_STRING:	addCaseInsensitiveStringBytes(valueNode, setValues);			
 												break;
-				case ANY:						ByteUtilities.addAllBytes(setValues);
+				case ANY:						ByteUtils.addAllBytes(setValues);
 											    break;
 				default: 						throw new ParseException(getTypeError(valueNode));
 			}
@@ -369,7 +369,7 @@ public final class ParseTreeUtils {
 	public static Set<Byte> calculateSetValues(final ParseTree set) throws ParseException {
 		final Set<Byte> setValues = getSetValues(set);
 		if (set.isValueInverted()) {
-			return ByteUtilities.invertedSet(setValues);
+			return ByteUtils.invertedSet(setValues);
 		}
 		return setValues;
 	}

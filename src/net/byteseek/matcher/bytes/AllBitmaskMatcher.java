@@ -36,7 +36,7 @@ import java.io.IOException;
 
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 
 /**
@@ -123,8 +123,8 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public byte[] getMatchingBytes() {
-    	return inverted? ByteUtilities.getBytesNotMatchingAllBitMask(mBitMaskValue)
-    			       : ByteUtilities.getBytesMatchingAllBitMask(mBitMaskValue); 
+    	return inverted? ByteUtils.getBytesNotMatchingAllBitMask(mBitMaskValue)
+    			       : ByteUtils.getBytesMatchingAllBitMask(mBitMaskValue); 
     }
 
 
@@ -133,8 +133,8 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public int getNumberOfMatchingBytes() {
-        return inverted? 256 - ByteUtilities.countBytesMatchingAllBits(mBitMaskValue) :
-                               ByteUtilities.countBytesMatchingAllBits(mBitMaskValue);
+        return inverted? 256 - ByteUtils.countBytesMatchingAllBits(mBitMaskValue) :
+                               ByteUtils.countBytesMatchingAllBits(mBitMaskValue);
     }
 
 

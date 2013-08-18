@@ -35,7 +35,7 @@ import java.io.IOException;
 
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 import java.util.BitSet;
 import java.util.Set;
@@ -134,11 +134,11 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
             // If we have a range of more than 1 contiguous set positions,
             // represent this as a range of values:
             if (lastBitSetPosition - firstBitSetPosition > 1) {
-                final String minValue = ByteUtilities.byteToString(prettyPrint, firstBitSetPosition);
-                final String maxValue = ByteUtilities.byteToString(prettyPrint, lastBitSetPosition);
+                final String minValue = ByteUtils.byteToString(prettyPrint, firstBitSetPosition);
+                final String maxValue = ByteUtils.byteToString(prettyPrint, lastBitSetPosition);
                 regularExpression.append(String.format("%s-%s", minValue, maxValue));
             } else { // less than 2 contiguous set positions - just write out a single byte:
-                final String byteVal = ByteUtilities.byteToString(prettyPrint, firstBitSetPosition);
+                final String byteVal = ByteUtils.byteToString(prettyPrint, firstBitSetPosition);
                 regularExpression.append(byteVal);
                 lastBitSetPosition = firstBitSetPosition;
             }

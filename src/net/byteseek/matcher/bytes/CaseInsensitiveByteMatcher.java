@@ -39,7 +39,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.ByteArrayMatcher;
 import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * An immutable {@link ByteMatcher} which matches ASCII bytes case insensitively.
@@ -166,7 +166,7 @@ public final class CaseInsensitiveByteMatcher extends AbstractByteMatcher {
             return this;
         }   
         if (getNumberOfMatchingBytes() == 1) {
-            return new ByteArrayMatcher(ByteUtilities.repeat(caseValues[0], numberOfRepeats));
+            return new ByteArrayMatcher(ByteUtils.repeat(caseValues[0], numberOfRepeats));
         }
         return new CaseInsensitiveMatcher(this, numberOfRepeats);
     }    

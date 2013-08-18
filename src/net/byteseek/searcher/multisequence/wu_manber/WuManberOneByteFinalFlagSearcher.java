@@ -44,7 +44,7 @@ import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.byteseek.util.bytes.BytePermutationIterator;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 import net.byteseek.util.object.LazyObject;
 
 import java.util.ArrayList;
@@ -362,8 +362,8 @@ import java.util.List;
         private int chooseOptimumSize(final int suggestedSize) {
             final int positiveSize = suggestedSize > 1?
                                      suggestedSize : 1;
-            final int possibleSize = ByteUtilities.isPowerOfTwo(positiveSize)?
-                      positiveSize : ByteUtilities.nextHighestPowerOfTwo(positiveSize);
+            final int possibleSize = ByteUtils.isPowerOfTwo(positiveSize)?
+                      positiveSize : ByteUtils.nextHighestPowerOfTwo(positiveSize);
             final int maxSize = getMaxTableSize();
             return possibleSize < maxSize?
                    possibleSize : maxSize;

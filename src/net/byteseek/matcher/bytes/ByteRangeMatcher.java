@@ -35,7 +35,7 @@ import java.io.IOException;
 
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * An immutable {@link ByteMatcher} which matches a range of bytes, 
@@ -144,8 +144,8 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         if (inverted) {
             regularExpression.append('^');
         }
-        final String minValue = ByteUtilities.byteToString(prettyPrint, minByteValue);
-        final String maxValue = ByteUtilities.byteToString(prettyPrint, maxByteValue);
+        final String minValue = ByteUtils.byteToString(prettyPrint, minByteValue);
+        final String maxValue = ByteUtils.byteToString(prettyPrint, maxByteValue);
         regularExpression.append( String.format("%s-%s]", minValue, maxValue ));
         if (prettyPrint) {
             regularExpression.append(' ');

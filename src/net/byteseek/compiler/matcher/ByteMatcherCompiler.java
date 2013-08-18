@@ -47,7 +47,7 @@ import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.node.ChildrenNode;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * A compiler which produces a {@link ByteMatcher} from an
@@ -106,7 +106,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 */
 	public static ByteMatcher compileFrom(final byte[] bytes) {
 		defaultFactory = new SetAnalysisByteMatcherFactory();
-		final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
+		final Set<Byte> byteSet = ByteUtils.toSet(bytes);
 		return defaultFactory.create(byteSet, NOT_INVERTED);
 	}
 
@@ -122,7 +122,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 */
 	public static ByteMatcher compileInvertedFrom(final byte[] bytes) {
 		defaultFactory = new SetAnalysisByteMatcherFactory();
-		final Set<Byte> byteSet = ByteUtilities.toSet(bytes);
+		final Set<Byte> byteSet = ByteUtils.toSet(bytes);
 		return defaultFactory.create(byteSet, INVERTED);
 	}
 
@@ -192,7 +192,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 		final Set<Byte> bytesToMatch = new LinkedHashSet<Byte>();
 		for (final String expression : expressions) {
 			final byte[] matchingBytes = compile(expression).getMatchingBytes();
-			bytesToMatch.addAll(ByteUtilities.toList(matchingBytes));
+			bytesToMatch.addAll(ByteUtils.toList(matchingBytes));
 		}
 		return matcherFactory.create(bytesToMatch, NOT_INVERTED);
 	}

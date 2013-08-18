@@ -6,7 +6,7 @@
 package net.byteseek.matcher.bytes;
 
 import net.byteseek.matcher.bytes.AnyByteMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -60,7 +60,7 @@ public class AnyMatcherTest {
     @Test
     public void testGetMatchingBytes() {
        AnyByteMatcher matcher = new AnyByteMatcher();
-       byte[] allBytes = ByteUtilities.getAllByteValues();
+       byte[] allBytes = ByteUtils.getAllByteValues();
        assertArrayEquals(allBytes, matcher.getMatchingBytes());
     }
 

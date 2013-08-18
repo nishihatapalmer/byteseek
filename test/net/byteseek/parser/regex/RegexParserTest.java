@@ -43,7 +43,7 @@ import java.util.Set;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -481,7 +481,7 @@ public class RegexParserTest {
 		for (ParseTree child : node) {
 			nodeVals.add(child.getByteValue());
 		}
-		Set<Byte> vals = ByteUtilities.toSet(values);
+		Set<Byte> vals = ByteUtils.toSet(values);
 		assertEquals("Sets have the same number of values", nodeVals.size(), vals.size());
 		nodeVals.removeAll(vals);
 		assertEquals("Sets have the same values", 0, nodeVals.size());
@@ -497,21 +497,21 @@ public class RegexParserTest {
 		expectParseException("Sequence with partial value", "00 01 0");
 		expectParseException("Sequence with partial value", "00 0 02");
 		
-		byte[] values = ByteUtilities.toArray((byte) 0, (byte) 1);
+		byte[] values = ByteUtils.toArray((byte) 0, (byte) 1);
 		testByteSequence("0001", values);
 		testByteSequence("00 01", values);
 		testByteSequence("00\n\t01", values);
 		testByteSequence("00 # zero byte\n\t01\t# one byte", values);
 
-		values = ByteUtilities.toArray((byte)0xca, (byte)0xfe, (byte)0xbe,(byte)0xef);
+		values = ByteUtils.toArray((byte)0xca, (byte)0xfe, (byte)0xbe,(byte)0xef);
 		testByteSequence("Cafebeef", values);
 		testByteSequence("Ca fe be ef", values);
 		testByteSequence("\nCa\tfe  \t  \rbe ef", values);
 		
-		values = ByteUtilities.toArray((byte) 0x00, (byte) 0x7f, (byte) 0x45);
+		values = ByteUtils.toArray((byte) 0x00, (byte) 0x7f, (byte) 0x45);
 		testByteSequence(" 00 &7f ~45", values);
 		
-		values = ByteUtilities.toArray((byte) 0x09, (byte) 0x0a, (byte) 0x0b,
+		values = ByteUtils.toArray((byte) 0x09, (byte) 0x0a, (byte) 0x0b,
 							  		   (byte) 0x0c, (byte) 0x0d, (byte) 0x1e);
 		testByteSequence(" \\t \\n \\v \\f \\r \\e", values);
 
@@ -1024,27 +1024,27 @@ public class RegexParserTest {
 		// Note that all alternatives consisting of a match on a single
 		// byte position are optimised into a set type.
 		
-		byte[] values0 = ByteUtilities.toArray((byte) 0x00, (byte) 0x01);
+		byte[] values0 = ByteUtils.toArray((byte) 0x00, (byte) 0x01);
 		testSetOfBytes("00|01",   values0, false); 
 		testSetOfBytes("01|00",   values0, false);
 		testSetOfBytes("(01|00)", values0, false);
 		testSetOfBytes("('\u0001'|'\u0000')", values0, false);
 		
-		byte[] values1 = ByteUtilities.toArray((byte) 0x00);
-		byte[] values3 = ByteUtilities.toArray((byte) 0x7f, (byte) 0x7f, (byte) 0x80, (byte) 0xff);
+		byte[] values1 = ByteUtils.toArray((byte) 0x00);
+		byte[] values3 = ByteUtils.toArray((byte) 0x7f, (byte) 0x7f, (byte) 0x80, (byte) 0xff);
 		testByteSequenceAlternatives("00|01|7f 7f 80 ff", values3, values0);
 		testByteSequenceAlternatives("7f 7f 80 ff|01|00", values3, values0);
 		testByteSequenceAlternatives("'\u007f' '\u007f' `\u0080` ff|01|00", values3, values0);
 		testByteSequenceAlternatives("(7f 7f 80 ff|01|00)", values3, values0);
 		
-		byte[] values4 = ByteUtilities.toArray((byte) 0xde, (byte) 0xad, (byte) 0xff);
+		byte[] values4 = ByteUtils.toArray((byte) 0xde, (byte) 0xad, (byte) 0xff);
 		testByteSequenceAlternatives("00|deadff|7f 7f 80 ff", values1, values4, values3);
 		testByteSequenceAlternatives("deadff|00|7f 7f 80 ff|01|00", values4, values3, values0);
 		testByteSequenceAlternatives("(00|deadff|7f 7f 80 ff)", values1, values4, values3);
 		testByteSequenceAlternatives("(deadff|00|7f 7f 80 ff|01|00)", values4, values3, values0);
 		
-		byte[] values5 = ByteUtilities.toArray((byte) 0x32, (byte) 0x01);
-		byte[] values6 = ByteUtilities.toArray((byte) 0x6c, (byte) 0xff, (byte) 0xee, (byte) 0xdd);
+		byte[] values5 = ByteUtils.toArray((byte) 0x32, (byte) 0x01);
+		byte[] values6 = ByteUtils.toArray((byte) 0x6c, (byte) 0xff, (byte) 0xee, (byte) 0xdd);
 		testByteSequenceAlternatives("deadff|&32|  ~6cffeedd|01", values4, values6, values5);
 		testByteSequenceAlternatives("(deadff|&32|  ~6cffeedd|01)", values4, values6, values5);
 	}
@@ -1087,7 +1087,7 @@ public class RegexParserTest {
 		testByte(" ((01))",  (byte) 1, false);
 		testByte("(((01)))", (byte) 1, false);
 		
-		byte[] values1 = ByteUtilities.toArray((byte) 1, (byte) 2, (byte) 3);
+		byte[] values1 = ByteUtils.toArray((byte) 1, (byte) 2, (byte) 3);
 		testByteSequence(" (01) (02) (03)",  values1);
 		testByteSequence("  01  (02)  03",   values1);
 		testByteSequence(" (01   02   03)",  values1);

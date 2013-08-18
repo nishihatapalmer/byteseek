@@ -45,7 +45,7 @@ import net.byteseek.parser.tree.node.ByteNode;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.parser.tree.node.IntNode;
 import net.byteseek.parser.tree.node.StringNode;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 import org.junit.Test;
 
@@ -441,21 +441,21 @@ public class ParseTreeUtilsTest {
 		Set<Byte> allbitmaskBytes1 = new HashSet<Byte>();
 		Set<Byte> allbitmaskBytes2 = new HashSet<Byte>(); 
 		ParseTreeUtils.addBytesMatchingAllBitmask(allbitmask, allbitmaskBytes1);
-		ByteUtilities.addBytesMatchingAllBitMask(bitmask, allbitmaskBytes2);
+		ByteUtils.addBytesMatchingAllBitMask(bitmask, allbitmaskBytes2);
 		assertEquals("All bitmask sets for bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 
 		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, false);
 		allbitmaskBytes1.clear();
 		allbitmaskBytes2.clear();
 		ParseTreeUtils.addBytesMatchingAllBitmask(allbitmask, allbitmaskBytes1);
-		ByteUtilities.addBytesMatchingAllBitMask(bitmask, allbitmaskBytes2);
+		ByteUtils.addBytesMatchingAllBitMask(bitmask, allbitmaskBytes2);
 		assertEquals("All bitmask sets for explicitly not inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 		
 		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, true);
 		allbitmaskBytes1.clear();
 		allbitmaskBytes2.clear();
 		ParseTreeUtils.addBytesMatchingAllBitmask(allbitmask, allbitmaskBytes1);
-		ByteUtilities.addBytesNotMatchingAllBitMask(bitmask, allbitmaskBytes2);
+		ByteUtils.addBytesNotMatchingAllBitMask(bitmask, allbitmaskBytes2);
 		assertEquals("All bitmask sets for inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 	}
 
@@ -471,21 +471,21 @@ public class ParseTreeUtilsTest {
 		Set<Byte> allbitmaskBytes1 = new HashSet<Byte>();
 		Set<Byte> allbitmaskBytes2 = new HashSet<Byte>(); 
 		ParseTreeUtils.addBytesMatchingAnyBitmask(allbitmask, allbitmaskBytes1);
-		ByteUtilities.addBytesMatchingAnyBitMask(bitmask, allbitmaskBytes2);
+		ByteUtils.addBytesMatchingAnyBitMask(bitmask, allbitmaskBytes2);
 		assertEquals("Any bitmask sets for bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 
 		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, false);
 		allbitmaskBytes1.clear();
 		allbitmaskBytes2.clear();
 		ParseTreeUtils.addBytesMatchingAnyBitmask(allbitmask, allbitmaskBytes1);
-		ByteUtilities.addBytesMatchingAnyBitMask(bitmask, allbitmaskBytes2);
+		ByteUtils.addBytesMatchingAnyBitMask(bitmask, allbitmaskBytes2);
 		assertEquals("Any bitmask sets for explicitly not inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 		
 		allbitmask = new ByteNode(ParseTreeType.ALL_BITMASK, bitmask, true);
 		allbitmaskBytes1.clear();
 		allbitmaskBytes2.clear();
 		ParseTreeUtils.addBytesMatchingAnyBitmask(allbitmask, allbitmaskBytes1);
-		ByteUtilities.addBytesNotMatchingAnyBitMask(bitmask, allbitmaskBytes2);
+		ByteUtils.addBytesNotMatchingAnyBitMask(bitmask, allbitmaskBytes2);
 		assertEquals("Any bitmask sets for inverted bitmask byte " + bitmask, allbitmaskBytes1, allbitmaskBytes2);
 	}
 
@@ -500,7 +500,7 @@ public class ParseTreeUtilsTest {
 		ParseTree node = new StringNode(string);
 		Set<Byte> byteSet = new HashSet<Byte>();
 		ParseTreeUtils.addStringBytes(node, byteSet);
-		assertEquals("String " + string + " has correct bytes", ByteUtilities.toSet(bytes), byteSet);
+		assertEquals("String " + string + " has correct bytes", ByteUtils.toSet(bytes), byteSet);
 	}
 	
 
@@ -519,7 +519,7 @@ public class ParseTreeUtilsTest {
 		ParseTree node = new StringNode(string);
 		Set<Byte> byteSet = new HashSet<Byte>();
 		ParseTreeUtils.addCaseInsensitiveStringBytes(node, byteSet);
-		assertEquals("String " + string + " has correct bytes", ByteUtilities.toSet(bytes), byteSet);
+		assertEquals("String " + string + " has correct bytes", ByteUtils.toSet(bytes), byteSet);
 	}
 
 	@Test
@@ -618,46 +618,46 @@ public class ParseTreeUtilsTest {
 	private void testNestedByteSets(byte... values) throws ParseException {
 		// non inverted set of non inverted set of bytes
 		ParseTree byteSet = buildSet(false, buildByteSet(false, values));
-		Set<Byte> expected = ByteUtilities.toSet(values);
+		Set<Byte> expected = ByteUtils.toSet(values);
 		testSetMethods("straight nested byte set", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
 		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
-		ByteUtilities.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
+		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
 		testSetMethods("Straight nested byte set with additional byte nodes", expected, byteSet);
 		
 		// non-inverted set of inverted set of bytes
 		byteSet = buildSet(false, buildByteSet(true, values));
-		expected = ByteUtilities.invertedSet(ByteUtilities.toSet(values));
+		expected = ByteUtils.invertedSet(ByteUtils.toSet(values));
 		testSetMethods("straight set of inverted set of bytes", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
 		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
-		ByteUtilities.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
+		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
 		testSetMethods("Straight set of inverted set of bytes with additional byte nodes", expected, byteSet);
 		
 		// inverted set of non inverted set of bytes
 		byteSet = buildSet(true, buildByteSet(false, values));
-		expected = ByteUtilities.invertedSet(ByteUtilities.toSet(values));
+		expected = ByteUtils.invertedSet(ByteUtils.toSet(values));
 		testInvertedSetMethods("inverted set of non inverted set of bytes", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
 		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
-		expected = ByteUtilities.toSet(values);
-		ByteUtilities.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
-		expected = ByteUtilities.invertedSet(expected);
+		expected = ByteUtils.toSet(values);
+		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
+		expected = ByteUtils.invertedSet(expected);
 		testInvertedSetMethods("Inverted set of non-inverted set of bytes plus some additional byte nodes", expected, byteSet);
 		
 		// inverted set of inverted set of bytes
 		byteSet = buildSet(true, buildByteSet(true, values));
-		expected = ByteUtilities.toSet(values);
+		expected = ByteUtils.toSet(values);
 		testInvertedSetMethods("inverted set of inverted set of bytes", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
 		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
-		expected = ByteUtilities.invertedSet(ByteUtilities.toSet(values));
-		ByteUtilities.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
-		expected = ByteUtilities.invertedSet(expected);
+		expected = ByteUtils.invertedSet(ByteUtils.toSet(values));
+		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
+		expected = ByteUtils.invertedSet(expected);
 		testInvertedSetMethods("Inverted set of non-inverted set of bytes plus some additional byte nodes", expected, byteSet);
 	}
 	
@@ -666,28 +666,28 @@ public class ParseTreeUtilsTest {
 	     ParseTree set = buildSet(false, buildRangeNode(start, end, false));
 		 addByteValues(set, values);
 		 Set<Byte> expected = new HashSet<Byte>();
-		 ByteUtilities.addBytesInRange(start, end, expected);
-		 ByteUtilities.addBytes(expected, values);
+		 ByteUtils.addBytesInRange(start, end, expected);
+		 ByteUtils.addBytes(expected, values);
 		 testSetMethods("Mixed set of range and bytes", expected, set);
 		 
 		 // Inverted set of range and bytes
 		 set = buildSet(true, buildRangeNode(start, end, false));
 		 addByteValues(set, values);
-		 expected = ByteUtilities.invertedSet(expected);
+		 expected = ByteUtils.invertedSet(expected);
 		 testInvertedSetMethods("Inverted mixed set of range and  bytes", expected, set);
 		
 		 // Straight set of inverted range and non-inverted bytes
 		 set = buildSet(false, buildRangeNode(start, end, true));
 		 addByteValues(set, values);
 		 expected.clear();
-		 ByteUtilities.addBytesNotInRange(start, end, expected);
-		 ByteUtilities.addBytes(expected, values);
+		 ByteUtils.addBytesNotInRange(start, end, expected);
+		 ByteUtils.addBytes(expected, values);
 		 testSetMethods("Mixed set of inverted range and bytes", expected, set);
 		 
 		 // Inverted set of inverted range and non-inverted bytes
 		 set = buildSet(true, buildRangeNode(start, end, true));
 		 addByteValues(set, values);
-		 expected = ByteUtilities.invertedSet(expected);
+		 expected = ByteUtils.invertedSet(expected);
 		 testInvertedSetMethods("Inverted set of inverted range and bytes", expected, set);
 	}
 	
@@ -697,7 +697,7 @@ public class ParseTreeUtilsTest {
 		// test straight any set:
 		ParseTree set = buildSet(false, new BaseNode(ParseTreeType.ANY));
 		Set<Byte> expected = new HashSet<Byte>(320);
-		ByteUtilities.addAllBytes(expected);
+		ByteUtils.addAllBytes(expected);
 		testSetMethods("All set", expected, set);
 		
 		// test inverted any set:
@@ -710,32 +710,32 @@ public class ParseTreeUtilsTest {
 	private void testByteSet(byte... values) throws ParseException {
 		// Test a straight set of bytes
 		ParseTree byteSet = buildByteSet(false, values);
-		Set<Byte> expected = ByteUtilities.toSet(values);
-		testSetMethods("byte set" + ByteUtilities.bytesToString(false,  values), expected, byteSet);
+		Set<Byte> expected = ByteUtils.toSet(values);
+		testSetMethods("byte set" + ByteUtils.bytesToString(false,  values), expected, byteSet);
 		
 		// Test an inverted set of bytes
 		byteSet = buildByteSet(true, values); 
-		expected = ByteUtilities.invertedSet(ByteUtilities.toSet(values));
-		testInvertedSetMethods("byte set" + ByteUtilities.bytesToString(false,  values), expected, byteSet);
+		expected = ByteUtils.invertedSet(ByteUtils.toSet(values));
+		testInvertedSetMethods("byte set" + ByteUtils.bytesToString(false,  values), expected, byteSet);
 		
 		// Test a set of inverted bytes
 		byteSet = new ChildrenNode(ParseTreeType.SET);
 		expected = new HashSet<Byte>(320);
 		for (byte value : values) {
 			byteSet.addChild(new ByteNode(value, true));
-			expected.addAll(ByteUtilities.invertedSet(value));
+			expected.addAll(ByteUtils.invertedSet(value));
 		}
-		testSetMethods("byte set" + ByteUtilities.bytesToString(false,  values), expected, byteSet);
+		testSetMethods("byte set" + ByteUtils.bytesToString(false,  values), expected, byteSet);
 
 		// Test an inverted set of inverted bytes
 		byteSet = new ChildrenNode(ParseTreeType.SET, true);
 		expected = new HashSet<Byte>(320);
 		for (byte value : values) {
 			byteSet.addChild(new ByteNode(value, true));
-			expected.addAll(ByteUtilities.invertedSet(value));
+			expected.addAll(ByteUtils.invertedSet(value));
 		}
-		expected = ByteUtilities.invertedSet(expected);
-		testInvertedSetMethods("byte set" + ByteUtilities.bytesToString(false,  values), expected, byteSet);
+		expected = ByteUtils.invertedSet(expected);
+		testInvertedSetMethods("byte set" + ByteUtils.bytesToString(false,  values), expected, byteSet);
 	}
 	
 
@@ -744,72 +744,72 @@ public class ParseTreeUtilsTest {
 		ParseTree byteSet = buildSet(false, buildRangeNode(start, end, false));
 		
 		Set<Byte> expected = new HashSet<Byte>(256);
-		ByteUtilities.addBytesInRange(start,  end, expected);
+		ByteUtils.addBytesInRange(start,  end, expected);
 		testSetMethods("range: " + start + "-" + end, expected, byteSet);
 		
 		// Test an inverted set of one range:
 		byteSet = buildSet(true, buildRangeNode(start, end, false));
 		
 		expected = new HashSet<Byte>(256);
-		ByteUtilities.addBytesNotInRange(start,  end, expected);
+		ByteUtils.addBytesNotInRange(start,  end, expected);
 		testInvertedSetMethods("range: " + start + "-" + end, expected, byteSet);
 
 		// Test a set of an inverted range:
 		byteSet = buildSet(false, buildRangeNode(start, end, true));
 		
 		expected = new HashSet<Byte>(256);
-		ByteUtilities.addBytesNotInRange(start,  end, expected);
+		ByteUtils.addBytesNotInRange(start,  end, expected);
 		testSetMethods("range: " + start + "-" + end, expected, byteSet);
 		
 		// Test an inverted set of an inverted range:
 		byteSet = buildSet(true, buildRangeNode(start, end, true));
 		
 		expected = new HashSet<Byte>(256);
-		ByteUtilities.addBytesInRange(start,  end, expected);
+		ByteUtils.addBytesInRange(start,  end, expected);
 		testInvertedSetMethods("range: " + start + "-" + end, expected, byteSet);
 	}
 	
 	private void testAllBitmaskSet(final int bitmask) throws ParseException {
 		// Test straight set with a single all bitmask:
 		ParseTree set = buildSet(false, new ByteNode(ParseTreeType.ALL_BITMASK, (byte) bitmask));
-		Set<Byte> expected = ByteUtilities.toSet(ByteUtilities.getBytesMatchingAllBitMask((byte) bitmask)); 
+		Set<Byte> expected = ByteUtils.toSet(ByteUtils.getBytesMatchingAllBitMask((byte) bitmask)); 
 		testSetMethods("bitmask " + bitmask, expected, set);
 		
 		// Test inverted set with a single all bitmask:
 		set = buildSet(true, new ByteNode(ParseTreeType.ALL_BITMASK, (byte) bitmask));
-		expected = ByteUtilities.toSet(ByteUtilities.getBytesNotMatchingAllBitMask((byte) bitmask));
+		expected = ByteUtils.toSet(ByteUtils.getBytesNotMatchingAllBitMask((byte) bitmask));
 		testInvertedSetMethods("bitmask " + bitmask, expected, set);
 		
 		// Test straight set with an inverted single all bitmask:
 		set = buildSet(false, new ByteNode(ParseTreeType.ALL_BITMASK, (byte) bitmask, true));
-		expected = ByteUtilities.toSet(ByteUtilities.getBytesNotMatchingAllBitMask((byte) bitmask)); 
+		expected = ByteUtils.toSet(ByteUtils.getBytesNotMatchingAllBitMask((byte) bitmask)); 
 		testSetMethods("bitmask " + bitmask, expected, set);
 		
 		// Test inverted set with an inverted single all bitmask:
 		set = buildSet(true, new ByteNode(ParseTreeType.ALL_BITMASK, (byte) bitmask, true));
-		expected = ByteUtilities.toSet(ByteUtilities.getBytesMatchingAllBitMask((byte) bitmask));
+		expected = ByteUtils.toSet(ByteUtils.getBytesMatchingAllBitMask((byte) bitmask));
 		testInvertedSetMethods("bitmask " + bitmask, expected, set);
 	}
 
 	private void testAnyBitmaskSet(final int bitmask) throws ParseException {
 		// Test straight set with a single all bitmask:
 		ParseTree set = buildSet(false, new ByteNode(ParseTreeType.ANY_BITMASK, (byte) bitmask));
-		Set<Byte> expected = ByteUtilities.toSet(ByteUtilities.getBytesMatchingAnyBitMask((byte) bitmask)); 
+		Set<Byte> expected = ByteUtils.toSet(ByteUtils.getBytesMatchingAnyBitMask((byte) bitmask)); 
 		testSetMethods("any bitmask " + bitmask, expected, set);
 		
 		// Test inverted set with a single all bitmask:
 		set = buildSet(true, new ByteNode(ParseTreeType.ANY_BITMASK, (byte) bitmask));
-		expected = ByteUtilities.toSet(ByteUtilities.getBytesNotMatchingAnyBitMask((byte) bitmask));
+		expected = ByteUtils.toSet(ByteUtils.getBytesNotMatchingAnyBitMask((byte) bitmask));
 		testInvertedSetMethods("any bitmask " + bitmask, expected, set);
 		
 		// Test straight set with an inverted single all bitmask:
 		set = buildSet(false, new ByteNode(ParseTreeType.ANY_BITMASK, (byte) bitmask, true));
-		expected = ByteUtilities.toSet(ByteUtilities.getBytesNotMatchingAnyBitMask((byte) bitmask)); 
+		expected = ByteUtils.toSet(ByteUtils.getBytesNotMatchingAnyBitMask((byte) bitmask)); 
 		testSetMethods("any bitmask " + bitmask, expected, set);
 		
 		// Test inverted set with an inverted single all bitmask:
 		set = buildSet(true, new ByteNode(ParseTreeType.ANY_BITMASK, (byte) bitmask, true));
-		expected = ByteUtilities.toSet(ByteUtilities.getBytesMatchingAnyBitMask((byte) bitmask));
+		expected = ByteUtils.toSet(ByteUtils.getBytesMatchingAnyBitMask((byte) bitmask));
 		testInvertedSetMethods("any bitmask " + bitmask, expected, set);
 	}
 
@@ -817,12 +817,12 @@ public class ParseTreeUtilsTest {
 		// Test straight set with a single string:
 		ParseTree set = buildSet(false, new StringNode(string));
 		Set<Byte> expected = new HashSet<Byte>();
-		ByteUtilities.addStringBytes(string, expected);
+		ByteUtils.addStringBytes(string, expected);
 		testSetMethods("String set: " + string, expected, set);
 		
 		// Test inverted set with a single string:
 		set = buildSet(true, new StringNode(string));
-		expected = ByteUtilities.invertedSet(expected);
+		expected = ByteUtils.invertedSet(expected);
 		testInvertedSetMethods("Inverted string set " + string, expected, set);
 	}
 	
@@ -830,12 +830,12 @@ public class ParseTreeUtilsTest {
 		// Test straight set with a single string:
 		ParseTree set = buildSet(false, new StringNode(string, ParseTreeType.CASE_INSENSITIVE_STRING));
 		Set<Byte> expected = new HashSet<Byte>();
-		ByteUtilities.addCaseInsensitiveStringBytes(string, expected);
+		ByteUtils.addCaseInsensitiveStringBytes(string, expected);
 		testSetMethods("Case insensitive string set: " + string, expected, set);
 		
 		// Test inverted set with a single string:
 		set = buildSet(true, new StringNode(string));
-		expected = ByteUtilities.invertedSet(expected);
+		expected = ByteUtils.invertedSet(expected);
 		testInvertedSetMethods("Inverted case insensitive string set " + string, expected, set);
 	}
 	

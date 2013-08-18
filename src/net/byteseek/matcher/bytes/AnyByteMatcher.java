@@ -36,7 +36,7 @@ import java.io.IOException;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.FixedGapMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * A {@link ByteMatcher} which matches any byte at all.
@@ -53,7 +53,7 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
     
     
     // A static 256-element array containing all the bytes.
-    private static final byte[] ALL_BYTES =  ByteUtilities.getAllByteValues();
+    private static final byte[] ALL_BYTES =  ByteUtils.getAllByteValues();
 
 
     /**

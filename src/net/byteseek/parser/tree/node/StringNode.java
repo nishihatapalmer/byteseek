@@ -33,7 +33,7 @@ package net.byteseek.parser.tree.node;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.util.bytes.ByteUtilities;
+import net.byteseek.util.bytes.ByteUtils;
 
 
 /**
@@ -111,7 +111,7 @@ public class StringNode extends BaseNode {
   @Override
   public byte getByteValue() throws ParseException {
 	  if (value.length() == 1) {
-		  return ByteUtilities.getBytes(value)[0];
+		  return ByteUtils.getBytes(value)[0];
 	  }
 	  throw new ParseException("The string [" + this + "] must be of length 1");
   }
