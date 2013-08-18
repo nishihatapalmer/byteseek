@@ -402,7 +402,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 */
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + trie.getSequences() + ")";
+		return getClass().getSimpleName() + "[sequences:" + trie.getSequences() + ']';
 	}
 
 	/**

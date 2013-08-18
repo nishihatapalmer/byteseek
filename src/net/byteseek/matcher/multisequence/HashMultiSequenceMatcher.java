@@ -184,4 +184,9 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         return new List[tableSize];
     }
     
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[num sequences:" + matchers.size() + ']'; 
+    }
+    
 }

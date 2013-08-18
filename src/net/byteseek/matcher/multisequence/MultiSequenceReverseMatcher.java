@@ -260,6 +260,11 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
     private SequenceMatcher getOriginalSequence(final SequenceMatcher toTranslate) {
         return reverseToOriginals.get(toTranslate);
     }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[reverse matcher:" + reversed + ']'; 
+    }
 
     
 }

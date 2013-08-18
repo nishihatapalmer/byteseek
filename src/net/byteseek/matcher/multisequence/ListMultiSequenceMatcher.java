@@ -481,7 +481,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + matchers + ")";
+        return getClass().getSimpleName() + "[matchers:" + matchers + ']';
     }    
         
 
