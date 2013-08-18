@@ -95,5 +95,11 @@ public class MatchResult<T> {
 	public Collection<T> getMatchingObjects() {
 		return matchingObjects;
 	}
-
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[position: " + matchPosition + 
+				                            " length:" + matchLength + 
+				                            " objects:" + matchingObjects + ']';  
+	}
 }
