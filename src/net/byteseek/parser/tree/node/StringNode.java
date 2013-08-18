@@ -31,10 +31,9 @@
 
 package net.byteseek.parser.tree.node;
 
-import java.io.UnsupportedEncodingException;
-
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
+import net.byteseek.util.bytes.ByteUtilities;
 
 
 /**
@@ -112,12 +111,7 @@ public class StringNode extends BaseNode {
   @Override
   public byte getByteValue() throws ParseException {
 	  if (value.length() == 1) {
-		  try {
-			  final byte[] stringbytes = value.getBytes("ISO-8859-1");
-			  return stringbytes[0];
-		  } catch (UnsupportedEncodingException ex) {
-			  throw new ParseException("No support for ISO-8859-1 encoding for string [" + value + ']', ex);
-		  }
+		  return ByteUtilities.getBytes(value)[0];
 	  }
 	  throw new ParseException("The string [" + this + "] must be of length 1");
   }
