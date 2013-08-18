@@ -283,5 +283,10 @@ public class InputStreamReader extends AbstractReader {
 			super.close();
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[stream:" + stream + " cache:" + cache + ']'; 
+	}
 
 }

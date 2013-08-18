@@ -206,5 +206,10 @@ public final class TempFileReader extends FileReader {
 					+ file.getAbsolutePath());
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[temp file:" + getFile() + " length: " + getFile().length() + " cache:" + cache + ']'; 
+	}
 
 }

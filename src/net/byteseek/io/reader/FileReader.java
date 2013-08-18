@@ -283,5 +283,10 @@ public class FileReader extends AbstractReader {
 	public final File getFile() {
 		return file;
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[file:" + file + " length: " + file.length() + " cache:" + cache + ']'; 
+	}
 
 }

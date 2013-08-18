@@ -143,5 +143,10 @@ public class StringReader extends AbstractReader {
 	public Charset getCharset() {
 		return charset;
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[string bytes:" + bytes + " charset:" + charset + " length: " + bytes.length + " cache:" + cache + ']'; 
+	}
 
 }
