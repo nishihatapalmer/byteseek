@@ -81,5 +81,9 @@ public final class NoCache extends AbstractCache {
         // nothing to do
     }
     
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();  
+	}
     
 }

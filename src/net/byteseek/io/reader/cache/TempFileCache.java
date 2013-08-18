@@ -168,6 +168,10 @@ public final class TempFileCache extends AbstractCache {
             this.length = limit;
             this.filePosition = filePosition;
         }
-
     } 
+    
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[temp file: " + tempFile + " window positions recorded:" + windowPositions.size() + ']';  
+	}
 }

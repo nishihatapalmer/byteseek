@@ -153,4 +153,10 @@ import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
     }
     
     
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[primary cache: " + primaryCache + 
+											" secondary cache: " + secondaryCache + ']';  
+	}
+    
 }

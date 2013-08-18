@@ -72,4 +72,9 @@ public final class AllWindowsCache extends AbstractCache {
         cache.clear();
     }
     
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[cache size: " + cache.size() + ']';  
+	}
+    
 }
