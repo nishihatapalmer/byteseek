@@ -258,7 +258,7 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 				final Set<Byte> originalTransitionBytes = ByteUtils
 						.toSet(transition.getBytes());
 				final int originalTransitionBytesSize = originalTransitionBytes.size();
-				final Set<Byte> bytesInCommon = ByteUtils.subtract(originalTransitionBytes,
+				final List<Byte> bytesInCommon = ByteUtils.subtract(originalTransitionBytes,
 						bytesToTransitionOn);
 
 				// If the existing transition is the same or a subset of the new
