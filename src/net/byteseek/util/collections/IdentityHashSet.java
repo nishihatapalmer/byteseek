@@ -48,7 +48,7 @@ import java.util.Set;
  * only overriding the methods necessary to add to, remove from and query the 
  * underlying IdentityHashMap.
  * <p>
- * This class will be most useful when working with graphs of objects, where
+ * This class will be useful when working with graphs of objects, where
  * the object identity is most important in determining set membership.
  * 
  * @param <T> The type of object to put in the set.
