@@ -991,4 +991,58 @@ public class ByteUtilsTest {
     	}
     }
     
+    @Test
+    public void testInvertedSet() {
+    	// test null set
+    	try {
+    		ByteUtils.invertedSet(null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}   
+    
+	    // Test sets from 0 to 255 elements:
+	    Set<Byte> testSet = new HashSet<Byte>();
+	    for (int i = 0; i < 256; i++) {
+	    	Set<Byte> result = ByteUtils.invertedSet(testSet);
+	    	assertTrue("Set lengths are complementary", testSet.size() + result.size() == 256);
+	    	result.addAll(testSet);
+	    	assertEquals("Combining members gives all byte values", 256, result.size());
+	    	testSet.add(Byte.valueOf((byte) i));
+	    }
+    }
+    
+    @Test
+    public void testInverseOf() {
+    	// test null sets
+    	try {
+    		ByteUtils.inverseOf(null, new HashSet<Byte>());
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+
+    	try {
+    		ByteUtils.inverseOf(new HashSet<Byte>(), null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+    	
+    	try {
+    		ByteUtils.inverseOf(null, null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+    	
+    	Set<Byte> testSet = new HashSet<Byte>();
+    	for (int i = 0; i < 256; i++) {
+    		Set<Byte> inverse = ByteUtils.invertedSet(testSet);
+    		assertTrue("Sets are the inverse of each other", ByteUtils.inverseOf(testSet, inverse));
+    		assertTrue("Sets are the inverse of each other", ByteUtils.inverseOf(inverse, testSet));
+    		
+    		testSet.add(Byte.valueOf((byte) i));
+    		assertFalse("Sets are the inverse of each other", ByteUtils.inverseOf(testSet, inverse));
+    		assertFalse("Sets are the inverse of each other", ByteUtils.inverseOf(inverse, testSet));
+
+    		inverse.remove(Byte.valueOf((byte) ( 255 - i)));
+    		assertFalse("Sets are the inverse of each other " + i, ByteUtils.inverseOf(testSet, inverse));
+    		assertFalse("Sets are the inverse of each other " + i, ByteUtils.inverseOf(inverse, testSet));
+    	}
+    	
+    }
+    
 };
