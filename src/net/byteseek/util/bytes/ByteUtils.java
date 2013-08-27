@@ -653,20 +653,23 @@ public final class ByteUtils {
     	}
     }
     
+    
     /**
      * Returns an inverted set of bytes.  This set of bytes contains all other
      * possible byte values than the ones in the set provided.
-     * 
+     * <p>
+     * The set returned is a HashSet with a capacity of the size of the
+     * set of bytes passed in, divided by the default load factor.  If you want
+     * to specify a different set, call buildInvertedSet instead.
+     *  
      * @param bytes A set of bytes.
      * @return Set<Byte> A set of all other bytes.
      * @throws IllegalArgumentException if the set of bytes passed in is null.
      */
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
-    	//TODO: work out an optimal size of new hash set from an original one.
-    	//      should be optimised for both lookup and iteration, 
-    	//      as iteration of a set is quite common in byteseek code.
-    	//      The set type is primarily used to guarantee uniqueness of the members.
-        final Set<Byte> inverted = new HashSet<Byte>(bytes.size() + 32);
+    	checkNullCollection(bytes);
+    	final int capacity = (int) (bytes.size() / 0.75);
+        final Set<Byte> inverted = new HashSet<Byte>(capacity);
         buildInvertedSet(bytes, inverted);
         return inverted;
     }
@@ -674,10 +677,11 @@ public final class ByteUtils {
     
     /**
      * Returns true if one set of bytes is the inverse of the other.
+     * Neither set is modified.
      * 
      * @param set The first set to test
      * @param inverseSet The other set to test
-     * @return True if both sets are the inverse of each other.
+     * @return True if the sets are the inverse of each other.
      * @throws IllegalArgumentException if either of the sets passed in is null.
      */
     public static boolean inverseOf(final Set<Byte> set, final Set<Byte> inverseSet) {
@@ -685,13 +689,13 @@ public final class ByteUtils {
     	checkNullCollection(inverseSet);
     	// If the set sizes are compatible with being the inverse of each other:
     	if (set.size() == 256 - inverseSet.size()) {
-    		// Go through all the bytes in the smaller set, to see if they appear in the
-    		// bigger set.
+    		// Go through  the bytes in the smaller set, to see if they appear in the
+    		// bigger set.  If any do, the sets are not inverses of each other.
     		final boolean setIsSmaller = set.size() < inverseSet.size();
-    		final Set<Byte> needle   = setIsSmaller? set : inverseSet;
+    		final Set<Byte> needles  = setIsSmaller? set : inverseSet;
     		final Set<Byte> haystack = setIsSmaller? inverseSet : set;
-    		for (final Byte value : needle) {
-    			if (haystack.contains(value)) {
+    		for (final Byte needle : needles) {
+    			if (haystack.contains(needle)) {
     				return false;
     			}
     		}
@@ -699,6 +703,7 @@ public final class ByteUtils {
     	}
     	return false;
     }
+    
     
     /**
      * Returns an inverted set of bytes containing all bytes except 
@@ -708,13 +713,11 @@ public final class ByteUtils {
      * @return Set<Byte> A set of all other bytes.
      */
     public static Set<Byte> invertedSet(final byte value) {
-        final Set<Byte> inverted = new HashSet<Byte>(288);
-        final int intValue =  value & 0xFF;
+        final Set<Byte> inverted = new HashSet<Byte>(342);
         for (int i = 0; i < 256; i ++) {
-        	if (i != intValue) {
-        		inverted.add(Byte.valueOf((byte) i));
-        	}
+        	inverted.add(Byte.valueOf((byte) i));
         }
+        inverted.remove(Byte.valueOf(value));
         return inverted;
     }    
     
