@@ -1055,7 +1055,7 @@ public class ByteUtilsTest {
     }
     
     @Test
-    public void testSubtractSet() {
+    public void testRemoveIntersection1() {
     	// test null collections
     	try {
     		ByteUtils.removeIntersection(null, new HashSet<Byte>());
@@ -1075,7 +1075,7 @@ public class ByteUtilsTest {
     }
     
     @Test
-    public void testBuildSubtractedSet() {
+    public void testRemoveIntersection2() {
     	// test null collections
     	try {
     		ByteUtils.removeIntersection(null, new HashSet<Byte>(), new ArrayList<Byte>());
