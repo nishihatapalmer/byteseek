@@ -147,6 +147,8 @@ public final class TempFileCache extends AbstractCache {
             } catch (IOException ex) {
             } finally {
                 file = null;
+                //TODO: use SLF4J logging framework to log if file could not be deleted.
+                //      examine other places where logging could be useful.
                 tempFile.delete();
                 tempFile = null;
                 nextFilePos = 0;
