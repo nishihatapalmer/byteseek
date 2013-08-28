@@ -1045,4 +1045,77 @@ public class ByteUtilsTest {
     	
     }
     
+    @Test
+    public void testInvertedSetFromByte() {
+    	for (int byteValue = 0; byteValue < 256; byteValue++) {
+    		Set<Byte> result = ByteUtils.invertedSet((byte) byteValue);
+    		assertEquals("Only 255 elements in a set minus one byte " + byteValue, 255, result.size());
+    		assertFalse("Set does not contain the byte value", result.contains(Byte.valueOf((byte) byteValue)));
+    	}
+    }
+    
+    @Test
+    public void testSubtractSet() {
+    	// test null collections
+    	try {
+    		ByteUtils.removeIntersection(null, new HashSet<Byte>());
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+
+    	try {
+    		ByteUtils.removeIntersection(new HashSet<Byte>(), null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+    	
+    	try {
+    		ByteUtils.removeIntersection(null, null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}
+    	
+    }
+    
+    @Test
+    public void testBuildSubtractedSet() {
+    	// test null collections
+    	try {
+    		ByteUtils.removeIntersection(null, new HashSet<Byte>(), new ArrayList<Byte>());
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+
+    	try {
+    		ByteUtils.removeIntersection(new HashSet<Byte>(), null, new ArrayList<Byte>());
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+    	
+    	try {
+    		ByteUtils.removeIntersection(null, null, new ArrayList<Byte>());
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}
+    	
+    	try {
+    		ByteUtils.removeIntersection(new HashSet<Byte>(), new HashSet<Byte>(), null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+    	
+    	try {
+    		ByteUtils.removeIntersection(null, new HashSet<Byte>(), null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+
+    	try {
+    		ByteUtils.removeIntersection(new HashSet<Byte>(), null, null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       
+    	
+    	try {
+    		ByteUtils.removeIntersection(null, null, null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}       	
+    	
+
+    	
+    	
+    }
+    
+    
 };

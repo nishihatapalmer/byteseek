@@ -727,7 +727,7 @@ public final class ByteUtils {
      * possible byte values than the ones in the set provided.
      * 
      * @param bytes A set of bytes.
-     * @param invertedSet
+     * @param invertedSet The set of bytes to add the inverted bytes to.  
      * @throws IllegalArgumentException if either of the sets passed in is null.  
      */
     public static void buildInvertedSet(final Set<Byte> bytes, final Set<Byte> invertedSet) {
@@ -742,41 +742,40 @@ public final class ByteUtils {
     
     
     /**
-     * Subtracts a set of bytes from another set of bytes.  
-     * Returns a new Set containing only the bytes which were actually removed.
+     * Removes any bytes in common from the sets passed in (the intersection of the two sets)
+     * and returns a list containing the intersection.
      * 
-     * @param bytes The set of bytes to subtract.
-     * @param fromSet The set of bytes to subtract from.
-     * @return A list containing the bytes which were subtracted.
+     * @param firstSet The first set of bytes.  Any bytes in common with the second set will be removed.
+     * @param secondSet The second set of bytes.  Any bytes in common with the first set will be removed.
+     * @return A list containing the intersection of the two sets
      * @throws IllegalArgumentException if either of the sets passed in is null. 
      */
-    public static List<Byte> subtract(final Set<Byte> bytes, final Set<Byte> fromSet) {
-    	checkNullCollection(bytes);
-    	checkNullCollection(fromSet);
+    public static List<Byte> removeIntersection(final Set<Byte> firstSet, final Set<Byte> secondSet) {
     	final List<Byte> bytesRemoved = new ArrayList<Byte>();
-        buildSubtractedSet(bytes, fromSet, bytesRemoved);
+        removeIntersection(firstSet, secondSet, bytesRemoved);
         return bytesRemoved;
     }   
     
     
     /**
-     * Subtracts a set of bytes from another set of bytes, and records which 
-     * bytes were actually removed, since they were in the original set. 
+     * Removes any bytes in common from the sets passed in (the intersection of the two sets)
+     * and adds the intersection to a collection also passed in.
      * 
-     * @param bytes The set of bytes to subtract.
-     * @param fromSet The set of bytes to subtract from.
-     * @param bytesRemoved The bytes which were removed from the set are added to this collection.
+     * @param firstSet The first set of bytes.  Any bytes in common with the second set will be removed.
+     * @param secondSet The second set of bytes.  Any bytes in common with the first set will be removed.
+     * @param bytesRemoved Any bytes in the intersection of the two sets are added to this collection.
+     * @throws IllegalArgumentException if any of the collections passed in are null.
      */
-    public static void buildSubtractedSet(final Set<Byte> bytes, 
-                                          final Set<Byte> fromSet,
+    public static void removeIntersection(final Set<Byte> firstSet, 
+                                          final Set<Byte> secondSet,
                                           final Collection<Byte> bytesRemoved) {
-    	checkNullCollection(bytes);
-    	checkNullCollection(fromSet);
+    	checkNullCollection(firstSet);
+    	checkNullCollection(secondSet);
     	checkNullCollection(bytesRemoved);
-    	final Iterator<Byte> byteIterator = bytes.iterator();
+    	final Iterator<Byte> byteIterator = firstSet.iterator();
         while (byteIterator.hasNext()) {
             final Byte theByte = byteIterator.next();
-            if (fromSet.remove(theByte)) {
+            if (secondSet.remove(theByte)) {
                 bytesRemoved.add(theByte);
                 byteIterator.remove();
             }

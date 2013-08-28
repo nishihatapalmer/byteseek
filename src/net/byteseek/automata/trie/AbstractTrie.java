@@ -255,14 +255,13 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 			final Set<Byte> bytesToTransitionOn = new HashSet<Byte>(allBytesToTransitionOn);
 			for (final Transition<T> transition : stateTransitions) {
 
-				final Set<Byte> originalTransitionBytes = ByteUtils
-						.toSet(transition.getBytes());
+				final Set<Byte> originalTransitionBytes = ByteUtils.toSet(transition.getBytes());
 				final int originalTransitionBytesSize = originalTransitionBytes.size();
-				final List<Byte> bytesInCommon = ByteUtils.subtract(originalTransitionBytes,
-						bytesToTransitionOn);
-
-				// If the existing transition is the same or a subset of the new
-				// transition bytes:
+				final List<Byte> bytesInCommon = 
+						ByteUtils.removeIntersection(originalTransitionBytes, bytesToTransitionOn);
+ 
+				// If the existing transition is the same or a subset of the new transition bytes,
+				// just keep the existing transition, only changing the final state if necessary.
 				final int numberOfBytesInCommon = bytesInCommon.size();
 				if (numberOfBytesInCommon == originalTransitionBytesSize) {
 
@@ -277,9 +276,8 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 					nextStates.add(toState);
 
 				} else if (numberOfBytesInCommon > 0) {
-					// Only some bytes are in common.
-					// We will have to split the existing transition to
-					// two states, and recreate the transitions to them:
+					// Only some bytes are in common - the new transition is not a subset of the original
+					// transition. We will have to split the existing transition to two states.
 					final State<T> originalToState = transition.getToState();
 					if (isFinal) {
 						originalToState.setIsFinal(true);
@@ -287,17 +285,14 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 					final State<T> newToState = originalToState.deepCopy();
 
 					// Add a transition to the bytes which are not in common:
-					final Transition<T> bytesNotInCommonTransition = transitionFactory
-							.create(originalTransitionBytes, false, originalToState);
-					currentState.addTransition(bytesNotInCommonTransition);
+					currentState.addTransition(
+							transitionFactory.create(originalTransitionBytes, false, originalToState));
 
 					// Add a transition to the bytes in common:
-					final Transition<T> bytesInCommonTransition = transitionFactory
-							.create(bytesInCommon, false, newToState);
-					currentState.addTransition(bytesInCommonTransition);
+					currentState.addTransition(
+							transitionFactory.create(bytesInCommon, false, newToState));
 
-					// Add the bytes in common state to the next states to
-					// process:
+					// Add the bytes in common state to the next states to process:
 					nextStates.add(newToState);
 
 					// Remove the original transition from the current state:
@@ -316,8 +311,8 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 			final int numberOfBytesLeft = bytesToTransitionOn.size();
 			if (numberOfBytesLeft > 0) {
 				final State<T> newState = stateFactory.create(isFinal);
-				final Transition<T> newTransition = transitionFactory.create(
-						bytesToTransitionOn, false, newState);
+				final Transition<T> newTransition = 
+						transitionFactory.create(bytesToTransitionOn, false, newState);
 				currentState.addTransition(newTransition);
 				nextStates.add(newState);
 			}
