@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  */
 
@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.Set;
 
 import net.byteseek.util.bytes.ByteUtils;
+import net.byteseek.util.collections.CollUtils;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -246,6 +247,10 @@ public class ByteUtilsTest {
         bytes = new byte[] {(byte) 0xFF, (byte) 0xFE, (byte) 0x7F, (byte) 0x7E};
         expectedValue = Byte.valueOf((byte) 0x7E);
         assertEquals("01111110", expectedValue,  ByteUtils.getAllBitMaskForBytes(bytes));
+        
+        // No bitmask matches 3 bytes only:
+        bytes = new byte[] {(byte) 0xFF, (byte) 0xFE, (byte) 0x7F};
+        assertNull("3 bytes has no bitmask", ByteUtils.getAllBitMaskForBytes(bytes));
     }
 
 
@@ -267,6 +272,43 @@ public class ByteUtilsTest {
     		assertNotNull("result should not be null for bitmask " + bitmask + " size of set " + validSet.size() + " expected " + validSet, result);
     		assertEquals("Set of bytes for bitmask " + bitmask + " size of set " + validSet.size() + " expected " + validSet, (byte) bitmask, result.byteValue());
     	}
+    	
+    	// test invalid set:
+    	Set<Byte> invalidSet = new HashSet<Byte>();
+    	final int LEGITIMATE_SIZE = 224;
+    	for (int i = 0; i < 90; i++) {
+    		if (((byte) i & 0xAA) != 0) {
+    			if (invalidSet.size() < LEGITIMATE_SIZE) {
+    				invalidSet.add((byte) i);
+    			}
+    		}
+    	}
+    	for (int i = 90; i < 256; i++) {
+    		if (((byte) i & 0x17) != 0) {
+    			if (invalidSet.size() < LEGITIMATE_SIZE) {
+    				invalidSet.add((byte) i);
+    			}
+    		}
+    	}
+    	Byte result = ByteUtils.getAnyBitMaskForBytes(ByteUtils.toArray(invalidSet));
+    	assertNull("Set made of two bitmasks on different bytes is not a correct set", result);
+    	
+    	// test a set for which there is a valid bitmask, but which has additional bytes that don't
+    	// match the bitmask, with the set being a valid size for one that has an any bitmask can generate.
+    	invalidSet.clear();
+    	for (int i = 128; i < 256; i++) { // all bytes share the topmost bit 128.  1000 0000
+    		invalidSet.add((byte) i);
+    	}
+    	// the next valid size for an any bitmask set, is 192 bytes.  So we need to add 64 bytes
+    	// in chunks that don't match each other.
+    	for (int i = 0; i < 64; i +=2) {
+    		invalidSet.add((byte) i);
+    	}
+    	for (int i = 1; i < 64; i += 2) {
+    		invalidSet.add((byte) i);
+    	}
+    	result = ByteUtils.getAnyBitMaskForBytes(ByteUtils.toArray(invalidSet));
+    	assertNull("Set made of two bitmasks on different bytes is not a correct set", result);
     	
     	// no one any bitmask matches only 11111111:
         byte[] bytes = new byte[] {(byte) 0xFF};
@@ -298,6 +340,10 @@ public class ByteUtilsTest {
         bytes = new byte[] {(byte) 0xFE, (byte) 0x7F};
         assertEquals("11111110 and 01111111", null, ByteUtils.getAnyBitMaskForBytes(bytes));
 
+        // No bitmask matches 3 bytes only:
+        bytes = new byte[] {(byte) 0xFF, (byte) 0xFE, (byte) 0x7F};
+        assertNull("3 bytes has no bitmask", ByteUtils.getAnyBitMaskForBytes(bytes));
+        
         // any bitmask 01111111 (0x7F) matches all except zero and 0x80.
         bytes = new byte[254];
         int position = 0;
@@ -1055,8 +1101,7 @@ public class ByteUtilsTest {
     }
     
     @Test
-    public void testRemoveIntersection1() {
-    	// test null collections
+    public void testRemoveIntersection1NullSets() {
     	try {
     		ByteUtils.removeIntersection(null, new HashSet<Byte>());
     		fail("Expected an illegal argument exception");
@@ -1071,11 +1116,59 @@ public class ByteUtilsTest {
     		ByteUtils.removeIntersection(null, null);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}
-    	
     }
     
     @Test
-    public void testRemoveIntersection2() {
+    public void testRemoveIntersection1EmptySets() {
+    	Set<Byte> set1 = new HashSet<Byte>();
+    	Set<Byte> set2 = new HashSet<Byte>();
+    	List<Byte> result = ByteUtils.removeIntersection(set1, set2);
+    	assertTrue("Set 1 is still empty", set1.isEmpty());
+    	assertTrue("Set 2 is still empty", set2.isEmpty());
+    	assertTrue("Intersection is empty", result.isEmpty());
+    }
+    
+    @Test
+    public void testRemoveIntersection1NonIntersectingSets() {
+    	testRemoveIntersection1NonIntersecting(new HashSet<Byte>(), ByteUtils.toSet(ByteUtils.getAllByteValues()));
+    	testRemoveIntersection1NonIntersecting(toSet(1, 2, 3, 4), toSet(5, 6, 7, 8));
+    	testRemoveIntersection1NonIntersecting(toSet(255, 254, 1 ,2), toSet( 253, 80, 3, 4, 5, 6, 7, 8));
+    }
+    
+    private void testRemoveIntersection1NonIntersecting(Set<Byte> set1, Set<Byte> set2) {
+		Set<Byte> set1Copy = new HashSet<Byte>(set1);
+		Set<Byte> set2Copy = new HashSet<Byte>(set2);
+    	List<Byte> result = ByteUtils.removeIntersection(set1,  set2);
+		assertTrue("No intersecting bytes expected", result.size() == 0);
+		assertTrue("Set 1 is unchanged", set1.equals(set1Copy));
+		assertTrue("Set 2 is unchanged", set2.equals(set2Copy));
+	}
+
+	@Test
+    public void testRemoveIntersection1IntersectingSets() {
+    	testRemoveIntersection1IntersectionSets(ByteUtils.toSet(ByteUtils.getAllByteValues()),
+    											ByteUtils.toSet(ByteUtils.getAllByteValues()),
+    											ByteUtils.toList(ByteUtils.getAllByteValues()));
+    	testRemoveIntersection1IntersectionSets(toSet(1, 2, 3, 4, 5, 6), 
+    											toSet(4, 5, 6, 7, 8),
+    											toList(4, 5, 6));
+    	testRemoveIntersection1IntersectionSets(toSet(1, 2, 3, 4, 5, 6, 255, 34, 25, 75), 
+												toSet(4, 5, 6, 7, 8, 34, 33, 32, 96, 255, 32),
+												toList(4, 5, 6, 34, 255));
+    }
+	
+    private void testRemoveIntersection1IntersectionSets(Set<Byte> set1, Set<Byte> set2, List<Byte> expectedIntersection) {
+		assertTrue("Set 1 does contain intersection values", CollUtils.containsAny(set1, expectedIntersection));
+		assertTrue("Set 2 does contain intersection values", CollUtils.containsAny(set2, expectedIntersection));
+    	List<Byte> intersection = ByteUtils.removeIntersection(set1,  set2);
+    	assertEquals("Intersection is correct size", expectedIntersection.size(), intersection.size());
+		assertTrue("Intersection has correct values", intersection.containsAll(expectedIntersection));
+		assertFalse("Set 1 does not contain any intersection values", CollUtils.containsAny(set1, intersection));
+		assertFalse("Set 2 does not contain any intersection values", CollUtils.containsAny(set2, intersection));
+	}
+    
+    @Test
+    public void testRemoveIntersection2NullSets() {
     	// test null collections
     	try {
     		ByteUtils.removeIntersection(null, new HashSet<Byte>(), new ArrayList<Byte>());
@@ -1111,11 +1204,264 @@ public class ByteUtilsTest {
     		ByteUtils.removeIntersection(null, null, null);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}       	
-    	
-
-    	
-    	
     }
     
+    
+    @Test
+    public void testRemoveIntersection2EmptySets() {
+    	Set<Byte> set1 = new HashSet<Byte>();
+    	Set<Byte> set2 = new HashSet<Byte>();
+    	List<Byte> intersectionBytes = new ArrayList<Byte>();
+    	ByteUtils.removeIntersection(set1, set2, intersectionBytes);
+    	assertTrue("Set 1 is still empty", set1.isEmpty());
+    	assertTrue("Set 2 is still empty", set2.isEmpty());
+    	assertTrue("Intersection is empty", intersectionBytes.isEmpty());
+    }
+    
+    @Test
+    public void testRemoveIntersection2NonIntersectingSets() {
+    	testRemoveIntersection2NonIntersecting(new HashSet<Byte>(), ByteUtils.toSet(ByteUtils.getAllByteValues()));
+    	testRemoveIntersection2NonIntersecting(toSet(1, 2, 3, 4), toSet(5, 6, 7, 8));
+    	testRemoveIntersection2NonIntersecting(toSet(255, 254, 1 ,2), toSet( 253, 80, 3, 4, 5, 6, 7, 8));
+    }
+    
+    private void testRemoveIntersection2NonIntersecting(Set<Byte> set1, Set<Byte> set2) {
+		List<Byte> intersection = new ArrayList<Byte>();
+    	Set<Byte> set1Copy = new HashSet<Byte>(set1);
+		Set<Byte> set2Copy = new HashSet<Byte>(set2);
+    	ByteUtils.removeIntersection(set1,  set2, intersection);
+		assertTrue("No intersecting bytes expected", intersection.size() == 0);
+		assertTrue("Set 1 is unchanged", set1.equals(set1Copy));
+		assertTrue("Set 2 is unchanged", set2.equals(set2Copy));
+	}
+    
+	@Test
+    public void testRemoveIntersection2IntersectingSets() {
+    	testRemoveIntersection2IntersectionSets(ByteUtils.toSet(ByteUtils.getAllByteValues()),
+    											ByteUtils.toSet(ByteUtils.getAllByteValues()),
+    											ByteUtils.toList(ByteUtils.getAllByteValues()));
+    	testRemoveIntersection2IntersectionSets(toSet(1, 2, 3, 4, 5, 6), 
+    											toSet(4, 5, 6, 7, 8),
+    											toList(4, 5, 6));
+    	testRemoveIntersection2IntersectionSets(toSet(1, 2, 3, 4, 5, 6, 255, 34, 25, 75), 
+												toSet(4, 5, 6, 7, 8, 34, 33, 32, 96, 255, 32),
+												toList(4, 5, 6, 34, 255));
+    }
+	
+    private void testRemoveIntersection2IntersectionSets(Set<Byte> set1, Set<Byte> set2, List<Byte> expectedIntersection) {
+		assertTrue("Set 1 does contain intersection values", CollUtils.containsAny(set1, expectedIntersection));
+		assertTrue("Set 2 does contain intersection values", CollUtils.containsAny(set2, expectedIntersection));
+    	List<Byte> intersection = new ArrayList<Byte>();
+    	ByteUtils.removeIntersection(set1,  set2, intersection);
+    	assertEquals("Intersection is correct size", expectedIntersection.size(), intersection.size());
+		assertTrue("Intersection has correct values", intersection.containsAll(expectedIntersection));
+		assertFalse("Set 1 does not contain any intersection values", CollUtils.containsAny(set1, intersection));
+		assertFalse("Set 2 does not contain any intersection values", CollUtils.containsAny(set2, intersection));
+	}
+    
+    @Test
+    public void testFloorLogBase2() {
+    	// Number must be positive.
+    	try {
+    		ByteUtils.floorLogBaseTwo(0);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	try {
+    		ByteUtils.floorLogBaseTwo(-1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	try {
+    		ByteUtils.floorLogBaseTwo(-65537);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}        	
+    	
+    	assertEquals("floor log base 2", 0, ByteUtils.floorLogBaseTwo(1));
+    	assertEquals("floor log base 2", 1, ByteUtils.floorLogBaseTwo(2));
+    	assertEquals("floor log base 2", 1, ByteUtils.floorLogBaseTwo(3));
+    	assertEquals("floor log base 2", 2, ByteUtils.floorLogBaseTwo(4));
+    	assertEquals("floor log base 2", 2, ByteUtils.floorLogBaseTwo(5));
+    	assertEquals("floor log base 2", 4, ByteUtils.floorLogBaseTwo(31));
+    	assertEquals("floor log base 2", 5, ByteUtils.floorLogBaseTwo(32));
+    	assertEquals("floor log base 2", 5, ByteUtils.floorLogBaseTwo(33));
+    	assertEquals("floor log base 2", 5, ByteUtils.floorLogBaseTwo(63));
+    	assertEquals("floor log base 2", 6, ByteUtils.floorLogBaseTwo(64));
+    	assertEquals("floor log base 2", 6, ByteUtils.floorLogBaseTwo(65));
+    	assertEquals("floor log base 2", 6, ByteUtils.floorLogBaseTwo(127));
+    	assertEquals("floor log base 2", 7, ByteUtils.floorLogBaseTwo(128));
+    	assertEquals("floor log base 2", 7, ByteUtils.floorLogBaseTwo(129));
+    	assertEquals("floor log base 2", 7, ByteUtils.floorLogBaseTwo(255));
+    }
+    
+    
+    @Test
+    public void testCeilLogBase2() {
+    	// Number must be positive.
+    	try {
+    		ByteUtils.ceilLogBaseTwo(0);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	try {
+    		ByteUtils.ceilLogBaseTwo(-1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	try {
+    		ByteUtils.ceilLogBaseTwo(-65537);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}        	
+    	
+    	assertEquals("ceil log base 2", 0, ByteUtils.ceilLogBaseTwo(1));
+    	assertEquals("ceil log base 2", 1, ByteUtils.ceilLogBaseTwo(2));
+    	assertEquals("ceil log base 2", 2, ByteUtils.ceilLogBaseTwo(3));
+    	assertEquals("ceil log base 2", 2, ByteUtils.ceilLogBaseTwo(4));
+    	assertEquals("ceil log base 2", 3, ByteUtils.ceilLogBaseTwo(5));
+    	assertEquals("ceil log base 2", 5, ByteUtils.ceilLogBaseTwo(31));
+    	assertEquals("ceil log base 2", 5, ByteUtils.ceilLogBaseTwo(32));
+    	assertEquals("ceil log base 2", 6, ByteUtils.ceilLogBaseTwo(33));
+    	assertEquals("ceil log base 2", 6, ByteUtils.ceilLogBaseTwo(63));
+    	assertEquals("ceil log base 2", 6, ByteUtils.ceilLogBaseTwo(64));
+    	assertEquals("ceil log base 2", 7, ByteUtils.ceilLogBaseTwo(65));
+    	assertEquals("ceil log base 2", 7, ByteUtils.ceilLogBaseTwo(127));
+    	assertEquals("ceil log base 2", 7, ByteUtils.ceilLogBaseTwo(128));
+    	assertEquals("ceil log base 2", 8, ByteUtils.ceilLogBaseTwo(129));
+    	assertEquals("ceil log base 2", 8, ByteUtils.ceilLogBaseTwo(255));
+    }
+    
+    @Test
+    public void testIsPowerOfTwo() {
+    	int[] powersOfTwo = new int[] {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
+    			                       65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216,
+    			                       33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
+    	
+    	for (int power : powersOfTwo) {
+    		assertTrue("Number is power of two " + power, ByteUtils.isPowerOfTwo(power));
+    		if (power != 2) {
+    			assertFalse("Number minus one is not power of two " + power, ByteUtils.isPowerOfTwo(power - 1));
+    		}
+    		if (power != 1) {
+    			assertFalse("Number plus one is not power of two " + power, ByteUtils.isPowerOfTwo(power + 1));
+    		}
+    	}
+    }
+    
+    @Test
+    public void testNextHighestPowerOfTwo() {
+    	int[] powersOfTwo = new int[] {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
+                65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216,
+                33554432, 67108864, 134217728, 268435456, 536870912, 1073741824}; 
+    	final int HIGHEST_POWER = 1073741824;
+    	for (int index = 0; index < powersOfTwo.length; index++) {
+    		final int power = powersOfTwo[index];
+    		if (power > 1) {
+    			assertEquals("Next highest power of two below power " + power, power, ByteUtils.nextHighestPowerOfTwo(power -1));
+    		}
+    		if (power < HIGHEST_POWER) {
+    			assertEquals("Next highest power of power is next entry " + power, powersOfTwo[index+1], ByteUtils.nextHighestPowerOfTwo(power));
+    			if (power > 1) {
+    				assertEquals("Next highest power of power + 1 is next entry " + power, powersOfTwo[index+1], ByteUtils.nextHighestPowerOfTwo(power + 1));
+    			}
+    		}
+    	}
+    }
+    
+    @Test
+    public void testBitsInCommon() {
+    	// null collection
+    	try {
+    		ByteUtils.getBitsInCommon(null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	
+    	// empty collection
+    	assertEquals("Bits in common for empty set is zero", 0, ByteUtils.getBitsInCommon(new ArrayList<Byte>()));
+    	
+    	// single byte
+    	for (int i = 0; i < 256; i++ ) {
+    		List<Byte> byteList = new ArrayList<Byte>();
+    		byteList.add((byte) i);
+    		assertEquals("Bits in common for single byte is the byte", i, ByteUtils.getBitsInCommon(byteList));
+    	}
+    	
+    	// opposite bit patterns 0x55 and 0xAA
+    	List<Byte> opposite = new ArrayList<Byte>();
+    	opposite.add((byte) 0x55);
+    	opposite.add((byte) 0xAA);
+    	assertEquals("Opposite bitpatterns have nothing in common", 0, ByteUtils.getBitsInCommon(opposite));
+    	
+    	// All bytes from 128 to 255 - only bit 8 is in common with all of them.
+    	List<Byte> highBits = new ArrayList<Byte>();
+    	for (int i = 128; i < 256; i++) {
+    		highBits.add((byte) i);
+    	}
+    	assertEquals("High bits only match 128", 128, ByteUtils.getBitsInCommon(highBits));
+    }
+    
+    @Test
+    public void testGetBitsSetForAllPossibleBytes() {
+       	// null collection
+    	try {
+    		ByteUtils.getBitsSetForAllPossibleBytes(null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}   
+    	
+    	
+    
+    }
+    
+    @Test
+    public void testGetAllBitsUsed() {
+    	fail("Not yet implemented");
+    }
+    
+    @Test
+    public void testGetUnusedBits() {
+    	fail("Not yet implemented");
+    }
+    
+    @Test
+    public void testByteFromHex() {
+    	fail("Not yet implemented");
+    }
+    
+    @Test
+    public void testByteToString() {
+    	fail("Not yet implemented");
+    }
+    
+    @Test
+    public void testBytesToString() {
+    	fail("Not yet implemented");
+    }
+    
+    @Test
+    public void testBytesToStringSubsequence() {
+    	fail("Not yet implemented");
+    }
+    		
+    // convenience methods to build collections quickly from variable parameters
+       
+    
+    private Set<Byte> toSet(int...integers) {
+    	Set<Byte> set = new HashSet<Byte>((int) (integers.length / 0.75));
+    	for (int i = 0; i < integers.length; i++) {
+    		final int value = integers[i];
+    		if (value < 0 || value > 255) {
+    			throw new IllegalArgumentException("Integer value " + value + " at position " + i + " is not between 0 and 255 inclusive");
+    		}
+    		set.add(Byte.valueOf((byte) value));
+    	}
+    	return set;
+    }
+    
+    private List<Byte> toList(int... integers) {
+    	List<Byte> list = new ArrayList<Byte>(integers.length);
+    	for (int i = 0; i < integers.length; i++) {
+    		final int value = integers[i];
+    		if (value < 0 || value > 255) {
+    			throw new IllegalArgumentException("Integer value " + value + " at position " + i + " is not between 0 and 255 inclusive");
+    		}
+    		list.add(Byte.valueOf((byte) value));
+    	}
+    	return list;    	
+    }
     
 };

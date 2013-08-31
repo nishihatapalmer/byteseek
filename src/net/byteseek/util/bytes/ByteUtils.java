@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -101,7 +100,7 @@ public final class ByteUtils {
      * @param b The byte to count the unset bits.
      * @return The number of bits unset in the byte.
      */
-    public static int countUnsetBits(byte b) {
+    public static int countUnsetBits(final byte b) {
         return 8 - countSetBits(b);
     }
 
@@ -213,6 +212,7 @@ public final class ByteUtils {
     	return bytes;
     }
     
+    
     /**
      * Adds the bytes which would match all the bits in a given bitmask to a 
      * Collection of Byte.
@@ -289,7 +289,7 @@ public final class ByteUtils {
      */
     public static Set<Byte> toSet(final byte[] bytes) {
     	checkNullArray(bytes);
-        final Set<Byte> setOfBytes = new LinkedHashSet<Byte>((int) Math.round(bytes.length * 1.25));
+        final Set<Byte> setOfBytes = new HashSet<Byte>((int) (bytes.length / 0.75));
         addAll(bytes, setOfBytes);
         return setOfBytes;
     }
@@ -302,7 +302,7 @@ public final class ByteUtils {
      * @return A list of bytes
      * @throws IllegalArgumentException if the byte array is null. 
      */
-    public static List<Byte> toList(byte[] bytes) {
+    public static List<Byte> toList(final byte[] bytes) {
     	checkNullArray(bytes);
         final List<Byte> listOfBytes = new ArrayList<Byte>(bytes.length);
         for (final byte b : bytes) {
@@ -374,6 +374,7 @@ public final class ByteUtils {
     		return new byte[0];
     	}
     }
+    
     
     /**
      * Adds the bytes in a string encoded as ISO-8859-1 to a collection of bytes.
@@ -630,17 +631,17 @@ public final class ByteUtils {
     
     
     /**
-     * Adds all the bytes in an inverted range to a set.  The inverted range can be specified
+     * Adds all the bytes in an inverted range to a collection.  The inverted range can be specified
      * either forwards or backwards. An inverted range contains all bytes except for the ones
      * specified in the range (which is inclusive).
      * 
      * @param from A number in the range from 0 to 255;
      * @param to A number in the range from 0 to 255.
-     * @param bytes A set of bytes to add the bytes in the range to.
+     * @param bytes A byte collection to add the bytes in the inverted range to.
      * @throws IllegalArgumentException if the from or to values are not between 0 and 255,
-     *                                  or the set of bytes passed in is null.
+     *                                  or the collection of bytes passed in is null.
      */
-    public static void addBytesNotInRange(final int from, final int to, final Set<Byte> bytes) {
+    public static void addBytesNotInRange(final int from, final int to, final Collection<Byte> bytes) {
     	checkNullCollection(bytes);
     	checkIntToByteRange(from, to);
     	final int start = from < to? from : to;
@@ -786,10 +787,14 @@ public final class ByteUtils {
     /**
      * Returns the log base 2 of an integer, rounded to the floor.
      * 
+     * Note that the integer must be positive.
+     * 
      * @param i The integer
      * @return int the log base 2 of an integer, rounded to the floor. 
+     * @throws IllegalArgumentException if the integer passed in is zero or negative.
      */
     public static int floorLogBaseTwo(final int i) {
+    	checkPositiveInteger(i);
         return 31 - Integer.numberOfLeadingZeros(i);
     }
     
@@ -797,10 +802,14 @@ public final class ByteUtils {
     /**
      * Returns the log base 2 of an integer, rounded to the ceiling.
      * 
+     * Note that the integer must be positive.
+     * 
      * @param i The integer.
      * @return int the log base 2 of an integer, rounded to the ceiling.
+     * @throws IllegalArgumentException if the integer passed in is zero or negative.
      */
     public static int ceilLogBaseTwo(final int i) {
+    	checkPositiveInteger(i);
         return 32 - Integer.numberOfLeadingZeros(i - 1);
     }    
     
@@ -837,10 +846,9 @@ public final class ByteUtils {
      */
     public static Byte getAllBitMaskForBytes(final Set<Byte> bytes) {
         checkNullCollection(bytes);
-    	Byte allBitMask = null;
         final int setSize = bytes.size();
         if (setSize == 256) { // if we have all byte values, then a bitmask of zero matches all of them.
-            allBitMask = Byte.valueOf((byte)0);
+        	return Byte.valueOf((byte) 0);
         } else if (Arrays.binarySearch(VALID_ALL_BITMASK_SET_SIZES, setSize) >= 0) {
             // Build a candidate bitmask from the bits all the bytes have in common.
             final int bitsInCommon = getBitsInCommon(bytes);
@@ -850,13 +858,12 @@ public final class ByteUtils {
                 // by that bitmask.
                 final byte mask = (byte) bitsInCommon;
                 if (setSize == countBytesMatchingAllBits(mask)) {
-                    allBitMask = Byte.valueOf(mask);
+                	return Byte.valueOf(mask);
                 }
             }
         }
-        return allBitMask;
+        return null;
     }
-
 
 
     /**
@@ -870,25 +877,24 @@ public final class ByteUtils {
      */
     public static Byte getAnyBitMaskForBytes(final Set<Byte> bytes) {
         checkNullCollection(bytes);
-    	Byte anyBitMask = null;
         final int setSize = bytes.size();
         if (setSize == 0) {
-            anyBitMask = Byte.valueOf((byte)0);
+            return Byte.valueOf((byte)0);
         } else if (Arrays.binarySearch(VALID_ANY_BITMASK_SET_SIZES, setSize) >= 0) {
             // Find which bits in the set are matched by 128 bytes in the set.
             // These bits might form a valid any bitmask.
-            int possibleAnyMask = getBitsSetForAllPossibleBytes(bytes);
+            final int possibleAnyMask = getBitsSetForAllPossibleBytes(bytes);
 
             // Check that the any bitmask produced gives a set of bytes
             // the same size as the set provided.
             if (possibleAnyMask > 0) {
                 final byte mask = (byte) possibleAnyMask;
                 if (setSize == countBytesMatchingAnyBit(mask)) {
-                    anyBitMask = Byte.valueOf(mask);
+                    return Byte.valueOf(mask);
                 }
             }
         }
-        return anyBitMask;
+        return null;
     }
 
 
@@ -908,16 +914,19 @@ public final class ByteUtils {
     
     
     /**
-     * Returns a bitmask which contains all the bits in common in the set of bytes
-     * provided.
+     * Returns a bitmask which contains all the bits in common in the collection of bytes
+     * provided - anding all the bytes together.
      * 
-     * @param bytes A set of bytes to find the bits in common.
-     * @return An integer mask containing only the bits in common.
+     * @param bytes A collection of bytes to find the bits in common.
+     * @return An integer mask containing only the bits in common, in the range 0 to 255.
      * @throws IllegalArgumentException if the set of bytes passed in is null.
      */
-    public static int getBitsInCommon(final Set<Byte> bytes) {
+    public static int getBitsInCommon(final Collection<Byte> bytes) {
     	checkNullCollection(bytes);
-        int bitsinCommon = 0xFF;
+        if (bytes.isEmpty()) {
+        	return 0;
+        }
+    	int bitsinCommon = 0xFF;
         for (final Byte b : bytes) {
             bitsinCommon &= b;
         }
@@ -929,7 +938,6 @@ public final class ByteUtils {
      * Calculate a bitmask in which a bit is set if across all the bytes in the 
      * set provided, there were 128 matches for that bit.  This means that the
      * set of bytes contains all the bytes with that bit set.
-     * 
      * <p>
      * Any given bit can only match a maximum of 128 byte values (the other 128 
      * being the ones where that bit is not set).  
@@ -1155,6 +1163,7 @@ public final class ByteUtils {
     	}
 	}    	
 
+
 	private static void checkNullString(String string) {
 		if (string == null) {
     		throw new IllegalArgumentException(STRING_PASSED_IN_CANNOT_BE_NULL);
@@ -1165,6 +1174,12 @@ public final class ByteUtils {
 		if (numberOfRepeats < 0) {
         	throw new IllegalArgumentException("Number of repeats cannot be negative " + numberOfRepeats);
         }
+	}
+	
+	private static void checkPositiveInteger(final int value) {
+		if (value <= 0) {
+			throw new IllegalArgumentException("The value must be positive " + value);
+		}
 	}
 
 	private static void checkBounds(final byte[] array, final int startIndex, final int endIndex) {
