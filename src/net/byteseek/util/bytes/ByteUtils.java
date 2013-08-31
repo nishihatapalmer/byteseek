@@ -915,11 +915,12 @@ public final class ByteUtils {
     
     /**
      * Returns a bitmask which contains all the bits in common in the collection of bytes
-     * provided - anding all the bytes together.
+     * provided - anding all the bytes together.  If the collection passed in is empty,
+     * then zero will be returned.
      * 
      * @param bytes A collection of bytes to find the bits in common.
      * @return An integer mask containing only the bits in common, in the range 0 to 255.
-     * @throws IllegalArgumentException if the set of bytes passed in is null.
+     * @throws IllegalArgumentException if the collection of bytes passed in is null.
      */
     public static int getBitsInCommon(final Collection<Byte> bytes) {
     	checkNullCollection(bytes);
