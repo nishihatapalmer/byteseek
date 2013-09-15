@@ -1387,6 +1387,10 @@ public class ByteUtilsTest {
     	opposite.add((byte) 0xAA);
     	assertEquals("Opposite bitpatterns have nothing in common", 0, ByteUtils.getBitsInCommon(opposite));
     	
+    	opposite.add((byte) 0x5A);
+    	opposite.add((byte) 0xA5);
+    	assertEquals("Opposite bitpatterns still have nothing in common", 0, ByteUtils.getBitsInCommon(opposite));
+    	
     	// All bytes from 128 to 255 - only bit 8 is in common with all of them.
     	List<Byte> highBits = new ArrayList<Byte>();
     	for (int i = 128; i < 256; i++) {
@@ -1403,33 +1407,143 @@ public class ByteUtilsTest {
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}   
     	
+    	// empty collection
+    	assertEquals("No bytes gives no bits", 0, ByteUtils.getBitsSetForAllPossibleBytes(new HashSet<Byte>()));
+    
+    	// all bytes gives FF bitmask:
+    	Set<Byte> allPossible = ByteUtils.toSet(ByteUtils.getAllByteValues());
+    	assertEquals("All bytes gives 0xFF", 0xFF, ByteUtils.getBitsSetForAllPossibleBytes(allPossible));
     	
-    
+    	// 128 to 255 gives 0x80 bitmask:
+    	Set<Byte> topBitSet = ByteUtils.toSet(ByteUtils.getBytesInRange(128, 255));
+    	assertEquals("128-255 gives 0x80", 0x80, ByteUtils.getBitsSetForAllPossibleBytes(topBitSet));
+    	
+    	topBitSet.add(Byte.valueOf((byte) 1));
+    	assertEquals("128-255, 1 gives 0x80", 0x80, ByteUtils.getBitsSetForAllPossibleBytes(topBitSet));
     }
     
-    @Test
-    public void testGetAllBitsUsed() {
-    	fail("Not yet implemented");
-    }
-    
-    @Test
-    public void testGetUnusedBits() {
-    	fail("Not yet implemented");
-    }
     
     @Test
     public void testByteFromHex() {
-    	fail("Not yet implemented");
+    	expectIllegalArgumentHexByte(null);
+    	expectIllegalArgumentHexByte("");
+    	expectIllegalArgumentHexByte("A");
+    	expectIllegalArgumentHexByte(" A3");
+    	expectIllegalArgumentHexByte("A3 ");
+    	expectIllegalArgumentHexByte("xx");
+    	expectIllegalArgumentHexByte("deadbeef");
+    	
+    	assertCorrectHexByte("00", (byte) 0);
+    	assertCorrectHexByte("01", (byte) 1);
+    	assertCorrectHexByte("aa", (byte) 0xaa);
+    	assertCorrectHexByte("FF", (byte) 0xFF);
+    	assertCorrectHexByte("3c", (byte) 0x3c);
+    	assertCorrectHexByte("Dc", (byte) 0xdC);
+    	assertCorrectHexByte("DC", (byte) 0xdC);
+    	assertCorrectHexByte("ab", (byte) 0xab);
+    	assertCorrectHexByte("cd", (byte) 0xcd);
+    	assertCorrectHexByte("ef", (byte) 0xef);
+    	assertCorrectHexByte("AB", (byte) 0xab);
+    	assertCorrectHexByte("CD", (byte) 0xcd);
+    	assertCorrectHexByte("EF", (byte) 0xef);
+    	assertCorrectHexByte("Ab", (byte) 0xab);
+    	assertCorrectHexByte("Cd", (byte) 0xcd);
+    	assertCorrectHexByte("Ef", (byte) 0xef);
+    	assertCorrectHexByte("aB", (byte) 0xab);
+    	assertCorrectHexByte("cD", (byte) 0xcd);
+    	assertCorrectHexByte("eF", (byte) 0xef);
+    }
+    
+    private void expectIllegalArgumentHexByte(String hex) {
+    	try {
+    		ByteUtils.byteFromHex(hex);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}   
+    }
+    
+    private void assertCorrectHexByte(String hex, byte value) {
+    	assertEquals("Byte value is correct for " + hex, value, ByteUtils.byteFromHex(hex));
     }
     
     @Test
     public void testByteToString() {
-    	fail("Not yet implemented");
+    	for (int i = 0; i < 256; i++) {
+    		assertEquals("Simple byte is just hex value " + i,   String.format("%02x", i),    ByteUtils.byteToString(false, i)); 
+    		if (i >= 32 && i <= 126 && i != 39) { 
+    			assertEquals("Pretty print ASCII char " + i,     String.format(" '%c' ",  i), ByteUtils.byteToString(true,  i));
+    		} else {
+    			assertEquals("Pretty print non ASCII char " + i, String.format(" %02x ",  i), ByteUtils.byteToString(true,  i));
+    		}
+    	}
     }
     
     @Test
-    public void testBytesToString() {
-    	fail("Not yet implemented");
+    public void testNullBytesToString() {
+    	try {
+    		ByteUtils.bytesToString(false, null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+       	try {
+    		ByteUtils.bytesToString(true, null);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}  
+    }
+       	
+     @Test
+     public void testEmptyBytesToString() {
+    	try {
+    		ByteUtils.bytesToString(false, new byte[0]);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+       	try {
+    		ByteUtils.bytesToString(true, new byte[0]);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {} 
+    }
+    
+    @Test
+    public void testSingleBytesToString() {
+       	// simple bytes
+    	testBytesToString("one byte array", "00", "00",  (byte) 0x00);
+    	testBytesToString("one byte array", "01", "01",  (byte) 0x01);
+    	testBytesToString("one byte array", "ff", "ff",  (byte) 0xff);
+    	testBytesToString("one byte array", "81", "81",  (byte) 0x81);
+    	testBytesToString("ascii char",     "41", "'A'", (byte) 0x41);
+    	testBytesToString("quote char",     "27", "27",  (byte) 0x27);
+    }
+    
+    private void testBytesToString(String description, String byteString, String prettyString, byte... array) {
+       	assertEquals(description, byteString, 				ByteUtils.bytesToString(false, array));
+       	assertEquals(description + " pretty", prettyString, ByteUtils.bytesToString(true, array));
+    }
+    
+    @Test
+    public void testMultipleBytesToString() {
+       	// multiple non ASCII bytes
+    	testBytesToString("two byte sequence", "0305", "03 05", (byte) 0x03, (byte) 0x05);
+        testBytesToString("two byte sequence", "039f", "03 9f", (byte) 0x03, (byte) 0x9f);
+               	
+       	// pretty print string
+       	testBytesToString("ASCII digits", "30313233343536373839", "'0123456789'", 
+       			          (byte) 0x30, (byte) 0x31, (byte) 0x32, (byte) 0x33, (byte) 0x34,  
+       			          (byte) 0x35, (byte) 0x36, (byte) 0x37, (byte) 0x38, (byte) 0x39);
+       	testBytesToString("ASCII characters", "2021227a7b", "' !\"z{'",
+			          (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B);
+
+       	
+       	// bytes then string
+       	testBytesToString("bytes then ASCII characters", "1a1b2021227a7b", "1a 1b ' !\"z{'",
+		          (byte) 0x1a, (byte) 0x1b, (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B);
+       	
+       	// string then bytes
+       	testBytesToString("bytes then ASCII characters", "2021227a7b1a1b", "' !\"z{' 1a 1b",
+		          (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B, (byte) 0x1a, (byte) 0x1b);
+       	
+       	// mixed string and bytes
+       	testBytesToString("bytes, ASCII, bytes", "152021227a7b1a", "15 ' !\"z{' 1a",
+		          (byte) 0x15, (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B, (byte) 0x1a);
+       	testBytesToString("ASCII, bytes, ASCII", "202115227a7b", "' !' 15 '\"z{'",
+		          (byte) 0x20, (byte) 0x21, (byte) 0x15, (byte) 0x22, (byte) 0x7a, (byte) 0x7B);
     }
     
     @Test

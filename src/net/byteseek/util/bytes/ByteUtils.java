@@ -32,6 +32,7 @@
 package net.byteseek.util.bytes;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,6 +56,7 @@ import java.util.Set;
  */
 public final class ByteUtils {
 	
+	private static final String HEX_BYTE_FORMAT = "%02x";
 	private static final String COLLECTION_PASSED_IN_CANNOT_BE_NULL = "The collection passed in cannot be null";
 	private static final String ARRAY_PASSED_IN_CANNOT_BE_NULL      = "The array passed in cannot be null";
 	private static final String STRING_PASSED_IN_CANNOT_BE_NULL     = "The string passed in cannot be null";
@@ -68,6 +70,7 @@ public final class ByteUtils {
     private static int[] VALID_ALL_BITMASK_SET_SIZES = {1, 2, 4, 8, 16, 32, 64, 128, 256};
     private static int[] VALID_ANY_BITMASK_SET_SIZES = {0, 128, 192, 224, 240, 248, 252, 254, 255};
 
+    private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
     /**
      * Private constructor for static utility class.
@@ -367,12 +370,7 @@ public final class ByteUtils {
      */
     public static byte[] getBytes(final String string) {
     	checkNullString(string);
-    	try {
-    		return string.getBytes("ISO-8859-1");
-    	} catch (UnsupportedEncodingException canNeverHappen) {
-    		// Support for ISO-8859-1 is mandatory for java implementations.
-    		return new byte[0];
-    	}
+   		return string.getBytes(ISO_8859_1);
     }
     
     
@@ -978,35 +976,6 @@ public final class ByteUtils {
 
 
     /**
-     * Calculates a bitmask containing all the set bits in the set of bytes provided.
-     * 
-     * @param bytes The set of bytes to find all the bits used in.
-     * @return A bitmask containing all the bits used across the set of bytes.
-     * @throws IllegalArgumentException if the set of bytes passed in is null.
-     */
-    public static int getAllBitsUsed(final Set<Byte> bytes) {
-    	checkNullCollection(bytes);
-    	int bitsUsed = 0x00;
-        for (final Byte b : bytes) {
-            bitsUsed |= b;
-        }
-        return bitsUsed;
-    }
-
-
-    /**
-     * Calculates a bitmask containing all the unset bits in the set of bytes provided.
-     * 
-     * @param bytes A set of bytes to test for unused bits.
-     * @return A bitmask containing all the bits which were unused across the set of bytes.
-     * @throws IllegalArgumentException if the set of bytes passed in is null.
-     */
-    public static int getUnusedBits(final Set<Byte> bytes) {
-        return getAllBitsUsed(bytes) ^ 0xFF;
-    }
-
-
-    /**
      * Adds the bytes matching an any bitmask (any of the bits can match) to 
      * a collection of bytes.
      * 
@@ -1057,12 +1026,12 @@ public final class ByteUtils {
     public static byte byteFromHex(final String hexByte) {
         if (hexByte != null && hexByte.length() == 2) {
             try {
-                return Byte.valueOf(hexByte, 16);
+                return (byte) Integer.parseInt(hexByte, 16);
             } catch (NumberFormatException dropThroughToIllegalArgumentException) {
                 // do nothing - illegal argument exception will be thrown below.
             }
         }
-        throw new IllegalArgumentException("Not a valid hex byte.");
+        throw new IllegalArgumentException("Not a valid hex byte [" + hexByte + ']');
     }
 
     
@@ -1088,7 +1057,7 @@ public final class ByteUtils {
                 result = String.format(" %02x ", byteValue);
             }
         } else {
-            result = String.format("%02x", byteValue);
+            result = String.format(HEX_BYTE_FORMAT, byteValue);
         }
         return result;
     }
@@ -1097,15 +1066,18 @@ public final class ByteUtils {
     /**
      * Returns a String containing a 2-digit hex representation of each byte in the
      * array.  If pretty printing and the byte value is a printable ASCII character,
-     * these values are returned as a quoted ASCII string (unless it is a single quote
-     * character itself, in which case it will still be represented as a hex byte).
+     * these values are returned as a quoted ASCII string delimited with single quotes.
+     * Note that a single quote character will be represented as a hex byte
+     * Pretty printing also spaces hex bytes. 
      * 
      * @param prettyPrint Whether to pretty print the byte string.
      * @param bytes the array of bytes to convert.
      * @return A string containing the byte values as a string.
+     * @throws IllegalArgumentException if the array is null or empty.
      */
     public static String bytesToString(final boolean prettyPrint, final byte[] bytes) {
-        return bytesToString(prettyPrint, bytes, 0, bytes.length);
+        checkNullArray(bytes);
+    	return bytesToString(prettyPrint, bytes, 0, bytes.length);
     }
     
     
@@ -1113,7 +1085,9 @@ public final class ByteUtils {
      * Returns a byte array as a String.  If not pretty printed, the bytes
      * are presented as 2 digit hex numbers.  If pretty printed, then bytes
      * which would be printable ASCII characters are represented as such
-     * enclosed in single quotes.
+     * enclosed in single quotes and hex byte elements are spaced.  The single
+     * quote character will not be enclosed in single quotes, but will be represented as
+     * a hex byte outside of quotes.
      * 
      * @param prettyPrint Whether to pretty print the byte array.
      * @param bytes The bytes to render as a String.
@@ -1125,31 +1099,40 @@ public final class ByteUtils {
     public static String bytesToString(final boolean prettyPrint, final byte[] bytes,
                                        final int startIndex, final int endIndex) {
     	checkBounds(bytes, startIndex, endIndex);
-    	final int estimatedSize = prettyPrint? bytes.length * 4 : bytes.length * 2; 
-    	final StringBuilder hexString = new StringBuilder(estimatedSize);
+    	final int estimatedSize = prettyPrint? (endIndex - startIndex) * 4 : (endIndex - startIndex) * 2; 
+    	final StringBuilder string = new StringBuilder(estimatedSize);
         boolean inString = false;
+        boolean firstByte = true;
         for (int byteIndex = startIndex; byteIndex < endIndex; byteIndex++) {
             final int byteValue = 0xFF & bytes[byteIndex];
-            if (prettyPrint &&
-                    byteValue >= START_PRINTABLE_ASCII &&
+            if (prettyPrint) {
+            	if (!firstByte && !inString) {
+            		string.append(' ');
+            	}
+            	if (byteValue >= START_PRINTABLE_ASCII &&
                     byteValue <= END_PRINTABLE_ASCII &&
                     byteValue != QUOTE_CHARACTER_VALUE) {
-            	if (inString) {
-            		hexString.append((char) byteValue);
+                    if (!inString) {
+                    	string.append('\'');
+                    }
+                   	string.append((char) byteValue);
+                    inString = true;
             	} else {
-            		hexString.append(" '").append((char) byteValue);
+            		if (inString) {
+            			string.append("' ");
+            		}
+            		string.append(String.format(HEX_BYTE_FORMAT, byteValue));
+                    inString = false;
             	}
-                inString = true;
             } else {
-                final String formatString = prettyPrint? inString? "' %02x" : "%02x" : "%02x";
-                hexString.append(String.format(formatString, byteValue));
-                inString = false;
+            	string.append(String.format(HEX_BYTE_FORMAT, byteValue));
             }
+            firstByte = false;
         }
         if (prettyPrint && inString) {
-            hexString.append("' ");
+            string.append('\'');
         }
-        return hexString.toString();
+        return string.toString();
     }    
 
 	private static void checkNullCollection(final Collection<Byte> bytes) {
