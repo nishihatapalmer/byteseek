@@ -1547,12 +1547,116 @@ public class ByteUtilsTest {
     }
     
     @Test
-    public void testBytesToStringSubsequence() {
-    	fail("Not yet implemented");
+    public void testNullBytesToStringSub() {
+    	try {
+    		ByteUtils.bytesToString(false, null, 0, 1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+       	try {
+    		ByteUtils.bytesToString(true, null, 0, 1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}  
     }
-    		
-    // convenience methods to build collections quickly from variable parameters
-       
+       	
+     @Test
+     public void testEmptyBytesToStringSub() {
+    	try {
+    		ByteUtils.bytesToString(false, new byte[0], 0, 1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+       	try {
+    		ByteUtils.bytesToString(true, new byte[0], 0, 1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {} 
+    }
+     
+    @Test
+    public void testOutOfBoundsStringSub() {
+    	try {
+    		ByteUtils.bytesToString(false, new byte[0], 0, 0);
+    		fail("0:0,0 Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}
+    	try {
+    		ByteUtils.bytesToString(false, new byte[] {(byte) 0x01}, 0, 0);
+    		fail("1:0,0 Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	try {
+    		ByteUtils.bytesToString(false, new byte[] {(byte) 0x01}, -1, 0);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	try {
+    		ByteUtils.bytesToString(false, new byte[] {(byte) 0x01}, -1, 1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    	try {
+    		ByteUtils.bytesToString(false, new byte[] {(byte) 0x01, (byte) 0xff}, 0, 3);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}
+    	try {
+    		ByteUtils.bytesToString(false, new byte[] {(byte) 0x01, (byte) 0xff}, 1, 1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}
+    	try {
+    		ByteUtils.bytesToString(false, new byte[] {(byte) 0x01, (byte) 0xff}, 2, 1);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}
+    	try {
+    		ByteUtils.bytesToString(false, new byte[] {(byte) 0x01, (byte) 0xff}, 2, 2);
+    		fail("Expected an illegal argument exception");
+    	} catch (IllegalArgumentException expected) {}    
+    }
+    
+    @Test
+    public void testBytesToStringSubsequence() {
+       	// simple bytes
+    	testBytesToStringSub("one byte array",  0, 1, "00", "00",  (byte) 0x00);
+    	testBytesToStringSub("one byte array",  0, 1, "01", "01",  (byte) 0x01);
+    	testBytesToStringSub("one byte array",  0, 1, "ff", "ff",  (byte) 0xff);
+    	testBytesToStringSub("one byte array",  0, 1, "81", "81",  (byte) 0x81);
+    	testBytesToStringSub("ascii char",      0, 1, "41", "'A'", (byte) 0x41);
+    	testBytesToStringSub("quote char",      0, 1, "27", "27",  (byte) 0x27);
+    }
+    
+    private void testBytesToStringSub(String description, int start, int end, String byteString, String prettyString, byte... array) {
+       	assertEquals(description, byteString, 				ByteUtils.bytesToString(false, array, start, end));
+       	assertEquals(description + " pretty", prettyString, ByteUtils.bytesToString(true, array, start, end));
+    }
+    
+    @Test
+    public void testMultipleBytesToStringSub() {
+       	// multiple non ASCII bytes
+    	testBytesToStringSub("two byte sequence", 0, 2, "0305", "03 05", (byte) 0x03, (byte) 0x05, (byte) 0x07);
+    	testBytesToStringSub("two byte sequence", 0, 1, "03", "03",      (byte) 0x03, (byte) 0x05, (byte) 0x07);
+    	testBytesToStringSub("two byte sequence", 1, 3, "039f", "03 9f", (byte) 0x07, (byte) 0x03, (byte) 0x9f);
+    	testBytesToStringSub("two byte sequence", 2, 3, "9f", "9f",      (byte) 0x07, (byte) 0x03, (byte) 0x9f);
+               	
+       	// pretty print string
+    	testBytesToStringSub("ASCII digits", 1, 9, "3132333435363738", "'12345678'", 
+       			          (byte) 0x30, (byte) 0x31, (byte) 0x32, (byte) 0x33, (byte) 0x34,  
+       			          (byte) 0x35, (byte) 0x36, (byte) 0x37, (byte) 0x38, (byte) 0x39);
+    	testBytesToStringSub("ASCII characters", 2, 5, "227a7b", "'\"z{'",
+			             (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B);
+
+       	
+       	// bytes then string
+    	testBytesToStringSub("bytes then ASCII characters", 1, 4, "1b2021", "1b ' !'",
+		          (byte) 0x1a, (byte) 0x1b, (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B);
+       	
+       	// string then bytes
+    	testBytesToStringSub("bytes then ASCII characters", 2, 7, "227a7b1a1b", "'\"z{' 1a 1b",
+		          (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B, (byte) 0x1a, (byte) 0x1b);
+       	
+       	// mixed string and bytes
+    	testBytesToStringSub("bytes, ASCII, bytes", 0, 8, "152021227a7b1a1c", "15 ' !\"z{' 1a 1c",
+		          (byte) 0x15, (byte) 0x20, (byte) 0x21, (byte) 0x22, (byte) 0x7a, (byte) 0x7B, (byte) 0x1a, (byte) 0x1c);
+    	testBytesToStringSub("ASCII, bytes, ASCII", 1, 5, "2115227a", "'!' 15 '\"z'",
+		          (byte) 0x20, (byte) 0x21, (byte) 0x15, (byte) 0x22, (byte) 0x7a, (byte) 0x7B);
+    }
+    
+
+    /*
+     * convenience methods to build collections quickly from variable parameters
+     */
     
     private Set<Byte> toSet(int...integers) {
     	Set<Byte> set = new HashSet<Byte>((int) (integers.length / 0.75));

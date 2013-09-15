@@ -1168,9 +1168,9 @@ public final class ByteUtils {
 
 	private static void checkBounds(final byte[] array, final int startIndex, final int endIndex) {
 		checkNullArray(array);
-		if (startIndex < 0 || startIndex >= array.length || startIndex > endIndex || endIndex > array.length) {
-        	throw new IllegalArgumentException("The start index must be between 0 and the array length " +
-        									   "and the end index must be greater than the start index and not greater than the length. " +
+		if (startIndex < 0 || startIndex >= endIndex || endIndex > array.length) {
+        	throw new IllegalArgumentException("The start index must be between 0 inclusive and the array length exclusive" +
+        									   ",end index must be greater than the start index and not greater than the length. " +
         									   "Array length is " + array.length + " start index is " + startIndex + " end index is " + endIndex);	
         }
 	}
