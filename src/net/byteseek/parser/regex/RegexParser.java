@@ -291,10 +291,10 @@ import net.byteseek.util.bytes.ByteUtils;
   *	\S	 # not white space             ^\s
   * \i   # ascii characters             00-7f
   * \I   # not ascii characters        ^00-7f
-  * \\u   # uppercase ascii characters  'A'-'Z'
-  * \U   # not uppercase ascii chars  ^'A'-'Z'
-  * \l   # lowercase ascii characters  'a'-'z'
-  * \L   # not lowercase ascii chars  ^'a'-'z'  
+  * \\u   # uppercase ascii characters   'A'-'Z'
+  * \U   # not uppercase ascii chars   ^'A'-'Z'
+  * \l   # lowercase ascii characters   'a'-'z'
+  * \L   # not lowercase ascii chars   ^'a'-'z'  
   *	</code></pre></blockquote></p></p> 
   *
   * @author Matt Palmer
