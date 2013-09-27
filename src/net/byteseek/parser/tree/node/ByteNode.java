@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,11 +35,11 @@ import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
 
 /**
- * A ParseTree node that has a byte value.  The value can optionally also be inverted.
+ * An immutable ParseTree node that has a byte value.  The value can optionally also be inverted.
  * ByteNodes have a ParseTreeType of ParseTreeType.BYTE by default, but can also be of
  * type ANY_BITMASK and ALL_BITMASK.
  * <p>
- * ByteNodes have no children, and will return an empty list of children.  
+ * ByteNodes have no children.  
  * 
  * @author Matt Palmer
  *
@@ -143,7 +143,7 @@ public final class ByteNode extends BaseNode {
   public boolean isValueInverted() {
 	return inverted;
   }
-
+  
 
   @Override
   public String toString() {

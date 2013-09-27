@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -49,39 +49,294 @@ import net.byteseek.parser.tree.node.StringNode;
 import net.byteseek.util.bytes.ByteUtils;
 
 /**
- * A hand-written regular expression parser for byteseek.
+ * A hand-written regular expression parser for byteseek. The syntax is designed
+ * to support matching byte structures. 
  * <p>
  * The parser has no state, so it is entirely thread-safe.
- * 
- * @author Matt Palmer
- */
+ * <p>
+  * <strong>Syntax</strong><br/>
+  * The syntax is the byteseek regular expression syntax, which is designed to make
+  * byte searching easier.  Mostly this involves bytes being directly specified as hexadecimal,
+  * with ASCII chars in quoted strings. Matchers for bitmasks (all or any bits) are also provided.  
+  * <p>
+  * <strong>Comments</strong><br/>
+  * Byteseek regular expressions can have comments in them, using a <strong>#</strong> symbol.  
+  * All text following the comment symbol is ignored until the next end of line character.
+  * <p><blockquote><pre><code>
+  * 01 ff c1 # Match byte sequence 0x01, 0xff, 0xc1
+  *	</code></pre></blockquote></p>
+  * <p>
+  * <strong>Whitespace</strong></br>
+  * All spaces, tabs, new lines and carriage returns separating syntax elements will
+  * be ignored, unless they appear within a quoted string.
+  * <p><blockquote><pre><code>
+  * 01ffc1               # match bytes 01 ff c1
+  * 01       ff       c1 # match bytes 01 ff c1
+  * 01 ff 'some text' c1 # match bytes 01 ff, the string 'some text', then the byte c1 
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Bytes</strong></br>
+  * Bytes are written as 2 digit hexadecimal numbers (any case allowed).  Spacing between
+  * them doesn't matter, as whitespace is ignored.  However, you can't separate the digits of a hex
+  * character with whitespace.
+  * <p><blockquote><pre><code>
+  * 00 FF 1a dE # match byte 00, ff, 1a, de
+  *	</code></pre></blockquote></p></p>
+  * To specify that you mean the inverse of a byte value (all other byte values), prepend a <strong>^</strong>
+  * symbol to the byte value (with no separating whitespace).
+  * <p><blockquote><pre><code>
+  * 00 ^FF 1a ^dE # match byte 00, any byte but ff, byte 1a and any byte but dE. 
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Any byte</strong></br>
+  * Any byte can be matched using the full stop symbol (as in most regular expression languages).
+  * <p><blockquote><pre><code>
+  * .       # matches any byte
+  * 01 . ff # matches 0x01, followed by any byte, then 0xff
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Ranges</strong></br>
+  * Ranges of byte values can be specified using a hypen separator to specify a range:
+  * <p><blockquote><pre><code>
+  * 00-7f # all the ascii bytes
+  * 30-39 # all the digits
+  *	</code></pre></blockquote></p></p>
+  * If you want every byte except within a range, prepend the range with a <strong>^</strong> symbol:
+  * <p><blockquote><pre><code>
+  * ^00-7f # all the non-ascii bytes
+  * ^30-39 # all the bytes which are not ASCII digits
+  *	</code></pre></blockquote></p></p>
+  * Ranges can also be specified using single quoted, single character strings:
+  * <p><blockquote><pre><code>
+  * 'a'-'z'  # all the lowercase ASCII letters. 
+  * ^'0'-'9' # all the bytes which are not ASCII digits
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Strings</strong></br>
+  * Text (ASCII only) is delimited using single quotes:
+  * <p><blockquote><pre><code>
+  * 'testing testing 123' # the string 'testing testing 123'
+  * 01 '01'               # the byte 0x01, followed by the text '01'
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Case insensitive strings</strong></br>
+  * Case-insensitive text can be written delimited with `back-ticks`:
+  * <p><blockquote><pre><code>
+  * `HtMl public`         # match the text HTML PUBLIC case insensitively.
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Bitmasks</strong></br>
+  * If you want to match a bitmask, there are two methods of doing so in byteseek.
+  * You can match all the bits in a bitmask, specified by the <strong>&</strong> symbol,
+  * or you can match any of the bits in a bitmask, specified by the <strong>~</strong> symbol.
+  * Prepend the appropriate bitmask symbol to a two digit hex number:
+  * <p><blockquote><pre><code>
+  * &7F   # match all these bits    01111111
+  * &0F   # match all these bits    00001111
+  * &81   # match all these bits    10000001
+  * ~7F   # match any of these bits 01111111
+  * ~0F   # match any of these bits 00001111
+  * ~81   # match any of these bits 10000001
+  *	</code></pre></blockquote></p></p>
+  * The intention of the all bits match is that, to match all the bits
+  * in a bitmask, a byte ANDed with the bitmask should equal the bitmask.
+  * This means that an 'all bits' bitmask of zero will match all bytes.
+  * <p><blockquote><pre><code>
+  * byteValue & bitmask == bitmask
+  *        01 & 01      == 01      match
+  *        ff & 01      == 01      match
+  *        02 & 01      == 00      no match
+  *        01 & 00      == 00      match
+  *        ff & 00      == 00      match
+  *	</code></pre></blockquote></p></p>
+  * The intention of the any bits match is that, to match any of the bits
+  * in a bitmask, a byte ANDed with the bitmask should not be zero.  Note that
+  * the result could be negative, as bytes in Java are signed.  This means
+  * that an 'any bits' bitmask of zero will match no bytes at all.
+  * <p><blockquote><pre><code>
+  * byteValue & bitmask != 00 
+  *        01 & 01      == 01      match
+  *        ff & 01      == 01      match
+  *        02 & 01      == 0       no match
+  *        01 & 00      == 00      no match
+  *        ff & 00      == 00      no match
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Sets</strong></br>
+  * Sets of bytes can be specified using square brackets.  Sets can contain bytes, ranges, strings,
+  * case insensitive strings, bitmasks and other sets.
+  * <p><blockquote><pre><code>
+  * [01 02 03]           # match the set of bytes 0x01, 0x02 or 0x03     
+  * 'version' [01 02 03] # match the string 'version' followed by any of the bytes 0x01, 0x02 or 0x03. 
+  *	</code></pre></blockquote></p></p>
+  * Sets can contain strings, which specify that those ASCII bytes are members of the set too, not a 
+  * sequence of characters.  Case insensitive strings just specify all the bytes which could match
+  * case insensitively.
+  * <p><blockquote><pre><code>
+  * ['0123456789']       # the set of all the digit bytes.
+  * [ff '0123456789' 00] # the set of all the digit bytes and the bytes 0x00 and 0xff
+  * [`HTML`]             # The set of bytes which case insensitively match HTML.
+  *	</code></pre></blockquote></p></p>
+  * If you want to specify the inverse set, prepend the set with a <strong>^</strong> symbol:
+  * <p><blockquote><pre><code>
+  * ^['0'-'9']            # anything but the set of all the digit bytes.
+  * ^[ff '0123456789' 00] # anything but the set of all the digit bytes and the bytes 0x00 and 0xff
+  * ^[^'0'-'9']           # an inefficient (double negative) way of specifying all the digit bytes.
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Sub expressions</strong></br>
+  * If you need to specify that something only applies to part of the whole expression,
+  * then you can group subsequences into sub expressions using round brackets.
+  * Sub expressions can also be nested within each other.  
+  * <p><blockquote><pre><code>
+  * 01 02 (03 04) 05       # this sub expression does nothing - the round brackets are superfluous
+  * (01 02 (03 (04)) 05)   # these sub expressions also do nothing.
+  *	</code></pre></blockquote></p></p>
+  * The above examples show sub expressions which are valid syntactically, but they don't do anything.  
+  * The round brackets are entirely unnecessary.  Sub expressions become useful when you need to quantify
+  * a part of an expression, for example, to say it repeats between 5 and 10 times.    
+  * They are also needed when you want to specify a list of alternative sequences within an expression.   
+  * These more interesting uses of sub expressions will become clear in the next sections.
+  * <p>
+  * <strong>Alternatives</strong></br>
+  * Alternatives are written separated by a pipe character:
+  * <p><blockquote><pre><code>
+  * 'this' | 'that' | 00 FF 1a     # match 'this', 'that', or 0x00 0xFF 0x1a
+  * 01 02 ('one'|'two'|'three') 03 # match the sequence 1, 2 followed by ('one', 'two' or 'three'), ending with 3
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Optional elements</strong></br>
+  * To specify that an element is optional, append a <strong>?</strong> symbol to the element.
+  * If you want an entire expression to be optional, enclose it with round brackets and append
+  * the question mark to it.
+  * <p><blockquote><pre><code>
+  * de?            # optional byte 0xde
+  * 'extra fries'? # optional 'extra fries'
+  * (01 02 03)?    # optional sequence of bytes (0x01 0x02 0x03)
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Zero to many elements</strong></br>
+  * To specify that an element can be repeated from zero to many times, append a <strong>*</strong> symbol
+  * to the element.  If you want an entire expression to be repeated zero to many times, enclose it with
+  * round brackets and append the * to it.
+  * <p><blockquote><pre><code>
+  * 10*                               # repeat byte 0x10 from zero to many times.
+  * 'stuff'*                          # repeat 'stuff' zero to many times.
+  * ('bytes' 00 01 02 'counting')*    # repeat entire expression in brackets from zero to many times.
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>One to many elements</strong></br>
+  * To specify that an element can be repeated from one to many times, append a <strong>+</strong> symbol
+  * to the element.  If you want an entire expression to be repeated one to many times, enclose it with
+  * round brackets and append the + to it.
+  * <p><blockquote><pre><code>
+  * 10+                               # repeat byte 0x10 from one to many times.
+  * 'stuff'+                          # repeat 'stuff' one to many times.
+  * ('bytes' 00 01 02 'counting')+    # repeat entire expression in brackets from one to many times.
+  *	</code></pre></blockquote></p></p>
+  * <p> 
+  * <strong>Repeat exactly</strong></br>
+  * To specify that an element should be repeated an exact number of times, append a positive integer 
+  * enclosed in curly brackets to the end of the element, e.g. <strong>ff{4}</strong>.
+  * If you want to repeat an entire expression, enclose the expression in round brackets
+  * and append the repeat quantifier to the end.
+  * <p><blockquote><pre><code>
+  * 10{40}                              # repeat byte 0x10 forty times.
+  * 'stuff'{3}                          # repeat 'stuff' three times.
+  * ('bytes' 00 01 02 'counting'){9}    # repeat entire expression in brackets nine times.
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Repeat min to max times</strong></br>
+  * To specify that an element can be repeated between a minimum and maximum number, append 
+  * two positive integers separated by a comma, enclosed in curly brackets to the end of the
+  * element , e.g. <strong>ff{2,6}</strong>.  If you want to specify an entire expression,
+  * enclose the expression in round brackets and append the repeat quantifier to the end.
+  * <p><blockquote><pre><code>
+  * 10{10,40}                           # repeat byte 0x10 between 10 and forty times.
+  * 'stuff'{3,6}                        # repeat 'stuff' between three and six times
+  * ('bytes' 00 01 02 'counting'){1,3}  # repeat entire expression in brackets between 1 and 3 times.
+  * ff{0,1}                             # repeat byte 0xff either zero or once - the same as <strong>ff?</strong> 
+  *	</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Repeat min to many times</strong></br>
+  * To specify that an element repeats at least a minimum number of times, but can repeat
+  * infinitely afterwards, append a positive integer and star separated by a comma, and enclosed
+  * in curly brackets to the end of the element, e.g. <strong>ff{5,*}</strong>.
+  * If you want to repeat an entire expression, enclose the expression in round brackets and
+  * append the repeat quantifier to the end. 
+  * <p><blockquote><pre><code>
+  * 10{10,*}                            # repeat byte 0x10 between 10 and infinite times.
+  * 'stuff'{3,*}                        # repeat 'stuff' between three and infinite times
+  * ('bytes' 00 01 02 'counting'){1,*}  # repeat entire expression in brackets between 1 and infinite times.
+  * ff{0,*}                             # repeat byte 0xff from zero to infinite times - the same as <strong>ff*</strong>	
+  * ff{1,*}                             # repeat byte 0xff from one to infinite times - the same as <strong>ff+</strong>
+  *</code></pre></blockquote></p></p>
+  * <p>
+  * <strong>Shorthands</strong></br>
+  * There are many common bytes and sets of bytes which appear regularly in regular expressions.
+  * Most regular expression languages support shorthands, which give you a memorable and often 
+  * shorter way to specify them.  The shorthands supported by this parser are listed below.
+  * <p><blockquote><pre><code>
+  *	\t	 # tab                         09
+  * \n	 # newline                     0a
+  *	\v 	 # vertical tab                0b
+  *	\f 	 # form feed                   0c 
+  *	\r 	 # carriage return             0d
+  *	\e 	 # escape                      1b
+  *	\d 	 # digit                       ['0'-'9']
+  *	\D 	 # not digit                  ^['0'-'9']
+  *	\w 	 # word character              ['a'-'z' 'A'-'Z' '0'-'9' '_']
+  *	\W 	 # not word character         ^['a'-'z' 'A'-'Z' '0'-'9' '_']
+  *	\s	 # white space                 [\t \n \r ' ']
+  *	\S	 # not white space            ^[\s]
+  *	</code></pre></blockquote></p></p> 
+  * <p>
+  * <strong>Named sets</strong></br>
+  * 
+  * <p><blockquote><pre><code>
+  *  
+  *	</code></pre></blockquote></p></p> 
+  *
+  * @author Matt Palmer
+  */
 public class RegexParser implements Parser<ParseTree> {
 
-	//FEATURE: set subtraction: [ 'a'-'z' -['aeiou']] 
+	/*
+	 * Ideas for future...
+	 */
+	//FEATURE: syntax for set subtraction: ['a'-'z' -'aeiou'] 
+	//FEATURE: syntax to specify <options> which apply to the parsing. 
+	//FEATURE: syntax for text encoding options for strings: <::UTF-16BE::>
+	
+	//TODO: check inverted range syntax works ^01-20
+	//TODO: change any bitmask syntax to &~10 instead of &10
+	//TODO: check where shorthands can appear sets, strings, ranges, etc.
+	//TODO: check where common byte sets can appear.
+	//TODO: check whether shorthands be directly inverted. ^\t
 	
 	/*
 	 * Private syntactic character constants
 	 */
-	private static final char ANY                    = '.';
-	private static final char ALTERNATIVE            = '|';
-	private static final char COMMENT 				= '#';
-	private static final char STRING_QUOTE 			= '\'';
+	private static final char ANY                    	= '.';
+	private static final char ALTERNATIVE            	= '|';
+	private static final char COMMENT 					= '#';
+	private static final char STRING_QUOTE 				= '\'';
 	private static final char CASE_INSENSITIVE_QUOTE 	= '`';
-	private static final char ALL_BITMASK 			= '&';
-	private static final char ANY_BITMASK 			= '~';
-	private static final char SHORTHAND_ESCAPE 		= '\\';
-	private static final char OPEN_SET 				= '[';
+	private static final char ALL_BITMASK 				= '&';
+	private static final char ANY_BITMASK 				= '~';
+	private static final char SHORTHAND_ESCAPE 			= '\\';
+	private static final char OPEN_SET 					= '[';
 	private static final char INVERT	 				= '^';
-	private static final char RANGE_SEPARATOR 		= '-';
+	private static final char RANGE_SEPARATOR 			= '-';
 	private static final char CLOSE_SET 				= ']';
-	private static final char OPTIONAL 				= '?';
-	private static final char MANY 					= '*';
-	private static final char ONE_TO_MANY 			= '+';
-	private static final char OPEN_REPEAT 			= '{';
-	private static final char REPEAT_SEPARATOR       = ',';
-	private static final char CLOSE_REPEAT 			= '}';	
+	private static final char OPTIONAL 					= '?';
+	private static final char MANY 						= '*';
+	private static final char ONE_TO_MANY 				= '+';
+	private static final char OPEN_REPEAT 				= '{';
+	private static final char REPEAT_SEPARATOR       	= ',';
+	private static final char CLOSE_REPEAT 				= '}';	
 	private static final char OPEN_GROUP 				= '(';
-	private static final char CLOSE_GROUP 			= ')';
+	private static final char CLOSE_GROUP 				= ')';
 	
 	/*
 	 * Private general constants
@@ -96,9 +351,9 @@ public class RegexParser implements Parser<ParseTree> {
 	public static final ParseTree UNDERSCORE 		= ByteNode.valueOf((byte) '_');
 	public static final ParseTree TAB				= ByteNode.valueOf((byte) '\t');
 	public static final ParseTree NEWLINE			= ByteNode.valueOf((byte) '\n');
-	public static final ParseTree CARRIAGE_RETURN = ByteNode.valueOf((byte) '\r');
-	public static final ParseTree VERTICAL_TAB    = ByteNode.valueOf((byte) 0x0b);
-	public static final ParseTree FORM_FEED	    = ByteNode.valueOf((byte) 0x0c);
+	public static final ParseTree CARRIAGE_RETURN 	= ByteNode.valueOf((byte) '\r');
+	public static final ParseTree VERTICAL_TAB    	= ByteNode.valueOf((byte) 0x0b);
+	public static final ParseTree FORM_FEED	    	= ByteNode.valueOf((byte) 0x0c);
 	public static final ParseTree ESCAPE	        = ByteNode.valueOf((byte) 0x1e);
 	
 	/*
@@ -128,20 +383,20 @@ public class RegexParser implements Parser<ParseTree> {
 	/*
 	 * Public static utility methods to build common parse tree nodes.
 	 */
-	public static final ParseTree buildRange(byte minByte, byte maxByte, boolean inverted) {
+	public static final ParseTree buildRange(final byte minByte, final byte maxByte, final boolean inverted) {
 		return new ChildrenNode(ParseTreeType.RANGE, 
 								 buildList(ByteNode.valueOf(minByte), ByteNode.valueOf(maxByte)), inverted);
 	}
 	
-	public static final ParseTree buildSet(ParseTree...parseTrees) {
+	public static final ParseTree buildSet(final ParseTree...parseTrees) {
 		return new ChildrenNode(ParseTreeType.SET, buildList(parseTrees));
 	}
 	
-	public static final ParseTree buildInvertedSet(ParseTree...parseTrees) {
+	public static final ParseTree buildInvertedSet(final ParseTree...parseTrees) {
 		return new ChildrenNode(ParseTreeType.SET, buildList(parseTrees), INVERTED);
 	}
 	
-	private static final List<ParseTree> buildList(ParseTree...parseTrees) {
+	private static final List<ParseTree> buildList(final ParseTree...parseTrees) {
 		return Arrays.asList(parseTrees);
 	}
 	
@@ -172,7 +427,8 @@ public class RegexParser implements Parser<ParseTree> {
 	}
 	
 	
-	private ParseTree optimisedAlternatives(final List<ParseTree> alternatives, StringParseReader expression)
+	private ParseTree optimisedAlternatives(final List<ParseTree> alternatives, 
+			                                final StringParseReader expression)
 			throws ParseException {
 		final int numAlternatives = alternatives.size();
 		
@@ -219,7 +475,7 @@ public class RegexParser implements Parser<ParseTree> {
 	 * @return A SET ParseTree for the optimised alternatives (removing them from the original list passed in),
 	 *         or null if there are no optimisations possible.
 	 */
-	private ParseTree optimiseSingleByteAlternatives(final List<ParseTree> alternatives) throws ParseException {
+	private ParseTree optimiseSingleByteAlternatives(final List<ParseTree> alternatives) {
 		// Find out if there is more than one alternative that matches only a sequence of length one:
 		int numOptimisableAlternatives = 0;
 		for (final ParseTree alternative : alternatives) { 
@@ -248,7 +504,7 @@ public class RegexParser implements Parser<ParseTree> {
 	}
 	
 	
-	private boolean matchesSingleByteLength(final ParseTree node) throws ParseException {
+	private boolean matchesSingleByteLength(final ParseTree node) {
 		switch (node.getParseTreeType()) {
 			case BYTE: 			
 			case RANGE:
@@ -257,9 +513,6 @@ public class RegexParser implements Parser<ParseTree> {
 			case ALL_BITMASK:	
 			case ANY_BITMASK: {
 				return true;
-			}
-			case STRING: {
-				return node.getTextValue().length() == 1;
 			}
 			default : return false;
 		}
@@ -271,12 +524,12 @@ public class RegexParser implements Parser<ParseTree> {
 		int currentChar = expression.read();
 		boolean requireRangeValue = false;
 		PARSE_SEQUENCE: while (currentChar >= 0) {
-			if (foundQuantifiedBytes(currentChar, expression, sequenceNodes)) {
+			if (foundQuantifiedAtoms(currentChar, expression, sequenceNodes)) {
 				if (requireRangeValue) {
 					createRange(sequenceNodes, expression);
 					requireRangeValue = false;
 				}
-			} else 	if (!foundWhitespaceAndComments(currentChar, expression)) {
+			} else if (!foundWhitespaceAndComments(currentChar, expression)) {
 				if (requireRangeValue) {
 					throw new ParseException(addContext("A range value was expected", expression));
 				}
@@ -326,62 +579,32 @@ public class RegexParser implements Parser<ParseTree> {
 		return sequenceNodes.size() == 1? sequenceNodes.get(0) 
 										 : new ChildrenNode(ParseTreeType.SEQUENCE, sequenceNodes);
 	}
+
 	
 	private void createRange(final List<ParseTree> sequence,
-						      final StringParseReader expression) throws ParseException {
-		final ParseTree secondRangeValue = popLastRangeValueNode(sequence, expression);
-		final ParseTree firstRangeValue  = popLastRangeValueNode(sequence, expression);
-		final List<ParseTree> rangeChildren = new ArrayList<ParseTree>(2);
-		rangeChildren.add(firstRangeValue);
-		rangeChildren.add(secondRangeValue);
-		sequence.add(new ChildrenNode(ParseTreeType.RANGE, rangeChildren));
-	}
-	
-	
-	private ParseTree popLastRangeValueNode(List<ParseTree> sequence,
-			StringParseReader expression) throws ParseException {
-		// Pop the last node of the sequence list:
-		final ParseTree rangeValue = popLastNode(sequence, expression);
-		
-		// Process the range node syntax (could be defined as a BYTE or a single character STRING)
-		return getRangeValueAsByteNode(rangeValue, expression);
-	}
-
-	/**
-	 * Returns a range value as a BYTE node.
-	 * 
-	 * A range value is normally defined as a BYTE node.  Syntactic sugar is also provided
-	 * which interprets a STRING containing a single character with a value between 0 and
-	 * 255 as a byte value, allowing the specification of range values like this 'a'-'z'.
-	 */
-	private ParseTree getRangeValueAsByteNode(ParseTree rangeValue,
-											 StringParseReader expression) throws ParseException {
-		// Test for an un-inverted BYTE node - if found, return it directly.
-		if (rangeValue.getParseTreeType() == ParseTreeType.BYTE &&
-			!rangeValue.isValueInverted()) {
-			return rangeValue;
+						     final StringParseReader expression) throws ParseException {
+		final ParseTree secondRangeValue = popLastNode(sequence, expression);
+		if (secondRangeValue.getParseTreeType() != ParseTreeType.BYTE) { 
+			throw new ParseException(addContext("The second range value must be of type BYTE: " + secondRangeValue, expression));
 		}
-		
-		// Syntactic sugar: if the node is a STRING type with a single character in it,
-		//                  then treat the char value as if it were a byte value.  This
-		//                  lets the user specify 'a'-'z' for a range.  or 'a'-FF, for that matter.
-		if (rangeValue.getParseTreeType() == ParseTreeType.STRING &&
-			rangeValue.getTextValue().length() == 1 &&
-			!rangeValue.isValueInverted()) {
-				final byte[] textBytes = ByteUtils.getBytes(rangeValue.getTextValue());
-				return ByteNode.valueOf(textBytes[0]);
+		if (secondRangeValue.isValueInverted()) {
+			throw new ParseException(addContext("The second value of a range cannot be inverted " + secondRangeValue, expression));
 		}
-
-		// A type which is not recognised - throw an error:
-		throw new ParseException(addContext("A range value must be a single non-inverted byte or a non-inverted single character string.", expression));
+		final ParseTree firstRangeValue  = popLastNode(sequence, expression);
+		if (firstRangeValue.getParseTreeType() != ParseTreeType.BYTE) { 
+			throw new ParseException(addContext("The first range value must be of type BYTE: " + firstRangeValue, expression));
+		}
+		sequence.add(new ChildrenNode(ParseTreeType.RANGE, firstRangeValue.isValueInverted(), 
+									  ByteNode.valueOf(firstRangeValue.getByteValue()),
+									  ByteNode.valueOf(secondRangeValue.getByteValue())));
 	}
 
 	
 	/**
 	 * Removes the last ParseTree node from a List of ParseTrees.
 	 */
-	private ParseTree popLastNode(List<ParseTree> sequence,
-							 StringParseReader expression) throws ParseException {
+	private ParseTree popLastNode(final List<ParseTree> sequence,
+							 	  final StringParseReader expression) throws ParseException {
 		if (sequence.isEmpty()) {
 			throw new ParseException(addContext("Tried to remove the last node in a sequence, but it was empty", expression));
 		}
@@ -391,7 +614,7 @@ public class RegexParser implements Parser<ParseTree> {
 	
 	
 	private boolean foundWhitespaceAndComments(final int currentChar,
-												 final StringParseReader expression) {
+											   final StringParseReader expression) {
 		switch (currentChar) {
 			case ' '		:	case '\t':	case '\r':	case '\n': {
 				return true;
@@ -405,16 +628,16 @@ public class RegexParser implements Parser<ParseTree> {
 	}
 	
 	
-	private boolean foundBytes(final int currentChar,
-							     final StringParseReader expression,
-							     final List<ParseTree> nodes) throws ParseException {
+	private boolean foundAtoms(final int currentChar,
+							   final StringParseReader expression,
+							   final List<ParseTree> nodes) throws ParseException {
 		boolean inverted = false;
 		int charToMatch = currentChar;
 		if (charToMatch == INVERT) {
 			inverted = true;
 			charToMatch = expression.read();
 		}
-		final ParseTree node = matchBytes(charToMatch, expression, inverted);
+		final ParseTree node = matchAtoms(charToMatch, expression, inverted);
 		if (node != null) {
 			nodes.add(node);
 		}
@@ -422,47 +645,43 @@ public class RegexParser implements Parser<ParseTree> {
 	}
 	
 	
-	private boolean foundQuantifiedBytes(final int currentChar, 
-										   final StringParseReader expression, 
-									       final List<ParseTree> nodes) throws ParseException {
+	private boolean foundQuantifiedAtoms(final int currentChar, 
+										 final StringParseReader expression, 
+									     final List<ParseTree> nodes) throws ParseException {
 		boolean inverted = false;
 		int charToMatch = currentChar;
 		if (charToMatch == INVERT) {
 			inverted = true;
 			charToMatch = expression.read();
 		}
-		ParseTree node = matchBytes(charToMatch, expression, inverted);
+		ParseTree node = matchAtoms(charToMatch, expression, inverted);
 		if (node != null) {
 			nodes.add(node);
 		} else {
-			node = matchQuantifiers(charToMatch, expression);
+			node = matchQuantifiers(charToMatch, expression, nodes);
 			if (node != null) {
-				checkQuantifiable(nodes, expression);
-				makeLastNodeAChildOf(node, nodes, expression);
+				nodes.add(node);
 			}
 		}
 		return node != null;
 	}
 	
-	private void checkQuantifiable(final List<ParseTree> nodes,
-						            final StringParseReader expression) throws ParseException {
-		if (nodes.size() == 0) {
-			throw new ParseException(addContext("Nothing to quantify", expression));
-		}
-		final ParseTreeType type = nodes.get(nodes.size() - 1).getParseTreeType();
-		switch (type) {
+	
+	private void checkQuantifiable(final ParseTree node,
+						           final StringParseReader expression) throws ParseException {
+		switch (node.getParseTreeType()) {
 			case BYTE: 			case RANGE:			case SET:		case ANY:
 			case SEQUENCE:		case ALTERNATIVES:	case STRING:	case CASE_INSENSITIVE_STRING:
 			case ALL_BITMASK:	case ANY_BITMASK: {
 				return;
 			}
 		}
-		throw new ParseException(addContext("The type: " + type + " is not quantifiable", expression));
+		throw new ParseException(addContext("The node: " + node + " is not quantifiable", expression));
 	}
 	
-	private ParseTree matchBytes(final int currentChar, 
-								  final StringParseReader expression,
-								  final boolean inverted) throws ParseException {
+	private ParseTree matchAtoms(final int currentChar, 
+								 final StringParseReader expression,
+								 final boolean inverted) throws ParseException {
 		switch (currentChar) {
 			case '0': 	case '1':	case '2':	case '3':	case '4':	
 			case '5': 	case '6':	case '7':	case '8':	case '9':
@@ -484,9 +703,9 @@ public class RegexParser implements Parser<ParseTree> {
 			}
 			
 			case STRING_QUOTE:	{
-				String stringValue = expression.readString(STRING_QUOTE);
-				if (stringValue.isEmpty()) {
-					throw new ParseException(addContext("Strings cannot be empty", expression));
+				final String stringValue = expression.readString(STRING_QUOTE);
+				if (stringValue.length() == 1) {
+					return ByteNode.valueOf(ByteUtils.getBytes(stringValue)[0], inverted);
 				}
 				if (inverted) {
 					throw new ParseException(addContext("Strings cannot be inverted", expression));
@@ -495,10 +714,7 @@ public class RegexParser implements Parser<ParseTree> {
 			}
 			
 			case CASE_INSENSITIVE_QUOTE: {
-				String stringValue = expression.readString(CASE_INSENSITIVE_QUOTE);
-				if (stringValue.isEmpty()) {
-					throw new ParseException(addContext("Case insensitive strings cannot be empty", expression));
-				}
+				final String stringValue = expression.readString(CASE_INSENSITIVE_QUOTE);
 				if (inverted) {
 					throw new ParseException(addContext("Case insensitive strings cannot be inverted", expression));
 				}
@@ -552,7 +768,7 @@ public class RegexParser implements Parser<ParseTree> {
 		int currentChar = expression.read();
 		boolean requireRangeValue = false;
 		PARSE_SET: while (currentChar >= 0) {
-			if (foundBytes(currentChar, expression, setNodes)) {
+			if (foundAtoms(currentChar, expression, setNodes)) {
 				if (requireRangeValue) {
 					createRange(setNodes, expression);
 					requireRangeValue = false;
@@ -585,46 +801,65 @@ public class RegexParser implements Parser<ParseTree> {
 		// We don't currently have an easy way to invert a node (could add a method to do so to the interface).
 		// Not all children have the same meaning outside of a set as inside one.  E.g. strings are interpreted
 		// as a set of bytes to match, not a sequence.  So for simplicity we leave sets exactly as they are
-		// syntactically defined.  
+		// syntactically defined.  Compilers must deal with nested sets or sets which aren't really needed.
 		return new ChildrenNode(ParseTreeType.SET, setNodes, inverted);
 	}
 	
 	
 	private ParseTree matchQuantifiers(final int currentChar, 
-										final StringParseReader expression) throws ParseException {
-		switch (currentChar) {
-			case MANY: 			return new ChildrenNode(ParseTreeType.ZERO_TO_MANY);
-			case ONE_TO_MANY: 	return new ChildrenNode(ParseTreeType.ONE_TO_MANY);
-			case OPEN_REPEAT: 	return parseRepeat(expression);
-			case OPTIONAL: 		return new ChildrenNode(ParseTreeType.OPTIONAL);
-			default:			return null;
+									   final StringParseReader expression,
+									   final List<ParseTree> nodes) throws ParseException {
+		ParseTree quantifier = null;
+		if (nodes.size() > 0) {
+			final ParseTree nodeToQuantify = nodes.get(nodes.size() - 1);
+			switch (currentChar) {
+				case MANY: {
+					quantifier = new ChildrenNode(ParseTreeType.ZERO_TO_MANY, nodeToQuantify);
+					break;
+				}
+				case ONE_TO_MANY: {
+					quantifier = new ChildrenNode(ParseTreeType.ONE_TO_MANY, nodeToQuantify);
+					break;
+				}
+				case OPEN_REPEAT: {
+					quantifier = parseRepeat(expression, nodeToQuantify);
+					break;
+				}
+				case OPTIONAL: { 		
+					quantifier = new ChildrenNode(ParseTreeType.OPTIONAL, nodeToQuantify);
+					break;
+				}
+			}
+			if (quantifier != null) {
+				checkQuantifiable(nodeToQuantify, expression);			
+				nodes.remove(nodes.size() - 1);
+			}
 		}
+		return quantifier;
 	}
 	
 
-	private ParseTree parseRepeat(final StringParseReader expression) throws ParseException {
+	private ParseTree parseRepeat(final StringParseReader expression,
+								  final ParseTree nodeToRepeat) throws ParseException {
 		final int firstValue = expression.readInt();
 		int nextToken = expression.read();
 		if (nextToken == CLOSE_REPEAT) {
 			if (firstValue == 0) {
 				throw new ParseException(addContext("Single repeat value cannot be zero", expression));
 			}
-			final List<ParseTree> intValueList = new ArrayList<ParseTree>(1);
-			intValueList.add(new IntNode(firstValue));
-			return new ChildrenNode(ParseTreeType.REPEAT, intValueList);
+			return new ChildrenNode(ParseTreeType.REPEAT, new IntNode(firstValue), nodeToRepeat);
 		}
 		if (nextToken == REPEAT_SEPARATOR) {
 			ParseTree repeatNode;
 			if (expression.peekAhead() == MANY) {
 				expression.read();
-				final List<ParseTree> intValueList = new ArrayList<ParseTree>(1);
-				intValueList.add(new IntNode(firstValue));
-				repeatNode = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MANY, intValueList);
+				repeatNode = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MANY, 
+											  new IntNode(firstValue), nodeToRepeat);
 			} else {
-				final List<ParseTree> values = new ArrayList<ParseTree>(3);
-				values.add(new IntNode(firstValue));
-				values.add(new IntNode(expression.readInt()));
-  			    repeatNode = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX, values);
+  			    repeatNode = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX, 
+  			    							  new IntNode(firstValue), 
+  			    							  new IntNode(expression.readInt()),
+  			    							  nodeToRepeat);
 			}
 			nextToken = expression.read();
 			if (nextToken == CLOSE_REPEAT) {
@@ -636,19 +871,6 @@ public class RegexParser implements Parser<ParseTree> {
 	}
 	
 	
-	private void makeLastNodeAChildOf(final ParseTree parentNode, final List<ParseTree> sequence,
-									  final StringParseReader expression) throws ParseException {
-		if (sequence.size() > 0) {
-			final ParseTree lastNode = sequence.remove(sequence.size() - 1);
-			parentNode.addChild(lastNode);
-			sequence.add(parentNode);
-		} else {
-			throw new ParseException(addContext("Needed the last node in a sequence to make a child of " + parentNode + 
-			    					         	 " but the sequence is empty.", expression));
-		}
-	}
-
-
 	private String addContext(String description, StringParseReader expression) {
 		return description + ".  Error occurred at position [" +
 				expression.getPosition() +

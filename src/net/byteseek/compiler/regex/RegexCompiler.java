@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -269,9 +269,10 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
         if (lower == upper) {
           automataList.add(createTransitionAutomata(ByteNode.valueOf(lower)));
         } else {
-            final ChildrenNode set = new ChildrenNode(ParseTreeType.SET);
-            set.addChild(ByteNode.valueOf(lower));
-            set.addChild(ByteNode.valueOf(upper));
+        	final List<ParseTree> caseLetterSet = new ArrayList<ParseTree>(2);
+        	caseLetterSet.add(ByteNode.valueOf(lower));
+        	caseLetterSet.add(ByteNode.valueOf(upper));
+            final ChildrenNode set = new ChildrenNode(ParseTreeType.SET, caseLetterSet);
         	automataList.add(createTransitionAutomata(set));
         }
       }      

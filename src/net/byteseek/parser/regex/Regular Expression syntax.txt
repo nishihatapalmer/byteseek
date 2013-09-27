@@ -109,11 +109,29 @@ Syntax for byte-oriented regular expressions:
      	&7F                   # match all these bits 01111111
         &0F                   # match all these bits 00001111
         &81                   # match all these bits 10000001
-
+		
+		/ff 
+		
+		/81		&81			 ~81	:81
+		~81
+		:81
+		
+		allmask:01 anymask:02 &&01  :.ff :,ff  /ff /?ff  
+		
    * Bitmasks (any of the specified bits can match) are written:
         ~7F                   # match any of these bits 01111111
         ~0F                   # match any of these bits 00001111
         ~81                   # match any of these bits 10000001
+
+		/?81    &?81 	~?81  ~/81     &~81
+		:~81	::81 
+		:/81
+		:?81
+		&:81
+		
+		
+		&81		&:81	&~81		
+		
 
    * Quantifiers: specify how many of the preceding expression must match:
      	Optional  	'that'?             0-1

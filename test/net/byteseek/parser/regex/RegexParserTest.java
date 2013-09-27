@@ -34,6 +34,8 @@ package net.byteseek.parser.regex;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.HashSet;
@@ -43,6 +45,7 @@ import java.util.Set;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
+import net.byteseek.parser.tree.ParseTreeUtils;
 import net.byteseek.util.bytes.ByteUtils;
 
 import org.junit.After;
@@ -278,16 +281,19 @@ public class RegexParserTest {
 	 * Test ParseTreeType.STRING
 	 */	
 	public final void testString() throws ParseException {
-		expectParseException("Empty string", "''");
 		expectParseException("Unclosed string", "'a string");
 		expectParseException("Unopened string", "abc'");
 		expectParseException("Unopened string", "An unopened'");
 		expectParseException("Mixed case quotes", "'Closed with case insensitive`");
 		expectParseException("Inverted string", "^'An inverted string'");
 
-		testString("' '"); 	
-		testString("'X'"); 	
-		testString("'0'"); 	
+		// Empty string is OK
+		testString("''");
+		
+		testByte("' '", (byte) ' ', true); 	
+		testByte("'X'", (byte) 'X', true); 	
+		testByte("'0'", (byte) '0', true); 	
+		
 		testString("'one two three four'"); 
 		testString("'some words\nwith a new line'");
 	}
@@ -311,13 +317,13 @@ public class RegexParserTest {
 	 * Test ParseTreeType.CASE_INSENSITIVE_STRING
 	 */	
 	public final void testCaseInsensitiveString() throws ParseException {
-		expectParseException("Empty string", "``");
 		expectParseException("Unclosed string", "`a string");
 		expectParseException("Unopened string", "abc`");
 		expectParseException("Unopened string", "An unopened`");
 		expectParseException("Mixed case quotes", "`Closed with case sensitive'");
 		expectParseException("Inverted case insensitive string", "^`Inverted case insensitive string`");
 		
+		testCaseInsensitiveString("``");
 		testCaseInsensitiveString("` `"); 
 		testCaseInsensitiveString("`q`"); 	
 		testCaseInsensitiveString("`7`"); 		
@@ -371,9 +377,7 @@ public class RegexParserTest {
 		expectParseException("Empty set", "[]");
 		expectParseException("Unclosed set", "[01 02 03");
 		expectParseException("Opening bracket in set", "[01 (]");
-		expectParseException("Unclosed range in set", "[01-]");
 		
-		// test simple sets
 		testSetOfBytes("[01]",   new byte[] {(byte) 0x01}, true);
 		testSetOfBytes("[ 01 ]",   new byte[] {(byte) 0x01}, true);
 		testSetOfBytes("[0102]", new byte[] {(byte) 0x02, (byte) 0x01}, true);
@@ -383,10 +387,13 @@ public class RegexParserTest {
 		testSetOfBytes("\t\r[0201]", new byte[] {(byte) 0x02, (byte) 0x01}, false);
 		testSetOfBytes("   \n  [0201^&03]", new byte[] {(byte) 0x02, (byte) 0x01, (byte) 0x03}, false);
 	}
-
+	
 	
 	@Test
 	public void testSetOfRanges() throws ParseException {
+		expectParseException("Unfinished range inside set", "[00-]");
+		expectParseException("Unstarted range inside set", "[-99]");
+
 		testSetOfRanges("[00-ff]",           false, 0, 255);
 		testSetOfRanges("[ 00-20  80-C0  ]", false, 0, 32, 128, 192);
 		testSetOfRanges("[ de-ad 'a'-'z'] ", false, 0xde, 0xad, 'a', 'z');
@@ -412,7 +419,10 @@ public class RegexParserTest {
 
 	@Test
 	public void testSetOfStrings() throws ParseException {
-		testSetOfStrings("['9']", "9");
+		expectParseException("Unclosed string inside set", "['9]");
+		expectParseException("Unopened string inside set", "[9']");
+		
+		testSetOfStrings("['99']", "99");
 		testSetOfStrings("['abc' 'def' '012']", "abc", "def", "012");
 		testSetOfStrings("['I knowe a banke' '24680' ' \t any \n other \r whitespace?']", "I knowe a banke", "24680", " \t any \n other \r whitespace?");
 	}
@@ -435,6 +445,9 @@ public class RegexParserTest {
 	
 	@Test
 	public void testSetOfCaseStrings() throws ParseException {
+		expectParseException("Unclosed case string inside set", "[`9]");
+		expectParseException("Unopened case string inside set", "[9`]");
+		
 		testSetOfCaseStrings("[`9`]", "9");
 		testSetOfCaseStrings("[`abc` `def` `012`]", "abc", "def", "012");
 		testSetOfCaseStrings("[`I knowe a banke` `24680` ` \t any \n other \r whitespace?`]", "I knowe a banke", "24680", " \t any \n other \r whitespace?");
@@ -457,10 +470,60 @@ public class RegexParserTest {
 	}
 	
 	
-	//TODO: test nested sets with different inversions
+	@Test
+	public void testNestedSets() throws ParseException {
+		expectParseException("unclosed nested set", "[01 02 [03 04]");
+		
+		testNestedSet("two simple sets 1", "[01 02 [03 04]]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x03, (byte) 0x04}, false);
+		testNestedSet("two simple sets 2", "[[03 04] 01 02]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x03, (byte) 0x04}, false);
+		testNestedSet("two simple sets 3", "[01 [03 04] 02]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x03, (byte) 0x04}, false);
+		testNestedSet("two simple sets 4", "[01 02 ^[03 04]]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x03, (byte) 0x04}, true);
+		testNestedSet("two simple sets 5", "[^[03 04] 01 02]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x03, (byte) 0x04}, true);
+		testNestedSet("two simple sets 6", "[01^[03 04] 02]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x03, (byte) 0x04}, true);
+		
+		testNestedSet("two overlapping sets 1", "[01 02 [02 04]]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x02, (byte) 0x04}, false);
+		testNestedSet("two overlapping sets 2", "[[02 04] 01 02]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x02, (byte) 0x04}, false);
+		testNestedSet("two overlapping sets 3", "[01 [03 04] 04]", 
+				new byte[] {(byte) 0x01, (byte) 0x04}, new byte[] {(byte) 0x03, (byte) 0x04}, false);
+		testNestedSet("two overlapping sets 4", "[01 02 ^[02 02]]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x02}, true);
+		testNestedSet("two overlapping sets 5", "[^[03 04] 01 02]", 
+				new byte[] {(byte) 0x01, (byte) 0x02}, new byte[] {(byte) 0x03, (byte) 0x04}, true);
+		testNestedSet("two overlapping sets 6", "[01^[01 01] 01]", 
+				new byte[] {(byte) 0x01}, new byte[] {(byte) 0x01}, true);
+		
+	}
 	
+	private void testNestedSet(String description, String setDefinition, 
+							  byte[] directValues, byte[] nestedValues,
+							  boolean nestedSetInverted) throws ParseException {
+		testNestedSet(description, parser.parse(setDefinition), false, directValues, nestedValues, nestedSetInverted);
+		testNestedSet(description + " inverted", parser.parse("^" + setDefinition), true, directValues, nestedValues, nestedSetInverted);
+	}
 	
-
+	private void testNestedSet(String description, ParseTree set, boolean inverted, 
+							   byte[] directValues, byte[] nestedValues, boolean nestedSetInverted) throws ParseException {
+		assertEquals("Node is a set", ParseTreeType.SET, set.getParseTreeType());
+		assertEquals("Inversion status is correct", inverted, set.isValueInverted());
+		int childIndex = ParseTreeUtils.getChildIndexOfType(set, 0, ParseTreeType.SET);
+		assertTrue("There is a child set of the parent set", childIndex >= 0);
+		ParseTree nestedSet = set.getChild(childIndex);
+		assertEquals("Node is a set", ParseTreeType.SET, nestedSet.getParseTreeType());
+		assertEquals("Inversion status is correct", nestedSetInverted, nestedSet.isValueInverted());
+		
+		Set<Byte> expected = ParseTreeUtils.getSetValues(nestedSet);
+		Set<Byte> result = ByteUtils.toSet(nestedValues);
+		assertEquals("Bytes are correct for the nested set", expected, result);
+	}
+	
 	
 	private void testSetOfBytes(String expression, byte[] values, boolean canInvert) throws ParseException {
 		testSetOfBytes(parser.parse(expression), false, values);
@@ -635,13 +698,13 @@ public class RegexParserTest {
 	 */
 	public void testRange() throws ParseException {
 		expectParseException("Unclosed range hex byte", "01-");
-		expectParseException("Unclosed range hex byte with a all bitmask following", "01- &fe");
+		expectParseException("Unclosed range hex byte with an all bitmask following", "01- &fe");
+		expectParseException("Unclosed range hex byte with an any bitmask following", "01-~fe");
 		expectParseException("Unclosed range hex byte with a group opened", "01- ('abcde'|ff");
 		expectParseException("Unclosed range character", "'q'- ");
 		expectParseException("Unclosed range bad comment", "01-#bad comment 02");
 		expectParseException("More than one char", "'aa'-'f'");
 		expectParseException("More than one char", "01-'more'");
-		expectParseException("Inverted first range value", "^01-02");
 		expectParseException("Inverted second range value", "01-^02");
 		
 		testRange("01-02",     (byte) 0x01, (byte) 0x02);
@@ -668,6 +731,7 @@ public class RegexParserTest {
 	
 	private void testRange(String expression, byte value1, byte value2) throws ParseException {
 		testRange(parser.parse(expression), value1, value2);
+		testRange(parser.parse('^' + expression), value1, value2);
 	}
 	
 	private void testRangeSequence(String expression, byte value1, byte value2, int index) throws ParseException {
@@ -725,7 +789,7 @@ public class RegexParserTest {
 		testAny(testZeroToMany("(.)*"));
 		
 		testString(testZeroToMany("'a string'*"), "a string");
-		testString(testZeroToMany("( ' ')*"), " ");
+		testString(testZeroToMany("( ' X ')*"), " X ");
 		
 		testCaseInsensitiveString(testZeroToMany("`abcdefghijklmnopqrstuvwxyz`*"), "abcdefghijklmnopqrstuvwxyz");
 		testCaseInsensitiveString(testZeroToMany("  (`   `)    *"), "   ");
@@ -777,7 +841,7 @@ public class RegexParserTest {
 		testAny(testOneToMany("(.)+"));
 		
 		testString(testOneToMany("'a string'+"), "a string");
-		testString(testOneToMany("( ' ')+"), " ");
+		testString(testOneToMany("( ' Y ')+"), " Y ");
 		
 		testCaseInsensitiveString(testOneToMany("`abcdefghijklmnopqrstuvwxyz`+"), "abcdefghijklmnopqrstuvwxyz");
 		testCaseInsensitiveString(testOneToMany("  (`   `)  #comment\n  +"), "   ");
@@ -828,7 +892,7 @@ public class RegexParserTest {
 		testAny(testOptional("(.)?"));
 		
 		testString(testOptional("'a string'?"), "a string");
-		testString(testOptional("( ' ')?"), " ");
+		testString(testOptional("( ' Z ')?"), " Z ");
 		
 		testCaseInsensitiveString(testOptional("`abcdefghijklmnopqrstuvwxyz`?"), "abcdefghijklmnopqrstuvwxyz");
 		testCaseInsensitiveString(testOptional("  (`   `)  #comment\n  ?"), "   ");
@@ -1034,7 +1098,7 @@ public class RegexParserTest {
 		byte[] values3 = ByteUtils.toArray((byte) 0x7f, (byte) 0x7f, (byte) 0x80, (byte) 0xff);
 		testByteSequenceAlternatives("00|01|7f 7f 80 ff", values3, values0);
 		testByteSequenceAlternatives("7f 7f 80 ff|01|00", values3, values0);
-		testByteSequenceAlternatives("'\u007f' '\u007f' `\u0080` ff|01|00", values3, values0);
+		testByteSequenceAlternatives("'\u007f' '\u007f' '\u0080' ff|01|00", values3, values0);
 		testByteSequenceAlternatives("(7f 7f 80 ff|01|00)", values3, values0);
 		
 		byte[] values4 = ByteUtils.toArray((byte) 0xde, (byte) 0xad, (byte) 0xff);
@@ -1073,6 +1137,58 @@ public class RegexParserTest {
 		}
 	}
 	
+
+	/**
+	 * Tests alternatives optimisation, which looks for single-byte alternatives and merges them into a single
+	 * set.
+	 * 
+	 * @throws ParseException
+	 */
+	@Test
+	public void testAlternativesOptimisation() throws ParseException {
+		testAlternativesOptimisation("All bytes in a set", "'0'|'1'|'2'|'3'|'4'|'5'|'6'", 
+				new byte[] {(byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4',
+							(byte) '5', (byte) '6'});
+		testAlternativesOptimisation("One string not in set", "'012'|'A'|'b'|01", 
+				new byte[] {(byte) 'A', (byte) 'b', (byte) 0x01});
+		testAlternativesOptimisation("No optimisation if only one value is length 1", "'AB'|'0'|'CDEF'|'YZ'",
+				new byte[0]);
+		
+		Set<Byte> bytesToMatch = new HashSet<Byte>();
+		ByteUtils.addBytesMatchingAllBitMask((byte) 0x55, bytesToMatch);
+		bytesToMatch.add((byte) 2);
+		bytesToMatch.add((byte) 16);
+		testAlternativesOptimisation("An all bitmask and a couple of others", "&55 | 02 | 10", ByteUtils.toArray(bytesToMatch));
+	}
+	
+	@SuppressWarnings("null")
+	private void testAlternativesOptimisation(String description, String expression, byte[] setValues) throws ParseException {
+		ParseTree result = parser.parse(expression);
+		ParseTree set = null;
+		if (result.getParseTreeType() == ParseTreeType.SET) { 
+			set = result;
+		} else {
+			for (int childIndex = 0; childIndex < result.getNumChildren(); childIndex++) {
+				if (result.getChild(childIndex).getParseTreeType() == ParseTreeType.SET){
+					set = result.getChild(childIndex);
+					break;
+				}
+			}
+		}
+		if (setValues.length > 0) {
+			assertTrue("There must be a set for alternatives expression " + expression, set != null);
+			assertFalse("The set is not inverted for expression " + expression, set.isValueInverted());
+			Set<Byte> setBytes = ParseTreeUtils.calculateSetValues(set);
+			assertEquals("Number of bytes in the set for expression " + expression + " is correct", setValues.length, setBytes.size());
+			for (int byteIndex = 0; byteIndex < setValues.length; byteIndex++) {
+				byte value = setValues[byteIndex];
+				assertTrue("Set contains the byte value " + value, setBytes.contains(value));
+			}
+		} else {
+			assertNull("There is no set", set);
+		}
+	}
+	
 	
 	@Test
 	/**
@@ -1094,13 +1210,47 @@ public class RegexParserTest {
 		testByteSequence("((01) (02)  03)",  values1);
 		testByteSequence("((01) (02) (03))", values1);
 		testByteSequence("((01)  02  (03))", values1);
-		
-		//TODO: need tests for embedded sequences / alternatives.
-		//      embedded sequences stay as sequences: could be quantified in the next parse step. 
-		//testByteSequence("(01 (02 03))", 3, values1);
-		//testByteSequence("((01 02) 03)", 3, values1);
 	}
 	
+	@Test
+	public void testNestedGroups() throws ParseException {
+		byte[] values1 = ByteUtils.toArray((byte) 2, (byte) 3);
+		
+		testNestedByteSequence("Simple nested sequence",   "(01 (02 03))", values1);
+		testNestedByteSequence("Simple nested sequence 2", "((02 03) 01)", values1);
+		
+		testQuantifiedNestedByteSequence("Quantified nested sequence 1",  "(01 (02 03)+)", ParseTreeType.ONE_TO_MANY, values1);
+		testQuantifiedNestedByteSequence("Quantified nested sequence 2", "((02 03)* 01)",  ParseTreeType.ZERO_TO_MANY, values1);
+		
+		// embedded alternatives:
+		testNestedAlternatives("Simple nested alternatives 1", "01 | ('ab' 01 02 |'cd'|'ef' ff fe) | 03 05");
+		testNestedAlternatives("Simple nested alternatives 2", "'one two three' | ('one'|'two'|'three') | 03 05+");
+	}
+	
+	private void testNestedByteSequence(String description, String expression, byte[] nestedSequence) throws ParseException {
+		ParseTree node = parser.parse(expression);
+		assertEquals(description + " parent node is a sequence", ParseTreeType.SEQUENCE, node.getParseTreeType());
+		int childIndex = ParseTreeUtils.getChildIndexOfType(node, 0, ParseTreeType.SEQUENCE);
+		assertTrue(description + " parent node contains a child sequence", childIndex >= 0);
+		ParseTree childSequence = node.getChild(childIndex);
+		testByteSequence(childSequence, nestedSequence);
+	}
+	
+	private void testQuantifiedNestedByteSequence(String description, String expression, ParseTreeType quantifier, byte[] nestedSequence) throws ParseException {
+		ParseTree node = parser.parse(expression);
+		assertEquals(description + " parent node is a sequence", ParseTreeType.SEQUENCE, node.getParseTreeType());
+		int childIndex = ParseTreeUtils.getChildIndexOfType(node, 0, quantifier);
+		assertTrue(description + " parent node contains a quantifier node", childIndex >= 0);
+		ParseTree childSequence = ParseTreeUtils.getFirstChild(node.getChild(childIndex));
+		testByteSequence(childSequence, nestedSequence);
+	}
+	
+	private void testNestedAlternatives(String description, String expression) throws ParseException {
+		ParseTree node = parser.parse(expression);
+		assertEquals(description + " parent node are alternatives", ParseTreeType.ALTERNATIVES, node.getParseTreeType());
+		int childIndex = ParseTreeUtils.getChildIndexOfType(node, 0, ParseTreeType.ALTERNATIVES);
+		assertTrue(description + " parent node contains an alternatives node", childIndex >= 0);
+	}
 	
 	@Test
 	/**
@@ -1109,9 +1259,9 @@ public class RegexParserTest {
 	 */
 	public void testComplexExpressions() throws ParseException {
 		parser.parse("((01)* 02 03 'a string')? ^[20-40 ^[45-6a 5f]]");
-		//TODO: add more complex expressions which test a good mixture of all available options.
-		//      try to break the parser by doing the unexpected. 
-		// 		Possibly create a random expression generator.
+		parser.parse("((('abc'? deff){1,3}|'abcd')+|01 ^02 03 ' '|\\d");
+		parser.parse("(((01+ 02)* | ('any old' &55 02 `bytes here`){1,100}) | ^[01 02 ^&55 ^[^&AA]])");
+		//FEATURE: Possibly create a random expression generator to really exercise the parser.
 	}
 	
 	

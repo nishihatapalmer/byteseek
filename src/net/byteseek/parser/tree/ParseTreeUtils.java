@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -37,6 +37,7 @@ import java.util.Set;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.util.bytes.ByteUtils;
+import net.byteseek.util.object.ObjectUtils;
 
 /**
  * A utility class of static helper methods to use when parsing expressions.
@@ -75,14 +76,15 @@ public final class ParseTreeUtils {
 	 * @param node The node to get the first child of.
 	 * @return A node which is the first child of the node passed in.
 	 * @throws ParseException If there is no such child node.
-	 * @throws NullPointerException if node is null.
+	 * @throws IllegalArgumentException if node is null.
 	 */
 	public static ParseTree getFirstChild(final ParseTree node) throws ParseException {
-	  if (node.getNumChildren() > 0) {
-	    return node.getChild(0);
-	  }
-	  throw new ParseException("No children exist for node type: " +
-	                            node.getParseTreeType().name());
+		ObjectUtils.checkNullObject(node);
+		if (node.getNumChildren() > 0) {
+			return node.getChild(0);
+		}
+		throw new ParseException("No children exist for node type: " +
+	                              node.getParseTreeType().name());
 	}
 
 	/**
@@ -91,14 +93,39 @@ public final class ParseTreeUtils {
 	 * @param parentNode The node to get the last child of.
 	 * @return The last child node of the node.
 	 * @throws ParseException if the node has no children.
-	 * @throws NullPointerException if the parentNode is null.
+	 * @throws IllegalArgumentException if the parentNode is null.
 	 */
 	public static ParseTree getLastChild(final ParseTree parentNode) throws ParseException {
+		ObjectUtils.checkNullObject(parentNode);
 		final int numChildren = parentNode.getNumChildren();
 		if (numChildren == 0) {
 			throw new ParseException("Node has no children - cannot get last child node [" + parentNode + ']');			
 		}
 		return parentNode.getChild(numChildren - 1);
+	}
+	
+	
+	/**
+	 * Returns the first child from the specified childIndex of the given type, 
+	 * or -1 if no such child exists, or the childIndex is out of the bounds of the parent node.
+	 * 
+	 * @param parentNode The node to search for children of a type in.
+	 * @param childIndex The index to begin searching from.
+	 * @param type The type of the child to look for.
+	 * @return The index of the child within the parent node, or -1 if no such child exists.
+	 * @throws IllegalArgumentException if the parentNode is null.
+	 */
+	public static int getChildIndexOfType(final ParseTree parentNode, final int from, final ParseTreeType type) {
+		ObjectUtils.checkNullObject(parentNode);
+		final int numChildren = parentNode.getNumChildren();
+		if (from < numChildren && from >= 0) {
+			for (int searchIndex = from; searchIndex < numChildren; searchIndex++) {
+				if (parentNode.getChild(searchIndex).getParseTreeType() == type) {
+					return searchIndex;
+				}
+			}
+		}
+		return -1;
 	}
 	
 	
@@ -112,6 +139,7 @@ public final class ParseTreeUtils {
 	 * @return The integer value of the first range value.
 	 * @throws ParseException If a problem occurs parsing the range value,
 	 *                         or the range node or value is not correct.
+	 * @throws IllegalArgumentException if the rangeNode passed in is null.
 	 */
 	public static int getFirstRangeValue(final ParseTree rangeNode) throws ParseException {
 		return getRangeValue(rangeNode, 0);
@@ -128,6 +156,7 @@ public final class ParseTreeUtils {
 	 * @return The integer value of the second range value.
 	 * @throws ParseException If a problem occurs parsing the range value,
 	 *                         or the range node or value is not correct.
+	 * @throws IllegalArgumentException if the rangeNode passed in is null.
 	 */
 	public static int getSecondRangeValue(final ParseTree rangeNode) throws ParseException {
 		return getRangeValue(rangeNode, 1);
@@ -141,8 +170,11 @@ public final class ParseTreeUtils {
 	 * @param byteNode The BYTE node
 	 * @param bytes The collection of bytes to add the byte or bytes to.
 	 * @throws ParseException If the node does not contain a byte value.
+	 * @throws IllegalArgumentException if the byteNode or the set of bytes are null.
 	 */
 	public static void addByteValues(final ParseTree byteNode, final Set<Byte> bytes) throws ParseException {
+		ObjectUtils.checkNullObject(byteNode, " parameter:byteNode");
+		ObjectUtils.checkNullCollection(bytes, " parameter: bytes");
 		if (byteNode.isValueInverted()) {
 			ByteUtils.addInvertedByteValues(byteNode.getByteValue(), bytes);
 		} else {
@@ -158,8 +190,11 @@ public final class ParseTreeUtils {
 	 * @param byteSet The set of bytes to add the byte range to.
 	 * @throws ParseException If the node is not a range node, or does not have correct range
 	 *                         values as child nodes, or if another problem occurs parsing the node.
+	 * @throws IllegalArgumentException if the range or the collection passed in are null.
 	 */
 	public static void addRangeBytes(final ParseTree range, Set<Byte> byteSet) throws ParseException {
+		ObjectUtils.checkNullObject(range, " parameter:range");
+		ObjectUtils.checkNullCollection(byteSet, " parameter:byteSet");
 		if (range.isValueInverted()) {
 		    ByteUtils.addBytesNotInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
 		} else {
@@ -182,6 +217,7 @@ public final class ParseTreeUtils {
 	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MANY},
 	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX},
      *                         there is no first repeat value.
+     * @throws IllegalArgumentException if the repeatNode passed in is null.
 	 */
 	public static int getFirstRepeatValue(final ParseTree repeatNode) throws ParseException {
 		return getRepeatValue(repeatNode, 0);
@@ -202,6 +238,7 @@ public final class ParseTreeUtils {
 	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX} or
 	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX}, or
 	 *                         there is no second repeat value.
+     * @throws IllegalArgumentException if the repeatNode passed in is null.
 	 */	
 	public static int getSecondRepeatValue(final ParseTree repeatNode) throws ParseException {
 		return getRepeatValue(repeatNode, 1);
@@ -219,9 +256,12 @@ public final class ParseTreeUtils {
 	 * @param set A set of bytes to add the values to.
 	 * @throws ParseException If there is no bitmask byte value or another problem occurs
 	 *                         parsing the value.
+	 * @throws IllegalArgumentException if the allBitmask or bytes passed in are null.
 	 */
 	public static void addBytesMatchingAllBitmask(final ParseTree allBitmask,
 												  final Collection<Byte> bytes) throws ParseException {
+		ObjectUtils.checkNullObject(allBitmask, "parameter: allBitmask");
+		ObjectUtils.checkNullCollection(bytes, "parameter: bytes");
 		if (allBitmask.isValueInverted()) {
 			ByteUtils.addBytesNotMatchingAllBitMask(allBitmask.getByteValue(), bytes);
 		} else {
@@ -242,9 +282,12 @@ public final class ParseTreeUtils {
 	 * @return A collection of bytes which match the any-bits bitmask.
 	 * @throws ParseException If there is no bitmask byte value or another problem occurs
 	 *                         parsing the value.
+	 * @throws IllegalArgumentException if the anyBitmask or bytes passed in are null.
 	 */
 	public static void addBytesMatchingAnyBitmask(final ParseTree anyBitmask,
 												  final Collection<Byte> bytes) throws ParseException {
+		ObjectUtils.checkNullObject(anyBitmask, "parameter: anyBitmask");
+		ObjectUtils.checkNullCollection(bytes, "parameter: bytes");
 		if (anyBitmask.isValueInverted()) {
 			ByteUtils.addBytesNotMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
 		} else {
@@ -259,9 +302,11 @@ public final class ParseTreeUtils {
 	 * @param string The text node to get the bytes for.
 	 * @param bytes The collection of Bytes to add the string bytes to.
 	 * @throws ParseException If the ISO 8859-1 encoding is not supported.
+	 * @throws IllegalArgumentException if the string parsetree or the collection of bytes are null.
 	 */
 	public static void addStringBytes(final ParseTree string,
 									  final Collection<Byte> bytes) throws ParseException {
+		ObjectUtils.checkNullObject(string, "parameter:string");
 		ByteUtils.addStringBytes(string.getTextValue(), bytes);
 	}
 	
@@ -274,9 +319,11 @@ public final class ParseTreeUtils {
 	 * @param caseInsensitive The text node to get a set of case insensitive byte values for.
 	 * @return A collection of bytes giving all the case insensitive bytes that string might match.
 	 * @throws ParseException If the ISO 8859-1 encoding is not supported.
+	 * @throws IllegalArgumentException if the string parsetree or the collection of bytes are null.
 	 */
 	public static void addCaseInsensitiveStringBytes(final ParseTree caseInsensitive,
 													 final Collection<Byte> bytes) throws ParseException {
+		ObjectUtils.checkNullObject(caseInsensitive, "parameter:caseInsensitive");
 		ByteUtils.addCaseInsensitiveStringBytes(caseInsensitive.getTextValue(), bytes);
 	}
 	
@@ -290,20 +337,23 @@ public final class ParseTreeUtils {
 	 * This method does not invert the set bytes returned if the set node passed in is inverted.
 	 * It preserves the bytes as-defined in the set, leaving the question of whether to
 	 * invert the bytes defined in the set passed in to any clients of the code.
+	 * However, note that any nested sets will have their inversion status taken into account,
+	 * as this affects the byte content of the parent set.  For example, a straight set containing
+	 * a nested set: [01 ^[01]] would be equivalent to a set containing all the bytes.
 	 * <p>
 	 * If you want the set values calculating taking into account the inversion 
 	 * status of the set node itself, please call the method {@link #calculateSetValues(ParseTree)}.
 	 * <p>
 	 * This can be recursive procedure if sets are nested within one another.
 	 * 
-	 * @param set
-	 *            The set node to calculate a set of byte values for.
+	 * @param set The set node to calculate a set of byte values for.
 	 * @return A set of byte values defined by the node.
-	 * @throws ParseException
-	 *             If a problem occurs parsing the node.
+	 * @throws ParseException If a problem occurs parsing the node.
+	 * @throws IllegalArgumentException if the set passed in is null.
 	 */
 	public static Set<Byte> getSetValues(final ParseTree set)
 			throws ParseException {
+		ObjectUtils.checkNullObject(set);
 		final Set<Byte> setValues = new HashSet<Byte>(64);
 		for (final ParseTree valueNode : set) {
 			switch (valueNode.getParseTreeType()) {
@@ -341,9 +391,11 @@ public final class ParseTreeUtils {
 	 * @param setNode The set node defining the set of bytes to add.
 	 * @param bytes The collection of bytes to add the bytes to.
 	 * @throws ParseException If the byte set nodes do not define a valid set.
+	 * @throws IllegalArgumentException if the setNode or bytes collection passed in are null.
 	 */
 	public static void addSetValues(final ParseTree setNode, 
 									final Collection<Byte> bytes) throws ParseException {
+		ObjectUtils.checkNullCollection(bytes, "parameter:bytes");
 		bytes.addAll(calculateSetValues(setNode));		
 	}
 	
@@ -359,14 +411,14 @@ public final class ParseTreeUtils {
 	 * the set (regardless of whether the set node itself is inverted), then
 	 * use the method {@link #getSetValues(ParseTree)}.
 	 * 
-	 * @param set
-	 * 				The set node to calculate a set of byte values for, taking into
-	 *              account whether the set node is inverted or not.
+	 * @param set  The set node to calculate a set of byte values for, taking into
+	 *             account whether the set node is inverted or not.
 	 * @return A set of byte values defined by the node.
-	 * @throws ParseException 
-	 *        		If a problem occurs parsing the node.
+	 * @throws ParseException If a problem occurs parsing the node.
+	 * @throws IllegalArgumentException if the set passed in is null.
 	 */
 	public static Set<Byte> calculateSetValues(final ParseTree set) throws ParseException {
+		ObjectUtils.checkNullObject(set);
 		final Set<Byte> setValues = getSetValues(set);
 		if (set.isValueInverted()) {
 			return ByteUtils.invertedSet(setValues);
@@ -390,8 +442,10 @@ public final class ParseTreeUtils {
 	 * @return The integer value of the first or second range value.
 	 * @throws ParseException If a problem occurs parsing the range value, 
 	 *                         or the range node or value is not correct.
+	 * @throws IllegalArgumentException if the rangeNode passed in is null.
 	 */
 	private static int getRangeValue(final ParseTree rangeNode, final int valueIndex) throws ParseException {
+		ObjectUtils.checkNullObject(rangeNode);
 		if (rangeNode.getParseTreeType() != ParseTreeType.RANGE) {
 			throw new ParseException("Node is not a RANGE node.  It has type: " + rangeNode.getParseTreeType());
 		}
@@ -417,8 +471,10 @@ public final class ParseTreeUtils {
 	 * @throws ParseException If the repeat node does not have type ParseTreeType.REPEAT,
 	 * 						  ParseTreeType.REPEAT_MIN_TO_MANY, ParseTreeType.REPEAT_MIN_TO_MAX,	
 	 *                        or an integer value supplied is not greater than zero.
+	 * @throws IllegalArgumentException if the repeatNode passed in is null.
 	 */
 	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
+		ObjectUtils.checkNullObject(repeatNode);
 		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT &&
 			repeatNode.getParseTreeType() != ParseTreeType.REPEAT_MIN_TO_MANY &&
 			repeatNode.getParseTreeType() != ParseTreeType.REPEAT_MIN_TO_MAX) {

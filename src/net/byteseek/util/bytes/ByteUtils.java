@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.byteseek.util.object.ObjectUtils;
+
 /**
  * A utility class containing useful methods to work with bytes, including:
  * <ul>
@@ -57,13 +59,10 @@ import java.util.Set;
 public final class ByteUtils {
 	
 	private static final String HEX_BYTE_FORMAT = "%02x";
-	private static final String COLLECTION_PASSED_IN_CANNOT_BE_NULL = "The collection passed in cannot be null";
-	private static final String ARRAY_PASSED_IN_CANNOT_BE_NULL      = "The array passed in cannot be null";
-	private static final String STRING_PASSED_IN_CANNOT_BE_NULL     = "The string passed in cannot be null";
-	
-	private static final byte ASCII_CASE_DIFFERENCE = 32;
 
-    private static final int QUOTE_CHARACTER_VALUE = 39;
+	private static final byte ASCII_CASE_DIFFERENCE = 32;
+    
+	private static final int QUOTE_CHARACTER_VALUE = 39;
     private static final int START_PRINTABLE_ASCII = 32;
     private static final int END_PRINTABLE_ASCII = 126;
 
@@ -226,7 +225,7 @@ public final class ByteUtils {
      */
     public static void addBytesMatchingAllBitMask(final byte bitMask, 
     											  final Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((((byte) byteIndex) & bitMask) == bitMask) {
@@ -242,7 +241,7 @@ public final class ByteUtils {
 	 * @throws IllegalArgumentException if the collection of bytes passed in is null.
 	 */
 	public static void addAllBytes(final Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+		ObjectUtils.checkNullCollection(bytes);
     	for (int i = 0; i < 256; i++) {
 			bytes.add(Byte.valueOf((byte) i));
 		}
@@ -258,7 +257,7 @@ public final class ByteUtils {
      */
     public static void addBytesNotMatchingAllBitMask(final byte bitMask,
     												 final Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((((byte) byteIndex) & bitMask) != bitMask) {
@@ -291,7 +290,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the byte array is null.
      */
     public static Set<Byte> toSet(final byte[] bytes) {
-    	checkNullArray(bytes);
+    	ObjectUtils.checkNullByteArray(bytes);
         final Set<Byte> setOfBytes = new HashSet<Byte>((int) (bytes.length / 0.75));
         addAll(bytes, setOfBytes);
         return setOfBytes;
@@ -306,7 +305,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the byte array is null. 
      */
     public static List<Byte> toList(final byte[] bytes) {
-    	checkNullArray(bytes);
+    	ObjectUtils.checkNullByteArray(bytes);
         final List<Byte> listOfBytes = new ArrayList<Byte>(bytes.length);
         for (final byte b : bytes) {
             listOfBytes.add(Byte.valueOf(b));
@@ -323,8 +322,8 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the byte array or collection is null.
      */
     public static void addAll(final byte[] bytes, final Collection<Byte> toCollection) {
-        checkNullArray(bytes);
-        checkNullCollection(toCollection);
+        ObjectUtils.checkNullByteArray(bytes);
+        ObjectUtils.checkNullCollection(toCollection);
     	final int size = bytes.length;
         for (int count = 0; count < size; count++) {
             toCollection.add(Byte.valueOf(bytes[count]));
@@ -339,7 +338,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the collection is null.
      */
     public static void addBytes(final Collection<Byte> toCollection, final byte...values) {
-    	checkNullCollection(toCollection);
+    	ObjectUtils.checkNullCollection(toCollection);
     	for (final byte value : values) {
     		toCollection.add(Byte.valueOf(value));
     	}
@@ -369,7 +368,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the string passed in is null.
      */
     public static byte[] getBytes(final String string) {
-    	checkNullString(string);
+    	ObjectUtils.checkNullString(string);
    		return string.getBytes(ISO_8859_1);
     }
     
@@ -384,7 +383,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the string or collection passed in is null. 
      */
     public static void addCaseInsensitiveStringBytes(final String string, final Collection<Byte> toCollection) {
-    	checkNullCollection(toCollection);
+    	ObjectUtils.checkNullCollection(toCollection);
     	final byte[] byteValues = getBytes(string);
 		for (int charIndex = 0; charIndex < byteValues.length; charIndex++) {
 			final byte charAt = byteValues[charIndex];
@@ -406,7 +405,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the collection passed in is null.
      */
     public static byte[] toArray(final Collection<Byte> collection) {
-    	checkNullCollection(collection);
+    	ObjectUtils.checkNullCollection(collection);
     	final byte[] result = new byte[collection.size()];
         int position = 0;
         for (final Byte b : collection) {
@@ -435,7 +434,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the array passed in is null.
      */
     public static byte[] reverseArray(final byte[] array) {
-    	checkNullArray(array);
+    	ObjectUtils.checkNullByteArray(array);
         final int lastpos = array.length - 1;
         final byte[] reversed = new byte[array.length];
         for (int i = 0; i <= lastpos; i++) {
@@ -478,7 +477,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the array is null or the number of repeats is negative.
      */
     public static byte[] repeat(final byte[] array, final int numberOfRepeats) {
-        checkNullArray(array);
+    	ObjectUtils.checkNullByteArray(array);
     	checkNegativeRepeats(numberOfRepeats);
     	final int repeatLength = array.length;
         final int size = repeatLength * numberOfRepeats;
@@ -542,7 +541,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the byte array is null.
      */
     public static int[] toIntArray(final byte[] bytes) {
-        checkNullArray(bytes);
+    	ObjectUtils.checkNullByteArray(bytes);
         final int length = bytes.length;
     	final int[] integers = new int[length];
         for (int index = 0; index < length; index++) {
@@ -598,7 +597,7 @@ public final class ByteUtils {
      * 									or the collection of bytes is null.
      */
     public static void addBytesInRange(final int from, final int to, final Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	checkIntToByteRange(from, to);
     	final int start = from < to? from : to;
     	final int end =   from < to? to : from;
@@ -609,12 +608,10 @@ public final class ByteUtils {
     
     
    /**
-    * Adds all the bytes not in a range to a collection of Byte.  The range can be specified
-    * either forwards or backwards.
+    * Adds all the bytes other than the byte provided to a collection of Byte.  
     * 
-    * @param from A number in the range from 0 to 255;
-    * @param to A number in the range from 0 to 255.
-    * @param bytes A set of bytes to add the bytes in the range to.
+    * @param value The byte value which should not appear in the collection of bytes.
+    * @param bytes A set of bytes to add all the other bytes to.
     * @throws IllegalArgumentException if collection of bytes passed in is null.
     */
     public static void addInvertedByteValues(final byte value, final Collection<Byte> bytes) {
@@ -640,7 +637,7 @@ public final class ByteUtils {
      *                                  or the collection of bytes passed in is null.
      */
     public static void addBytesNotInRange(final int from, final int to, final Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	checkIntToByteRange(from, to);
     	final int start = from < to? from : to;
     	final int end =   from < to? to : from;
@@ -666,7 +663,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the set of bytes passed in is null.
      */
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	final int capacity = (int) (bytes.size() / 0.75);
         final Set<Byte> inverted = new HashSet<Byte>(capacity);
         buildInvertedSet(bytes, inverted);
@@ -684,8 +681,8 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if either of the sets passed in is null.
      */
     public static boolean inverseOf(final Set<Byte> set, final Set<Byte> inverseSet) {
-    	checkNullCollection(set);
-    	checkNullCollection(inverseSet);
+    	ObjectUtils.checkNullCollection(set, "parameter:set");
+    	ObjectUtils.checkNullCollection(inverseSet, "parameter:inverseSet");
     	// If the set sizes are compatible with being the inverse of each other:
     	if (set.size() == 256 - inverseSet.size()) {
     		// Go through  the bytes in the smaller set, to see if they appear in the
@@ -730,8 +727,8 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if either of the sets passed in is null.  
      */
     public static void buildInvertedSet(final Set<Byte> bytes, final Set<Byte> invertedSet) {
-        checkNullCollection(bytes);
-        checkNullCollection(invertedSet);
+    	ObjectUtils.checkNullCollection(bytes, "parameter:bytes");
+    	ObjectUtils.checkNullCollection(invertedSet, "parameter:invertedSet");
     	for (int value = 0; value < 256; value++) {
             if (!bytes.contains((byte) value)) {
                 invertedSet.add(Byte.valueOf((byte) value));
@@ -768,9 +765,9 @@ public final class ByteUtils {
     public static void removeIntersection(final Set<Byte> firstSet, 
                                           final Set<Byte> secondSet,
                                           final Collection<Byte> bytesRemoved) {
-    	checkNullCollection(firstSet);
-    	checkNullCollection(secondSet);
-    	checkNullCollection(bytesRemoved);
+    	ObjectUtils.checkNullCollection(firstSet, "parameter:firstSet");
+    	ObjectUtils.checkNullCollection(secondSet, "parameter:secondSet");
+    	ObjectUtils.checkNullCollection(bytesRemoved, "parameter:bytesRemoved");
     	final Iterator<Byte> byteIterator = firstSet.iterator();
         while (byteIterator.hasNext()) {
             final Byte theByte = byteIterator.next();
@@ -843,7 +840,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the set of bytes passed in is null.
      */
     public static Byte getAllBitMaskForBytes(final Set<Byte> bytes) {
-        checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
         final int setSize = bytes.size();
         if (setSize == 256) { // if we have all byte values, then a bitmask of zero matches all of them.
         	return Byte.valueOf((byte) 0);
@@ -874,7 +871,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the set of bytes passed in is null.
      */
     public static Byte getAnyBitMaskForBytes(final Set<Byte> bytes) {
-        checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
         final int setSize = bytes.size();
         if (setSize == 0) {
             return Byte.valueOf((byte)0);
@@ -921,7 +918,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the collection of bytes passed in is null.
      */
     public static int getBitsInCommon(final Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
         if (bytes.isEmpty()) {
         	return 0;
         }
@@ -947,7 +944,7 @@ public final class ByteUtils {
 	 * @throws IllegalArgumentException if the set of bytes passed in is null.             
      */
     public static int getBitsSetForAllPossibleBytes(final Set<Byte> bytes) {
-        checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	// Count how many bytes match each bit:
         int bit1 = 0, bit2 = 0, bit3 = 0, bit4 = 0, bit5 = 0, bit6 = 0, bit7 = 0, bit8 = 0;
         for (final Byte b : bytes) {
@@ -985,7 +982,7 @@ public final class ByteUtils {
      */
     public static void addBytesMatchingAnyBitMask(final byte bitMask,
     											  final Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	// start loop at one - any bitmask matchers can never match the zero byte.
         for (int byteIndex = 1; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
@@ -1006,7 +1003,7 @@ public final class ByteUtils {
      */
     public static void addBytesNotMatchingAnyBitMask(final byte bitMask,
     											     Collection<Byte> bytes) {
-    	checkNullCollection(bytes);
+    	ObjectUtils.checkNullCollection(bytes);
     	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((byteValue & bitMask) == 0) {
@@ -1076,7 +1073,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the array is null or empty.
      */
     public static String bytesToString(final boolean prettyPrint, final byte[] bytes) {
-        checkNullArray(bytes);
+    	ObjectUtils.checkNullByteArray(bytes);
     	return bytesToString(prettyPrint, bytes, 0, bytes.length);
     }
     
@@ -1135,25 +1132,11 @@ public final class ByteUtils {
         return string.toString();
     }    
 
-	private static void checkNullCollection(final Collection<Byte> bytes) {
-		if (bytes == null) {
-    		throw new IllegalArgumentException(COLLECTION_PASSED_IN_CANNOT_BE_NULL);
-    	}
-	}
-
-	private static void checkNullArray(byte[] bytes) {
-		if (bytes == null) {
-    		throw new IllegalArgumentException(ARRAY_PASSED_IN_CANNOT_BE_NULL);
-    	}
-	}    	
-
-
-	private static void checkNullString(String string) {
-		if (string == null) {
-    		throw new IllegalArgumentException(STRING_PASSED_IN_CANNOT_BE_NULL);
-    	}
-	}    	
-
+    
+    /*
+     * Private utility methods
+     */
+    
 	private static void checkNegativeRepeats(final int numberOfRepeats) {
 		if (numberOfRepeats < 0) {
         	throw new IllegalArgumentException("Number of repeats cannot be negative " + numberOfRepeats);
@@ -1167,7 +1150,7 @@ public final class ByteUtils {
 	}
 
 	private static void checkBounds(final byte[] array, final int startIndex, final int endIndex) {
-		checkNullArray(array);
+		ObjectUtils.checkNullByteArray(array);
 		if (startIndex < 0 || startIndex >= endIndex || endIndex > array.length) {
         	throw new IllegalArgumentException("The start index must be between 0 inclusive and the array length exclusive" +
         									   ",end index must be greater than the start index and not greater than the length. " +

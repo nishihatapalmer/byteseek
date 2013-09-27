@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -85,6 +85,7 @@ public interface ParseTree extends Iterable<ParseTree> {
 	 */
 	public int getIntValue() throws ParseException;
 
+	
 	/**
 	 * Returns a String representing the value of this node,
 	 * or throws a ParseException if no such String value exists,
@@ -96,6 +97,7 @@ public interface ParseTree extends Iterable<ParseTree> {
 	 */
 	public String getTextValue() throws ParseException;
 	
+	
 	/**
 	 * Returns whether the value of this node should be inverted or not.
 	 * 
@@ -103,7 +105,7 @@ public interface ParseTree extends Iterable<ParseTree> {
 	 */
 	public boolean isValueInverted();
 
-
+	
 	/**
 	 * Returns the number of child nodes this node has.
 	 * 
@@ -121,26 +123,6 @@ public interface ParseTree extends Iterable<ParseTree> {
 	 */
 	public ParseTree getChild(int childIndex);
 	
-	
-	/**
-	 * Adds a child node to this node.
-	 * 
-	 * @param child The child ParseTree to add.
-	 * @return boolean if the ParseTree child was successfully added.
-	 * @throws UnsupportedOperationException if the implementation cannot add child nodes.
-	 */
-	public boolean addChild(ParseTree child);
-	
-	
-	/**
-	 * Removes a child node from this node at the given index position
-	 * 
-	 * @param childIndex The index of the child ParseTree to remove.
-	 * @return ParseTree The child ParseTree removed from this node.
-	 * @throws UnsupportedOperationException if the implementation cannot remove child nodes.
-	 * @throws IndexOutOfBoundsException if the childIndex is less than zero or greater than or equal to the number of children.
-	 */
-	public ParseTree removeChild(int childIndex);
 
 }
 

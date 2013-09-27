@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-13, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -161,11 +161,8 @@ public enum ParseTreeType {
 	 * particular parsers and compilers that work with this type.
 	 * <p>
 	 * Implementations should throw a {@link net.byteseek.parser.ParseException} if calls are made to 
-	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()}.
-	 * <p>
-	 * If a STRING type has a length of one, then it should be able to return the byte value of the
-	 * first character on a call to {@link net.byteseek.parser.tree.ParseTree#getByteValue()}. 
-	 * Otherwise it should throw a ParseException.
+	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()} or 
+	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}
 	 * <p>
 	 * A STRING type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
@@ -185,11 +182,8 @@ public enum ParseTreeType {
 	 * as byte strings to match, where lower and upper case will match equivalently.
 	 * <p>
 	 * Implementations should throw a {@link net.byteseek.parser.ParseException} if calls are made to 
-	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()}.
-	 * <p>
-	 * If a CASE_INSENSITIVE_STRING type has a length of one, then it should be able to return the byte value of the
-	 * first character on a call to {@link net.byteseek.parser.tree.ParseTree#getByteValue()}.
-	 * Otherwise it should throw a ParseException.
+	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()} or 
+	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}
 	 * <p>
 	 * A STRING type has no children, and must return an empty list of child nodes if 
 	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
@@ -216,9 +210,10 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}.
 	 * <p>
-	 * It must have two non-inverted child BYTE nodes defining an inclusive range of values between 0 and 255,
+	 * It must have two child BYTE nodes defining an inclusive range of values between 0 and 255,
 	 * This means that although the values are stored as Java bytes, which are signed, their values
-	 * are interpreted as meaning the more normal unsigned integer values of bytes from 0 to 255.
+	 * are interpreted as meaning the more normal unsigned integer values of bytes from 0 to 255 when 
+	 * processing the range.
 	 * <p><blockquote><pre><code>
 	 *    RANGE
 	 *     /&nbsp;&nbsp;&nbsp;&nbsp;\

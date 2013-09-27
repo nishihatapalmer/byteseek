@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,9 +40,9 @@ import net.byteseek.parser.tree.ParseTreeType;
 
 
 /**
- * A base implementation of ParseTree, that only has a type.
+ * An immutable base implementation of ParseTree, that only has a type.
  * This implementation is not particularly useful to instantiate directly, although that is not
- * prohibited.  This class is intended to be subclassed, with particular types of nodes implementing
+ * prohibited.  This class is intended to be sub-classed, with particular types of nodes implementing
  * their own specific functionality, with this class providing default behaviour.
  * <p>
  * Asking for a byte, int or text value will throw a {@link ParseException}.  Subclasses which 
@@ -79,7 +79,7 @@ public class BaseNode implements ParseTree {
    */
   @Override
   public byte getByteValue() throws ParseException {
-    throw new ParseException("No byte value is available.");
+    throw new ParseException("No byte value is available for the node " + this);
   }
 
   /**
@@ -87,7 +87,7 @@ public class BaseNode implements ParseTree {
    */  
   @Override
   public int getIntValue() throws ParseException {
-    throw new ParseException("No int value is available.");
+    throw new ParseException("No int value is available for the node " + this);
   }
 
   /**
@@ -95,7 +95,7 @@ public class BaseNode implements ParseTree {
    */
   @Override
   public String getTextValue() throws ParseException {
-    throw new ParseException("No text value is available.");
+    throw new ParseException("No text value is available for the node " + this);
   }
 
   /**
@@ -106,13 +106,6 @@ public class BaseNode implements ParseTree {
     return false;
   }
   
-  /**
-   * Always returns an empty list of child ParseTrees.
-   */
-  //@Override
-  //public List<ParseTree> getChildren() {
-  //  return Collections.emptyList();
-  //}
   
   @Override
   public int getNumChildren() {
@@ -121,17 +114,7 @@ public class BaseNode implements ParseTree {
   
   @Override
   public ParseTree getChild(final int childIndex) {
-	  throw new IndexOutOfBoundsException("There are no children in the node of type:" + type);
-  }
-
-  @Override
-  public boolean addChild(final ParseTree child) {
-	  throw new UnsupportedOperationException("The node does not support adding child nodes, type:" + type);
-  }
-  
-  @Override
-  public ParseTree removeChild(final int childIndex) {
-	  throw new UnsupportedOperationException("The node does not support removing child nodes, type:" + type);
+	  throw new IndexOutOfBoundsException("There are no children in the node: " + this);
   }
   
   @Override

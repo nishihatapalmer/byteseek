@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,23 +33,21 @@ package net.byteseek.parser.tree.node;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.util.bytes.ByteUtils;
 
 
 /**
- * A ParseTree node that has a string value.
+ * An immutable ParseTree node that has a string value.
  * <p>
  * The ParseTreeType is normally ParseTreeType.STRING, unless the node
  * should match case-insensitively, in which case the ParseTreeType 
  * will be ParseTreeType.CASE_INSENSITIVE_STRING.
  * <p>
- * StringNodes have no children, and will always return an empty list of
- * ParseTrees.
+ * StringNodes have no children, and can not be inverted.
  * 
  * @author Matt Palmer
  *
  */
-public class StringNode extends BaseNode {
+public final class StringNode extends BaseNode {
 
   private String value;
 
@@ -62,9 +60,11 @@ public class StringNode extends BaseNode {
     this(value, ParseTreeType.STRING);
   }
   
+  
   /**
    * Constructs a StringNode with the given String and whether the node
-   * should match case sensitively or not.
+   * should match case sensitively or not.  If the string passed in is null, then an empty
+   * string will be used for the StringNode.
    * 
    * @param value The String for this StringNode.
    * @param type The ParseTreeType of the StringNode.  It can only be STRING or CASE_INSENSITIVE_STRING.
@@ -76,7 +76,7 @@ public class StringNode extends BaseNode {
     	throw new IllegalArgumentException("A StringNode can only be of type STRING or CASE_INSENSITIVE_STRING. " + 
     										"The type passed in was [" + type + ']');
     }
-    this.value = value;
+    this.value = value == null? "" : value;
   }
 
   /**
@@ -90,33 +90,6 @@ public class StringNode extends BaseNode {
   }
   
 
-  /**
-   * Sets the text value of this StringNode.
-   * 
-   * @param value The new String of this StringNode.
-   */
-  public void setTextValue(final String value) {
-    this.value = value;
-  }
-  
-  /**
-   * Returns a byte value of a single character STRING.  It will also
-   * return the byte value of a CASE_INSENSITIVE_STRING if it is not an
-   * alphabetic character.
-   * 
-   * @return byte The byte value of a single character string.
-   * @throws ParseException if the string does not have a length of one, or you request
-   *                        the byte value of an alphabetic character in a case insensitive string.
-   */
-  @Override
-  public byte getByteValue() throws ParseException {
-	  if (value.length() == 1) {
-		  return ByteUtils.getBytes(value)[0];
-	  }
-	  throw new ParseException("The string [" + this + "] must be of length 1");
-  }
-  
-  
   /**
    * Returns whether the string matches case sensitively or not.
    * 

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-2013, All rights reserved.
+ * Copyright Matt Palmer 2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,45 +28,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-package net.byteseek.parser.tree.node;
-
-import net.byteseek.parser.ParseException;
-import net.byteseek.parser.tree.ParseTreeType;
-
-
-/**
- * An immutable ParseTree node that has an int value and a type of INTEGER.
- *  
- * @author Matt Palmer.
- *
- */
-public final class IntNode extends BaseNode {
-
-  private final int value;
-  
-  /**
-   * Constructs an IntNode with the given value.
-   * 
-   * @param value The value of the IntNode.
-   */
-  public IntNode(final int value) {
-	super(ParseTreeType.INTEGER);
-	this.value = value;
-  }
-  
-  /**
-   * Returns the integer value of this IntNode.
-   * @return int The integer value of this IntNode.
-   */
-  @Override
-  public int getIntValue() throws ParseException {
-    return value;
-  }
-  
-  @Override
-  public String toString() {
-	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + ']';
-  }
-  
-}
+ 
+ /**
+  * net.byteseek.parser is a package primarily containing an interface for parsing strings into
+  * an abstract syntax tree of type T, along with a ParseException if parsing fails.
+  * <p>
+  * A utility class, {@link net.byteseek.parser.StringParseReader} is also included, which can be used by parsers 
+  * to provide reading functionality on a string. It maintains a current position in the string,
+  * and has methods to peek ahead and behind and read positive integers, strings and hex values
+  * directly parsed from the string.
+  */
+ package net.byteseek.parser;

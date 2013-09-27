@@ -31,7 +31,7 @@
  
  /**
   * net.byteseek.parser.tree is a package containing an interface for an 
-  * Abstract Syntax Tree, and a sub-package containing an implementation of it.
+  * Abstract Syntax Tree, and a sub-package containing an immutable implementation of it.
   * A static utility class {@link ParseTreeUtils} simplifies the parsing of some of 
   * the abstract syntax tree structure and values. 
   * <p>
@@ -43,6 +43,7 @@
   * ParseTree node. These range from simple nodes like BYTE, having a byte value, to
   * SET, which may have many child nodes defining a set of bytes, to imperative nodes
   * like REPEAT or ONE_TO_MANY.  Their structure is defined in the JavaDoc for each 
-  * enumeration value.
+  * enumeration value.  A node with a given ParseTreeType should follow the behaviour 
+  * defined for a node of that ParseTreeType.
   */
  package net.byteseek.parser.tree;

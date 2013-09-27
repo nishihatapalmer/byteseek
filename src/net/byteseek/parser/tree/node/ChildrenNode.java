@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,6 +31,7 @@
 package net.byteseek.parser.tree.node;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,7 +40,7 @@ import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.util.collections.UnmodifiableListIterator;
 
 /**
- * A ParseTree node which has child ParseTrees.  The value of the node,
+ * An immutable ParseTree node which has child ParseTrees.  The value of the node,
  * if any, can be inverted.
  * <p>
  * The ParseTreeType defines what kind of children the node has and how
@@ -48,7 +49,7 @@ import net.byteseek.util.collections.UnmodifiableListIterator;
  * 
  * @author Matt Palmer.
  */
-public class ChildrenNode extends BaseNode {
+public final class ChildrenNode extends BaseNode {
 
 	private final List<ParseTree> children;
 	private final boolean inverted; 
@@ -60,7 +61,7 @@ public class ChildrenNode extends BaseNode {
 	 * @param type The ParseTreeType of the node.
 	 */
 	public ChildrenNode(final ParseTreeType type) {
-		this(type,  null, false);
+		this(type, (List<ParseTree>) null, false);
 	}
 	
 	/**
@@ -71,7 +72,7 @@ public class ChildrenNode extends BaseNode {
 	 * @param isInverted Whether the value of the node is inverted or not.
 	 */
 	public ChildrenNode(final ParseTreeType type, final boolean isInverted) {
-		this(type, null, isInverted);
+		this(type, (List<ParseTree>) null, isInverted);
 	}
 	
 	/**
@@ -84,9 +85,68 @@ public class ChildrenNode extends BaseNode {
 	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children) {
 		this(type, children, false);
 	}
+	
+	/**
+	 * Constructs an uninverted ChildrenNode with a given type, adding the parse tree passed in as a child.
+	 * <p>
+	 * 
+	 * @param type The ParseTreeType of this ChildrenNode.
+	 * @param child The ParseTree to be made the child of this node.
+	 */
+	public ChildrenNode(final ParseTreeType type, final ParseTree child) {
+		this(type, child, false);
+	}
 
 	/**
+	 * Constructs a ChildrenNode with a given type and inversion, adding the child to it.
+	 * <p>
+	 * 
+	 * @param type The ParseTreeType of this ChildrenNode.
+	 * @param children The list of child ParseTrees for this ChildrenNode.
+	 */
+	public ChildrenNode(final ParseTreeType type, final ParseTree child, final boolean inverted) {
+		super(type);
+		if (child == null) {
+			this.children = new ArrayList<ParseTree>(0);
+		} else {
+			this.children = new ArrayList<ParseTree>(1);
+			this.children.add(child);
+		}
+		this.inverted = inverted;
+	}
+	
+
+	/**
+	 * Constructs a ChildreNode, not inverted, and taking all the ParseTree
+	 * parameters provided as children of the node.
+	 * 
+	 * @param type The type of the ChildrenNOde
+	 * @param parseTrees The children of this node.
+	 */
+	public ChildrenNode(final ParseTreeType type, final ParseTree...parseTrees) {
+		this(type, false, parseTrees);
+	}
+
+	
+	
+	/**
+	 * Constructs a ChildreNode with the inversion status passed in, and taking all the ParseTree
+	 * parameters provided as children of the node.
+	 * 
+	 * @param type The type of the ChildrenNOde
+	 * @param inverted Whether the node is inverted or not.
+	 * @param parseTrees The children of this node.
+	 */
+	public ChildrenNode(final ParseTreeType type, final boolean inverted, final ParseTree...parseTrees) {
+		super(type);
+		this.children = Arrays.asList(parseTrees);
+		this.inverted = inverted;
+	}
+	
+	
+	/**
 	 * Constructs a ChildrenNode with a given type, inversion status and list of child ParseTrees.
+	 * If the list of child parsetrees is null, then the node is constructed with an empty list of children.
 	 * 
 	 * @param type The ParseTreeType of this ChildrenNode.
 	 * @param children The list of child ParseTrees for this ChildrenNode.
@@ -95,8 +155,8 @@ public class ChildrenNode extends BaseNode {
 	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
 			   			final boolean inverted) {
 		super(type);
-		this.children = children == null? new ArrayList<ParseTree>(2)
-									     : new ArrayList<ParseTree>(children);
+		this.children = children == null? new ArrayList<ParseTree>(0)
+									    : new ArrayList<ParseTree>(children);
 		this.inverted = inverted;
 	}		
 	
@@ -104,25 +164,22 @@ public class ChildrenNode extends BaseNode {
 	public int getNumChildren() {
 		return children.size();
 	}
-	
+	/**
+	 * 	{@inheritDoc}
+	 * 
+	 * @throws IndexOutOfBoundsException if the childIndex < 0 or >= the number of children.
+	 */
 	@Override
 	public ParseTree getChild(final int childIndex) {
-		if (childIndex < 0 || childIndex >= children.size()) {
-			throw new IndexOutOfBoundsException("Cannot access child with index " + childIndex + " in node with " + children.size() + " children ");
-		}
 		return children.get(childIndex);
 	}
 	
-	public boolean addChild(final ParseTree child) {
-		return children.add(child);
-	}
-	
-	
-	@Override
-	public ParseTree removeChild(final int childIndex) {
-		return children.remove(childIndex);
-	}
-
+	/**
+	 * Returns an iterator over the children of this node.
+	 * <p>
+	 * Note that the iterator returned is unmodifiable, and a call to remove() on it 
+	 * will throw an UnsupportedOperationException.
+	 */
 	@Override
 	public Iterator<ParseTree> iterator() {
 		return new UnmodifiableListIterator<ParseTree>(children);

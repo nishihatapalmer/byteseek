@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,7 +36,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.byteseek.parser.ParseException;
@@ -53,17 +55,14 @@ public class ParseTreeUtilsTest {
 
 	@Test
 	public final void testGetFirstChild() throws ParseException {
-		ChildrenNode parent = new ChildrenNode(ParseTreeType.SET);
-		parent.addChild(new IntNode(1));
-		parent.addChild(new StringNode("A string"));
+		ParseTree parent = new ChildrenNode(ParseTreeType.SET, 
+										    new IntNode(1), new StringNode("A string"));
 		
 		ParseTree firstChild = ParseTreeUtils.getFirstChild(parent);
 		assertEquals("First child is integer", ParseTreeType.INTEGER, firstChild.getParseTreeType());
 		assertEquals("First child value is 1", 1, firstChild.getIntValue());
 
-		parent = new ChildrenNode(ParseTreeType.SET);
-		parent.addChild(new StringNode("A string"));
-		parent.addChild(new IntNode(1));
+		parent = new ChildrenNode(ParseTreeType.SET, new StringNode("A string"), new IntNode(1));
 		
 		firstChild = ParseTreeUtils.getFirstChild(parent);
 		assertEquals("First child is String", ParseTreeType.STRING, firstChild.getParseTreeType());
@@ -71,8 +70,8 @@ public class ParseTreeUtilsTest {
 		
 		try {
 			firstChild = ParseTreeUtils.getFirstChild(null);
-			fail("Expected a null pointeger exception");
-		} catch (NullPointerException expected) {
+			fail("Expected an illegal argument exception");
+		} catch (IllegalArgumentException expected) {
 		}
 		
 		try {
@@ -87,17 +86,13 @@ public class ParseTreeUtilsTest {
 	
 	@Test
 	public final void testGetLastChild() throws ParseException {
-		ChildrenNode parent = new ChildrenNode(ParseTreeType.SET);
-		parent.addChild(new StringNode("A string"));
-		parent.addChild(new IntNode(1));
+		ParseTree parent = new ChildrenNode(ParseTreeType.SET, new StringNode("A string"), new IntNode(1));
 		
 		ParseTree lastChild = ParseTreeUtils.getLastChild(parent);
 		assertEquals("Last child is integer", ParseTreeType.INTEGER, lastChild.getParseTreeType());
 		assertEquals("Last child value is 1", 1, lastChild.getIntValue());
 
-		parent = new ChildrenNode(ParseTreeType.SET);
-		parent.addChild(new IntNode(1));
-		parent.addChild(new StringNode("A string"));
+		parent = new ChildrenNode(ParseTreeType.SET, new IntNode(1),new StringNode("A string"));
 		
 		lastChild = ParseTreeUtils.getLastChild(parent);
 		assertEquals("Last child is String", ParseTreeType.STRING, lastChild.getParseTreeType());
@@ -105,8 +100,8 @@ public class ParseTreeUtilsTest {
 		
 		try {
 			lastChild = ParseTreeUtils.getLastChild(null);
-			fail("Expected a null pointeger exception");
-		} catch (NullPointerException expected) {
+			fail("Expected an illegal argument exception");
+		} catch (IllegalArgumentException expected) {
 		}
 		
 		try {
@@ -116,17 +111,36 @@ public class ParseTreeUtilsTest {
 		} catch (ParseException expected) {
 		}
 	}
+	
+	
+	@Test
+	public void testGetChildIndexOfType() {
+		try {
+			ParseTreeUtils.getChildIndexOfType(null, 0, ParseTreeType.SET);
+			fail("Expected IllegalArgumentException for null parse tree");
+		} catch (IllegalArgumentException expected) {}
+		
+		ParseTree parent = new ChildrenNode(ParseTreeType.SET, new StringNode("A string"), new IntNode(1));
+		testGetChildIndexOfType(parent, ParseTreeType.STRING, 0, 0);
+		testGetChildIndexOfType(parent, ParseTreeType.INTEGER, 1, 0);
+		
+		parent = new ChildrenNode(ParseTreeType.SET, new StringNode("A string"), new StringNode("Second string"));
+		testGetChildIndexOfType(parent, ParseTreeType.STRING, 0, 0);
+		testGetChildIndexOfType(parent, ParseTreeType.STRING, 1, 1);
+	}
+	
+	private void testGetChildIndexOfType(ParseTree parent, ParseTreeType childType, int index, int startIndex) {
+		int childIndex = ParseTreeUtils.getChildIndexOfType(parent,  startIndex, childType);
+		assertEquals("Child index of node " + parent + " of type " + childType, index, childIndex);
+	}
 
+	
 	@Test
 	public final void testGetFirstRangeValue() throws ParseException {
-		ChildrenNode parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(ByteNode.valueOf((byte) 1));
-		parent.addChild(ByteNode.valueOf((byte) 1));
+		ParseTree parent = new ChildrenNode(ParseTreeType.RANGE, ByteNode.valueOf((byte) 1), ByteNode.valueOf((byte) 1));
 		assertEquals("Value is 1", 1, ParseTreeUtils.getFirstRangeValue(parent));
 		
-		parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(ByteNode.valueOf((byte) 242));
-		parent.addChild(ByteNode.valueOf((byte) 10));
+		parent = new ChildrenNode(ParseTreeType.RANGE, ByteNode.valueOf((byte) 242), ByteNode.valueOf((byte) 10));
 		assertEquals("Value is 242", 242, ParseTreeUtils.getFirstRangeValue(parent));
 		
 		for (ParseTreeType type : ParseTreeType.values()) {
@@ -139,9 +153,7 @@ public class ParseTreeUtilsTest {
 			}
 
 			if (type != ParseTreeType.BYTE) {
-				parent = new ChildrenNode(ParseTreeType.RANGE);
-				parent.addChild(new BaseNode(type));
-				parent.addChild(ByteNode.valueOf((byte) 96));
+				parent = new ChildrenNode(ParseTreeType.RANGE, new BaseNode(type), ByteNode.valueOf((byte) 96));
 				try {
 					ParseTreeUtils.getFirstRangeValue(parent);
 					fail("Expected a ParseException if the child type is not a BYTE.  Type is " + type);
@@ -152,18 +164,17 @@ public class ParseTreeUtilsTest {
 		
 		
 		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(ByteNode.valueOf((byte) 54));
+			parent = new ChildrenNode(ParseTreeType.RANGE, ByteNode.valueOf((byte) 54));
 			ParseTreeUtils.getFirstRangeValue(parent);
 			fail("Expected a ParseException with only one child");
 		} catch (ParseException expected) {
 		}
 		
 		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(ByteNode.valueOf((byte) 0));
-			parent.addChild(ByteNode.valueOf((byte) 64));
-			parent.addChild(ByteNode.valueOf((byte) 92));
+			parent = new ChildrenNode(ParseTreeType.RANGE, 
+								      ByteNode.valueOf((byte) 0),
+								      ByteNode.valueOf((byte) 64),
+								      ByteNode.valueOf((byte) 92));
 			ParseTreeUtils.getFirstRangeValue(parent);
 			fail("Expected a ParseException with three children");
 		} catch (ParseException expected) {
@@ -174,14 +185,14 @@ public class ParseTreeUtilsTest {
 
 	@Test
 	public final void testGetSecondRangeValue() throws ParseException {
-		ChildrenNode parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(ByteNode.valueOf((byte) 1));
-		parent.addChild(ByteNode.valueOf((byte)1));
+		ParseTree parent = new ChildrenNode(ParseTreeType.RANGE, 
+											ByteNode.valueOf((byte) 1),
+											ByteNode.valueOf((byte)1));
 		assertEquals("Value is 1", 1, ParseTreeUtils.getSecondRangeValue(parent));
 		
-		parent = new ChildrenNode(ParseTreeType.RANGE);
-		parent.addChild(ByteNode.valueOf((byte) 242));
-		parent.addChild(ByteNode.valueOf((byte) 10));
+		parent = new ChildrenNode(ParseTreeType.RANGE, 
+							   ByteNode.valueOf((byte) 242),
+							   ByteNode.valueOf((byte) 10));
 		assertEquals("Value is 10", 10, ParseTreeUtils.getSecondRangeValue(parent));
 		
 		for (ParseTreeType type : ParseTreeType.values()) {
@@ -194,9 +205,9 @@ public class ParseTreeUtilsTest {
 			}
 
 			if (type != ParseTreeType.BYTE) {
-				parent = new ChildrenNode(ParseTreeType.RANGE);
-				parent.addChild(ByteNode.valueOf((byte)96));
-				parent.addChild(new BaseNode(type));
+				parent = new ChildrenNode(ParseTreeType.RANGE, 
+								  		  ByteNode.valueOf((byte)96),
+								  		  new BaseNode(type));
 				try {
 					ParseTreeUtils.getSecondRangeValue(parent);
 					fail("Expected a ParseException if the second child type has is not a BYTE.  Type is " + type);
@@ -207,18 +218,17 @@ public class ParseTreeUtilsTest {
 		
 	
 		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(ByteNode.valueOf((byte) 255));
+			parent = new ChildrenNode(ParseTreeType.RANGE, ByteNode.valueOf((byte) 255));
 			ParseTreeUtils.getSecondRangeValue(parent);
 			fail("Expected a ParseException with only one child");
 		} catch (ParseException expected) {
 		}
 		
 		try {
-			parent = new ChildrenNode(ParseTreeType.RANGE);
-			parent.addChild(ByteNode.valueOf((byte) 0));
-			parent.addChild(ByteNode.valueOf((byte) 64));
-			parent.addChild(ByteNode.valueOf((byte) 92));
+			parent = new ChildrenNode(ParseTreeType.RANGE, 
+							          ByteNode.valueOf((byte) 0),
+							          ByteNode.valueOf((byte) 64),
+							          ByteNode.valueOf((byte) 92));
 			ParseTreeUtils.getSecondRangeValue(parent);
 			fail("Expected a ParseException with three children");
 		} catch (ParseException expected) {
@@ -227,13 +237,11 @@ public class ParseTreeUtilsTest {
 
 	@Test
 	public final void testGetFirstRepeatValue() throws ParseException {
-		ChildrenNode parent = new ChildrenNode(ParseTreeType.REPEAT);
-		parent.addChild(new IntNode(1));
+		ParseTree parent = new ChildrenNode(ParseTreeType.REPEAT, new IntNode(1));
 		assertEquals("Value is 1", 1, ParseTreeUtils.getFirstRepeatValue(parent));
 		
-		parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX);
-		parent.addChild(new IntNode(2420));
-		parent.addChild(new IntNode(10));
+		parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX,
+								  new IntNode(2420),new IntNode(10));
 		assertEquals("Value is 2420", 2420, ParseTreeUtils.getFirstRepeatValue(parent));
 		
 		for (ParseTreeType type : ParseTreeType.values()) {
@@ -241,8 +249,6 @@ public class ParseTreeUtilsTest {
 				type != ParseTreeType.REPEAT_MIN_TO_MANY &&
 				type != ParseTreeType.REPEAT_MIN_TO_MAX) {
 				try {
-					parent = new ChildrenNode(type);
-					parent.addChild(new IntNode(1));
 					ParseTreeUtils.getFirstRepeatValue(new ChildrenNode(type));
 					fail("Expected a ParseException if the repeat node type is not a repeating node.  Type is " + type);
 				} catch (ParseException expected) {
@@ -250,9 +256,7 @@ public class ParseTreeUtilsTest {
 			}
 
 			if (type != ParseTreeType.INTEGER) {
-				parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MANY);
-				parent.addChild(new BaseNode(type));
-				parent.addChild(new IntNode(96));
+				parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MANY, new BaseNode(type), new IntNode(96));
 				try {
 					ParseTreeUtils.getFirstRepeatValue(parent);
 					fail("Expected a ParseException if the child type has no integer value.  Type is " + type);
@@ -262,9 +266,7 @@ public class ParseTreeUtilsTest {
 		}
 		
 		try {
-			parent = new ChildrenNode(ParseTreeType.REPEAT);
-			parent.addChild(new IntNode(-1));
-			parent.addChild(new IntNode(30));
+			parent = new ChildrenNode(ParseTreeType.REPEAT, new IntNode(-1), new IntNode(30));
 			ParseTreeUtils.getFirstRepeatValue(parent);
 			fail("Expected a ParseException if a value is less than 0");
 		} catch (ParseException expected) {
@@ -273,23 +275,19 @@ public class ParseTreeUtilsTest {
 
 	@Test
 	public final void testGetSecondRepeatValue() throws ParseException {
-		ChildrenNode parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX);
-		parent.addChild(new IntNode(1));
-		parent.addChild(new IntNode(10));
+		ParseTree parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX, 
+				       					    new IntNode(1), new IntNode(10));
 		assertEquals("Value is 10", 10, ParseTreeUtils.getSecondRepeatValue(parent));
 		
-		parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX);
-		parent.addChild(new IntNode(2420));
-		parent.addChild(new IntNode(10));
+		parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX, 
+							      new IntNode(2420), new IntNode(10));
 		assertEquals("Value is 10", 10, ParseTreeUtils.getSecondRepeatValue(parent));
 		
 		for (ParseTreeType type : ParseTreeType.values()) {
 			if (type != ParseTreeType.REPEAT &&
 				type != ParseTreeType.REPEAT_MIN_TO_MANY &&
 				type != ParseTreeType.REPEAT_MIN_TO_MAX) {
-				try {
-					parent.addChild(new IntNode(1));
-					parent = new ChildrenNode(type);
+				try { // this is buggy anyway...
 					ParseTreeUtils.getSecondRepeatValue(new ChildrenNode(type));
 					fail("Expected a ParseException if the repeat node type is not a repeating node.  Type is " + type);
 				} catch (ParseException expected) {
@@ -297,9 +295,8 @@ public class ParseTreeUtilsTest {
 			}
 
 			if (type != ParseTreeType.INTEGER) {
-				parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX);
-				parent.addChild(new IntNode(96));
-				parent.addChild(new BaseNode(type));
+				parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX,
+										  new IntNode(96),new BaseNode(type));
 				try {
 					ParseTreeUtils.getSecondRepeatValue(parent);
 					fail("Expected a ParseException if the child type has no integer value.  Type is " + type);
@@ -309,9 +306,8 @@ public class ParseTreeUtilsTest {
 		}
 		
 		try {
-			parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX);
-			parent.addChild(new IntNode(30));
-			parent.addChild(new IntNode(-1));
+			parent = new ChildrenNode(ParseTreeType.REPEAT_MIN_TO_MAX, 
+									  new IntNode(30), new IntNode(-1));
 			ParseTreeUtils.getSecondRepeatValue(parent);
 			fail("Expected a ParseException if a value is less than 0");
 		} catch (ParseException expected) {
@@ -531,8 +527,7 @@ public class ParseTreeUtilsTest {
 				type != ParseTreeType.ALL_BITMASK &&
 				type != ParseTreeType.ANY_BITMASK &&
 				type != ParseTreeType.ANY) {
-				ParseTree node = new ChildrenNode(ParseTreeType.SET);
-				node.addChild(new BaseNode(type));
+				ParseTree node = new ChildrenNode(ParseTreeType.SET, new BaseNode(type));
 				try {
 					ParseTreeUtils.getSetValues(node);
 					fail("getSetValues: expected a parse exception for set child node of type " + type);
@@ -622,7 +617,7 @@ public class ParseTreeUtilsTest {
 		testSetMethods("straight nested byte set", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
-		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
+		byteSet = combineByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
 		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
 		testSetMethods("Straight nested byte set with additional byte nodes", expected, byteSet);
 		
@@ -632,7 +627,7 @@ public class ParseTreeUtilsTest {
 		testSetMethods("straight set of inverted set of bytes", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
-		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
+		byteSet = combineByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
 		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
 		testSetMethods("Straight set of inverted set of bytes with additional byte nodes", expected, byteSet);
 		
@@ -642,7 +637,7 @@ public class ParseTreeUtilsTest {
 		testInvertedSetMethods("inverted set of non inverted set of bytes", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
-		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
+		byteSet = combineByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
 		expected = ByteUtils.toSet(values);
 		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
 		expected = ByteUtils.invertedSet(expected);
@@ -654,7 +649,7 @@ public class ParseTreeUtilsTest {
 		testInvertedSetMethods("inverted set of inverted set of bytes", expected, byteSet);
 		
 		// Add some byte nodes directly to the parent set:
-		addByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
+		byteSet = combineByteValues(byteSet, (byte) 0x3c, (byte) 0x83);
 		expected = ByteUtils.invertedSet(ByteUtils.toSet(values));
 		ByteUtils.addAll(new byte[] {(byte) 0x3c, (byte) 0x83}, expected);
 		expected = ByteUtils.invertedSet(expected);
@@ -664,7 +659,7 @@ public class ParseTreeUtilsTest {
 	private void testRangeAndByteSet(int start, int end, byte... values) throws ParseException {
 		 // Straight set of range and bytes
 	     ParseTree set = buildSet(false, buildRangeNode(start, end, false));
-		 addByteValues(set, values);
+		 set = combineByteValues(set, values);
 		 Set<Byte> expected = new HashSet<Byte>();
 		 ByteUtils.addBytesInRange(start, end, expected);
 		 ByteUtils.addBytes(expected, values);
@@ -672,13 +667,13 @@ public class ParseTreeUtilsTest {
 		 
 		 // Inverted set of range and bytes
 		 set = buildSet(true, buildRangeNode(start, end, false));
-		 addByteValues(set, values);
+		 set = combineByteValues(set, values);
 		 expected = ByteUtils.invertedSet(expected);
 		 testInvertedSetMethods("Inverted mixed set of range and  bytes", expected, set);
 		
 		 // Straight set of inverted range and non-inverted bytes
 		 set = buildSet(false, buildRangeNode(start, end, true));
-		 addByteValues(set, values);
+		 set = combineByteValues(set, values);
 		 expected.clear();
 		 ByteUtils.addBytesNotInRange(start, end, expected);
 		 ByteUtils.addBytes(expected, values);
@@ -686,7 +681,7 @@ public class ParseTreeUtilsTest {
 		 
 		 // Inverted set of inverted range and non-inverted bytes
 		 set = buildSet(true, buildRangeNode(start, end, true));
-		 addByteValues(set, values);
+		 set = combineByteValues(set, values);
 		 expected = ByteUtils.invertedSet(expected);
 		 testInvertedSetMethods("Inverted set of inverted range and bytes", expected, set);
 	}
@@ -719,21 +714,25 @@ public class ParseTreeUtilsTest {
 		testInvertedSetMethods("byte set" + ByteUtils.bytesToString(false,  values), expected, byteSet);
 		
 		// Test a set of inverted bytes
-		byteSet = new ChildrenNode(ParseTreeType.SET);
+		List<ParseTree> valueNodes = new ArrayList<ParseTree>();
 		expected = new HashSet<Byte>(320);
 		for (byte value : values) {
-			byteSet.addChild(new ByteNode(value, true));
-			expected.addAll(ByteUtils.invertedSet(value));
+			valueNodes.add(ByteNode.valueOf(value, true));
+			expected.addAll(ByteUtils.invertedSet(value));			
 		}
+		byteSet = new ChildrenNode(ParseTreeType.SET, valueNodes);
+
 		testSetMethods("byte set" + ByteUtils.bytesToString(false,  values), expected, byteSet);
 
 		// Test an inverted set of inverted bytes
-		byteSet = new ChildrenNode(ParseTreeType.SET, true);
+		
 		expected = new HashSet<Byte>(320);
+		valueNodes = new ArrayList<ParseTree>();
 		for (byte value : values) {
-			byteSet.addChild(new ByteNode(value, true));
+			valueNodes.add(ByteNode.valueOf(value, true));
 			expected.addAll(ByteUtils.invertedSet(value));
 		}
+		byteSet = new ChildrenNode(ParseTreeType.SET, valueNodes, true);
 		expected = ByteUtils.invertedSet(expected);
 		testInvertedSetMethods("byte set" + ByteUtils.bytesToString(false,  values), expected, byteSet);
 	}
@@ -864,30 +863,38 @@ public class ParseTreeUtilsTest {
 	}	
 
 	private ParseTree buildSet(boolean inverted, final ParseTree... children) {
-		ParseTree set = new ChildrenNode(ParseTreeType.SET, inverted);
-		for (ParseTree child : children) {
-			set.addChild(child);
-		}
-		return set;
+		return new ChildrenNode(ParseTreeType.SET, inverted, children);
 	}	
 	
 	private ParseTree buildRangeNode(int start, int end, boolean inverted) {
-		ParseTree rangeNode = new ChildrenNode(ParseTreeType.RANGE, inverted);
-		rangeNode.addChild(ByteNode.valueOf((byte) start));
-		rangeNode.addChild(ByteNode.valueOf((byte) end));
-		return rangeNode;
+		return new ChildrenNode(ParseTreeType.RANGE, inverted,
+								ByteNode.valueOf((byte) start), ByteNode.valueOf((byte) end));
 	}
 	
+
 	private ParseTree buildByteSet(boolean invertedSet, byte... values) {
-		ParseTree byteSet = new ChildrenNode(ParseTreeType.SET, invertedSet);
-		addByteValues(byteSet, values);
-		return byteSet;
+		List<ParseTree> byteNodes = new ArrayList<ParseTree>();
+		for (byte value : values) {
+			byteNodes.add(ByteNode.valueOf(value));
+		}
+		return new ChildrenNode(ParseTreeType.SET, byteNodes, invertedSet);
 	}
 	
-	private void addByteValues(ParseTree set, byte... values) {
-		for (byte value : values) {
-			set.addChild(new ByteNode(value));
+	private ParseTree combineByteValues(ParseTree set, byte... values) {
+		List<ParseTree> byteNodes = new ArrayList<ParseTree>();
+		for (ParseTree value : set) {
+			byteNodes.add(value);
 		}
+		for (byte value: values) {
+			byteNodes.add(ByteNode.valueOf(value));
+		}
+		return new ChildrenNode(ParseTreeType.SET, byteNodes, set.isValueInverted());
 	}
+
+	/*
+	private ParseTree buildChildren(ParseTreeType type, ParseTree... children) {
+		return new ChildrenNode(type, Arrays.asList(children));
+	}
+	*/
 	
 }

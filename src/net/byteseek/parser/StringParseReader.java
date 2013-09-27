@@ -30,6 +30,8 @@
  */
 package net.byteseek.parser;
 
+import net.byteseek.util.object.ObjectUtils;
+
 /**
  * A class which can be used by parsers to read from a string, maintaining
  * a position in the string.  Hex bytes, strings and integers can be read
@@ -54,9 +56,7 @@ public class StringParseReader {
 	 * @throws IllegalArgumentException if the string passed in is null.
 	 */
 	public StringParseReader(final String string) {
-		if (string == null) {
-			throw new IllegalArgumentException("The string to read cannot be null.");
-		}
+		ObjectUtils.checkNullString(string);
 		this.string = string;
 		this.length = string.length();
 	}
@@ -263,6 +263,6 @@ public class StringParseReader {
 		if (digit >= 'A' && digit <= 'F') {
 			return digit - 'A' + 10;
 		}
-		throw new ParseException("The character " + digit + " is not a hex digit.");
+		throw new ParseException("The character " + digit + " is not a hex digit at position " + position + " in expression " + string);
 	}
 }

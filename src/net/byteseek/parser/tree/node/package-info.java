@@ -30,7 +30,7 @@
  */
  
  /**
-  * net.byteseek.parser.tree.node is a package containing basic implementations of
+  * net.byteseek.parser.tree.node is a package containing immutable implementations of
   * the {@link net.byteseek.parser.tree.ParseTree} interface, covering nodes which
   * contain bytes, integers, strings, and which have child nodes.  These are sufficient
   * to implement any of the abstract syntax required for a byteseek regular expression.

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.byteseek.parser.ParseException;
@@ -57,6 +58,27 @@ public class ChildrenNodeTest {
 		}
 	}
 	
+	@Test
+	public final void testParameterConstructors() {
+		ChildrenNode node = new ChildrenNode(ParseTreeType.SET, BaseNode.ANY_NODE, BaseNode.ANY_NODE);
+		testNode("Two parameters", node, ParseTreeType.SET, 2, false);
+		
+		node = new ChildrenNode(ParseTreeType.SET, BaseNode.ANY_NODE, BaseNode.ANY_NODE, BaseNode.ANY_NODE);
+		testNode("Three parameters", node, ParseTreeType.SET, 3, false);
+
+		node = new ChildrenNode(ParseTreeType.SET, false, BaseNode.ANY_NODE, BaseNode.ANY_NODE);
+		testNode("Two parameters not inverted", node, ParseTreeType.SET, 2, false);
+		
+		node = new ChildrenNode(ParseTreeType.SET, false, BaseNode.ANY_NODE, BaseNode.ANY_NODE, BaseNode.ANY_NODE);
+		testNode("Three parameters not inverted", node, ParseTreeType.SET, 3, false);
+		
+		node = new ChildrenNode(ParseTreeType.SET, true, BaseNode.ANY_NODE, BaseNode.ANY_NODE);
+		testNode("Two parameters inverted", node, ParseTreeType.SET, 2, true);
+		
+		node = new ChildrenNode(ParseTreeType.SET, true, BaseNode.ANY_NODE, BaseNode.ANY_NODE, BaseNode.ANY_NODE);
+		testNode("Three parameters inverted", node, ParseTreeType.SET, 3, true);
+	}
+	
 	private void runNumChildrenTests(int numChildren) {
 		List<ParseTree> children = new ArrayList<ParseTree>();
 		for (int i  = 0; i < numChildren; i++) {
@@ -68,7 +90,7 @@ public class ChildrenNodeTest {
 	private void runTests(List<ParseTree> children, int numChildren) {
 		for (ParseTreeType type : ParseTreeType.values()) {
 			testConstruction(type, children, numChildren);
-			testChangingChildren(type, children, numChildren);
+			//testChangingChildren(type, children, numChildren);
 		}		
 	}
 	
@@ -79,7 +101,7 @@ public class ChildrenNodeTest {
 		node = new ChildrenNode(type, true);
 		testNode("Type and inverted", node, type, 0, true);
 		
-		node = new ChildrenNode(type, null);
+		node = new ChildrenNode(type, (List<ParseTree>) null);
 		testNode("Type and null children", node, type, 0, false);
 		
 		node = new ChildrenNode(type, children);
@@ -89,57 +111,26 @@ public class ChildrenNodeTest {
 		testNode("Specified false inversion: ", node, type, numChildren, false);
 		
 		node = new ChildrenNode(type, children, true);
-		testNode("Specified true inversion: ", node, type, numChildren, true);		
-	}
-	
-	private void testChangingChildren(ParseTreeType type, List<ParseTree> children, int numChildren) {
-		List<ParseTree> childrenToTest = new ArrayList<ParseTree>(children);
+		testNode("Specified true inversion: ", node, type, numChildren, true);
 		
-		ParseTree defaultNode = new ChildrenNode(type, childrenToTest); 
+		node = new ChildrenNode(type, (ParseTree) null);
+		testNode("Specified a null child", node, type, 0, false);
+		
+		node = new ChildrenNode(type, (ParseTree) null, false);
+		testNode("Specified a null uninverted child", node, type, 0, false);
 
-		int count = 0;
-		for (ParseTree child : defaultNode) {
-			assertEquals("Children in new node are the same as list passed in", childrenToTest.get(count), child);
-			ParseTree getChild = defaultNode.getChild(count);
-			assertEquals("Iterator child is the same as get child", getChild, child);
-			count++;
-		}
-		assertEquals("Number of children in list are the same", childrenToTest.size(), count);
-		assertEquals("Number of children in node matches iterator count", count, defaultNode.getNumChildren());
+		node = new ChildrenNode(type, (ParseTree) null, true);
+		testNode("Specified a null inverted child", node, type, 0, true);
+		
+		node = new ChildrenNode(type, BaseNode.ANY_NODE);
+		testNode("Specified an ANY node child", node, type, 1, false);
 
-		try {
-			defaultNode.getChild(-1);
-			fail("Expected IndexOutOfBoundsException with negative index");
-		} catch (IndexOutOfBoundsException expected) {}
-		
-		try {
-			defaultNode.getChild(count);
-			fail("Expected IndexOutOfBoundsException with number of children");
-		} catch (IndexOutOfBoundsException expected) {}
-		
-		assertEquals("Before change, size is correct: ", numChildren, defaultNode.getNumChildren());
-		
-		ParseTree nodeToAdd = new StringNode("Node to add");
-		childrenToTest.add(nodeToAdd);
-		
-		assertEquals("Add to test list: size is unchanged.", numChildren, defaultNode.getNumChildren());
-		
-		ParseTree nodeToAdd2 = new StringNode("Second node to add");
-		defaultNode.addChild(nodeToAdd2);
-		
-		ParseTree addedNode = defaultNode.getChild(defaultNode.getNumChildren() - 1);
-		assertEquals("Last added node is correct", addedNode, nodeToAdd2);
-		
-		assertEquals("Add default node: size is correct: ", numChildren + 1, defaultNode.getNumChildren());
-		
-		childrenToTest.remove(nodeToAdd);
-		
-		assertEquals("Remove node from test list: size is correct: ", numChildren + 1, defaultNode.getNumChildren());
+		node = new ChildrenNode(type, BaseNode.ANY_NODE, false);
+		testNode("Specified an uninverted ANY node child", node, type, 1, false);
 
-		defaultNode.removeChild(0);
+		node = new ChildrenNode(type, BaseNode.ANY_NODE, true);
+		testNode("Specified an inverted ANY node child", node, type, 1, true);
 		
-		assertEquals("Remove from default node: Default behaviour is is back to start", numChildren, defaultNode.getNumChildren());
-		assertEquals("Remove from given node: test list is back to start", numChildren, childrenToTest.size());
 	}
 	
 	private void testNode(String description, ChildrenNode node, ParseTreeType type, int numChildren, boolean isInverted) {
@@ -162,7 +153,45 @@ public class ChildrenNodeTest {
 		} catch (ParseException allIsFine) {};
 		
 		assertEquals(description + "Child list has correct number of children " + numChildren, numChildren, node.getNumChildren());
+		for (int i = 0; i < numChildren; i++) {
+			ParseTree child = node.getChild(i);
+			assertEquals("Child node is ANY type", ParseTreeType.ANY, child.getParseTreeType());
+		}
+		
+		Iterator<ParseTree> iterator = node.iterator();
+		while (iterator.hasNext()) {
+			@SuppressWarnings("unused")
+			final ParseTree child = iterator.next();
+			try {
+				iterator.remove();
+				fail("Expected an unsupportedoperationexception");
+			} catch (UnsupportedOperationException expected) {};
+		}
+		
+		int i = 0;
+		for (ParseTree child : node) {
+			assertEquals("Child node is ANY type", ParseTreeType.ANY, child.getParseTreeType());
+			i++;
+		}
+		assertEquals("Count of iterated parse trees is the number of children", i, numChildren);
+		
+		try {
+			node.getChild(-1);
+			fail("Expected an indexoutofbounds exception");
+		} catch (IndexOutOfBoundsException expected) {};
+		
+		try {
+			node.getChild(numChildren);
+			fail("Expected an indexoutofbounds exception");
+		} catch (IndexOutOfBoundsException expected) {};
+		
+		try {
+			node.getChild(numChildren + 1);
+			fail("Expected an indexoutofbounds exception");
+		} catch (IndexOutOfBoundsException expected) {};
+			
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 
 }
+ 

@@ -55,12 +55,9 @@ public class MatchResult<T> {
 	/**
 	 * Constructs a MatchResult.
 	 * 
-	 * @param matchPosition
-	 * The position the match existed at.
-	 * @param matchLength
-	 * The length of the match.
-	 * @param matchingObject
-	 * The object associated with the match.
+	 * @param matchPosition   The position the match existed at.
+	 * @param matchLength     The length of the match.
+	 * @param matchingObjects A collection of objects associated with this match.
 	 */
 	public MatchResult(final long matchPosition, final long matchLength,
 			final Collection<T> matchingObjects) {

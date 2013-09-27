@@ -161,8 +161,8 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	/**
 	 * 
 	 * @param expressions
-	 * @return
-	 * @throws ParseException
+	 * @return S Another abstract syntax tree containing the join of all the trees passed in.
+	 * @throws ParseExcepStion
 	 * @throws CompileException
 	 */
 	protected abstract S joinExpressions(List<S> expressions) throws ParseException, CompileException;
