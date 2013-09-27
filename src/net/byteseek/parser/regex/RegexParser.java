@@ -307,12 +307,7 @@ public class RegexParser implements Parser<ParseTree> {
 	//FEATURE: syntax for set subtraction: ['a'-'z' -'aeiou'] 
 	//FEATURE: syntax to specify <options> which apply to the parsing. 
 	//FEATURE: syntax for text encoding options for strings: <::UTF-16BE::>
-	
-	//TODO: check inverted range syntax works ^01-20
-	//TODO: change any bitmask syntax to &~10 instead of &10
-	//TODO: check where shorthands can appear sets, strings, ranges, etc.
-	//TODO: check where common byte sets can appear.
-	//TODO: check whether shorthands be directly inverted. ^\t
+	//FEATURE: long syntax for common sets e.g. ascii, tab, space, etc. 
 	
 	/*
 	 * Private syntactic character constants

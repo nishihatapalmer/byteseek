@@ -698,7 +698,7 @@ public class RegexParserTest {
 	 */
 	public void testRange() throws ParseException {
 		expectParseException("Unclosed range hex byte", "01-");
-		expectParseException("Unclosed range hex byte with an all bitmask following", "01- &fe");
+		expectParseException("Unclosed range hex byte with a all bitmask following", "01- &fe");
 		expectParseException("Unclosed range hex byte with an any bitmask following", "01-~fe");
 		expectParseException("Unclosed range hex byte with a group opened", "01- ('abcde'|ff");
 		expectParseException("Unclosed range character", "'q'- ");
@@ -713,6 +713,7 @@ public class RegexParserTest {
 		testRange("'a'-'z'",   (byte) 'a',  (byte) 'z');
 		testRange("'a'-ff",    (byte) 'a',  (byte) 0xff);
 		testRange("ff-'a'",    (byte) 0xff, (byte) 'a');
+		testRange("\\t-\\r",    (byte) 0x09, (byte) 0x0d);
 		
 		testRangeSequence("01-0203",                       (byte) 0x01, (byte) 0x02, 0);
 		testRangeSequence("0201 - 02",                     (byte) 0x01, (byte) 0x02, 1);
