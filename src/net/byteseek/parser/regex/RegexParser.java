@@ -277,24 +277,24 @@ import net.byteseek.util.bytes.ByteUtils;
   * Most regular expression languages support shorthands, which give you a memorable and often 
   * shorter way to specify them.  The shorthands supported by this parser are listed below.
   * <p><blockquote><pre><code>
-  *	\t	 # tab                         09
-  * \n	 # newline                     0a
-  *	\v 	 # vertical tab                0b
-  *	\f 	 # form feed                   0c 
-  *	\r 	 # carriage return             0d
-  *	\e 	 # escape                      1b
-  *	\d 	 # digit                       ['0'-'9']
-  *	\D 	 # not digit                  ^['0'-'9']
-  *	\w 	 # word character              ['a'-'z' 'A'-'Z' '0'-'9' '_']
-  *	\W 	 # not word character         ^['a'-'z' 'A'-'Z' '0'-'9' '_']
-  *	\s	 # white space                 [\t \n \r ' ']
-  *	\S	 # not white space            ^[\s]
-  *	</code></pre></blockquote></p></p> 
-  * <p>
-  * <strong>Named sets</strong></br>
-  * 
-  * <p><blockquote><pre><code>
-  *  
+  *	\t	 # tab                          09
+  * \n	 # newline                      0a
+  *	\v 	 # vertical tab                 0b
+  *	\f 	 # form feed                    0c 
+  *	\r 	 # carriage return              0d
+  *	\e 	 # escape                       1b
+  *	\d 	 # digit                        ['0'-'9']
+  *	\D 	 # not digit                   ^['0'-'9']
+  *	\w 	 # word character               ['a'-'z' 'A'-'Z' '0'-'9' '_']
+  *	\W 	 # not word character          ^['a'-'z' 'A'-'Z' '0'-'9' '_']
+  *	\s	 # white space                  [\t \n \r ' ']
+  *	\S	 # not white space             ^\s
+  * \i   # ascii characters             00-7f
+  * \I   # not ascii characters        ^00-7f
+  * \\u   # uppercase ascii characters  'A'-'Z'
+  * \U   # not uppercase ascii chars  ^'A'-'Z'
+  * \l   # lowercase ascii characters  'a'-'z'
+  * \L   # not lowercase ascii chars  ^'a'-'z'  
   *	</code></pre></blockquote></p></p> 
   *
   * @author Matt Palmer
