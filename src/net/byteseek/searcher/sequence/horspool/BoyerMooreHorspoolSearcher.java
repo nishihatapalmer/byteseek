@@ -39,7 +39,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
-import net.byteseek.util.object.LazyObject;
+import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -81,8 +81,8 @@ import java.util.List;
  */
 public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
 
-    private final LazyObject<SearchInfo> forwardInfo;
-    private final LazyObject<SearchInfo> backwardInfo;
+    private final SingleCheckLazyObject<SearchInfo> forwardInfo;
+    private final SingleCheckLazyObject<SearchInfo> backwardInfo;
 
     /**
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
@@ -358,7 +358,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
     }
     
     
-    private class ForwardSearchInfo extends LazyObject<SearchInfo> {
+    private class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         public ForwardSearchInfo() {
         }
@@ -407,7 +407,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
     }
     
     
-    private class BackwardSearchInfo extends LazyObject<SearchInfo> {
+    private class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         public BackwardSearchInfo() {
         }

@@ -32,13 +32,76 @@ package net.byteseek.util.collections;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
 public class IdentityHashSetTest {
 
 	@Test
-	public final void test() {
-		fail("Not yet implemented"); // TODO
+	public final void testConstructor() {
+		IdentityHashSet<Byte> test = new IdentityHashSet<Byte>();
+		assertTrue("Set is empty", test.isEmpty());
+		assertEquals("Set size is zero", 0, test.size());
+
+		IdentityHashSet<Integer> test2 = new IdentityHashSet<Integer>();
+		assertTrue("Set is empty", test2.isEmpty());
+		assertEquals("Set size is zero", 0, test2.size());
+		
+		List<Integer> list = new ArrayList<Integer>();
+		Integer one = new Integer(1);
+		Integer two = new Integer(257);
+		Integer three = new Integer(1000000);
+		list.add(one);
+		list.add(two);
+		list.add(three);
+		
+		test2 = new IdentityHashSet<Integer>(list);
+		assertEquals("Hash set is same size as constructed list", list.size(), test2.size());
+		for (Integer value : list) {
+			assertTrue("Value is in the set", test2.contains(value));
+		}
+		
+		List<Integer> list2 = new ArrayList<Integer>();
+		Integer one2 = new Integer(1);
+		Integer two2 = new Integer(257);
+		Integer three2 = new Integer(1000000);
+		list.add(one2);
+		list.add(two2);
+		list.add(three2);
+		for (Integer value : list2) {
+			assertFalse("Value is not in the set", test2.contains(value));
+		}
 	}
 
+	@Test
+	public void testAdd() {
+		fail("Not implemented");
+	}
+	
+	@Test
+	public void testRemove() {
+		fail("Not implemented");
+	}
+	
+	@Test
+	public void testSize() {
+		fail("Not implemented");
+	}
+	
+	@Test
+	public void testContains() {
+		fail("Not implemented");
+	}
+	
+	@Test
+	public void testIterator() {
+		fail("Not implemented");
+	}
+	
+	@Test
+	public void testClone() {
+		fail("Not implemented");
+	}
 }

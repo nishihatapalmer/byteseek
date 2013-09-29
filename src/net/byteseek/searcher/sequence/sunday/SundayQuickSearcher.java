@@ -38,7 +38,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
-import net.byteseek.util.object.LazyObject;
+import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -51,8 +51,8 @@ import java.util.List;
  */
 public final class SundayQuickSearcher extends AbstractSequenceSearcher {
 
-    private final LazyObject<int[]> forwardInfo;
-    private final LazyObject<int[]> backwardInfo;
+    private final SingleCheckLazyObject<int[]> forwardInfo;
+    private final SingleCheckLazyObject<int[]> backwardInfo;
 
     /**
      * Constructs a Sunday Quick searcher given a {@link SequenceMatcher}
@@ -280,7 +280,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     }
     
     
-    private class ForwardSearchInfo extends LazyObject<int[]> {
+    private class ForwardSearchInfo extends SingleCheckLazyObject<int[]> {
 
         public ForwardSearchInfo() {
         }
@@ -317,7 +317,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     }
     
     
-    private class BackwardSearchInfo extends LazyObject<int[]> {
+    private class BackwardSearchInfo extends SingleCheckLazyObject<int[]> {
 
         public BackwardSearchInfo() {
         }

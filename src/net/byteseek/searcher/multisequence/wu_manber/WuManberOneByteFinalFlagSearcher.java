@@ -45,7 +45,7 @@ import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.byteseek.util.bytes.BytePermutationIterator;
 import net.byteseek.util.bytes.ByteUtils;
-import net.byteseek.util.object.LazyObject;
+import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -244,11 +244,11 @@ import java.util.List;
         /**
          * 
          */
-        protected final LazyObject<SearchInfo> forwardInfo;
+        protected final SingleCheckLazyObject<SearchInfo> forwardInfo;
         /**
          * 
          */
-        protected final LazyObject<SearchInfo> backwardInfo;
+        protected final SingleCheckLazyObject<SearchInfo> backwardInfo;
         
         /**
          * 
@@ -384,7 +384,7 @@ import java.util.List;
         /**
          * 
          */
-        protected class ForwardSearchInfo extends LazyObject<SearchInfo> {
+        protected class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
             /**
              * 
@@ -455,7 +455,7 @@ import java.util.List;
         /**
          * 
          */
-        protected class BackwardSearchInfo extends LazyObject<SearchInfo> {
+        protected class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
             /**
              * 

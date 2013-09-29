@@ -50,7 +50,7 @@ import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.byteseek.searcher.sequence.horspool.BoyerMooreHorspoolSearcher;
-import net.byteseek.util.object.LazyObject;
+import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 /**
  * The SetHorspoolSearcher implements the Boyer-Moore-Horspool algorithm for
@@ -68,8 +68,8 @@ import net.byteseek.util.object.LazyObject;
 public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
 
     private final ByteMatcherFactory byteMatcherFactory;
-    private final LazyObject<SearchInfo> forwardInfo;
-    private final LazyObject<SearchInfo> backwardInfo;
+    private final SingleCheckLazyObject<SearchInfo> forwardInfo;
+    private final SingleCheckLazyObject<SearchInfo> backwardInfo;
     
     
     /**
@@ -360,10 +360,10 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     
     
     /**
-     * A factory class implementing the {@link LazyObject}, creating a 
+     * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
      * {@SearchInfo} for searching forwards.
      */
-    private class ForwardSearchInfo extends LazyObject<SearchInfo> {
+    private class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         public ForwardSearchInfo() {
         }
@@ -420,10 +420,10 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     
     
     /**
-     * A factory class implementing the {@link LazyObject}, creating a 
+     * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
      * {@SearchInfo} for searching backwards.
      */
-    private class BackwardSearchInfo extends LazyObject<SearchInfo> {
+    private class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         public BackwardSearchInfo() {
         }

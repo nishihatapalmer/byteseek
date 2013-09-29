@@ -46,7 +46,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
-import net.byteseek.util.object.LazyObject;
+import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 /**
  * A class implementing the Set-Horspool Final-Flag algorithm. This is a variant
@@ -72,8 +72,8 @@ import net.byteseek.util.object.LazyObject;
  */
 public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher {
 
-    private final LazyObject<SearchInfo> forwardInfo;
-    private final LazyObject<SearchInfo> backwardInfo;
+    private final SingleCheckLazyObject<SearchInfo> forwardInfo;
+    private final SingleCheckLazyObject<SearchInfo> backwardInfo;
     
     
     /**
@@ -361,10 +361,10 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     
     
     /**
-     * A factory class implementing the {@link LazyObject}, creating a 
+     * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
      * {@SearchInfo} for searching forwards.
      */
-    private class ForwardSearchInfo extends LazyObject<SearchInfo> {
+    private class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         public ForwardSearchInfo() {
         }
@@ -426,10 +426,10 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     
     
     /**
-     * A factory class implementing the {@link LazyObject}, creating a 
+     * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
      * {@SearchInfo} for searching backwards.
      */
-    private class BackwardSearchInfo extends LazyObject<SearchInfo> {
+    private class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         public BackwardSearchInfo() {
         }

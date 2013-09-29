@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.util.object;
+package net.byteseek.util.object.lazy;
 
 /**
  * This simple abstract class creates objects using single-check
@@ -42,7 +42,7 @@ package net.byteseek.util.object;
  * 
  * @author Matt Palmer
  */
-public abstract class LazyObject<T> {
+public abstract class SingleCheckLazyObject<T> {
     
     private volatile T object;
 

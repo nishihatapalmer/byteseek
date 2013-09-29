@@ -43,7 +43,7 @@ import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolSearcher;
 import net.byteseek.util.bytes.BytePermutationIterator;
 import net.byteseek.util.bytes.ByteUtils;
-import net.byteseek.util.object.LazyObject;
+import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 /**
  * This abstract class calculates the search information for a Wu-Manber style
@@ -138,14 +138,14 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
      * A factory for a lazily instantiated SearchInfo object containing the 
      * information needed to search forwards.
      */
-    protected final LazyObject<SearchInfo> forwardInfo;
+    protected final SingleCheckLazyObject<SearchInfo> forwardInfo;
     
     
     /**
      * A factory for a lazily instantiated SearchInfo object containing the 
      * information needed to search backwards.
      */
-    protected final LazyObject<SearchInfo> backwardInfo;
+    protected final SingleCheckLazyObject<SearchInfo> backwardInfo;
 
     
     /**
@@ -309,11 +309,11 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
 
 
     /**
-     * A class extending LazyObject<SearchInfo>, which calculates the shift
+     * A class extending SingleCheckLazyObject<SearchInfo>, which calculates the shift
      * and matcher to use when searching forwards with the Wu-Manber search
      * algorithm.
      */
-    protected class ForwardSearchInfo extends LazyObject<SearchInfo> {
+    protected class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         /**
          * Creates and returns the forward search information.
@@ -382,11 +382,11 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
 
 
     /**
-     * A class extending LazyObject<SearchInfo>, which calculates the shift
+     * A class extending SingleCheckLazyObject<SearchInfo>, which calculates the shift
      * and matcher to use when searching backwards with the Wu-Manber search
      * algorithm.
      */
-    protected class BackwardSearchInfo extends LazyObject<SearchInfo> {
+    protected class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
 
         /**
          * Creates and returns the backward search information.
