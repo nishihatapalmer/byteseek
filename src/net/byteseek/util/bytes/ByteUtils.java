@@ -51,8 +51,6 @@ import net.byteseek.util.object.ObjectUtils;
  * <li>Counting permutations of bytes given a bit mask matching any or all bits.
  * <li>Returning the set of bytes matching a bit mask (on any or all of them).
  * </ul>
- * Note: This class will probably be split up into smaller and more
- * targeted utility classes in future.
  * 
  * @author Matt Palmer
  */
