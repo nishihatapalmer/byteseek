@@ -110,10 +110,10 @@ public class BytePermutationIteratorTest {
 		assertArrayEquals("7 permutation is correct", expectedResult, it.next());
 
 		expectedResult = new byte[] {(byte) 0x00, (byte) 0x7f, (byte) 0xc1};
-		assertArrayEquals("6 permutation is correct", expectedResult, it.next());
+		assertArrayEquals("8 permutation is correct", expectedResult, it.next());
 
 		expectedResult = new byte[] {(byte) 0x00, (byte) 0x7f, (byte) 0xee};
-		assertArrayEquals("7 permutation is correct", expectedResult, it.next());
+		assertArrayEquals("9 permutation is correct", expectedResult, it.next());
 		assertFalse("The permutation has no more members", it.hasNext());
 	}
 
