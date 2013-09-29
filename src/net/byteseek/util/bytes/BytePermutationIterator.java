@@ -36,6 +36,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import net.byteseek.util.object.ObjectUtils;
+
 /**
  * This class iterates through all the permutations of byte strings which can be 
  * produced from a list of byte arrays.  For example, given three arrays: 
@@ -49,11 +51,6 @@ import java.util.NoSuchElementException;
  * <li>{2, 5, 7}
  * </ul>
  * It is not thread-safe, as it maintains state as it iterates.
- * In addition, for efficiency the byte array returned by next() is always the 
- * same underlying byte array, so each call to next() modifies the values in it.
- * Do not rely on the array returned by next() remaining the same across iterations.
- * If you need to maintain access to the permutation values, you should copy the
- * array returned by next().
  * 
  * @author Matt Palmer
  */
@@ -66,21 +63,17 @@ public class BytePermutationIterator implements Iterator<byte[]> {
 
     
     /**
-     * Constructor for the iterator.
+     * Constructor for the byte permutation iterator.
      * 
      * @param byteArrays The list of byte arrays to produce permutations for
-     * @throws IllegalArgumentException if either the list of arrays is null, or
+     * @throws IllegalArgumentException if either the list of arrays is null or empty, or
      *         any of the byte arrays in the list are null or empty.
      */
     public BytePermutationIterator(final List<byte[]> byteArrays) {
-        if (byteArrays == null) {
-            throw new IllegalArgumentException("Null byteArrays passed in to PermutationIterator.");
-        }
+        ObjectUtils.checkNullOrEmptyCollection(byteArrays);
         this.byteArrays = new ArrayList<byte[]>(byteArrays);
         for (final byte[] array : this.byteArrays) {
-            if (array == null || array.length == 0) {
-                throw new IllegalArgumentException("Null or empty byte array passed in to PermutationIterator.");
-            }
+        	ObjectUtils.checkNullOrEmptyByteArray(array);
         }
         this.length = byteArrays.size();
         this.permutationState = new int[length];
@@ -100,9 +93,8 @@ public class BytePermutationIterator implements Iterator<byte[]> {
     /**
      * Returns the next permutation of the list of byte arrays as a byte array.
      * <p>
-     * Note: the values of the byte array returned are correct in this iteration.
-     * However, it is always the same underlying byte array. If you need a record
-     * of the byte arrays returned, you must copy them into new ones.
+     * The byte array returned is defensively cloned on each call to next(), so it
+     * is safe to rely on the contents of the arrays returned across multiple calls to next().l  
      * 
      * @throws NoSuchElementException if there are no more permutations.
      */

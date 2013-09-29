@@ -37,6 +37,7 @@ public final class ObjectUtils {
 
 	private static final String OBJECT_CANNOT_BE_NULL               = "The object cannot be null";
 	private static final String COLLECTION_CANNOT_BE_NULL           = "The collection cannot be null";
+	private static final String COLLECTION_CANNOT_BE_EMPTY          = "The collection cannot be empty";
 	private static final String COLLECTION_ELEMENT_CANNOT_BE_NULL   = "Elements of the collection cannot be null";
 	private static final String ARRAY_CANNOT_BE_NULL                = "The array cannot be null";
 	private static final String ARRAY_CANNOT_BE_EMPTY		        = "The array cannot be empty";
@@ -60,11 +61,29 @@ public final class ObjectUtils {
     	}
 	}
 
+	
 	public static <T> void checkNullCollection(final Collection<T> collection, final String description) {
 		if (collection == null) {
     		throw new IllegalArgumentException(COLLECTION_CANNOT_BE_NULL + ' ' + description);
     	}
 	}
+ 
+	
+	public static <T> void checkNullOrEmptyCollection(final Collection<T> collection) {
+		checkNullCollection(collection);
+		if (collection.isEmpty()) {
+			throw new IllegalArgumentException(COLLECTION_CANNOT_BE_EMPTY);
+		}
+	}
+	
+
+	public static <T> void checkNullOrEmptyCollection(final Collection<T> collection, final String description) {
+		checkNullCollection(collection, description);
+		if (collection.isEmpty()) {
+			throw new IllegalArgumentException(COLLECTION_CANNOT_BE_EMPTY + ' ' + description);
+		}
+	}
+	
 	
 	public static <T> void checkNullCollectionElements(final Collection<T> collection) {
 		checkNullCollection(collection);
@@ -79,7 +98,7 @@ public final class ObjectUtils {
 			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL + ' ' + description);
 		}
 	}
-	
+
 	
 	public static void checkNullByteArray(final byte[] bytes) {
 		if (bytes == null) {
