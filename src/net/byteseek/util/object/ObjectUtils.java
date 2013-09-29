@@ -35,56 +35,91 @@ import java.util.Collection;
 
 public final class ObjectUtils {
 
-	private static final String OBJECT_PASSED_IN_CANNOT_BE_NULL     = "The object passed in cannot be null";
-	private static final String COLLECTION_PASSED_IN_CANNOT_BE_NULL = "The collection passed in cannot be null";
-	private static final String ARRAY_PASSED_IN_CANNOT_BE_NULL      = "The array passed in cannot be null";
-	private static final String STRING_PASSED_IN_CANNOT_BE_NULL     = "The string passed in cannot be null";
+	private static final String OBJECT_CANNOT_BE_NULL               = "The object cannot be null";
+	private static final String COLLECTION_CANNOT_BE_NULL           = "The collection cannot be null";
+	private static final String COLLECTION_ELEMENT_CANNOT_BE_NULL   = "Elements of the collection cannot be null";
+	private static final String ARRAY_CANNOT_BE_NULL                = "The array cannot be null";
+	private static final String ARRAY_CANNOT_BE_EMPTY		        = "The array cannot be empty";
+	private static final String STRING_CANNOT_BE_NULL               = "The string cannot be null";
 
 	public static void checkNullObject(final Object object) {
 		if (object == null) {
-			throw new IllegalArgumentException(OBJECT_PASSED_IN_CANNOT_BE_NULL);
+			throw new IllegalArgumentException(OBJECT_CANNOT_BE_NULL);
 		}
 	}
 
 	public static void checkNullObject(final Object object, final String description) {
 		if (object == null) {
-			throw new IllegalArgumentException(OBJECT_PASSED_IN_CANNOT_BE_NULL + ' ' + description);
+			throw new IllegalArgumentException(OBJECT_CANNOT_BE_NULL + ' ' + description);
 		}
 	}
 	
 	public static <T> void checkNullCollection(final Collection<T> collection) {
 		if (collection == null) {
-    		throw new IllegalArgumentException(COLLECTION_PASSED_IN_CANNOT_BE_NULL);
+    		throw new IllegalArgumentException(COLLECTION_CANNOT_BE_NULL);
     	}
 	}
 
 	public static <T> void checkNullCollection(final Collection<T> collection, final String description) {
 		if (collection == null) {
-    		throw new IllegalArgumentException(COLLECTION_PASSED_IN_CANNOT_BE_NULL + ' ' + description);
+    		throw new IllegalArgumentException(COLLECTION_CANNOT_BE_NULL + ' ' + description);
     	}
 	}
 	
+	public static <T> void checkNullCollectionElements(final Collection<T> collection) {
+		checkNullCollection(collection);
+		for (T element : collection) {
+			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL);
+		}
+	}
+	
+	public static <T> void checkNullCollectionElements(final Collection<T> collection, final String description) {
+		checkNullCollection(collection, description);
+		for (T element : collection) {
+			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL + ' ' + description);
+		}
+	}
+	
+	
 	public static void checkNullByteArray(final byte[] bytes) {
 		if (bytes == null) {
-    		throw new IllegalArgumentException(ARRAY_PASSED_IN_CANNOT_BE_NULL);
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_NULL);
     	}
 	}    	
+	
 
 	public static void checkNullByteArray(final byte[] bytes, final String description) {
 		if (bytes == null) {
-    		throw new IllegalArgumentException(ARRAY_PASSED_IN_CANNOT_BE_NULL + ' ' + description);
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_NULL + ' ' + description);
+    	}
+	}  
+
+	
+	public static void checkNullOrEmptyByteArray(final byte[] bytes) {
+		checkNullByteArray(bytes);
+		if (bytes.length == 0) {
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_EMPTY);
+    	}
+	}    	
+
+	
+	public static void checkNullOrEmptyByteArray(final byte[] bytes, final String description) {
+		checkNullByteArray(bytes);
+		if (bytes.length == 0) {
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_EMPTY + ' ' + description);
     	}
 	}    
+	
 
 	public static void checkNullString(final String string) {
 		if (string == null) {
-    		throw new IllegalArgumentException(STRING_PASSED_IN_CANNOT_BE_NULL);
+    		throw new IllegalArgumentException(STRING_CANNOT_BE_NULL);
     	}
 	} 
 	
 	public static void checkNullString(final String string, final String description) {
 		if (string == null) {
-    		throw new IllegalArgumentException(STRING_PASSED_IN_CANNOT_BE_NULL + ' ' + description);
+    		throw new IllegalArgumentException(STRING_CANNOT_BE_NULL + ' ' + description);
     	}
 	} 
 	
