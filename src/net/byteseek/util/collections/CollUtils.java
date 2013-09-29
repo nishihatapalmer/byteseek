@@ -33,17 +33,34 @@ package net.byteseek.util.collections;
 
 import java.util.Collection;
 
+import net.byteseek.util.object.ObjectUtils;
+
 /**
+ * A static utility class containing useful methods for collections.
  * 
- * @author matt
+ * @author Matt Palmer
  *
  */
 public final class CollUtils {
 	
+	/**
+	 * Private constructor for a static utility class.
+	 */
 	private CollUtils() {
 	}
 	
+	
+	/**
+	 * Returns true if the collection contains any of the values passed in.
+	 * 
+	 * @param collection The collection to check
+	 * @param values The values to check to see if any are in the collection.
+	 * @return true if the collection contains any of the values.
+	 * @throws IllegalArgumentException if either of the collections passed in are null.
+	 */
     public static <T> boolean containsAny(final Collection<T> collection, final Collection<T> values) {
+    	ObjectUtils.checkNullCollection(collection, "parameter: collection");
+    	ObjectUtils.checkNullCollection(values, "parameter: values");
     	for (final T value : values) {
     		if (collection.contains(value)) {
     			return true;
