@@ -41,17 +41,17 @@ import java.util.NoSuchElementException;
  * 
  * @author Matt Palmer
  */
-public class UnmodifiableListIterator<T> implements Iterator<T> {
+public class ImmutableListIterator<T> implements Iterator<T> {
 
 	private final List<T> list;
 	private int           index;
 
 	/**
-	 * Constructs an UnmodifiableListIterator.
+	 * Constructs an ImmutableListIterator.
 	 * 
 	 * @param list The list to iterate over.
 	 */
-	public UnmodifiableListIterator(final List<T> list) {
+	public ImmutableListIterator(final List<T> list) {
 		this.list = list;
 	}
 
@@ -77,7 +77,7 @@ public class UnmodifiableListIterator<T> implements Iterator<T> {
 	}
 
 	/**
-	 * Removal is not supported by the UnmodifiableListIterator.  Calling this method will
+	 * Removal is not supported by the ImmutableListIterator.  Calling this method will
 	 * always throw a {@link UnsupportedOperationException}.
 	 * 
 	 * @throws UnsupportedOperationException if the method is called.
@@ -85,7 +85,7 @@ public class UnmodifiableListIterator<T> implements Iterator<T> {
 	@Override
 	public void remove() {
 		throw new UnsupportedOperationException(
-				"Removal not supported by the UnmodifiableListIterator.");
+				"Removal not supported by the ImmutableListIterator.");
 	}
 
 }
