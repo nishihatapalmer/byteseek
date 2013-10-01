@@ -190,14 +190,7 @@ public final class DfaBuilder<T> {
 			// Recursive: get the target DFA state for this transition.
 			final State<T> targetDFAState = getState(targetEntry.getKey(), stateSetsSeenSoFar);
 
-			// Create a transition to the target state using the bytes to
-			// transition on:
-			// This places a burden on the implementor of createSetTransition to
-			// ensure it
-			// returns an efficient transition, given the set of bytes passed to
-			// it.
-			// Maybe should rename method or add a createOptimalTransition()
-			// method...?
+			// Create a transition to the target state using the bytes to transition on:
 			final Transition<T> transition = transitionFactory.create(transitionBytes,
 					false, targetDFAState);
 
@@ -210,8 +203,7 @@ public final class DfaBuilder<T> {
 		// Build a map of bytes to the target nfa states each points to:
 		final Map<Byte, Set<State<T>>> byteToStates = buildByteToStates(sourceStates);
 
-		// Return a map of target nfa states to the bytes they each transition
-		// on:
+		// Return a map of target nfa states to the bytes they each transition on:
 		return getStatesToBytes(byteToStates);
 	}
 
