@@ -150,12 +150,13 @@ public interface State<T> extends Iterable<Transition<T>>, DeepCopy {
 	public Iterator<Transition<T>> iterator();
 
 	/**
-	 * Returns a list of the transitions which currently exist in this State.
+	 * Returns a list of the transitions which currently exist in this State.0
 	 * <p>
 	 * Implementors of State guarantee that the contents of the list 
 	 * returned will not subsequently change, even if the state itself
 	 * is modified (new transitions added or removed from it), and equally,
-	 * that changes to the list returned will not affect this State.
+	 * that changes to the list returned will not affect this State.  
+	 * For example, an internal list is defensively copied.
 	 * 
 	 * @return A list of transitions from this state.
 	 */
