@@ -133,6 +133,10 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Cloneabl
     
     
     /**
+     * This implementation of clone returns a new IdentityHashSet, 
+     * containing the same objects as the original.
+     * <p>
+     * 
      * {@inheritDoc}
      */    
     @Override
