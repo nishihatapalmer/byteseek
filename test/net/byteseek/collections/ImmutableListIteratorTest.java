@@ -34,10 +34,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class UnmodifiableListIteratorTest {
+public class ImmutableListIteratorTest {
 
 	@Test
-	public final void testUnmodifiableListIterator() {
+	public final void testImmutableListIterator() {
 		fail("Not yet implemented"); // TODO
 	}
 
