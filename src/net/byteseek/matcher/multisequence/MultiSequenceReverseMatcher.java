@@ -78,7 +78,7 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
     public MultiSequenceReverseMatcher(final MultiSequenceMatcher original) {
         reverseToOriginals = new IdentityHashMap<SequenceMatcher, SequenceMatcher>();
         final List<SequenceMatcher> originalSequences = original.getSequenceMatchers();
-        List<SequenceMatcher> reverseSequences = new ArrayList<SequenceMatcher>();
+        final List<SequenceMatcher> reverseSequences = new ArrayList<SequenceMatcher>();
         for (final SequenceMatcher originalSequence : originalSequences) {
             final SequenceMatcher reverseSequence = originalSequence.reverse();
             reverseSequences.add(reverseSequence);
