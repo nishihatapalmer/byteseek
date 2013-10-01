@@ -58,9 +58,9 @@ public final class CollUtils {
 	 * @return true if the collection contains any of the values.
 	 * @throws IllegalArgumentException if either of the collections passed in are null.
 	 */
-    public static <T> boolean containsAny(final Collection<T> collection, final Collection<T> values) {
+    public static <T> boolean containsAny(final Collection<T> collection, final Iterable<T> values) {
     	ObjectUtils.checkNullCollection(collection, "parameter: collection");
-    	ObjectUtils.checkNullCollection(values, "parameter: values");
+    	ObjectUtils.checkNullObject(values, "parameter: values");
     	for (final T value : values) {
     		if (collection.contains(value)) {
     			return true;
