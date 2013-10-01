@@ -39,7 +39,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.object.factory.DeepCopy;
 
 /**
- * A mutable implementation of {@link Transition} which matches bytes using a
+ * An immutable implementation of {@link Transition} which matches bytes using a
  * {@link ByteMatcher}.
  * <p>
  * This implementation is immutable, so is thread-safe.  It is possible to
