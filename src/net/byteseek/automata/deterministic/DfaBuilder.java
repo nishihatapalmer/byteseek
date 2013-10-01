@@ -227,7 +227,7 @@ public final class DfaBuilder<T> {
 	 * @return State<T> A State linking to all the initial States in the
 	 *         collection.
 	 */
-	public State<T> join(final Collection<State<T>> automata) {
+	public State<T> join(final Iterable<State<T>> automata) {
 		final Iterator<State<T>> automataFirstStates = automata.iterator();
 		if (automataFirstStates.hasNext()) {
 			final State<T> root = automataFirstStates.next();
