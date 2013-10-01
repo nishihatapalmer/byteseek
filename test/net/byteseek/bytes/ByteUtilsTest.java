@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.util.bytes;
+package net.byteseek.bytes;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
