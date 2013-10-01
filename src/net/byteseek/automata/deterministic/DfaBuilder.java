@@ -223,7 +223,7 @@ public final class DfaBuilder<T> {
 	 * the first states are final, then the state returned will also be final.
 	 * 
 	 * @param automata
-	 *            A collection of states to join.
+	 *            An iterable set of states to join.
 	 * @return State<T> A State linking to all the initial States in the
 	 *         collection.
 	 */
