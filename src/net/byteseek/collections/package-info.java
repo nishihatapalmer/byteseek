@@ -34,4 +34,4 @@
   * including a hash set which tests for equality based on object identity, 
   * and an immutable list iterator, which does not allow removal of elements from the list.
   */
- package net.byteseek.util.collections;
+ package net.byteseek.collections;

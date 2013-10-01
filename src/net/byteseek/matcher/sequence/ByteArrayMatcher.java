@@ -37,11 +37,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * An immutable class which matches a sequence of bytes.

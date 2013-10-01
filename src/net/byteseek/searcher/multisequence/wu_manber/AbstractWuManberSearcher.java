@@ -34,16 +34,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.byteseek.bytes.BytePermutationIterator;
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.multisequence.HashMultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.object.factory.DoubleCheckImmutableLazyObject;
+import net.byteseek.object.factory.LazyObject;
+import net.byteseek.object.factory.ObjectFactory;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolSearcher;
-import net.byteseek.util.bytes.BytePermutationIterator;
-import net.byteseek.util.bytes.ByteUtils;
-import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 /**
  * This abstract class calculates the search information for a Wu-Manber style
@@ -138,14 +140,14 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
      * A factory for a lazily instantiated SearchInfo object containing the 
      * information needed to search forwards.
      */
-    protected final SingleCheckLazyObject<SearchInfo> forwardInfo;
+    protected final LazyObject<SearchInfo> forwardInfo;
     
     
     /**
      * A factory for a lazily instantiated SearchInfo object containing the 
      * information needed to search backwards.
      */
-    protected final SingleCheckLazyObject<SearchInfo> backwardInfo;
+    protected final LazyObject<SearchInfo> backwardInfo;
 
     
     /**
@@ -158,8 +160,8 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
     public AbstractWuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
         super(matcher);
         this.blockSize = blockSize;
-        forwardInfo = new ForwardSearchInfo();
-        backwardInfo = new BackwardSearchInfo();
+        forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
+        backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfo());
     }
 
     
@@ -309,11 +311,11 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
 
 
     /**
-     * A class extending SingleCheckLazyObject<SearchInfo>, which calculates the shift
+     * A class implemented ObjectFactory<SearchInfo>, which calculates the shift
      * and matcher to use when searching forwards with the Wu-Manber search
      * algorithm.
      */
-    protected class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    protected class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
         /**
          * Creates and returns the forward search information.
@@ -321,7 +323,7 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
          * @return SearchInfo The information needed to search forwards.
          */
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             return new SearchInfo(getShifts(), getMatcher());
         }
 
@@ -382,11 +384,11 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
 
 
     /**
-     * A class extending SingleCheckLazyObject<SearchInfo>, which calculates the shift
+     * A class implementing ObjectFactory<SearchInfo>, which calculates the shift
      * and matcher to use when searching backwards with the Wu-Manber search
      * algorithm.
      */
-    protected class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    protected class BackwardSearchInfo implements ObjectFactory<SearchInfo> {
 
         /**
          * Creates and returns the backward search information.
@@ -394,7 +396,7 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
          * @return SearchInfo The information needed to search backwards.
          */
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             return new SearchInfo(getShifts(), getMatcher());
         }
 

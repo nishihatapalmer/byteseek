@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,18 +31,20 @@
 
 package net.byteseek.searcher.sequence.sunday;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.object.factory.DoubleCheckImmutableLazyObject;
+import net.byteseek.object.factory.LazyObject;
+import net.byteseek.object.factory.ObjectFactory;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
-import net.byteseek.util.object.lazy.SingleCheckLazyObject;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -51,8 +53,8 @@ import java.util.List;
  */
 public final class SundayQuickSearcher extends AbstractSequenceSearcher {
 
-    private final SingleCheckLazyObject<int[]> forwardInfo;
-    private final SingleCheckLazyObject<int[]> backwardInfo;
+    private final LazyObject<int[]> forwardInfo;
+    private final LazyObject<int[]> backwardInfo;
 
     /**
      * Constructs a Sunday Quick searcher given a {@link SequenceMatcher}
@@ -62,8 +64,8 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      */
     public SundayQuickSearcher(final SequenceMatcher sequence) {
         super(sequence);
-        forwardInfo = new ForwardSearchInfo();
-        backwardInfo = new BackwardSearchInfo();
+        forwardInfo  = new DoubleCheckImmutableLazyObject<int[]>(new ForwardInfoFactory());
+        backwardInfo = new DoubleCheckImmutableLazyObject<int[]>(new BackwardInfoFactory());
     }
 
 
@@ -280,9 +282,9 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     }
     
     
-    private class ForwardSearchInfo extends SingleCheckLazyObject<int[]> {
+    private final class ForwardInfoFactory implements ObjectFactory<int[]> {
 
-        public ForwardSearchInfo() {
+        private ForwardInfoFactory() {
         }
 
         /**
@@ -292,7 +294,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
          * the shortest distance it appears from the end of the matcher.
          */
         @Override
-        protected int[] create() {
+        public int[] create() {
             // First set the default shift to the length of the sequence plus one.
             final int[] shifts = new int[256];
             final SequenceMatcher sequence = getMatcher();
@@ -317,9 +319,9 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
     }
     
     
-    private class BackwardSearchInfo extends SingleCheckLazyObject<int[]> {
+    private final class BackwardInfoFactory implements ObjectFactory<int[]> {
 
-        public BackwardSearchInfo() {
+        private BackwardInfoFactory() {
         }
         
         /**
@@ -329,7 +331,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
          * the shortest distance it appears from the beginning of the matcher.
          */        
         @Override
-        protected int[] create() {
+        public int[] create() {
             // First set the default shift to the length of the sequence
             // (negative if search direction is reversed)
             final int[] shifts = new int[256];

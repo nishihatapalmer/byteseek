@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import net.byteseek.collections.CollUtils;
+
 import org.junit.Test;
 
 public class CollUtilsTest {

@@ -43,10 +43,12 @@ import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceUtils;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.object.factory.DoubleCheckImmutableLazyObject;
+import net.byteseek.object.factory.LazyObject;
+import net.byteseek.object.factory.ObjectFactory;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
-import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 /**
  * A class implementing the Set-Horspool Final-Flag algorithm. This is a variant
@@ -72,8 +74,8 @@ import net.byteseek.util.object.lazy.SingleCheckLazyObject;
  */
 public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher {
 
-    private final SingleCheckLazyObject<SearchInfo> forwardInfo;
-    private final SingleCheckLazyObject<SearchInfo> backwardInfo;
+    private final LazyObject<SearchInfo> forwardInfo;
+    private final LazyObject<SearchInfo> backwardInfo;
     
     
     /**
@@ -83,8 +85,8 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
      */
     public SetHorspoolFinalFlagSearcher(final MultiSequenceMatcher sequences) {
         super(sequences);
-        forwardInfo = new ForwardSearchInfo();
-        backwardInfo = new BackwardSearchInfo();
+        forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
+        backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
     }
     
     
@@ -354,19 +356,24 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     /**
      * A class holding information needed to search.
      */
-    private static class SearchInfo {
-        public int[] shifts;
-        public MultiSequenceMatcher verifier;
+    private static final class SearchInfo {
+        private int[] shifts;
+        private MultiSequenceMatcher verifier;
+        
+        public SearchInfo(final int[] shifts, final MultiSequenceMatcher verifier) {
+        	this.shifts = shifts;
+        	this.verifier = verifier;
+        }
     }    
     
     
     /**
-     * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
+     * A factory class implementing the {@link ObjectFactory}, creating a 
      * {@SearchInfo} for searching forwards.
      */
-    private class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    private class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-        public ForwardSearchInfo() {
+        private ForwardInfoFactory() {
         }
         
         /**
@@ -376,24 +383,23 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
          * the shortest distance it appears from the end of the sequences.
          */        
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             // Get info about the multi sequence sequences:
             final MultiSequenceMatcher matcher = getMatcher();            
             final int minLength = matcher.getMinimumLength();            
             
-            // Create the search info object:
-            final SearchInfo info = new SearchInfo();
+            // Create the search info object fields:
             
             // Create a verifier which works on the reverse sequences of the
             // multi sequence sequences (they will be matched backwards from the 
             // end of the sequences - if they are also reversed they will match
             // the original sequences).
-            info.verifier = new MultiSequenceReverseMatcher(matcher);
+            final MultiSequenceMatcher verifier = new MultiSequenceReverseMatcher(matcher);
             
             // Create the array of shifts and set the default shift to the
             // minimum length of all the sequences:
-            info.shifts = new int[256];            
-            Arrays.fill(info.shifts, minLength);
+            final int[] shifts = new int[256];            
+            Arrays.fill(shifts, minLength);
 
             // Now set specific shifts for the bytes actually in
             // the sequences.  The shift is the distance of a position
@@ -406,7 +412,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
                 final Set<Byte> bytesForPosition =
                         MultiSequenceUtils.bytesAlignedRight(distanceFromEnd, matcher);
                 for (final byte b : bytesForPosition) {
-                    info.shifts[b & 0xFF] = distanceFromEnd;
+                    shifts[b & 0xFF] = distanceFromEnd;
                 }
             }
             
@@ -414,24 +420,24 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             final Set<Byte> bytesForPosition =
                     MultiSequenceUtils.bytesAlignedRight(0, matcher);
             for (final byte b: bytesForPosition) {
-                int currentShift = info.shifts[b & 0xFF];
+                int currentShift = shifts[b & 0xFF];
                 if (currentShift > 0) {
-                    info.shifts[b & 0xFF] = -currentShift;
+                    shifts[b & 0xFF] = -currentShift;
                 }
             }
 
-            return info;
+            return new SearchInfo(shifts, verifier);
         }
     }
     
     
     /**
-     * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
+     * A factory class implementing the {@link ObjectFactory}, creating a 
      * {@SearchInfo} for searching backwards.
      */
-    private class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    private class BackwardInfoFactory implements ObjectFactory <SearchInfo> {
 
-        public BackwardSearchInfo() {
+        public BackwardInfoFactory() {
         }
         
         /**
@@ -442,19 +448,18 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
          * zero being the value of the first position in the sequence.
          */        
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             // Get info about the multi sequence sequences:
             final MultiSequenceMatcher matcher = getMatcher();            
             final int minLength = matcher.getMinimumLength();            
             
             // Create the search info object:
-            final SearchInfo info = new SearchInfo();
-            info.verifier = matcher;
+            final MultiSequenceMatcher verifier = matcher;
             
             // Create the array of shifts and set the default shift to the
             // minimum length of all the sequences:
-            info.shifts = new int[256];            
-            Arrays.fill(info.shifts, minLength);
+            final int[] shifts = new int[256];            
+            Arrays.fill(shifts, minLength);
 
             // Now set specific shifts for the bytes actually in
             // the sequences.  The shift is the distance of a position
@@ -467,7 +472,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
                 final Set<Byte> bytesForPosition =
                         MultiSequenceUtils.bytesAlignedLeft(distanceFromStart, matcher);
                 for (final byte b : bytesForPosition) {
-                    info.shifts[b & 0xFF] = distanceFromStart;
+                    shifts[b & 0xFF] = distanceFromStart;
                 }
             }
             
@@ -475,13 +480,13 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             final Set<Byte> bytesForPosition =
                     MultiSequenceUtils.bytesAlignedLeft(0, matcher);
             for (final byte b: bytesForPosition) {
-                int currentShift = info.shifts[b & 0xFF];
+                int currentShift = shifts[b & 0xFF];
                 if (currentShift > 0) {
-                    info.shifts[b & 0xFF] = -currentShift;
+                    shifts[b & 0xFF] = -currentShift;
                 }                
             }
 
-            return info;
+            return new SearchInfo(shifts, verifier);
         }
         
     }        

@@ -5,8 +5,8 @@
 
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
-import net.byteseek.util.bytes.ByteUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

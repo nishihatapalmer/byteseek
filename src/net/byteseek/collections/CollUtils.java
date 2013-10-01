@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
- * 
+ * Copyright Matt Palmer 2013, All rights reserved.
+ *
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *  
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,55 +29,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.automata;
+package net.byteseek.collections;
 
 import java.util.Collection;
 
-import net.byteseek.object.factory.DeepCopy;
+import net.byteseek.object.ObjectUtils;
 
 /**
- * An interface representing an automata, containing an initial {@link State}
- * and a collection of final States. A final State is one which represents a
- * match in the automata.
- * 
- * @param <T>
- *            The type of object associated with a State.
+ * A static utility class containing useful methods for collections.
  * 
  * @author Matt Palmer
+ *
  */
-public interface Automata<T> extends DeepCopy {
-
+public final class CollUtils {
+	
 	/**
-	 * Returns the initial {@link State} of the Automata.
-	 * 
-	 * @return State<T> the initial State of the automata.
+	 * Private constructor for a static utility class.
 	 */
-	public State<T> getInitialState();
-
+	private CollUtils() {
+	}
+	
+	
 	/**
-	 * Returns a collection of {@link State}s which are final in the Automata.
-	 * Implementations should return an empty collection if there are no final
-	 * states.
+	 * Returns true if the collection contains any of the values passed in.
 	 * 
-	 * @return A collection of final States.
+	 * @param collection The collection to check
+	 * @param values The values to check to see if any are in the collection.
+	 * @return true if the collection contains any of the values.
+	 * @throws IllegalArgumentException if either of the collections passed in are null.
 	 */
-	public Collection<State<T>> getFinalStates();
-
-	/**
-	 * Returns true if the automata is deterministic.
-	 * 
-	 * @return true if the automata is deterministic.
-	 */
-	public boolean isDeterministic();
-
-	/**
-	 * Produces a deep copy of the automata, its' States and Transitions. It
-	 * will not produce deep copies of any objects associated with a State,
-	 * although the automata copy will link to the same associated objects as
-	 * the original.
-	 * 
-	 * @return A deep copy of the automata.
-	 */
-	public Automata<T> deepCopy();
+    public static <T> boolean containsAny(final Collection<T> collection, final Collection<T> values) {
+    	ObjectUtils.checkNullCollection(collection, "parameter: collection");
+    	ObjectUtils.checkNullCollection(values, "parameter: values");
+    	for (final T value : values) {
+    		if (collection.contains(value)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
 }

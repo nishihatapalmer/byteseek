@@ -30,7 +30,7 @@
  */
 package net.byteseek.parser;
 
-import net.byteseek.util.object.ObjectUtils;
+import net.byteseek.object.ObjectUtils;
 
 /**
  * A class which can be used by parsers to read from a string, maintaining

@@ -35,6 +35,8 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.byteseek.collections.IdentityHashSet;
+
 import org.junit.Test;
 
 public class IdentityHashSetTest {

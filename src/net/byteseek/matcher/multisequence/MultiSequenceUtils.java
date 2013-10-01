@@ -36,9 +36,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * Some static utilities useful in processing collections of sequence matchers

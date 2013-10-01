@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2013. All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -29,55 +29,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.automata;
+package net.byteseek.object.factory;
 
-import java.util.Collection;
-
-import net.byteseek.object.factory.DeepCopy;
 
 /**
- * An interface representing an automata, containing an initial {@link State}
- * and a collection of final States. A final State is one which represents a
- * match in the automata.
+ * This class creates objects using double-check
+ * lazy initialisation, with volatile references.  This means that
+ * if two threads attempt to get the object at the same time before it has
+ * been fully initialised, the object will only be created once.
  * 
- * @param <T>
- *            The type of object associated with a State.
+ * @param <T> The type of object to instantiate lazily.
  * 
  * @author Matt Palmer
  */
-public interface Automata<T> extends DeepCopy {
+public final class DoubleCheckImmutableLazyObject<T> implements LazyObject<T> {
 
-	/**
-	 * Returns the initial {@link State} of the Automata.
-	 * 
-	 * @return State<T> the initial State of the automata.
-	 */
-	public State<T> getInitialState();
+    private final ObjectFactory<T> factory;
+    private T object; // since the object is immutable, this field does not have to be volatile.
 
-	/**
-	 * Returns a collection of {@link State}s which are final in the Automata.
-	 * Implementations should return an empty collection if there are no final
-	 * states.
-	 * 
-	 * @return A collection of final States.
-	 */
-	public Collection<State<T>> getFinalStates();
-
-	/**
-	 * Returns true if the automata is deterministic.
-	 * 
-	 * @return true if the automata is deterministic.
-	 */
-	public boolean isDeterministic();
-
-	/**
-	 * Produces a deep copy of the automata, its' States and Transitions. It
-	 * will not produce deep copies of any objects associated with a State,
-	 * although the automata copy will link to the same associated objects as
-	 * the original.
-	 * 
-	 * @return A deep copy of the automata.
-	 */
-	public Automata<T> deepCopy();
+    /**
+     * Constructs a DoubleCheckLazyObject with an object factory to create the 
+     * object lazily.
+     * 
+     * @param factory A factory which can create an instance of type T.
+     */
+    public DoubleCheckImmutableLazyObject(ObjectFactory<T> factory) {
+    	this.factory = factory;
+    }
+    
+   
+    /**
+     * Uses Double-Check lazy initialisation.  Only one instance will be created, no matter
+     * how many threads call this method.
+     * 
+     * @return An object of type T.
+     */
+    @Override
+    public final T get() {
+        if (object == null) {
+        	synchronized(this) {
+        		if (object == null) {
+        			object = factory.create();
+        		}
+        	}
+        }
+        return object;
+    }
 
 }

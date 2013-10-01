@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
- *
+ * Copyright Matt Palmer 2013. All rights reserved.
+ * 
  * This code is licensed under a standard 3-clause BSD license:
- *
+ * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *  
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -28,64 +28,52 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.util.collections;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+package net.byteseek.object.factory;
+
 
 /**
- * An iterator over a list which prevents removal of items from the list.
- * <p>
- * Calling {@link #remove()} on this iterator will throw an {@link UnsupportedOperationException}.
+ * This class creates objects using double-check
+ * lazy initialisation, with volatile references.  This means that
+ * if two threads attempt to get the object at the same time before it has
+ * been fully initialised, the object will only be created once.
+ * 
+ * @param <T> The type of object to instantiate lazily.
  * 
  * @author Matt Palmer
  */
-public class ImmutableListIterator<T> implements Iterator<T> {
+public final class DoubleCheckLazyObject<T> implements LazyObject<T> {
 
-	private final List<T> list;
-	private int           index;
+    private final ObjectFactory<T> factory;
+    private volatile T object;
 
-	/**
-	 * Constructs an ImmutableListIterator.
-	 * 
-	 * @param list The list to iterate over.
-	 */
-	public ImmutableListIterator(final List<T> list) {
-		this.list = list;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasNext() {
-		return index < list.size();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public T next() {
-		if (hasNext()) {
-			return list.get(index++);
-		}
-		throw new NoSuchElementException(String.format(
-				"Index position %d is greater than or equal to the list size %d", index,
-				list.size()));
-	}
-
-	/**
-	 * Removal is not supported by the ImmutableListIterator.  Calling this method will
-	 * always throw a {@link UnsupportedOperationException}.
-	 * 
-	 * @throws UnsupportedOperationException if the method is called.
-	 */
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException(
-				"Removal not supported by the ImmutableListIterator.");
-	}
+    /**
+     * Constructs a DoubleCheckLazyObject with an object factory to create the 
+     * object lazily.
+     * 
+     * @param factory A factory which can create an instance of type T.
+     */
+    public DoubleCheckLazyObject(ObjectFactory<T> factory) {
+    	this.factory = factory;
+    }
+    
+   
+    /**
+     * Uses Double-Check lazy initialisation.  Only one instance will be created, no matter
+     * how many threads call this method.
+     * 
+     * @return An object of type T.
+     */
+    @Override
+    public final T get() {
+        if (object == null) {
+        	synchronized(this) {
+        		if (object == null) {
+        			object = factory.create();
+        		}
+        	}
+        }
+        return object;
+    }
 
 }

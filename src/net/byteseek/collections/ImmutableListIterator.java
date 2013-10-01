@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2012, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,8 +28,64 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- /**
-  * A collection of utilities relating to objects.
-  */
- package net.byteseek.util.object;
+package net.byteseek.collections;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/**
+ * An iterator over a list which prevents removal of items from the list.
+ * <p>
+ * Calling {@link #remove()} on this iterator will throw an {@link UnsupportedOperationException}.
+ * 
+ * @author Matt Palmer
+ */
+public class ImmutableListIterator<T> implements Iterator<T> {
+
+	private final List<T> list;
+	private int           index;
+
+	/**
+	 * Constructs an ImmutableListIterator.
+	 * 
+	 * @param list The list to iterate over.
+	 */
+	public ImmutableListIterator(final List<T> list) {
+		this.list = list;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasNext() {
+		return index < list.size();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public T next() {
+		if (hasNext()) {
+			return list.get(index++);
+		}
+		throw new NoSuchElementException(String.format(
+				"Index position %d is greater than or equal to the list size %d", index,
+				list.size()));
+	}
+
+	/**
+	 * Removal is not supported by the ImmutableListIterator.  Calling this method will
+	 * always throw a {@link UnsupportedOperationException}.
+	 * 
+	 * @throws UnsupportedOperationException if the method is called.
+	 */
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException(
+				"Removal not supported by the ImmutableListIterator.");
+	}
+
+}

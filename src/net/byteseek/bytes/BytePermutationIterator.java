@@ -29,14 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.util.bytes;
+package net.byteseek.bytes;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.util.object.ObjectUtils;
+import net.byteseek.object.ObjectUtils;
 
 /**
  * This class iterates through all the permutations of byte strings which can be 

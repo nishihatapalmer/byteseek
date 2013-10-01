@@ -42,8 +42,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import net.byteseek.util.collections.IdentityHashSet;
-import net.byteseek.util.object.DeepCopy;
+import net.byteseek.collections.IdentityHashSet;
+import net.byteseek.object.factory.DeepCopy;
 
 /**
  * An implementation of the {@link State} interface.

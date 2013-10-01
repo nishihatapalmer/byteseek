@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,19 +31,21 @@
 
 package net.byteseek.searcher.sequence.horspool;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.object.factory.DoubleCheckImmutableLazyObject;
+import net.byteseek.object.factory.LazyObject;
+import net.byteseek.object.factory.ObjectFactory;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
-import net.byteseek.util.object.lazy.SingleCheckLazyObject;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 
 
@@ -75,14 +77,14 @@ import java.util.List;
  * <p>
  * One initially counter-intuitive consequence of this type of search is that
  * the longer the pattern you are searching for, the better the performance
- * usually is, as the possible shifts will be correspondingly bigger.
+ * can be, as the possible shifts will be correspondingly bigger. 
  * 
  * @author Matt Palmer
  */
 public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
 
-    private final SingleCheckLazyObject<SearchInfo> forwardInfo;
-    private final SingleCheckLazyObject<SearchInfo> backwardInfo;
+    private final LazyObject<SearchInfo> forwardInfo;
+    private final LazyObject<SearchInfo> backwardInfo;
 
     /**
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
@@ -92,8 +94,8 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
      */
     public BoyerMooreHorspoolSearcher(final SequenceMatcher sequence) {
         super(sequence);
-        forwardInfo = new ForwardSearchInfo();
-        backwardInfo = new BackwardSearchInfo();
+        forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
+        backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
     }
     
     
@@ -351,16 +353,22 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
     }
 
     
-    private static class SearchInfo {
-        public int[] shifts;
-        public ByteMatcher matcher;
-        public SequenceMatcher verifier;
+    private static final class SearchInfo {
+        private final int[] shifts;
+        private final ByteMatcher matcher;
+        private final SequenceMatcher verifier;
+        
+        public SearchInfo(final int[] shifts, final ByteMatcher matcher, final SequenceMatcher verifier) {
+        	this.shifts = shifts;
+        	this.matcher = matcher;
+        	this.verifier = verifier;
+        }
     }
     
     
-    private class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    private final class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-        public ForwardSearchInfo() {
+        private ForwardInfoFactory() {
         }
         
         /**
@@ -370,24 +378,20 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
          * the shortest distance it appears from the end of the matcher.
          */        
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             // Get info about the matcher:
             final SequenceMatcher sequence = getMatcher();            
             final int sequenceLength = sequence.length();            
             
-            // Create the search info object:
-            final SearchInfo info = new SearchInfo();
+            // Create the search info object fields:
             final int lastPosition = sequenceLength - 1;
-            info.matcher = sequence.getMatcherForPosition(lastPosition);
-            if (lastPosition == 0) {
-                info.verifier = AnyByteMatcher.ANY_BYTE_MATCHER;
-            } else {
-                info.verifier = sequence.subsequence(0, lastPosition);
-            }
-            info.shifts = new int[256];            
+            final ByteMatcher byteMatcher = sequence.getMatcherForPosition(lastPosition);
+            final SequenceMatcher verifier = (lastPosition == 0)? AnyByteMatcher.ANY_BYTE_MATCHER
+            												    : sequence.subsequence(0, lastPosition); 
 
-            // Set the default shift to the length of the sequence
-            Arrays.fill(info.shifts, sequenceLength);
+            // Set the default shift to the length of the sequence for all possible byte values:
+            final int[] shifts = new int[256];            
+            Arrays.fill(shifts, sequenceLength);
 
             // Now set specific shifts for the bytes actually in
             // the sequence itself.  The shift is the distance of a position
@@ -398,18 +402,18 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 final int distanceFromEnd = sequenceLength - sequencePos - 1;
                 for (final byte b : matchingBytes) {
-                    info.shifts[b & 0xFF] = distanceFromEnd;
+                    shifts[b & 0xFF] = distanceFromEnd;
                 }
             }
 
-            return info;
+            return new SearchInfo(shifts, byteMatcher, verifier);
         }
     }
     
     
-    private class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    private final class BackwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-        public BackwardSearchInfo() {
+        private BackwardInfoFactory() {
         }
         
         /**
@@ -420,24 +424,19 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
          * zero being the value of the first position in the sequence.
          */        
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             // Get info about the matcher:
             final SequenceMatcher sequence = getMatcher();            
             final int sequenceLength = sequence.length();            
             
-            // Create the search info object:
-            final SearchInfo info = new SearchInfo();
+            // Create the search info object fields
             final int lastPosition = sequenceLength - 1;
-            info.matcher = sequence.getMatcherForPosition(0);
-            if (lastPosition == 0) {
-                info.verifier = null;
-            } else {
-                info.verifier = sequence.subsequence(1, sequenceLength);
-            }
-            info.shifts = new int[256];            
-
+            final ByteMatcher byteMatcher = sequence.getMatcherForPosition(0);
+            final SequenceMatcher verifier = (lastPosition == 0)? null 
+            													: sequence.subsequence(1, sequenceLength); 
             // Set the default shift to the length of the sequence
-            Arrays.fill(info.shifts, sequenceLength);
+            final int[] shifts = new int[256];
+            Arrays.fill(shifts, sequenceLength);
 
             // Now set specific byte shifts for the bytes actually in
             // the sequence itself.  The shift is the position in the sequence,
@@ -446,10 +445,10 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
                 final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
                 for (final byte b : matchingBytes) {
-                    info.shifts[b & 0xFF] = sequencePos;
+                    shifts[b & 0xFF] = sequencePos;
                 }
             }
-            return info;
+            return new SearchInfo(shifts, byteMatcher, verifier);
         }
         
     }    

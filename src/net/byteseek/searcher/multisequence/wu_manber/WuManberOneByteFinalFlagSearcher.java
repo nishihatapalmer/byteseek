@@ -33,19 +33,22 @@ package net.byteseek.searcher.multisequence.wu_manber;
 
 import java.io.IOException;
 
+import net.byteseek.bytes.BytePermutationIterator;
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.object.factory.DoubleCheckImmutableLazyObject;
+import net.byteseek.object.factory.LazyObject;
+import net.byteseek.object.factory.ObjectFactory;
+import net.byteseek.object.factory.SingleCheckLazyObject;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
-import net.byteseek.util.bytes.BytePermutationIterator;
-import net.byteseek.util.bytes.ByteUtils;
-import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -205,25 +208,11 @@ import java.util.List;
     }
     
     
-    /**
-     * 
-     */
-    public static final class SearchInfo {
-        /**
-         * 
-         */
-        public int[] shifts;
-        /**
-         * 
-         */
-        public MultiSequenceMatcher matcher;
-        
-        /**
-         * 
-         * @param shifts
-         * @param matcher
-         */
-        public SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
+    private static final class SearchInfo {
+        private int[] shifts;
+        private MultiSequenceMatcher matcher;
+
+        private SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
             this.shifts = shifts;
             this.matcher = matcher;
         }
@@ -244,11 +233,11 @@ import java.util.List;
         /**
          * 
          */
-        protected final SingleCheckLazyObject<SearchInfo> forwardInfo;
+        protected final LazyObject<SearchInfo> forwardInfo;
         /**
          * 
          */
-        protected final SingleCheckLazyObject<SearchInfo> backwardInfo;
+        protected final LazyObject<SearchInfo> backwardInfo;
         
         /**
          * 
@@ -258,8 +247,8 @@ import java.util.List;
         public AbstractWuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
             super(matcher);
             this.blockSize = blockSize;
-            forwardInfo = new ForwardSearchInfo();
-            backwardInfo = new BackwardSearchInfo();
+            forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
+            backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfo());
         }
 
         public void prepareForwards() {
@@ -384,14 +373,14 @@ import java.util.List;
         /**
          * 
          */
-        protected class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+        protected class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
             /**
              * 
              * @return
              */
             @Override
-            protected SearchInfo create() {
+            public SearchInfo create() {
                 return new SearchInfo(getShifts(), getMatcher());
             }
             
@@ -455,14 +444,14 @@ import java.util.List;
         /**
          * 
          */
-        protected class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+        protected class BackwardSearchInfo implements ObjectFactory<SearchInfo> {
 
             /**
              * 
              * @return
              */
             @Override
-            protected SearchInfo create() {
+            public SearchInfo create() {
                 return new SearchInfo(getShifts(), getMatcher());
             }
             

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.util.bytes;
+package net.byteseek.bytes;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.byteseek.util.object.ObjectUtils;
+import net.byteseek.object.ObjectUtils;
 
 /**
  * A utility class containing useful methods to work with bytes, including:

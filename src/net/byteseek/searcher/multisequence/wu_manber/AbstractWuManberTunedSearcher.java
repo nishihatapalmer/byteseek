@@ -34,15 +34,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.byteseek.bytes.BytePermutationIterator;
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.object.factory.DoubleCheckImmutableLazyObject;
+import net.byteseek.object.factory.LazyObject;
+import net.byteseek.object.factory.ObjectFactory;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolSearcher;
-import net.byteseek.util.bytes.BytePermutationIterator;
-import net.byteseek.util.bytes.ByteUtils;
-import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 /**
  * This abstract class calculates the search information for a Wu-Manber style
@@ -162,14 +164,14 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
      * A factory for a lazily instantiated SearchInfo object containing the 
      * information needed to search forwards.
      */
-    protected final SingleCheckLazyObject<SearchInfo> forwardInfo;
+    protected final LazyObject<SearchInfo> forwardInfo;
     
     
     /**
      * A factory for a lazily instantiated SearchInfo object containing the 
      * information needed to search backwards.
      */
-    protected final SingleCheckLazyObject<SearchInfo> backwardInfo;
+    protected final LazyObject<SearchInfo> backwardInfo;
 
     
     /**
@@ -182,8 +184,8 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
     public AbstractWuManberTunedSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
         super(matcher);
         this.blockSize = blockSize;
-        forwardInfo = new ForwardSearchInfo();
-        backwardInfo = new BackwardSearchInfo();
+        forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
+        backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
     }
 
     
@@ -349,11 +351,11 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
 
 
     /**
-     * A class extending SingleCheckLazyObject<SearchInfo>, which calculates the shift,
+     * A class implementing ObjectFactory<SearchInfo>, which calculates the shift,
      * the final shift and matcher to use when searching forwards with the
      * Tuned Wu-Manber search algorithm.
      */
-    protected class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    protected class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
         /**
          * Creates and returns the forward search information.
@@ -361,7 +363,7 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
          * @return SearchInfo The information needed to search forwards.
          */
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             final int defaultShift = sequences.getMinimumLength() - blockSize + 1;        
             final int[] shifts = createShiftHashTable(defaultShift);
             final int[] finalShifts = createFinalShiftHashTable(defaultShift);
@@ -450,11 +452,11 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
 
 
     /**
-     * A class extending SingleCheckLazyObject<SearchInfo>, which calculates the shift,
+     * A class implementing ObjectFactory<SearchInfo>, which calculates the shift,
      * the final shift and matcher to use when searching backwards with the
      * Tuned Wu-Manber search algorithm.
      */
-    protected class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    protected class BackwardInfoFactory implements ObjectFactory<SearchInfo> {
 
         /**
          * Creates and returns the backward search information.
@@ -462,7 +464,7 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
          * @return SearchInfo The information needed to search backwards.
          */
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             final int minLength = sequences.getMinimumLength();
             final int defaultShift = minLength - blockSize + 1;        
             final int[] shifts = createShiftHashTable(defaultShift);

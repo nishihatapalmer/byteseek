@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -46,11 +46,14 @@ import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceUtils;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.object.factory.DoubleCheckImmutableLazyObject;
+import net.byteseek.object.factory.LazyObject;
+import net.byteseek.object.factory.ObjectFactory;
+import net.byteseek.object.factory.SingleCheckLazyObject;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 import net.byteseek.searcher.sequence.horspool.BoyerMooreHorspoolSearcher;
-import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 
 /**
  * The SetHorspoolSearcher implements the Boyer-Moore-Horspool algorithm for
@@ -68,8 +71,8 @@ import net.byteseek.util.object.lazy.SingleCheckLazyObject;
 public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
 
     private final ByteMatcherFactory byteMatcherFactory;
-    private final SingleCheckLazyObject<SearchInfo> forwardInfo;
-    private final SingleCheckLazyObject<SearchInfo> backwardInfo;
+    private final LazyObject<SearchInfo> forwardInfo;
+    private final LazyObject<SearchInfo> backwardInfo;
     
     
     /**
@@ -79,10 +82,11 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      */
     public SetHorspoolSearcher(final MultiSequenceMatcher sequences) {
         super(sequences);
-        forwardInfo = new ForwardSearchInfo();
-        backwardInfo = new BackwardSearchInfo();
+        forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
+        backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
         
         //TODO: provide constructors to allow different byte sequences factories.
+        //TODO: provide an ObjectFactory<LazyObject> to instantiate a LazyObject of choice.
         byteMatcherFactory = new SetAnalysisByteMatcherFactory();
     }
     
@@ -352,10 +356,16 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
     /**
      * A class holding information needed to search.
      */
-    private static class SearchInfo {
-        public int[] shifts;
-        public ByteMatcher matcher;
-        public MultiSequenceMatcher verifier;
+    private static final class SearchInfo {
+        private int[] shifts;
+        private ByteMatcher matcher;
+        private MultiSequenceMatcher verifier;
+        
+        public SearchInfo(final int[] shifts, final ByteMatcher endMatcher, final MultiSequenceMatcher verifier) {
+        	this.shifts = shifts;
+        	this.matcher = endMatcher;
+        	this.verifier = verifier;
+        }
     }    
     
     
@@ -363,9 +373,9 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
      * {@SearchInfo} for searching forwards.
      */
-    private class ForwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    private final class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-        public ForwardSearchInfo() {
+        private ForwardInfoFactory() {
         }
         
         /**
@@ -375,29 +385,28 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
          * the shortest distance it appears from the end of the sequences.
          */        
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             // Get info about the multi sequence sequences:
             final MultiSequenceMatcher matcher = getMatcher();            
             final int minLength = matcher.getMinimumLength();            
             
-            // Create the search info object:
-            final SearchInfo info = new SearchInfo();
+            // Create the search info object fields:
             
-            // Create a byte sequences for the last position of all the sequences:
+            // Create a byte matcher for the last position of all the sequences:
             final Set<Byte> allLastBytes =
                     MultiSequenceUtils.bytesAlignedRight(0, matcher);
-            info.matcher = byteMatcherFactory.create(allLastBytes);
+            final ByteMatcher lastPositionMatcher = byteMatcherFactory.create(allLastBytes);
             
             // Create a verifier which works on the reverse sequences of the
-            // multi sequence sequences (they will be matched backwards from the 
+            // multi-sequence sequences (they will be matched backwards from the 
             // end of the sequences - if they are also reversed they will match
             // the original sequences).
-            info.verifier = new MultiSequenceReverseMatcher(matcher);
+            final MultiSequenceMatcher verifier = new MultiSequenceReverseMatcher(matcher);
             
             // Create the array of shifts and set the default shift to the
             // minimum length of all the sequences:
-            info.shifts = new int[256];            
-            Arrays.fill(info.shifts, minLength);
+            final int[] shifts = new int[256];            
+            Arrays.fill(shifts, minLength);
 
             // Now set specific shifts for the bytes actually in
             // the sequences.  The shift is the distance of a position
@@ -410,11 +419,11 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                 final Set<Byte> bytesForPosition =
                         MultiSequenceUtils.bytesAlignedRight(distanceFromEnd, matcher);
                 for (final byte b : bytesForPosition) {
-                    info.shifts[b & 0xFF] = distanceFromEnd;
+                    shifts[b & 0xFF] = distanceFromEnd;
                 }
             }
 
-            return info;
+            return new SearchInfo(shifts, lastPositionMatcher, verifier);
         }
     }
     
@@ -423,9 +432,9 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * A factory class implementing the {@link SingleCheckLazyObject}, creating a 
      * {@SearchInfo} for searching backwards.
      */
-    private class BackwardSearchInfo extends SingleCheckLazyObject<SearchInfo> {
+    private class BackwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-        public BackwardSearchInfo() {
+        public BackwardInfoFactory() {
         }
         
         /**
@@ -436,25 +445,24 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
          * zero being the value of the first position in the sequence.
          */        
         @Override
-        protected SearchInfo create() {
+        public SearchInfo create() {
             // Get info about the multi sequence sequences:
             final MultiSequenceMatcher matcher = getMatcher();            
             final int minLength = matcher.getMinimumLength();            
             
-            // Create the search info object:
-            final SearchInfo info = new SearchInfo();
+            // Create the search info object fields
             
             // Create a byte sequences for the first position of all the sequences:
             final Set<Byte> allFirstBytes =
                     MultiSequenceUtils.bytesAlignedLeft(0, matcher);
-            info.matcher = byteMatcherFactory.create(allFirstBytes);
+            final ByteMatcher firstPositionMatcher = byteMatcherFactory.create(allFirstBytes);
             
-            info.verifier = matcher;
+            final MultiSequenceMatcher verifier = matcher;
             
             // Create the array of shifts and set the default shift to the
             // minimum length of all the sequences:
-            info.shifts = new int[256];            
-            Arrays.fill(info.shifts, minLength);
+            final int[] shifts = new int[256];            
+            Arrays.fill(shifts, minLength);
 
             // Now set specific shifts for the bytes actually in
             // the sequences.  The shift is the distance of a position
@@ -467,11 +475,11 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                 final Set<Byte> bytesForPosition =
                         MultiSequenceUtils.bytesAlignedLeft(distanceFromStart, matcher);
                 for (final byte b : bytesForPosition) {
-                    info.shifts[b & 0xFF] = distanceFromStart;
+                    shifts[b & 0xFF] = distanceFromStart;
                 }
             }
 
-            return info;
+            return new SearchInfo(shifts, firstPositionMatcher, verifier);
         }
         
     }        

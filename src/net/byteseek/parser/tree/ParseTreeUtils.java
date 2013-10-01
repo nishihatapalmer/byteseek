@@ -35,9 +35,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.byteseek.bytes.ByteUtils;
+import net.byteseek.object.ObjectUtils;
 import net.byteseek.parser.ParseException;
-import net.byteseek.util.bytes.ByteUtils;
-import net.byteseek.util.object.ObjectUtils;
 
 /**
  * A utility class of static helper methods to use when parsing expressions.

@@ -39,7 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.byteseek.util.bytes.ByteUtils;
+import net.byteseek.bytes.ByteUtils;
 
 /**
  * A fairly simple implementation of {@link ByteMatcherFactory}.  It attempts to build the

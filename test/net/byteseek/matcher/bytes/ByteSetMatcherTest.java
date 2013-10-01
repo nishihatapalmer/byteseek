@@ -5,11 +5,11 @@
 
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.InvertibleMatcher;
 import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
 import net.byteseek.matcher.bytes.SetBitsetMatcher;
-import net.byteseek.util.bytes.ByteUtils;
 
 import java.util.LinkedHashSet;
 import java.util.Random;

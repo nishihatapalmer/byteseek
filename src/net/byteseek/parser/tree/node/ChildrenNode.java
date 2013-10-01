@@ -35,9 +35,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.byteseek.collections.ImmutableListIterator;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.util.collections.ImmutableListIterator;
 
 /**
  * An immutable ParseTree node which has child ParseTrees.  The value of the node,

@@ -36,7 +36,7 @@ import java.util.Map;
 import net.byteseek.automata.State;
 import net.byteseek.automata.Transition;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.util.object.DeepCopy;
+import net.byteseek.object.factory.DeepCopy;
 
 /**
  * A mutable implementation of {@link Transition} which matches bytes using a

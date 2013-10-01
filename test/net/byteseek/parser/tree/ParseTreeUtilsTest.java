@@ -41,13 +41,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.node.BaseNode;
 import net.byteseek.parser.tree.node.ByteNode;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.parser.tree.node.IntNode;
 import net.byteseek.parser.tree.node.StringNode;
-import net.byteseek.util.bytes.ByteUtils;
 
 import org.junit.Test;
 

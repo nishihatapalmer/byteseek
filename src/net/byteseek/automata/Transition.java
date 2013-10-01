@@ -33,7 +33,7 @@ package net.byteseek.automata;
 
 import java.util.Map;
 
-import net.byteseek.util.object.DeepCopy;
+import net.byteseek.object.factory.DeepCopy;
 
 /**
  * A Transition is a link to a {@link State} which can be followed if a given

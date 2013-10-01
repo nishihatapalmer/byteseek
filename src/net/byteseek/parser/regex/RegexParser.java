@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
 import net.byteseek.parser.StringParseReader;
@@ -46,7 +47,6 @@ import net.byteseek.parser.tree.node.ByteNode;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.parser.tree.node.IntNode;
 import net.byteseek.parser.tree.node.StringNode;
-import net.byteseek.util.bytes.ByteUtils;
 
 /**
  * A hand-written regular expression parser for byteseek. The syntax is designed

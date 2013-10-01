@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
- *
+ * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *  
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,44 +29,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.util.collections;
+package net.byteseek.object.factory;
 
-import java.util.Collection;
-
-import net.byteseek.util.object.ObjectUtils;
 
 /**
- * A static utility class containing useful methods for collections.
+ * This class creates objects using single-check
+ * lazy initialisation, with volatile references.  This means that
+ * if two threads attempt to get the object at the same time before it has
+ * been fully initialised, it is possible for the object to be created 
+ * more than once.  
+ * 
+ * @param <T> The type of object to instantiate lazily.
  * 
  * @author Matt Palmer
- *
  */
-public final class CollUtils {
-	
-	/**
-	 * Private constructor for a static utility class.
-	 */
-	private CollUtils() {
-	}
-	
-	
-	/**
-	 * Returns true if the collection contains any of the values passed in.
-	 * 
-	 * @param collection The collection to check
-	 * @param values The values to check to see if any are in the collection.
-	 * @return true if the collection contains any of the values.
-	 * @throws IllegalArgumentException if either of the collections passed in are null.
-	 */
-    public static <T> boolean containsAny(final Collection<T> collection, final Collection<T> values) {
-    	ObjectUtils.checkNullCollection(collection, "parameter: collection");
-    	ObjectUtils.checkNullCollection(values, "parameter: values");
-    	for (final T value : values) {
-    		if (collection.contains(value)) {
-    			return true;
-    		}
-    	}
-    	return false;
+public final class SingleCheckLazyObject<T> implements LazyObject<T> {
+
+    private final ObjectFactory<T> factory;
+    private volatile T object;
+
+    /**
+     * Constructs a SingleCheckLazyObject with an object factory to create the 
+     * object lazily.
+     * 
+     * @param factory A factory which can create an instance of type T.
+     */
+    public SingleCheckLazyObject(ObjectFactory<T> factory) {
+    	this.factory = factory;
+    }
+
+    
+    /**
+     * Uses Single-Check lazy initialisation.  This can result in the field
+     * being initialised more than once.
+     * 
+     * @return An object of type T.
+     */
+    @Override
+    public final T get() {
+        T result = object;
+        if (result == null) {
+            object = result = factory.create();
+        }
+        return result;
     }
 
 }
