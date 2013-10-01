@@ -32,28 +32,100 @@ package net.byteseek.collections;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.junit.Test;
 
 public class ImmutableListIteratorTest {
 
+	@SuppressWarnings("unused")
 	@Test
 	public final void testImmutableListIterator() {
-		fail("Not yet implemented"); // TODO
+		try {
+			ImmutableListIterator<Integer> test = new ImmutableListIterator<Integer>(null);
+			fail("Expected an IllegalArgumentException");
+		} catch (IllegalArgumentException expected) {};
+		
+		ImmutableListIterator<Integer> test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
+			
+		List<Integer> testList = new ArrayList<Integer>();
+		testList.add(1);
+		testList.add(257);
+		test = new ImmutableListIterator<Integer>(testList);
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public final void testHasNext() {
-		fail("Not yet implemented"); // TODO
+		ImmutableListIterator<Integer> test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
+		assertFalse("Empty list does not have next", test.hasNext());
+		
+		List<Integer> testList = new ArrayList<Integer>();
+		testList.add(1);
+		testList.add(257);
+		testList.add(32);
+		testList.add(99999999);
+		test = new ImmutableListIterator<Integer>(testList);
+		for (Integer value : testList) {
+			assertTrue("Iterator has next", test.hasNext());
+			test.next();
+		}
+		assertFalse("Iterated list does not have next", test.hasNext());
 	}
 
 	@Test
 	public final void testNext() {
-		fail("Not yet implemented"); // TODO
+		ImmutableListIterator<Integer> test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
+		try {
+			test.next();
+			fail("Expected a NoSuchElementException");
+		} catch (NoSuchElementException expected) {};
+		
+		test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
+		assertFalse("Empty list does not have next", test.hasNext());
+		
+		List<Integer> testList = new ArrayList<Integer>();
+		testList.add(1);
+		testList.add(257);
+		testList.add(32);
+		testList.add(99999999);
+		test = new ImmutableListIterator<Integer>(testList);
+		for (Integer value : testList) {
+			assertEquals("Values are correct", value, test.next());
+		}
+		assertFalse("Iterated list does not have next", test.hasNext());
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public final void testRemove() {
-		fail("Not yet implemented"); // TODO
-	}
+		ImmutableListIterator<Integer> test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
+		try {
+			test.remove();
+			fail("Expected an UnsupportedOperationException");
+		} catch (UnsupportedOperationException expected) {};
+		
+		test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
+		try {
+			test.remove();
+			fail("Expected an UnsupportedOperationException");
+		} catch (UnsupportedOperationException expected) {};
 
+		
+		List<Integer> testList = new ArrayList<Integer>();
+		testList.add(1);
+		testList.add(257);
+		testList.add(32);
+		testList.add(99999999);
+		test = new ImmutableListIterator<Integer>(testList);
+		for (Integer value : testList) {
+			try {
+				test.remove();
+				fail("Expected an UnsupportedOperationException");
+			} catch (UnsupportedOperationException expected) {};
+			test.next();
+		}
+	}
 }

@@ -34,6 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import net.byteseek.object.ObjectUtils;
+
 /**
  * An iterator over a list which prevents removal of items from the list.
  * <p>
@@ -50,8 +52,10 @@ public class ImmutableListIterator<T> implements Iterator<T> {
 	 * Constructs an ImmutableListIterator.
 	 * 
 	 * @param list The list to iterate over.
+	 * @throws IllegalArgumentException if the list passed in is null.
 	 */
 	public ImmutableListIterator(final List<T> list) {
+		ObjectUtils.checkNullCollection(list);
 		this.list = list;
 	}
 
