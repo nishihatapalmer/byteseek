@@ -80,7 +80,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Cloneabl
      * @param initialObjects A collection of objects which will be added to the set 
      *                       on construction.
      */
-    public IdentityHashSet(final Collection<T> initialObjects) {
+    public IdentityHashSet(final Collection<? extends T> initialObjects) {
         super();
         map = new IdentityHashMap<T, Object>();
         addAll(initialObjects);
