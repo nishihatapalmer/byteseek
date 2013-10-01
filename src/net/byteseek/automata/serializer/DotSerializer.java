@@ -39,6 +39,8 @@ import net.byteseek.automata.Automata;
 import net.byteseek.automata.State;
 import net.byteseek.automata.Transition;
 
+//TODO: can we do this with walkers yet?  If not, why not...?
+
 /**
  * 
  * @author Matt Palmer
