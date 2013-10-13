@@ -30,8 +30,7 @@
  */
  
  /**
-  * net.byteseek.matcher contains an interface and data class for matching against
-  * byte arrays or {@link net.byteseek.io.reader.WindowReader}s.
+  * net.byteseek.matcher containing interfaces for objects that match bytes.
   * <p>
   * Sub-packages have specific implementations of matchers for bytes, sequences of
   * bytes and byte matchers, multi-sequence matchers, and finite-state automata.

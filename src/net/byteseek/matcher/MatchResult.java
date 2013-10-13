@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,70 +33,44 @@ package net.byteseek.matcher;
 import java.util.Collection;
 
 /**
- * A simple data carrying class to hold the results of matching something at a
- * given position, with a length and an associated matching Object.
+ * An interface for a simple data carrying class to hold the results of matching something at a
+ * given position, with a length and a collection of associated matching objects.
  * <p>
- * Many matchers will not use the MatchResult class, as what matched and how
+ * Many matchers will not use the MatchResult interface, as what matched and how
  * long the match is is implicit from the type of matching being done. For
  * example, when matching sequences, it is obvious what matched and how long the
  * match was, so there is no need to introduce an intermediate result object.
  * However, some matchers can match more than once, and may be associated with
  * different objects for different stages of matching. These types of matchers
- * will typically return a MatchResult (or a subclass of it).
+ * will typically return a MatchResult or a list of them.
+ * 
+ * @param <T> The type of object associated with the match.
  * 
  * @author Matt Palmer
  */
-public class MatchResult<T> {
-
-	private final long			matchPosition;
-	private final long			matchLength;
-	private final Collection<T>	matchingObjects;
-
-	/**
-	 * Constructs a MatchResult.
-	 * 
-	 * @param matchPosition   The position the match existed at.
-	 * @param matchLength     The length of the match.
-	 * @param matchingObjects A collection of objects associated with this match.
-	 */
-	public MatchResult(final long matchPosition, final long matchLength,
-			final Collection<T> matchingObjects) {
-		this.matchPosition = matchPosition;
-		this.matchLength = matchLength;
-		this.matchingObjects = matchingObjects;
-	}
+public interface MatchResult<T> {
 
 	/**
 	 * Returns the position a match was found at.
 	 * 
 	 * @return The position a match was found at.
 	 */
-	public long getMatchPosition() {
-		return matchPosition;
-	}
+	public long getMatchPosition();
 
+	
 	/**
 	 * Returns the length of the match.
 	 * 
 	 * @return The length of the match.
 	 */
-	public long getMatchLength() {
-		return matchLength;
-	}
+	public long getMatchLength();
 
+	
 	/**
 	 * Returns the objects associated with the match.
 	 * 
 	 * @return The objects associated with the match.
 	 */
-	public Collection<T> getMatchingObjects() {
-		return matchingObjects;
-	}
+	public Collection<T> getMatchingObjects();
 	
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "[position: " + matchPosition + 
-				                            " length:" + matchLength + 
-				                            " objects:" + matchingObjects + ']';  
-	}
 }
