@@ -33,7 +33,7 @@ package net.byteseek.collections;
 
 import java.util.Collection;
 
-import net.byteseek.object.ObjectUtils;
+import net.byteseek.object.ArgUtils;
 
 /**
  * A static utility class containing useful methods for collections.
@@ -59,8 +59,8 @@ public final class CollUtils {
 	 * @throws IllegalArgumentException if either of the collections passed in are null.
 	 */
     public static <T> boolean containsAny(final Collection<T> collection, final Iterable<T> values) {
-    	ObjectUtils.checkNullCollection(collection, "parameter: collection");
-    	ObjectUtils.checkNullObject(values, "parameter: values");
+    	ArgUtils.checkNullCollection(collection, "parameter: collection");
+    	ArgUtils.checkNullObject(values, "parameter: values");
     	for (final T value : values) {
     		if (collection.contains(value)) {
     			return true;

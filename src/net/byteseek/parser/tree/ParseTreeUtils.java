@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.byteseek.bytes.ByteUtils;
-import net.byteseek.object.ObjectUtils;
+import net.byteseek.object.ArgUtils;
 import net.byteseek.parser.ParseException;
 
 /**
@@ -79,7 +79,7 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if node is null.
 	 */
 	public static ParseTree getFirstChild(final ParseTree node) throws ParseException {
-		ObjectUtils.checkNullObject(node);
+		ArgUtils.checkNullObject(node);
 		if (node.getNumChildren() > 0) {
 			return node.getChild(0);
 		}
@@ -96,7 +96,7 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if the parentNode is null.
 	 */
 	public static ParseTree getLastChild(final ParseTree parentNode) throws ParseException {
-		ObjectUtils.checkNullObject(parentNode);
+		ArgUtils.checkNullObject(parentNode);
 		final int numChildren = parentNode.getNumChildren();
 		if (numChildren == 0) {
 			throw new ParseException("Node has no children - cannot get last child node [" + parentNode + ']');			
@@ -116,7 +116,7 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if the parentNode is null.
 	 */
 	public static int getChildIndexOfType(final ParseTree parentNode, final int from, final ParseTreeType type) {
-		ObjectUtils.checkNullObject(parentNode);
+		ArgUtils.checkNullObject(parentNode);
 		final int numChildren = parentNode.getNumChildren();
 		if (from < numChildren && from >= 0) {
 			for (int searchIndex = from; searchIndex < numChildren; searchIndex++) {
@@ -173,8 +173,8 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if the byteNode or the set of bytes are null.
 	 */
 	public static void addByteValues(final ParseTree byteNode, final Set<Byte> bytes) throws ParseException {
-		ObjectUtils.checkNullObject(byteNode, " parameter:byteNode");
-		ObjectUtils.checkNullCollection(bytes, " parameter: bytes");
+		ArgUtils.checkNullObject(byteNode, " parameter:byteNode");
+		ArgUtils.checkNullCollection(bytes, " parameter: bytes");
 		if (byteNode.isValueInverted()) {
 			ByteUtils.addInvertedByteValues(byteNode.getByteValue(), bytes);
 		} else {
@@ -193,8 +193,8 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if the range or the collection passed in are null.
 	 */
 	public static void addRangeBytes(final ParseTree range, Set<Byte> byteSet) throws ParseException {
-		ObjectUtils.checkNullObject(range, " parameter:range");
-		ObjectUtils.checkNullCollection(byteSet, " parameter:byteSet");
+		ArgUtils.checkNullObject(range, " parameter:range");
+		ArgUtils.checkNullCollection(byteSet, " parameter:byteSet");
 		if (range.isValueInverted()) {
 		    ByteUtils.addBytesNotInRange(getFirstRangeValue(range), getSecondRangeValue(range), byteSet);
 		} else {
@@ -260,8 +260,8 @@ public final class ParseTreeUtils {
 	 */
 	public static void addBytesMatchingAllBitmask(final ParseTree allBitmask,
 												  final Collection<Byte> bytes) throws ParseException {
-		ObjectUtils.checkNullObject(allBitmask, "parameter: allBitmask");
-		ObjectUtils.checkNullCollection(bytes, "parameter: bytes");
+		ArgUtils.checkNullObject(allBitmask, "parameter: allBitmask");
+		ArgUtils.checkNullCollection(bytes, "parameter: bytes");
 		if (allBitmask.isValueInverted()) {
 			ByteUtils.addBytesNotMatchingAllBitMask(allBitmask.getByteValue(), bytes);
 		} else {
@@ -286,8 +286,8 @@ public final class ParseTreeUtils {
 	 */
 	public static void addBytesMatchingAnyBitmask(final ParseTree anyBitmask,
 												  final Collection<Byte> bytes) throws ParseException {
-		ObjectUtils.checkNullObject(anyBitmask, "parameter: anyBitmask");
-		ObjectUtils.checkNullCollection(bytes, "parameter: bytes");
+		ArgUtils.checkNullObject(anyBitmask, "parameter: anyBitmask");
+		ArgUtils.checkNullCollection(bytes, "parameter: bytes");
 		if (anyBitmask.isValueInverted()) {
 			ByteUtils.addBytesNotMatchingAnyBitMask(anyBitmask.getByteValue(), bytes);
 		} else {
@@ -306,7 +306,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addStringBytes(final ParseTree string,
 									  final Collection<Byte> bytes) throws ParseException {
-		ObjectUtils.checkNullObject(string, "parameter:string");
+		ArgUtils.checkNullObject(string, "parameter:string");
 		ByteUtils.addStringBytes(string.getTextValue(), bytes);
 	}
 	
@@ -323,7 +323,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addCaseInsensitiveStringBytes(final ParseTree caseInsensitive,
 													 final Collection<Byte> bytes) throws ParseException {
-		ObjectUtils.checkNullObject(caseInsensitive, "parameter:caseInsensitive");
+		ArgUtils.checkNullObject(caseInsensitive, "parameter:caseInsensitive");
 		ByteUtils.addCaseInsensitiveStringBytes(caseInsensitive.getTextValue(), bytes);
 	}
 	
@@ -353,7 +353,7 @@ public final class ParseTreeUtils {
 	 */
 	public static Set<Byte> getSetValues(final ParseTree set)
 			throws ParseException {
-		ObjectUtils.checkNullObject(set);
+		ArgUtils.checkNullObject(set);
 		final Set<Byte> setValues = new HashSet<Byte>(64);
 		for (final ParseTree valueNode : set) {
 			switch (valueNode.getParseTreeType()) {
@@ -395,7 +395,7 @@ public final class ParseTreeUtils {
 	 */
 	public static void addSetValues(final ParseTree setNode, 
 									final Collection<Byte> bytes) throws ParseException {
-		ObjectUtils.checkNullCollection(bytes, "parameter:bytes");
+		ArgUtils.checkNullCollection(bytes, "parameter:bytes");
 		bytes.addAll(calculateSetValues(setNode));		
 	}
 	
@@ -418,7 +418,7 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if the set passed in is null.
 	 */
 	public static Set<Byte> calculateSetValues(final ParseTree set) throws ParseException {
-		ObjectUtils.checkNullObject(set);
+		ArgUtils.checkNullObject(set);
 		final Set<Byte> setValues = getSetValues(set);
 		if (set.isValueInverted()) {
 			return ByteUtils.invertedSet(setValues);
@@ -445,7 +445,7 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if the rangeNode passed in is null.
 	 */
 	private static int getRangeValue(final ParseTree rangeNode, final int valueIndex) throws ParseException {
-		ObjectUtils.checkNullObject(rangeNode);
+		ArgUtils.checkNullObject(rangeNode);
 		if (rangeNode.getParseTreeType() != ParseTreeType.RANGE) {
 			throw new ParseException("Node is not a RANGE node.  It has type: " + rangeNode.getParseTreeType());
 		}
@@ -474,7 +474,7 @@ public final class ParseTreeUtils {
 	 * @throws IllegalArgumentException if the repeatNode passed in is null.
 	 */
 	private static int getRepeatValue(final ParseTree repeatNode, final int valueIndex) throws ParseException {
-		ObjectUtils.checkNullObject(repeatNode);
+		ArgUtils.checkNullObject(repeatNode);
 		if (repeatNode.getParseTreeType() != ParseTreeType.REPEAT &&
 			repeatNode.getParseTreeType() != ParseTreeType.REPEAT_MIN_TO_MANY &&
 			repeatNode.getParseTreeType() != ParseTreeType.REPEAT_MIN_TO_MAX) {

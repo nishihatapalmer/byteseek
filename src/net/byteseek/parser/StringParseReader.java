@@ -30,7 +30,7 @@
  */
 package net.byteseek.parser;
 
-import net.byteseek.object.ObjectUtils;
+import net.byteseek.object.ArgUtils;
 
 /**
  * A class which can be used by parsers to read from a string, maintaining
@@ -56,7 +56,7 @@ public class StringParseReader {
 	 * @throws IllegalArgumentException if the string passed in is null.
 	 */
 	public StringParseReader(final String string) {
-		ObjectUtils.checkNullString(string);
+		ArgUtils.checkNullString(string);
 		this.string = string;
 		this.length = string.length();
 	}

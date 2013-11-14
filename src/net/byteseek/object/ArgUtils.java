@@ -33,7 +33,7 @@ package net.byteseek.object;
 
 import java.util.Collection;
 
-public final class ObjectUtils {
+public final class ArgUtils {
 
 	private static final String OBJECT_CANNOT_BE_NULL               = "The object cannot be null";
 	private static final String COLLECTION_CANNOT_BE_NULL           = "The collection cannot be null";
@@ -42,6 +42,12 @@ public final class ObjectUtils {
 	private static final String ARRAY_CANNOT_BE_NULL                = "The array cannot be null";
 	private static final String ARRAY_CANNOT_BE_EMPTY		        = "The array cannot be empty";
 	private static final String STRING_CANNOT_BE_NULL               = "The string cannot be null";
+	private static final String STRING_CANNOT_BE_EMPTY              = "The string cannot be empty";
+    private static final String END_PAST_LENGTH_ERROR               = "The end %d is past the end, length = %d";
+    private static final String START_LESS_THAN_ZERO_ERROR          = "The start %d is less than zero.";
+    private static final String START_PAST_END_ERROR                = "The start %d is past the end %d";
+    private static final String START_PAST_LENGTH_ERROR             = "Start position %d is past the end, length = %d.";
+    private static final String POSITIVE_INTEGER				    = "The number %d should be a positive integer.";
 
 	public static void checkNullObject(final Object object) {
 		if (object == null) {
@@ -98,6 +104,20 @@ public final class ObjectUtils {
 			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL + ' ' + description);
 		}
 	}
+	
+	public static <T> void checkNullOrEmptyCollectionNoNullElements(final Collection<T> collection) {
+		checkNullOrEmptyCollection(collection);
+		for (T element : collection) {
+			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL);
+		}
+	}
+	
+	public static <T> void checkNullOrEmptyCollectionNoNullElements(final Collection<T> collection, final String description) {
+		checkNullOrEmptyCollection(collection, description);
+		for (T element : collection) {
+			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL + ' ' + description);
+		}
+	}
 
 	
 	public static void checkNullByteArray(final byte[] bytes) {
@@ -141,5 +161,60 @@ public final class ObjectUtils {
     		throw new IllegalArgumentException(STRING_CANNOT_BE_NULL + ' ' + description);
     	}
 	} 
+
+	public static void checkNullOrEmptyString(final String string) {
+		if (string == null) {
+    		throw new IllegalArgumentException(STRING_CANNOT_BE_NULL);
+    	}
+		if (string.isEmpty()) {
+			throw new IllegalArgumentException(STRING_CANNOT_BE_EMPTY);
+		}
+	} 
+	
+	public static void checkNullOrEmptyString(final String string, final String description) {
+		if (string == null) {
+    		throw new IllegalArgumentException(STRING_CANNOT_BE_NULL + ' ' + description);
+    	}
+		if (string.isEmpty()) {
+			throw new IllegalArgumentException(STRING_CANNOT_BE_EMPTY + ' ' + description);
+		}
+	} 
+	
+	
+	public static void checkIndexOutOfBounds(final int length, final int position) {
+        if (position < 0) {
+        	throw new IllegalArgumentException(String.format(START_LESS_THAN_ZERO_ERROR, position));
+        }
+        if (position >= length) {
+            throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, position, length));
+        }
+	}
+	
+	
+	public static void checkIndexOutOfBounds(final int length, final int startIndex, final int endIndex) {
+        if (startIndex < 0) {
+        	throw new IllegalArgumentException(String.format(START_LESS_THAN_ZERO_ERROR, startIndex));
+        }
+		if (startIndex >= endIndex) {
+            throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1));
+        }
+        if (startIndex >= length) {
+            throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, length));
+        }
+        if (endIndex > length) {
+            throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, length));
+        }
+	}
+	
+	public static void checkPositiveInteger(final int number) {
+		if (number < 1) {
+			throw new IllegalArgumentException("The number " + number + " should be a positive integer.");
+		}
+	}
+	
+	public static void checkPositiveInteger(final int number, final String description) {
+		if (number < 1) {
+			throw new IllegalArgumentException(String.format(POSITIVE_INTEGER + ' ' + description, number));		}
+	}
 	
 }

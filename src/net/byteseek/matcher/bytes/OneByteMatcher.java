@@ -51,7 +51,24 @@ public final class OneByteMatcher extends AbstractByteMatcher {
 
     private final byte byteToMatch;
 
+    private static final class NodeCache {
+  	  
+  	  static final OneByteMatcher[] values = new OneByteMatcher[256];
+  	  
+  	  static {
+  		  for (int i = 0; i < 256; i++) {
+  			  values[i] = new OneByteMatcher((byte) (i & 0xFF));
+  		  }
+  	  }
+  	  
+    }
+    
+    
+    public static OneByteMatcher valueOf(final byte value) {
+  	  return NodeCache.values[value & 0xff];
+    }
 
+    
     /**
      * Constructs an immutable OneByteMatcher.
      * 

@@ -236,7 +236,7 @@ public final class CaseInsensitiveMatcher implements SequenceMatcher {
             return new CaseInsensitiveByteMatcher(theChar);
         }
         //FIXME: if the char is not an ASCII char, this will not be correct.
-        return new OneByteMatcher((byte) theChar);
+        return OneByteMatcher.valueOf((byte) theChar);
     }
 
     

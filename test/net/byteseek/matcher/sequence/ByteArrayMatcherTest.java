@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -47,8 +49,6 @@ import java.util.Random;
 import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.sequence.ByteArrayMatcher;
-import net.byteseek.matcher.sequence.SequenceMatcher;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -110,6 +110,8 @@ public class ByteArrayMatcherTest {
 	//   constructor tests   //
 	///////////////////////////
 
+
+	
 	/**
 	 * 
 	 * Construct all possible single byte value sequences.  Tests are:
@@ -201,9 +203,80 @@ public class ByteArrayMatcherTest {
 				assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue,
 						matchingBytes[0]);
 			}
+			
+			testDefensivelyCopied(array, matcher);
 		}
 	}
+	
+	
+	private void testDefensivelyCopied(byte[] array, ByteArrayMatcher matcher) {
+		changeArray(array);
+		for (int pos = 0; pos < array.length; pos++) {
+			final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
+			final byte[] matchingBytes = sbm.getMatchingBytes();
+			final byte matchingValue = array[pos];
+			assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+			assertTrue("byte value not equals:" + Integer.toString(matchingValue), 
+					matchingValue != matchingBytes[0]);
+		}
+	}
+	
+	private void changeArray(byte[] array) {
+		for (int i = 0; i < array.length; i++) {
+			int newvalue = ((array[i] & 0xFF) + 1) % 256;
+			array[i] = (byte) newvalue;
+		}
+	}
+	
 
+	@Test
+	public void testConstructSubsequence() {
+		for (int testNo = 0; testNo < 100; testNo++) {
+			final byte[] array = createRandomArray(1024);
+			final int startPos = rand.nextInt(array.length);
+			final int endPos   = startPos + rand.nextInt(array.length-startPos) + 1;
+			final ByteArrayMatcher matcher = new ByteArrayMatcher(array, startPos, endPos);
+			assertEquals("length:" + Integer.toString(endPos - startPos), endPos - startPos, matcher.length());
+
+			for (int pos = 0; pos < endPos - startPos; pos++) {
+				final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
+				final byte[] matchingBytes = sbm.getMatchingBytes();
+				final byte matchingValue = array[startPos + pos];
+				assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+				assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue,
+						matchingBytes[0]);
+			}
+			
+			testDefensivelyCopied(array, new ByteArrayMatcher(array, 0, array.length));
+		}
+	}
+	
+	@Test
+	public void testConstructRepeatedSubsequence() {
+		for (int testNo = 0; testNo < 100; testNo++) {
+			final byte[] array = createRandomArray(1024);
+			final int startPos = rand.nextInt(array.length);
+			final int endPos   = startPos + rand.nextInt(array.length-startPos) + 1;
+			final int repeats = rand.nextInt(10) + 1;
+			final int length = (endPos - startPos) * repeats;
+			final ByteArrayMatcher matcher = new ByteArrayMatcher(repeats, array, startPos, endPos);
+			assertEquals("length:" + length, length, matcher.length());
+
+			for (int pos = 0; pos < length; pos++) {
+				final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
+				final byte[] matchingBytes = sbm.getMatchingBytes();
+				final int arrayPos = startPos + (pos % (endPos - startPos));
+				final byte matchingValue = array[arrayPos];
+				assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+				assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue,
+						matchingBytes[0]);
+			}
+			
+			testDefensivelyCopied(array, new ByteArrayMatcher(array, 0, array.length));
+		}
+	}
+	
+	
 	/**
 	 * Construct using random lists of byte sequence matchers, 100 times.
 	 * Tests are:
@@ -268,17 +341,6 @@ public class ByteArrayMatcherTest {
 		new ByteArrayMatcher(new byte[0]);
 	}
 
-	@SuppressWarnings("unused")
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructNullCollection() {
-		new ByteArrayMatcher((ArrayList<Byte>) null);
-	}
-
-	@SuppressWarnings("unused")
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructEmptyCollection() {
-		new ByteArrayMatcher(new ArrayList<Byte>());
-	}
 
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
@@ -291,6 +353,118 @@ public class ByteArrayMatcherTest {
 	public void testConstructEmptyList() {
 		new ByteArrayMatcher(new ArrayList<ByteArrayMatcher>());
 	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testNullByteArray() {
+		new ByteArrayMatcher((byte[]) null);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testEmptyByteArray() {
+		new ByteArrayMatcher(new byte[0]);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testNullByteArrayMatcher() {
+		new ByteArrayMatcher((ByteArrayMatcher) null, 0, 0);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testByteArrayMatcherNegativeStart() {
+		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
+		new ByteArrayMatcher(matcher, -1, 1);
+	}
+
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testByteArrayMatcherEndPastLength() {
+		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
+		new ByteArrayMatcher(matcher, 0, 5);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testByteArrayMatcherStartNotSmallerThanEnd() {
+		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
+		new ByteArrayMatcher(matcher, 2, 2);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testSubsequenceConstructorByteArrayNotNull() {
+		new ByteArrayMatcher((byte[]) null, 2, 2);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testSubsequenceConstructorByteArrayNotEmpty() {
+		new ByteArrayMatcher(new byte[0], 0, 1);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testSubsequenceConstructorStartNotNegative() {
+		new ByteArrayMatcher(new byte[] {(byte) 0x01}, -200, 1);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testSubsequenceConstructorEndPastLength() {
+		new ByteArrayMatcher(new byte[] {(byte) 0x01}, 0, 2);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testSubsequenceConstructorStartNotSmallerThanEnd() {
+		new ByteArrayMatcher(new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructNullString() {
+		new ByteArrayMatcher((String) null);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructEmptyString() {
+		new ByteArrayMatcher("");
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructNullStringCharsetName() {
+		new ByteArrayMatcher((String) null, "US-ASCII");
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructEmptyStringCharsetName() {
+		new ByteArrayMatcher("", "US-ASCII");
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructNullCharsetName() {
+		new ByteArrayMatcher("XXX", (String) null);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalCharsetNameException.class)
+	public void testConstructIllegalCharsetName() {
+		new ByteArrayMatcher("XXX", "|}{}SD!$%^&*()");
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=UnsupportedCharsetException.class)
+	public void testConstructUnsupportedCharset() {
+		new ByteArrayMatcher("XXX", "NOTAREALCHARSET");
+	}
+	
 
 	///////////////////////////////
 	//   reader matching tests   //
@@ -448,9 +622,16 @@ public class ByteArrayMatcherTest {
 	@Test
 	public void testToRegularExpression() {
 		ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
-		assertEquals("reg ex abc", " 'abc' ", matcher.toRegularExpression(true));
+		assertEquals("reg ex abc", "'abc'", matcher.toRegularExpression(true));
 
 		//TODO: more reg ex tests.
+	}
+	
+	@Test
+	public void testToString() {
+		ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
+		assertTrue("String contains class name", matcher.toString().contains("ByteArrayMatcher"));
+		assertTrue("String contains data", matcher.toString().contains("abc"));
 	}
 
 	@Test
@@ -501,7 +682,7 @@ public class ByteArrayMatcherTest {
 				int charvalue = sequence.charAt(pos);
 				byte[] matchingbytes = sub.getMatcherForPosition(pos - count).getMatchingBytes();
 				assertEquals("only one byte matches at position", 1, matchingbytes.length);
-				assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+				assertEquals("values correct at pos " + pos, charvalue, (matchingbytes[0] & 0xFF));
 			}
 		}
 
@@ -514,7 +695,7 @@ public class ByteArrayMatcherTest {
 				int charvalue = sequence.charAt(sequence.length() - pos - 1);
 				byte[] matchingbytes = sub.getMatcherForPosition(pos - count).getMatchingBytes();
 				assertEquals("only one byte matches at position", 1, matchingbytes.length);
-				assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+				assertEquals("values correct at pos " + pos, charvalue, (matchingbytes[0] & 0xFF));
 			}
 		}
 
@@ -534,7 +715,7 @@ public class ByteArrayMatcherTest {
 					int charvalue = sequence.charAt(beginIndex + pos);
 					byte[] matchingbytes = sub.getMatcherForPosition(pos).getMatchingBytes();
 					assertEquals("only one byte matches at position", 1, matchingbytes.length);
-					assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+					assertEquals("values correct at pos " + pos, charvalue, (matchingbytes[0] & 0xFF));
 				}
 			}
 		}
@@ -547,10 +728,14 @@ public class ByteArrayMatcherTest {
 				int sequencelength = endIndex - beginIndex;
 				assertEquals("subsequence length correct", sequencelength, sub.length());
 				for (int pos = 0; pos < sequencelength; pos++) {
-					int charvalue = sequence.charAt(beginIndex + pos);
+					int charvalue = sequence.charAt(sequence.length() - beginIndex - pos - 1);
 					byte[] matchingbytes = sub.getMatcherForPosition(pos).getMatchingBytes();
 					assertEquals("only one byte matches at position", 1, matchingbytes.length);
-					assertEquals("values correct", charvalue, (matchingbytes[0] & 0xFF));
+					assertEquals("values correct at pos " + pos + 
+							     " for sequence " + sequence +
+							     " begin at " + beginIndex +
+							     " end at " + endIndex,
+							     charvalue, (matchingbytes[0] & 0xFF));
 				}
 			}
 		}

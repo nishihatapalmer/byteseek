@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.object.ObjectUtils;
+import net.byteseek.object.ArgUtils;
 
 /**
  * This class iterates through all the permutations of byte strings which can be 
@@ -70,10 +70,10 @@ public class BytePermutationIterator implements Iterator<byte[]> {
      *         any of the byte arrays in the list are null or empty.
      */
     public BytePermutationIterator(final List<byte[]> byteArrays) {
-        ObjectUtils.checkNullOrEmptyCollection(byteArrays);
+        ArgUtils.checkNullOrEmptyCollection(byteArrays);
         this.byteArrays = new ArrayList<byte[]>(byteArrays);
         for (final byte[] array : this.byteArrays) {
-        	ObjectUtils.checkNullOrEmptyByteArray(array);
+        	ArgUtils.checkNullOrEmptyByteArray(array);
         }
         this.length = byteArrays.size();
         this.permutationState = new int[length];

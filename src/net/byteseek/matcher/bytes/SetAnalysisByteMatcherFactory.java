@@ -146,7 +146,7 @@ public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
 
             case 1: { // just one byte matches:
                 final Iterator<Byte> byteValue = values.iterator();
-                result = new OneByteMatcher(byteValue.next());
+                result = OneByteMatcher.valueOf(byteValue.next());
                 break;
             }
 

@@ -64,7 +64,7 @@ public final class ByteMatcherCompilerUtils {
 	
 	public static ByteMatcher createByteMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
 		return isInverted(node, currentInversion)? new InvertedByteMatcher(node.getByteValue()) 
-		 							 			 : new OneByteMatcher(node.getByteValue());
+		 							 			 : OneByteMatcher.valueOf(node.getByteValue());
 	}
 	
 	public static ByteMatcher createAnyMatcher(final ParseTree node) throws ParseException {
