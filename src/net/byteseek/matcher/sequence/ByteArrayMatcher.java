@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -46,7 +46,12 @@ import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.object.ArgUtils;
 
 /**
- * An immutable class which matches a sequence of bytes.
+ * An immutable class which matches a sequence of bytes backed by a byte array.
+ * <p>
+ * The internal byte array is always constructed to be immutable.
+ * It can be shared with other immutable SequenceMatchers, constructed from an existing ByteArrayMatcher.
+ * Different views over the original byte array can be quickly constructed, such 
+ * as subsequences, or the reverse order of the bytes. 
  *
  * @author Matt Palmer
  */
@@ -146,12 +151,12 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     
     /**
      * A constructor which creates a ByteArrayMatcher matching the 
-     * array contained by a ReverseMatcher, but now matching forwards.
+     * array contained by a ReverseByteArrayMatcher, but now matching forwards.
      * 
-     * @param toReverse The ReverseMatcher to construct this ByteArrayMatcher from.
-     * @throws IllegalArgumentException if a null ReverseMatcher is passed in.
+     * @param toReverse The ReverseByteArrayMatcher to construct this ByteArrayMatcher from.
+     * @throws IllegalArgumentException if a null ReverseByteArrayMatcher is passed in.
      */
-    public ByteArrayMatcher(final ReverseMatcher toReverse) {
+    public ByteArrayMatcher(final ReverseByteArrayMatcher toReverse) {
         ArgUtils.checkNullObject(toReverse);
         this.byteArray= toReverse.byteArray;
         this.startArrayIndex = toReverse.startArrayIndex;
@@ -163,7 +168,9 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * Constructs an immutable byte sequence matcher from a list of other
      * ByteArrayMatchers.  The final sequence to match is the sequence of
      * bytes defined by joining all the bytes in the other ByteArrayMatcher's
-     * together in the order they appear in the list.
+     * together in the order they appear in the list.<p>
+     * A new byte array will be created to hold this sequence of bytes.  
+     * 
      *
      * @param matchers The list of ByteArrayMatchers to join.
      * @throws IllegalArgumentException if the matcher list is null or empty, or
@@ -381,7 +388,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     @Override    
     public SequenceMatcher reverse() {
-        return new ReverseMatcher(this);
+        return new ReverseByteArrayMatcher(this);
     }
 
     
@@ -426,15 +433,15 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     
     
     ////////////////////////////////////////////////////////////////////////////
-    //                                ReverseMatcher                          //        
+    //                                ReverseByteArrayMatcher                 //        
     ////////////////////////////////////////////////////////////////////////////
     
     
     /**
-     * A ReverseMatcher is a matcher which matches the reverse order of bytes in a byte array.
+     * A ReverseByteArrayMatcher is a matcher which matches the reverse order of bytes in a byte array.
      * 
      */
-    public static final class ReverseMatcher implements SequenceMatcher {
+    public static final class ReverseByteArrayMatcher implements SequenceMatcher {
          
          private final byte[] byteArray;
          private final int startArrayIndex; // the position to start in the array (inclusive)
@@ -442,12 +449,12 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          
          
          /**
-          * Constructs a ReverseMatcher from an original ByteArrayMatcher.
+          * Constructs a ReverseByteArrayMatcher from an original ByteArrayMatcher.
           * 
-          * @param toReverse The ByteArrayMatcher to construct a ReverseMatcher from.
+          * @param toReverse The ByteArrayMatcher to construct a ReverseByteArrayMatcher from.
           * @throws IllegalArgumentException if the ByteArrayMatcher is null.
           */
-         public ReverseMatcher(final ByteArrayMatcher toReverse) {
+         public ReverseByteArrayMatcher(final ByteArrayMatcher toReverse) {
              ArgUtils.checkNullObject(toReverse);
              this.byteArray = toReverse.byteArray;
              this.startArrayIndex = toReverse.startArrayIndex;
@@ -456,13 +463,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          
          
          /**
-          * Constructs a ReverseMatcher directly from a byte array.  The byte array
-          * is cloned, making the ReverseMatcher immutable.
+          * Constructs a ReverseByteArrayMatcher directly from a byte array.  The byte array
+          * is cloned, making the ReverseByteArrayMatcher immutable.
           * 
-          * @param array The array to clone and construct a ReverseMatcher from.
+          * @param array The array to clone and construct a ReverseByteArrayMatcher from.
           * @throws IllegalArgumentException if the byte array is null or empty.
           */
-         public ReverseMatcher(final byte[] array) {
+         public ReverseByteArrayMatcher(final byte[] array) {
         	 ArgUtils.checkNullOrEmptyByteArray(array);
              this.byteArray = array.clone();
              this.startArrayIndex = 0;
@@ -471,7 +478,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          
          
         /**
-         * Copy constructor creating an immutable sub-sequence of another ReverseMatcher, 
+         * Copy constructor creating an immutable sub-sequence of another ReverseByteArrayMatcher, 
          * backed by the original byte array, but otherwise behaving as if the array
          * had been reversed.  In particular, start indexes and end indexes should be
          * interpreted with that in mind - they reference the byte array as if it
@@ -483,7 +490,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          * @param endIndex The end position of the source, exclusive.
          * @throws IllegalArgumentException if the source is null, or the start or end index are out of bounds.
          */
-        public ReverseMatcher(final ReverseMatcher source, 
+        public ReverseByteArrayMatcher(final ReverseByteArrayMatcher source, 
                               final int startIndex, final int endIndex) {
             ArgUtils.checkNullObject(source);
             ArgUtils.checkIndexOutOfBounds(source.length(), startIndex, endIndex);
@@ -494,10 +501,10 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                
         
         /**
-         * Constructs a ReverseMatcher from a source byte array, a start index
+         * Constructs a ReverseByteArrayMatcher from a source byte array, a start index
          * and an end index, repeated a number of times.
          * 
-         * @param source The source array to construct a ReverseMatcher from.
+         * @param source The source array to construct a ReverseByteArrayMatcher from.
          * @param startIndex The first position in the source array to repeat from, inclusive.
          * @param endIndex The endIndex in the source array to repeat up to, exclusive.
          * @param numberOfRepeats The number of times to repeat the source array bytes.
@@ -506,7 +513,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          *        greater than or equal to the source length, or the end index is
          *        greater than the source length, or the number of repeats is less than one.
          */
-        public ReverseMatcher(final byte[] source,
+        public ReverseByteArrayMatcher(final byte[] source,
                               final int startIndex, final int endIndex,
                               final int numberOfRepeats) {
             ArgUtils.checkNullOrEmptyByteArray(source);
@@ -657,7 +664,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             if (subsequenceLength == 1) {
                 return OneByteMatcher.valueOf(byteArray[this.endArrayIndex - beginIndex - 1]);
             }
-            return new ReverseMatcher(this, beginIndex, endIndex);
+            return new ReverseByteArrayMatcher(this, beginIndex, endIndex);
         }
         
         
@@ -679,7 +686,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             if (numberOfRepeats == 1) {
                 return this;
             }
-            return new ReverseMatcher(byteArray, startArrayIndex, endArrayIndex, numberOfRepeats);
+            return new ReverseByteArrayMatcher(byteArray, startArrayIndex, endArrayIndex, numberOfRepeats);
         }
          
     }
