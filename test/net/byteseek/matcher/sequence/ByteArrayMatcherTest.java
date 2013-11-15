@@ -328,7 +328,6 @@ public class ByteArrayMatcherTest {
 		fail("not implemented");
 	}
 	
-	
 
 	//////////////////////////////////
 	//  construction failure tests  //
@@ -635,12 +634,58 @@ public class ByteArrayMatcherTest {
 		testReversed("xx");
 		testReversed("1234567890abcdefghijklmnopqrstuvwxyz");
 	}
+	
 
 	@Test
 	public void testSubsequence() {
 		testSubSequence("abc");
 		testSubSequence("I know a banke where the wilde thyme blows");
 		//TODO: lots more subsequence tests.
+	}
+	
+	@Test
+	public void testRepeat() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testConstructReverseNullByteArray() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testConstructReverseEmptyByteArray() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testConstructReverseByteArray() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testConstructRepeatedReverseNullByteArray() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testConstructRepeatedReverseEmptyByteArray() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testConstructRepeatedReverseByteArray() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testReverseRepeat() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testReverseToString() {
+		fail("not implemented");
 	}
 
 	////////////////////////////

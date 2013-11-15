@@ -448,14 +448,14 @@ public final class ByteArrayMatcher implements SequenceMatcher {
           * Constructs a ReverseByteArrayMatcher directly from a byte array.  The byte array
           * is cloned, making the ReverseByteArrayMatcher immutable.
           * 
-          * @param array The array to clone and construct a ReverseByteArrayMatcher from.
+          * @param bytes The array to clone and construct a ReverseByteArrayMatcher from.
           * @throws IllegalArgumentException if the byte array is null or empty.
           */
-         public ReverseByteArrayMatcher(final byte[] array) {
-        	 ArgUtils.checkNullOrEmptyByteArray(array);
-             this.byteArray = array.clone();
+         public ReverseByteArrayMatcher(final byte... bytes) {
+        	 ArgUtils.checkNullOrEmptyByteArray(bytes);
+             this.byteArray = bytes.clone();
              this.startArrayIndex = 0;
-             this.endArrayIndex = array.length;
+             this.endArrayIndex = bytes.length;
          }
          
          
@@ -485,19 +485,19 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         /**
          * Constructs a ReverseByteArrayMatcher from a source byte array, a start index
          * and an end index, repeated a number of times.
-         * 
+         * @param numberOfRepeats The number of times to repeat the source array bytes.
          * @param source The source array to construct a ReverseByteArrayMatcher from.
          * @param startIndex The first position in the source array to repeat from, inclusive.
          * @param endIndex The endIndex in the source array to repeat up to, exclusive.
-         * @param numberOfRepeats The number of times to repeat the source array bytes.
+         * 
          * @throws IllegalArgumentException if the source is null or empty, the start index
          *        is greater than or equal to the end index, the start index is
          *        greater than or equal to the source length, or the end index is
          *        greater than the source length, or the number of repeats is less than one.
          */
-        public ReverseByteArrayMatcher(final byte[] source,
-                              final int startIndex, final int endIndex,
-                              final int numberOfRepeats) {
+        public ReverseByteArrayMatcher(final int numberOfRepeats,
+                              final byte[] source, final int startIndex,
+                              final int endIndex) {
             ArgUtils.checkNullOrEmptyByteArray(source);
             ArgUtils.checkIndexOutOfBounds(source.length, startIndex, endIndex);
             ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
@@ -598,7 +598,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          */
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "[" + toRegularExpression(true) + ']';
+            return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
         }
 
 
@@ -668,7 +668,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             if (numberOfRepeats == 1) {
                 return this;
             }
-            return new ReverseByteArrayMatcher(byteArray, startArrayIndex, endArrayIndex, numberOfRepeats);
+            return new ReverseByteArrayMatcher(numberOfRepeats, byteArray, startArrayIndex, endArrayIndex);
         }
          
     }
