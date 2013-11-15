@@ -491,17 +491,17 @@ public final class ByteUtils {
      * Returns a byte array containing the original array passed in, 
      * with a subsequence of it repeated a number of times.  
      * It will always produce a new array, even if the number of repeats is only one.
-     * 
-     * @param array The array to repeat a subsequence of.
      * @param numberOfRepeats The number of times to repeat the subsequence.
+     * @param array The array to repeat a subsequence of.
      * @param startIndex The start index to begin repeating the array from, inclusive.
      * @param endIndex The end index to stop repeating the array from, exclusive.
+     * 
      * @return A new byte array consisting of the portions of the original array
      *         from the startIndex to the endIndex repeated.
      * @throws IllegalArgumentException if the array passed in is null, the number of repeats
      *         is negative, or the indexes are out of bounds for the array.
      */
-    public static byte[] repeat(final byte[] array, final int numberOfRepeats,
+    public static byte[] repeat(final int numberOfRepeats, final byte[] array,
                                 final int startIndex, final int endIndex) {
     	checkBounds(array, startIndex, endIndex);
     	checkNegativeRepeats(numberOfRepeats);

@@ -33,8 +33,6 @@ package net.byteseek.matcher.sequence;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -120,7 +118,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         ArgUtils.checkNullOrEmptyByteArray(source);
         ArgUtils.checkIndexOutOfBounds(source.length, startIndex, endIndex);
         ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
-        this.byteArray = ByteUtils.repeat(source, numberOfRepeats, startIndex, endIndex);
+        this.byteArray = ByteUtils.repeat(numberOfRepeats, source, startIndex, endIndex);
         this.startArrayIndex = 0;
         this.endArrayIndex = this.byteArray.length;
     }    
@@ -232,22 +230,6 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     }
     
 
-    /**
-     * Constructs an immutable ByteArrayMatcher from a repeated string, 
-     * encoding the bytes of the string using the charset specified by name.
-     * 
-     * @param string The string whose bytes will be matched.
-     * @param charsetName The name of the Charset to use to encode the bytes of the string.
-     * @throws IllegalArgumentException if the string is null or empty, or the charsetName
-     *         is null.
-     * @throws IllegalCharsetNameException if the name of the charset is illegal.
-     * @throws UnsupportedCharsetException if the charset is not supported.
-     */
-    public ByteArrayMatcher(final String string, final String charsetName) {
-        this(string, Charset.forName(charsetName));
-    }
-    
-    
     /**
      * Constructs a ByteArrayMatcher from a string and a Charset to use
      * to encode the bytes in the string.
@@ -519,7 +501,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             ArgUtils.checkNullOrEmptyByteArray(source);
             ArgUtils.checkIndexOutOfBounds(source.length, startIndex, endIndex);
             ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
-            this.byteArray = ByteUtils.repeat(source, startIndex, endIndex, numberOfRepeats);
+            this.byteArray = ByteUtils.repeat(startIndex, source, endIndex, numberOfRepeats);
             this.startArrayIndex = 0;
             this.endArrayIndex = this.byteArray.length;            
         }

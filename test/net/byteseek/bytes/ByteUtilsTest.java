@@ -989,11 +989,11 @@ public class ByteUtilsTest {
     @Test
     public void testRepeatArraySubsequence() {
     	try {
-    		ByteUtils.repeat(null, 1, 0, 1);
+    		ByteUtils.repeat(1, null, 0, 1);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}
     	try {
-    		ByteUtils.repeat(new byte[] {(byte) 0x01}, -1, 0, 1);
+    		ByteUtils.repeat(-1, new byte[] {(byte) 0x01}, 0, 1);
     		fail("Number of repeats cannot be negative");
     	} catch (IllegalArgumentException expect) {}
     	
@@ -1004,15 +1004,15 @@ public class ByteUtilsTest {
     private void testRepeatArraySubsequence(byte... values) {
     	int length = values.length;
     	try {
-    		ByteUtils.repeat(values, 1, -1, 1);
+    		ByteUtils.repeat(1, values, -1, 1);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}
     	try {
-    		ByteUtils.repeat(values, 1, 0, length + 1);
+    		ByteUtils.repeat(1, values, 0, length + 1);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expect) {}
     	try {
-    		ByteUtils.repeat(values, 1, length, length);
+    		ByteUtils.repeat(1, values, length, length);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expect) {}
     	
@@ -1020,7 +1020,7 @@ public class ByteUtilsTest {
     		for (int subEnd = subStart + 1; subEnd <= length; subEnd++) {
     			int subLength = subEnd - subStart;
     	    	for (int repeat = 0; repeat < 10; repeat++) {
-    	    		byte[] result = ByteUtils.repeat(values, repeat, subStart, subEnd);
+    	    		byte[] result = ByteUtils.repeat(repeat, values, subStart, subEnd);
     	    		assertEquals("Length of repeated array is " + repeat * subLength, repeat * subLength, result.length);
     	    		int resultPos = 0;
     	    		for (int testRepeat = 0; testRepeat < repeat; testRepeat++) {

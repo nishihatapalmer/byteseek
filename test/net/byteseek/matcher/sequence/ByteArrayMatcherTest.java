@@ -35,13 +35,12 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -318,6 +317,18 @@ public class ByteArrayMatcherTest {
 			}
 		}
 	}
+	
+	@Test
+	public void testConstructString() {
+		fail("not implemented");
+	}
+	
+	@Test
+	public void testConstructStringCharset() {
+		fail("not implemented");
+	}
+	
+	
 
 	//////////////////////////////////
 	//  construction failure tests  //
@@ -435,36 +446,7 @@ public class ByteArrayMatcherTest {
 		new ByteArrayMatcher("");
 	}
 	
-	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
-	public void testConstructNullStringCharsetName() {
-		new ByteArrayMatcher((String) null, "US-ASCII");
-	}
-	
-	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
-	public void testConstructEmptyStringCharsetName() {
-		new ByteArrayMatcher("", "US-ASCII");
-	}
-	
-	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
-	public void testConstructNullCharsetName() {
-		new ByteArrayMatcher("XXX", (String) null);
-	}
-	
-	@SuppressWarnings("unused")
-	@Test (expected=IllegalCharsetNameException.class)
-	public void testConstructIllegalCharsetName() {
-		new ByteArrayMatcher("XXX", "|}{}SD!$%^&*()");
-	}
-	
-	@SuppressWarnings("unused")
-	@Test (expected=UnsupportedCharsetException.class)
-	public void testConstructUnsupportedCharset() {
-		new ByteArrayMatcher("XXX", "NOTAREALCHARSET");
-	}
-	
+
 
 	///////////////////////////////
 	//   reader matching tests   //
