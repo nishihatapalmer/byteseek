@@ -473,7 +473,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          * @throws IllegalArgumentException if the source is null, or the start or end index are out of bounds.
          */
         public ReverseByteArrayMatcher(final ReverseByteArrayMatcher source, 
-                              final int startIndex, final int endIndex) {
+                                       final int startIndex, final int endIndex) {
             ArgUtils.checkNullObject(source);
             ArgUtils.checkIndexOutOfBounds(source.length(), startIndex, endIndex);
             this.byteArray = source.byteArray;
@@ -485,6 +485,10 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         /**
          * Constructs a ReverseByteArrayMatcher from a source byte array, a start index
          * and an end index, repeated a number of times.
+         * <p>
+         * Note that the start and end indexes are specified on the source array positions
+         * as they actually exist; not the reversed bytes which the matcher will eventually match.
+         * 
          * @param numberOfRepeats The number of times to repeat the source array bytes.
          * @param source The source array to construct a ReverseByteArrayMatcher from.
          * @param startIndex The first position in the source array to repeat from, inclusive.
@@ -501,12 +505,11 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             ArgUtils.checkNullOrEmptyByteArray(source);
             ArgUtils.checkIndexOutOfBounds(source.length, startIndex, endIndex);
             ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
-            this.byteArray = ByteUtils.repeat(startIndex, source, endIndex, numberOfRepeats);
+            this.byteArray = ByteUtils.repeat(numberOfRepeats, source, startIndex, endIndex);
             this.startArrayIndex = 0;
             this.endArrayIndex = this.byteArray.length;            
         }
         
-        //FIXME: infinite loop when crossing windows.
         
         /**
          * {@inheritDoc}
@@ -598,7 +601,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          */
         @Override
         public String toString() {
-            return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
+            return "ByteArrayMatcher." + getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
         }
 
 
