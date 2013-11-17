@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.matcher.multisequence;
+package net.byteseek.matcher.automata;
 
 import java.util.Collection;
 
