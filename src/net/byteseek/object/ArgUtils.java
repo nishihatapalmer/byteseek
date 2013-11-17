@@ -38,7 +38,7 @@ public final class ArgUtils {
 	private static final String OBJECT_CANNOT_BE_NULL               = "The object cannot be null";
 	private static final String COLLECTION_CANNOT_BE_NULL           = "The collection cannot be null";
 	private static final String COLLECTION_CANNOT_BE_EMPTY          = "The collection cannot be empty";
-	private static final String COLLECTION_ELEMENT_CANNOT_BE_NULL   = "Elements of the collection cannot be null";
+	private static final String COLLECTION_ELEMENT_CANNOT_BE_NULL   = "Elements cannot be null";
 	private static final String ARRAY_CANNOT_BE_NULL                = "The array cannot be null";
 	private static final String ARRAY_CANNOT_BE_EMPTY		        = "The array cannot be empty";
 	private static final String STRING_CANNOT_BE_NULL               = "The string cannot be null";
@@ -147,8 +147,55 @@ public final class ArgUtils {
 		if (bytes.length == 0) {
     		throw new IllegalArgumentException(ARRAY_CANNOT_BE_EMPTY + ' ' + description);
     	}
-	}    
+	}  
 	
+	
+	public static <T> void checkNullArray(final T[] array) {
+		if (array == null) {
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_NULL);
+    	}
+	}    	
+	
+
+	public static <T> void checkNullArray(final T[] array, final String description) {
+		if (array == null) {
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_NULL + ' ' + description);
+    	}
+	}  
+
+	
+	public static <T> void checkNullOrEmptyArray(final T[] array) {
+		checkNullArray(array);
+		if (array.length == 0) {
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_EMPTY);
+    	}
+	}    	
+	
+	public static <T> void checkNullOrEmptyArray(final T[] array, final String description) {
+		checkNullArray(array, description);
+		if (array.length == 0) {
+    		throw new IllegalArgumentException(ARRAY_CANNOT_BE_EMPTY + ' ' + description);
+    	}
+	}  
+
+	
+	public static <T> void checkNullOrEmptyArrayNoNullElements(final T[] array, final String description) {
+		checkNullOrEmptyArray(array, description);
+		for (T element : array) {
+			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL + ' ' + description);
+		}
+	}  
+	
+
+	public static <T> void checkNullOrEmptyArrayNoNullElements(final T[] array) {
+		checkNullOrEmptyArray(array);
+		for (T element : array) {
+			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL);
+		}
+	}    	
+
+	
+
 
 	public static void checkNullString(final String string) {
 		if (string == null) {

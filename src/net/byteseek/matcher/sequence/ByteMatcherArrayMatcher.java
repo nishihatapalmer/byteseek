@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,6 +40,7 @@ import java.util.List;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.object.ArgUtils;
 
 /**
  * An immutable class which matches a sequence of {@link ByteMatcher} objects.
@@ -51,18 +52,19 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     private final ByteMatcher[] matchers;
     private final int length;
 
+    /****************
+     * Constructors *
+     ***************/
 
     /**
-     * Constructs a ByteMatcherArrayMatcher from a list of {@link ByteMatcher} objects.
+     * Constructs a ByteMatcherArrayMatcher from a collection of {@link ByteMatcher} objects.
      *
      * @param sequence A list of SingleByteMatchers to construct this sequence matcher from.
-     * @throws IllegalArgumentException if the list is null or empty.
+     * @throws IllegalArgumentException if the list is null or empty or any elements in the collection are null.
      */
     public ByteMatcherArrayMatcher(final Collection<? extends ByteMatcher> sequence) {
-        if (sequence == null || sequence.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
-        }
-        this.matchers = sequence.toArray(new ByteMatcher[0]);
+        ArgUtils.checkNullOrEmptyCollectionNoNullElements(sequence);
+        matchers = sequence.toArray(new ByteMatcher[0]);
         this.length = this.matchers.length;
     }
 
@@ -72,12 +74,10 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
      * objects.
      * 
      * @param sequence An array of SingleByteMatchers to construct this sequence matcher from.
-     * @throws IllegalArgumentException if the array is null or empty.
+     * @throws IllegalArgumentException if the array is null or empty or any element of it is null.
      */
     public ByteMatcherArrayMatcher(final ByteMatcher[] sequence) {
-        if (sequence == null || sequence.length == 0) {
-            throw new IllegalArgumentException("Null or empty sequence passed in to SingleByteSequenceMatcher.");
-        }
+        ArgUtils.checkNullOrEmptyArrayNoNullElements(sequence);
         this.matchers = sequence.clone();
         this.length = this.matchers.length;
     }
@@ -90,9 +90,7 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the matcher is null.
      */
     public ByteMatcherArrayMatcher(final ByteMatcher matcher) {
-        if (matcher == null) {
-            throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
-        }
+        ArgUtils.checkNullObject(matcher);
         this.matchers = new ByteMatcher[] {matcher};
         this.length = 1;
     }
@@ -106,12 +104,8 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the matcher is null or the number of repeats is less than one.
      */
     public ByteMatcherArrayMatcher(final ByteMatcher matcher, final int numberOfMatchers) {
-        if (matcher == null) {
-            throw new IllegalArgumentException("Null matcher passed in to SingleByteSequenceMatcher.");
-        }
-        if (numberOfMatchers < 1) {
-            throw new IllegalArgumentException("SingleByteSequenceMatcher requires a positive number of matchers.");
-        }
+        ArgUtils.checkNullObject(matcher);
+        ArgUtils.checkPositiveInteger(numberOfMatchers);
         length = numberOfMatchers;
         this.matchers = new ByteMatcher[length];
         Arrays.fill(this.matchers, matcher);
