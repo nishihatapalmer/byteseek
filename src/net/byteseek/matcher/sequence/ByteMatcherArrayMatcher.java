@@ -44,7 +44,16 @@ import net.byteseek.object.ArgUtils;
 
 /**
  * An immutable class which matches a sequence of {@link ByteMatcher} objects.
- *
+ * This allows us to match sequences where any position in the sequence could
+ * match multiple bytes, for example (using the byteseek regular expression syntax):
+ * 
+ * <p/><code>
+ * 'begin:' [00 ff] \d \d \d \s 'end.'
+ * </code><p/>
+ * 
+ * would match a string starting with 'begin:', followed by either byte 00 or byte ff, then three digits and
+ * some whitespace, followed by 'end.'.
+ * 
  * @author Matt Palmer
  */
 public final class ByteMatcherArrayMatcher implements SequenceMatcher {
@@ -58,6 +67,9 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
 
     /**
      * Constructs a ByteMatcherArrayMatcher from a collection of {@link ByteMatcher} objects.
+     * <p>
+     * You should use a collection which gives a definite order to its elements, such as a List,
+     * or a LinkedHashMap.
      *
      * @param sequence A list of SingleByteMatchers to construct this sequence matcher from.
      * @throws IllegalArgumentException if the list is null or empty or any elements in the collection are null.
@@ -114,6 +126,8 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the WindowReader passed in is null.
      */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
@@ -142,6 +156,8 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the byte array passed in is null.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
@@ -161,6 +177,8 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the byte array passed in is null.
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
@@ -244,6 +262,8 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
+     * 
+     * @throws IllegalArgumentException if the number of repeats is less than one.
      */
     @Override
     public SequenceMatcher repeat(int numberOfRepeats) {
