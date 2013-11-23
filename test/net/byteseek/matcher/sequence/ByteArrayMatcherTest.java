@@ -474,21 +474,21 @@ public class ByteArrayMatcherTest {
 	}
 	
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testByteArrayMatcherNegativeStart() {
 		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
 		new ByteArrayMatcher(matcher, -1, 1);
 	}
 
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testByteArrayMatcherEndPastLength() {
 		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
 		new ByteArrayMatcher(matcher, 0, 5);
 	}
 	
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testByteArrayMatcherStartNotSmallerThanEnd() {
 		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
 		new ByteArrayMatcher(matcher, 2, 2);
@@ -507,19 +507,19 @@ public class ByteArrayMatcherTest {
 	}
 	
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testSubsequenceConstructorStartNotNegative() {
 		new ByteArrayMatcher(new byte[] {(byte) 0x01}, -200, 1);
 	}
 	
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testSubsequenceConstructorEndPastLength() {
 		new ByteArrayMatcher(new byte[] {(byte) 0x01}, 0, 2);
 	}
 	
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testSubsequenceConstructorStartNotSmallerThanEnd() {
 		new ByteArrayMatcher(new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
 	}
@@ -561,21 +561,21 @@ public class ByteArrayMatcherTest {
 	}
 
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructReverseSubsequenceNegativeStart() {
 		ByteArrayMatcher.ReverseByteArrayMatcher original = new ByteArrayMatcher.ReverseByteArrayMatcher(createRandomArray(128));
 		new ByteArrayMatcher.ReverseByteArrayMatcher(original, -1, 1);
 	}
 
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructReverseSubsequenceEndPastLength() {
 		ByteArrayMatcher.ReverseByteArrayMatcher original = new ByteArrayMatcher.ReverseByteArrayMatcher(createRandomArray(128));
 		new ByteArrayMatcher.ReverseByteArrayMatcher(original, 0, original.length() + 1);
 	}
 
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructReverseSubsequenceStartNotLessThanEnd() {
 		ByteArrayMatcher.ReverseByteArrayMatcher original = new ByteArrayMatcher.ReverseByteArrayMatcher(createRandomArray(128));
 		new ByteArrayMatcher.ReverseByteArrayMatcher(original, original.length(), original.length());
@@ -600,19 +600,19 @@ public class ByteArrayMatcherTest {
 	}
 	
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructRepeatedReverseStartNegative() {
 		new ByteArrayMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01}, -1, 1);
 	}
 
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructRepeatedReverseEndPastLength() {
 		new ByteArrayMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01}, 0, 2);
 	}
 
 	@SuppressWarnings("unused")
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructRepeatedReverseStartNotLessThanEnd() {
 		new ByteArrayMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
 	}
@@ -850,6 +850,27 @@ public class ByteArrayMatcherTest {
 	}
 	
 	
+	@Test(expected = IndexOutOfBoundsException.class) 
+	public void testNegativeSubsequenceBeginIndex() {
+		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		test.subsequence(-1);
+	}
+
+	
+	@Test(expected = IndexOutOfBoundsException.class) 
+	public void testSubsequenceEndIndexTooBig() {
+		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		test.subsequence(0, 11);
+	}
+
+	
+	@Test(expected = IndexOutOfBoundsException.class) 
+	public void testSubsequenceStartIndexTooBig() {
+		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		test.subsequence(5, 5);
+	}
+	
+	
 	@Test
 	public void testRepeatSubSequence() {
 		byte[] array = new byte[] {(byte) 0xc3};
@@ -991,7 +1012,30 @@ public class ByteArrayMatcherTest {
 		assertTrue("String contains class name", matcher.toString().contains("ByteArrayMatcher.ReverseByteArrayMatcher"));
 		assertTrue("String contains data", matcher.toString().contains("cba"));
 	}
+	
 
+	//////////////////////////////////////////////
+	//  standard sequence matcher test methods  //
+	//////////////////////////////////////////////
+	
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testNegativeByteMatcherPosition() {
+		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		test.getMatcherForPosition(-1);
+	}
+	
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testNegativeByteMatcherSubsequencePosition() {
+		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		
+		SequenceMatcher testSub = test.subsequence(3);
+		testSub.getMatcherForPosition(-1);
+	}
+	
+	
+	
+	
+	
 	////////////////////////////
 	//  private test methods  //
 	////////////////////////////

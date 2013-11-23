@@ -45,7 +45,7 @@ public final class ArgUtils {
 	private static final String STRING_CANNOT_BE_EMPTY              = "The string cannot be empty";
     private static final String END_PAST_LENGTH_ERROR               = "The end %d is past the end, length = %d";
     private static final String START_LESS_THAN_ZERO_ERROR          = "The start %d is less than zero.";
-    private static final String START_PAST_END_ERROR                = "The start %d is past the end %d";
+    private static final String START_PAST_END_INDEX_ERROR          = "The start index %d is equal to or greater than the end index %d";
     private static final String START_PAST_LENGTH_ERROR             = "Start position %d is past the end, length = %d.";
     private static final String POSITIVE_INTEGER				    = "The number %d should be a positive integer.";
 
@@ -230,26 +230,26 @@ public final class ArgUtils {
 	
 	public static void checkIndexOutOfBounds(final int length, final int position) {
         if (position < 0) {
-        	throw new IllegalArgumentException(String.format(START_LESS_THAN_ZERO_ERROR, position));
+        	throw new IndexOutOfBoundsException(String.format(START_LESS_THAN_ZERO_ERROR, position));
         }
         if (position >= length) {
-            throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, position, length));
+            throw new IndexOutOfBoundsException(String.format(START_PAST_LENGTH_ERROR, position, length));
         }
 	}
 	
 	
 	public static void checkIndexOutOfBounds(final int length, final int startIndex, final int endIndex) {
         if (startIndex < 0) {
-        	throw new IllegalArgumentException(String.format(START_LESS_THAN_ZERO_ERROR, startIndex));
+        	throw new IndexOutOfBoundsException(String.format(START_LESS_THAN_ZERO_ERROR, startIndex));
         }
 		if (startIndex >= endIndex) {
-            throw new IllegalArgumentException(String.format(START_PAST_END_ERROR, startIndex, endIndex - 1));
+            throw new IndexOutOfBoundsException(String.format(START_PAST_END_INDEX_ERROR, startIndex, endIndex));
         }
         if (startIndex >= length) {
-            throw new IllegalArgumentException(String.format(START_PAST_LENGTH_ERROR, startIndex, length));
+            throw new IndexOutOfBoundsException(String.format(START_PAST_LENGTH_ERROR, startIndex, length));
         }
         if (endIndex > length) {
-            throw new IllegalArgumentException(String.format(END_PAST_LENGTH_ERROR, endIndex, length));
+            throw new IndexOutOfBoundsException(String.format(END_PAST_LENGTH_ERROR, endIndex, length));
         }
 	}
 	

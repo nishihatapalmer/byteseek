@@ -59,6 +59,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     private final int startArrayIndex; // the position to start at (an inclusive value)
     private final int endArrayIndex;   // one past the actual end position (an exclusive value)
 
+    
     /****************
      * Constructors *
      ***************/
@@ -91,8 +92,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @param source A byte array containing a subsequence of bytes to use.
      * @param startIndex The start position of the source to begin from, inclusive.
      * @param endIndex The end position of the source, exclusive.
-     * @throws IllegalArgumentException If the source is null or empty, the start or end index
-     *         are out of bounds, or the number of repeats is less than one.
+     * @throws IllegalArgumentException If the source is null or empty or the number of repeats is less than one.
+     * @throws IndexOutOfBoundsException if the the start or end index are out of bounds, 
      */
     public ByteArrayMatcher(final byte[] source, final int startIndex, final int endIndex) {
     	this(1, source, startIndex, endIndex);
@@ -109,8 +110,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @param startIndex The start position of the source to begin from, inclusive.
      * @param endIndex The end position of the source, exclusive.
      * 
-     * @throws IllegalArgumentException If the source is null or empty,the start or end index
-     *         are out of bounds, or the number of repeats is less than one.
+     * @throws IllegalArgumentException If the source is null or empty or the number of repeats is less than one.
+     * @throws IndexOutOfBoundsException if the start or end index are out of bounds.
      */
     public ByteArrayMatcher(final int numberOfRepeats, 
                             final byte[] source, final int startIndex,
@@ -132,7 +133,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @param startIndex The start position of the source to begin from.
      * @param endIndex The end position of the source, which is one greater than
      *                 the last position to match in the source array.
-     * @throws IllegalArgumentException If the source is null, the start index is
+     * @throws IllegalArgumentException if the source is null
+     * @throws IndexOutOfBoundsException if  the start index is
      *         greater or equal to the end index, the start index is greater or
      *         equal to the length of the source, or the end index is greater than
      *         the length of the source.
@@ -248,13 +250,14 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     }
     
     
-    /***********
-     * Methods *
-     **********/
-    
+    /******************
+     * Public methods *
+     ******************/
     
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the WindowReader is null.
      */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition)
@@ -290,6 +293,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the byte array passed in is null.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
@@ -310,6 +315,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the byte array passed in is null.
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
@@ -361,6 +368,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      */
     @Override
     public ByteMatcher getMatcherForPosition(final int position) {
+    	ArgUtils.checkIndexOutOfBounds(length(), position);
         return OneByteMatcher.valueOf(byteArray[position + startArrayIndex]);
     }
 
@@ -470,7 +478,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          * @param source The ByteArrayMatcher to create a subsequence from.
          * @param startIndex The start position of the source to begin from, inclusive.
          * @param endIndex The end position of the source, exclusive.
-         * @throws IllegalArgumentException if the source is null, or the start or end index are out of bounds.
+         * @throws IllegalArgumentException if the source is null,
+         * @throws IndexOutOfBoundsException if the start or end index are out of bounds.
          */
         public ReverseByteArrayMatcher(final ReverseByteArrayMatcher source, 
                                        final int startIndex, final int endIndex) {
@@ -494,11 +503,9 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          * @param startIndex The first position in the source array to repeat from, inclusive.
          * @param endIndex The endIndex in the source array to repeat up to, exclusive.
          * 
-         * @throws IllegalArgumentException if the source is null or empty, the start index
-         *        is greater than or equal to the end index, the start index is
-         *        greater than or equal to the source length, or the end index is
-         *        greater than the source length, or the number of repeats is less than one.
-         */
+         * @throws IllegalArgumentException if the source is null or empty, or the number of repeats is less than one.
+         * @throws IndexOutOfBoundsException if the startIndex or endIndex are out of bounds.
+         */ 
         public ReverseByteArrayMatcher(final int numberOfRepeats,
                               final byte[] source, final int startIndex,
                               final int endIndex) {
