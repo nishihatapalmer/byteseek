@@ -61,6 +61,7 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     private final ByteMatcher[] matchers;
     private final int length;
 
+    
     /****************
      * Constructors *
      ***************/
@@ -123,7 +124,12 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
         Arrays.fill(this.matchers, matcher);
     }
 
-
+    
+    /******************
+     * Public methods *
+     ******************/
+    
+    
     /**
      * {@inheritDoc}
      * 
@@ -290,6 +296,9 @@ public final class ByteMatcherArrayMatcher implements SequenceMatcher {
     }
     
     
+    /*******************
+     * Private methods *
+     *******************/
     
     private ByteMatcher[] repeatMatchers(final int numberOfRepeats) {
         final int repeatSize = matchers.length;
