@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -32,6 +32,8 @@
 package net.byteseek.matcher.sequence;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
@@ -179,6 +181,37 @@ public final class FixedGapMatcher implements SequenceMatcher {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
-    }    
+    }
+
+
+	@Override
+	public Iterator<ByteMatcher> iterator() {
+		return new FixedGapIterator();
+	}    
+	
+	private class FixedGapIterator implements Iterator<ByteMatcher> {
+
+		private int count;
+		
+		@Override
+		public boolean hasNext() {
+			return count < length;
+		}
+
+		@Override
+		public ByteMatcher next() {
+			if (hasNext()) {
+				return AnyByteMatcher.ANY_BYTE_MATCHER;
+			}
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Byte matchers cannot be removed from a FixedGapMatcher");
+			
+		}
+		
+	}
 
 }

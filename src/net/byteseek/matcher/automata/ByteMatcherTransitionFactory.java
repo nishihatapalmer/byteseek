@@ -36,8 +36,8 @@ import java.util.Collection;
 import net.byteseek.automata.State;
 import net.byteseek.automata.Transition;
 import net.byteseek.automata.factory.TransitionFactory;
-import net.byteseek.matcher.bytes.ByteMatcherFactory;
-import net.byteseek.matcher.bytes.SetAnalysisByteMatcherFactory;
+import net.byteseek.compiler.matcher.ByteMatcherFactory;
+import net.byteseek.compiler.matcher.OptimalByteMatcherFactory;
 
 /**
  * An implementation of {@link TransitionFactory} which creates 
@@ -53,11 +53,11 @@ public final class ByteMatcherTransitionFactory<T> implements TransitionFactory<
 
     
     /** 
-     * Default constructor which used an underlying {@link SetAnalysisByteMatcherFactory}
+     * Default constructor which used an underlying {@link OptimalByteMatcherFactory}
      * to create {@link net.byteseek.matcher.bytes.ByteMatcher}s based on sets of bytes.
      */
     public ByteMatcherTransitionFactory() {
-        matcherFactory = new SetAnalysisByteMatcherFactory();
+        matcherFactory = new OptimalByteMatcherFactory();
     }
 
     

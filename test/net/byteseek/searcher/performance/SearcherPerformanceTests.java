@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.TrieMultiSequenceMatcher;
-import net.byteseek.matcher.sequence.ByteArrayMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.MatcherSearcher;
 import net.byteseek.searcher.SearchResult;
@@ -219,7 +219,7 @@ public class SearcherPerformanceTests {
 	}
 
 	private void profileSequence(String sequence, int numberOfTimes) throws IOException {
-		profileSequence("'" + sequence + "'", numberOfTimes, new ByteArrayMatcher(sequence));
+		profileSequence("'" + sequence + "'", numberOfTimes, new ByteSequenceMatcher(sequence));
 	}
 
 	private void profileSequence(String description, int numberOfTimes, SequenceMatcher matcher)
@@ -240,7 +240,7 @@ public class SearcherPerformanceTests {
 		description.append('[');
 		boolean first = true;
 		for (String str : matcherArgs) {
-			matchers.add(new ByteArrayMatcher(str));
+			matchers.add(new ByteSequenceMatcher(str));
 			if (!first)
 				description.append(',');
 			description.append('\'').append(str).append('\'');

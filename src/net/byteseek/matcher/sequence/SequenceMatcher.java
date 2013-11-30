@@ -40,7 +40,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
  *
  * @author Matt Palmer
  */
- public interface SequenceMatcher extends Matcher {
+ public interface SequenceMatcher extends Matcher, Iterable<ByteMatcher> {
 
     /**
      * Returns a {@link ByteMatcher} which matches all the bytes at

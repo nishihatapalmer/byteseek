@@ -7,24 +7,21 @@ package net.byteseek.compiler.matcher;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import net.byteseek.compiler.CompileException;
-import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
 import net.byteseek.matcher.bytes.AllBitmaskMatcher;
 import net.byteseek.matcher.bytes.ByteRangeMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
-import net.byteseek.matcher.sequence.ByteArrayMatcher;
-import net.byteseek.matcher.sequence.ByteMatcherArrayMatcher;
-import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;
+import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.FixedGapMatcher;
-import net.byteseek.matcher.sequence.SequenceArrayMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.matcher.sequence.SequenceSequenceMatcher;
 import net.byteseek.parser.tree.ParseTree;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
@@ -99,33 +96,33 @@ public class SequenceMatcherCompilerTest {
 		basicTests("[807f]", 1, ByteRangeMatcher.class);
 		basicTests(" [0102]", 1, ByteRangeMatcher.class);
 
-		basicTests("'a string'", 8, ByteArrayMatcher.class);
-		basicTests("`a string`", 8, CaseInsensitiveMatcher.class);
-		basicTests("01 'a string' 02", 10, ByteArrayMatcher.class);
+		basicTests("'a string'", 8, ByteSequenceMatcher.class);
+		basicTests("`a string`", 8, ByteMatcherSequenceMatcher.class);
+		basicTests("01 'a string' 02", 10, ByteSequenceMatcher.class);
 
-		basicTests("0102", 2, ByteArrayMatcher.class);
-		basicTests("01 02", 2, ByteArrayMatcher.class);
-		basicTests("01fd", 2, ByteArrayMatcher.class);
+		basicTests("0102", 2, ByteSequenceMatcher.class);
+		basicTests("01 02", 2, ByteSequenceMatcher.class);
+		basicTests("01fd", 2, ByteSequenceMatcher.class);
 
-		basicTests(" [0102] &01", 2, ByteMatcherArrayMatcher.class);
-		basicTests(" [0102] [^ffee]", 2, ByteMatcherArrayMatcher.class);
+		basicTests(" [0102] &01", 2, ByteMatcherSequenceMatcher.class);
+		basicTests(" [0102] [^ffee]", 2, ByteMatcherSequenceMatcher.class);
 
-		basicTests("01fd ef   de", 4, ByteArrayMatcher.class);
+		basicTests("01fd ef   de", 4, ByteSequenceMatcher.class);
 
-		basicTests("01fd [ef]   de", 4, ByteArrayMatcher.class);
+		basicTests("01fd [ef]   de", 4, ByteSequenceMatcher.class);
 
-		basicTests("01fd [ef fe]   de", 4, SequenceArrayMatcher.class);
+		basicTests("01fd [ef fe]   de", 4, SequenceSequenceMatcher.class);
 
-		basicTests("01{4}", 4, ByteArrayMatcher.class);
+		basicTests("01{4}", 4, ByteSequenceMatcher.class);
 
-		basicTests("010203{6}", 8, ByteArrayMatcher.class);
+		basicTests("010203{6}", 8, ByteSequenceMatcher.class);
 
 		basicTests("[fffe]", 1, AllBitmaskMatcher.class);
-		basicTests("[fffe]{5}", 5, ByteMatcherArrayMatcher.class);
+		basicTests("[fffe]{5}", 5, ByteMatcherSequenceMatcher.class);
 
-		basicTests("(0102){2}", 4, ByteArrayMatcher.class);
-		basicTests("(dd[ff03]){3}", 6, SequenceArrayMatcher.class);
-		basicTests("'start'(dd[ff03]){3}", 11, SequenceArrayMatcher.class);
+		basicTests("(0102){2}", 4, ByteSequenceMatcher.class);
+		basicTests("(dd[ff03]){3}", 6, SequenceSequenceMatcher.class);
+		basicTests("'start'(dd[ff03]){3}", 11, SequenceSequenceMatcher.class);
 
 		basicTests(".{1000}", 1000, FixedGapMatcher.class);
 	}

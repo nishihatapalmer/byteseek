@@ -7,6 +7,8 @@ package net.byteseek.matcher.bytes;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Iterator;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -115,6 +117,12 @@ public class InvertibleMatcherTest {
 		@Override
 		public boolean matchesNoBoundsCheck(byte[] bytes, int matchPosition) {
 			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Iterator<ByteMatcher> iterator() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 

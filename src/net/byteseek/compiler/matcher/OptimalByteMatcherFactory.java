@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.matcher.bytes;
+package net.byteseek.compiler.matcher;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +40,16 @@ import java.util.List;
 import java.util.Set;
 
 import net.byteseek.bytes.ByteUtils;
+import net.byteseek.matcher.bytes.AllBitmaskMatcher;
+import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
+import net.byteseek.matcher.bytes.AnyByteMatcher;
+import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.matcher.bytes.ByteRangeMatcher;
+import net.byteseek.matcher.bytes.InvertedByteMatcher;
+import net.byteseek.matcher.bytes.OneByteMatcher;
+import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
+import net.byteseek.matcher.bytes.SetBitsetMatcher;
+import net.byteseek.matcher.bytes.TwoByteMatcher;
 
 /**
  * A fairly simple implementation of {@link ByteMatcherFactory}.  It attempts to build the
@@ -60,7 +70,7 @@ import net.byteseek.bytes.ByteUtils;
  * 
  * @author Matt Palmer
  */
-public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
+public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
 
     private static final String ILLEGAL_ARGUMENTS = "Null or empty Byte set passed in to ByteSetMatcher.";
     private static final int BINARY_SEARCH_THRESHOLD = 16;
@@ -150,8 +160,8 @@ public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
                 break;
             }
 
-            case 2: { // there is a slim possibility it might be case insensitive...
-                result = getCaseInsensitiveMatcher(values);
+            case 2: { // a two byte matcher
+            	result = new TwoByteMatcher(values);
                 break;
             }
 
@@ -214,45 +224,6 @@ public final class SetAnalysisByteMatcherFactory implements ByteMatcherFactory {
     }
 
 
-    private ByteMatcher getCaseInsensitiveMatcher(final Set<Byte> values) {
-        ByteMatcher result = null;
-        Character caseChar = getCaseChar(values);
-        if (caseChar != null) {
-            result = new CaseInsensitiveByteMatcher(caseChar);
-        }
-        return result;
-    }
-
-    
-    private Character getCaseChar(final Set<Byte> values) {
-        Character result = null;
-        final int size = values.size();
-        if (size == 2) {
-            Iterator<Byte> iterator = values.iterator();
-            int val1 = iterator.next() & 0xFF;
-            int val2 = iterator.next() & 0xFF;
-            if (isSameCharDifferentCase(val1, val2)) {
-                result = Character.valueOf((char) val1);
-            }
-        }
-        return result;
-    }
-
-    
-    private boolean isSameCharDifferentCase(final int val1, final int val2) {
-        boolean result = false;
-        if (isAlphaChar(val1) && isAlphaChar(val2)) {
-            result = Math.abs(val1-val2) == 32;
-        }
-        return result;
-    }
-
-    
-    private boolean isAlphaChar(final int val) {
-        return ((val >= 65 && val <= 90) || (val >= 97 && val <= 122));
-    }
-
-    
     private static List<Integer> getSortedByteValues(final Set<Byte> byteSet) {
         final List<Integer> sortedByteValues = new ArrayList<Integer>();
         for (final Byte b : byteSet) {

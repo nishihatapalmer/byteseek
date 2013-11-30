@@ -31,7 +31,10 @@
 
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.matcher.sequence.ByteMatcherArrayMatcher;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 /**
@@ -129,8 +132,11 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }   
-        return new ByteMatcherArrayMatcher(this, numberOfRepeats);
+        return new ByteMatcherSequenceMatcher(this, numberOfRepeats);
     }     
+    
+    
+
     
     
     /**
@@ -144,6 +150,36 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
     public String toString() {
         return getClass().getSimpleName() + "(" + toRegularExpression(true) + ")";
     }    
+    
+    @Override
+    public Iterator<ByteMatcher> iterator() {
+    	return new ByteMatcherIterator();
+    }
+    
+    public class ByteMatcherIterator implements Iterator<ByteMatcher> {
+
+    	private boolean iterated = false;
+    	
+		@Override
+		public boolean hasNext() {
+			return iterated;
+		}
+
+		@Override
+		public ByteMatcher next() {
+			if (!iterated) {
+				iterated = true;
+				return AbstractByteMatcher.this;
+			}
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Byte matcher iterators cannot remove the ByteMatcher");
+		}
+    	
+    }
     
     
 }

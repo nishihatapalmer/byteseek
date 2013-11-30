@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -29,25 +29,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.matcher.sequence;
+package net.byteseek.compiler;
 
-import java.util.List;
+/**
+ * A generic interface for anything that can optimise an object of type T into another 
+ * object of type T.
+ * 
+ * @author Matt Palmer
+ *
+ * @param <T> The type of object to optimise.
+ */
+public interface Optimiser<T> {
 
-public class OptimisingSequenceMatcherFactory implements SequenceMatcherFactory {
-
-	@Override
-	public SequenceMatcher create(final List<SequenceMatcher> sequences) {
-    	// If there's only one sequence, then just return it:
-		if (sequences.size() == 1) {
-    		return sequences.get(0);
-    	}
-		
-    	//TODO: optimise sequences - collapse runs of single bytes into ByteArrayMatchers,
-    	//                           and runs of sequences of length one into 
-    	//                           ByteMatcherArrayMatchers.
-    	
-    	// Last resort - just build a sequence array matcher over the list of sequences.
-    	return new SequenceArrayMatcher(sequences);
-	}
-
+	/**
+	 * Returns an optimised object of type T given another object of type T.
+	 * <p>
+	 * No guarantees are made by this interface as to whether a new object will
+	 * be created, some cached pre-existing object is returned, or whether the 
+	 * original object passed in is simply returned as already being the most optimal.
+	 * Implementations should state if they provide any such guarantees.
+	 * 
+	 * @param toOptimise The object to optimise.
+	 * @return An optimised version of the object passed in. 
+	 */
+	public T optimise(T toOptimise);
+	
 }

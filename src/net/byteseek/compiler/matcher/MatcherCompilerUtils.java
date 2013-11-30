@@ -30,14 +30,19 @@
  */
 package net.byteseek.compiler.matcher;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.byteseek.matcher.bytes.AllBitmaskMatcher;
 import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.ByteMatcherFactory;
 import net.byteseek.matcher.bytes.ByteRangeMatcher;
 import net.byteseek.matcher.bytes.InvertedByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
+import net.byteseek.matcher.bytes.TwoByteMatcher;
+import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
+import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeUtils;
@@ -46,11 +51,11 @@ import net.byteseek.parser.tree.ParseTreeUtils;
  * @author Matt Palmer
  *
  */
-public final class ByteMatcherCompilerUtils {
+public final class MatcherCompilerUtils {
 
   private final static boolean NOT_YET_INVERTED = false;
   
-	private ByteMatcherCompilerUtils() {
+	private MatcherCompilerUtils() {
 		// Private constructor to prevent the construction of a static utility class.
 	}
 
@@ -130,6 +135,43 @@ public final class ByteMatcherCompilerUtils {
 		}
 		// Not a simple set - build the bytes in the set and ask the matcher factory for a matcher.
 		return matcherFactory.create(ParseTreeUtils.getSetValues(node), isInverted);
+	}
+	
+
+	public static SequenceMatcher createCaseInsensitiveMatcher(final String string) {
+		return new ByteMatcherSequenceMatcher(buildCaseInsensitiveMatcherList(string));
+	}
+	
+
+	private static List<ByteMatcher> buildCaseInsensitiveMatcherList(final String string) {
+		final List<ByteMatcher> sequence = new ArrayList<ByteMatcher>(string.length());
+		for (int pos = 0; pos < string.length(); pos++) {
+			final ByteMatcher matcher = createCaseInsensitiveMatcher(string.charAt(pos)); 
+			sequence.add(matcher);
+		}
+		return sequence;
+	}
+	
+	
+	/**
+	 * Returns an ASCII case insensitive byte matcher given a char.
+	 * <p>
+	 * Note that if the char value is greater than 255, it will not throw an exception
+	 * but will merely cast the char value into a byte value, discarding the higher bit values.
+	 * 
+	 * @param caseChar The character to get a case insensitive byte matcher for.
+	 * @return A byte matcher which matchers the character case insensitively.
+	 */
+	public static ByteMatcher createCaseInsensitiveMatcher(final char caseChar) {
+		final byte firstByte = (byte) (caseChar & 0xFF);
+		if (caseChar >= 'a' && caseChar <= 'Z') {
+			final byte secondByte = (byte) (firstByte - 32); 
+			return new TwoByteMatcher(firstByte, secondByte);
+		} else if (caseChar >= 'A' && caseChar <= 'Z') {
+			final byte secondByte = (byte) (firstByte + 32);
+			return new TwoByteMatcher(firstByte, secondByte);
+		} 
+		return OneByteMatcher.valueOf(firstByte); 
 	}
 	
 	

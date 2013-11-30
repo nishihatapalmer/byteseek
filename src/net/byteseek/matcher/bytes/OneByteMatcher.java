@@ -37,7 +37,7 @@ import java.io.IOException;
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.matcher.sequence.ByteArrayMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 
@@ -168,7 +168,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }   
-        return new ByteArrayMatcher(byteToMatch, numberOfRepeats);
+        return new ByteSequenceMatcher(byteToMatch, numberOfRepeats);
     }    
 
     @Override

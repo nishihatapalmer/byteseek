@@ -36,18 +36,18 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import org.junit.Test;
-
+import net.byteseek.compiler.matcher.MatcherCompilerUtils;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
-import net.byteseek.matcher.sequence.ByteArrayMatcher;
-import net.byteseek.matcher.sequence.CaseInsensitiveMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.ForwardSearchIterator;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.sequence.horspool.BoyerMooreHorspoolSearcher;
+
+import org.junit.Test;
 
 /**
  *
@@ -58,16 +58,15 @@ public class SequenceSearcherTest {
 	@Test
 	public void scratchTesting() throws FileNotFoundException, IOException {
 
-		SequenceMatcher matcher = new ByteArrayMatcher("A Midsommer Nights Dreame");
+		SequenceMatcher matcher = new ByteSequenceMatcher("A Midsommer Nights Dreame");
 		Searcher<SequenceMatcher> searcher = new BoyerMooreHorspoolSearcher(matcher);
 		findMatches(searcher, 0);
 
-		SequenceMatcher caseMatcher = new CaseInsensitiveMatcher(
-				"A Midsommer Nights Dreame");
+		SequenceMatcher caseMatcher = MatcherCompilerUtils.createCaseInsensitiveMatcher("A Midsommer Nights Dreame");
 		Searcher<SequenceMatcher> caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
 		findMatches(caseSearcher, 0);
 
-		caseMatcher = new CaseInsensitiveMatcher("MIDSOMMER NIGHT"); // fails its own length from the end if you add the H.
+		caseMatcher = MatcherCompilerUtils.createCaseInsensitiveMatcher("MIDSOMMER NIGHT"); // fails its own length from the end if you add the H.
 		caseSearcher = new BoyerMooreHorspoolSearcher(caseMatcher);
 		findMatches(caseSearcher, 112236);
 

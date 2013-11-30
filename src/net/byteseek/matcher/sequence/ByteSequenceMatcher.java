@@ -34,7 +34,9 @@ package net.byteseek.matcher.sequence;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.Window;
@@ -47,13 +49,13 @@ import net.byteseek.object.ArgUtils;
  * An immutable class which matches a sequence of bytes backed by a byte array.
  * <p>
  * The internal byte array is always constructed to be immutable.
- * It can be shared with other immutable SequenceMatchers, constructed from an existing ByteArrayMatcher.
+ * It can be shared with other immutable SequenceMatchers, constructed from an existing ByteSequenceMatcher.
  * Different views over the original byte array can be quickly constructed, such 
  * as subsequences, or the reverse order of the bytes. 
  *
  * @author Matt Palmer
  */
-public final class ByteArrayMatcher implements SequenceMatcher {
+public final class ByteSequenceMatcher implements SequenceMatcher {
     
     private final byte[] byteArray;
     private final int startArrayIndex; // the position to start at (an inclusive value)
@@ -65,14 +67,14 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      ***************/
 
     /**
-     * Constructs an immutable byte sequence matcher from an array of bytes, which 
+     * Constructs an immutable ByteSequenceMatcher from an array of bytes, which 
      * can be passed in directly as an array of bytes, or specified as a comma-separated list of bytes.
      * The array of bytes passed in is cloned to avoid mutability and concurrency issues.
      * 
      * @param byteArray The array of bytes to match.
      * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
      */
-    public ByteArrayMatcher(final byte...bytes) {
+    public ByteSequenceMatcher(final byte...bytes) {
         ArgUtils.checkNullOrEmptyByteArray(bytes);
         this.byteArray = bytes.clone(); // avoid mutability issues - clone byte array.
         this.startArrayIndex = 0;
@@ -81,13 +83,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
 
     
     /**
-     * Constructor creating an immutable ByteArrayMatcher from a new byte array created
+     * Constructor creating an immutable ByteSequenceMatcher from a new byte array created
      * from the source to fit the start and end indexes supplied.  
      * A new array will be created even if the new array would be identical to the array passed in.
      * <p>
-     * If you want to construct a ByteArrayMatcher which shares the underlying byte
-     * arrays, then use the copy constructor passing in an existing ByteArrayMatcher: 
-     * {@link #ByteArrayMatcher(ByteArrayMatcher, int, int)}. 
+     * If you want to construct a ByteSequenceMatcher which shares the underlying byte
+     * arrays, then use the copy constructor passing in an existing ByteSequenceMatcher: 
+     * {@link #ByteSequenceMatcher(ByteSequenceMatcher, int, int)}. 
      *  
      * @param source A byte array containing a subsequence of bytes to use.
      * @param startIndex The start position of the source to begin from, inclusive.
@@ -95,13 +97,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException If the source is null or empty or the number of repeats is less than one.
      * @throws IndexOutOfBoundsException if the the start or end index are out of bounds, 
      */
-    public ByteArrayMatcher(final byte[] source, final int startIndex, final int endIndex) {
+    public ByteSequenceMatcher(final byte[] source, final int startIndex, final int endIndex) {
     	this(1, source, startIndex, endIndex);
     }
     
 
     /**
-     * Constructor creating an immutable ByteArrayMatcher from a new byte array created
+     * Constructor creating an immutable ByteSequenceMatcher from a new byte array created
      * to fit the start and end indexes supplied, repeated a number of times.
      * A new array will be created even if the new array would be identical to the array passed in.
      * 
@@ -113,9 +115,9 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException If the source is null or empty or the number of repeats is less than one.
      * @throws IndexOutOfBoundsException if the start or end index are out of bounds.
      */
-    public ByteArrayMatcher(final int numberOfRepeats, 
-                            final byte[] source, final int startIndex,
-                            final int endIndex) {
+    public ByteSequenceMatcher(final int numberOfRepeats, 
+                               final byte[] source, final int startIndex,
+                               final int endIndex) {
         ArgUtils.checkNullOrEmptyByteArray(source);
         ArgUtils.checkIndexOutOfBounds(source.length, startIndex, endIndex);
         ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
@@ -126,10 +128,10 @@ public final class ByteArrayMatcher implements SequenceMatcher {
                     
 
     /**
-     * Copy constructor creating an immutable sub-sequence of a ByteArrayMatcher passed in, 
-     * and backed by the original byte array of the ByteArrayMatcher passed in.
+     * Copy constructor creating an immutable sub-sequence of a ByteSequenceMatcher passed in, 
+     * and backed by the original byte array of the ByteSequenceMatcher passed in.
      * 
-     * @param source The ByteArrayMatcher to create a subsequence from.
+     * @param source The ByteSequenceMatcher to create a subsequence from.
      * @param startIndex The start position of the source to begin from.
      * @param endIndex The end position of the source, which is one greater than
      *                 the last position to match in the source array.
@@ -139,8 +141,8 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      *         equal to the length of the source, or the end index is greater than
      *         the length of the source.
      */
-    public ByteArrayMatcher(final ByteArrayMatcher source, 
-                            final int startIndex, final int endIndex) {
+    public ByteSequenceMatcher(final ByteSequenceMatcher source, 
+                               final int startIndex, final int endIndex) {
         ArgUtils.checkNullObject(source);
         ArgUtils.checkIndexOutOfBounds(source.length(), startIndex, endIndex);
         this.byteArray = source.byteArray;
@@ -150,13 +152,13 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     
     
     /**
-     * A constructor which creates a ByteArrayMatcher matching the 
+     * A constructor which creates a ByteSequenceMatcher matching the 
      * array contained by a ReverseByteArrayMatcher, but now matching forwards.
      * 
-     * @param toReverse The ReverseByteArrayMatcher to construct this ByteArrayMatcher from.
+     * @param toReverse The ReverseByteArrayMatcher to construct this ByteSequenceMatcher from.
      * @throws IllegalArgumentException if a null ReverseByteArrayMatcher is passed in.
      */
-    public ByteArrayMatcher(final ReverseByteArrayMatcher toReverse) {
+    public ByteSequenceMatcher(final ReverseByteArrayMatcher toReverse) {
         ArgUtils.checkNullObject(toReverse);
         this.byteArray= toReverse.byteArray;
         this.startArrayIndex = toReverse.startArrayIndex;
@@ -167,7 +169,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
     /**
      * Constructs an immutable byte sequence matcher from a list of other
      * ByteArrayMatchers.  The final sequence to match is the sequence of
-     * bytes defined by joining all the bytes in the other ByteArrayMatcher's
+     * bytes defined by joining all the bytes in the other ByteSequenceMatcher's
      * together in the order they appear in the list.<p>
      * A new byte array will be created to hold this sequence of bytes.  
      * 
@@ -176,15 +178,15 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the matcher list is null or empty, or
      *         any of the ByteArrayMatchers in the list are null.
      */
-    public ByteArrayMatcher(final List<ByteArrayMatcher> matchers) {
+    public ByteSequenceMatcher(final List<ByteSequenceMatcher> matchers) {
     	ArgUtils.checkNullOrEmptyCollectionNoNullElements(matchers);
         int totalLength = 0;
-        for (final ByteArrayMatcher matcher : matchers) {
+        for (final ByteSequenceMatcher matcher : matchers) {
             totalLength += matcher.endArrayIndex;
         }
         this.byteArray = new byte[totalLength];
         int position = 0;
-        for (final ByteArrayMatcher matcher : matchers) {
+        for (final ByteSequenceMatcher matcher : matchers) {
             System.arraycopy(matcher.byteArray, 0, this.byteArray, position, matcher.endArrayIndex);
             position += matcher.endArrayIndex;
         }
@@ -200,7 +202,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @param numberOfBytes The number of bytes to repeat.
      * @throws IllegalArgumentException If the number of bytes is less than one.
      */
-    public ByteArrayMatcher(final byte byteValue, final int numberOfBytes) {
+    public ByteSequenceMatcher(final byte byteValue, final int numberOfBytes) {
         ArgUtils.checkPositiveInteger(numberOfBytes);
         this.byteArray = new byte[numberOfBytes];
         Arrays.fill(this.byteArray, byteValue);
@@ -214,26 +216,26 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      *
      * @param byteValue The byte to match.
      */
-    public ByteArrayMatcher(final byte byteValue) {
+    public ByteSequenceMatcher(final byte byteValue) {
         this(byteValue, 1);
     }
 
     
     
     /**
-     * Constructs an immutable ByteArrayMatcher from a string, encoding the
+     * Constructs an immutable ByteSequenceMatcher from a string, encoding the
      * bytes of the string using the system default Charset.
      * 
      * @param string The string whose bytes will be matched.
      * @throws IllegalArgumentException if the string is null or empty.
      */
-    public ByteArrayMatcher(final String string) {
+    public ByteSequenceMatcher(final String string) {
         this(string, Charset.defaultCharset());
     }
     
 
     /**
-     * Constructs a ByteArrayMatcher from a string and a Charset to use
+     * Constructs a ByteSequenceMatcher from a string and a Charset to use
      * to encode the bytes in the string.
      * 
      * @param string The string whose bytes will be matched
@@ -241,7 +243,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the string is null or empty, or the
      *         Charset is null.
      */
-    public ByteArrayMatcher(final String string, final Charset charset) {
+    public ByteSequenceMatcher(final String string, final Charset charset) {
         ArgUtils.checkNullOrEmptyString(string, "string");
         ArgUtils.checkNullObject(charset, "charset");
         this.byteArray = string.getBytes(charset);
@@ -395,7 +397,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         if (subsequenceLength == length()) {
             return this;
         }
-        return new ByteArrayMatcher(this, beginIndex, endIndex);
+        return new ByteSequenceMatcher(this, beginIndex, endIndex);
     }
     
     
@@ -417,10 +419,39 @@ public final class ByteArrayMatcher implements SequenceMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }
-        return new ByteArrayMatcher(numberOfRepeats, byteArray, startArrayIndex, endArrayIndex);
+        return new ByteSequenceMatcher(numberOfRepeats, byteArray, startArrayIndex, endArrayIndex);
     }
     
-    
+
+	@Override
+	public Iterator<ByteMatcher> iterator() {
+		return new ByteMatcherIterator();
+	}
+	
+	
+	private final class ByteMatcherIterator implements Iterator<ByteMatcher> {
+
+		int position = startArrayIndex;
+		
+		@Override
+		public boolean hasNext() {
+			return position < endArrayIndex;
+		}
+
+		@Override
+		public ByteMatcher next() {
+			if (hasNext()) {
+				return OneByteMatcher.valueOf(byteArray[position++]);
+			}
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Byte matchers cannot be removed from a ByteSequenceMatcher");
+		}
+		
+	}
     
     ////////////////////////////////////////////////////////////////////////////
     //                                ReverseByteArrayMatcher                 //        
@@ -439,12 +470,12 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          
          
          /**
-          * Constructs a ReverseByteArrayMatcher from an original ByteArrayMatcher.
+          * Constructs a ReverseByteArrayMatcher from an original ByteSequenceMatcher.
           * 
-          * @param toReverse The ByteArrayMatcher to construct a ReverseByteArrayMatcher from.
-          * @throws IllegalArgumentException if the ByteArrayMatcher is null.
+          * @param toReverse The ByteSequenceMatcher to construct a ReverseByteArrayMatcher from.
+          * @throws IllegalArgumentException if the ByteSequenceMatcher is null.
           */
-         public ReverseByteArrayMatcher(final ByteArrayMatcher toReverse) {
+         public ReverseByteArrayMatcher(final ByteSequenceMatcher toReverse) {
              ArgUtils.checkNullObject(toReverse);
              this.byteArray = toReverse.byteArray;
              this.startArrayIndex = toReverse.startArrayIndex;
@@ -475,7 +506,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          * was actually reversed.  Translation to the underlying byte array indexes
          * is done automatically and transparently.
          * 
-         * @param source The ByteArrayMatcher to create a subsequence from.
+         * @param source The ByteSequenceMatcher to create a subsequence from.
          * @param startIndex The start position of the source to begin from, inclusive.
          * @param endIndex The end position of the source, exclusive.
          * @throws IllegalArgumentException if the source is null,
@@ -608,7 +639,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          */
         @Override
         public String toString() {
-            return "ByteArrayMatcher." + getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
+            return "ByteSequenceMatcher." + getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
         }
 
 
@@ -639,7 +670,7 @@ public final class ByteArrayMatcher implements SequenceMatcher {
          */
         @Override    
         public SequenceMatcher reverse() {
-            return new ByteArrayMatcher(this);
+            return new ByteSequenceMatcher(this);
         }
 
         
@@ -680,7 +711,39 @@ public final class ByteArrayMatcher implements SequenceMatcher {
             }
             return new ReverseByteArrayMatcher(numberOfRepeats, byteArray, startArrayIndex, endArrayIndex);
         }
+        
+        
+    	@Override
+    	public Iterator<ByteMatcher> iterator() {
+    		return new ReverseByteMatcherIterator();
+    	}
+    	
+    	
+    	private final class ReverseByteMatcherIterator implements Iterator<ByteMatcher> {
+
+    		int position = endArrayIndex;
+    		
+    		@Override
+    		public boolean hasNext() {
+    			return position > startArrayIndex;
+    		}
+
+    		@Override
+    		public ByteMatcher next() {
+    			if (hasNext()) {
+    				return OneByteMatcher.valueOf(byteArray[--position]);
+    			}
+    			throw new NoSuchElementException();
+    		}
+
+    		@Override
+    		public void remove() {
+    			throw new UnsupportedOperationException("Byte matchers cannot be removed from a ReverseByteSequenceMatcher");
+    		}
+    		
+    	}
          
     }
+
     
 }

@@ -153,5 +153,5 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
     	return getClass().getSimpleName() + "[bitmask:" + mBitMaskValue + " inverted:" + inverted + ']';
     }
 
-    
+
 }

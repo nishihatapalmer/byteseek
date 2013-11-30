@@ -39,6 +39,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,36 +49,36 @@ import java.util.List;
  * 
  * @author Matt Palmer
  */
-public final class SequenceArrayMatcher implements SequenceMatcher {
+public final class SequenceSequenceMatcher implements SequenceMatcher {
 
     private final SequenceMatcher[] matchers;
     private final int totalLength;
 
     
     /**
-     * Constructs a SequenceArrayMatcher from a list of {@link SequenceMatcher} objects.
+     * Constructs a SequenceSequenceMatcher from a list of {@link SequenceMatcher} objects.
      *
-     * @param matchList A list of SequenceMatchers from which to construct this SequenceArrayMatcher.
+     * @param matchList A list of SequenceMatchers from which to construct this SequenceSequenceMatcher.
      * @throws IllegalArgumentException if the collection is null or empty.
      */
-    public SequenceArrayMatcher(final Collection<? extends SequenceMatcher> matchList) {
+    public SequenceSequenceMatcher(final Collection<? extends SequenceMatcher> matchList) {
         this(matchList, 1);
     }
 
 
     /**
-     * Constructs a SequenceArrayMatcher from a repeated list of {@link SequenceMatcher} objects.
+     * Constructs a SequenceSequenceMatcher from a repeated list of {@link SequenceMatcher} objects.
      * 
-     * @param matcherCollection  A collection of (repeated) SequenceMatchers from which to construct this SequenceArrayMatcher.
+     * @param matcherCollection  A collection of (repeated) SequenceMatchers from which to construct this SequenceSequenceMatcher.
      * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
      * @throws IllegalArgumentException if the collection is null or empty, or the number to repeat is less than one.
      */
-    public SequenceArrayMatcher(final Collection<? extends SequenceMatcher> matcherCollection, final int numberOfRepeats) {
+    public SequenceSequenceMatcher(final Collection<? extends SequenceMatcher> matcherCollection, final int numberOfRepeats) {
         if (matcherCollection == null || matcherCollection.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty match list passed in to SequenceArrayMatcher.");
+            throw new IllegalArgumentException("Null or empty match list passed in to SequenceSequenceMatcher.");
         }
         if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("SequenceArrayMatcher requires a positive number of repeats.");
+            throw new IllegalArgumentException("SequenceSequenceMatcher requires a positive number of repeats.");
         }
         if (numberOfRepeats == 1) {
             matchers = matcherCollection.toArray(new SequenceMatcher[matcherCollection.size() * numberOfRepeats]);
@@ -104,18 +105,18 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
 
 
 	/**
-     * Constructs a SequenceArrayMatcher from an array of SequenceMatchers.
+     * Constructs a SequenceSequenceMatcher from an array of SequenceMatchers.
      * 
      * @param matchArray The array of SequenceMatchers to construct from.
      * @throws IllegalArgumentException if the array is null or empty.
      */
-    public SequenceArrayMatcher(final SequenceMatcher[] matchArray) {
+    public SequenceSequenceMatcher(final SequenceMatcher[] matchArray) {
         this(matchArray, 1);
     }
     
     
     /**
-     * Constructs a SequenceArrayMatcher from an array of SequenceMatcher,
+     * Constructs a SequenceSequenceMatcher from an array of SequenceMatcher,
      * repeated a number of times.
      * 
      * @param matchArray The array of SequenceMatchers to construct from.
@@ -123,12 +124,12 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the array is null or empty, or the
      *         number of repeats is less than one.
      */
-    public SequenceArrayMatcher(final SequenceMatcher[] matchArray, final int numberOfRepeats) {
+    public SequenceSequenceMatcher(final SequenceMatcher[] matchArray, final int numberOfRepeats) {
         if (matchArray == null || matchArray.length == 0) {
-            throw new IllegalArgumentException("Null or empty match array passed in to SequenceArrayMatcher.");
+            throw new IllegalArgumentException("Null or empty match array passed in to SequenceSequenceMatcher.");
         }
         if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("SequenceArrayMatcher requires a positive number of repeats.");
+            throw new IllegalArgumentException("SequenceSequenceMatcher requires a positive number of repeats.");
         }
         if (numberOfRepeats == 1) {
             matchers = matchArray.clone();
@@ -265,7 +266,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
         }
         
         //TODO: throw Runtime, rewrite method...?
-        final String badness = "A ByteMatcher for position %d in a SequenceArrayMatcher of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
+        final String badness = "A ByteMatcher for position %d in a SequenceSequenceMatcher of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
         throw new RuntimeException(String.format(badness, position, totalLength));
     }
 
@@ -284,13 +285,13 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SequenceArrayMatcher reverse() {
+    public SequenceSequenceMatcher reverse() {
         final SequenceMatcher[] reversed = new SequenceMatcher[matchers.length];
         int position = matchers.length - 1;
         for (final SequenceMatcher matcher : matchers) {
             reversed[position--] = matcher.reverse();
         }
-        return new SequenceArrayMatcher(reversed);
+        return new SequenceSequenceMatcher(reversed);
     }
 
     
@@ -300,7 +301,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
     // Suppress warnings about null in this method.  Eclipse believes that the startMatcher or
     // the endMatcher could be null at the end of the loop.  This can only be true if there is a bug.
     // It should not happen otherwise, as we already test that the beginIndex and endIndex are within
-    // the bounds of the SequenceArrayMatcher total length - the sum of all the SequenceMatchers in it.
+    // the bounds of the SequenceSequenceMatcher total length - the sum of all the SequenceMatchers in it.
     // Therefore, a failure to find a SequenceMatcher within those bounds would represent a genuine 
     // programming error somewhere, which could then result in a NullPointerException thrown in this method.
     @SuppressWarnings("null")
@@ -354,7 +355,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
         }
         
         // Forming the new sequence array matcher:
-        return new SequenceArrayMatcher(newSequence);
+        return new SequenceSequenceMatcher(newSequence);
     }
 
     
@@ -378,7 +379,7 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }        
-        return new SequenceArrayMatcher(matchers, numberOfRepeats);
+        return new SequenceSequenceMatcher(matchers, numberOfRepeats);
     }
     
     
@@ -392,6 +393,13 @@ public final class SequenceArrayMatcher implements SequenceMatcher {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
-    }    
+    }
+
+
+	@Override
+	public Iterator<ByteMatcher> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}    
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2012-13, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,48 +29,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.matcher.bytes;
+package net.byteseek.compiler.matcher;
 
-import java.util.Collection;
+import net.byteseek.compiler.Optimiser;
+import net.byteseek.matcher.sequence.SequenceMatcher;
 
-/**
- * An interface for objects which implement a factory for {@link ByteMatcher}s.
- *
- * @author Matt Palmer
- */
-public interface ByteMatcherFactory {
+public class SequenceMatcherOptimiser implements Optimiser<SequenceMatcher> {
 
-    /**
-     * A constant to say that a set of bytes passed in to the factory should be inverted.
-     */
-    public final static boolean INVERTED = true;
-    
-    
-    /**
-     * A constant to say that a set of bytes passed in to the factory should not be inverted.
-     */
-    public final static boolean NOT_INVERTED = false;
-    
-    
-    /**
-     * Creates a {@link  ByteMatcher} from the collection of bytes passed in.
-     * There may be duplicate values in the collection.
-     * 
-     * @param bytes A collection of bytes to match.
-     * @return A ByteMatcher which matches that set of bytes.
-     */
-    ByteMatcher create(Collection<Byte> bytes);
-    
-    
-    /**
-     * Creates a {@link  ByteMatcher} from the collection of bytes passed in.
-     * There may be duplicate values in the collection.
-     * 
-     * @param byteSet A collection of bytes to match
-     * @param inverted Whether to invert the set of bytes to match.
-     * @return A ByteMatcher which matches the set of bytes (or their inverse, if
-     *         specified in the inverted parameter).
-     */
-    ByteMatcher create(Collection<Byte> byteSet, boolean inverted);
+	public static final Optimiser<SequenceMatcher> SEQUENCE_OPTIMISER = new SequenceMatcherOptimiser();
+	
+	@Override
+	public SequenceMatcher optimise(final SequenceMatcher toOptimise) {
+    	// If there's only one sequence, then just return it:
+		
+    	//TODO: optimise sequences - collapse runs of single bytes into ByteArrayMatchers,
+    	//                           and runs of sequences of length one into 
+    	//                           ByteMatcherArrayMatchers.
+    	
+    	// Last resort - just return the original object passed in.
+    	return toOptimise;
+	}
 
 }

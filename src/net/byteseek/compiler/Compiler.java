@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2013, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -31,19 +31,14 @@
 
 package net.byteseek.compiler;
 
-//TODO: update compilers to work with the new ast REPEAT types.
-
-
 import java.util.Collection;
 
 /**
  * An interface for compilers which compile a String expression 
  * into an object of type T.
  * 
- * @param <T>
- *            The type of the object to compile to.
- * @param <S>
- *            The type of syntax that is parsed.       
+ * @param <T> The type of the object to compile to.
+ *            
  * @author Matt Palmer
  */
 public interface Compiler<T> {

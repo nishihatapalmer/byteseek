@@ -40,8 +40,6 @@ import net.byteseek.bytes.ByteUtils;
 import net.byteseek.compiler.AbstractCompiler;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.ByteMatcherFactory;
-import net.byteseek.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
 import net.byteseek.parser.regex.RegexParser;
@@ -105,7 +103,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 * @return ByteMatcher a matcher which matches the byte values in the array provided.
 	 */
 	public static ByteMatcher compileFrom(final byte[] bytes) {
-		defaultFactory = new SetAnalysisByteMatcherFactory();
+		defaultFactory = new OptimalByteMatcherFactory();
 		final Set<Byte> byteSet = ByteUtils.toSet(bytes);
 		return defaultFactory.create(byteSet, NOT_INVERTED);
 	}
@@ -121,7 +119,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 *         than those in the array provided.
 	 */
 	public static ByteMatcher compileInvertedFrom(final byte[] bytes) {
-		defaultFactory = new SetAnalysisByteMatcherFactory();
+		defaultFactory = new OptimalByteMatcherFactory();
 		final Set<Byte> byteSet = ByteUtils.toSet(bytes);
 		return defaultFactory.create(byteSet, INVERTED);
 	}
@@ -133,7 +131,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	// Constructors:
 
 	/**
-	 * Constructs a ByteMatcherCompiler using a {@link SetAnalysisByteMatcherFactory}
+	 * Constructs a ByteMatcherCompiler using a {@link OptimalByteMatcherFactory}
 	 * to construct optimal matchers for sets of bytes, and the default parser
 	 * defined in AbstractCompiler.
 	 * 
@@ -176,7 +174,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 */
 	public ByteMatcherCompiler(final Parser<ParseTree> parser, final ByteMatcherFactory factoryToUse) {
 		super(parser == null? new RegexParser() : parser);
-		matcherFactory = factoryToUse == null? new SetAnalysisByteMatcherFactory() : factoryToUse;
+		matcherFactory = factoryToUse == null? new OptimalByteMatcherFactory() : factoryToUse;
 	}
 
 
@@ -207,12 +205,12 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	protected ByteMatcher doCompile(final ParseTree node) throws ParseException {
 
 		switch (node.getParseTreeType()) {
-			case BYTE: 			return ByteMatcherCompilerUtils.createByteMatcher(node);
-			case ANY:			return ByteMatcherCompilerUtils.createAnyMatcher(node);
-			case ALL_BITMASK:	return ByteMatcherCompilerUtils.createAllBitmaskMatcher(node);
-			case ANY_BITMASK:	return ByteMatcherCompilerUtils.createAnyBitmaskMatcher(node);
-			case RANGE: 		return ByteMatcherCompilerUtils.createRangeMatcher(node);
-			case SET:			return ByteMatcherCompilerUtils.createMatcherFromSet(node, matcherFactory);
+			case BYTE: 			return MatcherCompilerUtils.createByteMatcher(node);
+			case ANY:			return MatcherCompilerUtils.createAnyMatcher(node);
+			case ALL_BITMASK:	return MatcherCompilerUtils.createAllBitmaskMatcher(node);
+			case ANY_BITMASK:	return MatcherCompilerUtils.createAnyBitmaskMatcher(node);
+			case RANGE: 		return MatcherCompilerUtils.createRangeMatcher(node);
+			case SET:			return MatcherCompilerUtils.createMatcherFromSet(node, matcherFactory);
 		}
 		
 		// The node type wasn't understood by this compiler.

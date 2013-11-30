@@ -37,11 +37,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import net.byteseek.compiler.matcher.ByteMatcherFactory;
+import net.byteseek.compiler.matcher.OptimalByteMatcherFactory;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.ByteMatcherFactory;
-import net.byteseek.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceUtils;
@@ -87,7 +87,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         
         //TODO: provide constructors to allow different byte sequences factories.
         //TODO: provide an ObjectFactory<LazyObject> to instantiate a LazyObject of choice.
-        byteMatcherFactory = new SetAnalysisByteMatcherFactory();
+        byteMatcherFactory = new OptimalByteMatcherFactory();
     }
     
     

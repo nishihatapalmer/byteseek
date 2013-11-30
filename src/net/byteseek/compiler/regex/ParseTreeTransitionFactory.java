@@ -33,10 +33,10 @@ package net.byteseek.compiler.regex;
 import net.byteseek.automata.State;
 import net.byteseek.automata.Transition;
 import net.byteseek.automata.factory.TransitionFactory;
-import net.byteseek.compiler.matcher.ByteMatcherCompilerUtils;
+import net.byteseek.compiler.matcher.MatcherCompilerUtils;
+import net.byteseek.compiler.matcher.ByteMatcherFactory;
+import net.byteseek.compiler.matcher.OptimalByteMatcherFactory;
 import net.byteseek.matcher.automata.ByteMatcherTransition;
-import net.byteseek.matcher.bytes.ByteMatcherFactory;
-import net.byteseek.matcher.bytes.SetAnalysisByteMatcherFactory;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTree;
 
@@ -51,7 +51,7 @@ public final class ParseTreeTransitionFactory<T>
   }
   
   public ParseTreeTransitionFactory(final ByteMatcherFactory matcherFactory) {
-    this.matcherFactory = matcherFactory == null? new SetAnalysisByteMatcherFactory()
+    this.matcherFactory = matcherFactory == null? new OptimalByteMatcherFactory()
     											: matcherFactory;
   }
   
@@ -82,27 +82,27 @@ public final class ParseTreeTransitionFactory<T>
 
   
   private Transition<T> createByteTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition<T>(ByteMatcherCompilerUtils.createByteMatcher(ast), toState);
+    return new ByteMatcherTransition<T>(MatcherCompilerUtils.createByteMatcher(ast), toState);
   }
   
   private Transition<T> createAllBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition<T>(ByteMatcherCompilerUtils.createAllBitmaskMatcher(ast), toState);
+    return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAllBitmaskMatcher(ast), toState);
   }
 
   private Transition<T> createAnyBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-   return new ByteMatcherTransition<T>(ByteMatcherCompilerUtils.createAnyBitmaskMatcher(ast), toState);
+   return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAnyBitmaskMatcher(ast), toState);
   }
   
   private Transition<T> createAnyTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition<T>(ByteMatcherCompilerUtils.createAnyMatcher(ast), toState);
+    return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAnyMatcher(ast), toState);
   }
   
   private Transition<T> createRangeTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-	  return new ByteMatcherTransition<T>(ByteMatcherCompilerUtils.createRangeMatcher(ast), toState);
+	  return new ByteMatcherTransition<T>(MatcherCompilerUtils.createRangeMatcher(ast), toState);
   }
   
   private Transition<T> createSetTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-     return new ByteMatcherTransition<T>(ByteMatcherCompilerUtils.createMatcherFromSet(ast, matcherFactory), toState);
+     return new ByteMatcherTransition<T>(MatcherCompilerUtils.createMatcherFromSet(ast, matcherFactory), toState);
   }
 
 }

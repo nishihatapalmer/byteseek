@@ -37,6 +37,7 @@ public final class ArgUtils {
 
 	private static final String OBJECT_CANNOT_BE_NULL               = "The object cannot be null";
 	private static final String COLLECTION_CANNOT_BE_NULL           = "The collection cannot be null";
+	private static final String COLLECTION_MUST_BE_RIGHT_SIZE       = "The collection of size %d must be exactly %d in size";
 	private static final String COLLECTION_CANNOT_BE_EMPTY          = "The collection cannot be empty";
 	private static final String COLLECTION_ELEMENT_CANNOT_BE_NULL   = "Elements cannot be null";
 	private static final String ARRAY_CANNOT_BE_NULL                = "The array cannot be null";
@@ -79,6 +80,22 @@ public final class ArgUtils {
 		checkNullCollection(collection);
 		if (collection.isEmpty()) {
 			throw new IllegalArgumentException(COLLECTION_CANNOT_BE_EMPTY);
+		}
+	}
+	
+	
+	public static <T> void checkCollectionSize(final Collection<T> collection, final int size) {
+		checkNullCollection(collection);
+		if (collection.size() != size) {
+			throw new IllegalArgumentException(String.format(COLLECTION_MUST_BE_RIGHT_SIZE, collection.size(), size));
+		}
+	}
+	
+	
+	public static <T> void checkCollectionSizeNoNullElements(final Collection<T> collection, final int size) {
+		checkCollectionSize(collection, size);
+		for (T element : collection) {
+			checkNullObject(element, COLLECTION_ELEMENT_CANNOT_BE_NULL);
 		}
 	}
 	

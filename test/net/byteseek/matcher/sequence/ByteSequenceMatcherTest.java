@@ -55,7 +55,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests all the constructors and public methods of the ByteArrayMatcher class for
+ * Tests all the constructors and public methods of the ByteSequenceMatcher class for
  * both success and failure, and the associated ReverseByteArrayMatcher class for all 
  * the same conditions.
  * 
@@ -64,7 +64,7 @@ import org.junit.Test;
  * 
  * @author Matt Palmer
  */
-public class ByteArrayMatcherTest {
+public class ByteSequenceMatcherTest {
 
 	//////////////////
 	// test setup   //
@@ -75,7 +75,7 @@ public class ByteArrayMatcherTest {
 	private FileReader			reader;
 	private byte[]				bytes;
 
-	public ByteArrayMatcherTest() {
+	public ByteSequenceMatcherTest() {
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class ByteArrayMatcherTest {
 	public void testConstructSingleByte() throws IOException {
 		for (int byteValue = 0; byteValue < 256; byteValue++) {
 
-			ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue);
+			ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue);
 			assertEquals("length:1, byte value:" + Integer.toString(byteValue), 1, matcher.length());
 
 			byte[] matchingBytes = matcher.getMatcherForPosition(0).getMatchingBytes();
@@ -167,7 +167,7 @@ public class ByteArrayMatcherTest {
 	public void testConstructRepeatedBytes() {
 		for (int byteValue = 0; byteValue < 256; byteValue++) {
 			final int repeats = rand.nextInt(1024) + 1;
-			final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) byteValue, repeats);
+			final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) byteValue, repeats);
 			assertEquals(
 					"length:" + Integer.toString(repeats) + ", byte value:"
 							+ Integer.toString(byteValue), repeats, matcher.length());
@@ -193,7 +193,7 @@ public class ByteArrayMatcherTest {
 	public void testConstructByteArray() {
 		for (int testNo = 0; testNo < 10; testNo++) {
 			final byte[] array = createRandomArray(1024);
-			final ByteArrayMatcher matcher = new ByteArrayMatcher(array);
+			final ByteSequenceMatcher matcher = new ByteSequenceMatcher(array);
 			assertEquals("length:" + Integer.toString(array.length), array.length, matcher.length());
 
 			for (int pos = 0; pos < array.length; pos++) {
@@ -236,7 +236,7 @@ public class ByteArrayMatcherTest {
 			final byte[] array = createRandomArray(1024);
 			final int startPos = rand.nextInt(array.length);
 			final int endPos   = startPos + rand.nextInt(array.length-startPos) + 1;
-			final ByteArrayMatcher matcher = new ByteArrayMatcher(array, startPos, endPos);
+			final ByteSequenceMatcher matcher = new ByteSequenceMatcher(array, startPos, endPos);
 			assertEquals("length:" + Integer.toString(endPos - startPos), endPos - startPos, matcher.length());
 
 			for (int pos = 0; pos < endPos - startPos; pos++) {
@@ -248,7 +248,7 @@ public class ByteArrayMatcherTest {
 						matchingBytes[0]);
 			}
 			
-			testDefensivelyCopied(array, new ByteArrayMatcher(array, 0, array.length));
+			testDefensivelyCopied(array, new ByteSequenceMatcher(array, 0, array.length));
 		}
 	}
 	
@@ -260,7 +260,7 @@ public class ByteArrayMatcherTest {
 			final int endPos   = startPos + rand.nextInt(array.length-startPos) + 1;
 			final int repeats = rand.nextInt(10) + 1;
 			final int length = (endPos - startPos) * repeats;
-			final ByteArrayMatcher matcher = new ByteArrayMatcher(repeats, array, startPos, endPos);
+			final ByteSequenceMatcher matcher = new ByteSequenceMatcher(repeats, array, startPos, endPos);
 			assertEquals("length:" + length, length, matcher.length());
 
 			for (int pos = 0; pos < length; pos++) {
@@ -273,7 +273,7 @@ public class ByteArrayMatcherTest {
 						matchingBytes[0]);
 			}
 			
-			testDefensivelyCopied(array, new ByteArrayMatcher(array, 0, array.length));
+			testDefensivelyCopied(array, new ByteSequenceMatcher(array, 0, array.length));
 		}
 	}
 	
@@ -290,12 +290,12 @@ public class ByteArrayMatcherTest {
 	@Test
 	public void testConstructByteSequenceMatcherList() {
 		for (int testNo = 0; testNo < 10; testNo++) {
-			final List<ByteArrayMatcher> list = createRandomList(32);
+			final List<ByteSequenceMatcher> list = createRandomList(32);
 			int totalLength = 0;
 			for (final SequenceMatcher matcher : list) {
 				totalLength += matcher.length();
 			}
-			final ByteArrayMatcher matcher = new ByteArrayMatcher(list);
+			final ByteSequenceMatcher matcher = new ByteSequenceMatcher(list);
 			assertEquals("length:" + Integer.toString(totalLength), totalLength, matcher.length());
 
 			int localPos = -1;
@@ -359,7 +359,7 @@ public class ByteArrayMatcherTest {
 	}
 
 	private void testConstructString(String string, Charset charset) {
-		ByteArrayMatcher matcher = new ByteArrayMatcher(string);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher(string);
 		byte[] array = string.getBytes();
 		assertEquals("length:", array.length, matcher.length());
 		for (int i = 0; i < array.length; i++) { 
@@ -377,7 +377,7 @@ public class ByteArrayMatcherTest {
 	public void testConstructReverseByteArray() {
 		for (int testNo = 0; testNo < 10; testNo++) {
 			final byte[] array = createRandomArray(1024);
-			final SequenceMatcher matcher = new ByteArrayMatcher.ReverseByteArrayMatcher(array);
+			final SequenceMatcher matcher = new ByteSequenceMatcher.ReverseByteArrayMatcher(array);
 			assertEquals("length:" + Integer.toString(array.length), array.length, matcher.length());
 
 			for (int pos = 0; pos < array.length; pos++) {
@@ -402,7 +402,7 @@ public class ByteArrayMatcherTest {
 			final int endPos   = startPos + rand.nextInt(array.length-startPos) + 1;
 			final int repeats = rand.nextInt(10) + 1;
 			final int length = (endPos - startPos) * repeats;
-			final ByteArrayMatcher.ReverseByteArrayMatcher matcher = new ByteArrayMatcher.ReverseByteArrayMatcher(repeats, array, startPos, endPos);
+			final ByteSequenceMatcher.ReverseByteArrayMatcher matcher = new ByteSequenceMatcher.ReverseByteArrayMatcher(repeats, array, startPos, endPos);
 			assertEquals("length:" + length, length, matcher.length());
 
 			for (int pos = 0; pos < length; pos++) {
@@ -415,7 +415,7 @@ public class ByteArrayMatcherTest {
 						matchingBytes[0]);
 			}
 			
-			testDefensivelyCopied(array, new ByteArrayMatcher(array, 0, array.length));
+			testDefensivelyCopied(array, new ByteSequenceMatcher(array, 0, array.length));
 		}
 	}
 	
@@ -427,194 +427,194 @@ public class ByteArrayMatcherTest {
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructNoRepeats() {
-		new ByteArrayMatcher((byte) 0x8f, 0);
+		new ByteSequenceMatcher((byte) 0x8f, 0);
 	}
 
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructNullArray() {
-		new ByteArrayMatcher((byte[]) null);
+		new ByteSequenceMatcher((byte[]) null);
 	}
 
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructEmptyArray() {
-		new ByteArrayMatcher(new byte[0]);
+		new ByteSequenceMatcher(new byte[0]);
 	}
 
 
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructNullList() {
-		new ByteArrayMatcher((ArrayList<ByteArrayMatcher>) null);
+		new ByteSequenceMatcher((ArrayList<ByteSequenceMatcher>) null);
 	}
 
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructEmptyList() {
-		new ByteArrayMatcher(new ArrayList<ByteArrayMatcher>());
+		new ByteSequenceMatcher(new ArrayList<ByteSequenceMatcher>());
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testNullByteArray() {
-		new ByteArrayMatcher((byte[]) null);
+		new ByteSequenceMatcher((byte[]) null);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testEmptyByteArray() {
-		new ByteArrayMatcher(new byte[0]);
+		new ByteSequenceMatcher(new byte[0]);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testNullByteArrayMatcher() {
-		new ByteArrayMatcher((ByteArrayMatcher) null, 0, 0);
+		new ByteSequenceMatcher((ByteSequenceMatcher) null, 0, 0);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testByteArrayMatcherNegativeStart() {
-		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
-		new ByteArrayMatcher(matcher, -1, 1);
+		final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
+		new ByteSequenceMatcher(matcher, -1, 1);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testByteArrayMatcherEndPastLength() {
-		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
-		new ByteArrayMatcher(matcher, 0, 5);
+		final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
+		new ByteSequenceMatcher(matcher, 0, 5);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testByteArrayMatcherStartNotSmallerThanEnd() {
-		final ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
-		new ByteArrayMatcher(matcher, 2, 2);
+		final ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
+		new ByteSequenceMatcher(matcher, 2, 2);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testSubsequenceConstructorByteArrayNotNull() {
-		new ByteArrayMatcher((byte[]) null, 2, 2);
+		new ByteSequenceMatcher((byte[]) null, 2, 2);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testSubsequenceConstructorByteArrayNotEmpty() {
-		new ByteArrayMatcher(new byte[0], 0, 1);
+		new ByteSequenceMatcher(new byte[0], 0, 1);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testSubsequenceConstructorStartNotNegative() {
-		new ByteArrayMatcher(new byte[] {(byte) 0x01}, -200, 1);
+		new ByteSequenceMatcher(new byte[] {(byte) 0x01}, -200, 1);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testSubsequenceConstructorEndPastLength() {
-		new ByteArrayMatcher(new byte[] {(byte) 0x01}, 0, 2);
+		new ByteSequenceMatcher(new byte[] {(byte) 0x01}, 0, 2);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testSubsequenceConstructorStartNotSmallerThanEnd() {
-		new ByteArrayMatcher(new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
+		new ByteSequenceMatcher(new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructNullString() {
-		new ByteArrayMatcher((String) null);
+		new ByteSequenceMatcher((String) null);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructEmptyString() {
-		new ByteArrayMatcher("");
+		new ByteSequenceMatcher("");
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructReverseNullByteArrayMatcher() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher((ByteArrayMatcher) null);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher((ByteSequenceMatcher) null);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructReverseNullByteArray() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher((byte[]) null);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher((byte[]) null);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructReverseEmptyByteArray() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher(new byte[0]);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(new byte[0]);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructReverseSubsequenceNullByteArray() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher((byte[]) null);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher((byte[]) null);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructReverseSubsequenceNegativeStart() {
-		ByteArrayMatcher.ReverseByteArrayMatcher original = new ByteArrayMatcher.ReverseByteArrayMatcher(createRandomArray(128));
-		new ByteArrayMatcher.ReverseByteArrayMatcher(original, -1, 1);
+		ByteSequenceMatcher.ReverseByteArrayMatcher original = new ByteSequenceMatcher.ReverseByteArrayMatcher(createRandomArray(128));
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(original, -1, 1);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructReverseSubsequenceEndPastLength() {
-		ByteArrayMatcher.ReverseByteArrayMatcher original = new ByteArrayMatcher.ReverseByteArrayMatcher(createRandomArray(128));
-		new ByteArrayMatcher.ReverseByteArrayMatcher(original, 0, original.length() + 1);
+		ByteSequenceMatcher.ReverseByteArrayMatcher original = new ByteSequenceMatcher.ReverseByteArrayMatcher(createRandomArray(128));
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(original, 0, original.length() + 1);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructReverseSubsequenceStartNotLessThanEnd() {
-		ByteArrayMatcher.ReverseByteArrayMatcher original = new ByteArrayMatcher.ReverseByteArrayMatcher(createRandomArray(128));
-		new ByteArrayMatcher.ReverseByteArrayMatcher(original, original.length(), original.length());
+		ByteSequenceMatcher.ReverseByteArrayMatcher original = new ByteSequenceMatcher.ReverseByteArrayMatcher(createRandomArray(128));
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(original, original.length(), original.length());
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructRepeatedReverseNullByteArray() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher(1, null, 0, 1);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(1, null, 0, 1);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructRepeatedReverseEmptyByteArray() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher(1, new byte[0], 0, 1);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(1, new byte[0], 0, 1);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructRepeatedReverseNoPositiveRepeat() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher(0, new byte[] {(byte) 0x01}, 0, 1);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(0, new byte[] {(byte) 0x01}, 0, 1);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructRepeatedReverseStartNegative() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01}, -1, 1);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01}, -1, 1);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructRepeatedReverseEndPastLength() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01}, 0, 2);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01}, 0, 2);
 	}
 
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructRepeatedReverseStartNotLessThanEnd() {
-		new ByteArrayMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
+		new ByteSequenceMatcher.ReverseByteArrayMatcher(1, new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
 	}
 
 	///////////////////////////////
@@ -623,31 +623,31 @@ public class ByteArrayMatcherTest {
 
 	@Test
 	public void testMatches_ByteReader_long() throws FileNotFoundException, IOException {
-		SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3);
+		SequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x2A, 3);
 		runTestMatchesAround(matcher, 0, 61, 1017);
 
-		matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse();
+		matcher = new ByteSequenceMatcher((byte) 0x2A, 3).reverse();
 		runTestMatchesAround(matcher, 0, 61, 1017);
 
-		matcher = new ByteArrayMatcher("Here");
+		matcher = new ByteSequenceMatcher("Here");
 		runTestMatchesAround(matcher, 28200, 60836, 64481);
 
 		matcher = matcher.subsequence(1, 4);
 		runTestMatchesAround(matcher, 28201, 60837, 64482);
 
-		matcher = new ByteArrayMatcher("ereH").reverse();
+		matcher = new ByteSequenceMatcher("ereH").reverse();
 		runTestMatchesAround(matcher, 28200, 60836, 64481);
 
 		matcher = matcher.subsequence(1, 3);
 		runTestMatchesAround(matcher, 28201, 60837, 64482);
 
-		matcher = new ByteArrayMatcher(new byte[] { 0x2e, 0x0d, 0x0a });
+		matcher = new ByteSequenceMatcher(new byte[] { 0x2e, 0x0d, 0x0a });
 		runTestMatchesAround(matcher, 196, 42004, 112277);
 
 		matcher = matcher.subsequence(1);
 		runTestMatchesAround(matcher, 197, 42005, 112278);
 
-		matcher = new ByteArrayMatcher(new byte[] { 0x0a, 0x0d, 0x2e }).reverse();
+		matcher = new ByteSequenceMatcher(new byte[] { 0x0a, 0x0d, 0x2e }).reverse();
 		runTestMatchesAround(matcher, 196, 42004, 112277);
 
 		matcher = matcher.subsequence(1);
@@ -665,16 +665,16 @@ public class ByteArrayMatcherTest {
 	@Test
 	public void testMatchesOverBoundary_ByteReader_long() throws FileNotFoundException, IOException {
 		// Test around a window boundary at 4096
-		SequenceMatcher matcher = new ByteArrayMatcher("be");
+		SequenceMatcher matcher = new ByteSequenceMatcher("be");
 		runTestMatchesAround(matcher, 4095);
 
-		matcher = new ByteArrayMatcher("eb").reverse();
+		matcher = new ByteSequenceMatcher("eb").reverse();
 		runTestMatchesAround(matcher, 4095);
 
-		matcher = new ByteArrayMatcher("Gutenberg");
+		matcher = new ByteSequenceMatcher("Gutenberg");
 		runTestMatchesAround(matcher, 4090);
 
-		matcher = new ByteArrayMatcher("grebnetuG").reverse();
+		matcher = new ByteSequenceMatcher("grebnetuG").reverse();
 		runTestMatchesAround(matcher, 4090);
 	}
 
@@ -684,7 +684,7 @@ public class ByteArrayMatcherTest {
 
 	@Test
 	public void testMatchesReaderOutOfBoundsNegative() throws IOException {
-		SequenceMatcher matcher = new ByteArrayMatcher("xxx");
+		SequenceMatcher matcher = new ByteSequenceMatcher("xxx");
 		assertFalse("negative position", matcher.matches(reader, -1));
 		assertFalse("past end", matcher.matches(reader, 10000000));
 
@@ -695,10 +695,10 @@ public class ByteArrayMatcherTest {
 
 	@Test
 	public void testMatchesReaderOutOfBoundsCrossingEnd() throws IOException {
-		SequenceMatcher matcher = new ByteArrayMatcher(new byte[] { 0x65, 0x2e, 0x0d, 0x0a, 0x00 });
+		SequenceMatcher matcher = new ByteSequenceMatcher(new byte[] { 0x65, 0x2e, 0x0d, 0x0a, 0x00 });
 		assertFalse("longer than end", matcher.matches(reader, 112276));
 
-		matcher = new ByteArrayMatcher(new byte[] { 0x00, 0x0a, 0x0d, 0x2e, 0x65 }).reverse();
+		matcher = new ByteSequenceMatcher(new byte[] { 0x00, 0x0a, 0x0d, 0x2e, 0x65 }).reverse();
 		assertFalse("reverse longer than end", matcher.matches(reader, 112276));
 	}
 
@@ -708,20 +708,20 @@ public class ByteArrayMatcherTest {
 
 	@Test
 	public void testMatches_byteArr_int() {
-		SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3);
+		SequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x2A, 3);
 		runTestMatchesAroundArray(matcher, 0, 61, 1017);
 
-		matcher = new ByteArrayMatcher((byte) 0x2A, 3).reverse();
+		matcher = new ByteSequenceMatcher((byte) 0x2A, 3).reverse();
 		runTestMatchesAroundArray(matcher, 0, 61, 1017);
 	}
 
 	@Test
 	public void testMatchesNoBoundsCheck_byteArr_int() {
-		SequenceMatcher matcher = new ByteArrayMatcher((byte) 0x2A, 3);
+		SequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x2A, 3);
 		testMatchesAroundArrayNoCheck(matcher, 61);
 		testMatchesAroundArrayNoCheck(matcher, 1017);
 
-		matcher = new ByteArrayMatcher((byte) 0x2a, 3).reverse();
+		matcher = new ByteSequenceMatcher((byte) 0x2a, 3).reverse();
 		testMatchesAroundArrayNoCheck(matcher, 61);
 		testMatchesAroundArrayNoCheck(matcher, 1017);
 	}
@@ -732,7 +732,7 @@ public class ByteArrayMatcherTest {
 
 	@Test
 	public void testMatches_outOfBoundsNegative() {
-		SequenceMatcher matcher = new ByteArrayMatcher("Titania");
+		SequenceMatcher matcher = new ByteSequenceMatcher("Titania");
 		assertFalse("matches at negative pos", matcher.matches(bytes, -1));
 		
 		matcher = matcher.reverse();
@@ -742,7 +742,7 @@ public class ByteArrayMatcherTest {
 
 	@Test(expected = ArrayIndexOutOfBoundsException.class)
 	public void testMatchesNoBoundsCheck_outOfBoundsNegative() {
-		SequenceMatcher matcher = new ByteArrayMatcher("Oberon");
+		SequenceMatcher matcher = new ByteSequenceMatcher("Oberon");
 		matcher.matchesNoBoundsCheck(bytes, -1);
 		
 		matcher = matcher.reverse();
@@ -752,7 +752,7 @@ public class ByteArrayMatcherTest {
 	
 	@Test
 	public void testMatches_outOfBoundsPastEnd() {
-		SequenceMatcher matcher = new ByteArrayMatcher("Bottom");
+		SequenceMatcher matcher = new ByteSequenceMatcher("Bottom");
 		assertFalse("matches past end", matcher.matches(bytes, 4096));
 		
 		matcher = matcher.reverse();
@@ -762,14 +762,14 @@ public class ByteArrayMatcherTest {
 	
 	@Test(expected = ArrayIndexOutOfBoundsException.class)
 	public void testMatchesNoBoundsCheck_outOfBoundsPastEnd() {
-		SequenceMatcher matcher = new ByteArrayMatcher("Puck");
+		SequenceMatcher matcher = new ByteSequenceMatcher("Puck");
 		matcher.matchesNoBoundsCheck(bytes, 4096);
 	}
 	
 
 	@Test(expected = ArrayIndexOutOfBoundsException.class)
 	public void testReverseMatchesNoBoundsCheck_outOfBoundsPastEnd() {
-		SequenceMatcher matcher = new ByteArrayMatcher("kcuP");
+		SequenceMatcher matcher = new ByteSequenceMatcher("kcuP");
 		matcher = matcher.reverse();
 		matcher.matchesNoBoundsCheck(bytes, 4096);
 	}
@@ -777,24 +777,24 @@ public class ByteArrayMatcherTest {
 	
 	@Test
 	public void testMatches_outOfBoundsCrossingEnd() {
-		SequenceMatcher matcher = new ByteArrayMatcher("be");
+		SequenceMatcher matcher = new ByteSequenceMatcher("be");
 		assertFalse("matches crossing end", matcher.matches(bytes, 4095));
 		
-		matcher = new ByteArrayMatcher("eb").reverse();
+		matcher = new ByteSequenceMatcher("eb").reverse();
 		assertFalse("matches crossing end", matcher.matches(bytes, 4095));
 	}
 	
 
 	@Test(expected = ArrayIndexOutOfBoundsException.class)
 	public void testMatchesNoBoundsCheck_outOfBoundsCrossingEnd() {
-		ByteArrayMatcher matcher = new ByteArrayMatcher("be");
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher("be");
 		matcher.matchesNoBoundsCheck(bytes, 4095);
 	}
 	
 	
 	@Test(expected = ArrayIndexOutOfBoundsException.class)
 	public void testReverseMatchesNoBoundsCheck_outOfBoundsCrossingEnd() {
-		SequenceMatcher matcher = new ByteArrayMatcher("eb");
+		SequenceMatcher matcher = new ByteSequenceMatcher("eb");
 		matcher = matcher.reverse();
 		matcher.matchesNoBoundsCheck(bytes, 4095);
 	}
@@ -806,7 +806,7 @@ public class ByteArrayMatcherTest {
 
 	@Test
 	public void testToRegularExpression() {
-		ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher("abc");
 		assertEquals("reg ex abc", "'abc'", matcher.toRegularExpression(true));
 
 		//TODO: more reg ex tests.
@@ -814,8 +814,8 @@ public class ByteArrayMatcherTest {
 	
 	@Test
 	public void testToString() {
-		ByteArrayMatcher matcher = new ByteArrayMatcher("abc");
-		assertTrue("String contains class name", matcher.toString().contains("ByteArrayMatcher"));
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher("abc");
+		assertTrue("String contains class name", matcher.toString().contains("ByteSequenceMatcher"));
 		assertTrue("String contains data", matcher.toString().contains("abc"));
 	}
 
@@ -852,21 +852,21 @@ public class ByteArrayMatcherTest {
 	
 	@Test(expected = IndexOutOfBoundsException.class) 
 	public void testNegativeSubsequenceBeginIndex() {
-		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		ByteSequenceMatcher test = new ByteSequenceMatcher("0123456789");
 		test.subsequence(-1);
 	}
 
 	
 	@Test(expected = IndexOutOfBoundsException.class) 
 	public void testSubsequenceEndIndexTooBig() {
-		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		ByteSequenceMatcher test = new ByteSequenceMatcher("0123456789");
 		test.subsequence(0, 11);
 	}
 
 	
 	@Test(expected = IndexOutOfBoundsException.class) 
 	public void testSubsequenceStartIndexTooBig() {
-		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		ByteSequenceMatcher test = new ByteSequenceMatcher("0123456789");
 		test.subsequence(5, 5);
 	}
 	
@@ -897,9 +897,9 @@ public class ByteArrayMatcherTest {
 	}
 	
 	private void testRepeatSubSequence(int repeats, byte[] array, int startIndex, int endIndex) {
-		ByteArrayMatcher matcher = new ByteArrayMatcher(repeats, array, startIndex, endIndex);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher(repeats, array, startIndex, endIndex);
 		testRepeatSubSequence(array, matcher, repeats, startIndex, endIndex);
-		matcher = new ByteArrayMatcher(array, startIndex, endIndex);
+		matcher = new ByteSequenceMatcher(array, startIndex, endIndex);
 		testRepeatSubSequence(array, matcher.repeat(repeats), repeats, startIndex, endIndex);
 	}
 	
@@ -919,13 +919,13 @@ public class ByteArrayMatcherTest {
 	
 	@Test (expected=IllegalArgumentException.class)
 	public void testRepeatNotZero() {
-		ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x01);
 		matcher.repeat(0);
 	}
 
 	@Test (expected=IllegalArgumentException.class)
 	public void testRepeatNotNegative() {
-		ByteArrayMatcher matcher = new ByteArrayMatcher((byte) 0x01);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher((byte) 0x01);
 		matcher.repeat(-1);
 	}	
 	
@@ -956,9 +956,9 @@ public class ByteArrayMatcherTest {
 	}
 	
 	private void testRepeatReverseSubSequence(int repeats, byte[] array, int startIndex, int endIndex) {
-		ByteArrayMatcher.ReverseByteArrayMatcher matcher = new ByteArrayMatcher.ReverseByteArrayMatcher(repeats, array, startIndex, endIndex);
+		ByteSequenceMatcher.ReverseByteArrayMatcher matcher = new ByteSequenceMatcher.ReverseByteArrayMatcher(repeats, array, startIndex, endIndex);
 		testRepeatReverseSubSequence(array, matcher, repeats, startIndex, endIndex);
-		matcher = new ByteArrayMatcher.ReverseByteArrayMatcher(1, array, startIndex, endIndex);
+		matcher = new ByteSequenceMatcher.ReverseByteArrayMatcher(1, array, startIndex, endIndex);
 		testRepeatReverseSubSequence(array, matcher.repeat(repeats), repeats, startIndex, endIndex);
 	}
 	
@@ -978,13 +978,13 @@ public class ByteArrayMatcherTest {
 	
 	@Test (expected=IllegalArgumentException.class)
 	public void testRepeatReverseNotZero() {
-		ByteArrayMatcher.ReverseByteArrayMatcher matcher = new ByteArrayMatcher.ReverseByteArrayMatcher((byte) 0x01);
+		ByteSequenceMatcher.ReverseByteArrayMatcher matcher = new ByteSequenceMatcher.ReverseByteArrayMatcher((byte) 0x01);
 		matcher.repeat(0);
 	}
 
 	@Test (expected=IllegalArgumentException.class)
 	public void testRepeatReverseNotNegative() {
-		ByteArrayMatcher.ReverseByteArrayMatcher matcher = new ByteArrayMatcher.ReverseByteArrayMatcher((byte) 0x01);
+		ByteSequenceMatcher.ReverseByteArrayMatcher matcher = new ByteSequenceMatcher.ReverseByteArrayMatcher((byte) 0x01);
 		matcher.repeat(-1);
 	}	
 	
@@ -993,7 +993,7 @@ public class ByteArrayMatcherTest {
 		for (int testNo = 0; testNo < 100; testNo++) {
 			byte[] array = createRandomArray(513);
 			int repeats = rand.nextInt(10) + 1;
-			ByteArrayMatcher.ReverseByteArrayMatcher matcher = new ByteArrayMatcher.ReverseByteArrayMatcher(repeats, array, 0, array.length);
+			ByteSequenceMatcher.ReverseByteArrayMatcher matcher = new ByteSequenceMatcher.ReverseByteArrayMatcher(repeats, array, 0, array.length);
 			assertEquals("Length  is " + repeats * array.length, repeats * array.length, matcher.length());
 			for (int i = 0; i < matcher.length(); i++) {
 				byte arrayByte = array[array.length - (i % array.length) - 1];
@@ -1008,8 +1008,8 @@ public class ByteArrayMatcherTest {
 	
 	@Test
 	public void testReverseToString() {
-		SequenceMatcher matcher = new ByteArrayMatcher("abc").reverse();
-		assertTrue("String contains class name", matcher.toString().contains("ByteArrayMatcher.ReverseByteArrayMatcher"));
+		SequenceMatcher matcher = new ByteSequenceMatcher("abc").reverse();
+		assertTrue("String contains class name", matcher.toString().contains("ByteSequenceMatcher.ReverseByteArrayMatcher"));
 		assertTrue("String contains data", matcher.toString().contains("cba"));
 	}
 	
@@ -1020,13 +1020,13 @@ public class ByteArrayMatcherTest {
 	
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testNegativeByteMatcherPosition() {
-		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		ByteSequenceMatcher test = new ByteSequenceMatcher("0123456789");
 		test.getMatcherForPosition(-1);
 	}
 	
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testNegativeByteMatcherSubsequencePosition() {
-		ByteArrayMatcher test = new ByteArrayMatcher("0123456789");
+		ByteSequenceMatcher test = new ByteSequenceMatcher("0123456789");
 		
 		SequenceMatcher testSub = test.subsequence(3);
 		testSub.getMatcherForPosition(-1);
@@ -1046,7 +1046,7 @@ public class ByteArrayMatcherTest {
 	}
 
 	private void testSubSequenceBeginIndex(String sequence) {
-		ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher(sequence);
 
 		// Test all possible subsequences of it using only beginIndex:
 		SequenceMatcher sub = matcher;
@@ -1077,7 +1077,7 @@ public class ByteArrayMatcherTest {
 	}
 
 	private void testSubSequenceBeginEndIndex(String sequence) {
-		ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher(sequence);
 
 		// Test all possible subsequences of it from begin index to end index:
 		SequenceMatcher sub = matcher;
@@ -1218,10 +1218,10 @@ public class ByteArrayMatcherTest {
 	 * - that each position in the reversed matcher matches only one byte.
 	 * - that the bytes in the reversed matcher correspond to the original, but reversed.
 	 * 
-	 * @param sequence A string to construct a ByteArrayMatcher from.
+	 * @param sequence A string to construct a ByteSequenceMatcher from.
 	 */
 	private void testReversed(String sequence) {
-		ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher(sequence);
 		SequenceMatcher reversed = matcher.reverse();
 		int matcherLength = matcher.length();
 		assertEquals(sequence + " length", matcherLength, reversed.length());
@@ -1304,7 +1304,7 @@ public class ByteArrayMatcherTest {
 	 */
 	private void testMatchersForSequence(String sequence) {
 		// test forwards matcher
-		ByteArrayMatcher matcher = new ByteArrayMatcher(sequence);
+		ByteSequenceMatcher matcher = new ByteSequenceMatcher(sequence);
 		testByteMatcherForPosition(sequence, matcher);
 
 		// test the reversed matcher
@@ -1369,27 +1369,27 @@ public class ByteArrayMatcherTest {
 	 * @param maxNum
 	 * @return 
 	 */
-	private List<ByteArrayMatcher> createRandomList(final int maxNum) {
+	private List<ByteSequenceMatcher> createRandomList(final int maxNum) {
 		final int noOfMatchers = rand.nextInt(maxNum) + 1;
-		final List<ByteArrayMatcher> matchers = new ArrayList<ByteArrayMatcher>();
+		final List<ByteSequenceMatcher> matchers = new ArrayList<ByteSequenceMatcher>();
 		for (int num = 0; num < noOfMatchers; num++) {
 			final int matchType = rand.nextInt(3);
-			ByteArrayMatcher matcher;
+			ByteSequenceMatcher matcher;
 			switch (matchType) {
 			case 0: {
 				final int byteValue = rand.nextInt(256);
-				matcher = new ByteArrayMatcher((byte) byteValue);
+				matcher = new ByteSequenceMatcher((byte) byteValue);
 				break;
 			}
 			case 1: {
 				final byte[] values = createRandomArray(256);
-				matcher = new ByteArrayMatcher(values);
+				matcher = new ByteSequenceMatcher(values);
 				break;
 			}
 			case 2: {
 				final int byteValue = rand.nextInt(256);
 				final int repeats = rand.nextInt(256) + 1;
-				matcher = new ByteArrayMatcher((byte) byteValue, repeats);
+				matcher = new ByteSequenceMatcher((byte) byteValue, repeats);
 				break;
 			}
 			default: {

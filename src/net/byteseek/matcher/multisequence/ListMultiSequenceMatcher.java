@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.matcher.sequence.ByteArrayMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 /**
@@ -67,7 +67,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
     /**
      * Constructs a ListMultiSequenceMatcher from a list of byte arrays.
      * <p>
-     * The byte arrays will be cloned when constructing {@link ByteArrayMatcher}s
+     * The byte arrays will be cloned when constructing {@link ByteSequenceMatcher}s
      * from them to be used in this matcher.  If the list of byte arrays is empty
      * then a ListMultiSequenceMatcher is constructed which will not match anything.
      * 
@@ -86,7 +86,7 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
             if (bytes == null) {
                 throw new IllegalArgumentException("A null byte array was in the list of arrays to match.");
             }
-            final SequenceMatcher sequence = new ByteArrayMatcher(bytes);
+            final SequenceMatcher sequence = new ByteSequenceMatcher(bytes);
             matchers.add(sequence);
         }
         if (matchers.isEmpty()) {
