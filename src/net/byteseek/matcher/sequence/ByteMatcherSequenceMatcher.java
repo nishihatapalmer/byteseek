@@ -33,11 +33,13 @@ package net.byteseek.matcher.sequence;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.Window;
@@ -89,8 +91,9 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 
 
 	private void populateMatchers(final byte[] bytes, final int startIndex, final int endIndex) {
+		int matcherPosition = 0;
 		for (int position = startIndex; position < endIndex; position++) {
-        	matchers[position] = OneByteMatcher.valueOf(bytes[position]);
+        	matchers[matcherPosition++] = OneByteMatcher.valueOf(bytes[position]);
         }
 	}
 
@@ -98,8 +101,8 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
     public ByteMatcherSequenceMatcher(final byte[] array, final int startIndex, final int endIndex) {
         ArgUtils.checkNullOrEmptyByteArray(array);
         ArgUtils.checkIndexOutOfBounds(array.length, startIndex, endIndex);
-        this.length = array.length;
-        this.matchers = new ByteMatcher[endIndex - startIndex];
+        this.length = endIndex - startIndex;
+        this.matchers = new ByteMatcher[length];
         populateMatchers(array, startIndex, endIndex);
     }
 
@@ -358,9 +361,26 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         final StringBuilder builder = new StringBuilder(length * 4);
+        boolean singleByte = false;
+        List<Byte> singleBytes = new ArrayList<Byte>();
         for (final ByteMatcher matcher : matchers) {
-            builder.append(matcher.toRegularExpression(prettyPrint));
+        	if (matcher.getNumberOfMatchingBytes() == 1) {
+        		singleByte = true;
+        		singleBytes.add(Byte.valueOf(matcher.getMatchingBytes()[0]));
+        	} else {
+        		if (singleByte) {
+        			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
+        			singleBytes.clear();
+        			singleByte = false;
+        		}
+        		builder.append(matcher.toRegularExpression(prettyPrint));
+        	}
         }
+		if (singleByte) {
+			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
+			singleBytes.clear();
+			singleByte = false;
+		}
         return builder.toString();
     }
 
@@ -432,6 +452,36 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         }
         return repeated;
     }
+    
+	@Override
+	public Iterator<ByteMatcher> iterator() {
+		return new ByteMatcherSequenceIterator();
+	}
+
+	private class ByteMatcherSequenceIterator implements Iterator<ByteMatcher> {
+
+		int position = 0;
+		
+		@Override
+		public boolean hasNext() {
+			return position < length;
+		}
+
+		@Override
+		public ByteMatcher next() {
+			if (hasNext()) {
+				return matchers[position++];
+			}
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Cannot remove matchers from a ByteMatcherSequenceMatcher");
+		}
+		
+	}
+
     
     
     public static class ReverseByteMatcherSequenceMatcher implements SequenceMatcher {
@@ -523,14 +573,5 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		}
 
 	}
-
-
-	@Override
-	public Iterator<ByteMatcher> iterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 
 }

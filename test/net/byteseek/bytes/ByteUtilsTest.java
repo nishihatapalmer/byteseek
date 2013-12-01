@@ -1506,11 +1506,11 @@ public class ByteUtilsTest {
     @Test
     public void testNullBytesToString() {
     	try {
-    		ByteUtils.bytesToString(false, null);
+    		ByteUtils.bytesToString(false, (byte[]) null);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}    
        	try {
-    		ByteUtils.bytesToString(true, null);
+    		ByteUtils.bytesToString(true, (byte[]) null);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}  
     }

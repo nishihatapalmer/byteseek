@@ -1068,13 +1068,31 @@ public final class ByteUtils {
      * @param prettyPrint Whether to pretty print the byte string.
      * @param bytes the array of bytes to convert.
      * @return A string containing the byte values as a string.
-     * @throws IllegalArgumentException if the array is null or empty.
+     * @throws IllegalArgumentException if the array is null.
      */
     public static String bytesToString(final boolean prettyPrint, final byte[] bytes) {
     	ArgUtils.checkNullByteArray(bytes);
     	return bytesToString(prettyPrint, bytes, 0, bytes.length);
     }
+ 
     
+    /**
+     * Returns a String containing a 2-digit hex representation of each byte in the
+     * array.  If pretty printing and the byte value is a printable ASCII character,
+     * these values are returned as a quoted ASCII string delimited with single quotes.
+     * Note that a single quote character will be represented as a hex byte
+     * Pretty printing also spaces hex bytes. 
+     * 
+     * @param prettyPrint Whether to pretty print the byte string.
+     * @param bytes the list of Bytes to convert.
+     * @return A string containing the byte values as a string.
+     * @throws IllegalArgumentException if the collection of bytes is null.
+     */
+    public static String bytesToString(final boolean prettyPrint, final List<Byte> bytes) {
+    	ArgUtils.checkNullCollection(bytes);
+    	return bytesToString(prettyPrint, toArray(bytes), 0, bytes.size());
+    }
+
     
     /**
      * Returns a byte array as a String.  If not pretty printed, the bytes
