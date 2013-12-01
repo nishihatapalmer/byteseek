@@ -36,11 +36,13 @@ import java.io.IOException;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.object.ArgUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An immutable sequence matcher which matches sequences of other sequence matchers.
@@ -71,15 +73,12 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
      * 
      * @param matcherCollection  A collection of (repeated) SequenceMatchers from which to construct this SequenceSequenceMatcher.
      * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
-     * @throws IllegalArgumentException if the collection is null or empty, or the number to repeat is less than one.
+     * @throws IllegalArgumentException if the collection is null or empty or contains null elements,
+     *                                  or the number to repeat is less than one.
      */
     public SequenceSequenceMatcher(final Collection<? extends SequenceMatcher> matcherCollection, final int numberOfRepeats) {
-        if (matcherCollection == null || matcherCollection.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty match list passed in to SequenceSequenceMatcher.");
-        }
-        if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("SequenceSequenceMatcher requires a positive number of repeats.");
-        }
+        ArgUtils.checkNullOrEmptyCollectionNoNullElements(matcherCollection);
+        ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             matchers = matcherCollection.toArray(new SequenceMatcher[matcherCollection.size() * numberOfRepeats]);
             totalLength = calculateTotalLength(matchers);
@@ -125,12 +124,8 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
      *         number of repeats is less than one.
      */
     public SequenceSequenceMatcher(final SequenceMatcher[] matchArray, final int numberOfRepeats) {
-        if (matchArray == null || matchArray.length == 0) {
-            throw new IllegalArgumentException("Null or empty match array passed in to SequenceSequenceMatcher.");
-        }
-        if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("SequenceSequenceMatcher requires a positive number of repeats.");
-        }
+        ArgUtils.checkNullOrEmptyArrayNoNullElements(matchArray);
+        ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             matchers = matchArray.clone();
             totalLength = calculateTotalLength(matchers);
@@ -250,11 +245,7 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public ByteMatcher getMatcherForPosition(final int position) {
-        if (position < 0 || position >= totalLength) {
-            throw new IndexOutOfBoundsException(
-                    String.format("Position %d out of bounds in sequence of length %d",
-                                   position, totalLength));            
-        }
+    	ArgUtils.checkIndexOutOfBounds(totalLength,  position);
         int currentPosition = 0;
         for (final SequenceMatcher matcher : matchers) {
             final int matcherLength = matcher.length();
@@ -264,8 +255,6 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
                 return matcher.getMatcherForPosition(matcherOffset);
             }
         }
-        
-        //TODO: throw Runtime, rewrite method...?
         final String badness = "A ByteMatcher for position %d in a SequenceSequenceMatcher of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
         throw new RuntimeException(String.format(badness, position, totalLength));
     }
@@ -307,11 +296,7 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
     @SuppressWarnings("null")
 	@Override
     public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
-        // Check it is a valid subsequence:
-        if (beginIndex < 0 || endIndex > totalLength || beginIndex >= endIndex) {
-            final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
-            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, totalLength));
-        }
+        ArgUtils.checkIndexOutOfBounds(totalLength, beginIndex, endIndex);
         
         // Locate info about the start and ending matchers for these index positions:
         SequenceMatcher startMatcher = null, endMatcher = null;
@@ -373,9 +358,7 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
      */
     @Override    
     public SequenceMatcher repeat(int numberOfRepeats) {
-        if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("Number of repeats must be at least one.");
-        }
+    	ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             return this;
         }        
@@ -398,8 +381,31 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
 
 	@Override
 	public Iterator<ByteMatcher> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new SequenceSequenceIterator();
 	}    
+	
+	private class SequenceSequenceIterator implements Iterator<ByteMatcher> {
+
+		private int position;
+		
+		@Override
+		public boolean hasNext() {
+			return position < totalLength;
+		}
+
+		@Override
+		public ByteMatcher next() {
+			if (hasNext()) {
+				return getMatcherForPosition(position++);
+			}
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Cannot remove byte matchers from SequenceSequenceMatchers");
+		}
+		
+	}
 
 }

@@ -38,11 +38,16 @@ import java.util.NoSuchElementException;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.object.ArgUtils;
 
 /**
  * An immutable object which matches a gap of unknown bytes.
+ * <p>
+ * This is equivalent to a sequence of Any matchers (a ByteMatcher which matches all bytes), 
+ * but it's a lot quicker just to check that the match is within bounds, than to actually
+ * check the bytes themselves, since by definition it will match any bytes it sees.
  * 
- * @author matt
+ * @author Matt Palmer
  */
 public final class FixedGapMatcher implements SequenceMatcher {
 
@@ -56,9 +61,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the gap is less than one.
      */
     public FixedGapMatcher(final int gapLength) {
-        if (gapLength < 1) {
-            throw new IllegalArgumentException("FixedGapMatcher requires a gap greater than zero.");
-        }
+    	ArgUtils.checkPositiveInteger(gapLength);
         this.length = gapLength;
     }
 
@@ -68,10 +71,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public ByteMatcher getMatcherForPosition(final int position) {
-        if (position < 0 || position >= length) {
-            final String message = String.format("Position %d out of bounds, length is %d", position, length);
-            throw new IndexOutOfBoundsException(message);
-        }
+    	ArgUtils.checkIndexOutOfBounds(length, position);
         return AnyByteMatcher.ANY_BYTE_MATCHER;
     }
 
@@ -90,7 +90,13 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return prettyPrint ? String.format(" .{%d} ", length) : String.format(".{%d}", length);
+    	switch (length) {
+	    	case 1:  return prettyPrint ? ". "   : ".";
+	    	case 2:  return prettyPrint ? ".. "  : "..";
+	    	case 3:  return prettyPrint ? "... " : "...";
+	    	default: return prettyPrint ? String.format(".{%d} ", length) 
+	    								: String.format(".{%d}",  length); 
+    	}
     }
 
 
@@ -135,15 +141,12 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SequenceMatcher subsequence(int beginIndex, int endIndex) {
-       if (beginIndex < 0 || endIndex > length || beginIndex >= endIndex) {
-            final String message = "Subsequence index %d to %d is out of bounds in a sequence of length %d";
-            throw new IndexOutOfBoundsException(String.format(message, beginIndex, endIndex, length));
-        }
-        if (endIndex - beginIndex == 1) {
+    public SequenceMatcher subsequence(int startIndex, int endIndex) {
+        ArgUtils.checkIndexOutOfBounds(length, startIndex, endIndex);
+        if (endIndex - startIndex == 1) {
             return AnyByteMatcher.ANY_BYTE_MATCHER;
         }
-        return new FixedGapMatcher(endIndex - beginIndex);
+        return new FixedGapMatcher(endIndex - startIndex);
     }
 
     
@@ -161,9 +164,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */
     @Override
     public SequenceMatcher repeat(int numberOfRepeats) {
-        if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("Number of repeats must be at least one.");
-        }
+    	ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             return this;
         }        
@@ -209,7 +210,6 @@ public final class FixedGapMatcher implements SequenceMatcher {
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("Byte matchers cannot be removed from a FixedGapMatcher");
-			
 		}
 		
 	}
