@@ -12,6 +12,7 @@ import net.byteseek.matcher.bytes.AllBitmaskMatcher;
 import net.byteseek.matcher.bytes.ByteRangeMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
+import net.byteseek.matcher.bytes.TwoByteMatcher;
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.FixedGapMatcher;
@@ -90,11 +91,11 @@ public class SequenceMatcherCompilerTest {
 		basicTests("01", 1, OneByteMatcher.class);
 		basicTests("fF", 1, OneByteMatcher.class);
 
-		basicTests("[00ff]", 1, SetBinarySearchMatcher.class);
-		basicTests("[ff00]", 1, SetBinarySearchMatcher.class);
-		basicTests("[7f80]", 1, ByteRangeMatcher.class);
-		basicTests("[807f]", 1, ByteRangeMatcher.class);
-		basicTests(" [0102]", 1, ByteRangeMatcher.class);
+		basicTests("[00ff]", 1, TwoByteMatcher.class);
+		basicTests("[ff00]", 1, TwoByteMatcher.class);
+		basicTests("[7f80]", 1, TwoByteMatcher.class);
+		basicTests("[807f]", 1, TwoByteMatcher.class);
+		basicTests(" [0102]", 1, TwoByteMatcher.class);
 
 		basicTests("'a string'", 8, ByteSequenceMatcher.class);
 		basicTests("`a string`", 8, ByteMatcherSequenceMatcher.class);

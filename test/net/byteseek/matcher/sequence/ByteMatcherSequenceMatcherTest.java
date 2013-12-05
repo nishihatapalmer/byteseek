@@ -136,7 +136,7 @@ public class ByteMatcherSequenceMatcherTest {
 					matchingBytes[0] & 0xFF);
 
 			byte[] testArray = new byte[] { (byte) byteValue };
-			assertTrue("matches that byte value in an array", matcher.matches(testArray, 0));
+			assertTrue("matches that byte value in an array " + byteValue, matcher.matches(testArray, 0));
 
 			ByteArrayReader wrapped = new ByteArrayReader(testArray);
 			assertTrue("matches that byte value in a reader", matcher.matches(wrapped, 0));
@@ -584,7 +584,7 @@ public class ByteMatcherSequenceMatcherTest {
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructRepeatedReverseNullByteArray() {
-		new ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher(1, null, 0, 1);
+		new ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher(1, (byte[]) null, 0, 1);
 	}
 	
 	@SuppressWarnings("unused")

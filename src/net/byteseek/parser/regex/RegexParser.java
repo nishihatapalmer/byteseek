@@ -427,7 +427,8 @@ public class RegexParser implements Parser<ParseTree> {
 			throws ParseException {
 		final int numAlternatives = alternatives.size();
 		
-		// If there are no alternatives, throw an error:
+		// If there are no alternatives, throw an error (this is impossible in the code as currently written,
+		// but we keep the test in case of changes that invalidate this assumption).
 		if (numAlternatives == 0) {
 			throw new ParseException(addContext("No alternatives were found.", expression));
 		}

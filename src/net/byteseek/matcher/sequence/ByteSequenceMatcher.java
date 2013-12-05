@@ -261,7 +261,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * 
      * @throws NullPointerException if the WindowReader is null.
      */
-    @Override
+    @Override 
     public boolean matches(final WindowReader reader, final long matchPosition)
             throws IOException {
         final byte[] matchArray = byteArray;          
@@ -516,9 +516,9 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
                                        final int startIndex, final int endIndex) {
             ArgUtils.checkNullObject(source);
             ArgUtils.checkIndexOutOfBounds(source.length(), startIndex, endIndex);
-            this.byteArray = source.byteArray;
+            this.byteArray       = source.byteArray;
             this.startArrayIndex = source.startArrayIndex + source.length() - endIndex;
-            this.endArrayIndex = source.endArrayIndex - startIndex;
+            this.endArrayIndex   = source.endArrayIndex - startIndex;
         }         
                
         
@@ -651,7 +651,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
             //FIXME: can we have a reverseBytesToString method instead...?
             //       current method creates a new byte array just to print the bytes out.
             return ByteUtils.bytesToString(prettyPrint, 
-                    ByteUtils.reverseArraySubsequence(byteArray, startArrayIndex, endArrayIndex));
+            							   ByteUtils.reverseArraySubsequence(byteArray, startArrayIndex, endArrayIndex));
         }
 
 

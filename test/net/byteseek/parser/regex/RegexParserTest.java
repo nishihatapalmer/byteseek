@@ -112,6 +112,7 @@ public class RegexParserTest {
 		expectParseException("Spaces",				"    ");
 		expectParseException("Spaces newline",		"      \n");
 		expectParseException("Lots of whitespace",	"  \n\t\r   \t \n \t \n ");
+		expectParseException("Empty group",         "()");
 	}
 
 	
