@@ -34,7 +34,9 @@ package net.byteseek.matcher.sequence;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,13 +44,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.matcher.bytes.OneByteMatcher;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -419,6 +424,17 @@ public class ByteMatcherSequenceMatcherTest {
 		}
 	}
 	
+	
+	@Test
+	public void testConstructByteMatcherList() {
+		//TODO: write test.
+	}
+	
+	@Test
+	public void testConstructRepeatedByteMatcher() {
+		//TODO: write test
+	}
+	
 
 	//////////////////////////////////
 	//  construction failure tests  //
@@ -453,6 +469,14 @@ public class ByteMatcherSequenceMatcherTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructEmptyList() {
 		new ByteMatcherSequenceMatcher(new ArrayList<ByteMatcherSequenceMatcher>());
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructNullElementList() {
+		List<ByteMatcherSequenceMatcher> list = new ArrayList<ByteMatcherSequenceMatcher>();
+		list.add(null);
+		new ByteMatcherSequenceMatcher(list);
 	}
 	
 	@SuppressWarnings("unused")
@@ -493,6 +517,48 @@ public class ByteMatcherSequenceMatcherTest {
 		final ByteMatcherSequenceMatcher matcher = new ByteMatcherSequenceMatcher((byte) 0x01, (byte) 0x02, (byte) 0x03);
 		new ByteMatcherSequenceMatcher(matcher, 2, 2);
 	}
+
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructNullByteMatcherCollection() {
+		new ByteMatcherSequenceMatcher((List<ByteMatcher>) null);
+	}
+
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructEmptyByteMatcherCollection() {
+		new ByteMatcherSequenceMatcher(new ArrayList<ByteMatcher>());
+	}
+
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructByteMatcherCollectionNullElement() {
+		List<ByteMatcher> matchers = new ArrayList<ByteMatcher>();
+		matchers.add(OneByteMatcher.valueOf((byte) 0x00));
+		matchers.add(null);
+		new ByteMatcherSequenceMatcher(matchers);
+	}
+	
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructNullRepeatedByteMatcher() {
+		new ByteMatcherSequenceMatcher(null, 3);
+	}
+	
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructZeroRepeatedByteMatcher() {
+		new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 0x00), 0);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructNegativeRepeatedByteMatcher() {
+		new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 0x00), -1);
+	}
+
 	
 	@SuppressWarnings("unused")
 	@Test (expected=IllegalArgumentException.class)
@@ -504,6 +570,25 @@ public class ByteMatcherSequenceMatcherTest {
 	@Test (expected=IllegalArgumentException.class)
 	public void testSubsequenceConstructorByteArrayNotEmpty() {
 		new ByteMatcherSequenceMatcher(new byte[0], 0, 1);
+	}
+
+
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructByteMatcherArray() {
+		new ByteMatcherSequenceMatcher((ByteMatcher[]) null);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructByteMatcherArrayNullElement() {
+		new ByteMatcherSequenceMatcher(new ByteMatcher[] {null});
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructEmptyByteMatcherArray() {
+		new ByteMatcherSequenceMatcher(new ByteMatcher[0]);
 	}
 	
 	@SuppressWarnings("unused")
@@ -528,6 +613,12 @@ public class ByteMatcherSequenceMatcherTest {
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructNullString() {
 		new ByteMatcherSequenceMatcher((String) null);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructNullCharset() {
+		new ByteMatcherSequenceMatcher("A string", null);
 	}
 	
 	@SuppressWarnings("unused")
@@ -560,6 +651,7 @@ public class ByteMatcherSequenceMatcherTest {
 		new ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher((byte[]) null);
 	}
 
+	
 	@SuppressWarnings("unused")
 	@Test (expected=IndexOutOfBoundsException.class)
 	public void testConstructReverseSubsequenceNegativeStart() {
@@ -617,6 +709,112 @@ public class ByteMatcherSequenceMatcherTest {
 		new ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher(1, new byte[] {(byte) 0x01, (byte) 0x02}, 1, 1);
 	}
 
+
+	// ///////////////////////////
+	// matcher iteration tests //
+	// ///////////////////////////
+
+	@Test
+	public void testByteMatcherIterator() {
+		testByteMatcherIterator("1");
+		testByteMatcherIterator("abcdefghijklmnopqrstuvwxyz");
+		testByteMatcherIterator("atat\t\tn\n");
+		
+		testReverseByteMatcherIterator("1");
+		testReverseByteMatcherIterator("abcdefghijklmnopqrstuvwxyz");
+		testReverseByteMatcherIterator("atat\t\tn\n");
+	}
+	
+	private void testByteMatcherIterator(String value) {
+		ByteMatcherSequenceMatcher matcher = new ByteMatcherSequenceMatcher(value);
+		testByteMatcherIterator(matcher, value);
+		
+		for (int i = 1; i < value.length() - 1; i++) {
+			String newValue = value.substring(i);
+			SequenceMatcher submatch = matcher.subsequence(i);
+			testByteMatcherIterator(submatch, newValue);
+		}
+		
+		for (int i = 1; i < value.length(); i++) {
+			String newValue = value.substring(0, i);
+			SequenceMatcher submatch = matcher.subsequence(0, i);
+			testByteMatcherIterator(submatch, newValue);
+		}
+	}
+	
+
+	private void testByteMatcherIterator(SequenceMatcher value, String expected) {
+		Iterator<ByteMatcher> iterator = value.iterator();
+		assertNotNull("Byte matcher iterator is not null", iterator);
+		
+		try {
+			iterator.remove();
+			fail("expected an unsupported operation exception removing from the iterator");
+		} catch (UnsupportedOperationException ex) {};
+		
+		assertTrue("Byte matcher iterator must always have at least one element [" + expected + ']', iterator.hasNext());
+		int position = 0;
+		while (iterator.hasNext()) {
+			ByteMatcher bm = iterator.next();
+			byte[] matchingbytes = bm.getMatchingBytes();
+			assertEquals("Matching bytes has one byte", 1, matchingbytes.length);
+			
+			byte b = (byte) expected.charAt(position++);
+			assertEquals("Bytes match for byte " + b, b, matchingbytes[0]);
+		}
+		
+		assertEquals("Lengths match after iteration", position, value.length());
+		
+		try {
+			iterator.next();
+			fail("expected NoSuchElementException");
+		} catch (NoSuchElementException ex) {};
+	}
+
+	
+	private void testReverseByteMatcherIterator(String value) {
+		SequenceMatcher matcher = new ByteMatcherSequenceMatcher(value);
+		matcher = matcher.reverse();
+		
+		testReverseByteMatcherIterator(matcher, value);
+		
+		for (int i = 1; i < value.length() - 1; i++) {
+			String newValue = value.substring(0, value.length() - i);
+			SequenceMatcher submatch = matcher.subsequence(i);
+			testReverseByteMatcherIterator(submatch, newValue);
+		}
+
+	}
+	
+	private void testReverseByteMatcherIterator(SequenceMatcher value, String expected) {
+		Iterator<ByteMatcher> iterator = value.iterator();
+		assertNotNull("Byte matcher iterator is not null", iterator);
+		
+		try {
+			iterator.remove();
+			fail("expected an unsupported operation exception removing from the iterator");
+		} catch (UnsupportedOperationException ex) {};
+		
+		assertTrue("Byte matcher iterator must always have at least one element", iterator.hasNext());
+		int position = expected.length();
+		while (iterator.hasNext()) {
+			ByteMatcher bm = iterator.next();
+			byte[] matchingbytes = bm.getMatchingBytes();
+			assertEquals("Matching bytes has one byte", 1, matchingbytes.length);
+			
+			byte b = (byte) expected.charAt(--position);
+			assertEquals("Bytes match for byte " + b, b, matchingbytes[0]);
+		}
+		
+		assertEquals("Lengths match after iteration", 0, position);
+		
+		try {
+			iterator.next();
+			fail("expected NoSuchElementException");
+		} catch (NoSuchElementException ex) {};
+	}
+	
+	
 	///////////////////////////////
 	//   reader matching tests   //
 	///////////////////////////////

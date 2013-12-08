@@ -468,13 +468,13 @@ public final class ByteUtils {
      * Returns a byte array containing the original array passed in repeated a 
      * number of times.  It will always create a new array, even if the number of
      * times to repeat is only one.
-     * 
-     * @param array The array to repeat.
      * @param numberOfRepeats The number of times to repeat the array.
+     * @param array The array to repeat.
+     * 
      * @return A new array containing the original array repeated a number of time.
      * @throws IllegalArgumentException if the array is null or the number of repeats is negative.
      */
-    public static byte[] repeat(final byte[] array, final int numberOfRepeats) {
+    public static byte[] repeat(final int numberOfRepeats, final byte[] array) {
     	ArgUtils.checkNullByteArray(array);
     	checkNegativeRepeats(numberOfRepeats);
     	final int repeatLength = array.length;

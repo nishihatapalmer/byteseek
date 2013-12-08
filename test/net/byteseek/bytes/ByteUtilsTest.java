@@ -960,11 +960,11 @@ public class ByteUtilsTest {
     @Test
     public void testRepeatArray() {
     	try {
-    		ByteUtils.repeat(null, 1);
+    		ByteUtils.repeat(1, null);
     		fail("Expected an illegal argument exception");
     	} catch (IllegalArgumentException expected) {}
     	try {
-    		ByteUtils.repeat(new byte[] {(byte) 0x01}, -1);
+    		ByteUtils.repeat(-1, new byte[] {(byte) 0x01});
     		fail("Number of repeats cannot be negative");
     	} catch (IllegalArgumentException expect) {}
     	
@@ -974,7 +974,7 @@ public class ByteUtilsTest {
     
     private void testRepeatArray(byte... values) {
     	for (int repeat = 0; repeat < 10; repeat++) {
-    		byte[] result = ByteUtils.repeat(values, repeat);
+    		byte[] result = ByteUtils.repeat(repeat, values);
     		assertEquals("Length of repeated array is " + repeat * values.length, repeat * values.length, result.length);
     		for (int testRepeat = 0; testRepeat < repeat; testRepeat++) {
     			for (int testRun = 0; testRun < values.length; testRun++) {
