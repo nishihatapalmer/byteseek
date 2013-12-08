@@ -159,12 +159,12 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
     	
 		@Override
 		public boolean hasNext() {
-			return iterated;
+			return !iterated;
 		}
 
 		@Override
 		public ByteMatcher next() {
-			if (!iterated) {
+			if (hasNext()) {
 				iterated = true;
 				return AbstractByteMatcher.this;
 			}
