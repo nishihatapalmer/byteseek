@@ -190,9 +190,9 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
             return this;
         }
         if (getNumberOfMatchingBytes() == 1) {
-        	return new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf(firstByteToMatch), numberOfRepeats);
+        	return new ByteMatcherSequenceMatcher(numberOfRepeats, OneByteMatcher.valueOf(firstByteToMatch));
         }
-        return new ByteMatcherSequenceMatcher(this, numberOfRepeats);
+        return new ByteMatcherSequenceMatcher(numberOfRepeats, this);
     }    
     
 

@@ -132,7 +132,7 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
         if (numberOfRepeats == 1) {
             return this;
         }   
-        return new ByteMatcherSequenceMatcher(this, numberOfRepeats);
+        return new ByteMatcherSequenceMatcher(numberOfRepeats, this);
     }     
     
     

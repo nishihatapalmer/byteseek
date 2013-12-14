@@ -49,205 +49,87 @@ import net.byteseek.object.ArgUtils;
 
 /**
  * An immutable class which matches a sequence of {@link ByteMatcher}s.
- * This allows us to match sequences where any position in the sequence could
- * match multiple bytes, for example (using the byteseek regular expression syntax):
- * 
+ * Constructors taking a wide variety of data types are provided : bytes and byte arrays, strings, 
+ * collections and arrays of ByteMatchers and ByteMatcherSequenceMatchers. Subsequences and repeats can
+ * also be specified in them.
+ * <p>
+ * ByteMatcherSequenceMatchers can match sequences where any position in the sequence is matched by
+ * any sort of byte matcher - single bytes, inverted bytes, ranges, bitmasks or arbitrary sets
+ * of bytes.  For example (using the byteseek regular expression syntax):
+ * <p>
  * <p/><code>
  * 'begin:' [00 ff] \d \d \d \s 'end.'
  * </code><p/>
- * 
+ * <p>
  * would match a string starting with 'begin:', followed by either byte 00 or byte ff, then three digits and
  * some whitespace, followed by 'end.'.
- * 
+ * <p>
+ * A public static ReverseByteMatcherSequenceMatcher class is also provided, that does the same thing but matching the 
+ * reverse of a sequence given to it. If constructed from a ByteMatcherSequenceMatcher, it will
+ * share the underlying ByteMatcher array of the ByteMatcherSequenceMatcher, as a reverse view over the original sequence.  
+ *   
  * @author Matt Palmer
  */
 public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 
-	private final ByteMatcher[] matchers;
+    private final int length;
     private final int startArrayIndex; // the position to start at (an inclusive value)
     private final int endArrayIndex;   // one past the actual end position (an exclusive value)
-    private final int length;
-
+	private final ByteMatcher[] matchers;
     
+	
     /****************
      * Constructors *
      ***************/
 
-    /**
+	
+	/**
      * Constructs an immutable ByteMatcherSequenceMatcher from an array of bytes, which 
      * can be passed in directly as an array of bytes, or specified as a comma-separated list of bytes.
      * <p>
-     * It will be entirely independent of the byte array passed in after construction.
+     * The byte array is just used as a template to construct from - 
+     * it will be independent of it afterwards.
      * 
      * @param byteArray The array of bytes to match.
      * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
      */
     public ByteMatcherSequenceMatcher(final byte...bytes) {
-        ArgUtils.checkNullOrEmptyByteArray(bytes);
-        this.length = bytes.length;
-        this.startArrayIndex = 0;
-        this.endArrayIndex   = length;
-        this.matchers = new ByteMatcher[length];
-        populateMatchers(bytes, 0, length);
-    }
-
-
-    /**
-     * Constructs an immutable ByteMatcherSequenceMatcher from a subsequence of an array of bytes.
-     * The subsequence is specified with a start index (inclusive) and end index (exclusive).
-     * <p>
-     * It will be entirely independent of the byte array passed in after construction.
-     *  
-     * @param array The array of bytes to match a subsequence of.
-     * @param startIndex The start index to begin matching within the array, inclusive.
-     * @param endIndex The end index to stop matching within the array, exclusive.
-     * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
-     * @throws IndexOutOfBoundsException if the start or end indexes are out of bounds.
-     */
-    public ByteMatcherSequenceMatcher(final byte[] array, final int startIndex, final int endIndex) {
-    	ArgUtils.checkNullOrEmptyByteArray(array);
-    	ArgUtils.checkIndexOutOfBounds(array.length, startIndex, endIndex);
-        this.length = endIndex - startIndex;
-        this.startArrayIndex = 0;
-        this.endArrayIndex = length;
-        this.matchers = new ByteMatcher[length];
-        populateMatchers(array, startIndex, endIndex);
-    }
-    
-
-    public ByteMatcherSequenceMatcher(final int repeats, final byte[] array) {
-    	//TODO: construction failure tests.
-    	//ArgUtils.checkNullOrEmptyByteArray(array);
-        //ArgUtils.checkPositiveInteger(repeats, "numberOfRepeats");
-        this.length = array.length * repeats;
-        this.startArrayIndex = 0;
-        this.endArrayIndex   = length;
-        this.matchers = new ByteMatcher[length];
-        populateRepeatedMatchers(repeats, array, 0, length);
+        this(1, bytes, 0, bytes == null? -1 : bytes.length);
     }
     
     
-	public ByteMatcherSequenceMatcher(final int repeats, final byte[] array, 
-								      final int startIndex, final int endIndex) {
-        //TODO: construction failure tests.
-		//ArgUtils.checkNullOrEmptyByteArray(array);
-        //ArgUtils.checkIndexOutOfBounds(array.length, startIndex, endIndex);
-        //ArgUtils.checkPositiveInteger(repeats, "numberOfRepeats");
-        final byte[] repeated = ByteUtils.repeat(repeats, array, startIndex, endIndex);
-        this.length = repeated.length;
-        this.startArrayIndex = 0;
-        this.endArrayIndex   = length;
-        this.matchers = new ByteMatcher[length];
-        populateMatchers(repeated, 0, length);
-	}
-
-
-	public ByteMatcherSequenceMatcher(final List<ByteMatcherSequenceMatcher> list) {
-		ArgUtils.checkNullOrEmptyCollectionNoNullElements(list);
-		int totalLength = 0;
-		for (final ByteMatcherSequenceMatcher sequence : list) {
-			totalLength += sequence.length();
-		}
-		this.length = totalLength;
-        this.startArrayIndex = 0;
-        this.endArrayIndex   = length;
-		this.matchers = new ByteMatcher[length];
-		int matcherPos = 0;
-		for (final ByteMatcherSequenceMatcher sequence : list) {
-			for (final ByteMatcher matcher : sequence) {
-				matchers[matcherPos++] = matcher;
-			}
-		}
-	}
-
-
-	public ByteMatcherSequenceMatcher(final ByteMatcherSequenceMatcher matcher, int startIndex, int endIndex) {
-		ArgUtils.checkNullObject(matcher);
-		ArgUtils.checkIndexOutOfBounds(matcher.length(), startIndex, endIndex);
-		this.matchers = matcher.matchers;
-        this.startArrayIndex = matcher.startArrayIndex + startIndex;
-        this.endArrayIndex   = matcher.startArrayIndex + endIndex;
-		this.length = endIndex - startIndex; 
-	}
-
-	
-	public ByteMatcherSequenceMatcher(final ReverseByteMatcherSequenceMatcher matcher) {
-		ArgUtils.checkNullObject(matcher);
-		this.matchers        = matcher.matchers;
-        this.startArrayIndex = matcher.startArrayIndex;
-        this.endArrayIndex   = matcher.endArrayIndex;
-		this.length          = matcher.length; 
-	}
-
-	
     /**
      * Constructs an immutable ByteMatcherSequenceMatcher from a repeated byte.
-     *
+     * 
+     * @param repeats The number of bytes to repeat.
      * @param byteValue The byte value to repeat.
-     * @param numberOfBytes The number of bytes to repeat.
+     *
      * @throws IllegalArgumentException If the number of bytes is less than one.
      */
-    public ByteMatcherSequenceMatcher(final byte byteValue, final int numberOfBytes) {
-        ArgUtils.checkPositiveInteger(numberOfBytes);
-        this.length = numberOfBytes;
-        this.startArrayIndex = 0;
-        this.endArrayIndex = length;
-        this.matchers = new ByteMatcher[length];
-        Arrays.fill(this.matchers, OneByteMatcher.valueOf(byteValue));
-    }
+    public ByteMatcherSequenceMatcher(final int repeats, final byte byteValue) {
+        this(repeats, OneByteMatcher.valueOf(byteValue));
+    }	
 
     
     /**
-     * Constructs a ByteMatcherSequenceMatcher from a collection of {@link ByteMatcher} objects.
-     * <p>
-     * You should use a collection which gives a definite order to its elements, such as a List,
-     * or a LinkedHashMap.
-     *
-     * @param sequence A list of SingleByteMatchers to construct this sequence matcher from.
-     * @throws IllegalArgumentException if the list is null or empty or any elements in the collection are null.
-     */
-    public ByteMatcherSequenceMatcher(final Collection<? extends ByteMatcher> sequence) {
-        ArgUtils.checkNullOrEmptyCollectionNoNullElements(sequence);
-        matchers = sequence.toArray(new ByteMatcher[0]);
-        this.length = this.matchers.length;
-        this.startArrayIndex = 0;
-        this.endArrayIndex = length;
-    }
-
-    
-    /**
-     * Constructs a ByteMatcherSequenceMatcher from an array of {@link ByteMatcher}
-     * objects.
+     * Constructs an immutable ByteMatcherSequenceMatcher from a repeated {@link ByteMatcher} object.
      * 
-     * @param sequence An array of SingleByteMatchers to construct this sequence matcher from.
-     * @throws IllegalArgumentException if the array is null or empty or any element of it is null.
-     */
-    public ByteMatcherSequenceMatcher(final ByteMatcher[] sequence) {
-    	ArgUtils.checkNullOrEmptyArrayNoNullElements(sequence);
-        this.matchers = sequence.clone();
-        this.length = this.matchers.length;
-        this.startArrayIndex = 0;
-        this.endArrayIndex = length;
-    }
-    
-
-    /**
-     * Constructs a ByteMatcherSequenceMatcher from a repeated {@link ByteMatcher} object.
-     *
-     * @param matcher The ByteMatcher to construct this sequence matcher from.
      * @param repeats The number of times to repeat the ByteMatcher.
-     * @throws IllegalArgumentException if the matcher is null or the number of repeats is less than one.
+     * @param matcher The ByteMatcher to construct this sequence matcher from.
+     *
+     * @throws IllegalArgumentException if the number of repeats is less than one,
+     *                                  or the matcher is null.
      */
-    public ByteMatcherSequenceMatcher(final ByteMatcher matcher, final int repeats) {
-        ArgUtils.checkNullObject(matcher);
-        ArgUtils.checkPositiveInteger(repeats);
-        this.length = repeats;
+    public ByteMatcherSequenceMatcher(final int repeats, final ByteMatcher matcher) {
+    	ArgUtils.checkPositiveInteger(repeats);
+    	ArgUtils.checkNullObject(matcher);
+        this.length          = repeats;
         this.startArrayIndex = 0;
-        this.endArrayIndex = length;
-        this.matchers = new ByteMatcher[length];
+        this.endArrayIndex   = length;
+        this.matchers        = new ByteMatcher[length];
         Arrays.fill(this.matchers, matcher);
     }
-
+    
     
     /**
      * Constructs an immutable ByteMatcherSequenceMatcher from a string, encoding the
@@ -262,7 +144,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
     
 
     /**
-     * Constructs a ByteMatcherSequenceMatcher from a string and a Charset to use
+     * Constructs an immutable ByteMatcherSequenceMatcher from a string and a Charset to use
      * to encode the bytes in the string as an array of OneByteMatchers.
      * 
      * @param string The string whose bytes will be matched
@@ -274,12 +156,283 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         ArgUtils.checkNullOrEmptyString(string, "string");
         ArgUtils.checkNullObject(charset, "charset");
         final byte[] bytes = string.getBytes(charset);
-        this.length = bytes.length;
+        this.length          = bytes.length;
         this.startArrayIndex = 0;
-        this.endArrayIndex = length;
-        this.matchers = new ByteMatcher[length];
-        populateMatchers(bytes, 0, length);
+        this.endArrayIndex   = length;
+        this.matchers        = new ByteMatcher[length];
+        populateMatchers(1, bytes, 0, length);
     }
+
+    
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher using a byte array as a template,
+     * repeated a number of times.
+     * 
+     * @param repeats The number of times to repeat the byte array
+     * @param array The byte array to use as a template
+     * @throws IllegalArgumentException if the number of repeats is less than one,
+     *                                  or the byte array is null or empty.
+     */
+    public ByteMatcherSequenceMatcher(final int repeats, final byte[] array) {
+    	this(repeats, array, 0, array == null? -1 : array.length);
+    }
+    
+    
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher from a subsequence of an array of bytes.
+     * The subsequence is specified with a start index (inclusive) and end index (exclusive).
+     * <p>
+     * It will be entirely independent of the byte array passed in after construction.
+     *  
+     * @param array The array of bytes to match a subsequence of.
+     * @param startIndex The start index to begin matching within the array, inclusive.
+     * @param endIndex The end index to stop matching within the array, exclusive.
+     * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
+     * @throws IndexOutOfBoundsException if the start or end indexes are out of bounds.
+     */
+    public ByteMatcherSequenceMatcher(final byte[] array, 
+    		                          final int startIndex, final int endIndex) {
+    	this(1, array, startIndex, endIndex);
+    }
+    
+    
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher using a byte array passed in
+     * as a template, taking a subsequence of that array and repeating it a number of times.
+     * 
+     * @param repeats The number of times to repeat the subsequence.
+     * @param array The array containing the subsequence of bytes to repeat.
+     * @param startIndex The start index of the subsequence within the array, inclusive.
+     * @param endIndex The end index of the subsequence within the array, exclusive.
+     * @throws IllegalArgumentException if the number of repeats is less than one,
+     *                                  the array is null or empty.
+     * @throws IndexOutOfBoundsException if the start or end indexes are out of bounds in the array.
+     */
+	public ByteMatcherSequenceMatcher(final int repeats, final byte[] array, 
+								      final int startIndex, final int endIndex) {
+        ArgUtils.checkPositiveInteger(repeats, "repeats");
+		ArgUtils.checkNullOrEmptyByteArray(array);
+        ArgUtils.checkIndexOutOfBounds(array.length, startIndex, endIndex);
+        this.length          = (endIndex - startIndex) * repeats;
+        this.startArrayIndex = 0;
+        this.endArrayIndex   = length;
+        this.matchers        = new ByteMatcher[length];
+        //TODO: tests for populate matchers and populate repeated matchers...
+        populateMatchers(repeats, array, startIndex, endIndex);
+	}
+
+	
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher using an array of {@link ByteMatcher}
+     * objects as a template.  The array can be specified by passing in an array, or as a comma
+     * delimited list of parameters at compile time, since the ... syntax is used.
+     * 
+     * @param sequence An array of ByteMatchers to construct this sequence matcher from.
+     * @throws IllegalArgumentException if the array is null or empty or any element of it is null.
+     */
+    public ByteMatcherSequenceMatcher(final ByteMatcher... sequence) {
+    	this(1, sequence, 0, sequence == null? -1 : sequence.length);
+    }
+
+    
+    
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher using a repeated array of {@link ByteMatcher}
+     * objects as a template.
+     * 
+     * @param repeats The number of times to repeat the array.
+     * @param sequence An array of ByteMatchers to construct this sequence matcher from.
+     * @throws IllegalArgumentException if the array is null or empty or any element of it is null.
+     */
+    public ByteMatcherSequenceMatcher(final int repeats, final ByteMatcher[] sequence) {
+    	this(repeats, sequence, 0, sequence == null? -1 : sequence.length);
+    }
+    
+    
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher using a subsequence of an array of 
+     * {@link ByteMatcher} objects as a template.
+     * 
+     * @param sequence An array of ByteMatchers to construct this sequence matcher from.
+     * @param startIndex The start index in the sequence to start matching from, inclusive.
+     * @param endIndex The end index in the sequence to end matching, exclusive.
+     * @throws IllegalArgumentException if the array is null or empty, or any element of it is null.
+     * @throws IndexOutOfBoundsException if the start or end index is out of bounds.
+     */
+    public ByteMatcherSequenceMatcher(final ByteMatcher[] sequence, 
+    		                          final int startIndex, final int endIndex) {
+    	this(1, sequence, startIndex, endIndex);
+    }
+    
+    
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher using a repeated subsequence of an array of 
+     * {@link ByteMatcher} objects as a template.
+     * 
+     * @param repeats The number of times to repeat the subsequence.
+     * @param sequence An array of ByteMatchers to construct this sequence matcher from.
+     * @param startIndex The start index in the sequence to start matching from, inclusive.
+     * @param endIndex The end index in the sequence to end matching, exclusive.
+     * @throws IllegalArgumentException if the repeats are less than one, the array is null or empty, or any element of it is null.
+     * @throws IndexOutOfBoundsException if the start or end index is out of bounds.
+     */
+    public ByteMatcherSequenceMatcher(final int repeats, final ByteMatcher[] sequence, 
+    		                          final int startIndex, final int endIndex) {
+    	ArgUtils.checkPositiveInteger(repeats);
+    	ArgUtils.checkNullOrEmptyArrayNoNullElements(sequence);
+    	ArgUtils.checkIndexOutOfBounds(sequence.length, startIndex, endIndex);
+        this.length          = endIndex - startIndex; 
+        this.startArrayIndex = 0;
+        this.endArrayIndex   = length;
+        this.matchers        = new ByteMatcher[length];
+        populateMatchers(repeats, sequence, startIndex, endIndex);
+    }
+
+    
+    /**
+     * Constructs an immutable ByteMatcherSequenceMatcher from another repeated ByteMatcherSequenceMatcher.
+     * The underlying ByteMatchers will be shared, but unless the repeat is only one, a new array will be
+     * created to hold the repeated pattern.
+     * 
+     * @param repeats The number of times to repeat the source 
+     * @param source The ByteMatcherSequenceMatcher to repeat.
+     * @throws IllegalArgumentException if repeats is less than one, or if the source is null.
+     */
+	public ByteMatcherSequenceMatcher(final int repeats, final ByteMatcherSequenceMatcher source) {
+		this(repeats, source, 0, source == null? -1 : source.length);
+	}
+    
+    
+	/**
+	 * Constructs an immutable ByteMatcherSequenceMatcher from another ByteMatcherSequenceMatcher,
+	 * but taking a start and end index.  The copy-constructed matcher will share the underlying
+	 * matcher storage of the original, and will form a subsequence of the original.
+	 *  
+	 * @param matcher The ByteMatcherSequenceMatcher to construct from.
+	 * @param startIndex The start index in the source matcher for this matcher to start from, inclusive.
+	 * @param endIndex The end index in the source matcher for this matcher to end at, exclusive.
+	 * @throws IllegalArgumentException if the matcher is null.
+	 * @throws IndexOutOfBoundsException if the start or end indexes are out of bounds in the source matcher.
+	 */
+	public ByteMatcherSequenceMatcher(final ByteMatcherSequenceMatcher matcher, 
+			                          final int startIndex, final int endIndex) {
+		this(1, matcher, startIndex, endIndex);
+	}
+	
+	
+	/**
+	 * Constructs an immutable ByteMatcherSequenceMatcher from another ByteMatcherSequenceMatcher,
+	 * but taking a start and end index and a number of times to repeat the subsequence.
+	 * The copy-constructed matcher will only share the underlying matcher storage of the original if 
+	 * the number of repeats is one, otherwise a new array of ByteMatchers will be created to hold the 
+	 * repetitions.
+	 *  
+	 * @param repeats The number of times to repeat the source subsequence.
+	 * @param matcher The ByteMatcherSequenceMatcher to construct from.
+	 * @param startIndex The start index in the source matcher for this matcher to start from, inclusive.
+	 * @param endIndex The end index in the source matcher for this matcher to end at, exclusive.
+	 * @throws IllegalArgumentException if the matcher is null.
+	 * @throws IndexOutOfBoundsException if the start or end indexes are out of bounds in the source matcher.
+	 */
+	public ByteMatcherSequenceMatcher(final int repeats, final ByteMatcherSequenceMatcher source,
+									  final int startIndex, final int endIndex) {
+		ArgUtils.checkPositiveInteger(repeats);
+		ArgUtils.checkNullObject(source);
+		ArgUtils.checkIndexOutOfBounds(source.length, startIndex, endIndex);
+		this.length              = (endIndex - startIndex) * repeats;
+		if (repeats == 1) {
+			this.startArrayIndex = source.startArrayIndex + startIndex;
+			this.endArrayIndex   = source.startArrayIndex + endIndex;
+			this.matchers        = source.matchers;
+		} else {
+			this.startArrayIndex = 0;
+			this.endArrayIndex   = length;
+			this.matchers = new ByteMatcher[length];
+			populateMatchers(repeats, source, startIndex, endIndex);
+		}
+	}
+
+
+	/**
+	 * Constructs an immutable ByteMatcherSequenceMatcher from an array of ByteMatcherSequenceMatchers.
+	 * If the array only contains a single ByteMatcherSequenceMatcher, then they will share the underlying
+	 * array of ByteMatchers.  If there are more than one, new storage is created to hold them. 
+	 * 
+	 * @param matchers The array of ByteMatcherSequenceMatchers.
+	 * @throws IllegalArgumentException if the array of matchers is null or empty, or if any of the 
+	 *                                  elements of the array are null.
+	 */
+    public ByteMatcherSequenceMatcher(final ByteMatcherSequenceMatcher... matchers) {
+		ArgUtils.checkNullOrEmptyArrayNoNullElements(matchers);
+		if (matchers.length == 1) {
+			final ByteMatcherSequenceMatcher theMatcher = matchers[0];
+			this.length          = theMatcher.length;
+			this.startArrayIndex = theMatcher.startArrayIndex;
+			this.endArrayIndex   = theMatcher.endArrayIndex;
+			this.matchers        = theMatcher.matchers;
+		} else {
+			this.length          = countTotalLength(matchers);
+	        this.startArrayIndex = 0;
+	        this.endArrayIndex   = length;
+			this.matchers        = new ByteMatcher[length];
+			populateMatchers(matchers);
+		}
+    }
+
+	
+	/**
+	 * Constructs an immutable ByteMatcherSequenceMatcher from an array of other SequenceMatchers,
+	 * joining all the ByteMatchers within them into a single matcher.  The resulting matcher is independent of 
+	 * the array passed in.
+	 * 
+	 * @param matchers The array  of SequenceMatchers to join into a single ByteMatcherSequenceMatcher.
+	 * @throws IllegalArgumentException if the array is null, empty or contains null elements.
+	 */
+    
+    public ByteMatcherSequenceMatcher(final SequenceMatcher... matchers) {
+		ArgUtils.checkNullOrEmptyArrayNoNullElements(matchers);
+		this.length          = countTotalLength(matchers);
+        this.startArrayIndex = 0;
+        this.endArrayIndex   = length;
+		this.matchers        = new ByteMatcher[length];
+		populateMatchers(matchers); 
+    }
+    
+    
+	/**
+	 * Constructs an immutable ByteMatcherSequenceMatcher from a list of other SequenceMatchers,
+	 * joining all the ByteMatchers within them into a single matcher.  The resulting matcher is independent of 
+	 * the list passed in.
+	 * 
+	 * @param list The list of SequenceMatchers to join into a single ByteMatcherSequenceMatcher.
+	 * @throws IllegalArgumentException if the list is null, empty or contains null elements.
+	 */
+	public ByteMatcherSequenceMatcher(final List<? extends SequenceMatcher> list) {
+		ArgUtils.checkNullOrEmptyCollectionNoNullElements(list);
+		this.length          = countTotalLength(list);
+        this.startArrayIndex = 0;
+        this.endArrayIndex   = length;
+		this.matchers        = new ByteMatcher[length];
+		populateMatchers(list);
+	}
+	
+	
+	/**
+	 * Constructs a ByteMatcherSequenceMatcher from a ReverseByteMatcherSequenceMatcher.
+	 * The matcher will match the opposite sequence to the ReverseByteMatcherSequenceMatcher, but
+	 * will share the underlying array of ByteMatchers.  It will be a forward-matching view over the
+	 * underlying sequence of matchers.
+	 * 
+	 * @param matcher The ReverseByteMatcherSequenceMatcher to construct from.
+	 * @throws IllegalArgumentException if the matcher is null.
+	 */
+	public ByteMatcherSequenceMatcher(final ReverseByteMatcherSequenceMatcher matcher) {
+		ArgUtils.checkNullObject(matcher);
+		this.length          = matcher.length;
+        this.startArrayIndex = matcher.startArrayIndex;
+        this.endArrayIndex   = matcher.endArrayIndex;
+		this.matchers        = matcher.matchers; 
+	}
     
     
     /******************
@@ -453,7 +606,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
      * @throws IllegalArgumentException if the number of repeats is less than one.
      */
     @Override
-    public SequenceMatcher repeat(int numberOfRepeats) {
+    public SequenceMatcher repeat(final int numberOfRepeats) {
         ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             return this;
@@ -479,25 +632,58 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
      * Private methods *
      *******************/
 
-	private void populateMatchers(final byte[] bytes, final int startIndex, final int endIndex) {
-		int matcherPosition = 0;
-		for (int position = startIndex; position < endIndex; position++) {
-        	matchers[matcherPosition++] = OneByteMatcher.valueOf(bytes[position]);
-        }
-	}
-	
-	
-	private void populateRepeatedMatchers(final int repeats, final byte[] bytes, 
-			                              final int startIndex, final int endIndex) {
-		int matcherPosition = 0;
+	private void populateMatchers(final int repeats, final byte[] bytes, 
+			                      final int startIndex, final int endIndex) {
 		final int subsequenceLength = endIndex - startIndex;
 		final int totalLength = subsequenceLength * repeats;
 		for (int position = 0; position < totalLength; position++) {
 			final int arrayIndex = startIndex + (position % subsequenceLength);
-        	matchers[matcherPosition++] = OneByteMatcher.valueOf(bytes[arrayIndex]);
+        	matchers[position] = OneByteMatcher.valueOf(bytes[arrayIndex]);
         }
 	}
+
 	
+	private void populateMatchers(final int repeats, final ByteMatcher[] byteMatchers, 
+                                  final int startIndex, final int endIndex) {
+		final int subsequenceLength = endIndex - startIndex;
+		final int totalLength = subsequenceLength * repeats;
+		for (int position = 0; position < totalLength; position++) {
+			final int arrayIndex = startIndex + (position % subsequenceLength);
+			matchers[position] = byteMatchers[arrayIndex];
+		}
+	}
+
+	
+	private void populateMatchers(final int repeats, final ByteMatcherSequenceMatcher source,
+								  final int startIndex, final int endIndex) {
+		final int subsequenceLength = endIndex - startIndex;
+		final int totalLength = subsequenceLength * repeats;
+		final int sourceStartIndex = source.startArrayIndex + startIndex;
+		for (int position = 0; position < totalLength; position++) {
+			final int sourceIndex = sourceStartIndex + (position % subsequenceLength);
+        	matchers[position] = source.matchers[sourceIndex];
+        }
+	}
+
+	
+	private void populateMatchers(final List<? extends SequenceMatcher> list) {
+		int matcherPos = 0;
+		for (final SequenceMatcher sequence : list) {
+			for (final ByteMatcher matcher : sequence) {
+				matchers[matcherPos++] = matcher;
+			}
+		}
+	}
+	
+	private void populateMatchers(final SequenceMatcher[] list) {
+		int matcherPos = 0;
+		for (final SequenceMatcher sequence : list) {
+			for (final ByteMatcher matcher : sequence) {
+				matchers[matcherPos++] = matcher;
+			}
+		}
+	}
+
     
     private ByteMatcher[] repeatMatchers(final int numberOfRepeats) {
         final int repeatSize = matchers.length;
@@ -507,6 +693,25 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         }
         return repeated;
     }
+    
+    
+	private int countTotalLength(final List<? extends SequenceMatcher> list) {
+		int totalLength = 0;
+		for (final SequenceMatcher sequence : list) {
+			totalLength += sequence.length();
+		}
+		return totalLength;
+	}
+	
+	
+	private int countTotalLength(final SequenceMatcher[] matchers) {
+		int totalLength = 0;
+		for (final SequenceMatcher sequence : matchers) {
+			totalLength += sequence.length();
+		}
+		return totalLength;
+	}
+    
     
 	@Override
 	public Iterator<ByteMatcher> iterator() {
