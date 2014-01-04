@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -90,10 +89,10 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
      * The byte array is just used as a template to construct from - 
      * it will be independent of it afterwards.
      * 
-     * @param byteArray The array of bytes to match.
+     * @param bytes The array of bytes to match.
      * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
      */
-    public ByteMatcherSequenceMatcher(final byte...bytes) {
+    public ByteMatcherSequenceMatcher(final byte... bytes) {
         this(1, bytes, 0, bytes == null? -1 : bytes.length);
     }
     
@@ -104,7 +103,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
      * @param repeats The number of bytes to repeat.
      * @param byteValue The byte value to repeat.
      *
-     * @throws IllegalArgumentException If the number of bytes is less than one.
+     * @throws IllegalArgumentException If the number of repeats is less than one.
      */
     public ByteMatcherSequenceMatcher(final int repeats, final byte byteValue) {
         this(repeats, OneByteMatcher.valueOf(byteValue));
@@ -217,7 +216,6 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         this.startArrayIndex = 0;
         this.endArrayIndex   = length;
         this.matchers        = new ByteMatcher[length];
-        //TODO: tests for populate matchers and populate repeated matchers...
         populateMatchers(repeats, array, startIndex, endIndex);
 	}
 
@@ -234,7 +232,6 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
     	this(1, sequence, 0, sequence == null? -1 : sequence.length);
     }
 
-    
     
     /**
      * Constructs an immutable ByteMatcherSequenceMatcher using a repeated array of {@link ByteMatcher}
@@ -548,9 +545,9 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final StringBuilder builder = new StringBuilder(length * 4);
+        final StringBuilder builder = new StringBuilder(prettyPrint? length * 4 : length * 3);
         boolean singleByte = false;
-        List<Byte> singleBytes = new ArrayList<Byte>();
+        final List<Byte> singleBytes = new ArrayList<Byte>();
         for (int index = startArrayIndex; index < endArrayIndex; index++) {
         	final ByteMatcher matcher = matchers[index];
         	if (matcher.getNumberOfMatchingBytes() == 1) {
@@ -567,8 +564,6 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         }
 		if (singleByte) {
 			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
-			singleBytes.clear();
-			singleByte = false;
 		}
         return builder.toString();
     }
@@ -949,9 +944,9 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 
 		@Override
 		public String toRegularExpression(boolean prettyPrint) {
-	        final StringBuilder builder = new StringBuilder(length * 4);
+	        final StringBuilder builder = new StringBuilder(prettyPrint? length * 4 : length * 3);
 	        boolean singleByte = false;
-	        List<Byte> singleBytes = new ArrayList<Byte>();
+	        final List<Byte> singleBytes = new ArrayList<Byte>();
 	        for (int index = endArrayIndex - 1; index >= startArrayIndex; index--) {
 	        	final ByteMatcher matcher = matchers[index];
 	        	if (matcher.getNumberOfMatchingBytes() == 1) {
@@ -968,8 +963,6 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 	        }
 			if (singleByte) {
 				builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
-				singleBytes.clear();
-				singleByte = false;
 			}
 	        return builder.toString();
 		}
