@@ -37,12 +37,12 @@ import java.util.Collection;
  * given position, with a length and a collection of associated matching objects.
  * <p>
  * Many matchers will not use the MatchResult interface, as what matched and how
- * long the match is is implicit from the type of matching being done. For
+ * long the match is implicit from the type of matching being done. For
  * example, when matching sequences, it is obvious what matched and how long the
  * match was, so there is no need to introduce an intermediate result object.
  * However, some matchers can match more than once, and may be associated with
  * different objects for different stages of matching. These types of matchers
- * will typically return a MatchResult or a list of them.
+ * will typically return a MatchResult or a collection of them.
  * 
  * @param <T> The type of object associated with the match.
  * 
