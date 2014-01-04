@@ -278,7 +278,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
     	ArgUtils.checkPositiveInteger(repeats);
     	ArgUtils.checkNullOrEmptyArrayNoNullElements(sequence);
     	ArgUtils.checkIndexOutOfBounds(sequence.length, startIndex, endIndex);
-        this.length          = endIndex - startIndex; 
+        this.length          = (endIndex - startIndex) * repeats; 
         this.startArrayIndex = 0;
         this.endArrayIndex   = length;
         this.matchers        = new ByteMatcher[length];
