@@ -17,12 +17,12 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class BitMaskAllBitesMatcherTest {
+public class BitMaskAllBitsMatcherTest {
 
     /**
      * 
      */
-    public BitMaskAllBitesMatcherTest() {
+    public BitMaskAllBitsMatcherTest() {
     }
 
     /**
