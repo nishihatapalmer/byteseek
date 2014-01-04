@@ -31,7 +31,6 @@
 package net.byteseek.compiler.matcher;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.matcher.bytes.AllBitmaskMatcher;
