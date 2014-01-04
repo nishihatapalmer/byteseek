@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2013-14, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,7 +30,7 @@
  */
  
  /**
-  * net.byteseek.matcher containing interfaces for objects that match bytes.
+  * net.byteseek.matcher containing interfaces for objects that match bytes in various ways.
   * <p>
   * Sub-packages have specific implementations of matchers for bytes, sequences of
   * bytes and byte matchers, multi-sequence matchers, and finite-state automata.
