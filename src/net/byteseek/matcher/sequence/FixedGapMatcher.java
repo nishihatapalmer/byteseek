@@ -205,6 +205,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
 		@Override
 		public ByteMatcher next() {
 			if (hasNext()) {
+				count += 1;
 				return AnyByteMatcher.ANY_BYTE_MATCHER;
 			}
 			throw new NoSuchElementException();
