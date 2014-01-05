@@ -746,9 +746,20 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		
 	}
 
+	
+	/*
+	 * Reverse matching class
+	 */
     
-    
-    public static class ReverseByteMatcherSequenceMatcher implements SequenceMatcher {
+
+	/**
+	 * An immutable ReverseByteMatcherSequenceMatcher which matches the reverse of a sequence passed to it.
+	 * 
+	 * If copy constructed from a ByteMatcherSequenceMatcher it will share the underlying storage.
+	 * 
+	 * @author Matt Palmer
+	 */
+    public static final class ReverseByteMatcherSequenceMatcher implements SequenceMatcher {
 
     	private final ByteMatcher[] matchers;
         private final int startArrayIndex; // the position to start at (an inclusive value)
@@ -758,7 +769,14 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         /****************
          * Constructors *
          ***************/
+
         
+        /**
+         * Constructs an immutable ReverseByteMatcherSequenceMatcher from an array of bytes.
+         * 
+         * @param array The array of bytes to match the reverse sequence of.
+         * @throws IllegalArgumentException if the array is null or empty.
+         */
         public ReverseByteMatcherSequenceMatcher(final byte[] array) {
 			ArgUtils.checkNullOrEmptyByteArray(array);
 			this.length          = array.length;
@@ -769,6 +787,17 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		}
 
         
+        /**
+         * Constructs an immutable ReverseByteMatcherSequenceMatcher from a subsequence of 
+         * a source ReverseByteMatcherSequenceMatcher.  The object will share the storage of
+         * the original object.
+         * 
+         * @param original The source ReverseByteMatcherSequenceMatcher to construct from.
+         * @param startIndex The start index to take a subsequence from, inclusive.
+         * @param endIndex The end index of the subsequence, exclusive.
+         * @throws IllegalArgumentException if the original is null.
+         * @throws IndexOutOfBoundsException if the start or end index is out of bounds.
+         */
 		public ReverseByteMatcherSequenceMatcher(final ReverseByteMatcherSequenceMatcher original, 
 												 final int startIndex, final int endIndex) {
 			ArgUtils.checkNullObject(original);
@@ -780,17 +809,39 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		}
 
 		
+		/**
+		 * Constructs an immutable ReverseByteMatcherSequenceMatcher from a source 
+		 * ReverseByteMatcherSequenceMatcher given a number of times to repeat the original.
+		 * <p>
+		 * If the number of repeats is one, the underlying storage will be shared.
+		 * 
+		 * @param numberOfRepeats The number of times to repeat the original.
+		 * @param original The original to construct from.
+		 * @throws IllegalArgumentException if the number of repeats is less than one or the
+		 *                                  original is null.
+		 */
 		public ReverseByteMatcherSequenceMatcher(final int numberOfRepeats,
 												 final ReverseByteMatcherSequenceMatcher original) {
 			this(numberOfRepeats, original, 0, original.length);
 		}
 		
 
+		/**
+		 * Constructs an immutable ReverseByteMatcherSequencematcher from a source
+		 * ReverseByteMatcherSequenceMatcher, by repeating a subsequence of the original.
+		 * 
+		 * @param numberOfRepeats The number of times to repeat the original.
+		 * @param original The original ReverseByteMatcherSequenceMatcher
+		 * @param startIndex The start index of the subsequence, inclusive.
+		 * @param endIndex The end index of the subsequence, exclusive.
+		 * @throws IllegalArgumentException if the number of repeats is less than one or the original is null.
+		 * @throws IndexOutOfBoundsException if the start or end index is out of bounds.
+		 */
 		public ReverseByteMatcherSequenceMatcher(final int numberOfRepeats,
 												 final ReverseByteMatcherSequenceMatcher original, 
 												 final int startIndex, final int endIndex) {
-			ArgUtils.checkNullObject(original);
 			ArgUtils.checkPositiveInteger(numberOfRepeats);
+			ArgUtils.checkNullObject(original);
 			ArgUtils.checkIndexOutOfBounds(original.length(), startIndex, endIndex);
 			this.length          = (endIndex - startIndex) * numberOfRepeats;
 			if (numberOfRepeats == 1) {
@@ -805,6 +856,15 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		}
 
 		
+		/**
+		 * Constructs an immutable ReverseByteMatcherSequenceMatcher from a ByteMatcherSequenceMatcher.
+		 * The constructed object will match the reverse sequence of the original forward matcher.
+		 * <p>
+		 * The constructed object will share the underlying storage of the original matcher.
+		 * 
+		 * @param forwardMatcher The forward matcher to construct from.
+		 * @throws IllegalArgumentException if the forward matcher is null.
+		 */
 		public ReverseByteMatcherSequenceMatcher(final ByteMatcherSequenceMatcher forwardMatcher) {
 			ArgUtils.checkNullObject(forwardMatcher);
 			this.length          = forwardMatcher.length;
@@ -814,6 +874,18 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		}
 
 		
+		/**
+		 * Constructs an immutable ReverseByteMatcherSequenceMatcher from a repeated subsequence
+		 * of a byte array.
+		 * 
+		 * @param repeats The number of times to repeat the subsequence.
+		 * @param array The byte array to construct from.
+		 * @param startIndex The start index of the subsequence, inclusive.
+		 * @param endIndex The end index of the subsequence, exclusive.]\
+		 * @throws IllegalArgumentException if the number of repeats is less than one 
+		 *                                  or the byte array is null or empty.
+		 * @throws IndexOutOfBoundsException if the start or end index is out of bounds.
+		 */
 		public ReverseByteMatcherSequenceMatcher(final int repeats, final byte[] array,
 												 final int startIndex, final int endIndex) {
 	        ArgUtils.checkNullOrEmptyByteArray(array);
@@ -827,6 +899,12 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 	        populateMatchers(repeated, 0, length);
 		}
 
+		
+		/**
+		 * Constructs an immutable ReverseByteMatcherSequenceMatcher from a single byte value.
+		 * 
+		 * @param byteValue The value to match.
+		 */
 		public ReverseByteMatcherSequenceMatcher(final byte byteValue) {
 			this.matchers        = new ByteMatcher[] {OneByteMatcher.valueOf(byteValue)};
 			this.length          = 1;
@@ -997,6 +1075,11 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 			return new ReverseByteMatcherSequenceMatcherIterator();
 		}
 
+		
+		/**
+		 * A ByteMatcher iterator over a ReverseByteMatcherSequenceMatcher.
+		 * @author Matt Palmer
+		 */
 		private class ReverseByteMatcherSequenceMatcherIterator implements Iterator<ByteMatcher> {
 
 			int position = endArrayIndex;
