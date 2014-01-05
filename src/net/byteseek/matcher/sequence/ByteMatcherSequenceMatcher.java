@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2013, All rights reserved.
+ * Copyright Matt Palmer 2009-2014, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -547,6 +547,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
     public String toRegularExpression(final boolean prettyPrint) {
         final StringBuilder builder = new StringBuilder(prettyPrint? length * 4 : length * 3);
         boolean singleByte = false;
+        boolean appended = false;
         final List<Byte> singleBytes = new ArrayList<Byte>();
         for (int index = startArrayIndex; index < endArrayIndex; index++) {
         	final ByteMatcher matcher = matchers[index];
@@ -556,13 +557,21 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         	} else {
         		if (singleByte) {
         			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
+        			appended = true;
         			singleBytes.clear();
         			singleByte = false;
         		}
+        		if (prettyPrint && appended) {
+        			builder.append(' ');
+        		}
         		builder.append(matcher.toRegularExpression(prettyPrint));
+        		appended = true;
         	}
         }
 		if (singleByte) {
+    		if (prettyPrint && appended) {
+    			builder.append(' ');
+    		}
 			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
 		}
         return builder.toString();
@@ -946,6 +955,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		public String toRegularExpression(boolean prettyPrint) {
 	        final StringBuilder builder = new StringBuilder(prettyPrint? length * 4 : length * 3);
 	        boolean singleByte = false;
+	        boolean appended = false;
 	        final List<Byte> singleBytes = new ArrayList<Byte>();
 	        for (int index = endArrayIndex - 1; index >= startArrayIndex; index--) {
 	        	final ByteMatcher matcher = matchers[index];
@@ -955,13 +965,21 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 	        	} else {
 	        		if (singleByte) {
 	        			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
+	        			appended = true;
 	        			singleBytes.clear();
 	        			singleByte = false;
 	        		}
+	        		if (prettyPrint && appended) {
+	        			builder.append(' ');
+	        		}
 	        		builder.append(matcher.toRegularExpression(prettyPrint));
+	        		appended = true;
 	        	}
 	        }
 			if (singleByte) {
+	    		if (prettyPrint && appended) {
+	    			builder.append(' ');
+	    		}
 				builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
 			}
 	        return builder.toString();
