@@ -51,7 +51,11 @@ import net.byteseek.object.ArgUtils;
  */
 public final class FixedGapMatcher implements SequenceMatcher {
 
-    private final int length;
+	private static final String ONE_ANY_MATCHER    = ".";
+	private static final String TWO_ANY_MATCHERS   = "..";
+	private static final String THREE_ANY_MATCHERS = "...";
+	
+	private final int length;
 
    
     /**
@@ -91,11 +95,10 @@ public final class FixedGapMatcher implements SequenceMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
     	switch (length) {
-	    	case 1:  return prettyPrint ? ". "   : ".";
-	    	case 2:  return prettyPrint ? ".. "  : "..";
-	    	case 3:  return prettyPrint ? "... " : "...";
-	    	default: return prettyPrint ? String.format(".{%d} ", length) 
-	    								: String.format(".{%d}",  length); 
+	    	case 1:  return ONE_ANY_MATCHER;
+	    	case 2:  return TWO_ANY_MATCHERS;
+	    	case 3:  return THREE_ANY_MATCHERS;
+	    	default: return String.format(".{%d}", length); 
     	}
     }
 
