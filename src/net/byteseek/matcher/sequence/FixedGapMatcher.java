@@ -144,7 +144,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SequenceMatcher subsequence(int startIndex, int endIndex) {
+    public SequenceMatcher subsequence(final int startIndex, final int endIndex) {
         ArgUtils.checkIndexOutOfBounds(length, startIndex, endIndex);
         if (endIndex - startIndex == 1) {
             return AnyByteMatcher.ANY_BYTE_MATCHER;
@@ -166,7 +166,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      * {@inheritDoc}
      */
     @Override
-    public SequenceMatcher repeat(int numberOfRepeats) {
+    public SequenceMatcher repeat(final int numberOfRepeats) {
     	ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             return this;
