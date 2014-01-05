@@ -54,6 +54,7 @@ import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
+import net.byteseek.matcher.bytes.TwoByteMatcher;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -178,10 +179,10 @@ public class ByteMatcherSequenceMatcherTest {
 			final ByteMatcherSequenceMatcher matcher = new ByteMatcherSequenceMatcher(array);
 			assertEquals("length:" + Integer.toString(array.length), array.length, matcher.length());
 
-			for (int pos = 0; pos < array.length; pos++) {
-				final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
+			for (int i = 0; i < array.length; i++) {
+				final ByteMatcher sbm = matcher.getMatcherForPosition(i);
 				final byte[] matchingBytes = sbm.getMatchingBytes();
-				final byte matchingValue = array[pos];
+				final byte matchingValue = array[i];
 				assertEquals("number of bytes matched=1", 1, matchingBytes.length);
 				assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue,
 						matchingBytes[0]);
@@ -537,22 +538,87 @@ public class ByteMatcherSequenceMatcherTest {
 		
 	@Test
 	public void testConstructSingleByteMatcherSequenceMatcher() {
-		fail("not implemented");
+		byte[] array = createRandomArray(65);
+		ByteMatcherSequenceMatcher source = new ByteMatcherSequenceMatcher(array);
+		ByteMatcherSequenceMatcher result = new ByteMatcherSequenceMatcher(source);
+		assertEquals("Lengths are the same: " + array.length, source.length(), result.length());
+		for (int i = 0; i < array.length; i++) {
+			final ByteMatcher sbm = result.getMatcherForPosition(i);
+			final byte[] matchingBytes = sbm.getMatchingBytes();
+			final byte matchingValue = array[i];
+			assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+			assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue,
+					matchingBytes[0]);
+		}
 	}
+
 	
 	@Test
 	public void testConstructByteMatcherSequenceMatcherArray() {
-		fail("not implemented");
+		ByteMatcherSequenceMatcher[] matchers = new ByteMatcherSequenceMatcher[5];
+		int totalLength = 0;
+		for (int i = 0; i < 5; i++) {
+			matchers[i] = new ByteMatcherSequenceMatcher(createRandomByteMatcherArray(129));
+			totalLength += matchers[i].length();
+		}
+		ByteMatcherSequenceMatcher result = new ByteMatcherSequenceMatcher(matchers);
+		assertEquals("Length is correct: " + totalLength, totalLength, result.length());
+		
+		int matcherPos = 0;
+		for (int i = 0; i < 5; i++) {
+			ByteMatcherSequenceMatcher component = matchers[i];
+			for (int j = 0; j < component.length(); j++) {
+				ByteMatcher sourceMatch = component.getMatcherForPosition(j);
+				ByteMatcher resultMatch = result.getMatcherForPosition(matcherPos++);
+				byte[] sourceBytes = sourceMatch.getMatchingBytes();
+				byte[] resultBytes = resultMatch.getMatchingBytes();
+				assertEquals("Same number of bytes match", sourceBytes.length, resultBytes.length);
+				assertEquals("Matches the same bytes", sourceBytes[0], resultBytes[0]);
+			}
+		}
 	}
+	
 	
 	@Test
 	public void testConstructSingleSequenceMatcher() {
-		fail("not implemented");
+		byte[] array = createRandomArray(342);
+		ByteSequenceMatcher source = new ByteSequenceMatcher(array);
+		ByteMatcherSequenceMatcher result = new ByteMatcherSequenceMatcher(source);
+		assertEquals("length is correct " + array.length, source.length(), result.length());
+		for (int i = 0; i < array.length; i++) {
+			final ByteMatcher sbm = result.getMatcherForPosition(i);
+			final byte[] matchingBytes = sbm.getMatchingBytes();
+			final byte matchingValue = array[i];
+			assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+			assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue,
+					matchingBytes[0]);
+		}
 	}
+	
 	
 	@Test
 	public void testConstructSequenceMatcherArray() {
-		fail("not implemented");
+		ByteSequenceMatcher[] matchers = new ByteSequenceMatcher[5];
+		int totalLength = 0;
+		for (int i = 0; i < 5; i++) {
+			matchers[i] = new ByteSequenceMatcher(createRandomArray(129));
+			totalLength += matchers[i].length();
+		}
+		ByteMatcherSequenceMatcher result = new ByteMatcherSequenceMatcher(matchers);
+		assertEquals("Length is correct: " + totalLength, totalLength, result.length());
+		
+		int matcherPos = 0;
+		for (int i = 0; i < 5; i++) {
+			ByteSequenceMatcher component = matchers[i];
+			for (int j = 0; j < component.length(); j++) {
+				ByteMatcher sourceMatch = component.getMatcherForPosition(j);
+				ByteMatcher resultMatch = result.getMatcherForPosition(matcherPos++);
+				byte[] sourceBytes = sourceMatch.getMatchingBytes();
+				byte[] resultBytes = resultMatch.getMatchingBytes();
+				assertEquals("Same number of bytes match", sourceBytes.length, resultBytes.length);
+				assertEquals("Matches the same bytes", sourceBytes[0], resultBytes[0]);
+			}
+		}
 	}
 	
 	
@@ -625,11 +691,12 @@ public class ByteMatcherSequenceMatcherTest {
 	
 	@Test
 	public void testConstructRepeatedReverseByteArray() {
+		int repeats = 1;
 		for (int testNo = 0; testNo < 10; testNo++) {
 			final byte[] array = createRandomArray(1024);
 			final int startPos = rand.nextInt(array.length);
 			final int endPos   = startPos + rand.nextInt(array.length-startPos) + 1;
-			final int repeats = rand.nextInt(10) + 1;
+
 			final int length = (endPos - startPos) * repeats;
 			final ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher matcher = new ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher(repeats, array, startPos, endPos);
 			assertEquals("length:" + length, length, matcher.length());
@@ -645,17 +712,39 @@ public class ByteMatcherSequenceMatcherTest {
 			}
 			
 			testDefensivelyCopied(array, new ByteMatcherSequenceMatcher(array, 0, array.length));
+			repeats = rand.nextInt(10) + 1;
 		}
 	}
 	
 	
 	@Test
-	public void testConstructByteMatcherList() {
-		//TODO: write test.
-		fail("not implemented");
+	public void testConstructReverseRepeatIndexedCopyConstructor() {
+		int repeats = 1;
+		for (int testNo = 0; testNo < 10; testNo++) {
+			final byte[] array = createRandomArray(1024);
+			final int startPos = rand.nextInt(array.length);
+			final int endPos   = startPos + rand.nextInt(array.length-startPos) + 1;
+
+			final int length = (endPos - startPos) * repeats;
+			final ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher source = new ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher(array);
+			final ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher matcher = new ByteMatcherSequenceMatcher.ReverseByteMatcherSequenceMatcher(repeats, source, startPos, endPos);
+			assertEquals("length:" + length, length, matcher.length());
+
+			for (int pos = 0; pos < length; pos++) {
+				final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
+				final byte[] matchingBytes = sbm.getMatchingBytes();
+				final int arrayPos = endPos - (pos % (endPos - startPos)) - 1;
+				final byte matchingValue = array[arrayPos];
+				assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+				assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue,
+						matchingBytes[0]);
+			}
+			
+			testDefensivelyCopied(array, new ByteMatcherSequenceMatcher(array, 0, array.length));
+			repeats = rand.nextInt(10) + 1;
+		}
 	}
 	
-
 	//////////////////////////////////
 	//  construction failure tests  //
 	//////////////////////////////////
@@ -1386,9 +1475,73 @@ public class ByteMatcherSequenceMatcherTest {
 	public void testToRegularExpression() {
 		ByteMatcherSequenceMatcher matcher = new ByteMatcherSequenceMatcher("abc");
 		assertEquals("reg ex abc", "'abc'", matcher.toRegularExpression(true));
+		assertEquals("reg ex abc", "616263", matcher.toRegularExpression(false));
 
-		//TODO: more reg ex tests.
+		matcher = new ByteMatcherSequenceMatcher(new TwoByteMatcher((byte) 0x01, (byte) 0x02),
+				 								 new OneByteMatcher((byte) 0x00)); 
+		assertEquals("reg ex [01 02] 00", "[01 02] 00", matcher.toRegularExpression(true));
+		assertEquals("reg ex 00 [01 02]", "[0102]00", matcher.toRegularExpression(false));
+		
+		matcher = new ByteMatcherSequenceMatcher(new OneByteMatcher((byte) 0x00), 
+												 new TwoByteMatcher((byte) 0x01, (byte) 0x02));
+		assertEquals("reg ex 00 [01 02]", "00 [01 02]", matcher.toRegularExpression(true));
+		assertEquals("reg ex 00 [01 02]", "00[0102]", matcher.toRegularExpression(false));
+
+		matcher = new ByteMatcherSequenceMatcher(new OneByteMatcher((byte) 0x00), 
+				                                 new OneByteMatcher((byte) 0xff),
+				                                 new TwoByteMatcher((byte) 0x01, (byte) 0x02),
+				                                 new TwoByteMatcher((byte) 0x03, (byte) 0x04),
+		 										 new OneByteMatcher((byte) 0xfe));
+		 										 
+		assertEquals("reg ex 00 ff [01 02] [03 04] fe", "00 ff [01 02] [03 04] fe", matcher.toRegularExpression(true));
+		assertEquals("reg ex 00 [01 02]", "00ff[0102][0304]fe", matcher.toRegularExpression(false));
+		
+		matcher = new ByteMatcherSequenceMatcher(new OneByteMatcher((byte) 0x41), 
+                								 new OneByteMatcher((byte) 0x42),
+                								 new TwoByteMatcher((byte) 0x01, (byte) 0x02),
+                								 new TwoByteMatcher((byte) 0x03, (byte) 0x04),
+                								 new OneByteMatcher((byte) 0x01));
+				 
+		assertEquals("reg ex 'AB' [01 02] [03 04] 01", "'AB' [01 02] [03 04] 01", matcher.toRegularExpression(true));
+		assertEquals("reg ex 4142[0102][0304]01", "4142[0102][0304]01", matcher.toRegularExpression(false));
 	}
+	
+	
+	@Test
+	public void testReverseToRegularExpression() {
+		SequenceMatcher matcher = new ByteMatcherSequenceMatcher("abc").reverse();
+		assertEquals("reg ex cba", "'cba'", matcher.toRegularExpression(true));
+		assertEquals("reg ex cba", "636261", matcher.toRegularExpression(false));
+
+		matcher = new ByteMatcherSequenceMatcher(new TwoByteMatcher((byte) 0x01, (byte) 0x02),
+				 								 new OneByteMatcher((byte) 0x00)).reverse(); 
+		assertEquals("reg ex 00 [01 02]", "00 [01 02]", matcher.toRegularExpression(true));
+		assertEquals("reg ex 00 [01 02]", "00[0102]", matcher.toRegularExpression(false));
+		
+		matcher = new ByteMatcherSequenceMatcher(new OneByteMatcher((byte) 0x00), 
+												 new TwoByteMatcher((byte) 0x01, (byte) 0x02)).reverse();
+		assertEquals("reg ex [01 02] 00", "[01 02] 00", matcher.toRegularExpression(true));
+		assertEquals("reg ex [0102]00", "[0102]00", matcher.toRegularExpression(false));
+
+		matcher = new ByteMatcherSequenceMatcher(new OneByteMatcher((byte) 0x00), 
+				                                 new OneByteMatcher((byte) 0xff),
+				                                 new TwoByteMatcher((byte) 0x01, (byte) 0x02),
+				                                 new TwoByteMatcher((byte) 0x03, (byte) 0x04),
+		 										 new OneByteMatcher((byte) 0xfe)).reverse();
+		 										 
+		assertEquals("reg ex fe [03 04] [01 02] ff 00", "fe [03 04] [01 02] ff 00", matcher.toRegularExpression(true));
+		assertEquals("reg ex fe[0304][0102]ff00", "fe[0304][0102]ff00", matcher.toRegularExpression(false));
+		
+		matcher = new ByteMatcherSequenceMatcher(new OneByteMatcher((byte) 0x41), 
+                								 new OneByteMatcher((byte) 0x42),
+                								 new TwoByteMatcher((byte) 0x01, (byte) 0x02),
+                								 new TwoByteMatcher((byte) 0x03, (byte) 0x04),
+                								 new OneByteMatcher((byte) 0x01)).reverse();
+				 
+		assertEquals("reg ex 01 [03 04] [01 02] 'BA'", "01 [03 04] [01 02] 'BA'", matcher.toRegularExpression(true));
+		assertEquals("reg ex 01[0304][0102]4241", "01[0304][0102]4241", matcher.toRegularExpression(false));
+	}
+
 	
 	@Test
 	public void testToString() {
