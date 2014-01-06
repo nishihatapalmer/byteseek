@@ -105,6 +105,8 @@ public final class FixedGapMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the reader passed in is null.
      */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
@@ -115,6 +117,8 @@ public final class FixedGapMatcher implements SequenceMatcher {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws NullPointerException if the byte array is null.
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
@@ -124,6 +128,10 @@ public final class FixedGapMatcher implements SequenceMatcher {
     
     /**
      * {@inheritDoc}
+     * <p>
+     * Note that this implementation will always return true, even if the byte array passed in is
+     * null or empty, or the matchPostition is negative.
+     * 
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
