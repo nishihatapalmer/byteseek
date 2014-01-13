@@ -166,7 +166,7 @@ public final class FixedGapMatcher implements SequenceMatcher {
      */  
     @Override
     public SequenceMatcher subsequence(final int beginIndex) {
-        return subsequence(beginIndex, length());
+        return subsequence(beginIndex, length);
     }    
     
     
