@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2013, All rights reserved.
+ * Copyright Matt Palmer 2009-2014, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
