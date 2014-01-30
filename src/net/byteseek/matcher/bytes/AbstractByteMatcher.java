@@ -53,7 +53,7 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
     @Override
     public final ByteMatcher getMatcherForPosition(final int position) {
         if (position != 0) {
-            throw new IndexOutOfBoundsException("SingleByteMatchers only have a matcher at position 0.");
+            throw new IndexOutOfBoundsException("ByteMatchers only have a matcher at position 0.");
         }
         return this;
     }
@@ -96,7 +96,7 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
     @Override
     public final SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
         if (beginIndex != 0 || endIndex != 1) {
-            throw new IndexOutOfBoundsException("SingleByteMatchers only support a sequence starting at zero with a length of one.");
+            throw new IndexOutOfBoundsException("ByteMatchers only support a sequence starting at zero with a length of one.");
         }
         return this;
     }
@@ -115,7 +115,7 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
     @Override
     public final SequenceMatcher subsequence(final int beginIndex) {
         if (beginIndex != 0) {
-            throw new IndexOutOfBoundsException("SingleByteMatchers only support a sequence starting at zero with a length of one.");
+            throw new IndexOutOfBoundsException("ByteMatchers only support a sequence starting at zero with a length of one.");
         }
         return this;
     }
