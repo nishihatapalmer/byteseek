@@ -74,6 +74,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      * @return Whether there is a match at the given position.
      * @throws IndexOutOfBoundsException if a match is made outside the bounds of 
      *                                   the array.
+     * @throws NullPointerException if the byte array passed in is null.
      */
     public boolean matchesNoBoundsCheck(byte[] bytes, int matchPosition);    
     
