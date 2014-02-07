@@ -1099,7 +1099,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 
 			@Override
 			public void remove() {
-				throw new UnsupportedOperationException("Cannot remove byte matchers from a ReverseBVyteMatcherSequenceMatcher");
+				throw new UnsupportedOperationException("Cannot remove byte matchers from a ReverseByteMatcherSequenceMatcher");
 				
 			}
 			

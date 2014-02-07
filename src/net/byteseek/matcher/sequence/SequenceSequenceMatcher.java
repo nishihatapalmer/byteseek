@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
@@ -229,7 +230,8 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final StringBuilder regularExpression = new StringBuilder();
+        /*
+    	final StringBuilder regularExpression = new StringBuilder();
         boolean firstMatcher = true;
         for (final SequenceMatcher matcher : matchers) {
         	if (prettyPrint && !firstMatcher) {
@@ -239,6 +241,37 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
            firstMatcher = false;
         }
         return regularExpression.toString();
+        */
+        final StringBuilder builder = new StringBuilder(prettyPrint? totalLength * 4 : totalLength * 3);
+        boolean singleByte = false;
+        boolean appended = false;
+        final List<Byte> singleBytes = new ArrayList<Byte>();
+        for (int index = 0; index < totalLength; index++) {
+        	final ByteMatcher matcher = getMatcherForPosition(index);
+        	if (matcher.getNumberOfMatchingBytes() == 1) {
+        		singleByte = true;
+        		singleBytes.add(Byte.valueOf(matcher.getMatchingBytes()[0]));
+        	} else {
+        		if (singleByte) {
+        			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
+        			appended = true;
+        			singleBytes.clear();
+        			singleByte = false;
+        		}
+        		if (prettyPrint && appended) {
+        			builder.append(' ');
+        		}
+        		builder.append(matcher.toRegularExpression(prettyPrint));
+        		appended = true;
+        	}
+        }
+		if (singleByte) {
+    		if (prettyPrint && appended) {
+    			builder.append(' ');
+    		}
+			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
+		}
+        return builder.toString();
     }
 
 

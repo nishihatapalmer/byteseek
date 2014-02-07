@@ -143,8 +143,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final String regex = ByteUtils.byteToString(prettyPrint, byteToMatch & 0xFF);
-        return prettyPrint? regex + " " : regex;
+        return ByteUtils.byteToString(prettyPrint, byteToMatch & 0xFF);
     }
 
 
