@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2013, All rights reserved.
+ * Copyright Matt Palmer 2009-2014, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -56,6 +56,7 @@ import net.byteseek.object.ArgUtils;
  */
 public final class ByteUtils {
 	
+	private static final String CHAR_BYTE_FORMAT = "'%c'";
 	private static final String HEX_BYTE_FORMAT = "%02x";
 
 	private static final byte ASCII_CASE_DIFFERENCE = 32;
@@ -1043,17 +1044,14 @@ public final class ByteUtils {
      */
     public static String byteToString(final boolean prettyPrint, int byteValue) {
         String result;
-        if (prettyPrint) {
-            if (byteValue >= START_PRINTABLE_ASCII &&
-                byteValue <= END_PRINTABLE_ASCII &&
-                byteValue != QUOTE_CHARACTER_VALUE) {
-                result = String.format(" '%c' ", byteValue);
-            } else {
-                result = String.format(" %02x ", byteValue);
-            }
+        if (prettyPrint &&
+            byteValue >= START_PRINTABLE_ASCII &&
+            byteValue <= END_PRINTABLE_ASCII &&
+            byteValue != QUOTE_CHARACTER_VALUE) {
+            result = String.format(CHAR_BYTE_FORMAT, byteValue);
         } else {
             result = String.format(HEX_BYTE_FORMAT, byteValue);
-        }
+        } 
         return result;
     }
     
