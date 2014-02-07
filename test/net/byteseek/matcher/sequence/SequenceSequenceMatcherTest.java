@@ -42,15 +42,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-import net.byteseek.bytes.ByteUtils;
-import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
@@ -596,37 +593,6 @@ public class SequenceSequenceMatcherTest {
 		;
 	}
 
-	private void testReverseByteMatcherIterator(SequenceMatcher value, String expected) {
-		Iterator<ByteMatcher> iterator = value.iterator();
-		assertNotNull("Byte matcher iterator is not null", iterator);
-
-		try {
-			iterator.remove();
-			fail("expected an unsupported operation exception removing from the iterator");
-		} catch (UnsupportedOperationException ex) {
-		}
-		;
-
-		assertTrue("Byte matcher iterator must always have at least one element", iterator.hasNext());
-		int position = expected.length();
-		while (iterator.hasNext()) {
-			ByteMatcher bm = iterator.next();
-			byte[] matchingbytes = bm.getMatchingBytes();
-			assertEquals("Matching bytes has one byte", 1, matchingbytes.length);
-
-			byte b = (byte) expected.charAt(--position);
-			assertEquals("Bytes match for byte " + b, b, matchingbytes[0]);
-		}
-
-		assertEquals("Lengths match after iteration", 0, position);
-
-		try {
-			iterator.next();
-			fail("expected NoSuchElementException");
-		} catch (NoSuchElementException ex) {
-		}
-		;
-	}
 
 	// /////////////////////////////
 	// reader matching tests //
