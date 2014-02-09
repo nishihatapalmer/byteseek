@@ -1496,9 +1496,9 @@ public class ByteUtilsTest {
     	for (int i = 0; i < 256; i++) {
     		assertEquals("Simple byte is just hex value " + i,   String.format("%02x", i),    ByteUtils.byteToString(false, i)); 
     		if (i >= 32 && i <= 126 && i != 39) { 
-    			assertEquals("Pretty print ASCII char " + i,     String.format(" '%c' ",  i), ByteUtils.byteToString(true,  i));
+    			assertEquals("Pretty print ASCII char " + i,     String.format("'%c'",  i), ByteUtils.byteToString(true,  i));
     		} else {
-    			assertEquals("Pretty print non ASCII char " + i, String.format(" %02x ",  i), ByteUtils.byteToString(true,  i));
+    			assertEquals("Pretty print non ASCII char " + i, String.format("%02x",  i), ByteUtils.byteToString(true,  i));
     		}
     	}
     }

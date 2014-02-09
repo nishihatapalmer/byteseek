@@ -258,6 +258,7 @@ public class FileReader extends AbstractReader {
 				return new Window(bytes, windowStart, totalRead);
 			}
 		} catch (final EOFException justReturnNull) {
+			//TODO: identify logging interfaces suitable for library use.
 		}
 		return null;
 	}

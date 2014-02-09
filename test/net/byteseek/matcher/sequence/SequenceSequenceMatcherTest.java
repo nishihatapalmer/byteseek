@@ -53,6 +53,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.bytes.TwoByteMatcher;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,7 +76,9 @@ public class SequenceSequenceMatcherTest {
 
 	private final static Random rand = new Random();
 
-	private FileReader reader;
+//	private FileReader reader;
+//	private FileReader reader2;
+	List<FileReader> readers;
 	private byte[] bytes;
 
 	public SequenceSequenceMatcherTest() {
@@ -106,8 +109,18 @@ public class SequenceSequenceMatcherTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		reader = new FileReader(getFile("/TestASCII.txt"));
-		bytes = reader.getWindow(0).getArray();
+		readers = getReaders("/TestASCII.txt", 1, 10, 4092, 4100);
+		//reader = new FileReader(getFile("/TestASCII.txt"));
+		//reader2 = new FileReader(getFile("/TestASCII.txt"), 3);
+		bytes = readers.get(14).getWindow(0).getArray();
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		for (FileReader reader : readers) {
+			reader.close();
+		}
+		readers.clear();
 	}
 
 	// /////////////////////////
@@ -383,7 +396,52 @@ public class SequenceSequenceMatcherTest {
 	}
 
 	
+	/**
+	 * Construct using repeated random lists of byte sequence matchers. Tests are:
+	 * 
+	 * - the length of an assembled matcher is correct. - each position in the
+	 * list of matchers matches only one byte. - each position in the assembled
+	 * matcher matches only one byte. - each byte in the assembled matcher is
+	 * correct.
+	 */
+	@Test
+	public void testConstructRepeatedByteSequenceMatcherList() {
+		//TODO: test for repetition - this is just a copy of the unrepeated list test method.
+		for (int testNo = 0; testNo < 10; testNo++) {
+			final List<SequenceSequenceMatcher> list = createRandomList(32);
+			int totalLength = 0;
+			for (final SequenceMatcher matcher : list) {
+				totalLength += matcher.length();
+			}
+			final int repeats = rand.nextInt(10) + 1;
+			final SequenceSequenceMatcher matcher = new SequenceSequenceMatcher(repeats, list);
+			assertEquals("length:", totalLength * repeats, matcher.length());
 
+			int localPos = -1;
+			int matchIndex = 0;
+			SequenceMatcher currentMatcher = list.get(matchIndex);
+			for (int pos = 0; pos < totalLength * repeats; pos++) {
+				final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
+				final byte[] matchingBytes = sbm.getMatchingBytes();
+				localPos++;
+				if (localPos == currentMatcher.length()) {
+					matchIndex++;
+					if (matchIndex == list.size()) {
+						matchIndex = 0;
+					}
+					currentMatcher = list.get(matchIndex);
+					localPos = 0;
+				}
+				final ByteMatcher sbm2 = currentMatcher.getMatcherForPosition(localPos);
+				final byte[] matchingBytes2 = sbm2.getMatchingBytes();
+				assertEquals("number of bytes matched source=1", 1, matchingBytes2.length);
+				assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+				assertEquals("byte value:" + Integer.toString(matchingBytes2[0]), matchingBytes2[0], matchingBytes[0]);
+			}
+		}
+	}
+	
+	
 	// ////////////////////////////////
 	// construction failure tests //
 	// ////////////////////////////////
@@ -662,24 +720,28 @@ public class SequenceSequenceMatcherTest {
 
 	@Test
 	public void testMatchesReaderOutOfBoundsNegative() throws IOException {
-		SequenceMatcher matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher("xxx"));
-		assertFalse("negative position", matcher.matches(reader, -1));
-		assertFalse("past end", matcher.matches(reader, 10000000));
-
-		matcher = matcher.reverse();
-		assertFalse("reverse negative position", matcher.matches(reader, -1));
-		assertFalse("reverse past end", matcher.matches(reader, 10000000));
+		for (FileReader reader : readers) {
+			SequenceMatcher matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher("xxx"));
+			assertFalse("negative position", matcher.matches(reader, -1));
+			assertFalse("past end", matcher.matches(reader, 10000000));
+	
+			matcher = matcher.reverse();
+			assertFalse("reverse negative position", matcher.matches(reader, -1));
+			assertFalse("reverse past end", matcher.matches(reader, 10000000));
+		}
 	}
 
 	@Test
 	public void testMatchesReaderOutOfBoundsCrossingEnd() throws IOException {
-		SequenceMatcher matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher(new byte[] { 0x65, 0x2e, 0x0d,
-				0x0a, 0x00 }));
-		assertFalse("longer than end", matcher.matches(reader, 112276));
+		for (FileReader reader : readers) {
+			SequenceMatcher matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher(new byte[] { 0x65, 0x2e, 0x0d,
+					0x0a, 0x00 }));
+			assertFalse("longer than end", matcher.matches(reader, 112276));
 
-		matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher(new byte[] { 0x00, 0x0a, 0x0d, 0x2e, 0x65 }))
+			matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher(new byte[] { 0x00, 0x0a, 0x0d, 0x2e, 0x65 }))
 				.reverse();
-		assertFalse("reverse longer than end", matcher.matches(reader, 112276));
+			assertFalse("reverse longer than end", matcher.matches(reader, 112276));
+		}
 	}
 
 	// ///////////////////////////////
@@ -1131,9 +1193,11 @@ public class SequenceSequenceMatcherTest {
 	 */
 	private void testMatchesAroundReader(SequenceMatcher matcher, long pos) throws IOException {
 		String matchDesc = matcher.toRegularExpression(true);
-		assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
-		assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
-		assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
+		for (FileReader reader : readers) {
+			assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
+			assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
+			assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
+		}
 	}
 
 	/**
@@ -1221,7 +1285,19 @@ public class SequenceSequenceMatcherTest {
 		URL url = this.getClass().getResource(resourceName);
 		return new File(url.getPath());
 	}
-
+	
+	private List<FileReader> getReaders(String resourceName, int... windowFromTo) throws FileNotFoundException {
+		List<FileReader> result = new ArrayList<FileReader>(32);
+		for (int pos = 0; pos < windowFromTo.length; pos += 2) {
+			int windowSizeFrom = windowFromTo[pos];
+			int windowSizeTo   = windowFromTo[pos + 1];
+			for (int windowSize = windowSizeFrom; windowSize <= windowSizeTo; windowSize++) {
+				result.add(new FileReader(getFile(resourceName), windowSize));
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Creates a random length byte array containing random bytes.
 	 * 

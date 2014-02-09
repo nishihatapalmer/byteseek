@@ -43,6 +43,7 @@ import java.util.NoSuchElementException;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,6 +61,11 @@ public class FixedGapMatcherTest {
 	public void setUp() throws Exception {
 		reader = new FileReader(getFile("/TestASCII.txt"));
 		bytes = reader.getWindow(0).getArray();
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		reader.close();
 	}
 	
 	@Test

@@ -45,6 +45,8 @@ import net.byteseek.object.ArgUtils;
 
 /**
  * An immutable sequence matcher which matches sequences of other sequence matchers.
+ * This could even involve sequences of other SequenceSequenceMatchers arbitrarily
+ * nested, and of different lengths.
  * For example, we could have a sequence of bytes, followed by a case insensitive
  * sequence, followed by a fixed gap, followed by a byte set sequence.
  * 
@@ -88,7 +90,7 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
             for (int count = 0; count < numberOfRepeats; count++) {
                 allMatchers.addAll(matcherCollection);
             }
-            matchers = matcherCollection.toArray(new SequenceMatcher[length]);
+            matchers = allMatchers.toArray(new SequenceMatcher[length]);
             totalLength = calculateTotalLength(matchers);
         }
     }
@@ -143,31 +145,38 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
         final int localTotalLength = totalLength;
         final SequenceMatcher[] localArray = matchers;        
         Window window = reader.getWindow(matchPosition);
-        int checkPos = 0;
-        int matchIndex = 0;
+        int matchPos = 0;
+        int matcherIndex = 0;
+        // While we have data to read from:
         while (window != null) {
-            final int offset = reader.getWindowOffset(matchPosition + checkPos);
-            final int endPos = Math.min(window.length(), offset + localTotalLength - checkPos);
+            final int windowStartMatchPos = matchPos;
+        	final int offset = reader.getWindowOffset(matchPosition + matchPos);
+            final int endArrayPos = Math.min(window.length(), offset + localTotalLength - matchPos);
+            //final long lastMatchingPosition = window.getWindowPosition() + endArrayPos - 1;
             final byte[] array = window.getArray();
-            while (offset + checkPos < endPos) {
-                final SequenceMatcher matcher = localArray[matchIndex++];
+            int arrayCheckPos = offset + matchPos - windowStartMatchPos;
+            // While our current matcher starts within the current window 
+            while (arrayCheckPos < endArrayPos) {
+                final SequenceMatcher matcher = localArray[matcherIndex++];
                 final int matcherLength = matcher.length();
-                // If our matcher fits within the current window, check using the window:
-                if (offset + checkPos + matcherLength <= endPos) {
-                    if (!matcher.matchesNoBoundsCheck(array, offset + checkPos)) {
+                //final int arrayCheckPos = offset + matchPos - windowStartMatchPos;
+                // If our matcher fits within the current window, check using the window array:
+                if (arrayCheckPos + matcherLength <= endArrayPos) {
+                    if (!matcher.matchesNoBoundsCheck(array, arrayCheckPos)) {
                         return false;
                     }
                 } else { // the matcher spans two windows, or is at the limit of the final window.
-                    if (!matcher.matches(reader, matchPosition + checkPos)) {
+                    if (!matcher.matches(reader, matchPosition + matchPos)) {
                         return false;
                     }
                 }
-                checkPos += matcherLength;
+                matchPos += matcherLength;
+                arrayCheckPos += matcherLength;
             }
-            if (checkPos == localTotalLength) {
+            if (matchPos == localTotalLength) {
                 return true;
             }
-            window = reader.getWindow(matchPosition + checkPos);
+            window = reader.getWindow(matchPosition + matchPos);
         }
         return false;
     }   
@@ -282,17 +291,18 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
     public ByteMatcher getMatcherForPosition(final int position) {
     	ArgUtils.checkIndexOutOfBounds(totalLength,  position);
         int currentEndPosition = 0;
+        ByteMatcher result = null;
         for (final SequenceMatcher matcher : matchers) {
             final int matcherLength = matcher.length();
             currentEndPosition += matcherLength;
             if (position < currentEndPosition) {
             	final int matcherOffset = position - (currentEndPosition - matcherLength); 
-                return matcher.getMatcherForPosition(matcherOffset);
+                result = matcher.getMatcherForPosition(matcherOffset);
+                break;
             }
         }
-        final String badness = "A ByteMatcher for position %d in a SequenceSequenceMatcher of length %d could not be retrieved.  This should not happen; there is a bug.  Please report this to the byteseek developers.";
-        throw new RuntimeException(String.format(badness, position, totalLength));
-    }
+        return result;
+   }
 
 
     /**

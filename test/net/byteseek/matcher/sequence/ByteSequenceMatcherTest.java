@@ -54,6 +54,7 @@ import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -76,7 +77,7 @@ public class ByteSequenceMatcherTest {
 
 	private final static Random rand = new Random();
 
-	private FileReader reader;
+	private List<FileReader> readers;
 	private byte[] bytes;
 
 	public ByteSequenceMatcherTest() {
@@ -107,10 +108,18 @@ public class ByteSequenceMatcherTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		reader = new FileReader(getFile("/TestASCII.txt"));
-		bytes = reader.getWindow(0).getArray();
+		readers = getReaders("/TestASCII.txt", 1, 10, 4092, 4100);
+		bytes = readers.get(14).getWindow(0).getArray();
 	}
 
+	@After
+	public void tearDown() throws Exception {
+		for (FileReader reader : readers) {
+			reader.close();
+		}
+		readers.clear();
+	}
+	
 	// /////////////////////////
 	// constructor tests //
 	// /////////////////////////
@@ -770,22 +779,26 @@ public class ByteSequenceMatcherTest {
 
 	@Test
 	public void testMatchesReaderOutOfBoundsNegative() throws IOException {
-		SequenceMatcher matcher = new ByteSequenceMatcher("xxx");
-		assertFalse("negative position", matcher.matches(reader, -1));
-		assertFalse("past end", matcher.matches(reader, 10000000));
-
-		matcher = matcher.reverse();
-		assertFalse("reverse negative position", matcher.matches(reader, -1));
-		assertFalse("reverse past end", matcher.matches(reader, 10000000));
+		for (FileReader reader : readers) {
+			SequenceMatcher matcher = new ByteSequenceMatcher("xxx");
+			assertFalse("negative position", matcher.matches(reader, -1));
+			assertFalse("past end", matcher.matches(reader, 10000000));
+	
+			matcher = matcher.reverse();
+			assertFalse("reverse negative position", matcher.matches(reader, -1));
+			assertFalse("reverse past end", matcher.matches(reader, 10000000));
+		}
 	}
 
 	@Test
 	public void testMatchesReaderOutOfBoundsCrossingEnd() throws IOException {
-		SequenceMatcher matcher = new ByteSequenceMatcher(new byte[] { 0x65, 0x2e, 0x0d, 0x0a, 0x00 });
-		assertFalse("longer than end", matcher.matches(reader, 112276));
-
-		matcher = new ByteSequenceMatcher(new byte[] { 0x00, 0x0a, 0x0d, 0x2e, 0x65 }).reverse();
-		assertFalse("reverse longer than end", matcher.matches(reader, 112276));
+		for (FileReader reader : readers) {
+			SequenceMatcher matcher = new ByteSequenceMatcher(new byte[] { 0x65, 0x2e, 0x0d, 0x0a, 0x00 });
+			assertFalse("longer than end", matcher.matches(reader, 112276));
+	
+			matcher = new ByteSequenceMatcher(new byte[] { 0x00, 0x0a, 0x0d, 0x2e, 0x65 }).reverse();
+			assertFalse("reverse longer than end", matcher.matches(reader, 112276));
+		}
 	}
 
 	// ///////////////////////////////
@@ -1311,9 +1324,11 @@ public class ByteSequenceMatcherTest {
 	 */
 	private void testMatchesAroundReader(SequenceMatcher matcher, long pos) throws IOException {
 		String matchDesc = matcher.toRegularExpression(true);
-		assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
-		assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
-		assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
+		for (FileReader reader : readers) {
+			assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
+			assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
+			assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
+		}
 	}
 
 	/**
@@ -1400,6 +1415,18 @@ public class ByteSequenceMatcherTest {
 	private File getFile(final String resourceName) {
 		URL url = this.getClass().getResource(resourceName);
 		return new File(url.getPath());
+	}
+	
+	private List<FileReader> getReaders(String resourceName, int... windowFromTo) throws FileNotFoundException {
+		List<FileReader> result = new ArrayList<FileReader>(32);
+		for (int pos = 0; pos < windowFromTo.length; pos += 2) {
+			int windowSizeFrom = windowFromTo[pos];
+			int windowSizeTo   = windowFromTo[pos + 1];
+			for (int windowSize = windowSizeFrom; windowSize <= windowSizeTo; windowSize++) {
+				result.add(new FileReader(getFile(resourceName), windowSize));
+			}
+		}
+		return result;
 	}
 
 	/**
