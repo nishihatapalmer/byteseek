@@ -35,7 +35,13 @@ import java.io.IOException;
 
 /**
  * An exception thrown when a {@link WindowReader} cannot access a Window which it
- * should be able to return. It extends {@link java.io.IOException}, which means
+ * should be able to return.  WindowReaders assume they can access any legitimate position
+ * in the underlying source.  Merely trying to access out of bounds of the source will not
+ * cause this exception to be thrown - in this case a WindowReader will simply return a null
+ * Window.  This exception is reserved for a failure to access a Window in a legitimate 
+ * position.  
+ * <p>
+ * It extends {@link java.io.IOException}, which means
  * it is a checked exception. However, it will be thrown from methods which can
  * also throw IOExceptions for other reasons, so no specific catch block is
  * technically required, although you can specifically catch this exception if
