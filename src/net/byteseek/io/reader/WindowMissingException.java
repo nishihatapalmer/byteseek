@@ -49,7 +49,10 @@ import java.io.IOException;
  * <p>
  * This may be because an inappropriate
  * {@link net.byteseek.io.reader.cache.WindowCache} object was used for the
- * input source of the WindowReader and the access pattern used with it.
+ * input source of the WindowReader and the access pattern used with it.  For example,
+ * if a MostRecentlyAdded cache is used with a stream based reader, the early Windows in
+ * the stream will eventually be lost.  Any attempt to access a Window in that part of 
+ * the stream will then fail, and a WindowMissingException would be thrown.
  * 
  * @author Matt Palmer.
  */
