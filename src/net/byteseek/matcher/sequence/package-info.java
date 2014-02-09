@@ -33,6 +33,6 @@
   * net.byteseek.matcher.sequence containing interfaces for objects that match
   * sequences of bytes in various ways.  Classes are provided which match
   * straight sequences of bytes, sequences of ByteMatchers, fixed gaps, and
-  * sequences of other byte sequences.
+  * sequences of other sequences.
   */
  package net.byteseek.matcher.sequence;
