@@ -252,6 +252,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     
     
     private List<Automata<T>> getByteAutomataList(final String fromString) {
+      //TODO: should allow different charsets, not just do a direct byte from char conversion.
       final List<Automata<T>> automataList = new ArrayList<Automata<T>>(fromString.length());
       for (int i = 0; i < fromString.length(); i++) {
         automataList.add(createTransitionAutomata(ByteNode.valueOf((byte) fromString.charAt(i))));
