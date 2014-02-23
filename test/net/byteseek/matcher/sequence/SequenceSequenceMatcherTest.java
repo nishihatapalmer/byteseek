@@ -406,7 +406,6 @@ public class SequenceSequenceMatcherTest {
 	 */
 	@Test
 	public void testConstructRepeatedByteSequenceMatcherList() {
-		//TODO: test for repetition - this is just a copy of the unrepeated list test method.
 		for (int testNo = 0; testNo < 10; testNo++) {
 			final List<SequenceSequenceMatcher> list = createRandomList(32);
 			int totalLength = 0;
@@ -415,6 +414,10 @@ public class SequenceSequenceMatcherTest {
 			}
 			final int repeats = rand.nextInt(10) + 1;
 			final SequenceSequenceMatcher matcher = new SequenceSequenceMatcher(repeats, list);
+			final SequenceSequenceMatcher toRepeat = new SequenceSequenceMatcher(list);
+			final SequenceMatcher sameObject = toRepeat.repeat(1);
+			assertEquals("Repeated once is the same object", toRepeat, sameObject);
+			final SequenceMatcher repeated = toRepeat.repeat(repeats);
 			assertEquals("length:", totalLength * repeats, matcher.length());
 
 			int localPos = -1;
@@ -422,7 +425,9 @@ public class SequenceSequenceMatcherTest {
 			SequenceMatcher currentMatcher = list.get(matchIndex);
 			for (int pos = 0; pos < totalLength * repeats; pos++) {
 				final ByteMatcher sbm = matcher.getMatcherForPosition(pos);
+				final ByteMatcher rbm = repeated.getMatcherForPosition(pos);
 				final byte[] matchingBytes = sbm.getMatchingBytes();
+				final byte[] repeatedBytes = rbm.getMatchingBytes();
 				localPos++;
 				if (localPos == currentMatcher.length()) {
 					matchIndex++;
@@ -436,7 +441,9 @@ public class SequenceSequenceMatcherTest {
 				final byte[] matchingBytes2 = sbm2.getMatchingBytes();
 				assertEquals("number of bytes matched source=1", 1, matchingBytes2.length);
 				assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+				assertEquals("number of bytes matched=1", 1, repeatedBytes.length);
 				assertEquals("byte value:" + Integer.toString(matchingBytes2[0]), matchingBytes2[0], matchingBytes[0]);
+				assertEquals("byte value:" + Integer.toString(matchingBytes2[0]), matchingBytes2[0], repeatedBytes[0]);
 			}
 		}
 	}

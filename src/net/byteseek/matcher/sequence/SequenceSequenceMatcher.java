@@ -304,16 +304,6 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
         return result;
    }
 
-
-    /**
-     * Returns a cloned array of {@link SequenceMatcher}s this sequence array matcher matches.
-     * 
-     * @return An array of SequenceMatchers.
-     */
-    public SequenceMatcher[] getMatchers() {
-        return matchers.clone();
-    }
-
     
     /**
      * {@inheritDoc}
