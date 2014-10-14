@@ -29,8 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.object.factory;
+package net.byteseek.object.lazy;
 
+
+import net.byteseek.object.factory.ObjectFactory;
 
 /**
  * This class creates objects using double-check
@@ -42,10 +44,10 @@ package net.byteseek.object.factory;
  * 
  * @author Matt Palmer
  */
-public final class DoubleCheckLazyObject<T> implements LazyObject<T> {
+public final class DoubleCheckImmutableLazyObject<T> implements LazyObject<T> {
 
     private final ObjectFactory<T> factory;
-    private volatile T object;
+    private T object; // since the object is immutable, this field does not have to be volatile.
 
     /**
      * Constructs a DoubleCheckLazyObject with an object factory to create the 
@@ -53,7 +55,7 @@ public final class DoubleCheckLazyObject<T> implements LazyObject<T> {
      * 
      * @param factory A factory which can create an instance of type T.
      */
-    public DoubleCheckLazyObject(ObjectFactory<T> factory) {
+    public DoubleCheckImmutableLazyObject(ObjectFactory<T> factory) {
     	this.factory = factory;
     }
     

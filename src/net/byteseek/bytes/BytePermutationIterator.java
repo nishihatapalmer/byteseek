@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * This class iterates through all the permutations of byte strings which can be 

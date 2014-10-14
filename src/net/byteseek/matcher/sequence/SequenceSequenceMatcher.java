@@ -41,7 +41,7 @@ import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An immutable sequence matcher which matches sequences of other sequence matchers.
@@ -99,7 +99,7 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
 	/**
      * Constructs a SequenceSequenceMatcher from an array of SequenceMatchers.
      * 
-     * @param matchArray The array of SequenceMatchers to construct from.
+     * @param matchers The array of SequenceMatchers to construct from.
      * @throws IllegalArgumentException if the array is null or empty.
      */
     public SequenceSequenceMatcher(final SequenceMatcher...matchers) {

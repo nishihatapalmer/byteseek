@@ -44,7 +44,7 @@ import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An immutable class which matches a sequence of {@link ByteMatcher}s.
@@ -325,7 +325,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 	 * repetitions.
 	 *  
 	 * @param repeats The number of times to repeat the source subsequence.
-	 * @param matcher The ByteMatcherSequenceMatcher to construct from.
+	 * @param source The ByteMatcherSequenceMatcher to construct from.
 	 * @param startIndex The start index in the source matcher for this matcher to start from, inclusive.
 	 * @param endIndex The end index in the source matcher for this matcher to end at, exclusive.
 	 * @throws IllegalArgumentException if the matcher is null.

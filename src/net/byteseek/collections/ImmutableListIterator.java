@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An iterator over a list which prevents removal of items from the list.

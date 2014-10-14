@@ -33,7 +33,7 @@ package net.byteseek.collections;
 
 import java.util.Collection;
 
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A static utility class containing useful methods for collections.

@@ -38,7 +38,7 @@ import java.util.NoSuchElementException;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An immutable object which matches a gap of unknown bytes.

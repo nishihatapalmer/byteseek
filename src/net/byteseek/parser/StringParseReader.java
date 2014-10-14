@@ -30,7 +30,7 @@
  */
 package net.byteseek.parser;
 
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A class which can be used by parsers to read from a string, maintaining
@@ -202,7 +202,7 @@ public class StringParseReader {
 	 * Reads past the next occurrence of the character specified. 
 	 * If the character doesn't appear, then we have read past the end of the string. 
 	 * 
-	 * @param endingChar The character to read past.
+	 * @param toChar The character to read past.
 	 */
 	public final void readPastChar(final char toChar) {
 		final int charIndex = string.indexOf(toChar, position);

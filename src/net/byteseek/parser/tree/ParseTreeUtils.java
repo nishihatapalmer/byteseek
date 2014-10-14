@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.byteseek.bytes.ByteUtils;
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.parser.ParseException;
 
 /**
@@ -110,7 +110,7 @@ public final class ParseTreeUtils {
 	 * or -1 if no such child exists, or the childIndex is out of the bounds of the parent node.
 	 * 
 	 * @param parentNode The node to search for children of a type in.
-	 * @param childIndex The index to begin searching from.
+	 * @param from The index to begin searching from.
 	 * @param type The type of the child to look for.
 	 * @return The index of the child within the parent node, or -1 if no such child exists.
 	 * @throws IllegalArgumentException if the parentNode is null.

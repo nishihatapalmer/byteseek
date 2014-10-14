@@ -41,7 +41,7 @@ import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 
 /**

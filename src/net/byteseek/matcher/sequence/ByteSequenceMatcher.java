@@ -43,7 +43,7 @@ import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An immutable class which matches a sequence of bytes backed by a byte array.
@@ -71,7 +71,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * can be passed in directly as an array of bytes, or specified as a comma-separated list of bytes.
      * The array of bytes passed in is cloned to avoid mutability and concurrency issues.
      * 
-     * @param byteArray The array of bytes to match.
+     * @param bytes The array of bytes to match.
      * @throws IllegalArgumentException if the array of bytes passed in is null or empty.
      */
     public ByteSequenceMatcher(final byte...bytes) {

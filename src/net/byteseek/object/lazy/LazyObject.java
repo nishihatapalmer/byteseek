@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.object.factory;
+package net.byteseek.object.lazy;
 
 /**
  * An interface for (potentially) lazy object creation.

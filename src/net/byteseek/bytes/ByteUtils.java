@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.byteseek.object.ArgUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A utility class containing useful methods to work with bytes, including:
