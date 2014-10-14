@@ -102,15 +102,16 @@ public final class DotSerializer<T> implements AutomataSerializer<T, String> {
 		if (!visitedStates.containsKey(state)) {
 			visitedStates.put(state, nextStateNumber);
 			final String shapeDef = Integer.toString(nextStateNumber);
-			String label = shapeDef;
-			if (includeAssociatedObjects) {
+            final StringBuilder label = new StringBuilder();
+            label.append(nextStateNumber);
+            if (includeAssociatedObjects) {
 				final Collection<T> associatedObjects = state.getAssociations();
-				for (final T associated : associatedObjects) {
-					label += " [" + associated.toString() + ']';
+                for (final T associated : associatedObjects) {
+					label.append(" [").append(associated.toString()).append(']');
 				}
 			}
 			final String shape = state.isFinal() ? FINAL_STATE_SHAPE : NON_FINAL_STATE_SHAPE;
-			builder.append(String.format(STATE_DEFINITION, shapeDef, label, shape));
+			builder.append(String.format(STATE_DEFINITION, shapeDef, label.toString(), shape));
 
 			// process its transitions:
 			for (final Transition<T> transition : state) {

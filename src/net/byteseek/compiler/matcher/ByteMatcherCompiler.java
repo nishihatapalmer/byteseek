@@ -78,7 +78,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 
 	// Protected static fields:
 
-	protected static ByteMatcherCompiler   defaultCompiler;
+	protected static ByteMatcherCompiler defaultCompiler;
 	protected static ByteMatcherFactory	 defaultFactory;
 
 	/**

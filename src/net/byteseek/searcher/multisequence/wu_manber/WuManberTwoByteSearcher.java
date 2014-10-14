@@ -94,7 +94,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
             int arraySearchPosition = arrayStartPosition;            
 
             if (arraySearchPosition == 0) {
-
+                //TODO: why is this here?
             }
 
             // Search forwards in this array:
@@ -105,7 +105,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
 
                 // Calculate the hash of the current block:
                 final int lastBlockByte = array[arraySearchPosition] & 0xFF;
-                if (firstBlockByte < 0) firstBlockByte = array[arraySearchPosition - 1] & 0xFF;
+                if (firstBlockByte < 0) {
+                    firstBlockByte = array[arraySearchPosition - 1] & 0xFF;
+                }
                 final int blockHash = (firstBlockByte << 5) - firstBlockByte + lastBlockByte;
 
                 // Get the safe shift for this block:
@@ -169,7 +171,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
 
             // Calculate the hash of the current block:
             final int lastBlockByte = bytes[searchPosition] & 0xFF;
-            if (firstBlockByte < 0) firstBlockByte = bytes[searchPosition - 1] & 0xFF;
+            if (firstBlockByte < 0) {
+                firstBlockByte = bytes[searchPosition - 1] & 0xFF;
+            }
             final int blockHash = (firstBlockByte << 5) - firstBlockByte + lastBlockByte; 
 
             // Get the safe shift for this block:
@@ -238,7 +242,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
 
                 // Calculate the hash of the current block:
                 final int firstBlockByte = array[arraySearchPosition] & 0xFF;
-                if (lastBlockByte < 0) lastBlockByte = array[arraySearchPosition + 1];
+                if (lastBlockByte < 0) {
+                    lastBlockByte = array[arraySearchPosition + 1];
+                }
                 final int blockHash = (firstBlockByte << 5) - firstBlockByte + lastBlockByte;
 
                 // Get the safe shift for this block:
@@ -298,7 +304,9 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
 
             // Get the safe shift for this byte:
             final int firstBlockByte = bytes[searchPosition] & 0xFF;
-            if (lastBlockByte < 0) lastBlockByte = bytes[searchPosition + 1] & 0xFF;
+            if (lastBlockByte < 0) {
+                lastBlockByte = bytes[searchPosition + 1] & 0xFF;
+            }
             final int blockHash = (firstBlockByte << 5) - firstBlockByte + lastBlockByte; 
             final int safeShift = safeShifts[blockHash & hashBitMask];
 

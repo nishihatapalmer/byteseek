@@ -46,7 +46,7 @@ import java.io.RandomAccessFile;
  */
 public final class IOUtils {
 
-	private static int DEFAULT_BUFFER_SIZE = 4096;
+	private static final int DEFAULT_BUFFER_SIZE = 4096;
 
 	/**
 	 * Private constructor to prevent instantiating a utility class.

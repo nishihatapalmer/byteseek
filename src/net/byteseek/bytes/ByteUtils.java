@@ -65,8 +65,8 @@ public final class ByteUtils {
     private static final int START_PRINTABLE_ASCII = 32;
     private static final int END_PRINTABLE_ASCII = 126;
 
-    private static int[] VALID_ALL_BITMASK_SET_SIZES = {1, 2, 4, 8, 16, 32, 64, 128, 256};
-    private static int[] VALID_ANY_BITMASK_SET_SIZES = {0, 128, 192, 224, 240, 248, 252, 254, 255};
+    private static final int[] VALID_ALL_BITMASK_SET_SIZES = {1, 2, 4, 8, 16, 32, 64, 128, 256};
+    private static final int[] VALID_ANY_BITMASK_SET_SIZES = {0, 128, 192, 224, 240, 248, 252, 254, 255};
 
     private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 

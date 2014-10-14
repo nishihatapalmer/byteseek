@@ -96,7 +96,7 @@ import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolSearcher;
  */
 public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSearcher {
         
-    private static int HIGHEST_POWER_OF_TWO = 1073741824;
+    private static final int HIGHEST_POWER_OF_TWO = 1073741824;
 
     /**
      * A class holding the search information used in the Wu-Manber search.
