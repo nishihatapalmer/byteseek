@@ -130,7 +130,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *   b      (0) --b--> [1]
 	 * </code><p/>
 	 *
-	 * @param transitionByte The byte to transition on.
+	 * @param source The thing to transition on.
 	 * @param inverted Whether to match all other bytes, or just the one passed in.
 	 * @return An automata with a transition on the byte supplied.
 	 */
