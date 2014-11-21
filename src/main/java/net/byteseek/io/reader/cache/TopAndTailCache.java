@@ -72,7 +72,7 @@ public final class TopAndTailCache extends AbstractCache {
         }
         if (windowPosition < firstCacheSize) {
             cache.put(windowPosition, window);
-        } else if (windowPosition >= lengthSoFar - secondCacheSize) {
+        } else if (windowEnd > lengthSoFar - secondCacheSize) {
             cache.put(windowPosition, window);
             tailCacheEntries.add(window);
         }
