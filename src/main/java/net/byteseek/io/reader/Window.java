@@ -130,6 +130,27 @@ public final class Window {
 	}
 
 	/**
+	 * Returns the final position in this window.  It is equivalent
+	 * to the window position plus the length of the window, minus one.
+	 *
+	 * @return the last position in this window.
+	 */
+	public long getWindowEndPosition() {
+		return windowPosition + length - 1;
+	}
+
+	/**
+	 * Returns the starting position of the window after this one.  It is
+	 * equivalent to the window position plus the length of this window.
+	 *
+	 * @return The starting position of the window after this one.
+	 */
+	public long getNextWindowPosition() {
+		return windowPosition + length;
+	}
+
+
+	/**
 	 * Returns the length of the Window. Note that this may be shorter than the
 	 * length of the byte array which backs this Window.
 	 * 
