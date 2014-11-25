@@ -100,11 +100,11 @@ public final class TopAndTailCache extends AbstractCache {
             int numberOfCacheEntries = tailCacheEntries.size();
             if (numberOfCacheEntries > 1) {
                 final int nextToCheck = nextTailCacheToCheck;
-                final Window maybeTail = tailCacheEntries.get(nextToCheck);
-                if (maybeTail.getWindowEndPosition() < tailCacheStart) {
-                    cache.remove(maybeTail);
+                final Window window = tailCacheEntries.get(nextToCheck);
+                if (window.getWindowEndPosition() < tailCacheStart) {
+                    cache.remove(window);
                     tailCacheEntries.remove(nextToCheck);
-                    notifyWindowFree(maybeTail, this);
+                    notifyWindowFree(window, this);
                 } else {
                     nextTailCacheToCheck = (nextToCheck + 1) % numberOfCacheEntries;
                 }
