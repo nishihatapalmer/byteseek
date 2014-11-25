@@ -104,6 +104,7 @@ public final class TopAndTailCache extends AbstractCache {
                 if (maybeTail.getWindowEndPosition() < tailCacheStart) {
                     cache.remove(maybeTail);
                     tailCacheEntries.remove(nextToCheck);
+                    notifyWindowFree(maybeTail, this);
                 } else {
                     nextTailCacheToCheck = (nextToCheck + 1) % numberOfCacheEntries;
                 }
