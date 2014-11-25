@@ -44,7 +44,8 @@ public final class TopAndTailCache extends AbstractCache {
     private final List<Window> tailCacheEntries;
     private final int firstCacheSize;
     private final int secondCacheSize;
-    private long lengthSoFar;
+    private long lastPositionSeen;
+    private int nextTailCacheToCheck;
 
     public TopAndTailCache(final int cacheSize) {
         this(cacheSize, cacheSize);
@@ -65,16 +66,17 @@ public final class TopAndTailCache extends AbstractCache {
     @Override
     public void addWindow(final Window window) {
         final long windowPosition = window.getWindowPosition();
-        final long windowEnd      = windowPosition + window.length();
-        if (windowEnd > lengthSoFar) {
-            lengthSoFar = windowEnd;
-            removeNonTailWindows();
+        final long windowEnd      = window.getWindowEndPosition();
+        if (windowEnd > lastPositionSeen) {
+            lastPositionSeen = windowEnd;
         }
+        final long tailCacheStart = lastPositionSeen - secondCacheSize + 1;
         if (windowPosition < firstCacheSize) {
             cache.put(windowPosition, window);
-        } else if (windowEnd > lengthSoFar - secondCacheSize) {
+        } else if (windowEnd >= tailCacheStart) {
             cache.put(windowPosition, window);
             tailCacheEntries.add(window);
+            checkNonTailWindows(tailCacheStart);
         }
     }
 
@@ -83,15 +85,28 @@ public final class TopAndTailCache extends AbstractCache {
         tailCacheEntries.clear();
     }
 
-
-    private void removeNonTailWindows() {
-        final long secondCacheStart = lengthSoFar - secondCacheSize;
-        final Iterator<Window> tailEntryIterator = tailCacheEntries.iterator();
-        while (tailEntryIterator.hasNext()) {
-            final Window tailEntry = tailEntryIterator.next();
-            final long windowEnd = tailEntry.getWindowPosition() + tailEntry.length();
-            if (windowEnd < secondCacheStart) {
-                tailEntryIterator.remove();
+    /**
+     * Every time we add a window which is further on than the last position we saw,
+     * check up to two windows to see if they should be evicted from the cache.
+     * The index of the window to check in the tail cache is kept the same if we
+     * evict the window at that position, or advanced if we don't.  This ensures that
+     * we eventually cycle round the tail cache and check earlier windows, because for each
+     * window we add, we can remove up to two windows which should no longer be cached.
+     *
+     * @param tailCacheStart The start of the tail cache.
+     */
+    private void checkNonTailWindows(final long tailCacheStart) {
+        for (int repeat = 0; repeat < 2; repeat++){
+            int numberOfCacheEntries = tailCacheEntries.size();
+            if (numberOfCacheEntries > 1) {
+                final int nextToCheck = nextTailCacheToCheck;
+                final Window maybeTail = tailCacheEntries.get(nextToCheck);
+                if (maybeTail.getWindowEndPosition() < tailCacheStart) {
+                    cache.remove(maybeTail);
+                    tailCacheEntries.remove(nextToCheck);
+                } else {
+                    nextTailCacheToCheck = (nextToCheck + 1) % numberOfCacheEntries;
+                }
             }
         }
     }
