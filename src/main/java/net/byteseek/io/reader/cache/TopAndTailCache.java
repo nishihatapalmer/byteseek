@@ -89,9 +89,9 @@ public final class TopAndTailCache extends AbstractCache {
      * Every time we add a window which is further on than the last position we saw,
      * check up to two windows to see if they should be evicted from the cache.
      * The index of the window to check in the tail cache is kept the same if we
-     * evict the window at that position, or advanced if we don't.  This ensures that
-     * we eventually cycle round the tail cache and check earlier windows, because for each
-     * window we add, we can remove up to two windows which should no longer be cached.
+     * evict the window at that position, or advanced if we don't (mod number of cache entries).
+     * This ensures that we eventually cycle round the tail cache and check earlier windows,
+     * because for each window we add, we can remove up to two windows which should no longer be cached.
      *
      * @param tailCacheStart The start of the tail cache.
      */
