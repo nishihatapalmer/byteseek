@@ -56,6 +56,7 @@ public final class TempFileCache extends AbstractCache {
     private final Map<Long, WindowInfo> windowPositions;
     
     private File tempFile;
+    private File tempDir;
     private RandomAccessFile file;
     private long nextFilePos;
    
@@ -64,7 +65,23 @@ public final class TempFileCache extends AbstractCache {
      * Constructs a TempFileCache.
      */
     public TempFileCache() {
+        this(null);
+    }
+
+
+    /**
+     * Constructs a TempFileCache which creates temporary files in the directory specified.
+     * If the file is null, then temporary files will be created in the default temp directory.
+     *
+     * @param tempDir The directory to create temporary files in.
+     * @throws java.lang.IllegalArgumentException if the tempdir supplied is not a directory.
+     */
+    public TempFileCache(final File tempDir) {
         windowPositions = new HashMap<Long, WindowInfo>();
+        this.tempDir = tempDir;
+        if (tempDir != null && !tempDir.isDirectory()) {
+            throw new IllegalArgumentException("The temp dir file supplied is not a directory: " + tempDir.getAbsolutePath());
+        }
     }
     
     
@@ -134,7 +151,8 @@ public final class TempFileCache extends AbstractCache {
         if (tempFile == null) {
             windowPositions.clear();
             nextFilePos = 0;
-            tempFile = IOUtils.createTempFile();
+            tempFile = tempDir == null? IOUtils.createTempFile()
+                                      : IOUtils.createTempFile(tempDir);
             file = new RandomAccessFile(tempFile, "rw");
         }
     }
