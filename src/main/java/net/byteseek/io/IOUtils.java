@@ -180,6 +180,18 @@ public final class IOUtils {
 	}
 
 	/**
+	 * Creates a temporary file in the directory specified with the
+	 * filename prefix "byteseek" and a filename extension of ".tmp".
+	 *
+	 * @param tempDir The directory to create the temporary file in.
+	 * @return The temporary file created.
+	 * @throws IOException If an error occurs creating the temporary file.
+	 */
+	public static File createTempFile(File tempDir) throws IOException {
+		return File.createTempFile("byteseek", ".tmp", tempDir);
+	}
+
+	/**
 	 * Creates a temporary file in the default temporary file area, with the
 	 * filename prefix "byteseek" and a filename extension of ".tmp". The
 	 * temporary file will have the contents of the {@link java.io.InputStream}
