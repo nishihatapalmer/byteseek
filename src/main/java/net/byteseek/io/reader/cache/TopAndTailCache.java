@@ -37,6 +37,21 @@ import java.util.*;
 
 /**
  * A cache which holds on to the first X bytes and the last Y bytes.
+ * <p>
+ * It makes no assumption about the final length, so it will work with streaming readers.
+ * It holds on to (at least) the last Y bytes given the highest length it has seen so far.
+ * As windows are no longer within the tail cache they are gradually evicted from the cache
+ * as new windows further along are added.
+ * <p>
+ * Note: this cache may retain access to windows that are not within the tail of the data source.
+ * If they were within the tail at one point during the read, and then insufficient further windows
+ * are read to cause the cache to evict the stale windows.  It does not attempt to ensure that all
+ * windows currently cached are evicted as soon as possible once they should no longer be cached.
+ * Instead, it takes an incremental approach of checking up to two old windows each time a new
+ * window is added, cycling around the tail-entries.  This gives us a worst case of about
+ * the tail cache size in stale windows.  The average case should be much better than that,
+ * for example, with either random access or sequential access.  This approach means we do not have
+ * to check all tail-cached windows each time we add a new window to the cache.
  */
 public final class TopAndTailCache extends AbstractCache {
 
