@@ -114,6 +114,18 @@ public final class ReaderInputStream extends InputStream {
         return pos > -1? currentWindowLength - currentArrayPos : 0;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>WARNING</b>
+     * Mark <b>is only partially supported</b>, and <i>only if</i> the underlying WindowReader which backs this InputStream has a
+     * caching mechanism which can rewind far enough.  This is not actually guaranteed, so you must be
+     * sure that your WindowReader is caching enough to support mark and reset in this stream.
+     * This method <b>always return true</b> (we cannot tell whether the WindowReader will genuinely cache enough).
+     * <p>
+     * If an attempt is made to rewind to a previous window which is not cached, a {@link net.byteseek.io.reader.WindowMissingException}
+     * is thrown on a call to {@link #reset()}.
+     */
     @Override
     public boolean markSupported() {
         return true;
