@@ -152,15 +152,7 @@ public final class ReaderInputStream extends InputStream {
     private void checkWindowPos() throws IOException {
         if (currentArrayPos >= currentWindowLength) {
             pos += currentArrayPos;
-            currentWindow = this.reader.getWindow(pos);
-            if (currentWindow != null) {
-                currentWindowLength = currentWindow.length();
-                currentArrayPos = 0;
-                currentArray = currentWindow.getArray();
-            } else {
-                currentArray = null;
-                pos = -1;
-            }
+            setPos(pos);
         }
     }
 
