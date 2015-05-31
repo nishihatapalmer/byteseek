@@ -172,7 +172,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
 
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[byte:" + byteToMatch + ']';
+    	return getClass().getSimpleName() + '[' +  String.format("%02x", byteToMatch & 0xFF) + ']';
     }
     
     

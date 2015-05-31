@@ -150,7 +150,9 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[bitmask:" + mBitMaskValue + " inverted:" + inverted + ']';
+    	return getClass().getSimpleName() +
+                "[bitmask:" +  String.format("%02x", mBitMaskValue & 0xFF) +
+                " inverted:" + inverted + ']';
     }
 
 
