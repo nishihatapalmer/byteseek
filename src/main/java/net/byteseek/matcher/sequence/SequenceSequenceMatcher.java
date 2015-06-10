@@ -357,9 +357,10 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
                 break;
             }
         }
-        
+
         // If there's only one matcher involved, then return a subsequence of it:
-        if (startMatcher == endMatcher) {
+        //if (startMatcher == endMatcher) {
+        if (startIndex == lastIndex) {
             return startMatcher.subsequence(startOffset, endLimit);
         }
         

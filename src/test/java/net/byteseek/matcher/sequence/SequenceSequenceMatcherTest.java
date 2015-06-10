@@ -943,6 +943,20 @@ public class SequenceSequenceMatcherTest {
 		testSubSequence("\tq\tw\te\tr\ni\r\t\t \tx\t.");
 	}
 
+	/**
+	 * Test for bug where the subsequence would only return the first element if the matcher
+	 * at the start and end of the subsequence was the same object.
+	 */
+	@Test
+	public void testSubSequenceSameByteMatchers() {
+		ByteMatcher ZERO = OneByteMatcher.valueOf((byte) 0);
+		SequenceSequenceMatcher matcher =
+				new SequenceSequenceMatcher(ZERO, ZERO, ZERO, ZERO, ZERO);
+		SequenceMatcher result = matcher.subsequence(0, 3);
+		assertEquals("Length is 3", 3, result.length());
+
+	}
+
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testNegativeSubsequenceBeginIndex() {
 		SequenceSequenceMatcher test = new SequenceSequenceMatcher(new ByteSequenceMatcher("0123456789"));
