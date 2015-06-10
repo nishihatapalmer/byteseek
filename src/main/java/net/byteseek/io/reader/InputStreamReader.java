@@ -78,6 +78,7 @@ public class InputStreamReader extends AbstractReader {
 	private final InputStream stream;
 	private long streamPos = 0;
 	private long length = UNKNOWN_LENGTH;
+	private boolean closeStreamOnClose;
 
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the default
@@ -91,8 +92,26 @@ public class InputStreamReader extends AbstractReader {
 	 *             if the stream is null.
 	 */
 	public InputStreamReader(final InputStream stream) {
-		this(stream, DEFAULT_WINDOW_SIZE, DEFAULT_CAPACITY);
+		this(stream, DEFAULT_WINDOW_SIZE, DEFAULT_CAPACITY, true);
 	}
+
+	/**
+	 * Constructs an InputStreamReader from an InputStream, using the default
+	 * window size of 4096 and a default capacity of 32, and a
+	 * {@link TwoLevelCache} with a {@link MostRecentlyUsedCache} as its primary
+	 * cache and a {@link TempFileCache} as the secondary cache.
+	 *
+	 * @param stream
+	 *            The InputStream to read from.
+	 * @param closeStreamOnClose
+	 *            Whether to close the underlying stream when this reader is closed.
+	 * @throws IllegalArgumentException
+	 *             if the stream is null.
+	 */
+	public InputStreamReader(final InputStream stream, final boolean closeStreamOnClose) {
+		this(stream, DEFAULT_WINDOW_SIZE, DEFAULT_CAPACITY, closeStreamOnClose);
+	}
+
 
 	/**
 	 * Constructs an InputStreamReader from an InputStream using a default
@@ -109,7 +128,29 @@ public class InputStreamReader extends AbstractReader {
 	 *             if the stream or cache is null.
 	 */
 	public InputStreamReader(final InputStream stream, final WindowCache cache) {
-		this(stream, DEFAULT_WINDOW_SIZE, cache);
+		this(stream, DEFAULT_WINDOW_SIZE, cache, true);
+	}
+
+	/**
+	 * Constructs an InputStreamReader from an InputStream using a default
+	 * window size of 4096, and the {@link WindowCache} provided. The
+	 * WindowCache must ensure that it can provide any Window from a position in
+	 * the stream which has already been read, or you must be sure that you will
+	 * never request such a position if the cache cannot provide that guarantee.
+	 *
+	 * @param stream
+	 *            The InputStream to read from.
+	 * @param cache
+	 *            The WindowCache to use.
+	 * @param closeStreamOnClose
+	 *            Whether to close the underlying stream when this reader is closed.	 *
+	 *
+	 * @throws IllegalArgumentException
+	 *             if the stream or cache is null.
+	 */
+	public InputStreamReader(final InputStream stream, final WindowCache cache,
+							 final boolean closeStreamOnClose) {
+		this(stream, DEFAULT_WINDOW_SIZE, cache, closeStreamOnClose);
 	}
 
 	/**
@@ -126,7 +167,27 @@ public class InputStreamReader extends AbstractReader {
 	 *             if the stream is null, or the window size is less than one.
 	 */
 	public InputStreamReader(final InputStream stream, final int windowSize) {
-		this(stream, windowSize, DEFAULT_CAPACITY);
+		this(stream, windowSize, DEFAULT_CAPACITY, true);
+	}
+
+	/**
+	 * Constructs an InputStreamReader from an InputStream, using the window
+	 * size provided and a default capacity of 32, and a {@link TwoLevelCache}
+	 * with a {@link MostRecentlyUsedCache} as its primary cache and a
+	 * {@link TempFileCache} as the secondary cache.
+	 *
+	 * @param stream
+	 *            The InputStream to read from.
+	 * @param windowSize
+	 *            The size of a Window to create from the stream.
+	 * @param closeStreamOnClose
+	 *            Whether to close the underlying stream when this reader is closed.
+	 *            *
+	 * @throws IllegalArgumentException
+	 *             if the stream is null, or the window size is less than one.
+	 */
+	public InputStreamReader(final InputStream stream, final int windowSize, final boolean closeStreamOnClose) {
+		this(stream, windowSize, DEFAULT_CAPACITY, closeStreamOnClose);
 	}
 
 	/**
@@ -148,8 +209,56 @@ public class InputStreamReader extends AbstractReader {
 	public InputStreamReader(final InputStream stream, final int windowSize,
 			final int capacity) {
 		this(stream, windowSize, TwoLevelCache.create(
-				new MostRecentlyUsedCache(capacity), new TempFileCache()));
+				new MostRecentlyUsedCache(capacity), new TempFileCache()), true);
 	}
+
+	/**
+	 * Constructs an InputStreamReader from an InputStream, using the window
+	 * size provided, the capacity provided and a {@link TwoLevelCache} with a
+	 * {@link MostRecentlyUsedCache} as its primary cache and a
+	 * {@link TempFileCache} as the secondary cache.
+	 *
+	 * @param stream
+	 *            The InputStream to read from.
+	 * @param windowSize
+	 *            The size of a Window to create from the stream.
+	 * @param capacity
+	 *            The capacity of the MostRecentlyUsedCache.
+	 * @param closeStreamOnClose
+	 *            Whether to close the underlying stream when this reader is closed.
+	 * @throws IllegalArgumentException
+	 *             if the stream is null, or the window size is less than one,
+	 *             or the capacity is less than zero.
+	 */
+	public InputStreamReader(final InputStream stream, final int windowSize,
+							 final int capacity, final boolean closeStreamOnClose) {
+		this(stream, windowSize, TwoLevelCache.create(
+				new MostRecentlyUsedCache(capacity), new TempFileCache()),
+		        closeStreamOnClose);
+	}
+
+	/**
+	 * Constructs an InputStreamReader from an InputStream, using the window
+	 * size provided and the {@link WindowCache} provided. The WindowCache must
+	 * ensure that it can provide any Window from a position in the stream which
+	 * has already been read, or you must be sure that you will never request
+	 * such a position if the cache cannot provide that guarantee.
+	 *
+	 * @param stream
+	 *            The InputStream to read from.
+	 * @param windowSize
+	 *            The size of a Window to create from the stream.
+	 * @param cache
+	 *            The WindowCache to use.
+	 * @throws IllegalArgumentException
+	 *             if the stream or cache is null, or the window size is less
+	 *             than one.
+	 */
+	public InputStreamReader(final InputStream stream, final int windowSize,
+							 final WindowCache cache) {
+		this(stream, windowSize, cache, true);
+	}
+
 
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the window
@@ -169,12 +278,13 @@ public class InputStreamReader extends AbstractReader {
 	 *             than one.
 	 */
 	public InputStreamReader(final InputStream stream, final int windowSize,
-			final WindowCache cache) {
+			                 final WindowCache cache, final boolean closeStreamOnClose) {
 		super(windowSize, cache);
 		if (stream == null) {
 			throw new IllegalArgumentException("Stream is null.");
 		}
 		this.stream = stream;
+		this.closeStreamOnClose = closeStreamOnClose;
 	}
 
 	/**
@@ -278,7 +388,9 @@ public class InputStreamReader extends AbstractReader {
 	@Override
 	public void close() throws IOException {
 		try {
-			stream.close();
+			if (closeStreamOnClose) {
+				stream.close();
+			}
 		} finally {
 			super.close();
 		}
