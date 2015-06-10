@@ -188,19 +188,18 @@ public final class TempFileReader extends FileReader {
 	 * clears any cache associated with it. It then attempts to delete the
 	 * temporary file.
 	 * 
-	 * @throws IOException
-	 *             If the temporary file could not be closed or deleted.
+	 * @throws IOException If the temporary file could not be closed or deleted.
 	 */
 	@Override
 	public void close() throws IOException {
 		boolean fileDeleted = false;
 		final File file = getFile();
 		try {
-			super.close(); // ensure the inherited random access file is closed
-							// first
+			super.close(); // ensure the inherited random access file is closed first.
 		} finally {
 			fileDeleted = file.delete();
 		}
+		//TODO: this looks wrong - if exception in super.close() this won't run?
 		if (!fileDeleted) {
 			throw new IOException("Could not delete the temporary file:"
 					+ file.getAbsolutePath());
