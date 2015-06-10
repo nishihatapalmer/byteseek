@@ -48,17 +48,33 @@ public final class ReaderInputStream extends InputStream {
     private int currentWindowLength;
     private byte[] currentArray;
     private int currentArrayPos;
+    private boolean closeReaderOnClose;
+
 
     /**
-     * Constructs a ReaderInputStream from a WindowReader.
+     * Constructs a ReaderInputStream from a WindowReader.  By default, the
+     * underlying reader will not be closed when this input stream is closed.
      *
      * @param reader The WindowReader to back the InputStream.
      * @throws IOException If the ReaderInputStream cannot acquire a window for position 0.
      * @throws java.lang.IllegalArgumentException if the reader is null.
      */
     public ReaderInputStream(final WindowReader reader) throws IOException {
+        this(reader, true);
+    }
+
+    /**
+     * Constructs a ReaderInputStream from a WindowReader.
+     *
+     * @param reader The WindowReader to back the InputStream.
+     * @param closeReaderOnClose Whether the underlying reader is closed when this input stream is closed.
+     * @throws IOException If the ReaderInputStream cannot acquire a window for position 0.
+     * @throws java.lang.IllegalArgumentException if the reader is null.
+     */
+    public ReaderInputStream(final WindowReader reader, boolean closeReaderOnClose) throws IOException {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
+        this.closeReaderOnClose = closeReaderOnClose;
         setPos(0L);
     }
 
@@ -91,7 +107,6 @@ public final class ReaderInputStream extends InputStream {
                 return len;
             } else { // buffer copy may span more than one window (if there are more windows available...)
                 int copied = 0;
-                int destPos   = off;
                 while (copied < len) {
                     System.arraycopy(currentArray, currentArrayPos, b, off + copied, available);
                     copied          += available;
@@ -143,7 +158,9 @@ public final class ReaderInputStream extends InputStream {
 
     @Override
     public synchronized void close() throws IOException {
-        reader.close();
+        if (closeReaderOnClose) {
+            reader.close();
+        }
     }
 
     private void setPos(final long newPos) throws IOException {
