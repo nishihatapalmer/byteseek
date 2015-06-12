@@ -120,8 +120,8 @@ public class FixedGapMatcherTest {
 		assertEquals("Matcher of length one is .", ".", matcher.toRegularExpression(false));
 		
 		matcher = new FixedGapMatcher(2);
-		assertEquals("Matcher of length two is ..", "src/main", matcher.toRegularExpression(true));
-		assertEquals("Matcher of length two is ..", "src/main", matcher.toRegularExpression(false));
+		assertEquals("Matcher of length two is ..", "..", matcher.toRegularExpression(true));
+		assertEquals("Matcher of length two is ..", "..", matcher.toRegularExpression(false));
 
 		matcher = new FixedGapMatcher(3);
 		assertEquals("Matcher of length three is ...", "...", matcher.toRegularExpression(true));
