@@ -59,7 +59,7 @@ import net.byteseek.matcher.bytes.TwoByteMatcher;
  * Its heuristics are as follows:
  * <ul>
  * <li>Find the simple cases that only match 1, 2, 255 and 256 different values.
- *     Use either a {@link net.byteseek.matcher.bytes.OneByteMatcher}, a {@link net.byteseek.matcher.bytes.CaseInsensitiveByteMatcher}, a
+ *     Use either a {@link net.byteseek.matcher.bytes.OneByteMatcher}, a
  *     {@link net.byteseek.matcher.bytes.InvertedByteMatcher} or an {@link net.byteseek.matcher.bytes.AnyByteMatcher}.
  * <li>Do the set of bytes match a bitmask (all or any of the bits?)  Use either an 
  *     {@link net.byteseek.matcher.bytes.AnyBitmaskMatcher} or a {@link net.byteseek.matcher.bytes.AllBitmaskMatcher}.
@@ -164,6 +164,8 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
             	result = new TwoByteMatcher(values);
                 break;
             }
+
+            //TODO: could consider an inverted two byte matcher (e.g. not this case insensitive letter...)
 
             case 255: { // all but one byte matches - find the one that doesn't match:
                 for (int byteValue = 0; byteValue < 256; byteValue++) {
