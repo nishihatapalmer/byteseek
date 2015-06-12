@@ -226,17 +226,9 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * @throws ParseException If the ast could not be parsed.
      */
     protected SequenceMatcher doCompile(final ParseTree ast) throws ParseException {
-    	return optimise(buildSequenceList(ast, new ArrayList<SequenceMatcher>()));
+        final List<SequenceMatcher> sequences = buildSequenceList(ast, new ArrayList<SequenceMatcher>());
+        return optimiser.optimise(new SequenceSequenceMatcher(sequences));
     }
-    
-    
-    protected SequenceMatcher optimise(List<SequenceMatcher> sequences) {
-    	if (sequences.size() == 1) {
-    		return optimiser.optimise(sequences.get(0));
-    	}
-    	return optimiser.optimise(new SequenceSequenceMatcher(sequences));
-    }
-    
     
     /**
      * Parses the ParseTree node passed in, building a list of sequence matchers from it.
@@ -248,8 +240,8 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * @throws NullPointerException if the parse tree or sequence list are null.
      */
     protected List<SequenceMatcher> buildSequenceList(final ParseTree matcherNode,
-    										  		   final List<SequenceMatcher> sequenceList)
-    										  		   throws ParseException {
+    										  		  final List<SequenceMatcher> sequenceList)
+    										  		  throws ParseException {
     	switch (matcherNode.getParseTreeType()) {
     		case BYTE:           			addByteMatcher(                 	matcherNode, sequenceList); break;
     		case ANY:                     	addAnyMatcher(						matcherNode, sequenceList); break;
@@ -260,9 +252,10 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(	matcherNode, sequenceList); break;
     		case SEQUENCE:          		addSequenceMatcher(					matcherNode, sequenceList); break;
     		case REPEAT:          			addRepeatedSequence(				matcherNode, sequenceList); break;
-    		case SET: 						// drop through - sets and alternatives are both treated as sets.
-    		//TODO: should we really treat alternatives as sets?  Seems like stretching the syntax to the point of meaninglessness.
-    		case ALTERNATIVES: 				addSetMatcher(						matcherNode, sequenceList); break;
+
+            //TODO: should we really treat alternatives as sets?  Seems like stretching the syntax to the point of meaninglessness.
+            case SET: 						// drop through - sets and alternatives are both treated as sets.
+     		case ALTERNATIVES: 				addSetMatcher(						matcherNode, sequenceList); break;
     		
     		default: throw new ParseException(getTypeErrorMessage(matcherNode));
     	}
