@@ -194,6 +194,32 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         this.endArrayIndex = totalLength;
     }
 
+    /**
+     * Constructs an immutable ByteSequenceMatcher from another SequenceMatcher.
+     * <p>
+     * All the positions in the sequence matcher passed in must match only a single byte,
+     * or it is impossible to create a ByteSequenceMatcher from it.
+     *
+     * @param matcher The matcher to construct the ByteSequenceMatcher from.
+     * @throws IllegalArgumentException if the matcher is null, or it contains a ByteMatcher which matches
+     *         more than one byte value.
+     */
+    public ByteSequenceMatcher(final SequenceMatcher matcher) {
+        ArgUtils.checkNullObject(matcher);
+        final int finalLength = matcher.length();
+        this.byteArray = new byte[finalLength];
+        for (int matcherIndex = 0; matcherIndex < finalLength; matcherIndex++) {
+            final ByteMatcher byteMatcher = matcher.getMatcherForPosition(matcherIndex);
+            final int numberOfMatcherBytes = byteMatcher.getNumberOfMatchingBytes();
+            if (numberOfMatcherBytes != 1) {
+                throw new IllegalArgumentException("The matcher passed in contains a matcher at position " + matcherIndex +
+                                                   " which matches more than one byte value: " + byteMatcher);
+            }
+            this.byteArray[matcherIndex] = byteMatcher.getMatchingBytes()[0];
+        }
+        this.startArrayIndex = 0;
+        this.endArrayIndex = finalLength;
+    }
 
     /**
      * Constructs an immutable byte sequence matcher from a repeated byte.
