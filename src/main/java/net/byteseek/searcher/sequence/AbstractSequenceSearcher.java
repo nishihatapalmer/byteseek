@@ -40,6 +40,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.AbstractSearcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * This abstract base class for sequence searchers holds the sequence to be
@@ -77,9 +78,7 @@ public abstract class AbstractSequenceSearcher extends AbstractSearcher<Sequence
      * @param sequence The SequenceMatcher to search for.
      */
     public AbstractSequenceSearcher(final SequenceMatcher sequence) {
-        if (sequence == null) {
-            throw new IllegalArgumentException("Null sequence passed in to searcher.");
-        }        
+        ArgUtils.checkNullObject(sequence, "Null sequence passed in to searcher.");
         this.matcher = sequence;
     }    
     
