@@ -389,20 +389,38 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             final SequenceMatcher verifier = (lastPosition == 0)? AnyByteMatcher.ANY_BYTE_MATCHER
             												    : sequence.subsequence(0, lastPosition); 
 
+            // Check for the pathological case of positions matching all bytes, from the end to the start.
+            // If there is such a matcher in the sequence, no shift can be bigger than this length.
+            // The shift code would still work if we did not do this, but long gaps like .{2048) would
+            // incur a high processing cost.
+            int maxShift = sequenceLength;
+            for (int position = sequenceLength - 1; position >=0; position--) {
+                final ByteMatcher matcher = sequence.getMatcherForPosition(position);
+                if (matcher.getNumberOfMatchingBytes() == 256) {
+                    maxShift = sequenceLength - position;
+                    break;
+                }
+            }
+
             // Set the default shift to the length of the sequence for all possible byte values:
             final int[] shifts = new int[256];            
-            Arrays.fill(shifts, sequenceLength);
+            Arrays.fill(shifts, maxShift);
 
-            // Now set specific shifts for the bytes actually in
-            // the sequence itself.  The shift is the distance of a position
-            // from the end of the sequence, but we do not create a shift for
-            // the very last position.
-            for (int sequencePos = 0; sequencePos < lastPosition; sequencePos++) {
-                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
-                final byte[] matchingBytes = aMatcher.getMatchingBytes();
-                final int distanceFromEnd = sequenceLength - sequencePos - 1;
-                for (final byte b : matchingBytes) {
-                    shifts[b & 0xFF] = distanceFromEnd;
+            // As long as we can shift more than one, work out the other possible shifts:
+            if (maxShift > 1) {
+                final int processShiftsFromPos = sequenceLength - maxShift;
+
+                // Now set specific shifts for the bytes actually in
+                // the sequence itself.  The shift is the distance of a position
+                // from the end of the sequence, but we do not create a shift for
+                // the very last position.
+                for (int sequencePos = processShiftsFromPos; sequencePos < lastPosition; sequencePos++) {
+                    final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
+                    final byte[] matchingBytes = aMatcher.getMatchingBytes();
+                    final int distanceFromEnd = sequenceLength - sequencePos - 1;
+                    for (final byte b : matchingBytes) {
+                        shifts[b & 0xFF] = distanceFromEnd;
+                    }
                 }
             }
 
@@ -433,21 +451,41 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceSearcher {
             final int lastPosition = sequenceLength - 1;
             final ByteMatcher byteMatcher = sequence.getMatcherForPosition(0);
             final SequenceMatcher verifier = (lastPosition == 0)? null 
-            													: sequence.subsequence(1, sequenceLength); 
-            // Set the default shift to the length of the sequence
-            final int[] shifts = new int[256];
-            Arrays.fill(shifts, sequenceLength);
+            													: sequence.subsequence(1, sequenceLength);
 
-            // Now set specific byte shifts for the bytes actually in
-            // the sequence itself.  The shift is the position in the sequence,
-            // but we do not create a shift for the first position 0.
-            for (int sequencePos = lastPosition; sequencePos > 0; sequencePos--) {
-                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
-                final byte[] matchingBytes = aMatcher.getMatchingBytes();
-                for (final byte b : matchingBytes) {
-                    shifts[b & 0xFF] = sequencePos;
+            // Check for the pathological case of positions matching all bytes, from the end to the start.
+            // If there is such a matcher in the sequence, no shift can be bigger than this length.
+            // The shift code would still work if we did not do this, but long gaps like .{2048) would
+            // incur a high processing cost.
+            int maxShift = sequenceLength;
+            for (int position = 0; position < sequenceLength; position++) {
+                final ByteMatcher matcher = sequence.getMatcherForPosition(position);
+                if (matcher.getNumberOfMatchingBytes() == 256) {
+                    maxShift = position + 1;
+                    break;
                 }
             }
+
+            // Set the default shift to the length of the sequence
+            final int[] shifts = new int[256];
+            Arrays.fill(shifts, maxShift);
+
+            // As long as we can shift more than one, work out the other possible shifts:
+            if (maxShift > 1) {
+                final int processShiftsFromPos = maxShift - 1;
+
+                // Now set specific byte shifts for the bytes actually in
+                // the sequence itself.  The shift is the position in the sequence,
+                // but we do not create a shift for the first position 0.
+                for (int sequencePos = processShiftsFromPos; sequencePos > 0; sequencePos--) {
+                    final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
+                    final byte[] matchingBytes = aMatcher.getMatchingBytes();
+                    for (final byte b : matchingBytes) {
+                        shifts[b & 0xFF] = sequencePos;
+                    }
+                }
+            }
+
             return new SearchInfo(shifts, byteMatcher, verifier);
         }
         
