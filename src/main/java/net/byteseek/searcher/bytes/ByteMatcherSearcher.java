@@ -82,9 +82,9 @@ public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
             // Search in the window array:
             for (int arraySearchPosition = startWindowSearchPosition;
                  arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
-                if (toSearchFor.matches(array[arraySearchPosition])) {
+                if (searchByte.matches(array[arraySearchPosition])) {
                     final long matchPosition = searchPosition + arraySearchPosition - startWindowSearchPosition;
-                    return SearchUtils.singleResult(matchPosition, toSearchFor);
+                    return SearchUtils.singleResult(matchPosition, searchByte);
                 }
             }
 

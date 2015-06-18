@@ -51,24 +51,29 @@ import java.util.List;
 public final class ByteSearcher extends AbstractSearcher<Byte> {
 
     private final byte toSearchFor;
+    private final Byte byteValue;
 
     public ByteSearcher(final byte value) {
         toSearchFor = value;
+        byteValue = Byte.valueOf(value);
     }
 
     public ByteSearcher(final Byte value) {
         ArgUtils.checkNullObject(value, "Byte passed in cannot be null.");
         toSearchFor = value;
+        byteValue = value;
     }
 
     public ByteSearcher(final OneByteMatcher value) {
         ArgUtils.checkNullObject(value, "OneByteMatcher passed in cannot be null.");
         toSearchFor = value.getMatchingBytes()[0];
+        byteValue = Byte.valueOf(toSearchFor);
     }
 
     @Override
     public List<SearchResult<Byte>> searchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         final byte searchByte = toSearchFor;
+        final Byte resultValue = byteValue;
         long searchPosition = fromPosition >=0? fromPosition : 0;
         Window window;
         // While we have a window to search in:
@@ -93,7 +98,7 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
                      arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
                 if (array[arraySearchPosition] == searchByte) {
                     final long matchPosition = searchPosition + arraySearchPosition - startWindowSearchPosition;
-                    return SearchUtils.singleResult(matchPosition, Byte.valueOf(searchByte));
+                    return SearchUtils.singleResult(matchPosition, resultValue);
                 }
             }
 
@@ -106,12 +111,15 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
     @Override
     public List<SearchResult<Byte>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final byte searchByte = toSearchFor;
-        final int startPosition = fromPosition >= 0? fromPosition : 0;
-        final int endPosition   = toPosition < bytes.length? toPosition : bytes.length - 1;
-        for (int searchPosition = startPosition; searchPosition <= endPosition; searchPosition++) {
-            if (bytes[searchPosition] == searchByte) {
-                return SearchUtils.singleResult(searchPosition, Byte.valueOf(searchByte));
+        final Byte resultValue = byteValue;
+        final int lastPosition = toPosition < bytes.length?
+                                 toPosition : bytes.length - 1;
+        int searchPosition = fromPosition > 0? fromPosition : 0;
+        while (searchPosition <= lastPosition) {
+            if (searchByte == bytes[searchPosition]) {
+                return SearchUtils.singleResult(searchPosition, resultValue);
             }
+            searchPosition++;
         }
         return SearchUtils.noResults();
     }
@@ -119,6 +127,7 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
     @Override
     public List<SearchResult<Byte>> searchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         final byte searchByte = toSearchFor;
+        final Byte resultValue = byteValue;
         long searchPosition = fromPosition;
         Window window;
         // While we have a window to search in:
@@ -141,7 +150,7 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
                  arraySearchPosition >= endWindowSearchPosition; arraySearchPosition--) {
                 if (array[arraySearchPosition] == searchByte) {
                     final long matchPosition = searchPosition - (startWindowSearchPosition - arraySearchPosition);
-                    return SearchUtils.singleResult(matchPosition, Byte.valueOf(searchByte));
+                    return SearchUtils.singleResult(matchPosition, resultValue);
                 }
             }
 
@@ -154,12 +163,14 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
     @Override
     public List<SearchResult<Byte>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final byte searchByte = toSearchFor;
-        final int startPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
-        final int endPosition   = toPosition > 0? toPosition : 0;
-        for (int searchPosition = startPosition; searchPosition >= endPosition; searchPosition--) {
-            if (bytes[searchPosition] == searchByte) {
-                return SearchUtils.singleResult(searchPosition, Byte.valueOf(searchByte));
+        final Byte resultValue = byteValue;
+        final int lastPosition = toPosition > 0? toPosition : 0;
+        int searchPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
+        while (searchPosition >= lastPosition) {
+            if (searchByte == bytes[searchPosition]) {
+                return SearchUtils.singleResult(searchPosition, resultValue);
             }
+            searchPosition--;
         }
         return SearchUtils.noResults();
     }
