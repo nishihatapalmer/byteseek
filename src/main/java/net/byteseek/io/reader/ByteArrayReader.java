@@ -82,7 +82,7 @@ public class ByteArrayReader extends AbstractReader {
 	 */
 	@Override
 	Window createWindow(final long windowStart) throws IOException {
-		return new Window(bytes, 0, bytes.length);
+		return windowStart == 0? new Window(bytes, 0, bytes.length) : null;
 	}
 
 	/**
