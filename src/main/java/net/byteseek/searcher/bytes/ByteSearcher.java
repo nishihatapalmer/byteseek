@@ -83,6 +83,11 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
                     startWindowSearchPosition + distanceToWindowEnd :
                     startWindowSearchPosition + (int) distanceToSearchEnd;
 
+            //TODO: performance tests: is it better to inline an array search method here,
+            //      or just call the array search method itself?  Pros: the compiler may inline
+            //      the array search method anyway, plus the array search method does bounds
+            //      checking on the result, which may enable array bounds optimizations.
+
             // Search in the window array:
             for (int arraySearchPosition = startWindowSearchPosition;
                      arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
@@ -125,6 +130,11 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
             final long distanceToSearchEnd       = searchPosition - toPosition;
             final int  endWindowSearchPosition   = distanceToSearchEnd > startWindowSearchPosition?
                     0 : startWindowSearchPosition - (int) distanceToSearchEnd;
+
+            //TODO: performance tests: is it better to inline an array search method here,
+            //      or just call the array search method itself?  Pros: the compiler may inline
+            //      the array search method anyway, plus the array search method does bounds
+            //      checking on the result, which may enable array bounds optimizations.
 
             // Search in the window array:
             for (int arraySearchPosition = startWindowSearchPosition;
