@@ -72,7 +72,7 @@ public final class SearcherProfiler {
 
 		//System.out.println("Profiling " + searcher + " over ZIP file.");
 		FileReader reader2 = new FileReader(getFile("/TestASCII.zip"));
-		results.profile("ZIP file", reader2, searcher, numberOfSearches);        
+		results.profile("ZIP file", reader2, searcher, numberOfSearches);
 
 		return results;
 	}

@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
@@ -50,6 +51,8 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.MatcherSearcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.Searcher;
+import net.byteseek.searcher.bytes.ByteMatcherSearcher;
+import net.byteseek.searcher.bytes.ByteSearcher;
 import net.byteseek.searcher.multisequence.MultiSequenceMatcherSearcher;
 import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolFinalFlagSearcher;
 import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolSearcher;
@@ -120,13 +123,25 @@ public class SearcherPerformanceTests {
 
 	public void profile(int numberOfTimes) {
 		try {
+			profileByteSearchers(numberOfTimes);
+			//profileByteMatcherSearchers(numberOfTimes);
 			//profileSequenceSearchers(numberOfTimes);
-			profileMultiSequenceSearchers(numberOfTimes);
+			//profileMultiSequenceSearchers(numberOfTimes);
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (IOException ex) {
 			Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	private Collection<Searcher<?>> getByteSearchers(int byteValue) {
+		List<Searcher<?>> searchers = new ArrayList<Searcher<?>>();
+		OneByteMatcher matcher = OneByteMatcher.valueOf((byte) byteValue);
+		searchers.add(new MatcherSearcher(matcher));
+		searchers.add(new SequenceMatcherSearcher(matcher));
+		searchers.add(new ByteSearcher(matcher));
+		searchers.add(new ByteMatcherSearcher(matcher));
+		return searchers;
 	}
 
 	private Collection<Searcher<?>> getSequenceSearchers(SequenceMatcher sequence) {
@@ -182,6 +197,14 @@ public class SearcherPerformanceTests {
 		return lastResultCount;
 	}
 
+	public void profileByteSearchers(int numberOfTimes) throws FileNotFoundException, IOException {
+		profileByte(0,           numberOfTimes);
+		profileByte((byte) 'A',  numberOfTimes);
+		profileByte((byte) 'e',  numberOfTimes);
+		profileByte((byte) 12,   numberOfTimes);
+	}
+
+
 	public void profileSequenceSearchers(int numberOfTimes) throws FileNotFoundException,
 			IOException {
 
@@ -216,6 +239,11 @@ public class SearcherPerformanceTests {
 		profileMultiSequence(numberOfTimes, "Midsommer", "Oberon", "Titania", "Dreame", "heere",
 				"nothing", "perchance", "discretion", "smallest", "through", "enough", "Gentleman",
 				"friends");
+	}
+
+	private void profileByte(int byteValue, int numberOfTimes) throws IOException {
+		lastResultCount = profileSearchers("Profiling byte value: " + byteValue,
+				numberOfTimes, getByteSearchers(byteValue));
 	}
 
 	private void profileSequence(String sequence, int numberOfTimes) throws IOException {
@@ -334,10 +362,12 @@ public class SearcherPerformanceTests {
 				for (Searcher<?> searcher : searchers) {
 					newSet.remove(searcher);
 				}
-				for (Searcher<?> searcher : newSet) {
-					message += searcher.getClass().getSimpleName() + " ";
+				if (newSet.size() > 0) {
+					for (Searcher<?> searcher : newSet) {
+						message += searcher.getClass().getSimpleName() + " ";
+					}
+					System.out.println(message);
 				}
-				System.out.println(message);
 			}
 		}
 	}
