@@ -138,7 +138,7 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
 
             // Search in the window array:
             for (int arraySearchPosition = startWindowSearchPosition;
-                 arraySearchPosition <= endWindowSearchPosition; arraySearchPosition--) {
+                 arraySearchPosition >= endWindowSearchPosition; arraySearchPosition--) {
                 if (array[arraySearchPosition] == searchByte) {
                     final long matchPosition = searchPosition - (startWindowSearchPosition - arraySearchPosition);
                     return SearchUtils.singleResult(matchPosition, Byte.valueOf(searchByte));
@@ -156,7 +156,7 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
         final byte searchByte = toSearchFor;
         final int startPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
         final int endPosition   = toPosition > 0? toPosition : 0;
-        for (int searchPosition = startPosition; searchPosition <= endPosition; searchPosition--) {
+        for (int searchPosition = startPosition; searchPosition >= endPosition; searchPosition--) {
             if (bytes[searchPosition] == searchByte) {
                 return SearchUtils.singleResult(searchPosition, Byte.valueOf(searchByte));
             }
@@ -173,4 +173,18 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
     public void prepareBackwards() {
        // Nothing to prepare in order to search.
     }
+
+    /**
+     * Returns a string representation of this searcher.
+     * The precise format returned is subject to change, but in general it will
+     * return the type of searcher and the sequence being searched for.
+     *
+     * @return String a representation of the searcher.
+     */
+    @Override
+    public String toString() {
+        final int value = toSearchFor & 0xFF;
+        return this.getClass().getSimpleName() + '[' + String.format("%02X", value) + ']';
+    }
+
 }

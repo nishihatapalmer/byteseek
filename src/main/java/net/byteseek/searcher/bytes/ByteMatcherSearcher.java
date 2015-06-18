@@ -34,7 +34,6 @@ package net.byteseek.searcher.bytes;
 import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.searcher.AbstractSearcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
@@ -130,7 +129,7 @@ public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
 
             // Search in the window array:
             for (int arraySearchPosition = startWindowSearchPosition;
-                 arraySearchPosition <= endWindowSearchPosition; arraySearchPosition--) {
+                 arraySearchPosition >= endWindowSearchPosition; arraySearchPosition--) {
                 if (searchByte.matches(array[arraySearchPosition])) {
                     final long matchPosition = searchPosition - (startWindowSearchPosition - arraySearchPosition);
                     return SearchUtils.singleResult(matchPosition, searchByte);
@@ -148,7 +147,7 @@ public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
         final ByteMatcher searchByte = toSearchFor;
         final int startPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
         final int endPosition   = toPosition > 0? toPosition : 0;
-        for (int searchPosition = startPosition; searchPosition <= endPosition; searchPosition--) {
+        for (int searchPosition = startPosition; searchPosition >= endPosition; searchPosition--) {
             if (searchByte.matches(bytes[searchPosition])) {
                 return SearchUtils.singleResult(searchPosition, searchByte);
             }
@@ -165,4 +164,17 @@ public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
     public void prepareBackwards() {
         // Nothing to prepare in order to search.
     }
+
+    /**
+     * Returns a string representation of this searcher.
+     * The precise format returned is subject to change, but in general it will
+     * return the type of searcher and the sequence being searched for.
+     *
+     * @return String a representation of the searcher.
+     */
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '[' + toSearchFor + ']';
+    }
+
 }
