@@ -99,16 +99,16 @@ public class SearcherPerformanceTests {
 	// The problem appears both in forwards and backwards searching - but for different sequences.
 	// Some kind of boundary issue...
 	
-	public final static int	FIRST_WARMUP_TIMES	= 10;
-	public final static int	SECOND_WARMUP_TIMES	= 10;
+	public final static int	FIRST_WARMUP_TIMES	= 50;
+	public final static int	SECOND_WARMUP_TIMES	= 25;
 	public final static int	CYCLE_WARMUP_TIMES	= 10;
-	public final static int	TEST_TIMES			= 10;	//100; 
+	public final static int	TEST_TIMES			= 100;	//100;
 
 	public static void main(String[] args) throws InterruptedException {
 		System.out.println("Starting profiling");
 		SearcherPerformanceTests tests = new SearcherPerformanceTests();
 
-		//warmup(tests);
+		warmup(tests);
 
 		Thread.sleep(250);
 		System.out.println("Running performance tests " + TEST_TIMES);
@@ -139,6 +139,9 @@ public class SearcherPerformanceTests {
 		OneByteMatcher matcher = OneByteMatcher.valueOf((byte) byteValue);
 		searchers.add(new MatcherSearcher(matcher));
 		searchers.add(new SequenceMatcherSearcher(matcher));
+		searchers.add(new BoyerMooreHorspoolSearcher(matcher));
+		searchers.add(new HorspoolFinalFlagSearcher(matcher));
+		searchers.add(new SundayQuickSearcher(matcher));
 		searchers.add(new ByteSearcher(matcher));
 		searchers.add(new ByteMatcherSearcher(matcher));
 		return searchers;

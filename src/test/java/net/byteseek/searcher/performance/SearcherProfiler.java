@@ -6,6 +6,7 @@
 package net.byteseek.searcher.performance;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -17,8 +18,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.byteseek.io.IOUtils;
+import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.io.reader.cache.AllWindowsCache;
 import net.byteseek.searcher.BackwardSearchIterator;
 import net.byteseek.searcher.ForwardSearchIterator;
 import net.byteseek.searcher.SearchResult;
@@ -66,15 +70,25 @@ public final class SearcherProfiler {
 			throws FileNotFoundException, IOException {
 		final ProfileResults results = new ProfileResults();
 
-		//System.out.println("Profiling " + searcher + " over ASCII file.");
-		FileReader reader = new FileReader(getFile("/TestASCII.txt"));
+		final File asciiFile = getFile("/TestASCII.txt");
+		final File zipFile   = getFile("/TestASCII.zip");
+
+		WindowReader reader = getFileReader(asciiFile);
 		results.profile("ASCII file", reader, searcher, numberOfSearches);
 
-		//System.out.println("Profiling " + searcher + " over ZIP file.");
-		FileReader reader2 = new FileReader(getFile("/TestASCII.zip"));
+		WindowReader reader2 = getFileReader(zipFile);
 		results.profile("ZIP file", reader2, searcher, numberOfSearches);
 
 		return results;
+	}
+
+	private WindowReader getFileReader(File file) throws IOException {
+		FileReader reader = new FileReader(file, new AllWindowsCache());
+		// read entire file into cache so we're not profiling underlying OS file system performance.
+		for (long position = 0; position < file.length() + 1024; position += 1024) {
+			reader.getWindow(position);
+		}
+		return reader;
 	}
 
 	private File getFile(final String resourceName) {
