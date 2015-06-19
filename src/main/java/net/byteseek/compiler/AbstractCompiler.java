@@ -122,8 +122,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 * Classes implementing this base class must implement this method to
 	 * perform the actual compilation.
 	 * 
-	 * @param S
-	 *            An abstract syntax tree
+	 * @param ast An abstract syntax tree
 	 * @return A compiled object of type T.
 	 * @throws CompileException
 	 *             If a problem occurred during compilation.
@@ -135,9 +134,9 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 		try {
 			return doCompile(ast);
 		} catch (IllegalArgumentException e) {
-			throw new CompileException("An illegal argument occurred during construction.", e);
+			throw new CompileException(e.getMessage());
 		} catch (ParseException ex) {
-			throw new CompileException("A problem occurred parsing the syntax tree.", ex);
+			throw new CompileException(ex.getMessage());
 		}
 	}
 
@@ -148,8 +147,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 * Classes implementing this base class must implement this method to
 	 * perform the actual compilation.
 	 * 
-	 * @param S
-	 *            An abstract syntax tree
+	 * @param ast An abstract syntax tree
 	 * @return A compiled object of type T.
 	 * @throws ParseException
 	 *             If a problem occurred during parsing.
@@ -162,8 +160,8 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 * 
 	 * @param expressions
 	 * @return S Another abstract syntax tree containing the join of all the trees passed in.
-	 * @throws ParseExcepStion
-	 * @throws CompileException
+	 * @throws ParseException  An exception which occurs when parsing the expressions.
+	 * @throws CompileException An exception which occurs during compilation of the expressions.
 	 */
 	protected abstract S joinExpressions(List<S> expressions) throws ParseException, CompileException;
 
