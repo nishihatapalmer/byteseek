@@ -182,16 +182,14 @@ public class SequenceMatcherOptimiser implements Optimiser<SequenceMatcher> {
 			final int numMatchingValues = toAnalyse.getMatcherForPosition(matcherIndex).getNumberOfMatchingBytes();
 			if (numMatchingValues == valuesToFind) {
 				currentRun++;
-				if (currentRun == 2) {
-					totalConsecutive = 2;
-				} else if (currentRun > 2) {
-					totalConsecutive++;
-				}
 			} else {
+				if (currentRun > 1) {
+					totalConsecutive += currentRun;
+				}
 				currentRun = 0;
 			}
 		}
-		return totalConsecutive;
+		return currentRun > 1? totalConsecutive + currentRun : totalConsecutive;
 	}
 
 }
