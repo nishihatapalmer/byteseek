@@ -108,7 +108,7 @@ public class SearcherPerformanceTests {
 		System.out.println("Starting profiling");
 		SearcherPerformanceTests tests = new SearcherPerformanceTests();
 
-		warmup(tests);
+		//warmup(tests);
 
 		Thread.sleep(250);
 		System.out.println("Running performance tests " + TEST_TIMES);

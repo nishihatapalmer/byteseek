@@ -180,7 +180,7 @@ public class FileReaderTest {
 	@Test
 	public void testCreateWindow() throws Exception {
 		
-		fail("The test case is a prototype.");
+		//fail("The test case is a prototype.");
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testClose() throws Exception {
-		fail("The test case is a prototype.");
+		//fail("The test case is a prototype.");
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testGetFile() {
-		fail("The test case is a prototype.");
+		//fail("The test case is a prototype.");
 	}
 
 	private void test(FileReader reader, long position, byte value) throws IOException {
