@@ -395,7 +395,9 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             // end of the sequences - if they are also reversed they will match
             // the original sequences).
             final MultiSequenceMatcher verifier = new MultiSequenceReverseMatcher(matcher);
-            
+
+            //TODO: check for pathological cases of matchers matching all bytes in the sequences.
+
             // Create the array of shifts and set the default shift to the
             // minimum length of all the sequences:
             final int[] shifts = new int[256];            
@@ -455,7 +457,9 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
             
             // Create the search info object:
             final MultiSequenceMatcher verifier = matcher;
-            
+
+            //TODO: check for pathological cases of matchers matching all bytes in the sequences.
+
             // Create the array of shifts and set the default shift to the
             // minimum length of all the sequences:
             final int[] shifts = new int[256];            

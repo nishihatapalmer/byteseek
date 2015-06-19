@@ -336,7 +336,9 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
             final int defaultShift = sequences.getMinimumLength() - blockSize + 1;        
             final int[] shifts = createShiftHashTable(defaultShift);
             // (relies on shifts being a size which is a power of two):
-            final int hashBitMask = shifts.length - 1; 
+            final int hashBitMask = shifts.length - 1;
+
+            //TODO: check for pathological cases of matchers matching all bytes in the sequences.
 
             // For each sequence in our list:
             for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
@@ -411,7 +413,9 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
             final int defaultShift = minLength - blockSize + 1;        
             final int[] shifts = createShiftHashTable(defaultShift);
             // (relies on shifts being a size which is a power of two):
-            final int hashBitMask = shifts.length - 1; 
+            final int hashBitMask = shifts.length - 1;
+
+            //TODO: check for pathological cases of matchers matching all bytes in the sequences.
 
             // For each sequence in our list:
             for (final SequenceMatcher sequence : sequences.getSequenceMatchers()) {
