@@ -239,18 +239,17 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        /*
     	final StringBuilder regularExpression = new StringBuilder();
         boolean firstMatcher = true;
         for (final SequenceMatcher matcher : matchers) {
-        	if (prettyPrint && !firstMatcher) {
+        	if (!firstMatcher && prettyPrint) {
         		regularExpression.append(' ');
         	}
            regularExpression.append(matcher.toRegularExpression(prettyPrint));
            firstMatcher = false;
         }
         return regularExpression.toString();
-        */
+        /*
         final StringBuilder builder = new StringBuilder(prettyPrint? totalLength * 4 : totalLength * 3);
         boolean singleByte = false;
         boolean appended = false;
@@ -280,7 +279,9 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
     		}
 			builder.append(ByteUtils.bytesToString(prettyPrint, singleBytes));
 		}
+
         return builder.toString();
+        */
     }
 
 
