@@ -59,6 +59,8 @@ public final class TempFileCache extends AbstractCache {
     private File tempDir;
     private RandomAccessFile file;
     private long nextFilePos;
+    private Window lastWindow;
+    private long   lastWindowPos = -1;
    
     
     /**
@@ -90,6 +92,9 @@ public final class TempFileCache extends AbstractCache {
      */
     @Override
     public Window getWindow(final long position) {
+        if (position == lastWindowPos && lastWindow != null) {
+            return lastWindow;
+        }
         Window window = null;
         final WindowInfo info = windowPositions.get(position);
         if (info != null) {
@@ -97,6 +102,8 @@ public final class TempFileCache extends AbstractCache {
             try {
                 IOUtils.readBytes(file, array, info.filePosition);
                 window = new Window(array, position, info.length);
+                lastWindow = window;
+                lastWindowPos = position;
             } catch (IOException justReturnNullWindow) {
             }
         }
