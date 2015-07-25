@@ -99,10 +99,10 @@ public class droidSig {
         public int maxFragOffset;
 
         public void toDROIDXML(StringBuilder builder, String elementName) throws Exception {
-            builder.append("\t\t<").append(elementName);
-            builder.append(" MaxOffset=\"").append(maxFragOffset).append("\" ");
-            builder.append(" MinOffset=\"").append(minFragOffset).append("\" ");
-            builder.append(" Position=\"").append(position).append("\">");
+            builder.append("\t\t<").append(elementName).append(' ');
+            builder.append("MaxOffset=\"").append(maxFragOffset).append("\" ");
+            builder.append("MinOffset=\"").append(minFragOffset).append("\" ");
+            builder.append("Position=\"").append(position).append("\">");
             builder.append(escapeXml(fragmentExpression));
             builder.append("</").append(elementName).append(">\n");
         }
@@ -153,7 +153,9 @@ public class droidSig {
             paramIndex++;
         }
 
-        String result = buildByteSequence(args[paramIndex], anchor).toDROIDXML();
+        String expression = args[paramIndex];
+        String result = buildByteSequence(expression, anchor).toDROIDXML();
+        System.out.println("<!-- \n" + expression + "\n-->");
         System.out.println(result);
     }
 
