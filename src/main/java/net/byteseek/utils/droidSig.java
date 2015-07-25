@@ -187,8 +187,8 @@ public class droidSig {
         // fixed offset {digit}
         // variable offset {digit:digit}
 
-        // If there are no offsets, the sequence  needs no fragments.
-        if (containsNoOffsets(subExpression)) {
+        // If there are no offsets or alternatives, the sequence  needs no fragments.
+        if (containsNoMandatoryFragments(subExpression)) {
             subSequence.mainExpression = subExpression; // just set the expression directly.
         } else {
             // Split into potential fragments and offsets
@@ -487,8 +487,8 @@ public class droidSig {
         return offsets;
     }
 
-    private static boolean containsNoOffsets(String subExpression) {
-        return !subExpression.contains("{");
+    private static boolean containsNoMandatoryFragments(String subExpression) {
+        return !(subExpression.contains("{") | subExpression.contains("("));
     }
 
 
