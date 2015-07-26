@@ -89,7 +89,6 @@ public class droidSig {
         DroidSequenceBuilder specBuilder = new DroidSequenceBuilder();
         String result = specBuilder.build(expression, anchor).toDROIDXML();
 
-        System.out.println("<!-- \n" + expression + "\n-->");
         System.out.println(result);
     }
 
