@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class DroidExpressionBuilder {
 
+    //TODO: missing syntax: {1-*}, ??
+
     public DroidExpressionBuilder() {};
 
     public ByteSequenceSpec build(String expression, String anchor) {

@@ -52,11 +52,13 @@ import java.util.List;
  * <p>
  * Note: there is a signature development service provided by the National Archives at:
  * <p>
- * http://test.linkeddatapronom.nationalarchives.gov.uk/sigdev/index.htm
+ *     http://test.linkeddatapronom.nationalarchives.gov.uk/sigdev/index.htm
  * </p>
- * Which allows you to generate signature XML by specifying the main components and their
+ * Also see the same service at:<p>
+ *     http://exponentialdecay.co.uk/sd/index.htm
+ * </p>
+ * These allow you to also generate signature XML by specifying the main components and their
  * expressions.
- *
  * </p>
  *
  * Created by matt on 25/07/15.
