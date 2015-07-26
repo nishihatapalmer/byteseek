@@ -58,11 +58,6 @@ public class DroidExpressionBuilder {
     private SubSequenceSpec buildSubSequence(String subExpression, String anchor) {
         SubSequenceSpec subSequence = new SubSequenceSpec();
 
-        // implement full subsequence syntax where needed
-        // {1-*}
-        // ??
-
-
         // If there are no offsets or alternatives, the sequence  needs no fragments.
         if (containsNoMandatoryFragments(subExpression)) {
             subSequence.mainExpression = subExpression; // just set the expression directly.
@@ -273,8 +268,7 @@ public class DroidExpressionBuilder {
         return numBytes;
     }
 
-
-
+    //TODO: deal with {1-*} syntax.  This causes us to have a min offset, then a new subsequence.
     private void processAnchoredOffsets(SubSequenceSpec subSequence, String anchor, List<String> offsetExpressions) {
         String firstOffset = offsetExpressions.get(0);
         int lastIndex      = offsetExpressions.size() - 1;
@@ -368,6 +362,9 @@ public class DroidExpressionBuilder {
 
 
     private String[] getSubsequenceExpressions(String expression) {
+        // Find any {1-*} expressions and convert into {1} * form:
+        expression = expression.replaceAll("-\\*}", "} *");
+
         // Split expression into separate bytes sequences, separated by wildcards:
         String[] sequences = expression.split("\\*");
 
