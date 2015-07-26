@@ -99,8 +99,9 @@ public class droidSig {
         }
 
         String expression = args[paramIndex];
-        DroidExpressionBuilder builder = new DroidExpressionBuilder();
-        String result = builder.build(expression, anchor).toDROIDXML();
+        DroidExpressionBuilder specBuilder = new DroidExpressionBuilder();
+        String result = specBuilder.build(expression, anchor).toDROIDXML();
+
         System.out.println("<!-- \n" + expression + "\n-->");
         System.out.println(result);
     }

@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -38,21 +39,26 @@ public final class StringUtils {
     }
 
     /**
-     * Escapes text for including in an XML document.
+     * Escapes entities for including in an XML document.
      *
      * @param target
      * @return
-     * @throws Exception
      */
-    public static String escapeXml(String target) throws Exception {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        Text text = document.createTextNode(target);
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        DOMSource source = new DOMSource(text);
-        StringWriter writer = new StringWriter();
-        StreamResult result = new StreamResult(writer);
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.transform(source, result);
-        return writer.toString();
+    public static String escapeXml(String target) {
+        final int length = target.length();
+        StringBuilder builder = new StringBuilder(length + 128);
+        for (int charIndex = 0; charIndex < length; charIndex++) {
+            final char theChar = target.charAt(charIndex);
+            switch (theChar) {
+                case '&'  : builder.append("&amp;");  break;
+                case '<'  : builder.append("&lt;");   break;
+                case '>'  : builder.append("&gt;");   break;
+                case '"'  : builder.append("&quot;"); break;
+                case '\'' : builder.append("&apos;"); break;
+                default   : builder.append(theChar);  break;
+            }
+        }
+        return builder.toString();
+
     }
 }

@@ -380,15 +380,19 @@ public class DroidExpressionBuilder {
         public String anchor;
         public List<SubSequenceSpec> subSequences = new ArrayList<SubSequenceSpec>();
 
-        public String toDROIDXML() throws Exception {
+        public String toDROIDXML() {
             StringBuilder builder = new StringBuilder(2048);
+            toDROIDXML(builder);
+            return builder.toString();
+        }
+
+        public void toDROIDXML(StringBuilder builder) {
             builder.append("<ByteSequence Reference=\"").append(anchor).append("\">\n");
             int subSequencePosition = 1;
             for (SubSequenceSpec subSequence : subSequences) {
                 subSequence.toDROIDXML(builder, subSequencePosition++);
             }
             builder.append("</ByteSequence>\n");
-            return builder.toString();
         }
     }
 
@@ -399,7 +403,13 @@ public class DroidExpressionBuilder {
         public List<FragmentSpec> leftFragments = new ArrayList<FragmentSpec>();
         public List<FragmentSpec> rightFragments = new ArrayList<FragmentSpec>();
 
-        public void toDROIDXML(StringBuilder builder, int position) throws Exception {
+        public String toDROIDXML(int position) {
+            StringBuilder builder = new StringBuilder(2048);
+            toDROIDXML(builder, position);
+            return builder.toString();
+        }
+
+        public void toDROIDXML(StringBuilder builder, int position)  {
             builder.append("\t<SubSequence Position=\"").append(position).append("\" ");
             builder.append("SubSeqMaxOffset=\"").append(maxSeqOffset).append("\" ");
             builder.append("SubSeqMinOffset=\"").append(minSeqOffset).append("\">\n");
@@ -420,7 +430,13 @@ public class DroidExpressionBuilder {
         public int minFragOffset;
         public int maxFragOffset;
 
-        public void toDROIDXML(StringBuilder builder, String elementName) throws Exception {
+        public String toDROIDXML(String elementName) {
+            StringBuilder builder = new StringBuilder(2048);
+            toDROIDXML(builder, elementName);
+            return builder.toString();
+        }
+
+        public void toDROIDXML(StringBuilder builder, String elementName) {
             builder.append("\t\t<").append(elementName).append(' ');
             builder.append("MaxOffset=\"").append(maxFragOffset).append("\" ");
             builder.append("MinOffset=\"").append(minFragOffset).append("\" ");
