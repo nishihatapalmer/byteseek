@@ -48,16 +48,16 @@ public class SubSequenceSpec {
     }
 
     public void toDROIDXML(StringBuilder builder, int position)  {
-        builder.append("\t<SubSequence Position=\"").append(position).append("\" ");
+        builder.append("<SubSequence Position=\"").append(position).append("\" ");
         builder.append("SubSeqMaxOffset=\"").append(maxSeqOffset).append("\" ");
-        builder.append("SubSeqMinOffset=\"").append(minSeqOffset).append("\">\n");
-        builder.append("\t\t<Sequence>").append(StringUtils.escapeXml(mainExpression)).append("</Sequence>\n");
+        builder.append("SubSeqMinOffset=\"").append(minSeqOffset).append("\">");
+        builder.append("<Sequence>").append(StringUtils.escapeXml(mainExpression)).append("</Sequence>");
         for (FragmentSpec fragment : leftFragments) {
             fragment.toDROIDXML(builder, "LeftFragment");
         }
         for (FragmentSpec fragment : rightFragments) {
             fragment.toDROIDXML(builder, "RightFragment");
         }
-        builder.append("\t</SubSequence>\n");
+        builder.append("</SubSequence>");
     }
 }

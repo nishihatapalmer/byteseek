@@ -45,11 +45,11 @@ public class ByteSequenceSpec {
     }
 
     public void toDROIDXML(StringBuilder builder) {
-        builder.append("<ByteSequence Reference=\"").append(anchor).append("\">\n");
+        builder.append("<ByteSequence Reference=\"").append(anchor).append("\">");
         int subSequencePosition = 1;
         for (SubSequenceSpec subSequence : subSequences) {
             subSequence.toDROIDXML(builder, subSequencePosition++);
         }
-        builder.append("</ByteSequence>\n");
+        builder.append("</ByteSequence>");
     }
 }

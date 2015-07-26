@@ -45,11 +45,11 @@ public class FragmentSpec {
     }
 
     public void toDROIDXML(StringBuilder builder, String elementName) {
-        builder.append("\t\t<").append(elementName).append(' ');
+        builder.append("<").append(elementName).append(' ');
         builder.append("MaxOffset=\"").append(maxFragOffset).append("\" ");
         builder.append("MinOffset=\"").append(minFragOffset).append("\" ");
         builder.append("Position=\"").append(position).append("\">");
         builder.append(StringUtils.escapeXml(fragmentExpression));
-        builder.append("</").append(elementName).append(">\n");
+        builder.append("</").append(elementName).append(">");
     }
 }
