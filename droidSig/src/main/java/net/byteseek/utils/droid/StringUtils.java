@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.utils;
+package net.byteseek.utils.droid;
 
 /**
  *

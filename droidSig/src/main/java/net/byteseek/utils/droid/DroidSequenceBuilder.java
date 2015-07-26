@@ -31,8 +31,6 @@
 
 package net.byteseek.utils.droid;
 
-import net.byteseek.utils.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
