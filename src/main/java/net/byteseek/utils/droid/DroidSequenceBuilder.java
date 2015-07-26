@@ -39,11 +39,11 @@ import java.util.List;
 /**
  * Created by matt on 26/07/15.
  */
-public class DroidExpressionBuilder {
+public class DroidSequenceBuilder {
 
     //TODO: missing syntax: {1-*}, ??
 
-    public DroidExpressionBuilder() {};
+    public DroidSequenceBuilder() {};
 
     public ByteSequenceSpec build(String expression, String anchor) {
         ByteSequenceSpec byteSequence = new ByteSequenceSpec();
