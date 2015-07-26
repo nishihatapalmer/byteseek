@@ -221,6 +221,7 @@ public class DroidExpressionBuilder {
     private int getNumBytesInExpression(String expression) {
         int numBytes = 0;
         int hexCount = 0;
+        int questionCount = 0;
         boolean inSet = false;
         boolean inString = false;
         boolean inCaseString = false;
@@ -252,6 +253,14 @@ public class DroidExpressionBuilder {
                     }
                 } else if (hexCount == 1) {
                     throw new IllegalArgumentException("A hex digit was split in two in the expression: " + expression);
+                } else if (currentChar == '?') {
+                    questionCount++;
+                    if (questionCount == 2) {
+                        numBytes++;
+                        questionCount = 0;
+                    }
+                } else if (questionCount == 1) {
+                    throw new IllegalArgumentException("Questions marks must be in pairs, the expression only has a single one: " + expression);
                 } else if (currentChar == '[') {
                     inSet = true;
                 } else if (currentChar == '\'') {
