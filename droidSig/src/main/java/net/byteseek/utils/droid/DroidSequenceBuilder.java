@@ -289,7 +289,6 @@ public class DroidSequenceBuilder {
         return numBytes;
     }
 
-    //TODO: deal with {1-*} syntax.  This causes us to have a min offset, then a new subsequence.
     private void processAnchoredOffsets(SubSequenceSpec subSequence, String anchor, List<String> offsetExpressions) {
         String firstOffset = offsetExpressions.get(0);
         int lastIndex      = offsetExpressions.size() - 1;
@@ -385,6 +384,9 @@ public class DroidSequenceBuilder {
     private String[] getSubsequenceExpressions(String expression) {
         // Find any {1-*} expressions and convert into {1} * form:
         expression = expression.replaceAll("-\\*}", "} *");
+
+        // Find any ?? and convert them into {1}
+        expression = expression.replace("??", "{1}");
 
         // Split expression into separate bytes sequences, separated by wildcards:
         String[] sequences = expression.split("\\*");
