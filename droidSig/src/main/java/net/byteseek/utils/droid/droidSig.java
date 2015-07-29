@@ -35,9 +35,23 @@ package net.byteseek.utils.droid;
 
 /**
  *
- * Builds DROID ByteSequence XML from a DROID regular expression.
+ * Builds DROID 6 ByteSequence XML from a DROID regular expression.
  * <p>
- * Note: there is a signature development service provided by the National Archives at:
+ * It attempts to make DROID-6 compatible XML, rather than XML identical to that which PRONOM generates.
+ * <p>
+ *     It omits the generation of the DefaultShift and Shift elements, as DROID 6 onwards
+ * no longer requires these - these values are internally generated if required.
+ * <p>
+ *     It will not split up fragment elements identically to PRONOM in all cases.
+ * PRONOM assumes that classes of bytes (enclosed in square brackets) can't be part of a searchable sequence,
+ * but from DROID 6 onwards this is no longer the case.  In most cases this results in faster searches, with
+ * fewer fragments to process.
+ * <p>
+ *     It also has an option to strip out default attribute values from the generated XML.  DROID 6 currently
+ * will process this XML correctly - and lots of zero attributes makes the XML much harder to read.
+ * <p>
+ * Note: there is also a signature development service provided by the National Archives at, which should give
+ * PRONOM compatible signatures.
  * <p>
  *     http://test.linkeddatapronom.nationalarchives.gov.uk/sigdev/index.htm
  * </p>
