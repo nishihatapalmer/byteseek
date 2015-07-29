@@ -41,22 +41,26 @@ public class SubSequenceSpec {
     public List<FragmentSpec> leftFragments = new ArrayList<FragmentSpec>();
     public List<FragmentSpec> rightFragments = new ArrayList<FragmentSpec>();
 
-    public String toDROIDXML(int position) {
+    public String toDROIDXML(int position, boolean stripDefaults) {
         StringBuilder builder = new StringBuilder(2048);
-        toDROIDXML(builder, position);
+        toDROIDXML(builder, position, stripDefaults);
         return builder.toString();
     }
 
-    public void toDROIDXML(StringBuilder builder, int position)  {
+    public void toDROIDXML(StringBuilder builder, int position, boolean stripDefaults)  {
         builder.append("<SubSequence Position=\"").append(position).append("\" ");
-        builder.append("SubSeqMaxOffset=\"").append(maxSeqOffset).append("\" ");
-        builder.append("SubSeqMinOffset=\"").append(minSeqOffset).append("\">");
+        if (!stripDefaults || maxSeqOffset > 0) {
+            builder.append("SubSeqMaxOffset=\"").append(maxSeqOffset).append("\" ");
+        }
+        if (!stripDefaults || minSeqOffset > 0) {
+            builder.append("SubSeqMinOffset=\"").append(minSeqOffset).append("\">");
+        }
         builder.append("<Sequence>").append(StringUtils.escapeXml(mainExpression)).append("</Sequence>");
         for (FragmentSpec fragment : leftFragments) {
-            fragment.toDROIDXML(builder, "LeftFragment");
+            fragment.toDROIDXML(builder, "LeftFragment", stripDefaults);
         }
         for (FragmentSpec fragment : rightFragments) {
-            fragment.toDROIDXML(builder, "RightFragment");
+            fragment.toDROIDXML(builder, "RightFragment", stripDefaults);
         }
         builder.append("</SubSequence>");
     }

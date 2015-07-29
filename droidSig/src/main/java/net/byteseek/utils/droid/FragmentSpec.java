@@ -38,16 +38,20 @@ public class FragmentSpec {
     public int minFragOffset;
     public int maxFragOffset;
 
-    public String toDROIDXML(String elementName) {
+    public String toDROIDXML(String elementName, boolean stripDefaults) {
         StringBuilder builder = new StringBuilder(2048);
-        toDROIDXML(builder, elementName);
+        toDROIDXML(builder, elementName, stripDefaults);
         return builder.toString();
     }
 
-    public void toDROIDXML(StringBuilder builder, String elementName) {
+    public void toDROIDXML(StringBuilder builder, String elementName, boolean stripDefaults) {
         builder.append("<").append(elementName).append(' ');
-        builder.append("MaxOffset=\"").append(maxFragOffset).append("\" ");
-        builder.append("MinOffset=\"").append(minFragOffset).append("\" ");
+        if (!stripDefaults || maxFragOffset > 0) { // this is currently valid behaviour, but not strict
+            builder.append("MaxOffset=\"").append(maxFragOffset).append("\" ");
+        }
+        if (!stripDefaults || minFragOffset > 0) { // this is currently valid behaviour, but not strict
+            builder.append("MinOffset=\"").append(minFragOffset).append("\" ");
+        }
         builder.append("Position=\"").append(position).append("\">");
         builder.append(StringUtils.escapeXml(fragmentExpression));
         builder.append("</").append(elementName).append(">");

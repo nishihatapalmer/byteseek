@@ -38,17 +38,17 @@ public class ByteSequenceSpec {
     public String anchor;
     public List<SubSequenceSpec> subSequences = new ArrayList<SubSequenceSpec>();
 
-    public String toDROIDXML() {
+    public String toDROIDXML(boolean stripDefaults) {
         StringBuilder builder = new StringBuilder(2048);
-        toDROIDXML(builder);
+        toDROIDXML(builder, stripDefaults);
         return builder.toString();
     }
 
-    public void toDROIDXML(StringBuilder builder) {
+    public void toDROIDXML(StringBuilder builder, boolean stripDefaults) {
         builder.append("<ByteSequence Reference=\"").append(anchor).append("\">");
         int subSequencePosition = 1;
         for (SubSequenceSpec subSequence : subSequences) {
-            subSequence.toDROIDXML(builder, subSequencePosition++);
+            subSequence.toDROIDXML(builder, subSequencePosition++, stripDefaults);
         }
         builder.append("</ByteSequence>");
     }

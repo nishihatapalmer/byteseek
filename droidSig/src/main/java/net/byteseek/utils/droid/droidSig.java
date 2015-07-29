@@ -53,41 +53,58 @@ package net.byteseek.utils.droid;
 public class droidSig {
 
     public final static String USAGE_HELP =
-            "droidSig usage:\n" +
-            "---------------\n\n" +
-            "droidSig produces DROID Byte Sequence XML fragments from a DROID regular expression.\n\n" +
-                    "\t[BOF|EOF|VAR]\t[Optional]\tThe anchoring of the byte sequence.\n" +
-                    "\t\t\t\t\tBOF\tBeginning of file.  If not specified, this is the default.\n" +
-                    "\t\t\t\t\tEOF\tEnd of file.\n" +
-                    "\t\t\t\t\tVAR\tA wildcard search from the beginning of the file.\n" +
-                    "\t{expression}\tA DROID signature regular expression.\n\n" +
-            "Examples:\n" +
-            "\tdroidSig \"01 02 03 04\"\n" +
-            "\tdroidSig EOF \"01 02 {4} [00:FF] 05 06 07 08 09 0A {1-4} 0B 0C * 01 02 03 04 05\n\n";
+            "droidSig\t\tdroidSig produces DROID Byte Sequence XML fragments from a DROID regular expression.\n\n" +
+
+                    "\tUsage:\n" +
+                    "\t\t[-r BOF|EOF|VAR]\t[Optional]\tSets the anchor reference of the byte sequences:\n" +
+                    "\t\t\t\t\t\t\t\t\t\t * BOF\tBeginning of file.  If not specified, this is the default.\n" +
+                    "\t\t\t\t\t\t\t\t\t\t * EOF\tEnd of file.\n" +
+                    "\t\t\t\t\t\t\t\t\t\t * VAR\tA wildcard search from the beginning of the file.\n" +
+
+                    "\t\t[-s]\t\t\t\t[Optional]\tStrip out default values from the XML - mostly the attributes set to zero.\n" +
+                    "\t\t\t\t\t\t\t\t\t\tDROID will still read this XML correctly (currently) and it removes a lot of noise from the XML.\n" +
+
+                    "\t\t{expression}\t\tThe last parameter is the DROID signature regular expression to parse.\n\n" +
+            "\tExamples:\n" +
+            "\t\tdroidSig \"01 02 03 04\"\n" +
+            "\t\tdroidSig -r EOF -s \"01 02 {4} [00:FF] 05 06 07 08 09 0A {1-4} 0B 0C * 01 02 03 04 05\"\n\n";
 
     public static void main(final String[] args) throws Exception {
 
+        // print help with no parameters:
         if (args == null || args.length == 0) {
             System.out.println(USAGE_HELP);
-            System.exit(0);
+            System.exit(1);
         }
 
+        // process the parameters:
+        String anchor = "BOFoffset";     // default is BOFoffset for the anchor if not specified.
+        boolean stripDefaults = false;   // default is not to strip out default values, if not specified.
+        int numParameters = args.length;
         int paramIndex = 0;
-        String firstParam = args[paramIndex];
-        String anchor = "BOFoffset";
-        if ("BOF".equals(firstParam)) {
-            paramIndex++;
-        } else if ("EOF".equals(firstParam)) {
-            anchor = "EOFoffset";
-            paramIndex++;
-        } else if ("VAR".equals(firstParam)) {
-            anchor = "Variable";
+
+        while (paramIndex < numParameters - 1) {
+            String param = args[paramIndex];
+            if ("-r".equals(param)) {
+                paramIndex++;
+                String argument = args[paramIndex];
+                if ("BOF".equals(argument)) {
+                    anchor = "BOFoffset";
+                } else if ("EOF".equals(argument)) {
+                    anchor = "EOFoffset";
+
+                } else if ("VAR".equals(argument)) {
+                    anchor = "Variable";
+                }
+            } else if ("-s".equals(param)) {
+                stripDefaults = true;
+            }
             paramIndex++;
         }
 
         String expression = args[paramIndex];
         DroidSequenceBuilder specBuilder = new DroidSequenceBuilder();
-        String result = specBuilder.build(expression, anchor).toDROIDXML();
+        String result = specBuilder.build(expression, anchor).toDROIDXML(stripDefaults);
 
         System.out.println(result);
     }
