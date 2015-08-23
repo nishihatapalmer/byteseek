@@ -32,8 +32,6 @@
 
 package net.byteseek.utils.droid;
 
-
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -79,22 +77,22 @@ public class droidSig {
         }
 
         // Set default values:
-        Random random         = new Random();
-        String anchor         = "BOFoffset";
-        String xmlOutput      = "SEQ";
-        int    sigId          = 10000 + random.nextInt(990000);
-        String formatName     = "Test Signature Format";
-        String puid           = "example.com/fmt/x";
-        int    formatId       = 10000 + random.nextInt(990000);
-        String extension      = "";
-        boolean stripDefaults = false;
+        Random    random         = new Random();
+        String    anchor         = "BOFoffset";
+        XmlOutput xmlOutput      = XmlOutput.SEQ;
+        int       sigId          = 10000 + random.nextInt(990000);
+        String    formatName     = "Test Signature Format";
+        String    puid           = "example.com/fmt/x";
+        int       formatId       = 10000 + random.nextInt(990000);
+        String    extension      = "";
+        boolean   stripDefaults = false;
 
         // Process any parameters:
         int numParameters = args.length;
         int paramIndex = 0;
         while (paramIndex < numParameters) {
             String param = args[paramIndex];
-            Command command = getCommand(param);
+            Command command = Command.getCommand(param);
             switch(command) {
 
                 case ANCHOR: {
@@ -105,7 +103,7 @@ public class droidSig {
 
                 case XML: {
                     paramIndex++;
-                    xmlOutput = getXML(nextArgument(args, paramIndex));
+                    xmlOutput = getXMLOutput(nextArgument(args, paramIndex));
                     break;
                 }
 
@@ -162,30 +160,29 @@ public class droidSig {
             paramIndex++;
         }
 
-        // Build the byte sequence from the expression, and wrap it in a signature with a format definition:
+        // Build the byte sequence from the expression, wrap it in a signature with a format definition,
+        // and put the lot in a signature file specification.
         String                expression = args[args.length - 1]; // The expression is always the last parameter if we haven't already exited.
         DroidSequenceBuilder  sequenceBuilder  = new DroidSequenceBuilder();
         ByteSequenceSpec      byteSequenceSpec = sequenceBuilder.build(expression, anchor);
         InternalSignatureSpec signatureSpec    = new InternalSignatureSpec(sigId, byteSequenceSpec);
         FormatSpec            formatSpec       = new FormatSpec(formatId, formatName, puid, sigId, extension);
+        SignatureFileSpec     sigFileSpec      = new SignatureFileSpec(signatureSpec, formatSpec);
 
         // Output the correct level of XML:
         String XML = "";
-        if ("SEQ".equals(xmlOutput)) {
-            XML = byteSequenceSpec.toDROIDXML(stripDefaults);
-        } else if ("SIG".equals(xmlOutput)) {
-            XML = signatureSpec.toDROIDXML(stripDefaults);
-        } else if ("FMT".equals(xmlOutput)) {
-            XML = getFormatXML(stripDefaults, signatureSpec, formatSpec);
-        } else if ("ALL".equals(xmlOutput)) {
-            XML = getAllXML(stripDefaults, signatureSpec, formatSpec);
+        switch (xmlOutput) {
+            case SEQ:   XML = byteSequenceSpec.toDROIDXML(stripDefaults);     break;
+            case SIG:   XML = signatureSpec.toDROIDXML(stripDefaults);        break;
+            case FRAGS: XML = sigFileSpec.toDROIDXMLFragments(stripDefaults); break;
+            case FILE:  XML = sigFileSpec.toDROIDXML(stripDefaults);          break;
         }
         System.out.println(XML);
     }
 
 
     /*******************************************************************************************************************
-     *            Commands to help parsing the command line parameters.
+     *            Enums to help parsing the command line commands and command arguments
      */
     private enum Command {
 
@@ -211,41 +208,64 @@ public class droidSig {
         public boolean equals(String parameter) {
             return shortCommand.equals(parameter) || longCommand.equals(parameter);
         }
-    }
 
-    private static Command getCommand(String parameter) {
-        Command[] commands = Command.values();
-        for (Command command : commands) {
-            if (command.equals(parameter)) {
-                return command;
+        public static Command getCommand(String parameter) {
+            Command[] commands = Command.values();
+            for (Command command : commands) {
+                if (command.equals(parameter)) {
+                    return command;
+                }
             }
+            return Command.NULL;
         }
-        return Command.NULL;
     }
 
+    private enum AnchorReference {
+
+        BOF("BOFOffset"),
+        EOF("EOFOffset"),
+        VAR("Variable");
+
+        private final String anchorValue;
+
+        AnchorReference(String anchorValue) {
+            this.anchorValue = anchorValue;
+        }
+
+        public String getValue() {
+            return anchorValue;
+        }
+
+        public static String getReference(String argument) {
+            try {
+                AnchorReference anchor = AnchorReference.valueOf(argument);
+                return anchor.getValue();
+            } catch (IllegalArgumentException ignoreReturnNull) {
+            }
+            return null;
+        }
+
+    }
+
+    private enum XmlOutput {
+        SEQ,
+        SIG,
+        FRAGS,
+        FILE;
+
+        public static XmlOutput getXmlOutput(String argument) {
+            try {
+                return XmlOutput.valueOf(argument);
+            } catch (IllegalArgumentException ignoreReturnNull) {
+            }
+            return null;
+        }
+    }
 
 
     /*******************************************************************************************************************
      *           Private methods.
      */
-
-    private static String getFormatXML(boolean stripDefaults, InternalSignatureSpec signatureSpec, FormatSpec formatSpec) {
-        return signatureSpec.toDROIDXML(stripDefaults) + "\n" +
-              formatSpec.toDROIDXML(stripDefaults);
-    }
-
-    private static String getAllXML(boolean stripDefaults, InternalSignatureSpec signatureSpec, FormatSpec formatSpec) {
-        Date now = new Date();
-        return  XML_HEADER +
-                String.format(SIGNATURE_FILE_START, now, now, now, now, now, now) +
-                SIGNATURE_COLLECTION_START +
-                signatureSpec.toDROIDXML(stripDefaults) +
-                SIGNATURE_COLLECTION_END +
-                FORMAT_COLLECTION_START  +
-                formatSpec.toDROIDXML(stripDefaults) +
-                FORMAT_COLLECTION_END +
-                SIGNATURE_FILE_END;
-    }
 
     private static String nextArgument(String[] args, int paramIndex) {
         if (paramIndex < args.length) {
@@ -255,30 +275,21 @@ public class droidSig {
     }
 
     private static String getAnchor(String argument) {
-        if ("BOF".equals(argument)) {
-            return "BOFoffset";
+        String reference = AnchorReference.getReference(argument);
+        if (reference == null) {
+            System.err.println("ERROR: unknown argument for anchor reference -a, must be BOF, EOF or VAR: " + argument);
+            System.exit(3);
         }
-        if ("EOF".equals(argument)) {
-            return "EOFoffset";
-        }
-        if ("VAR".equals(argument)) {
-            return "Variable";
-        }
-        System.err.println("ERROR: unknown argument for anchor reference -r, must be BOF, EOF or VAR: " + argument);
-        System.exit(3);
-        return null;
+        return reference;
     }
 
-    private static String getXML(String argument) {
-        if ("SEQ".equals(argument) ||
-            "SIG".equals(argument) ||
-            "FMT".equals(argument) ||
-            "ALL".equals(argument)) {
-            return argument;
+    private static XmlOutput getXMLOutput(String argument) {
+        XmlOutput xmlOutput = XmlOutput.getXmlOutput(argument);
+        if (xmlOutput == null) {
+            System.err.println("ERROR: unknown argument for xml output -x, must be SEQ, SIG, FMT or ALL: " + argument);
+            System.exit(4);
         }
-        System.err.println("ERROR: unknown argument for xml output -x, must be SEQ, SIG, FMT or ALL: " + argument);
-        System.exit(4);
-        return null;
+        return xmlOutput;
     }
 
     private static int getInteger(String argument) {
@@ -312,39 +323,39 @@ public class droidSig {
                     "  All parameters are optional and can appear in any order,\n" +
                     "  except the last which is always the expression to be processed.\n\n" +
 
-                    "  -a --anchor BOF|EOF|VAR   Sets the anchor reference of the byte sequence to search from:\n" +
-                    "                             * BOF  Beginning of file.  If not specified, this is the default.\n" +
-                    "                             * EOF  End of file.\n" +
-                    "                             * VAR  A wildcard * search from the beginning of the file.\n" +
+                    "  -a --anchor BOF|EOF|VAR      Sets the anchor reference of the byte sequence to search from:\n" +
+                    "                                * BOF  Beginning of file.  If not specified, this is the default.\n" +
+                    "                                * EOF  End of file.\n" +
+                    "                                * VAR  A wildcard * search from the beginning of the file.\n" +
 
-                    "  -x --xml SEQ|SIG|FMT|ALL  The type of XML to output:\n" +
-                    "                             * SEQ  The byte sequence alone.  If not specified, this is the default.\n" +
-                    "                             * SIG  The internal signature ML with the byte sequence XML inside it.\n" +
-                    "                             * FMT  The SIG XML defined above followed by a linked format XML definition on the next line.\n" +
-                    "                             * ALL  A complete signature file XML with an internal signature and a file format.\n" +
+                    "  -x --xml SEQ|SIG|FRAGS|FILE  The type of XML to output:\n" +
+                    "                                * SEQ   The byte sequence XML fragment.  If not specified, this is the default.\n" +
+                    "                                * SIG   The internal signature XML fragment with the byte sequence XML inside it.\n" +
+                    "                                * FRAGS The SIG XML defined above followed by a linked format XML definition on the next line.\n" +
+                    "                                * FILE  The complete signature file XML with an internal signature and a file format.\n" +
 
-                    "  -i --id   {integer}       The ID of the internal signature if the --xml option specified SIG, FMT or ALL.\n" +
-                    "                            If not specified, then the id will be randomly generated above 10000.\n" +
+                    "  -i --id   {integer}          The ID of the internal signature if the --xml option specified SIG, FMT or ALL.\n" +
+                    "                               If not specified, then the id will be randomly generated above 10000.\n" +
 
-                    "  -n --name {string}        The name of the file format if the --xml option specified FMT or ALL.\n" +
-                    "                            If not specified, then the format name will default to \"Test Signature Format\".\n" +
+                    "  -n --name {string}           The name of the file format if the --xml option specified FMT or ALL.\n" +
+                    "                               If not specified, then the format name will default to \"Test Signature Format\".\n" +
 
-                    "  -p --puid {string}        The PUID of the file format if the --xml option specified FMT or ALL.\n" +
-                    "                            If not specified, then the format PUID will default to \"example.com/fmt/x\"\n" +
+                    "  -p --puid {string}           The PUID of the file format if the --xml option specified FMT or ALL.\n" +
+                    "                               If not specified, then the format PUID will default to \"example.com/fmt/x\"\n" +
 
-                    "  -f --formatid  {integer}  The file format id to use if the -xml specified FMT or ALL.\n" +
-                    "                            If not specified, then the format id will be randomly generated above 10000.\n" +
+                    "  -f --formatid  {integer}     The file format id to use if the -xml specified FMT or ALL.\n" +
+                    "                               If not specified, then the format id will be randomly generated above 10000.\n" +
 
-                    "  -e --ext  {string}        The file format extension for the file format if the --xml specified FMT or ALL.\n" +
-                    "                            If not specified, then there will be no extension associated with the file format.\n" +
+                    "  -e --ext  {string}           The file format extension for the file format if the --xml specified FMT or ALL.\n" +
+                    "                               If not specified, then there will be no extension associated with the file format.\n" +
 
-                    "  -s --strip                Strip out default attribute values from the XML - if not set then all values will be output.\n" +
-                    "                            DROID will still read this XML correctly (currently) and it removes a lot of noise from the XML.\n" +
+                    "  -s --strip                   Strip out default attribute values from the XML - if not set then all values will be output.\n" +
+                    "                               DROID will still read this XML correctly (currently) and it removes a lot of noise from the XML.\n" +
 
-                    "  -h --help [syntax]        Print this help and exit.\n" +
-                    "                            If the optional argument \"syntax\" is also given, help on the expression syntax will be printed as well.\n" +
+                    "  -h --help [syntax]           Print this help and exit.\n" +
+                    "                               If the optional argument \"syntax\" is also given, help on the expression syntax will be printed as well.\n" +
 
-                    "  {expression}              The last parameter is the DROID signature regular expression string to parse, if help is not being printed.\n\n" +
+                    "  {expression}                 The last parameter is the DROID signature regular expression string to parse, if help is not being printed.\n\n" +
 
                     "\tExamples:\n" +
                     "\t\tdroidSig \"01 02 03 04\"\n" +
@@ -352,17 +363,8 @@ public class droidSig {
                     "\t\tdroidSig -a EOF -x SIG -i 9090 \"01 02 03 04 (0D|0A|0A0D) 31\"\n" +
                     "\t\tdroidSig --xml ALL --name \"Acme Report Data\" --puid \"acme.com\\fmt\\5\" \"4F 5E 92 (0A|0D) 20 20 72 [01:02]\"\n\n";
 
-    private static final String XML_HEADER                 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    private static final String SIGNATURE_FILE_START       = "<FFSignatureFile DateCreated=\"%tY-%tm-%tdT%tH:%tM:%tS\" Version=\"1\"" +
-            " xmlns=\"http://www.nationalarchives.gov.uk/pronom/SignatureFile\">";
-    private static final String SIGNATURE_COLLECTION_START = "<InternalSignatureCollection>";
-    private static final String SIGNATURE_COLLECTION_END   = "</InternalSignatureCollection>";
-    private static final String FORMAT_COLLECTION_START    = "<FileFormatCollection>";
-    private static final String FORMAT_COLLECTION_END      = "</FileFormatCollection>";
-    private static final String SIGNATURE_FILE_END         = "</FFSignatureFile>";
 
-
-    private static String SYNTAX_HELP = "Official Expression Syntax\n" +
+    public static final String SYNTAX_HELP = "Official Expression Syntax\n" +
             "--------------------------\n" +
             "DROID regular expressions are a simplified subset of general regular expressions, and they\n" +
             "have a slightly different syntax.  DROID expressions are byte-oriented rather than text-oriented.\n" +
