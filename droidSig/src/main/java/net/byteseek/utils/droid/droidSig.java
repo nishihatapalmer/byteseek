@@ -59,9 +59,15 @@ import java.util.List;
  */
 public class droidSig {
 
+    //TODO: move droidSig into its own code repository aside from byteseek.
+
     //TODO: check exit codes, consistent, standard if such a thing exists.
 
     //TODO: update existing XML file.
+
+    //TODO: write start scripts and README.txt
+
+    //TODO: write maven build scripts to assemble final product.
 
     /**
      * Processes the command line arguments passed in, either building some xml output,
@@ -184,7 +190,7 @@ public class droidSig {
                     break;
             }
         } else {
-            //TODO: update the XML and print it out...
+            //TODO: update the XML file and return it...
         }
 
         System.out.println(XML);
@@ -314,10 +320,11 @@ public class droidSig {
                     "   Error messages are written to standard error, with a non-zero exit code.\n" +
 
                     "\n Usage:\n" +
-                    "\n     droidSig [options] {expression} {expression} ...\n\n" +
+                    "\n     droidSig [option | expression], ...\n\n" +
 
-                    "   All options are optional and can appear in any order.  They all have default values if not specified.\n" +
-                    "   After any options, all remaining parameters are expressions which are parsed into <ByteSequence> elements.\n" +
+                    "   Options and expressions can appear in any order.\n" +
+                    "   Any parameter which is not recognised as an option will be parsed as a <ByteSequence> expression.\n" +
+                    "   All options have default values if not specified.\n" +
 
                     "\n Options:\n" +
 
@@ -331,12 +338,12 @@ public class droidSig {
 
                     "   -e --ext       {string}          Set the file format extension for the file format, defaulting to no extension if not specified.\n" +
 
-                    "   -x --xml SEQ|SIG|FMT|FRAGS|FILE  Set the type of XML to write to standard out, defaulting to FILE if not specified:\n" +
-                    "                                      SEQ    A <ByteSequence> XML fragment only.\n" +
-                    "                                      SIG    An <InternalSignature> XML fragment with the <ByteSequence> XML inside it.\n" +
-                    "                                      FMT    A <FileFormat> XML fragment linked to an internal signature with the signature id you have.\n" +
-                    "                                      FRAGS  An <InternalSignature> fragment followed by the <FileFormat> fragment on the next line.\n" +
-                    "                                      FILE   A new signature XML file containing the <InternalSignature> and <FileFormat> specified.\n" +
+                    "   -x --xml SEQ|SIG|FMT|FRAGS|FILE  Set the level of XML to process and output, defaulting to FILE if not specified:\n" +
+                    "                                      SEQ    The <ByteSequence> XML fragments only.\n" +
+                    "                                      SIG    The <InternalSignature> XML fragment.\n" +
+                    "                                      FMT    The <FileFormat> linked to an internal signature with the signature id you have.\n" +
+                    "                                      FRAGS  Both <InternalSignature> and <FileFormat> fragments.\n" +
+                    "                                      FILE   Complete signature XML containing the <InternalSignature> and <FileFormat> specified.\n" +
 
                     "   -u --update    {sig filename}    Set the filename of a signature file to update, creating it if it doesn't exist.\n" +
                     "                                    The XML type set by the -x option determines how the file is updated:\n" +
@@ -358,7 +365,7 @@ public class droidSig {
                     "                                      license The license for the use of this code will be printed.\n" +
 
                     "\n Expressions:\n" +
-                    "   {expression} {expression} ...    After the options above, all remaining parameters are interpreted as <ByteSequence> expressions to be parsed.\n" +
+                    "   {expression} ...                 All non-option parameters are interpreted as <ByteSequence> expressions to be parsed.\n" +
                     "                                    If there are multiple expressions, then any signature will contain multiple byte sequences.\n" +
 
                     "\n Anchoring expressions:\n" +
@@ -380,8 +387,7 @@ public class droidSig {
                     "   droidSig --xml ALL --name \"Acme Report Data\" --puid \"acme.com\\fmt\\5\" \"4F 5E 92 (0A|0D) 20 20 72 [01:02]\"\n\n";
 
 
-    public static final String LICENCE = "droidSig\n" +
-            " Copyright Matt Palmer 2015, All rights reserved.\n" +
+    public static final String LICENCE = "License:\n Copyright Matt Palmer 2015, all rights reserved.\n" +
             "\n" +
             " This code is licensed under a standard 3-clause BSD license:\n" +
             "\n" +
