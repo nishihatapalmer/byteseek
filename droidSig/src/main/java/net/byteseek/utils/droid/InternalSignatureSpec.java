@@ -31,22 +31,27 @@
 
 package net.byteseek.utils.droid;
 
+import java.util.List;
+
 /**
  * Created by matt on 20/08/15.
  */
 public class InternalSignatureSpec {
 
     private final int sigId;
-    private final ByteSequenceSpec sequenceSpec;
+    private final List<ByteSequenceSpec> sequenceSpecs;
 
-    public InternalSignatureSpec(int sigId, ByteSequenceSpec byteSequenceSpec) {
+    public InternalSignatureSpec(int sigId, List<ByteSequenceSpec> byteSequenceSpecs) {
         this.sigId = sigId;
-        this.sequenceSpec = byteSequenceSpec;
+        this.sequenceSpecs = byteSequenceSpecs;
     }
 
     public String toDROIDXML(boolean stripDefaults) {
-        return "<InternalSignature ID=\"" + sigId + "\">" +
-                sequenceSpec.toDROIDXML(stripDefaults) +
-                "</InternalSignature>";
+        String xml = "<InternalSignature ID=\"" + sigId + "\">";
+        for (ByteSequenceSpec sequenceSpec : sequenceSpecs) {
+            xml += sequenceSpec.toDROIDXML(stripDefaults);
+        }
+        xml += "</InternalSignature>";
+        return xml;
     }
 }

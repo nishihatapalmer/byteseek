@@ -39,30 +39,34 @@ import java.util.List;
  */
 public class DroidSequenceBuilder {
 
-    //TODO: missing syntax: {1-*}, ??
-
     public DroidSequenceBuilder() {};
 
-    public ByteSequenceSpec build(String expression, String anchor) {
-        ByteSequenceSpec byteSequence = new ByteSequenceSpec();
-        byteSequence.anchor = checkAnchor(anchor);
-        List<SubSequenceSpec> subSequences = getSubsequences(expression, anchor);
+    public ByteSequenceSpec build(final String expression) {
+        final ByteSequenceSpec byteSequence = new ByteSequenceSpec();
+        final String subsequenceExpression = processAnchors(byteSequence, expression);
+        final List<SubSequenceSpec> subSequences = getSubsequences(subsequenceExpression, byteSequence.anchor);
         for (SubSequenceSpec subSequence : subSequences) {
             byteSequence.subSequences.add(subSequence);
         }
         return byteSequence;
     }
 
-    private String checkAnchor(String anchor) {
-        if (anchor == null || anchor.isEmpty()) {
-            return "BOFoffset";
+    private String processAnchors(ByteSequenceSpec spec, String expression) {
+        String anchor = "BOFoffset";
+        expression = expression.trim();
+        if (expression.startsWith("\\A")) {
+            expression = expression.substring(2).trim();
         }
-        if ("BOFoffset".equals(anchor) || "EOFoffset".equals(anchor) || "Variable".equals(anchor)) {
-            return anchor;
+        if (expression.endsWith("\\Z")) {
+            anchor = "EOFoffset";
+            expression = expression.substring(0, expression.length() - 2).trim();
         }
-        throw new IllegalArgumentException("The anchor must be BOFoffset, EOFoffset or Variable.\n" +
-                                           "A null or empty anchor is permitted and defaults to BOFoffset.\n" +
-                                           "The actual anchor supplied was: " + anchor);
+        if (expression.startsWith("*")) {
+            anchor = "Variable";
+            expression = expression.substring(1).trim();
+        }
+        spec.anchor = anchor;
+        return expression;
     }
 
     private List<SubSequenceSpec> getSubsequences(String expression, String anchor) {

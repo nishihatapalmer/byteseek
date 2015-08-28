@@ -32,8 +32,10 @@
 
 package net.byteseek.utils.droid;
 
-import java.util.Date;
-import java.util.Random;
+//TODO: check exit codes.
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -72,34 +74,33 @@ public class droidSig {
 
         // print help with no parameters to standard error:
         if (args == null || args.length == 0) {
+            System.err.println("ERROR: no parameters specified; printing the standard help:\n");
             System.err.println(USAGE_HELP);
             System.exit(1);
         }
 
         // Set default values:
-        Random    random         = new Random();
-        String    anchor         = "BOFoffset";
-        XmlOutput xmlOutput      = XmlOutput.SEQ;
-        int       sigId          = 10000 + random.nextInt(990000);
-        String    formatName     = "Test Signature Format";
-        String    puid           = "example.com/fmt/x";
-        int       formatId       = 10000 + random.nextInt(990000);
-        String    extension      = "";
-        boolean   stripDefaults = false;
+        XmlOutput xmlOutput                = XmlOutput.FILE;
+        int       sigId                    = 100000;
+        String    formatName               = "Test Signature Format";
+        String    puid                     = "example.com/fmt/x";
+        int       formatId                 = 100000;
+        String    extension                = "";
+        boolean   stripDefaults            = false;
+        String    updateFileName           = "";
 
-        // Process any parameters:
+        // Prepare our list of expressions:
+        DroidSequenceBuilder sequenceBuilder = new DroidSequenceBuilder();
+        List<ByteSequenceSpec> expressions = new ArrayList<ByteSequenceSpec>();
+
+        // Process the parameters
         int numParameters = args.length;
         int paramIndex = 0;
+        int firstExpressionIndex = -1;
         while (paramIndex < numParameters) {
             String param = args[paramIndex];
             Command command = Command.getCommand(param);
             switch(command) {
-
-                case ANCHOR: {
-                    paramIndex++;
-                    anchor = getAnchor(nextArgument(args, paramIndex));
-                    break;
-                }
 
                 case XML: {
                     paramIndex++;
@@ -137,8 +138,14 @@ public class droidSig {
                     break;
                 }
 
-                case STRIP: {
+                case STRIP: { //TODO: does this strip XML in updated files too?
                     stripDefaults = true;
+                    break;
+                }
+
+                case UPDATE: {
+                    paramIndex++;
+                    updateFileName = nextArgument(args, paramIndex);
                     break;
                 }
 
@@ -149,35 +156,51 @@ public class droidSig {
                 }
 
                 case NULL: {
-                    if (paramIndex < args.length - 1) {
-                        System.err.println("ERROR: Unknown command encountered: " + param);
-                        System.exit(6);
-                    }
-                    break; // the last parameter can be a null command - it will be the expression to process instead.
+                    expressions.add(sequenceBuilder.build(param));
+                    break;
                 }
             }
 
             paramIndex++;
         }
 
-        // Build the byte sequence from the expression, wrap it in a signature with a format definition,
-        // and put the lot in a signature file specification.
-        String                expression = args[args.length - 1]; // The expression is always the last parameter if we haven't already exited.
-        DroidSequenceBuilder  sequenceBuilder  = new DroidSequenceBuilder();
-        ByteSequenceSpec      byteSequenceSpec = sequenceBuilder.build(expression, anchor);
-        InternalSignatureSpec signatureSpec    = new InternalSignatureSpec(sigId, byteSequenceSpec);
-        FormatSpec            formatSpec       = new FormatSpec(formatId, formatName, puid, sigId, extension);
-        SignatureFileSpec     sigFileSpec      = new SignatureFileSpec(signatureSpec, formatSpec);
+        //TODO: process multiple expressions...
 
-        // Output the correct level of XML:
         String XML = "";
-        switch (xmlOutput) {
-            case SEQ:   XML = byteSequenceSpec.toDROIDXML(stripDefaults);     break;
-            case SIG:   XML = signatureSpec.toDROIDXML(stripDefaults);        break;
-            case FRAGS: XML = sigFileSpec.toDROIDXMLFragments(stripDefaults); break;
-            case FILE:  XML = sigFileSpec.toDROIDXML(stripDefaults);          break;
+        if (updateFileName.isEmpty()) {
+
+            InternalSignatureSpec signatureSpec = new InternalSignatureSpec(sigId, expressions);
+            FormatSpec formatSpec = new FormatSpec(formatId, formatName, puid, sigId, extension);
+            SignatureFileSpec sigFileSpec = new SignatureFileSpec(signatureSpec, formatSpec);
+
+            // Output the correct level of XML:
+            switch (xmlOutput) {
+                case SEQ:
+                    XML = getSequenceFragmentXML(expressions, stripDefaults);
+                    break;
+                case SIG:
+                    XML = signatureSpec.toDROIDXML(stripDefaults);
+                    break;
+                case FRAGS:
+                    XML = sigFileSpec.toDROIDXMLFragments(stripDefaults);
+                    break;
+                case FILE:
+                    XML = sigFileSpec.toDROIDXML(stripDefaults);
+                    break;
+            }
+        } else {
+            //TODO: update the XML and print it out...
         }
+
         System.out.println(XML);
+    }
+
+    private static String getSequenceFragmentXML(List<ByteSequenceSpec> expressions, boolean stripDefaults) {
+        String XML = "";
+        for (ByteSequenceSpec byteSequenceSpec: expressions) {
+            XML += byteSequenceSpec.toDROIDXML(stripDefaults) + '\n';
+        }
+        return XML;
     }
 
 
@@ -187,7 +210,6 @@ public class droidSig {
     private enum Command {
 
         NULL(    "", ""),
-        ANCHOR(  "a", "anchor"),
         XML(     "x", "xml"),
         ID(      "i", "id"),
         NAME(    "n", "name"),
@@ -195,6 +217,7 @@ public class droidSig {
         FORMATID("f", "formatid"),
         EXT(     "e", "ext"),
         STRIP(   "s", "strip"),
+        UPDATE(  "u", "update"),
         HELP(    "h", "help");
 
         private final String shortCommand;
@@ -274,15 +297,6 @@ public class droidSig {
         return "";
     }
 
-    private static String getAnchor(String argument) {
-        String reference = AnchorReference.getReference(argument);
-        if (reference == null) {
-            System.err.println("ERROR: unknown argument for anchor reference -a, must be BOF, EOF or VAR: " + argument);
-            System.exit(3);
-        }
-        return reference;
-    }
-
     private static XmlOutput getXMLOutput(String argument) {
         XmlOutput xmlOutput = XmlOutput.getXmlOutput(argument);
         if (xmlOutput == null) {
@@ -307,6 +321,8 @@ public class droidSig {
         System.out.println("\n\n" + USAGE_HELP + "\n");
         if ("syntax".equals(argument)) {
             System.out.println(SYNTAX_HELP + "\n\n");
+        } else if ("license".equals(argument)) {
+            System.out.println(LICENCE);
         }
         System.exit(0);
     }
@@ -316,53 +332,116 @@ public class droidSig {
      *                     Help strings.
      */
 
+    //TODO: multiple byte sequences as separate parameters within a single internalsignature.
+
     public final static String USAGE_HELP =
-            "droidSig\tv1.0\tdroidSig produces DROID signature XML from a DROID regular expression.\n\n" +
+            "droidSig v1.0\t (c) Matt Palmer 2015, all rights reserved.\n" +
+                    " droidSig produces DROID signature XML from a DROID regular expression.\n" +
+                    " It can also update an existing signature XML file.\n" +
 
-                    " Usage:\n\n" +
-                    "  All parameters are optional and can appear in any order,\n" +
-                    "  except the last which is always the expression to be processed.\n\n" +
+                    "\n License:\n" +
+                    "   This code is released under a BSD license, see help on the license for details.\n" +
 
-                    "  -a --anchor BOF|EOF|VAR      Sets the anchor reference of the byte sequence to search from:\n" +
-                    "                                * BOF  Beginning of file.  If not specified, this is the default.\n" +
-                    "                                * EOF  End of file.\n" +
-                    "                                * VAR  A wildcard * search from the beginning of the file.\n" +
+                    "\n Output:\n" +
+                    "   XML is written to standard out with a zero exit code.\n" +
+                    "   Error messages are written to standard error, with a non-zero exit code.\n" +
 
-                    "  -x --xml SEQ|SIG|FRAGS|FILE  The type of XML to output:\n" +
-                    "                                * SEQ   The byte sequence XML fragment.  If not specified, this is the default.\n" +
-                    "                                * SIG   The internal signature XML fragment with the byte sequence XML inside it.\n" +
-                    "                                * FRAGS The SIG XML defined above followed by a linked format XML definition on the next line.\n" +
-                    "                                * FILE  The complete signature file XML with an internal signature and a file format.\n" +
+                    "\n Usage:\n" +
+                    "\n     droidSig [options] {expression} {expression} ...\n\n" +
 
-                    "  -i --id   {integer}          The ID of the internal signature if the --xml option specified SIG, FMT or ALL.\n" +
-                    "                               If not specified, then the id will be randomly generated above 10000.\n" +
+                    "   All options are optional and can appear in any order.  They all have default values if not specified.\n" +
+                    "   After any options, all remaining parameters are expressions which are parsed into <ByteSequence> elements.\n" +
 
-                    "  -n --name {string}           The name of the file format if the --xml option specified FMT or ALL.\n" +
-                    "                               If not specified, then the format name will default to \"Test Signature Format\".\n" +
+                    "\n Options:\n" +
 
-                    "  -p --puid {string}           The PUID of the file format if the --xml option specified FMT or ALL.\n" +
-                    "                               If not specified, then the format PUID will default to \"example.com/fmt/x\"\n" +
+                    "   -i --id        {integer}         Set the ID of the internal signature, defaulting to 100000 if not specified.\n" +
 
-                    "  -f --formatid  {integer}     The file format id to use if the -xml specified FMT or ALL.\n" +
-                    "                               If not specified, then the format id will be randomly generated above 10000.\n" +
+                    "   -n --name      {string}          Set the name of the file format, defaulting to \"Test Signature Format\" if not specified.\n" +
 
-                    "  -e --ext  {string}           The file format extension for the file format if the --xml specified FMT or ALL.\n" +
-                    "                               If not specified, then there will be no extension associated with the file format.\n" +
+                    "   -p --puid      {string}          Set the PUID of the file format, defaulting to \"example.com/fmt/x\" if not specified.\n" +
 
-                    "  -s --strip                   Strip out default attribute values from the XML - if not set then all values will be output.\n" +
-                    "                               DROID will still read this XML correctly (currently) and it removes a lot of noise from the XML.\n" +
+                    "   -f --formatid  {integer}         Set file format id to use, defaulting to 100000 if not specified.\n" +
 
-                    "  -h --help [syntax]           Print this help and exit.\n" +
-                    "                               If the optional argument \"syntax\" is also given, help on the expression syntax will be printed as well.\n" +
+                    "   -e --ext       {string}          Set the file format extension for the file format, defaulting to no extension if not specified.\n" +
 
-                    "  {expression}                 The last parameter is the DROID signature regular expression string to parse, if help is not being printed.\n\n" +
+                    "   -x --xml SEQ|SIG|FMT|FRAGS|FILE  Set the type of XML to write to standard out, defaulting to FILE if not specified:\n" +
+                    "                                      SEQ    A <ByteSequence> XML fragment only.\n" +
+                    "                                      SIG    An <InternalSignature> XML fragment with the <ByteSequence> XML inside it.\n" +
+                    "                                      FMT    A <FileFormat> XML fragment linked to an internal signature with the signature id you have.\n" +
+                    "                                      FRAGS  An <InternalSignature> fragment followed by the <FileFormat> fragment on the next line.\n" +
+                    "                                      FILE   A new signature XML file containing the <InternalSignature> and <FileFormat> specified.\n" +
 
-                    "\tExamples:\n" +
-                    "\t\tdroidSig \"01 02 03 04\"\n" +
-                    "\t\tdroidSig --strip \"01 02 {4} [00:FF] 05 06 07 08 09 0A {1-4} 0B 0C * 01 02 03 04 05\"\n" +
-                    "\t\tdroidSig -a EOF -x SIG -i 9090 \"01 02 03 04 (0D|0A|0A0D) 31\"\n" +
-                    "\t\tdroidSig --xml ALL --name \"Acme Report Data\" --puid \"acme.com\\fmt\\5\" \"4F 5E 92 (0A|0D) 20 20 72 [01:02]\"\n\n";
+                    "   -u --update    {sig filename}    Set the filename of a signature file to update, creating it if it doesn't exist.\n" +
+                    "                                    The XML type set by the -x option determines how the file is updated:\n" +
+                    "                                      SEQ    Adds <ByteSequence>s into an <InternalSignature> with the current id, without disturbing any existing sequences.\n" +
+                    "                                      SIG    Replaces the <InternalSignature> element with the current id with one containing only the <ByteSequences> specified.\n" +
+                    "                                      FMT    Updates the <FileFormat> of the format id with the values you specify, leaving the others unchanged.\n" +
+                    "                                             It will be linked with a signature id only if you have specified one with the -i option.\n" +
+                    "                                             If no <FileFormat> exists with your format id, a new one is created.\n" +
+                    "                                      FRAGS  Adds <ByteSequence>s into an <InternalSignature> with the current id, without disturbing any existing sequences.\n" +
+                    "                                             Updates the <FileFormat> element as for the FMT option.\n" +
+                    "                                      FILE   Replaces the <InternalSignature> as for the SIG option.\n" +
+                    "                                             Updates <FileFormat> as for the FMT option.\n" +
 
+                    "   -s --strip                       Strip out default attribute values from the XML - if not set then all values will be output.\n" +
+                    "                                    DROID will still read this XML correctly (currently) and it removes a lot of noise from the XML.\n" +
+
+                    "   -h --help [syntax|license]       Print this help, and optionally help on one other topic:\n" +
+                    "                                      syntax  Help on the expression syntax will be printed.\n" +
+                    "                                      license The license for the use of this code will be printed.\n" +
+
+                    "\n Expressions:\n" +
+                    "   {expression} {expression} ...    After the options above, all remaining parameters are interpreted as <ByteSequence> expressions to be parsed.\n" +
+                    "                                    If there are multiple expressions, then any signature will contain multiple byte sequences.\n" +
+
+                    "\n Anchoring expressions:\n" +
+                    "   Byte sequence expressions can be matched at the beginning of a file or the end of a file.\n" +
+                    "   They can also be at some fixed offset from the start or end of a file, or a variable offset.\n" +
+                    "   In order to specify these, the normal DROID expression syntax is extended a little using common conventions:\n" +
+                    "     \\A     If this appears at the start of an expression, it means anchor to the beginning of the file (the default).\n" +
+                    "     \\Z     If this appears at the end of an expression, it means anchor to the end of the file.\n" +
+                    "     *      If the star wildcard appears at the start of an expression, it means to search from the beginning of the file.\n" +
+                    "     {n}    Fixed gap: add the gap number inside curly brackets.\n" +
+                    "            If anchored to the beginning, it should appear at the start of the expression.  If anchored to the end, at the end.\n" +
+                    "     {n-m}  Variable gap: add the minimum and maximum gap inside curly brackets separated by a hyphen.\n" +
+                    "            If anchored to the beginning, it should appear at the start of the expression.  If anchored to the end, at the end.\n" +
+
+                    "\n Examples:\n" +
+                    "   droidSig \"01 02 03 04\"\n" +
+                    "   droidSig --strip \"01 02 {4} [00:FF] 05 06 07 08 09 0A {1-4} 0B 0C * 01 02 03 04 05\"\n" +
+                    "   droidSig -a EOF -x SIG -i 9090 \"01 02 03 04 (0D|0A|0A0D) 31\"\n" +
+                    "   droidSig --xml ALL --name \"Acme Report Data\" --puid \"acme.com\\fmt\\5\" \"4F 5E 92 (0A|0D) 20 20 72 [01:02]\"\n\n";
+
+
+    public static final String LICENCE = "droidSig\n" +
+            " Copyright Matt Palmer 2015, All rights reserved.\n" +
+            "\n" +
+            " This code is licensed under a standard 3-clause BSD license:\n" +
+            "\n" +
+            " Redistribution and use in source and binary forms, with or without modification,\n" +
+            " are permitted provided that the following conditions are met:\n" +
+            "\n" +
+            "  * Redistributions of source code must retain the above copyright notice,\n" +
+            "    this list of conditions and the following disclaimer.\n" +
+            "\n" +
+            "  * Redistributions in binary form must reproduce the above copyright notice,\n" +
+            "    this list of conditions and the following disclaimer in the documentation\n" +
+            "    and/or other materials provided with the distribution.\n" +
+            "\n" +
+            "  * The names of its contributors may not be used to endorse or promote products\n" +
+            "    derived from this software without specific prior written permission.\n" +
+            "\n" +
+            " THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n" +
+            " AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n" +
+            " IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\n" +
+            " ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE\n" +
+            " LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR\n" +
+            " CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF\n" +
+            " SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS\n" +
+            " INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN\n" +
+            " CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)\n" +
+            " ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\n" +
+            " POSSIBILITY OF SUCH DAMAGE.\n\n";
 
     public static final String SYNTAX_HELP = "Official Expression Syntax\n" +
             "--------------------------\n" +
