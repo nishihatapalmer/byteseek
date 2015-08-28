@@ -32,8 +32,6 @@
 
 package net.byteseek.utils.droid;
 
-//TODO: check exit codes.
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +59,9 @@ import java.util.List;
  */
 public class droidSig {
 
-    //TODO: use standard exit codes if they exist for various conditions....
+    //TODO: check exit codes, consistent, standard if such a thing exists.
+
+    //TODO: update existing XML file.
 
     /**
      * Processes the command line arguments passed in, either building some xml output,
@@ -155,7 +155,7 @@ public class droidSig {
                     break;
                 }
 
-                case NULL: {
+                case NOT_RECOGNISED: {
                     expressions.add(sequenceBuilder.build(param));
                     break;
                 }
@@ -163,8 +163,6 @@ public class droidSig {
 
             paramIndex++;
         }
-
-        //TODO: process multiple expressions...
 
         String XML = "";
         if (updateFileName.isEmpty()) {
@@ -209,16 +207,16 @@ public class droidSig {
      */
     private enum Command {
 
-        NULL(    "", ""),
-        XML(     "x", "xml"),
-        ID(      "i", "id"),
-        NAME(    "n", "name"),
-        PUID(    "p", "puid"),
-        FORMATID("f", "formatid"),
-        EXT(     "e", "ext"),
-        STRIP(   "s", "strip"),
-        UPDATE(  "u", "update"),
-        HELP(    "h", "help");
+        NOT_RECOGNISED( "", ""),
+        XML(            "x", "xml"),
+        ID(             "i", "id"),
+        NAME(           "n", "name"),
+        PUID(           "p", "puid"),
+        FORMATID(       "f", "formatid"),
+        EXT(            "e", "ext"),
+        STRIP(          "s", "strip"),
+        UPDATE(         "u", "update"),
+        HELP(           "h", "help");
 
         private final String shortCommand;
         private final String longCommand;
@@ -228,18 +226,17 @@ public class droidSig {
             this.longCommand = "--" + longCommand;
         }
 
-        public boolean equals(String parameter) {
-            return shortCommand.equals(parameter) || longCommand.equals(parameter);
+        public boolean hasName(String commandName) {
+            return shortCommand.equals(commandName) || longCommand.equals(commandName);
         }
 
-        public static Command getCommand(String parameter) {
-            Command[] commands = Command.values();
-            for (Command command : commands) {
-                if (command.equals(parameter)) {
+        public static Command getCommand(String commandName) {
+            for (Command command : Command.values()) {
+                if (command.hasName(commandName)) {
                     return command;
                 }
             }
-            return Command.NULL;
+            return Command.NOT_RECOGNISED;
         }
     }
 
