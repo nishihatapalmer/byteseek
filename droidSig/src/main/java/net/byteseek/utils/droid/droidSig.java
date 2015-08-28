@@ -240,33 +240,6 @@ public class droidSig {
         }
     }
 
-    private enum AnchorReference {
-
-        BOF("BOFOffset"),
-        EOF("EOFOffset"),
-        VAR("Variable");
-
-        private final String anchorValue;
-
-        AnchorReference(String anchorValue) {
-            this.anchorValue = anchorValue;
-        }
-
-        public String getValue() {
-            return anchorValue;
-        }
-
-        public static String getReference(String argument) {
-            try {
-                AnchorReference anchor = AnchorReference.valueOf(argument);
-                return anchor.getValue();
-            } catch (IllegalArgumentException ignoreReturnNull) {
-            }
-            return null;
-        }
-
-    }
-
     private enum XmlOutput {
         SEQ,
         SIG,
