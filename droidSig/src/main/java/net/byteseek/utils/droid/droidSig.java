@@ -166,12 +166,9 @@ public class droidSig {
 
         String XML = "";
         if (updateFileName.isEmpty()) {
-
             InternalSignatureSpec signatureSpec = new InternalSignatureSpec(sigId, expressions);
-            FormatSpec formatSpec = new FormatSpec(formatId, formatName, puid, sigId, extension);
-            SignatureFileSpec sigFileSpec = new SignatureFileSpec(signatureSpec, formatSpec);
-
-            // Output the correct level of XML:
+            FormatSpec            formatSpec    = new FormatSpec(formatId, formatName, puid, sigId, extension);
+            SignatureFileSpec     sigFileSpec   = new SignatureFileSpec(signatureSpec, formatSpec);
             switch (xmlOutput) {
                 case SEQ:
                     XML = getSequenceFragmentXML(expressions, stripDefaults);
