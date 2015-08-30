@@ -265,7 +265,7 @@ public class DroidSequenceBuilder {
                     numBytes++;
                 }
             } else {
-                if (StringUtils.isHexDigit(currentChar)) {
+                if (Utils.isHexDigit(currentChar)) {
                     hexCount++;
                     if (hexCount == 2) {
                         numBytes++;
@@ -312,28 +312,28 @@ public class DroidSequenceBuilder {
     private int getMinOffset(String fragmentExpression) {
         if (fragmentExpression.contains("-")) {
             int rangePosition = fragmentExpression.indexOf("-");
-            return StringUtils.getInt(fragmentExpression, 1, rangePosition);
+            return Utils.getInt(fragmentExpression, 1, rangePosition);
         } else {
-            return StringUtils.getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
+            return Utils.getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
         }
     }
 
     private int getMaxOffset(String fragmentExpression) {
         if (fragmentExpression.contains("-")) {
             int rangePosition = fragmentExpression.indexOf("-");
-            return StringUtils.getInt(fragmentExpression, rangePosition + 1, fragmentExpression.length() - 1);
+            return Utils.getInt(fragmentExpression, rangePosition + 1, fragmentExpression.length() - 1);
         } else {
-            return StringUtils.getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
+            return Utils.getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
         }
     }
 
     private void setSequenceOffsets(SubSequenceSpec subSequence, String offset) {
         if (offset.contains("-")) {
             int rangePosition = offset.indexOf("-");
-            subSequence.minSeqOffset = StringUtils.getInt(offset, 1, rangePosition);
-            subSequence.maxSeqOffset = StringUtils.getInt(offset, rangePosition + 1, offset.length() - 1);
+            subSequence.minSeqOffset = Utils.getInt(offset, 1, rangePosition);
+            subSequence.maxSeqOffset = Utils.getInt(offset, rangePosition + 1, offset.length() - 1);
         } else {
-            int offsetValue = StringUtils.getInt(offset, 1, offset.length() - 1);
+            int offsetValue = Utils.getInt(offset, 1, offset.length() - 1);
             subSequence.minSeqOffset = offsetValue;
             subSequence.maxSeqOffset = offsetValue;
         }

@@ -55,7 +55,7 @@ public class SubSequenceSpec {
         if (!stripDefaults || minSeqOffset > 0) {
             builder.append("SubSeqMinOffset=\"").append(minSeqOffset).append("\">");
         }
-        builder.append("<Sequence>").append(StringUtils.escapeXml(mainExpression)).append("</Sequence>");
+        builder.append("<Sequence>").append(Utils.escapeXml(mainExpression)).append("</Sequence>");
         for (FragmentSpec fragment : leftFragments) {
             fragment.toDROIDXML(builder, "LeftFragment", stripDefaults);
         }

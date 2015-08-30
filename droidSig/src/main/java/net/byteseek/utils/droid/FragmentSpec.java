@@ -53,7 +53,7 @@ public class FragmentSpec {
             builder.append("MinOffset=\"").append(minFragOffset).append("\" ");
         }
         builder.append("Position=\"").append(position).append("\">");
-        builder.append(StringUtils.escapeXml(fragmentExpression));
+        builder.append(Utils.escapeXml(fragmentExpression));
         builder.append("</").append(elementName).append(">");
     }
 }

@@ -36,9 +36,9 @@ package net.byteseek.utils.droid;
  *
  * Created by matt on 26/07/15.
  */
-public final class StringUtils {
+public final class Utils {
 
-    private StringUtils() {};
+    private Utils() {};
 
     public static int getInt(String value, int from, int to) {
         String intString = value.substring(from, to).trim();
