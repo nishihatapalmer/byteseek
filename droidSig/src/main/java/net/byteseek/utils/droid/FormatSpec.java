@@ -50,7 +50,7 @@ public class FormatSpec {
         this.extension = extension;
     }
 
-    public String toDROIDXML(boolean stripDefaults) {
+    public String toXML(boolean stripDefaults) {
         String baseXML =  "<FileFormat ID=\"" + formatId + "\" Name=\"" + formatName + "\" PUID=\"" + puid + "\">" +
                           "<InternalSignatureID>" + sigId + "</InternalSignatureID>";
         if (!extension.isEmpty()) {

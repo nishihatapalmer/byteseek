@@ -102,7 +102,6 @@ public class droidSig {
         // Process the parameters
         int numParameters = args.length;
         int paramIndex = 0;
-        int firstExpressionIndex = -1;
         while (paramIndex < numParameters) {
             String param = args[paramIndex];
             Command command = Command.getCommand(param);
@@ -177,26 +176,29 @@ public class droidSig {
             SignatureFileSpec     sigFileSpec   = new SignatureFileSpec(signatureSpec, formatSpec);
             switch (xmlOutput) {
                 case SEQ:
-                    XML = getSequenceFragmentXML(expressions, stripDefaults);
+                    XML = getSequenceFragments(expressions, stripDefaults);
                     break;
                 case SIG:
-                    XML = signatureSpec.toDROIDXML(stripDefaults);
+                    XML = signatureSpec.toXML(stripDefaults);
+                    break;
+                case FMT:
+                    XML = formatSpec.toXML(stripDefaults);
                     break;
                 case FRAGS:
-                    XML = sigFileSpec.toDROIDXMLFragments(stripDefaults);
+                    XML = getSigAndFormatFragments(signatureSpec, formatSpec, stripDefaults);
                     break;
                 case FILE:
-                    XML = sigFileSpec.toDROIDXML(stripDefaults);
+                    XML = sigFileSpec.toXML(stripDefaults);
                     break;
             }
         } else {
-            //TODO: update the XML file and return it...
+            //TODO: update the XML file and return the changed XML...
         }
 
         System.out.println(XML);
     }
 
-    private static String getSequenceFragmentXML(List<ByteSequenceSpec> expressions, boolean stripDefaults) {
+    private static String getSequenceFragments(List<ByteSequenceSpec> expressions, boolean stripDefaults) {
         String XML = "";
         for (ByteSequenceSpec byteSequenceSpec: expressions) {
             XML += byteSequenceSpec.toDROIDXML(stripDefaults) + '\n';
@@ -204,6 +206,11 @@ public class droidSig {
         return XML;
     }
 
+    public static String getSigAndFormatFragments(InternalSignatureSpec signatureSpec,
+                                           FormatSpec            formatSpec, boolean stripDefaults) {
+        return signatureSpec.toXML(stripDefaults) + "\n" +
+               formatSpec.toXML(stripDefaults);
+    }
 
     /*******************************************************************************************************************
      *            Enums to help parsing the command line commands and command arguments
@@ -246,6 +253,7 @@ public class droidSig {
     private enum XmlOutput {
         SEQ,
         SIG,
+        FMT,
         FRAGS,
         FILE;
 
@@ -304,8 +312,6 @@ public class droidSig {
     /*******************************************************************************************************************
      *                     Help strings.
      */
-
-    //TODO: multiple byte sequences as separate parameters within a single internalsignature.
 
     public final static String USAGE_HELP =
             "droidSig v1.0\t (c) Matt Palmer 2015, all rights reserved.\n" +

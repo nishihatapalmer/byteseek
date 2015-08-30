@@ -46,22 +46,17 @@ public class SignatureFileSpec {
         this.formatSpec      = formatSpec;
     }
 
-    public String toDROIDXML(boolean stripDefaults) {
+    public String toXML(boolean stripDefaults) {
         Date now = new Date();
         return  XML_HEADER +
                 String.format(SIGNATURE_FILE_START, now, now, now, now, now, now) +
                 SIGNATURE_COLLECTION_START +
-                internalSigSpec.toDROIDXML(stripDefaults) +
+                internalSigSpec.toXML(stripDefaults) +
                 SIGNATURE_COLLECTION_END +
                 FORMAT_COLLECTION_START  +
-                formatSpec.toDROIDXML(stripDefaults) +
+                formatSpec.toXML(stripDefaults) +
                 FORMAT_COLLECTION_END +
                 SIGNATURE_FILE_END;    }
-
-    public String toDROIDXMLFragments(boolean stripDefaults) {
-        return internalSigSpec.toDROIDXML(stripDefaults) + "\n" +
-               formatSpec.toDROIDXML(stripDefaults);
-    }
 
 
     private static final String XML_HEADER                 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";

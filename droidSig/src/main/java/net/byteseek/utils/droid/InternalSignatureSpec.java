@@ -46,7 +46,7 @@ public class InternalSignatureSpec {
         this.sequenceSpecs = byteSequenceSpecs;
     }
 
-    public String toDROIDXML(boolean stripDefaults) {
+    public String toXML(boolean stripDefaults) {
         String xml = "<InternalSignature ID=\"" + sigId + "\">";
         for (ByteSequenceSpec sequenceSpec : sequenceSpecs) {
             xml += sequenceSpec.toDROIDXML(stripDefaults);
