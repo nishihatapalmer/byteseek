@@ -29,55 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.utils.droid;
 
-/**
- *
- *
- * Created by matt on 26/07/15.
- */
-public final class Utils {
+package net.byteseek.utils.droidSig.specs;
 
-    private Utils() {};
+public class FragmentSpec {
 
-    public static int getInt(String value, int from, int to) {
-        String intString = value.substring(from, to).trim();
-        return Integer.parseInt(intString);
-    }
+    public        int position;
+    public String fragmentExpression;
+    public        int minFragOffset;
+    public        int maxFragOffset;
 
-    /**
-     * Returns true if the character is a hex digit.
-     *
-     * @param currentChar
-     * @return
-     */
-    public static boolean isHexDigit(char currentChar) {
-        return (currentChar >= '0' && currentChar <= '9') ||
-                (currentChar >= 'a' && currentChar <= 'f') ||
-                (currentChar >= 'A' && currentChar <= 'F');
-    }
-
-    /**
-     * Escapes entities for including in an XML document.
-     *
-     * @param target
-     * @return
-     */
-    public static String escapeXml(String target) {
-        final int length = target.length();
-        StringBuilder builder = new StringBuilder(length + 128);
-        for (int charIndex = 0; charIndex < length; charIndex++) {
-            final char theChar = target.charAt(charIndex);
-            switch (theChar) {
-                case '&'  : builder.append("&amp;");  break;
-                case '<'  : builder.append("&lt;");   break;
-                case '>'  : builder.append("&gt;");   break;
-                case '"'  : builder.append("&quot;"); break;
-                case '\'' : builder.append("&apos;"); break;
-                default   : builder.append(theChar);  break;
-            }
-        }
-        return builder.toString();
-
-    }
 }

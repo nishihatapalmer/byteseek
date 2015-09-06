@@ -29,7 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.utils.droid;
+package net.byteseek.utils.droidSig;
+
+import net.byteseek.utils.droidSig.specs.ByteSequenceSpec;
+import net.byteseek.utils.droidSig.specs.FragmentSpec;
+import net.byteseek.utils.droidSig.specs.SubSequenceSpec;
 
 import java.util.ArrayList;
 import java.util.List;
