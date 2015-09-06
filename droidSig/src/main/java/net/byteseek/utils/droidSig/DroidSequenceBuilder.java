@@ -269,7 +269,7 @@ public class DroidSequenceBuilder {
                     numBytes++;
                 }
             } else {
-                if (Utils.isHexDigit(currentChar)) {
+                if (isHexDigit(currentChar)) {
                     hexCount++;
                     if (hexCount == 2) {
                         numBytes++;
@@ -316,28 +316,28 @@ public class DroidSequenceBuilder {
     private int getMinOffset(String fragmentExpression) {
         if (fragmentExpression.contains("-")) {
             int rangePosition = fragmentExpression.indexOf("-");
-            return Utils.getInt(fragmentExpression, 1, rangePosition);
+            return getInt(fragmentExpression, 1, rangePosition);
         } else {
-            return Utils.getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
+            return getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
         }
     }
 
     private int getMaxOffset(String fragmentExpression) {
         if (fragmentExpression.contains("-")) {
             int rangePosition = fragmentExpression.indexOf("-");
-            return Utils.getInt(fragmentExpression, rangePosition + 1, fragmentExpression.length() - 1);
+            return getInt(fragmentExpression, rangePosition + 1, fragmentExpression.length() - 1);
         } else {
-            return Utils.getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
+            return getInt(fragmentExpression, 1, fragmentExpression.length() - 1);
         }
     }
 
     private void setSequenceOffsets(SubSequenceSpec subSequence, String offset) {
         if (offset.contains("-")) {
             int rangePosition = offset.indexOf("-");
-            subSequence.minSeqOffset = Utils.getInt(offset, 1, rangePosition);
-            subSequence.maxSeqOffset = Utils.getInt(offset, rangePosition + 1, offset.length() - 1);
+            subSequence.minSeqOffset = getInt(offset, 1, rangePosition);
+            subSequence.maxSeqOffset = getInt(offset, rangePosition + 1, offset.length() - 1);
         } else {
-            int offsetValue = Utils.getInt(offset, 1, offset.length() - 1);
+            int offsetValue = getInt(offset, 1, offset.length() - 1);
             subSequence.minSeqOffset = offsetValue;
             subSequence.maxSeqOffset = offsetValue;
         }
@@ -405,6 +405,24 @@ public class DroidSequenceBuilder {
         }
 
         return sequences;
+    }
+
+
+    private static int getInt(String value, int from, int to) {
+        String intString = value.substring(from, to).trim();
+        return Integer.parseInt(intString);
+    }
+
+    /**
+     * Returns true if the character is a hex digit.
+     *
+     * @param currentChar
+     * @return
+     */
+    private static boolean isHexDigit(char currentChar) {
+        return (currentChar >= '0' && currentChar <= '9') ||
+                (currentChar >= 'a' && currentChar <= 'f') ||
+                (currentChar >= 'A' && currentChar <= 'F');
     }
 
 }
