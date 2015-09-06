@@ -34,9 +34,9 @@ package net.byteseek.utils.droidSig.specs;
 
 public class FragmentSpec {
 
-    public        int position;
+    public int    position;
     public String fragmentExpression;
-    public        int minFragOffset;
-    public        int maxFragOffset;
+    public int    minFragOffset;
+    public int    maxFragOffset;
 
 }

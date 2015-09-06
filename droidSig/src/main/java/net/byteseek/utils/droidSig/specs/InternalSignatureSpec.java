@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class InternalSignatureSpec {
 
-    public final int sigId;
+    public final int                    sigId;
     public final List<ByteSequenceSpec> sequenceSpecs;
 
     public InternalSignatureSpec(int sigId, List<ByteSequenceSpec> byteSequenceSpecs) {
