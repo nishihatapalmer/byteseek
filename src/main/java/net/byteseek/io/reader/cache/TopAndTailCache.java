@@ -36,7 +36,7 @@ import net.byteseek.io.reader.Window;
 import java.util.*;
 
 /**
- * A cache which holds on to the first X bytes and the last Y bytes.
+ * A general purpose top and tail cache which holds on to the first X bytes and the last Y bytes.
  * <p>
  * It makes no assumption about the final length, so it will work with streaming readers.
  * It holds on to (at least) the last Y bytes given the highest length it has seen so far.
