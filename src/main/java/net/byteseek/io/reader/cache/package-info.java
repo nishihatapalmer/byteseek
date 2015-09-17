@@ -31,5 +31,11 @@
 
 /**
  * A set of caching strategies for net.byteseek.io.reader windows.
+ * <p>
+ *     There are three basic types of cache: ones which write out the Windows
+ *     to a file, ones which hold on to Windows in memory by some strategy, and
+ *     ones which hold on to Windows in memory using SoftReferences, which allow
+ *     the garbage collector to get rid of them when memory is running low.
+ * </p>
  */
 package net.byteseek.io.reader.cache;
