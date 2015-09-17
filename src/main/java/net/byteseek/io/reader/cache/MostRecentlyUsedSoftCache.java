@@ -32,7 +32,6 @@
 package net.byteseek.io.reader.cache;
 
 import java.lang.ref.SoftReference;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
