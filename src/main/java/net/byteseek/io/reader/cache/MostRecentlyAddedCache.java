@@ -44,7 +44,7 @@ import net.byteseek.io.reader.Window;
  * 
  * @author Matt Palmer
  */
-public final class MostRecentlyAddedCache extends AbstractCache  {
+public final class MostRecentlyAddedCache extends AbstractFreeNotificationCache {
 
     private final static boolean INSERTION_ORDER = false;    
     

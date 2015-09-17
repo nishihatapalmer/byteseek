@@ -55,7 +55,7 @@ import net.byteseek.io.reader.Window;
  *
  * @author Matt Palmer
  */
-public final class MostRecentlyUsedSoftCache implements WindowCache {
+public final class MostRecentlyUsedSoftCache extends AbstractNoFreeNotificationCache {
 
     private final static boolean ACCESS_ORDER = true;
 
@@ -114,14 +114,5 @@ public final class MostRecentlyUsedSoftCache implements WindowCache {
         return getClass().getSimpleName() + "[size: " + cache.size() + ']';
     }
 
-    @Override
-    public void subscribe(WindowObserver observer) {
-        throw new UnsupportedOperationException("MostRecentlyUsedSoftCache does not support free notification of windows.");
-    }
-
-    @Override
-    public boolean unsubscribe(final WindowObserver observer) {
-        throw new UnsupportedOperationException("MostRecentlyUsedSoftCache does not support free notification of windows.");
-    }
 
 }

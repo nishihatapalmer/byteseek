@@ -51,7 +51,7 @@ import net.byteseek.io.reader.Window;
  * 
  * @author Matt Palmer
  */
-public final class TempFileCache extends AbstractCache {
+public final class TempFileCache extends AbstractFreeNotificationCache {
 
     private final Map<Long, WindowInfo> windowPositions;
     

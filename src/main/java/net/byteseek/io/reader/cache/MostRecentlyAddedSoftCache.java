@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2015, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,6 +31,7 @@
 
 package net.byteseek.io.reader.cache;
 
+import java.lang.ref.SoftReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,49 +40,66 @@ import net.byteseek.io.reader.Window;
 
 /**
  * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.Window}
- * objects which were most recently used. The number of Windows which will be cached
- * is configurable by its capacity.
- * 
+ * objects which were most recently added, as long as there is sufficient memory.
+ * The number of Windows which will be cached is configurable by its capacity.
+ * <p>
+ * If memory is short, then unused cached windows will be freed automatically by the garbage
+ * collector.  Because this can happen without warning, this cache does not
+ * support window free notification, and an UnsupportedOperationException will be
+ * thrown if an attempt is made to subscribe or unsubscribe for these events.
+ * <p>
+ * Do not use this cache if there is no other way of retrieving the window again
+ * if it may be required.  This type of cache may suit a FileReader, since the file
+ * can always be read again to obtain a window.  It will not suit an InputStreamReader,
+ * as it is impossible to obtain an old window from a stream again once read.
+ *
  * @author Matt Palmer
  */
-public final class MostRecentlyUsedCache extends AbstractFreeNotificationCache {
+public final class MostRecentlyAddedSoftCache extends AbstractNoFreeNotificationCache {
 
-    private final static boolean ACCESS_ORDER = true;    
-    
-    private final Cache cache;
-    
-    
+    private final static boolean ACCESS_ORDER = false;
+
+    private final Map<Long, SoftReference<Window>> cache;
+
     /**
-     * Creates a MostRecentlyUsedCache using the provided capacity.
-     * 
+     * Creates a MostRecentlyAddedSoftCache using the provided capacity.
+     *
      * @param capacity The number of Window objects to cache.
      */
-    public MostRecentlyUsedCache(final int capacity) {
-        cache = new Cache(capacity + 1, 1.1f, ACCESS_ORDER);
+    public MostRecentlyAddedSoftCache(final int capacity) {
+        cache = new LinkedHashMap<Long, SoftReference<Window>>(capacity + 1, 1.1f, ACCESS_ORDER);
     }
-    
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public Window getWindow(final long position) {
-        return cache.get(position);
+        final SoftReference<Window> windowRef = cache.get(position);
+        if (windowRef != null) {
+            final Window window = windowRef.get();
+            if (window != null) {
+                return window;
+            }
+            cache.remove(position);
+        }
+        return null;
     }
 
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void addWindow(final Window window) {
         final long windowPosition = window.getWindowPosition();
-        if (!cache.containsKey(windowPosition)) {
-            cache.put(windowPosition, window);
+        final SoftReference<Window> windowRef = cache.get(windowPosition);
+        if (windowRef == null || windowRef.get() == null) {
+            cache.put(windowPosition, new SoftReference<Window>(window));
         }
     }
-    
-   
+
+
     /**
      * {@inheritDoc}
      */
@@ -89,36 +107,12 @@ public final class MostRecentlyUsedCache extends AbstractFreeNotificationCache {
     public void clear() {
         cache.clear();
     }
-    
-    
-    /**
-     * A simple most recently used cache, which extends {@link java.util.LinkedHashMap}
-     * to provide caching services, and also provides notification to any
-     * {@link WindowObserver}s who are subscribed when a {@link Window} leaves it.
-     */    
-    private class Cache extends LinkedHashMap<Long, Window> {
 
-        private final int capacity;
-        
-        private Cache(int capacity, float loadFactor, boolean accessOrder) {
-            super(capacity, loadFactor, accessOrder);
-            this.capacity = capacity;
-        }
-        
-        @Override
-        protected boolean removeEldestEntry(final Map.Entry<Long, Window> eldest) {
-            final boolean remove = size() > capacity;
-            if (remove) {
-                notifyWindowFree(eldest.getValue(), MostRecentlyUsedCache.this);
-            }
-            return remove;
-        }   
-    }    
-        
-    
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "[size: " + cache.size() + " capacity: " + cache.capacity + ']';  
-	}
-    
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[size: " + cache.size() + ']';
+    }
+
+
 }

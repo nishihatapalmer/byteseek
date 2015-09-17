@@ -40,7 +40,7 @@ import net.byteseek.io.reader.Window;
  * 
  * @author Matt Palmer
  */
-public final class NoCache extends AbstractCache {
+public final class NoCache extends AbstractFreeNotificationCache {
 
     /**
      * A static NoCache object, as this object has no state, so can be

@@ -42,7 +42,7 @@ import net.byteseek.io.reader.Window;
  * 
  * @author Matt Palmer
  */
-public final class AllWindowsCache extends AbstractCache {
+public final class AllWindowsCache extends AbstractFreeNotificationCache {
 
     private final Map<Long, Window> cache = new HashMap<Long, Window>();
     

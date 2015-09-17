@@ -51,7 +51,7 @@ import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
  * 
  * @author Matt Palmer
  */
- public final class TwoLevelCache extends AbstractCache implements WindowObserver {
+ public final class TwoLevelCache extends AbstractFreeNotificationCache implements WindowObserver {
 
     /**
      * A static constructor for TwoLevelCache, which avoids passing "this" in the

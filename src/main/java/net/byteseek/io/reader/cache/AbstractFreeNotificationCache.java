@@ -50,14 +50,14 @@ import net.byteseek.io.reader.Window;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractCache implements WindowCache {
+public abstract class AbstractFreeNotificationCache implements WindowCache {
     
     private List<WindowObserver> windowObservers; 
     
     /**
      * Constructs a WindowCache with an empty list of cache observers.
      */
-    public AbstractCache() {
+    public AbstractFreeNotificationCache() {
         windowObservers = Collections.emptyList(); 
     }
     
