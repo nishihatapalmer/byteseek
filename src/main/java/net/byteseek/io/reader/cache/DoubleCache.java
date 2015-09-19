@@ -41,22 +41,27 @@ import net.byteseek.io.reader.Window;
  * <p>
  * The use case for this cache is to allow holding Windows in a fast
  * in-memory primary soft cache, which can evict data under low memory conditions.
- * The secondary cache should be an on-disk cache which can always retrieve the
- * data.  If data has been evicted from the primary cache, it can be safely
+ * The secondary cache should be a persistent cache which can always retrieve the
+ * data.  If data has been evicted from the memory cache, it can be safely
  * retrieved from the slower permanent cache.  This window is then re-added
- * to the fast primary cache.
+ * to the fast memory cache.
  * <p>
  * For example, when using an InputStreamReader where we want to be able to
  * always retrieve old data, but also want to support faster access to multiple
  * Windows (memory permitting), this cache allows both requirements to be satisfied.
  * </p>
+ * This cache technically supports free notification, but will never notify
+ * of a window being evicted, since the persistent cache should never actually
+ * release a window.  Care must be taken to use appropriate caches with this
+ * cache.
  *
  * @author Matt Palmer
  */
-public final class DoubleCache extends AbstractNoFreeNotificationCache {
+public final class DoubleCache extends AbstractFreeNotificationCache {
 
     private final WindowCache memoryCache;
     private final WindowCache persistentCache;
+
 
     public DoubleCache(final WindowCache memoryCache, final WindowCache secondaryCache) {
         this.memoryCache     = memoryCache;
