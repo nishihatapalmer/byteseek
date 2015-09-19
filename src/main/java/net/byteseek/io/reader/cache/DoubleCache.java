@@ -57,15 +57,20 @@ import net.byteseek.io.reader.Window;
  *
  * @author Matt Palmer
  */
-public final class DoubleCache extends AbstractFreeNotificationCache {
+public final class DoubleCache extends AbstractFreeNotificationCache implements WindowCache.WindowObserver {
 
     private final WindowCache memoryCache;
     private final WindowCache persistentCache;
 
+    public static DoubleCache create(final WindowCache memoryCache, final WindowCache persistentCache) {
+        final DoubleCache doubleCache = new DoubleCache(memoryCache, persistentCache);
+        persistentCache.subscribe(doubleCache);
+        return doubleCache;
+    }
 
-    public DoubleCache(final WindowCache memoryCache, final WindowCache secondaryCache) {
+    private DoubleCache(final WindowCache memoryCache, final WindowCache persistentCache) {
         this.memoryCache     = memoryCache;
-        this.persistentCache = secondaryCache;
+        this.persistentCache = persistentCache;
     }
 
     /**
@@ -102,6 +107,18 @@ public final class DoubleCache extends AbstractFreeNotificationCache {
         persistentCache.clear();
     }
 
+   /**
+    * Implementation of the {@link WindowObserver} method to receive
+    * notification that a Window is freed from the persistent cache.
+    *
+    * @param window The Window which is leaving either the primary or secondary cache.
+    * @param fromCache The WindowCache from which the Window is leaving.
+    */
+    @Override
+    public void windowFree(final Window window, final WindowCache fromCache) {
+        notifyWindowFree(window, this);
+    }
+
     /**
      * Returns the memory cache used by this DoubleCache.
      *
@@ -111,7 +128,6 @@ public final class DoubleCache extends AbstractFreeNotificationCache {
         return memoryCache;
     }
 
-
     /**
      * Returns the persistent cache used by this DoubleCache.
      *
@@ -120,7 +136,6 @@ public final class DoubleCache extends AbstractFreeNotificationCache {
     public WindowCache getPersistentCache() {
         return persistentCache;
     }
-
 
     @Override
     public String toString() {
