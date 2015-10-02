@@ -93,7 +93,7 @@ public final class MostRecentlyAddedCache extends AbstractFreeNotificationCache 
     /**
      * A simple most recently added cache, which extends {@link java.util.LinkedHashMap}
      * to provide caching services, and also provides notification to any
-     * {@link WindowObserver}s who are subscribed when a {@link Window} leaves it.
+     * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.Window} leaves it.
      */
     private class Cache extends LinkedHashMap<Long, Window> {
 

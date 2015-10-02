@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.Window;
 
 
 /**

@@ -50,7 +50,7 @@ import net.byteseek.searcher.SearchUtils;
  * <li>{@link #searchBackwards(net.byteseek.io.reader.WindowReader, long, long)}
  * </ul>
  * These allocate searching for sequences efficiently between searching in the
- * byte arrays provided by {@link Window}s when the sequence fits in a single window,
+ * byte arrays provided by {@link net.byteseek.io.reader.Window}s when the sequence fits in a single window,
  * only using the less efficient reader interface on the sequence for times when
  * the sequence crosses over Window boundaries.
  * <p>

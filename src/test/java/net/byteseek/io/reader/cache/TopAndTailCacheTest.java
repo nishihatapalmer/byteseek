@@ -1,16 +1,12 @@
 package net.byteseek.io.reader.cache;
 
-import net.byteseek.io.reader.FileReader;
-import net.byteseek.io.reader.InputStreamReader;
+import net.byteseek.io.reader.HardWindow;
 import net.byteseek.io.reader.Window;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -90,6 +86,6 @@ public class TopAndTailCacheTest {
     }
 
     private void addWindow(long position) {
-        cache.addWindow(new Window(array, position, array.length));
+        cache.addWindow(new HardWindow(array, position, array.length));
     }
 }

@@ -48,7 +48,7 @@ import net.byteseek.io.reader.cache.WindowCache;
  * length of the stream in order to serve bytes out of it for any position in
  * the stream. If a position requested has not yet been read in the stream, then
  * the stream will be read (and the Windows encountered cached) until the
- * position requested is available in a {@link Window}. Note that if you
+ * position requested is available in a {@link HardWindow}. Note that if you
  * explicitly call the {@link #length()} method, then the stream will be read
  * until the end is encountered and a length can be determined.
  * <p>
@@ -289,7 +289,7 @@ public class InputStreamReader extends AbstractReader {
 
 	/**
 	 * Returns a window onto the data for a given position. The position does
-	 * not have to be the beginning of a {@link Window} - but the Window
+	 * not have to be the beginning of a {@link HardWindow} - but the Window
 	 * returned must include that position (if such a position exists in the
 	 * WindowReader).
 	 * 
@@ -332,7 +332,7 @@ public class InputStreamReader extends AbstractReader {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
-				lastWindow = new Window(bytes, streamPos, totalRead);
+				lastWindow = new HardWindow(bytes, streamPos, totalRead);
 				streamPos += totalRead;
 			}
 			if (totalRead < windowSize) { // If we read less than the available
@@ -365,7 +365,7 @@ public class InputStreamReader extends AbstractReader {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
-				final Window lastWindow = new Window(bytes, streamPos,
+				final Window lastWindow = new HardWindow(bytes, streamPos,
 						totalRead);
 				streamPos += totalRead;
 				cache.addWindow(lastWindow);

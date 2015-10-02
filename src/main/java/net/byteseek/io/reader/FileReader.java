@@ -255,7 +255,7 @@ public class FileReader extends AbstractReader {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(randomAccessFile, bytes);
 			if (totalRead > 0) {
-				return new Window(bytes, windowStart, totalRead);
+				return new HardWindow(bytes, windowStart, totalRead);
 			}
 		} catch (final EOFException justReturnNull) {
 			//TODO: identify logging interfaces suitable for library use.

@@ -38,7 +38,7 @@ import net.byteseek.io.reader.Window;
 
 
 /**
- * A {@link WindowCache} which holds on to all {@link Window} objects.
+ * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.Window} objects.
  * 
  * @author Matt Palmer
  */

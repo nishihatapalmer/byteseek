@@ -32,6 +32,7 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.Window;
 
 import java.util.HashMap;
 import java.util.Map;

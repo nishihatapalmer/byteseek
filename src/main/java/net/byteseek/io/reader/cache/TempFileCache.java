@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.byteseek.io.IOUtils;
+import net.byteseek.io.reader.HardWindow;
+import net.byteseek.io.reader.Window;
 import net.byteseek.io.reader.Window;
 
 
@@ -101,7 +103,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache {
             final byte[] array = new byte[info.length];
             try {
                 IOUtils.readBytes(file, array, info.filePosition);
-                window = new Window(array, position, info.length);
+                window = new HardWindow(array, position, info.length);
                 lastWindow = window;
                 lastWindowPos = position;
             } catch (IOException justReturnNullWindow) {
