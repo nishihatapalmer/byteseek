@@ -1,7 +1,7 @@
 package net.byteseek.io.reader.cache;
 
-import net.byteseek.io.reader.HardWindow;
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.HardWindow;
+import net.byteseek.io.reader.windows.Window;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

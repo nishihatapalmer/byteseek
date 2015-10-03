@@ -22,8 +22,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import net.byteseek.io.reader.FileReader;
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.cache.AllWindowsCache;
 import net.byteseek.io.reader.cache.NoCache;
 
