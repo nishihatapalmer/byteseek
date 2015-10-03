@@ -31,6 +31,8 @@
 
 package net.byteseek.io.reader.windows;
 
+import net.byteseek.utils.ArgUtils;
+
 /**
  * A HardWindow is essentially a wrapper for a byte array containing bytes from the
  * {@link net.byteseek.io.reader.WindowReader} that creates it, at a specified position in the WindowReader.
@@ -69,19 +71,13 @@ public final class HardWindow implements Window {
 	 * underlying byte arrays taken from a WindowReader in order to optimise read
 	 * performance. = *
 	 * 
-	 * @param bytes
-	 *            The byte array to wrap.
-	 * @param windowPosition
-	 *            The position at which the Window starts.
-	 * @param length
-	 *            An ending position of a slice of the array.
+	 * @param bytes The byte array to wrap.
+	 * @param windowPosition The position at which the Window starts.
+	 * @param length An ending position of a slice of the array.
 	 */
 	public HardWindow(final byte[] bytes, final long windowPosition,
 					  final int length) {
-		if (bytes == null) {
-			throw new IllegalArgumentException(
-					"Null byte array passed in to Array.");
-		}
+		ArgUtils.checkNullByteArray(bytes, "bytes");
 		this.bytes = bytes; // a Window wraps a byte array - no defensive
 							// copying should be allowed.
 		this.windowPosition = windowPosition;
@@ -98,8 +94,7 @@ public final class HardWindow implements Window {
 	 * itself (since a Window can be shorter than the byte array which backs
 	 * it).
 	 * 
-	 * @param position
-	 *            The position in the Window to read a byte from.
+	 * @param position The position in the Window to read a byte from.
 	 * @return The byte at that position in the Window.
 	 * @throws IndexOutOfBoundsException
 	 *             if the position is less than zero, or past the end of the
