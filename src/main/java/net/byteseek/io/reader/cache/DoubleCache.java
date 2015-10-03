@@ -31,7 +31,7 @@
 
 package net.byteseek.io.reader.cache;
 
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 
 /**
  * A specialised cache which stores data in two caches.  The memory cache is checked

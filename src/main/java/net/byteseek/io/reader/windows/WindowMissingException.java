@@ -29,12 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.reader;
+package net.byteseek.io.reader.windows;
 
 import java.io.IOException;
 
 /**
- * An exception thrown when a {@link WindowReader} cannot access a Window which it
+ * An exception thrown when a {@link net.byteseek.io.reader.WindowReader} cannot access a Window which it
  * should be able to return.  WindowReaders assume they can access any legitimate position
  * in the underlying source.  Merely trying to access out of bounds of the source will not
  * cause this exception to be thrown - in this case a WindowReader will simply return a null

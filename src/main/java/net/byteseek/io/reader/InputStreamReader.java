@@ -39,6 +39,9 @@ import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
 import net.byteseek.io.reader.cache.TempFileCache;
 import net.byteseek.io.reader.cache.TwoLevelCache;
 import net.byteseek.io.reader.cache.WindowCache;
+import net.byteseek.io.reader.windows.HardWindow;
+import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowMissingException;
 
 /**
  * A WindowReader extending {@link AbstractReader} over an {@link java.io.InputStream}
@@ -48,7 +51,7 @@ import net.byteseek.io.reader.cache.WindowCache;
  * length of the stream in order to serve bytes out of it for any position in
  * the stream. If a position requested has not yet been read in the stream, then
  * the stream will be read (and the Windows encountered cached) until the
- * position requested is available in a {@link HardWindow}. Note that if you
+ * position requested is available in a {@link net.byteseek.io.reader.windows.HardWindow}. Note that if you
  * explicitly call the {@link #length()} method, then the stream will be read
  * until the end is encountered and a length can be determined.
  * <p>
@@ -65,7 +68,7 @@ import net.byteseek.io.reader.cache.WindowCache;
  * that in the use you make of this WindowReader, a position which is no longer
  * available in your cache will never be requested. If you request a position
  * which has already been read in the stream, but which the cache can no longer
- * provide, then a {@link WindowMissingException} will be thrown (this is a
+ * provide, then a {@link net.byteseek.io.reader.windows.WindowMissingException} will be thrown (this is a
  * RuntimeException, as it indicates a programming error).
  * <p>
  * This class depends on InputStream implementations, which are unlikely to be
@@ -289,7 +292,7 @@ public class InputStreamReader extends AbstractReader {
 
 	/**
 	 * Returns a window onto the data for a given position. The position does
-	 * not have to be the beginning of a {@link HardWindow} - but the Window
+	 * not have to be the beginning of a {@link net.byteseek.io.reader.windows.HardWindow} - but the Window
 	 * returned must include that position (if such a position exists in the
 	 * WindowReader).
 	 * 
@@ -300,7 +303,7 @@ public class InputStreamReader extends AbstractReader {
 	 *         null is returned.
 	 * @throws IOException
 	 *             if an IO error occurred trying to create a new window.
-	 * @throws WindowMissingException
+	 * @throws net.byteseek.io.reader.windows.WindowMissingException
 	 *             if the cache could not provide a Window for a position in the
 	 *             stream which has already been read.
 	 */

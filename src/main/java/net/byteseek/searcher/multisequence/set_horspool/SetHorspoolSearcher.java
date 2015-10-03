@@ -39,7 +39,7 @@ import java.util.Set;
 
 import net.byteseek.compiler.matcher.ByteMatcherFactory;
 import net.byteseek.compiler.matcher.OptimalByteMatcherFactory;
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;

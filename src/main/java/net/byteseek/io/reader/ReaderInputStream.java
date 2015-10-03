@@ -30,6 +30,7 @@
  */
 package net.byteseek.io.reader;
 
+import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
@@ -138,7 +139,7 @@ public final class ReaderInputStream extends InputStream {
      * sure that your WindowReader is caching enough to support mark and reset in this stream.
      * This method <b>always return true</b> (we cannot tell whether the WindowReader will genuinely cache enough).
      * <p>
-     * If an attempt is made to rewind to a previous window which is not cached, a {@link net.byteseek.io.reader.WindowMissingException}
+     * If an attempt is made to rewind to a previous window which is not cached, a {@link net.byteseek.io.reader.windows.WindowMissingException}
      * is thrown on a call to {@link #reset()}.
      */
     @Override

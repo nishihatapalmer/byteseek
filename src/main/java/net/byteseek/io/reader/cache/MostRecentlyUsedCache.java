@@ -34,11 +34,11 @@ package net.byteseek.io.reader.cache;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 
 
 /**
- * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.Window}
+ * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
  * objects which were most recently used. The number of Windows which will be cached
  * is configurable by its capacity.
  * 
@@ -94,7 +94,7 @@ public final class MostRecentlyUsedCache extends AbstractFreeNotificationCache {
     /**
      * A simple most recently used cache, which extends {@link java.util.LinkedHashMap}
      * to provide caching services, and also provides notification to any
-     * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.Window} leaves it.
+     * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.windows.Window} leaves it.
      */    
     private class Cache extends LinkedHashMap<Long, Window> {
 

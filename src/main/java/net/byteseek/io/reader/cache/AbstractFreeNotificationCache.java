@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 
 
 /**
@@ -93,7 +93,7 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
     
     
     /**
-     * Notifies a {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} that a {@link net.byteseek.io.reader.Window} was removed from a
+     * Notifies a {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} that a {@link net.byteseek.io.reader.windows.Window} was removed from a
      * {@link WindowCache}.
      * 
      * @param window The Window which was removed from this cache.

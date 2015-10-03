@@ -29,11 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.reader;
+package net.byteseek.io.reader.windows;
 
 /**
  * A HardWindow is essentially a wrapper for a byte array containing bytes from the
- * {@link WindowReader} that creates it, at a specified position in the WindowReader.
+ * {@link net.byteseek.io.reader.WindowReader} that creates it, at a specified position in the WindowReader.
  * Windows contain the position in the WindowReader they begin from, and how long the
  * Window is.  It maintains a hard reference to the underlying byte array, so the
  * memory used cannot be reclaimed by the garbage collector until the Window

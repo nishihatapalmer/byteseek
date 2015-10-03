@@ -36,6 +36,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 import net.byteseek.io.reader.cache.NoCache;
+import net.byteseek.io.reader.windows.HardWindow;
+import net.byteseek.io.reader.windows.Window;
 
 /**
  * A {@link WindowReader} which gives access to the bytes of a String, either using

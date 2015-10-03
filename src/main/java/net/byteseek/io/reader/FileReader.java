@@ -40,6 +40,8 @@ import java.io.RandomAccessFile;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
 import net.byteseek.io.reader.cache.WindowCache;
+import net.byteseek.io.reader.windows.HardWindow;
+import net.byteseek.io.reader.windows.Window;
 
 /**
  * A WindowReader extending {@link AbstractReader} which reads a random access file
@@ -76,7 +78,7 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Constructs a FileReader which defaults to a {@link Window} size of 4096
+	 * Constructs a FileReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096
 	 * using the WindowCache passed in to cache ArrayWindows.
 	 * 
 	 * @param file
@@ -94,7 +96,7 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Constructs a FileReader using the {@link Window} size passed in, and
+	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
 	 * caches the last 32 Windows in a {@link MostRecentlyUsedCache}.
 	 * 
 	 * @param file
@@ -134,8 +136,8 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Constructs a FileReader which defaults to a {@link Window} size of 4096,
-	 * caching the last 32 most recently used {@link Window}s in a
+	 * Constructs a FileReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096,
+	 * caching the last 32 most recently used {@link net.byteseek.io.reader.windows.Window}s in a
 	 * {@link MostRecentlyUsedCache}.
 	 * 
 	 * @param path
@@ -151,7 +153,7 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Constructs a FileReader which defaults to a {@link Window} size of 4096
+	 * Constructs a FileReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096
 	 * using the {@link WindowCache} passed in to cache Windows.
 	 * 
 	 * @param path
@@ -169,7 +171,7 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Constructs a FileReader using the {@link Window} size passed in, and
+	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
 	 * caches the last 32 Windows in a {@link MostRecentlyUsedCache}.
 	 * 
 	 * @param path
@@ -188,7 +190,7 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Constructs a FileReader using the {@link Window} size passed in, and
+	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
 	 * caches the last Windows up to the capacity supplied using a
 	 * {@link MostRecentlyUsedCache}.
 	 * 
@@ -210,7 +212,7 @@ public class FileReader extends AbstractReader {
 	}
 
 	/**
-	 * Constructs a FileReader which reads the file into {@link Window}s of the
+	 * Constructs a FileReader which reads the file into {@link net.byteseek.io.reader.windows.Window}s of the
 	 * specified size, using the {@link WindowCache} supplied to cache them.
 	 * 
 	 * @param file

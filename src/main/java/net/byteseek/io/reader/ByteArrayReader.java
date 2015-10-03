@@ -33,6 +33,8 @@ package net.byteseek.io.reader;
 import java.io.IOException;
 
 import net.byteseek.io.reader.cache.NoCache;
+import net.byteseek.io.reader.windows.HardWindow;
+import net.byteseek.io.reader.windows.Window;
 
 /**
  * Provides a reader interface over an array of bytes.

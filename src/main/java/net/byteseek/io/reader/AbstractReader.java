@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.cache.WindowCache;
+import net.byteseek.io.reader.windows.Window;
 
 /**
  * An abstract implementation of the WindowReader interface, which also implements

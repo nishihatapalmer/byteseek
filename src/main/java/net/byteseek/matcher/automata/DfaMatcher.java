@@ -38,7 +38,7 @@ import java.util.Collections;
 
 import net.byteseek.automata.Automata;
 import net.byteseek.automata.State;
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 

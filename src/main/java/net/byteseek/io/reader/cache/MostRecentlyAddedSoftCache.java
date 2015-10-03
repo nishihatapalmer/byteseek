@@ -35,12 +35,11 @@ import java.lang.ref.SoftReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import net.byteseek.io.reader.Window;
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 
 
 /**
- * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.Window}
+ * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
  * objects which were most recently added, as long as there is sufficient memory.
  * The number of Windows which will be cached is configurable by its capacity.
  * <p>

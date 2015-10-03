@@ -31,7 +31,7 @@
 
 package net.byteseek.searcher.bytes;
 
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.searcher.AbstractSearcher;

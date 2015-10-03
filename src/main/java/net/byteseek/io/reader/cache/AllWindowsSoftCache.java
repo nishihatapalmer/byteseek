@@ -35,12 +35,11 @@ import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.byteseek.io.reader.Window;
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 
 
 /**
- * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.Window} objects
+ * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.windows.Window} objects
  * using SoftReferences, so they can be reclaimed by the GC if memory
  * is running low.
  *

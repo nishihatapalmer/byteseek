@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;

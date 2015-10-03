@@ -31,6 +31,8 @@
 
 package net.byteseek.io.reader;
 
+import net.byteseek.io.reader.windows.Window;
+
 import java.io.Closeable;
 import java.io.IOException;
 
@@ -41,7 +43,7 @@ import java.io.IOException;
  * 
  * <ul>
  * <li>Read a single byte at a given position
- * <li>Get a {@link Window} onto the underlying byte source for a given
+ * <li>Get a {@link net.byteseek.io.reader.windows.Window} onto the underlying byte source for a given
  * position.
  * </ul>
  * 
@@ -70,7 +72,7 @@ public interface WindowReader extends Closeable {
 	int readByte(long position) throws IOException;
 
 	/**
-	 * Returns a {@link Window} for the given position.
+	 * Returns a {@link net.byteseek.io.reader.windows.Window} for the given position.
 	 * <p/>
 	 * The Window does not have to begin at the position specified; the Window
 	 * only needs to contain a byte at the position requested. Use

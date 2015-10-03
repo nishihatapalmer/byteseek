@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.reader;
+package net.byteseek.io.reader.windows;
 
 import net.byteseek.utils.ArgUtils;
 
@@ -38,7 +38,7 @@ import java.lang.ref.SoftReference;
 
 /**
  * A SoftWindow is essentially a wrapper for a byte array containing bytes from the
- * {@link WindowReader} that creates it, at a specified position in the WindowReader.
+ * {@link net.byteseek.io.reader.WindowReader} that creates it, at a specified position in the WindowReader.
  * Windows contain the position in the WindowReader they begin from, and how long the
  * Window is.  It uses a SoftReference to the byte array, allowing the garbage
  * collector to reclaim the underlying array in low memory conditions, and a

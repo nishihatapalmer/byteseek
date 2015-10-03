@@ -31,8 +31,7 @@
 
 package net.byteseek.io.reader.cache;
 
-import net.byteseek.io.reader.Window;
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;

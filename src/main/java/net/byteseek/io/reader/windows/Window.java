@@ -1,4 +1,4 @@
-package net.byteseek.io.reader;
+package net.byteseek.io.reader.windows;
 
 import java.io.IOException;
 

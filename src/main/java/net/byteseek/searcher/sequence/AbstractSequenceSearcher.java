@@ -34,7 +34,7 @@ package net.byteseek.searcher.sequence;
 import java.io.IOException;
 import java.util.List;
 
-import net.byteseek.io.reader.Window;
+import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.AbstractSearcher;
@@ -50,7 +50,7 @@ import net.byteseek.utils.ArgUtils;
  * <li>{@link #searchBackwards(net.byteseek.io.reader.WindowReader, long, long)}
  * </ul>
  * These allocate searching for sequences efficiently between searching in the
- * byte arrays provided by {@link net.byteseek.io.reader.Window}s when the sequence fits in a single window,
+ * byte arrays provided by {@link net.byteseek.io.reader.windows.Window}s when the sequence fits in a single window,
  * only using the less efficient reader interface on the sequence for times when
  * the sequence crosses over Window boundaries.
  * <p>
