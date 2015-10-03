@@ -41,6 +41,8 @@ import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
 import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.HardWindow;
+import net.byteseek.io.reader.windows.SoftWindow;
+import net.byteseek.io.reader.windows.SoftWindowRecovery;
 import net.byteseek.io.reader.windows.Window;
 
 /**
@@ -51,7 +53,7 @@ import net.byteseek.io.reader.windows.Window;
  * 
  * @author matt
  */
-public class FileReader extends AbstractReader {
+public class FileReader extends AbstractReader implements SoftWindowRecovery {
 
 	private final static String READ_ONLY = "r";
 	private final static String NULL_ARGUMENTS = "Null file passed to FileReader";
@@ -59,6 +61,7 @@ public class FileReader extends AbstractReader {
 	private final File file;
 	private final RandomAccessFile randomAccessFile;
 	private final long length;
+    private boolean useSoftWindows;
 
 	/**
 	 * Constructs a FileReader which defaults to an array size of 4096, caching
@@ -257,10 +260,12 @@ public class FileReader extends AbstractReader {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(randomAccessFile, bytes);
 			if (totalRead > 0) {
+				if (useSoftWindows) {
+					return new SoftWindow(bytes, windowStart, totalRead, this);
+				}
 				return new HardWindow(bytes, windowStart, totalRead);
 			}
 		} catch (final EOFException justReturnNull) {
-			//TODO: identify logging interfaces suitable for library use.
 		}
 		return null;
 	}
@@ -290,6 +295,18 @@ public class FileReader extends AbstractReader {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "[file:" + file + " length: " + file.length() + " cache:" + cache + ']'; 
+	}
+
+	public void useSoftWindows(boolean useSoftWindows) {
+		this.useSoftWindows = useSoftWindows;
+	}
+
+	@Override
+	public byte[] reloadWindow(final Window window) throws IOException {
+		randomAccessFile.seek(window.getWindowPosition());
+		final byte[] bytes = new byte[windowSize];
+		IOUtils.readBytes(randomAccessFile, bytes);
+		return bytes;
 	}
 
 }
