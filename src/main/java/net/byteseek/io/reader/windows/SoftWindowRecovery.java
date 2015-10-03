@@ -1,7 +1,5 @@
 package net.byteseek.io.reader.windows;
 
-import net.byteseek.io.reader.windows.Window;
-
 import java.io.IOException;
 
 /**
