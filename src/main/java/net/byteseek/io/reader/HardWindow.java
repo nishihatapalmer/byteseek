@@ -32,10 +32,12 @@
 package net.byteseek.io.reader;
 
 /**
- * A Window is essentially a wrapper for a byte array containing bytes from the
+ * A HardWindow is essentially a wrapper for a byte array containing bytes from the
  * {@link WindowReader} that creates it, at a specified position in the WindowReader.
  * Windows contain the position in the WindowReader they begin from, and how long the
- * Window is.
+ * Window is.  It maintains a hard reference to the underlying byte array, so the
+ * memory used cannot be reclaimed by the garbage collector until the Window
+ * itself is no longer cached.
  * <p>
  * The byte array is not copied, which means that mutable state is directly
  * wrapped by this class, although the Window itself is immutable. The entire

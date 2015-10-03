@@ -1,13 +1,15 @@
 package net.byteseek.io.reader;
 
+import java.io.IOException;
+
 /**
  * Created by matt on 02/10/15.
  */
 public interface Window {
 
-	byte getByte(int position);
+	byte getByte(int position) throws IOException;
 
-	byte[] getArray();
+	byte[] getArray() throws IOException;
 
 	long getWindowPosition();
 
