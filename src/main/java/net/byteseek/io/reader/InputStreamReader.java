@@ -39,9 +39,7 @@ import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
 import net.byteseek.io.reader.cache.TempFileCache;
 import net.byteseek.io.reader.cache.TwoLevelCache;
 import net.byteseek.io.reader.cache.WindowCache;
-import net.byteseek.io.reader.windows.HardWindow;
-import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowMissingException;
+import net.byteseek.io.reader.windows.*;
 
 /**
  * A WindowReader extending {@link AbstractReader} over an {@link java.io.InputStream}
@@ -82,6 +80,7 @@ public class InputStreamReader extends AbstractReader {
 	private long streamPos = 0;
 	private long length = UNKNOWN_LENGTH;
 	private boolean closeStreamOnClose;
+	private SoftWindowRecovery recovery;
 
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the default
@@ -315,12 +314,10 @@ public class InputStreamReader extends AbstractReader {
 			// No window was returned, but the position requested has already
 			// been read. This means the cache algorithm selected to use with
 			// this reader cannot return an earlier position, and being a
-			// stream,
-			// we can't rewind to read it again. There is nothing which can be
+			// stream, we can't rewind to read it again. There is nothing which can be
 			// done at this point other than to throw an exception.
 			final String message = "Cache failed to provide a window at position: %d but we have already read up to: %d";
-			throw new WindowMissingException(String.format(message, position,
-					streamPos));
+			throw new WindowMissingException(String.format(message, position, streamPos));
 		}
 		return window;
 	}
@@ -335,18 +332,18 @@ public class InputStreamReader extends AbstractReader {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
-				lastWindow = new HardWindow(bytes, streamPos, totalRead);
+				if (recovery == null) {
+					lastWindow = new HardWindow(bytes, streamPos, totalRead);
+				} else {
+					lastWindow = new SoftWindow(bytes, streamPos, totalRead, recovery);
+				}
 				streamPos += totalRead;
 			}
-			if (totalRead < windowSize) { // If we read less than the available
-											// array:
-				length = streamPos; // then the length is whatever the streampos
-									// is now.
+			if (totalRead < windowSize) { // If we read less than the available array:
+				length = streamPos; // then the length is whatever the streampos  is now.
 			}
-			if (readPos <= streamPos) { // If we still haven't reached the
-										// window
-				cache.addWindow(lastWindow); // for the requested position,
-												// cache it.
+			if (readPos <= streamPos) { // If we still haven't reached the window
+				cache.addWindow(lastWindow); // for the requested position, cache it.
 			}
 		}
 		return lastWindow;
@@ -368,8 +365,12 @@ public class InputStreamReader extends AbstractReader {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
-				final Window lastWindow = new HardWindow(bytes, streamPos,
-						totalRead);
+				final Window lastWindow;
+				if (recovery == null) {
+					lastWindow = new HardWindow(bytes, streamPos, totalRead);
+				} else {
+					lastWindow = new SoftWindow(bytes, streamPos, totalRead, recovery);
+				}
 				streamPos += totalRead;
 				cache.addWindow(lastWindow);
 			}
@@ -397,6 +398,22 @@ public class InputStreamReader extends AbstractReader {
 		} finally {
 			super.close();
 		}
+	}
+
+	/**
+	 * Sets a SoftWindowRecovery object to use.  If this is null (the default),
+	 * then HardWindows will be used, which while in memory cannot be reclaimed
+	 * by the garbage collector.  If a SoftWindowRecovery object is provided,
+	 * then the InputStreamReader will use SoftWindows, which can be reclaimed
+	 * by the garbage collector in low memory conditions.  The recovery object
+	 * is used by the window to reload a window whose memory has been reclaimed.
+	 *
+	 * @param recovery An object which can reload the memory needed by a Window
+	 *                 in the case that its byte array has been reclaimed by the
+	 *                 garbage collector.
+	 */
+	public void setSoftWindowRecovery(final SoftWindowRecovery recovery) {
+		this.recovery = recovery;
 	}
 	
 	@Override
