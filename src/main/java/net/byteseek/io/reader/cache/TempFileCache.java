@@ -38,8 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.byteseek.io.IOUtils;
-import net.byteseek.io.reader.windows.HardWindow;
-import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.*;
 
 
 /**
@@ -52,7 +51,7 @@ import net.byteseek.io.reader.windows.Window;
  * 
  * @author Matt Palmer
  */
-public final class TempFileCache extends AbstractFreeNotificationCache {
+public final class TempFileCache extends AbstractFreeNotificationCache implements SoftWindowRecovery {
 
     private final Map<Long, WindowInfo> windowPositions;
     
@@ -102,7 +101,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache {
             final byte[] array = new byte[info.length];
             try {
                 IOUtils.readBytes(file, array, info.filePosition);
-                window = new HardWindow(array, position, info.length);
+                window = new SoftWindow(array, position, info.length, this);
                 lastWindow = window;
                 lastWindowPos = position;
             } catch (IOException justReturnNullWindow) {
@@ -180,8 +179,19 @@ public final class TempFileCache extends AbstractFreeNotificationCache {
             }
         }
     }
-    
-    
+
+    @Override
+    public byte[] reloadWindow(final Window window) throws IOException {
+        final WindowInfo info = windowPositions.get(window.getWindowPosition());
+        if (info != null) {
+            final byte[] array = new byte[info.length];
+            IOUtils.readBytes(file, array, info.filePosition);
+            return array;
+        }
+        throw new WindowMissingException("No window exists in the cache for the window: " + window);
+    }
+
+
     /**
      * A utility class recording the length of a Window and the position in 
      * the temporary file it exists at.
