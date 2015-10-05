@@ -30,12 +30,17 @@
  */
 
 /**
- * A set of caching strategies for net.byteseek.io.reader windows.
+ * A set of caching strategies for net.byteseek.io.reader.Window.windows.
  * <p>
- *     There are three basic types of cache: ones which write out the Windows
- *     to a file, ones which hold on to Windows in memory by some strategy, and
- *     ones which hold on to Windows in memory using SoftReferences, which allow
- *     the garbage collector to get rid of them when memory is running low.
- * </p>
+ * Most caches are in-memory caches, holding the Windows within memory.
+ * There is also a temporary file disk cache.  Finally, there are two
+ * caches which use more than one cache to achieve their strategy:
+ * DoubleCache and TwoLevelCache.
+ * <p>
+ * Note that various readers (and the TempFileCache) can use SoftWindows,
+ * which allow the garbage collector to reclaim memory in low-memory conditions.
+ * Therefore, even in-memory caches (depending on how the reader is configured)
+ * can adapt to low memory conditions if required, as long as the window can be
+ * re-read (e.g. from a file, or a TempFileCache).
  */
 package net.byteseek.io.reader.cache;
