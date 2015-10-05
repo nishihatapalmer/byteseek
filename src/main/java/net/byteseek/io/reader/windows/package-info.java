@@ -38,4 +38,4 @@
  * array, and have an implementation of SoftWindowRecovery to re-load the data if
  * the garbage collector has reclaimed it.
  */
-package net.byteseek.io.reader;
+package net.byteseek.io.reader.windows;
