@@ -37,7 +37,13 @@
  * This allows the search and matching algorithms to access the arrays directly, and for the windows
  * to be cached using a variety of caching strategies defined in the cache sub-package.
  * <p>
- * In addition, the ReaderInputStream adapts any WindnowReader into an InputStream, to allow the
+ * There are two types of Window currently defined.  HardWindows store a hard reference
+ * to the underlying byte array.  SoftWindows use a SoftReference to the array, which allows
+ * the garbage collector to re-use the array memory if it is not currently in use.  For
+ * applications which are processing byte sources quickly, SoftWindows will help to prevent
+ * OutOfMemoryErrors.
+ * <p>
+ * In addition, the ReaderInputStream adapts any WindowReader into an InputStream, to allow the
  * cached windows to be used with other classes which expect input streams.
  */
 package net.byteseek.io.reader;
