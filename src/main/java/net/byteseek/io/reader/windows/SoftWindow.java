@@ -181,7 +181,7 @@ public final class SoftWindow implements Window {
     private byte[] getByteArray() throws IOException {
         byte[] array = bytes.get();
         if (array == null) {
-            array = recovery.reloadWindow(this);
+            array = recovery.reloadWindowBytes(this);
             bytes = new SoftReference<byte[]>(array);
         }
         return array;

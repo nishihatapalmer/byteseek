@@ -302,7 +302,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	}
 
 	@Override
-	public byte[] reloadWindow(final Window window) throws IOException {
+	public byte[] reloadWindowBytes(final Window window) throws IOException {
 		randomAccessFile.seek(window.getWindowPosition());
 		final byte[] bytes = new byte[windowSize];
 		IOUtils.readBytes(randomAccessFile, bytes);

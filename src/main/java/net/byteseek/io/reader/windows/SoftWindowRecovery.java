@@ -37,6 +37,6 @@ import java.io.IOException;
  */
 public interface SoftWindowRecovery {
 
-    byte[] reloadWindow(Window window) throws IOException;
+    byte[] reloadWindowBytes(Window window) throws IOException;
 
 }

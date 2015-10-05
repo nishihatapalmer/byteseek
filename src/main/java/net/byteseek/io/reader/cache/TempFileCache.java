@@ -181,7 +181,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
     }
 
     @Override
-    public byte[] reloadWindow(final Window window) throws IOException {
+    public byte[] reloadWindowBytes(final Window window) throws IOException {
         final WindowInfo info = windowPositions.get(window.getWindowPosition());
         if (info != null) {
             final byte[] array = new byte[info.length];
