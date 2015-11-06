@@ -142,7 +142,7 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 	@Override
 	public int readByte(final long position) throws IOException {
 		final Window window = getWindow(position);
-		final int offset = (int) position % windowSize;
+		final int offset = (int) (position % (long) windowSize);
 		if (window == null || offset >= window.length()) {
 			return NO_BYTE_AT_POSITION;
 		}
@@ -166,7 +166,7 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 	public Window getWindow(final long position) throws IOException {
 		if (position >= 0) {
 			Window window = null;
-			final int offset = (int) position % windowSize;
+			final int offset = (int) (position % (long) windowSize);
 			final long windowStart = position - offset;
 			if (lastWindow != null
 					&& lastWindow.getWindowPosition() == windowStart) {
@@ -216,7 +216,7 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 	 */
 	@Override
 	public int getWindowOffset(final long position) {
-		return (int) position % windowSize;
+		return (int) (position % (long) windowSize);
 	}
 
 	/**
@@ -263,7 +263,7 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 			try {
 				final Window window = getWindow(position);
 				if (window != null) {
-					position += windowSize;
+					position += (long) windowSize;
 					return window;
 				}
 			} catch (final IOException throwNoSuchElementExceptionInstead) {
