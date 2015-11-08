@@ -78,6 +78,7 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
         if (windowPos >= topCacheBytes) {
             // Check for tail cached windows which shouldn't be cached any more.
             final long tailCacheStart = window.getNextWindowPosition() - tailCacheBytes;
+            //TODO: garbage reduction - rewrite so we don't need to create an iterator here.
             final Iterator<Window> it = tailEntries.iterator();
             while (it.hasNext()) {
                 final Window cachedWin = it.next();
