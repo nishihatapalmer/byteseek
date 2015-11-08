@@ -59,10 +59,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
     private File tempDir;
     private RandomAccessFile file;
     private long nextFilePos;
-    private Window lastWindow;
-    private long   lastWindowPos = -1;
-   
-    
+
     /**
      * Constructs a TempFileCache.
      */
@@ -92,9 +89,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
      */
     @Override
     public Window getWindow(final long position) {
-        if (position == lastWindowPos && lastWindow != null) {
-            return lastWindow;
-        }
         Window window = null;
         final WindowInfo info = windowPositions.get(position);
         if (info != null) {
@@ -102,8 +96,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             try {
                 IOUtils.readBytes(file, array, info.filePosition);
                 window = new SoftWindow(array, position, info.length, this);
-                lastWindow = window;
-                lastWindowPos = position;
             } catch (IOException justReturnNullWindow) {
             }
         }
