@@ -37,6 +37,7 @@ import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An abstract implementation of the WindowReader interface, which also implements
@@ -118,13 +119,8 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 	 *             null.
 	 */
 	public AbstractReader(final int windowSize, final WindowCache cache) {
-		if (windowSize < 1) {
-			throw new IllegalArgumentException(
-					"Window size must be at least one.");
-		}
-		if (cache == null) {
-			throw new IllegalArgumentException("Window cache cannot be null.");
-		}
+		ArgUtils.checkPositiveInteger(windowSize, "windowSize");
+		ArgUtils.checkNullObject(cache, "cache");
 		this.windowSize = windowSize;
 		this.cache = cache;
 	}
