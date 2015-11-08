@@ -34,6 +34,9 @@ package net.byteseek.io.reader.cache;
 import java.util.HashMap;
 import java.util.Map;
 
+import gnu.trove.decorator.TLongObjectMapDecorator;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
 
 
@@ -44,8 +47,8 @@ import net.byteseek.io.reader.windows.Window;
  */
 public final class AllWindowsCache extends AbstractFreeNotificationCache {
 
-    private final Map<Long, Window> cache = new HashMap<Long, Window>();
-    
+    private final TLongObjectMap<Window> cache = new TLongObjectHashMap<Window>();
+
     /**
      * {@inheritDoc}
      */
