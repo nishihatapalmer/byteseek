@@ -39,6 +39,10 @@ import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
 
+//FUTURE:
+//      * If windowSize is a power of two, could use bit masking to get the
+//        window offset (remainder), rather than the expensive % remainder operation.
+
 /**
  * An abstract implementation of the WindowReader interface, which also implements
  * Iterable<Window> to allow iterating over the Windows of a WindowReader.
