@@ -31,6 +31,8 @@
 
 package net.byteseek.io.reader.cache;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
 
 import java.util.*;
@@ -55,7 +57,7 @@ import java.util.*;
  */
 public final class TopAndTailCache extends AbstractFreeNotificationCache {
 
-    private final Map<Long, Window> cache;
+    private final TLongObjectMap<Window> cache;
     private final List<Window> tailCacheEntries;
     private final int firstCacheSize;
     private final int secondCacheSize;
@@ -67,7 +69,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
     }
 
     public TopAndTailCache(final int firstCacheSize, final int secondCacheSize) {
-        this.cache = new HashMap<Long, Window>();
+        this.cache = new TLongObjectHashMap<Window>();
         this.tailCacheEntries = new ArrayList<Window>();
         this.firstCacheSize  = firstCacheSize;
         this.secondCacheSize = secondCacheSize;

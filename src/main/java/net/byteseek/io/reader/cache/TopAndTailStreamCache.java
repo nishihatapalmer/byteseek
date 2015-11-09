@@ -31,6 +31,8 @@
 
 package net.byteseek.io.reader.cache;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
 
 import java.util.*;
@@ -49,7 +51,7 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
 
     final long topCacheBytes;
     final long tailCacheBytes;
-    final Map<Long, Window> cache;
+    final TLongObjectMap<Window> cache;
     final List<Window> tailEntries;
     long lastSeenPosition;
 
@@ -60,7 +62,7 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
     public TopAndTailStreamCache(final long topBytes, final long tailBytes) {
         this.topCacheBytes  = topBytes;
         this.tailCacheBytes = tailBytes;
-        cache               = new HashMap<Long, Window>();
+        cache               = new TLongObjectHashMap<Window>();
         tailEntries         = new ArrayList<Window>();
 
     }
@@ -76,18 +78,27 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
         cache.put(windowPos, window);
         // past top bytes, into tail bytes.
         if (windowPos >= topCacheBytes) {
+
             // Check for tail cached windows which shouldn't be cached any more.
             final long tailCacheStart = window.getNextWindowPosition() - tailCacheBytes;
-            final Iterator<Window> it = tailEntries.iterator();
-            while (it.hasNext()) {
-                final Window cachedWin = it.next();
-                if (cachedWin.getNextWindowPosition() <= tailCacheStart) {
-                   it.remove();
-                   cache.remove(cachedWin.getWindowPosition());
-                   notifyWindowFree(cachedWin, this);
+            final int numTailEntries = tailEntries.size();
+            int removeEntry = 0;
+            for (int i = 0; i < numTailEntries; i++) {
+                final Window tailEntry = tailEntries.get(i);
+                if (tailEntry.getNextWindowPosition() <= tailCacheStart) {
+                    removeEntry = i + 1;
                 } else {
                     break;
                 }
+            }
+            // If we found any to remove, remove them.
+            if (removeEntry > 0) {
+                for (int i = 0; i < removeEntry; i++) {
+                    final Window toRemove = tailEntries.get(i);
+                    cache.remove(toRemove.getWindowPosition());
+                    notifyWindowFree(toRemove, this);
+                }
+                tailEntries.subList(0, removeEntry).clear();
             }
             // add this window to our tail entries.
             tailEntries.add(window);

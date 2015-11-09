@@ -37,6 +37,8 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.windows.*;
 
@@ -53,16 +55,13 @@ import net.byteseek.io.reader.windows.*;
  */
 public final class TempFileCache extends AbstractFreeNotificationCache implements SoftWindowRecovery {
 
-    private final Map<Long, WindowInfo> windowPositions;
+    private final TLongObjectMap<WindowInfo> windowPositions;
     
     private File tempFile;
     private File tempDir;
     private RandomAccessFile file;
     private long nextFilePos;
-    private Window lastWindow;
-    private long   lastWindowPos = -1;
-   
-    
+
     /**
      * Constructs a TempFileCache.
      */
@@ -79,7 +78,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
      * @throws java.lang.IllegalArgumentException if the tempdir supplied is not a directory.
      */
     public TempFileCache(final File tempDir) {
-        windowPositions = new HashMap<Long, WindowInfo>();
+        windowPositions = new TLongObjectHashMap<WindowInfo>();
         this.tempDir = tempDir;
         if (tempDir != null && !tempDir.isDirectory()) {
             throw new IllegalArgumentException("The temp dir file supplied is not a directory: " + tempDir.getAbsolutePath());
@@ -92,9 +91,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
      */
     @Override
     public Window getWindow(final long position) {
-        if (position == lastWindowPos && lastWindow != null) {
-            return lastWindow;
-        }
         Window window = null;
         final WindowInfo info = windowPositions.get(position);
         if (info != null) {
@@ -102,8 +98,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             try {
                 IOUtils.readBytes(file, array, info.filePosition);
                 window = new SoftWindow(array, position, info.length, this);
-                lastWindow = window;
-                lastWindowPos = position;
             } catch (IOException justReturnNullWindow) {
             }
         }

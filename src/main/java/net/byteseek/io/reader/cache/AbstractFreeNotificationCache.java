@@ -100,8 +100,8 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
      * @param fromCache The WindowCache from which the Window was removed.
      */
     protected final void notifyWindowFree(final Window window, final WindowCache fromCache) {
-        for (final WindowObserver observer : windowObservers) {
-            observer.windowFree(window, fromCache);
+        for (int i = 0; i < windowObservers.size(); i++) {
+            windowObservers.get(i).windowFree(window, fromCache);
         }
     }
     
