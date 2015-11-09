@@ -262,11 +262,12 @@ public final class SearchUtils {
 	 */
 	public static <T> List<SearchResult<T>> addPositionToResults(
 			final List<SearchResult<T>> originalResults, final long amountToAdd) {
-		final List<SearchResult<T>> newResults = new ArrayList<SearchResult<T>>(
-				originalResults.size());
-		for (final SearchResult<T> result : originalResults) {
-			newResults.add(new SearchResult<T>(result.getMatchPosition()
-					+ amountToAdd, result.getMatchingObject()));
+		//TODO: reduce garbage - make search result mutable and just amend the positions in-place...?
+		final int numResults = originalResults.size();
+		final List<SearchResult<T>> newResults = new ArrayList<SearchResult<T>>(numResults);
+		for (int i = 0; i < numResults; i++) {
+			final SearchResult<T> result = originalResults.get(i);
+			newResults.add(new SearchResult<T>(result.getMatchPosition() + amountToAdd, result.getMatchingObject()));
 		}
 		return newResults;
 	}
