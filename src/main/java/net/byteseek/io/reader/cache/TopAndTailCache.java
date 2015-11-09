@@ -117,7 +117,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
                 final int nextToCheck = nextTailCacheToCheck;
                 final Window window = tailCacheEntries.get(nextToCheck);
                 if (window.getWindowEndPosition() < tailCacheStart) {
-                    cache.remove(window);
+                    cache.remove(window.getWindowPosition());
                     tailCacheEntries.remove(nextToCheck);
                     notifyWindowFree(window, this);
                 } else {
