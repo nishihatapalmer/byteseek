@@ -817,8 +817,23 @@ public final class ByteUtils {
     public static boolean isPowerOfTwo(final int i) {
         return i > 0? (i & (i - 1)) == 0 : false;
     }
-    
-    
+
+
+    /**
+     * Returns a number which is a power of two.  If the number
+     * passed in is a power of two, the same number is returned.
+     * If the number passed in is not a power of two, then the
+     * number returned will be the next highest power of two
+     * above it.
+     *
+     * @param i The number to get the ceiling power of two size.
+     * @return The ceiling power of two equal or higher than the number passed in.
+     */
+    public static int ceilPowerOfTwo(final int i) {
+        return 1 << ceilLogBaseTwo(i);
+    }
+
+
     /**
      * Returns the number which is the next highest power of two bigger than another integer.
      * 
