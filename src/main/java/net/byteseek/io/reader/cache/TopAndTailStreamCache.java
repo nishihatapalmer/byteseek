@@ -78,19 +78,27 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
         cache.put(windowPos, window);
         // past top bytes, into tail bytes.
         if (windowPos >= topCacheBytes) {
+
             // Check for tail cached windows which shouldn't be cached any more.
             final long tailCacheStart = window.getNextWindowPosition() - tailCacheBytes;
-            //TODO: garbage reduction - rewrite so we don't need to create an iterator here.
-            final Iterator<Window> it = tailEntries.iterator();
-            while (it.hasNext()) {
-                final Window cachedWin = it.next();
-                if (cachedWin.getNextWindowPosition() <= tailCacheStart) {
-                   it.remove();
-                   cache.remove(cachedWin.getWindowPosition());
-                   notifyWindowFree(cachedWin, this);
+            final int numTailEntries = tailEntries.size();
+            int removeEntry = 0;
+            for (int i = 0; i < numTailEntries; i++) {
+                final Window tailEntry = tailEntries.get(i);
+                if (tailEntry.getNextWindowPosition() <= tailCacheStart) {
+                    removeEntry = i + 1;
                 } else {
                     break;
                 }
+            }
+            // If we found any to remove, remove them.
+            if (removeEntry > 0) {
+                for (int i = 0; i < removeEntry; i++) {
+                    final Window toRemove = tailEntries.get(i);
+                    cache.remove(toRemove.getWindowPosition());
+                    notifyWindowFree(toRemove, this);
+                }
+                tailEntries.subList(0, removeEntry).clear();
             }
             // add this window to our tail entries.
             tailEntries.add(window);
