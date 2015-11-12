@@ -306,8 +306,7 @@ public class InputStreamReader extends AbstractReader {
 	 *             stream which has already been read.
 	 */
 	@Override
-	public final Window getWindow(final long position) throws IOException,
-			WindowMissingException {
+	public final Window getWindow(final long position) throws IOException {
 		final Window window = super.getWindow(position);
 		if (window == null && position < nextReadPos && position >= 0) {
 			// No window was returned, but the position requested has already
