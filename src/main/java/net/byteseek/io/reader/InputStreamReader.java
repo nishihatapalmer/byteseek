@@ -328,7 +328,7 @@ public class InputStreamReader extends AbstractReader {
 	@Override
 	protected Window createWindow(final long readPos) throws IOException {
 		Window lastWindow = null;
-		while (readPos > streamPos && length == UNKNOWN_LENGTH) {
+		while (readPos >= streamPos && length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
@@ -342,8 +342,8 @@ public class InputStreamReader extends AbstractReader {
 			if (totalRead < windowSize) { // If we read less than the available array:
 				length = streamPos; // then the length is whatever the streampos  is now.
 			}
-			if (readPos <= streamPos) { // If we still haven't reached the window
-				cache.addWindow(lastWindow); // for the requested position, cache it.
+			if (streamPos < readPos) {       // If we still haven't reached the window
+				cache.addWindow(lastWindow); // for the requested position, cache it, as we'll go around again.
 			}
 		}
 		return lastWindow;
