@@ -40,6 +40,7 @@ import net.byteseek.io.reader.cache.TempFileCache;
 import net.byteseek.io.reader.cache.TwoLevelCache;
 import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.*;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A WindowReader extending {@link AbstractReader} over an {@link java.io.InputStream}
@@ -77,7 +78,7 @@ import net.byteseek.io.reader.windows.*;
 public class InputStreamReader extends AbstractReader {
 
 	private final InputStream stream;
-	private long streamPos = 0;
+	private long nextReadPos = 0;
 	private long length = UNKNOWN_LENGTH;
 	private boolean closeStreamOnClose;
 	private SoftWindowRecovery recovery;
@@ -282,9 +283,7 @@ public class InputStreamReader extends AbstractReader {
 	public InputStreamReader(final InputStream stream, final int windowSize,
 			                 final WindowCache cache, final boolean closeStreamOnClose) {
 		super(windowSize, cache);
-		if (stream == null) {
-			throw new IllegalArgumentException("Stream is null.");
-		}
+		ArgUtils.checkNullObject(stream, "stream");
 		this.stream = stream;
 		this.closeStreamOnClose = closeStreamOnClose;
 	}
@@ -310,14 +309,14 @@ public class InputStreamReader extends AbstractReader {
 	public final Window getWindow(final long position) throws IOException,
 			WindowMissingException {
 		final Window window = super.getWindow(position);
-		if (window == null && position < streamPos && position >= 0) {
+		if (window == null && position < nextReadPos && position >= 0) {
 			// No window was returned, but the position requested has already
 			// been read. This means the cache algorithm selected to use with
 			// this reader cannot return an earlier position, and being a
 			// stream, we can't rewind to read it again. There is nothing which can be
 			// done at this point other than to throw an exception.
 			final String message = "Cache failed to provide a window at position: %d but we have already read up to: %d";
-			throw new WindowMissingException(String.format(message, position, streamPos));
+			throw new WindowMissingException(String.format(message, position, nextReadPos));
 		}
 		return window;
 	}
@@ -326,25 +325,28 @@ public class InputStreamReader extends AbstractReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Window createWindow(final long readPos) throws IOException {
+	protected Window createWindow(final long windowPos) throws IOException {
 		Window lastWindow = null;
-		while (readPos >= streamPos && length == UNKNOWN_LENGTH) {
+		while (nextReadPos <= windowPos && length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
 				if (recovery == null) {
-					lastWindow = new HardWindow(bytes, streamPos, totalRead);
+					lastWindow = new HardWindow(bytes, nextReadPos, totalRead);
 				} else {
-					lastWindow = new SoftWindow(bytes, streamPos, totalRead, recovery);
+					lastWindow = new SoftWindow(bytes, nextReadPos, totalRead, recovery);
 				}
-				streamPos += totalRead;
+				nextReadPos += totalRead;
 			}
 			if (totalRead < windowSize) { // If we read less than the available array:
-				length = streamPos; // then the length is whatever the streampos  is now.
+				length = nextReadPos; // then the length is whatever the streampos  is now.
 			}
-			if (streamPos < readPos) {       // If we still haven't reached the window
+			if (nextReadPos < windowPos) {       // If we still haven't reached the window
 				cache.addWindow(lastWindow); // for the requested position, cache it, as we'll go around again.
 			}
+		}
+		if (nextReadPos <= windowPos) { // If we didn't manage to get to the window position, we can't return one.
+			lastWindow = null;
 		}
 		return lastWindow;
 	}
@@ -356,8 +358,7 @@ public class InputStreamReader extends AbstractReader {
 	 * cached in order to determine the length.
 	 * 
 	 * @return The total length of the stream.
-	 * @throws IOException
-	 *             If any problem occurred reading the stream.
+	 * @throws IOException  If any problem occurred reading the stream.
 	 */
 	@Override
 	public long length() throws IOException {
@@ -367,16 +368,16 @@ public class InputStreamReader extends AbstractReader {
 			if (totalRead > 0) {
 				final Window lastWindow;
 				if (recovery == null) {
-					lastWindow = new HardWindow(bytes, streamPos, totalRead);
+					lastWindow = new HardWindow(bytes, nextReadPos, totalRead);
 				} else {
-					lastWindow = new SoftWindow(bytes, streamPos, totalRead, recovery);
+					lastWindow = new SoftWindow(bytes, nextReadPos, totalRead, recovery);
 				}
-				streamPos += totalRead;
+				nextReadPos += totalRead;
 				cache.addWindow(lastWindow);
 			}
-			if (totalRead < windowSize) { // If we read less than the available
-											// array:
-				length = streamPos;
+			// If we read less than the available array, we know the length.
+			if (totalRead < windowSize) {
+				length = nextReadPos;
 			}
 		}
 		return length;
