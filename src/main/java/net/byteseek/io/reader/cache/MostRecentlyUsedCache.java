@@ -34,6 +34,7 @@ package net.byteseek.io.reader.cache;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import net.byteseek.collections.LongLinkedHashMap;
 import net.byteseek.io.reader.windows.Window;
 
 
@@ -46,8 +47,6 @@ import net.byteseek.io.reader.windows.Window;
  */
 public final class MostRecentlyUsedCache extends AbstractFreeNotificationCache {
 
-    private final static boolean ACCESS_ORDER = true;    
-    
     private final Cache cache;
     
     
@@ -57,7 +56,7 @@ public final class MostRecentlyUsedCache extends AbstractFreeNotificationCache {
      * @param capacity The number of Window objects to cache.
      */
     public MostRecentlyUsedCache(final int capacity) {
-        cache = new Cache(capacity + 1, 1.1f, ACCESS_ORDER);
+        cache = new Cache(capacity);
     }
     
     
@@ -96,17 +95,17 @@ public final class MostRecentlyUsedCache extends AbstractFreeNotificationCache {
      * to provide caching services, and also provides notification to any
      * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.windows.Window} leaves it.
      */    
-    private class Cache extends LinkedHashMap<Long, Window> {
+    private class Cache extends LongLinkedHashMap<Window> {
 
         private final int capacity;
         
-        private Cache(int capacity, float loadFactor, boolean accessOrder) {
-            super(capacity, loadFactor, accessOrder);
+        private Cache(int capacity) {
+            super(capacity + 1, 1.1f, true);
             this.capacity = capacity;
         }
         
         @Override
-        protected boolean removeEldestEntry(final Map.Entry<Long, Window> eldest) {
+        protected boolean removeEldestEntry(final MapEntry<Window> eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
                 notifyWindowFree(eldest.getValue(), MostRecentlyUsedCache.this);
