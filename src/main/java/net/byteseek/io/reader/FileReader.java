@@ -44,6 +44,7 @@ import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.SoftWindow;
 import net.byteseek.io.reader.windows.SoftWindowRecovery;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A WindowReader extending {@link AbstractReader} which reads a random access file
@@ -232,9 +233,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	public FileReader(final File file, final int windowSize,
 			final WindowCache cache) throws FileNotFoundException {
 		super(windowSize, cache);
-		if (file == null) {
-			throw new IllegalArgumentException(NULL_ARGUMENTS);
-		}
+		ArgUtils.checkNullObject(file, "file");
 		this.file = file;
 		randomAccessFile = new RandomAccessFile(file, READ_ONLY);
 		length = file.length();
