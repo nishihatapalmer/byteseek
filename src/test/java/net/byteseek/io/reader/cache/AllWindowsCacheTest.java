@@ -45,21 +45,27 @@ public class AllWindowsCacheTest {
 
     @Test
     public void testGetWindow() throws Exception {
+        fail("not implemented yet");
 
     }
 
     @Test
     public void testAddWindow() throws Exception {
+        fail("not implemented yet");
 
     }
 
     @Test
     public void testClear() throws Exception {
+        fail("not implemented yet");
 
     }
 
     @Test
     public void testToString() throws Exception {
+        fail("not implemented yet");
 
     }
+
+
 }
