@@ -48,7 +48,7 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
     
     
     /**
-     * Creates a MostRecentlyUsedCache using the provided capacity.
+     * Creates a LeastRecentlyUsedCache using the provided capacity.
      * 
      * @param capacity The number of Window objects to cache.
      */
@@ -88,7 +88,7 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
     
     
     /**
-     * A simple most recently used cache, which extends {@link java.util.LinkedHashMap}
+     * A simple least recently used cache, which extends {@link java.util.LinkedHashMap}
      * to provide caching services, and also provides notification to any
      * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.windows.Window} leaves it.
      */    
