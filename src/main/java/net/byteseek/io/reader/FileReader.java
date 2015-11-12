@@ -57,7 +57,6 @@ import net.byteseek.utils.ArgUtils;
 public class FileReader extends AbstractReader implements SoftWindowRecovery {
 
 	private final static String READ_ONLY = "r";
-	private final static String NULL_ARGUMENTS = "Null file passed to FileReader";
 
 	private final File file;
 	private final RandomAccessFile randomAccessFile;
