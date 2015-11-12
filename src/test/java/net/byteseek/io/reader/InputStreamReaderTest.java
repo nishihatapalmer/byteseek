@@ -30,11 +30,15 @@
  */
 package net.byteseek.io.reader;
 
+import net.byteseek.io.reader.windows.SoftWindow;
+import net.byteseek.io.reader.windows.SoftWindowRecovery;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowMissingException;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.Assert.*;
@@ -140,25 +144,65 @@ public class InputStreamReaderTest {
 
     @Test
     public void testLength() throws Exception {
-        fail("not implemented yet");
-
+        for (int i = 0; i < readers.length; i++) {
+            assertEquals("reader length is 1024", 1024, readers[i].length());
+        }
     }
 
     @Test
-    public void testClose() throws Exception {
-        fail("not implemented yet");
+    public void testCloseAfterReading() throws Exception {
+        for (int i = 0; i < readers.length; i++) {
+            readers[i].length(); // force read of stream
+            readers[i].close();  // close reader.
+            try {
+                readers[i].getWindow(0);
+                fail("Expected WindowMissingException");
+            } catch (WindowMissingException expected) {}
+        }
+    }
 
+    /* Closing a ByteArrayInputStream doesn't do anything, so this
+       test doesn't test anything.
+    @Test
+    public void testCloseBeforeReading() throws Exception {
+        for (int i = 0; i < readers.length; i++) {
+            readers[i].close();  // close reader.
+            try {
+                readers[i].getWindow(0);
+                fail("Expected WindowMissingException");
+            } catch (WindowMissingException expected) {}
+        }
+    }
+    */
+
+    @Test
+    public void testSetSoftWindowRecoveryGetWindow() throws Exception {
+        for (int i = 0; i < readers.length; i++) {
+            readers[i].setSoftWindowRecovery(
+                    new SoftWindowRecovery() {
+                        @Override
+                        public byte[] reloadWindowBytes(Window window) throws IOException {
+                            return new byte[1024];
+                        }
+                    });
+            assertEquals("Soft windows are returned", SoftWindow.class, readers[i].getWindow(0).getClass());
+        }
     }
 
     @Test
     public void testSetSoftWindowRecovery() throws Exception {
-        fail("not implemented yet");
-
+        for (int i = 0; i < readers.length; i++) {
+            readers[i].setSoftWindowRecovery(
+                    new SoftWindowRecovery() {
+                        @Override
+                        public byte[] reloadWindowBytes(Window window) throws IOException {
+                            return new byte[1024];
+                        }
+                    });
+            readers[i].length(); // read entire stream so everything is in cache.
+            assertEquals("Soft windows are returned", SoftWindow.class, readers[i].getWindow(0).getClass());
+        }
     }
 
-    @Test
-    public void testToString() throws Exception {
-        fail("not implemented yet");
 
-    }
 }
