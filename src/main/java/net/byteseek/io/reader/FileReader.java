@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import net.byteseek.io.IOUtils;
-import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
+import net.byteseek.io.reader.cache.LeastRecentlyUsedCache;
 import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.SoftWindow;
@@ -68,7 +68,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 
 	/**
 	 * Constructs a FileReader which defaults to an array size of 4096, caching
-	 * the last 32 most recently used Windows in a {@link MostRecentlyUsedCache}
+	 * the last 32 most recently used Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}
 	 * .
 	 * 
 	 * @param file
@@ -79,7 +79,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 *             if the file passed in is null.
 	 */
 	public FileReader(final File file) throws FileNotFoundException {
-		this(file, DEFAULT_WINDOW_SIZE, new MostRecentlyUsedCache(
+		this(file, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(
 				DEFAULT_CAPACITY));
 	}
 
@@ -103,7 +103,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 
 	/**
 	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
-	 * caches the last 32 Windows in a {@link MostRecentlyUsedCache}.
+	 * caches the last 32 Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
 	 * @param file
 	 *            The file to read from.
@@ -116,13 +116,13 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 */
 	public FileReader(final File file, final int windowSize)
 			throws FileNotFoundException {
-		this(file, windowSize, new MostRecentlyUsedCache(DEFAULT_CAPACITY));
+		this(file, windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
 	/**
 	 * Constructs a FileReader using the array size passed in, and caches the
 	 * last most recently used Windows up to the capacity specified in a
-	 * {@link MostRecentlyUsedCache}.
+	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
 	 * @param file
 	 *            The file to read from.
@@ -138,13 +138,13 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 */
 	public FileReader(final File file, final int windowSize, final int capacity)
 			throws FileNotFoundException {
-		this(file, windowSize, new MostRecentlyUsedCache(capacity));
+		this(file, windowSize, new LeastRecentlyUsedCache(capacity));
 	}
 
 	/**
 	 * Constructs a FileReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096,
 	 * caching the last 32 most recently used {@link net.byteseek.io.reader.windows.Window}s in a
-	 * {@link MostRecentlyUsedCache}.
+	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
 	 * @param path
 	 *            The path of the file to read from.
@@ -154,7 +154,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 *             if the file passed in is null.
 	 */
 	public FileReader(final String path) throws FileNotFoundException {
-		this(new File(path), DEFAULT_WINDOW_SIZE, new MostRecentlyUsedCache(
+		this(new File(path), DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(
 				DEFAULT_CAPACITY));
 	}
 
@@ -178,7 +178,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 
 	/**
 	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
-	 * caches the last 32 Windows in a {@link MostRecentlyUsedCache}.
+	 * caches the last 32 Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
 	 * @param path
 	 *            The path of the file to read from.
@@ -191,14 +191,14 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 */
 	public FileReader(final String path, final int windowSize)
 			throws FileNotFoundException {
-		this(new File(path), windowSize, new MostRecentlyUsedCache(
+		this(new File(path), windowSize, new LeastRecentlyUsedCache(
 				DEFAULT_CAPACITY));
 	}
 
 	/**
 	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
 	 * caches the last Windows up to the capacity supplied using a
-	 * {@link MostRecentlyUsedCache}.
+	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
 	 * @param path
 	 *            The path of the file to read from.
@@ -214,7 +214,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 */
 	public FileReader(final String path, final int windowSize,
 			final int capacity) throws FileNotFoundException {
-		this(new File(path), windowSize, new MostRecentlyUsedCache(capacity));
+		this(new File(path), windowSize, new LeastRecentlyUsedCache(capacity));
 	}
 
 	/**

@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -31,31 +31,28 @@
 
 package net.byteseek.io.reader.cache;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import net.byteseek.collections.LongLinkedHashMap;
 import net.byteseek.io.reader.windows.Window;
 
 
 /**
  * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
- * objects which were most recently added. The number of Windows which will be cached
+ * objects which were most recently used. The number of Windows which will be cached
  * is configurable by its capacity.
  * 
  * @author Matt Palmer
  */
-public final class MostRecentlyAddedCache extends AbstractFreeNotificationCache {
-
+public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache {
 
     private final Cache cache;
     
+    
     /**
-     * Creates a MostRecentlyAddedCache using the provided capacity.
+     * Creates a MostRecentlyUsedCache using the provided capacity.
      * 
      * @param capacity The number of Window objects to cache.
      */
-    public MostRecentlyAddedCache(final int capacity) {
+    public LeastRecentlyUsedCache(final int capacity) {
         cache = new Cache(capacity);
     }
     
@@ -79,8 +76,8 @@ public final class MostRecentlyAddedCache extends AbstractFreeNotificationCache 
             cache.put(windowPosition, window);
         }
     }
-
     
+   
     /**
      * {@inheritDoc}
      */
@@ -91,16 +88,16 @@ public final class MostRecentlyAddedCache extends AbstractFreeNotificationCache 
     
     
     /**
-     * A simple most recently added cache, which extends {@link java.util.LinkedHashMap}
+     * A simple most recently used cache, which extends {@link java.util.LinkedHashMap}
      * to provide caching services, and also provides notification to any
      * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.windows.Window} leaves it.
-     */
+     */    
     private class Cache extends LongLinkedHashMap<Window> {
 
         private final int capacity;
         
         private Cache(int capacity) {
-            super(capacity + 1);
+            super(capacity + 1, 1.1f, true);
             this.capacity = capacity;
         }
         
@@ -108,7 +105,7 @@ public final class MostRecentlyAddedCache extends AbstractFreeNotificationCache 
         protected boolean removeEldestEntry(final MapEntry<Window> eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
-                notifyWindowFree(eldest.getValue(), MostRecentlyAddedCache.this);
+                notifyWindowFree(eldest.getValue(), LeastRecentlyUsedCache.this);
             }
             return remove;
         }   

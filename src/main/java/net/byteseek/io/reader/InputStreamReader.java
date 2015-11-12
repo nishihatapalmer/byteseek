@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.byteseek.io.IOUtils;
-import net.byteseek.io.reader.cache.MostRecentlyUsedCache;
+import net.byteseek.io.reader.cache.LeastRecentlyUsedCache;
 import net.byteseek.io.reader.cache.TempFileCache;
 import net.byteseek.io.reader.cache.TwoLevelCache;
 import net.byteseek.io.reader.cache.WindowCache;
@@ -54,7 +54,7 @@ import net.byteseek.io.reader.windows.*;
  * until the end is encountered and a length can be determined.
  * <p>
  * By default, the InputStreamReader uses a {@link TwoLevelCache}, with a
- * {@link MostRecentlyUsedCache} as its primary cache, and a
+ * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache} as its primary cache, and a
  * {@link TempFileCache} as its secondary cache. If the input stream fits
  * entirely into the MostRecentlyUsedCache, then a temporary file will never be
  * created. The secondary cache only gets used if a Window drops out of the
@@ -85,7 +85,7 @@ public class InputStreamReader extends AbstractReader {
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the default
 	 * window size of 4096 and a default capacity of 32, and a
-	 * {@link TwoLevelCache} with a {@link MostRecentlyUsedCache} as its primary
+	 * {@link TwoLevelCache} with a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache} as its primary
 	 * cache and a {@link TempFileCache} as the secondary cache.
 	 * 
 	 * @param stream
@@ -100,7 +100,7 @@ public class InputStreamReader extends AbstractReader {
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the default
 	 * window size of 4096 and a default capacity of 32, and a
-	 * {@link TwoLevelCache} with a {@link MostRecentlyUsedCache} as its primary
+	 * {@link TwoLevelCache} with a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache} as its primary
 	 * cache and a {@link TempFileCache} as the secondary cache.
 	 *
 	 * @param stream
@@ -158,7 +158,7 @@ public class InputStreamReader extends AbstractReader {
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the window
 	 * size provided and a default capacity of 32, and a {@link TwoLevelCache}
-	 * with a {@link MostRecentlyUsedCache} as its primary cache and a
+	 * with a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache} as its primary cache and a
 	 * {@link TempFileCache} as the secondary cache.
 	 * 
 	 * @param stream
@@ -175,7 +175,7 @@ public class InputStreamReader extends AbstractReader {
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the window
 	 * size provided and a default capacity of 32, and a {@link TwoLevelCache}
-	 * with a {@link MostRecentlyUsedCache} as its primary cache and a
+	 * with a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache} as its primary cache and a
 	 * {@link TempFileCache} as the secondary cache.
 	 *
 	 * @param stream
@@ -195,7 +195,7 @@ public class InputStreamReader extends AbstractReader {
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the window
 	 * size provided, the capacity provided and a {@link TwoLevelCache} with a
-	 * {@link MostRecentlyUsedCache} as its primary cache and a
+	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache} as its primary cache and a
 	 * {@link TempFileCache} as the secondary cache.
 	 * 
 	 * @param stream
@@ -211,13 +211,13 @@ public class InputStreamReader extends AbstractReader {
 	public InputStreamReader(final InputStream stream, final int windowSize,
 			final int capacity) {
 		this(stream, windowSize, TwoLevelCache.create(
-				new MostRecentlyUsedCache(capacity), new TempFileCache()), true);
+				new LeastRecentlyUsedCache(capacity), new TempFileCache()), true);
 	}
 
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the window
 	 * size provided, the capacity provided and a {@link TwoLevelCache} with a
-	 * {@link MostRecentlyUsedCache} as its primary cache and a
+	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache} as its primary cache and a
 	 * {@link TempFileCache} as the secondary cache.
 	 *
 	 * @param stream
@@ -235,7 +235,7 @@ public class InputStreamReader extends AbstractReader {
 	public InputStreamReader(final InputStream stream, final int windowSize,
 							 final int capacity, final boolean closeStreamOnClose) {
 		this(stream, windowSize, TwoLevelCache.create(
-				new MostRecentlyUsedCache(capacity), new TempFileCache()),
+				new LeastRecentlyUsedCache(capacity), new TempFileCache()),
 		        closeStreamOnClose);
 	}
 
