@@ -30,6 +30,7 @@
  */
 package net.byteseek.io.reader;
 
+import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.SoftWindow;
 import net.byteseek.io.reader.windows.SoftWindowRecovery;
 import net.byteseek.io.reader.windows.Window;
@@ -204,5 +205,200 @@ public class InputStreamReaderTest {
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStream() throws Exception {
+        new InputStreamReader(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamWindowSize() throws Exception {
+        new InputStreamReader(null, 1024);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamFalse() throws Exception {
+        new InputStreamReader(null, false);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamTrue() throws Exception {
+        new InputStreamReader(null, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamWindowCache() throws Exception {
+        new InputStreamReader(null, NoCache.NO_CACHE);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullWindowCache() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(in, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullWindowCacheFalse() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(in, null, false);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullWindowCacheTrue() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(in, null, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullWindowCacheAndStream() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullWindowCacheAndStreamFalse() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(null, null, false);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullWindowCacheAndStreamTrue() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(null, null, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateStreamNullWindowCacheFalse() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(in, null, false);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateStreamNullWindowCacheTrue() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(in, null, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamWindowCacheFalse() throws Exception {
+        new InputStreamReader(null, NoCache.NO_CACHE, false);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamWindowCacheTrue() throws Exception {
+        new InputStreamReader(null, NoCache.NO_CACHE, true);
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeCache() throws Exception {
+        new InputStreamReader(null, 1024, NoCache.NO_CACHE);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeCacheFalse() throws Exception {
+        new InputStreamReader(null, 1024, NoCache.NO_CACHE, false);
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeCacheTrue() throws Exception {
+        new InputStreamReader(null, 1024, NoCache.NO_CACHE, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateStreamSizeNullCache() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[1]);
+        new InputStreamReader(in, 1024, null);
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeCapacity() throws Exception {
+        new InputStreamReader(null, 1024, 1000);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeCapacityFalse() throws Exception {
+        new InputStreamReader(null, 1024, 1000, false);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeCapacityTrue() throws Exception {
+        new InputStreamReader(null, 1024, 1000, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeFalse() throws Exception {
+        new InputStreamReader(null, 1024, false);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullStreamSizeTrue() throws Exception {
+        new InputStreamReader(null, 1024, true);
+    }
+
+    @Test
+    public void testCreateStream() {
+        try {
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]));
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), false);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), true);
+        } catch (Exception e) {
+            fail("Creation failed.");
+        }
+    }
+
+
+    @Test
+    public void testCreateStreamCache() {
+        try {
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), NoCache.NO_CACHE);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), NoCache.NO_CACHE, false);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), NoCache.NO_CACHE, true);
+        } catch (Exception e) {
+            fail("Creation failed.");
+        }
+    }
+
+    @Test
+    public void testCreateStreamSize() {
+        try {
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, false);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, true);
+        } catch (Exception e) {
+            fail("Creation failed.");
+        }
+    }
+
+    @Test
+    public void testCreateStreamSizeCapacity() {
+        try {
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, 1000);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, 1000, false);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, 1000, true);
+        } catch (Exception e) {
+            fail("Creation failed.");
+        }
+    }
+
+    @Test
+    public void testCreateStreamSizeCache() {
+        try {
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, NoCache.NO_CACHE);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, NoCache.NO_CACHE, false);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, NoCache.NO_CACHE, true);
+        } catch (Exception e) {
+            fail("Creation failed.");
+        }
+    }
+
+    @Test
+    public void testToString() {
+        assertTrue(readers[0].toString().contains("InputStreamReader"));
+        assertTrue(readers[0].toString().contains("cache"));
+    }
+
 
 }
+
