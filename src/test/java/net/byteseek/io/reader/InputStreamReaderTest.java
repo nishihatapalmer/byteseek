@@ -250,19 +250,16 @@ public class InputStreamReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullWindowCacheAndStream() throws Exception {
-        InputStream in = new ByteArrayInputStream(new byte[1]);
         new InputStreamReader(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullWindowCacheAndStreamFalse() throws Exception {
-        InputStream in = new ByteArrayInputStream(new byte[1]);
         new InputStreamReader(null, null, false);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullWindowCacheAndStreamTrue() throws Exception {
-        InputStream in = new ByteArrayInputStream(new byte[1]);
         new InputStreamReader(null, null, true);
     }
 
