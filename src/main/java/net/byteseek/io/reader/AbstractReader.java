@@ -53,7 +53,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractReader implements WindowReader, Iterable<Window> {
+public abstract class AbstractReader implements WindowReader {
 
 	/**
 	 * A constant indicating that there is no byte at the position requested,
@@ -165,7 +165,7 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 	@Override
 	public Window getWindow(final long position) throws IOException {
 		if (position >= 0) {
-			Window window = null;
+			Window window;
 			final int offset = (int) (position % (long) windowSize);
 			final long windowStart = position - offset;
 			if (lastWindow != null

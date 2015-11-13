@@ -53,11 +53,11 @@ import java.io.IOException;
  * matching or searching at any position. This can be useful to run an algorithm
  * over a Window boundary without building in knowledge of the Windows into the
  * algorithm. However, this is likely to be slower, as every read of a byte
- * carries an additional method call overhead.
+ * carries an additional method call overhead to get the Window in order to read the byte.
  * 
  * @author Matt Palmer
  */
-public interface WindowReader extends Closeable {
+public interface WindowReader extends Closeable, Iterable<Window> {
 
 	/**
 	 * Read a byte from a given position.
