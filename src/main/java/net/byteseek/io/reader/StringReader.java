@@ -111,7 +111,7 @@ public class StringReader extends AbstractReader {
 	 * the entire byte array that encodes the String.
 	 */
 	@Override
-	Window createWindow(final long windowStart) throws IOException {
+	protected Window createWindow(final long windowStart) throws IOException {
 		return new HardWindow(bytes, 0, bytes.length);
 	}
 

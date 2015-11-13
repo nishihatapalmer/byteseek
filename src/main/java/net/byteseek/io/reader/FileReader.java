@@ -255,7 +255,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final Window createWindow(final long windowStart) throws IOException {
+	protected Window createWindow(final long windowStart) throws IOException {
 		try {
 			randomAccessFile.seek(windowStart);
 			final byte[] bytes = new byte[windowSize];

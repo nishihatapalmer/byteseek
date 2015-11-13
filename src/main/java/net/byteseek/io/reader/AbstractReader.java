@@ -234,7 +234,7 @@ public abstract class AbstractReader implements WindowReader, Iterable<Window> {
 	 *             If the WindowReader has an issue reading the bytes required for a
 	 *             valid Window.
 	 */
-	abstract Window createWindow(final long windowStart) throws IOException;
+	protected abstract Window createWindow(final long windowStart) throws IOException;
 
 	/**
 	 * An iterator of {@link Window}s over a {@link WindowReader}.

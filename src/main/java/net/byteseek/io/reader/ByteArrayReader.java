@@ -83,7 +83,7 @@ public class ByteArrayReader extends AbstractReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	Window createWindow(final long windowStart) throws IOException {
+	protected Window createWindow(final long windowStart) throws IOException {
 		return windowStart == 0? new HardWindow(bytes, 0, bytes.length) : null;
 	}
 
