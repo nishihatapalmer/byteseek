@@ -113,6 +113,22 @@ public class InputStreamReaderTest {
     }
 
     @Test
+    public void testReadByteNegative() throws IOException {
+        for (int i = 0; i < fileReaders.length; i++) {
+            int negPos = -(rand.nextInt());
+            assertEquals("negative position gives -1", -1, fileReaders[i].readByte(negPos));
+        }
+    }
+
+    @Test
+    public void testReadBytePastEnd() throws IOException {
+        for (int i = 0; i < fileReaders.length; i++) {
+            long pos = fileLength + rand.nextInt();
+            assertEquals("past end position gives -1", -1, fileReaders[i].readByte(pos));
+        }
+    }
+
+    @Test
     public void testGetWindowData() throws IOException {
         for (int i = 0; i < fileReaders.length;i++) {
             testGetWindowData(fileReaders[i]);
