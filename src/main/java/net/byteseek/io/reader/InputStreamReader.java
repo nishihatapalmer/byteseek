@@ -325,29 +325,29 @@ public class InputStreamReader extends AbstractReader {
 	 */
 	@Override
 	protected Window createWindow(final long windowPos) throws IOException {
-		Window lastWindow = null;
+		Window window = null;
 		while (nextReadPos <= windowPos && length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
 				if (recovery == null) {
-					lastWindow = new HardWindow(bytes, nextReadPos, totalRead);
+					window = new HardWindow(bytes, nextReadPos, totalRead);
 				} else {
-					lastWindow = new SoftWindow(bytes, nextReadPos, totalRead, recovery);
+					window = new SoftWindow(bytes, nextReadPos, totalRead, recovery);
 				}
 				nextReadPos += totalRead;
+				if (windowPos >= nextReadPos) {   // If we still haven't reached the window
+					cache.addWindow(window); // for the requested position, cache it, as we'll go around again.
+				}
 			}
 			if (totalRead < windowSize) { // If we read less than the available array:
-				length = nextReadPos; // then the length is whatever the streampos  is now.
-			}
-			if (nextReadPos < windowPos) {       // If we still haven't reached the window
-				cache.addWindow(lastWindow); // for the requested position, cache it, as we'll go around again.
+				length = nextReadPos;     // then the length is whatever the nextReadPos is now.
 			}
 		}
-		if (nextReadPos <= windowPos) { // If we didn't manage to get to the window position, we can't return one.
-			lastWindow = null;
+		if (windowPos >= nextReadPos) { // If we didn't manage to get to the window position, we can't return one.
+			window = null;
 		}
-		return lastWindow;
+		return window;
 	}
 
 	/**
