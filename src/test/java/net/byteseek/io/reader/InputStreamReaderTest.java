@@ -30,7 +30,7 @@
  */
 package net.byteseek.io.reader;
 
-import net.byteseek.io.reader.cache.AllWindowsCache;
+import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.SoftWindow;
 import net.byteseek.io.reader.windows.SoftWindowRecovery;
@@ -108,14 +108,32 @@ public class InputStreamReaderTest {
             testReadByte(reader, 112271, (byte) 0x44);
             testReadByte(reader, 112275, (byte) 0x6d);
             testReadByte(reader, 112277, (byte) 0x2e);
-
             testRandomPositions("ascii file:", raf, reader, fileLength);
         }
     }
 
     @Test
-    public void testGetWindowData() {
-        fail("not implemented yet");
+    public void testGetWindowData() throws IOException {
+        for (int i = 0; i < fileReaders.length;i++) {
+            testGetWindowData(fileReaders[i]);
+        }
+    }
+
+    private void testGetWindowData(WindowReader fileReader) throws IOException {
+        for (Window window : fileReader) {
+            byte[] fileBytes = new byte[window.length()];
+            long windowPosition = window.getWindowPosition();
+            raf.seek(windowPosition);
+            IOUtils.readBytes(raf, fileBytes, windowPosition);
+            assertAllBytesSame(window, fileBytes);
+        }
+    }
+
+    private void assertAllBytesSame(Window window, byte[] fileBytes) throws IOException {
+        byte[] windowArray = window.getArray();
+        for (int i = 0; i < fileBytes.length; i++) {
+            assertEquals("Bytes identical for window" + window + " at position " + i, fileBytes[i], windowArray[i]);
+        }
     }
 
     @Test
@@ -125,7 +143,7 @@ public class InputStreamReaderTest {
         }
     }
 
-    private void testWindowOffset(InputStreamReader reader, int windowSize) {
+    private void testWindowOffset(WindowReader reader, int windowSize) {
         for (int i = 0; i < 10; i++) {
             // Test integer positions:
             long testPosition = rand.nextInt();
