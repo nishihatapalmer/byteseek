@@ -143,7 +143,7 @@ public class FileReaderTest {
 	 * @throws IOException 
 	 */
 	@Test
-	public void testReadByte() throws FileNotFoundException, IOException {
+	public void testReadByte() throws IOException {
 
 		File asciifile = getFile("/TestASCII.txt");
 		int fileLength = (int) asciifile.length();
@@ -153,13 +153,13 @@ public class FileReaderTest {
 		while (iterator.hasNext()) {
 			FileReader reader = iterator.next();
 
-			// test known positions at and around the specified position:
-			test(reader, 112122, (byte) 0x50);
-			test(reader, 112271, (byte) 0x44);
-			test(reader, 112275, (byte) 0x6d);
-			test(reader, 112277, (byte) 0x2e);
+			// testReadByte known positions at and around the specified position:
+			testReadByte(reader, 112122, (byte) 0x50);
+			testReadByte(reader, 112271, (byte) 0x44);
+			testReadByte(reader, 112275, (byte) 0x6d);
+			testReadByte(reader, 112277, (byte) 0x2e);
 
-			// test randomly selected positions:
+			// testReadByte randomly selected positions:
 			testRandomPositions("ascii file:", raf, reader, fileLength);
 		}
 
@@ -174,29 +174,17 @@ public class FileReaderTest {
 			FileReader reader = iterator.next();
 
 			// Test known positions at and around the specified position:
-			test(reader, 3, (byte) 0x04);
-			test(reader, 0, (byte) 0x50);
-			test(reader, 1584, (byte) 0xAA);
-			test(reader, 30359, (byte) 0x6F);
-			test(reader, 39898, (byte) 0xFB);
+			testReadByte(reader, 3, (byte) 0x04);
+			testReadByte(reader, 0, (byte) 0x50);
+			testReadByte(reader, 1584, (byte) 0xAA);
+			testReadByte(reader, 30359, (byte) 0x6F);
+			testReadByte(reader, 39898, (byte) 0xFB);
 
-			// test randomly selected positions:
+			// testReadByte randomly selected positions:
 			testRandomPositions("ascii file:", raf, reader, fileLength);
 		}
 
 		raf.close();
-	}
-
-	private void testRandomPositions(String description, RandomAccessFile raf, FileReader reader,
-			int fileLength) throws IOException {
-		// test randomly selected positions:
-		for (int count = 0; count < 500; count++) {
-			final int randomposition = rand.nextInt(fileLength);
-			raf.seek(randomposition);
-			byte filebyte = raf.readByte();
-			assertEquals(description + randomposition, filebyte,
-					(byte) reader.readByte(randomposition));
-		}
 	}
 
 	/**
@@ -204,7 +192,16 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testCreateWindow() throws Exception {
-		
+
+		fail("The test case is a prototype.");
+	}
+
+	/**
+	 * Test of getWindow method, of class FileReader.
+	 */
+	@Test
+	public void testGetWindow() throws Exception {
+
 		fail("The test case is a prototype.");
 	}
 
@@ -224,7 +221,37 @@ public class FileReaderTest {
 		fail("The test case is a prototype.");
 	}
 
-	private void test(FileReader reader, long position, byte value) throws IOException {
+
+	@Test
+	public void testUseSoftWindows() throws Exception {
+		fail("The test case is a prototype.");
+
+	}
+
+	@Test
+	public void testReloadWindowBytes() throws Exception {
+		fail("The test case is a prototype.");
+
+	}
+
+
+	/*
+	 * Private testReadByte methods.
+	 */
+
+	private void testRandomPositions(String description, RandomAccessFile raf, WindowReader reader,
+									 int fileLength) throws IOException {
+		// testReadByte randomly selected positions:
+		for (int count = 0; count < 500; count++) {
+			final int randomPosition = rand.nextInt(fileLength);
+			raf.seek(randomPosition);
+			byte fileByte = raf.readByte();
+			assertEquals(description + randomPosition, fileByte,
+					(byte) reader.readByte(randomPosition));
+		}
+	}
+
+	private void testReadByte(WindowReader reader, long position, byte value) throws IOException {
 		assertEquals("Reader " + reader + " reading at position " + position + " should have value " + value,
 				      value, (byte) reader.readByte(position));
 	}
@@ -237,21 +264,10 @@ public class FileReaderTest {
 		return this.getClass().getResource(resourceName).getPath();
 	}
 
-	@Test
-	public void testUseSoftWindows() throws Exception {
-		fail("not implemented yet");
-
-	}
-
-	@Test
-	public void testReloadWindowBytes() throws Exception {
-		fail("not implemented yet");
-
-	}
 
 	/**
 	 * Provides a variety of FileReaders using different window sizes, cache capacities
-	 * and cache strategies.  This enables us to test FileReader methods on many different
+	 * and cache strategies.  This enables us to testReadByte FileReader methods on many different
 	 * constructions, which should make no difference to the functionality of the file reader,
 	 * (except the non-functional requirement of performance).
 	 */

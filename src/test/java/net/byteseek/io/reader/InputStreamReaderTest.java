@@ -30,42 +30,113 @@
  */
 package net.byteseek.io.reader;
 
+import net.byteseek.io.reader.cache.AllWindowsCache;
 import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.SoftWindow;
 import net.byteseek.io.reader.windows.SoftWindowRecovery;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.windows.WindowMissingException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.Iterator;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
 public class InputStreamReaderTest {
 
-    private InputStreamReader[] readers = new InputStreamReader[7];
+    Random rand = new Random();
+
+    private InputStreamReader[] readers     = new InputStreamReader[10];
+    private InputStreamReader[] fileReaders = new InputStreamReader[10];
+    private int[]               windowSizes = new int[] {512, 1022, 1023, 1024, 1025, 1026, 4096, 32, 127, 157};
+    private RandomAccessFile    raf;
+    private int                fileLength;
+
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         byte[] array = new byte[1024];
-        // set up readers using different window sizes to flush out boundary conditions.
-        InputStream in = new ByteArrayInputStream(array);
-        readers[0] = new InputStreamReader(in, 512);
-        in = new ByteArrayInputStream(array);
-        readers[1] = new InputStreamReader(in, 1022);
-        in = new ByteArrayInputStream(array);
-        readers[2] = new InputStreamReader(in, 1023);
-        in = new ByteArrayInputStream(array);
-        readers[3] = new InputStreamReader(in, 1024);
-        in = new ByteArrayInputStream(array);
-        readers[4] = new InputStreamReader(in, 1025);
-        in = new ByteArrayInputStream(array);
-        readers[5] = new InputStreamReader(in, 1026);
-        in = new ByteArrayInputStream(array);
-        readers[6] = new InputStreamReader(in, 4096);
+        // Set up readers with different window sizes
+        for (int i = 0; i < 10; i++) {
+            InputStream in = new ByteArrayInputStream(array);
+            readers[i] = new InputStreamReader(in, windowSizes[i]);
+            FileInputStream filein = getFileInputStream("/TestASCII.txt");
+            fileReaders[i] = new InputStreamReader(filein, windowSizes[i]);
+        }
+        raf = new RandomAccessFile(getFile("/TestASCII.txt"), "r");
+        fileLength = (int) raf.length();
+    }
+
+    @After
+    public void after() throws Exception {
+        for (int i = 0; i < fileReaders.length; i++) {
+            fileReaders[i].close();
+        }
+        raf.close();
+    }
+
+    @Test
+    public void testIterateWindows() {
+        for (int i = 0; i < readers.length;i++) {
+            testIterateReader(readers[i]);
+        }
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testNoRemoveIterator() {
+        Iterator<Window> iterator = readers[0].iterator();
+        iterator.remove();
+    }
+
+    private void testIterateReader(WindowReader reader) {
+        long length = 0;
+        for (Window window : reader) {
+            length += window.length();
+        }
+        assertEquals("Length is 1024 after iterating all windows", 1024, length);
+    }
+
+    @Test
+    public void testReadByte() throws IOException {
+        for (int i = 0; i < fileReaders.length; i++) {
+            WindowReader reader = fileReaders[i];
+            testReadByte(reader, 112122, (byte) 0x50);
+            testReadByte(reader, 112271, (byte) 0x44);
+            testReadByte(reader, 112275, (byte) 0x6d);
+            testReadByte(reader, 112277, (byte) 0x2e);
+
+            testRandomPositions("ascii file:", raf, reader, fileLength);
+        }
+    }
+
+    @Test
+    public void testGetWindowData() {
+        fail("not implemented yet");
+    }
+
+    @Test
+    public void testGetWindowOffset() {
+        for (int i = 0; i < readers.length; i++) {
+            testWindowOffset(readers[i], windowSizes[i]);
+        }
+    }
+
+    private void testWindowOffset(InputStreamReader reader, int windowSize) {
+        for (int i = 0; i < 10; i++) {
+            // Test integer positions:
+            long testPosition = rand.nextInt();
+            int offset = (int) (testPosition % (long) windowSize);
+            assertEquals("Position " + testPosition, offset, reader.getWindowOffset(testPosition));
+
+            // Test long positions
+            testPosition = rand.nextLong();
+            offset = (int) (testPosition % (long) windowSize);
+            assertEquals("Position " + testPosition, offset, reader.getWindowOffset(testPosition));
+        }
     }
 
     @Test
@@ -395,6 +466,38 @@ public class InputStreamReaderTest {
         assertTrue(readers[0].toString().contains("InputStreamReader"));
         assertTrue(readers[0].toString().contains("cache"));
     }
+
+    private void testRandomPositions(String description, RandomAccessFile raf, WindowReader reader,
+                                     int fileLength) throws IOException {
+        // testReadByte randomly selected positions:
+        for (int count = 0; count < 500; count++) {
+            final int randomPosition = rand.nextInt(fileLength);
+            raf.seek(randomPosition);
+            byte fileByte = raf.readByte();
+            assertEquals(description + randomPosition, fileByte,
+                    (byte) reader.readByte(randomPosition));
+        }
+    }
+
+    private void testReadByte(WindowReader reader, long position, byte value) throws IOException {
+        assertEquals("Reader " + reader + " reading at position " + position + " should have value " + value,
+                value, (byte) reader.readByte(position));
+    }
+
+
+    private FileInputStream getFileInputStream(final String resourceName) throws IOException {
+        return new FileInputStream(getFile(resourceName));
+    }
+
+    private File getFile(final String resourceName) throws IOException {
+        return new File(getFilePath(resourceName));
+    }
+
+    private String getFilePath(final String resourceName) {
+        return this.getClass().getResource(resourceName).getPath();
+    }
+
+
 
 
 }
