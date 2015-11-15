@@ -54,9 +54,8 @@ import net.byteseek.io.reader.windows.*;
 public final class TempFileCache extends AbstractFreeNotificationCache implements SoftWindowRecovery {
 
     private final TLongObjectMap<WindowInfo> windowPositions;
-    
+    private final File tempDir;
     private File tempFile;
-    private File tempDir;
     private RandomAccessFile file;
     private long nextFilePos;
 
