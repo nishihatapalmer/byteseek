@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2015, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -263,11 +263,6 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     }
 
 
-	/**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addRepeatedSequence(final ParseTree ast,
                                      final List<SequenceMatcher> sequenceList)
         throws ParseException {
@@ -278,12 +273,6 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
       }
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addSequenceMatcher(final ParseTree ast,
                                     final List<SequenceMatcher> sequenceList)
         throws ParseException {
@@ -292,112 +281,62 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
       }
     }
 
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addCaseInsensitiveStringMatcher(final ParseTree ast,
                                                  final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(MatcherCompilerUtils.createCaseInsensitiveMatcher(ast.getTextValue()));
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addStringMatcher(final ParseTree ast,
                                   final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(new ByteSequenceMatcher(ast.getTextValue()));
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addSetMatcher(final ParseTree ast,
                                final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(MatcherCompilerUtils.createMatcherFromSet(ast, byteMatcherFactory));
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addRangeMatcher(final ParseTree ast,
                                  final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(MatcherCompilerUtils.createRangeMatcher(ast));
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addAnyBitmaskMatcher(final ParseTree ast,
                                       final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(MatcherCompilerUtils.createAnyBitmaskMatcher(ast));
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addAllBitmaskMatcher(final ParseTree ast,
                                       final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(MatcherCompilerUtils.createAllBitmaskMatcher(ast));
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addAnyMatcher(final ParseTree ast,
                                final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(MatcherCompilerUtils.createAnyMatcher(ast));
     }
 
-    
-    /**
-     * @param ast
-     * @param sequenceList
-     * @throws ParseException
-     */
     private void addByteMatcher(final ParseTree ast,
                                 final List<SequenceMatcher> sequenceList)
         throws ParseException {
       sequenceList.add(MatcherCompilerUtils.createByteMatcher(ast));
     }
     
-    
 	@Override
 	protected ParseTree joinExpressions(List<ParseTree> expressions) throws ParseException, CompileException {
 		return new ChildrenNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED);
     }    
-	
-	
+
 	private String getTypeErrorMessage(final ParseTree ast) {
 		final ParseTreeType type = ast.getParseTreeType();
 		return String.format("Unknown type %s ", type); 
 	}    	
 	
-   
 }
