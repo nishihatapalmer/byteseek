@@ -156,7 +156,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * @throws IOException If the reader encounters a problem reading bytes.
      */    
     public boolean matchesBackwards(WindowReader reader, long matchPosition)
-         throws IOException;;
+         throws IOException;
     
     
     /**
