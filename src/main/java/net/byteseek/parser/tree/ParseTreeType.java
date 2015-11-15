@@ -450,7 +450,7 @@ public enum ParseTreeType {
 	 * An OPTIONAL node has a single child node, which is the ParseTree to be matched from zero to one times.
 	 * A ParseException should be thrown if an OPTIONAL node has anything other than a single child node.
 	 */		
-  	OPTIONAL;
+  	OPTIONAL
     
 
 }
