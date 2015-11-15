@@ -264,7 +264,7 @@ public final class IOUtils {
 	public static void copyStream(final InputStream in, final OutputStream out,
 			final int bufferSize) throws IOException {
 		final byte[] buffer = new byte[bufferSize];
-		int byteRead = 0;
+		int byteRead;
 		while ((byteRead = in.read(buffer)) >= 0) {
 			out.write(buffer, 0, byteRead);
 		}

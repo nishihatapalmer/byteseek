@@ -93,7 +93,7 @@ public interface MultiSequenceMatcher extends Matcher {
      * 
      * Should never return null - always returns a collection, even if empty.
      *
-     * @param bytes 
+     * @param bytes The bytes to search in.
      * @param matchPosition The position to test for a match.
      * @return A collection of matching SequenceMatchers or an empty collection if none matched.
      */
@@ -162,7 +162,7 @@ public interface MultiSequenceMatcher extends Matcher {
     /**
      * Returns whether or not there is a match backwards from the matchPosition
      * 
-     * @param bytes 
+     * @param bytes The bytes to search in.
      * @param matchPosition The position to try to match at.
      * @return Whether there is a match at the given position.
      */    

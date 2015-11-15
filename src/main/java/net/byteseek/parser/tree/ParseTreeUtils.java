@@ -278,8 +278,7 @@ public final class ParseTreeUtils {
 	 * ANY_BITMASK.  As long as there is a byte value to the node, it will be processed
 	 * as if it is an ANY_BITMASK.
  	 *
-	 * @param allBitmask The any bitmask node.
-	 * @return A collection of bytes which match the any-bits bitmask.
+	 * @param anyBitmask The any bitmask node.
 	 * @throws ParseException If there is no bitmask byte value or another problem occurs
 	 *                         parsing the value.
 	 * @throws IllegalArgumentException if the anyBitmask or bytes passed in are null.
@@ -317,7 +316,6 @@ public final class ParseTreeUtils {
 	 * ensuring case-insensitivity.
 	 * 
 	 * @param caseInsensitive The text node to get a set of case insensitive byte values for.
-	 * @return A collection of bytes giving all the case insensitive bytes that string might match.
 	 * @throws ParseException If the ISO 8859-1 encoding is not supported.
 	 * @throws IllegalArgumentException if the string parsetree or the collection of bytes are null.
 	 */

@@ -44,6 +44,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.byteseek.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -194,6 +195,35 @@ public class FileReaderTest {
 	public void testCreateWindow() throws Exception {
 
 		fail("The test case is a prototype.");
+	}
+
+	@Test
+	public void testGetWindowData() throws IOException {
+
+		File zipfile = getFile("/TestASCII.zip");
+		RandomAccessFile raf = new RandomAccessFile(zipfile, "r");
+
+		Iterator<FileReader> iterator = new FileReaderIterator("/TestASCII.zip");
+		while (iterator.hasNext()) {
+			testGetWindowData(iterator.next(), raf);
+		}
+	}
+
+	private void testGetWindowData(WindowReader fileReader, RandomAccessFile raf) throws IOException {
+		for (Window window : fileReader) {
+			byte[] fileBytes = new byte[window.length()];
+			long windowPosition = window.getWindowPosition();
+			raf.seek(windowPosition);
+			IOUtils.readBytes(raf, fileBytes, windowPosition);
+			assertAllBytesSame(window, fileBytes);
+		}
+	}
+
+	private void assertAllBytesSame(Window window, byte[] fileBytes) throws IOException {
+		byte[] windowArray = window.getArray();
+		for (int i = 0; i < fileBytes.length; i++) {
+			assertEquals("Bytes identical for window" + window + " at position " + i, fileBytes[i], windowArray[i]);
+		}
 	}
 
 	/**

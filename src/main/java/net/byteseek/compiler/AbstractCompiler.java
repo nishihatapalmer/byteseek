@@ -157,8 +157,9 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	protected abstract T doCompile(S ast) throws ParseException, CompileException;
 
 	/**
-	 * 
-	 * @param expressions
+	 * Joins a list of experssions into a single abstract syntax tree.
+	 *
+	 * @param expressions A list of expressions to join together.
 	 * @return S Another abstract syntax tree containing the join of all the trees passed in.
 	 * @throws ParseException  An exception which occurs when parsing the expressions.
 	 * @throws CompileException An exception which occurs during compilation of the expressions.

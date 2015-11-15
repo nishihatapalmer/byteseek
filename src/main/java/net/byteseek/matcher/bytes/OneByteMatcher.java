@@ -82,7 +82,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
     /**
      * Constructs an immutable OneByteMatcher from a hex representation of a byte.
      * 
-     * @param hexByte 
+     * @param hexByte A 2 hex digit respreentation of a byte.
      * @throws IllegalArgumentException if the string is not a valid 2-digit hex byte.
      */
     public OneByteMatcher(final String hexByte) {

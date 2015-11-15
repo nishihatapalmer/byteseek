@@ -89,8 +89,6 @@ public final class SearchUtils {
 	 *            The WindowReader to search in.
 	 * @return A list of SearchResult objects containing all matches found in
 	 *         the WindowReader.
-	 * @throws IOException
-	 *             if a problem occurred reading in the WindowReader.
 	 */
 	public static <T> List<SearchResult<T>> searchAllForwards(
 			final Searcher<T> searcher, final WindowReader reader) {

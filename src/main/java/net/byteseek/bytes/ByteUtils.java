@@ -378,8 +378,7 @@ public final class ByteUtils {
      * 
      * @param string The ISO-8859-1 string whose bytes should be added
      * @param toCollection The collection to add the bytes to.
-     * @throws UnsupportedEncodingException If the string cannot be encoded as ISO-8859-1.
-     * @throws IllegalArgumentException if the string or collection passed in is null. 
+     * @throws IllegalArgumentException if the string or collection passed in is null.
      */
     public static void addCaseInsensitiveStringBytes(final String string, final Collection<Byte> toCollection) {
     	ArgUtils.checkNullCollection(toCollection);

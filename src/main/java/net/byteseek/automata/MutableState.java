@@ -54,7 +54,7 @@ import net.byteseek.object.factory.DeepCopy;
  * immutable, to make determining the deterministic state efficient.  If transitions
  * which are not deterministic are used, then either whenever the transition is modified,
  * the State it belongs to must have its deterministic status invalidated by calling
- * {@ink #invalidateDeterministicStatus()}, or by sub-classing this State and overriding
+ * {@link #invalidateDeterministicStatus()}, or by sub-classing this State and overriding
  * the {@link #isDeterministic} method.
  * <p>
  * It is intentionally not a final class, allowing other States to inherit from 

@@ -418,8 +418,8 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *
 	 * <p/><pre>{@code
 	 *
-	 * (X?){3}   [0] ----> [1] ----> [2] ----> [3]
-	 *                 X         X         X
+	 * (X){3}   [0] ----> [1] ----> [2] ----> [3]
+	 *                X         X         X
 	 * 
 	 * }</pre><p/>
 	 *

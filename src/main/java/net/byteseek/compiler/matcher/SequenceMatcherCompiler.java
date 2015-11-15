@@ -147,8 +147,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 
     /**
      * Constructor which uses the provided {@link Parser} to produce the abstract
-     * syntax tree, and the default {@SequenceMatcherOptimiser} to build the byte
-     * matchers.
+     * syntax tree, and the default {@Optimiser} to build the byte matchers.
      * 
      * @param parser The parser to use to produce the abstract syntax tree.
      */    

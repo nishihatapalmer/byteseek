@@ -92,7 +92,7 @@ public interface RegexBuilder<T, S> {
     /**
      * Builds an automata which repeats from one to many times.
      *
-     * @param oneToManyStates 
+     * @param oneToManyStates The states to repeat from one to many times.
      * @return An automata which repeats from one to many times.
      */
     public Automata<T> buildOneToManyAutomata(final Automata<T> oneToManyStates);

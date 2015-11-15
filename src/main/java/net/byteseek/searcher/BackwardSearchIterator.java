@@ -114,8 +114,6 @@ public class BackwardSearchIterator<T> implements
 	 *            The final position to search up to in the WindowReader.
 	 * @param reader
 	 *            The WindowReader to search in.
-	 * @throws IOException
-	 *             If determining the length of the WindowReader causes an error.
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or WindowReader is null.
 	 */

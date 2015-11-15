@@ -51,8 +51,9 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	private final Automata<T>	automata;
 
 	/**
-	 * 
-	 * @param automata
+	 * Constructs a matcher for deterministic finite state automata.
+	 *
+	 * @param automata The deterministic automata to match
 	 */
 	public DfaMatcher(final Automata<T> automata) {
 		this.automata = automata;
