@@ -357,9 +357,9 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * A class holding information needed to search.
      */
     private static final class SearchInfo {
-        private int[] shifts;
-        private ByteMatcher matcher;
-        private MultiSequenceMatcher verifier;
+        private final int[] shifts;
+        private final ByteMatcher matcher;
+        private final MultiSequenceMatcher verifier;
         
         public SearchInfo(final int[] shifts, final ByteMatcher endMatcher, final MultiSequenceMatcher verifier) {
         	this.shifts = shifts;

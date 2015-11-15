@@ -357,8 +357,8 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
      * A class holding information needed to search.
      */
     private static final class SearchInfo {
-        private int[] shifts;
-        private MultiSequenceMatcher verifier;
+        private final int[] shifts;
+        private final MultiSequenceMatcher verifier;
         
         public SearchInfo(final int[] shifts, final MultiSequenceMatcher verifier) {
         	this.shifts = shifts;
