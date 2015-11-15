@@ -138,9 +138,9 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
             automataList.add(compile(expression));
         }
         return regexBuilder.buildAlternativesAutomata(automataList);
-    }    
-    
-    
+    }
+
+    @Override
     protected Automata<T> doCompile(final ParseTree ast) throws CompileException, ParseException {
         switch (ast.getParseTreeType()) {
             case BYTE:						// Drop through - bytes, bitmasks (all and any), sets, ranges and any bytes
@@ -229,9 +229,9 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
       final Automata<T> automata = doCompile(ParseTreeUtils.getLastChild(ast));
       final int minRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
       return regexBuilder.buildMinToManyAutomata(minRepeat, automata);
-    }    
-    
-    
+    }
+
+    @Override
     protected ParseTree joinExpressions(final List<ParseTree> expressions)
         throws ParseException, CompileException {
       return new ChildrenNode(ParseTreeType.ALTERNATIVES, expressions);

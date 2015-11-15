@@ -202,6 +202,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 * @return A ByteMatcher representing the expression.
 	 * @throws ParseException If the ast could not be parsed.
 	 */
+	@Override
 	protected ByteMatcher doCompile(final ParseTree node) throws ParseException {
 
 		switch (node.getParseTreeType()) {

@@ -54,7 +54,8 @@ public final class ParseTreeTransitionFactory<T>
     this.matcherFactory = matcherFactory == null? new OptimalByteMatcherFactory()
     											: matcherFactory;
   }
-  
+
+  @Override
   public Transition<T> create(final ParseTree source,
                               final boolean invert,
                               final State<T> toState) {

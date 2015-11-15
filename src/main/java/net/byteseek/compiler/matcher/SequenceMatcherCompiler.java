@@ -225,6 +225,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * @return A SequenceMatcher representing the expression.
      * @throws ParseException If the ast could not be parsed.
      */
+    @Override
     protected SequenceMatcher doCompile(final ParseTree ast) throws ParseException {
         final List<SequenceMatcher> sequences = buildSequenceList(ast, new ArrayList<SequenceMatcher>());
         return optimiser.optimise(new SequenceSequenceMatcher(sequences));
