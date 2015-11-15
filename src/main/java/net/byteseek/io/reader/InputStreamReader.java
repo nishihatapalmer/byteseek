@@ -78,9 +78,9 @@ import net.byteseek.utils.ArgUtils;
 public class InputStreamReader extends AbstractReader {
 
 	private final InputStream stream;
+	private final boolean closeStreamOnClose;
 	private long nextReadPos = 0;
 	private long length = UNKNOWN_LENGTH;
-	private boolean closeStreamOnClose;
 	private SoftWindowRecovery recovery;
 
 	/**
