@@ -61,8 +61,7 @@ public enum ParseTreeType {
 	 * Implementations should throw a {@link net.byteseek.parser.ParseException} 
 	 * if calls are made to {@link net.byteseek.parser.tree.ParseTree#getTextValue()}.
 	 * <p>
-	 * A BYTE type has no children, and must return an empty list of child nodes if 
-	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
+	 * A BYTE type has no children.
 	 */
     BYTE,
     
@@ -78,8 +77,7 @@ public enum ParseTreeType {
 	 * if calls are made to either {@link net.byteseek.parser.tree.ParseTree#getByteValue()} or
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()}.
 	 * <p>
-	 * An INTEGER type has no children, and must return an empty list of child nodes if 
-	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
+	 * An INTEGER type has no children
 	 */
 	INTEGER,    
 
@@ -96,8 +94,7 @@ public enum ParseTreeType {
 	 * if calls are made to either {@link net.byteseek.parser.tree.ParseTree#getIntValue()} or
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()}.
 	 * <p>
-	 * An ALL_BITMASK type has no children, and must return an empty list of child nodes if 
-	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
+	 * An ALL_BITMASK type has no children.
 	 */	
 	ALL_BITMASK,
 
@@ -114,8 +111,7 @@ public enum ParseTreeType {
 	 * if calls are made to either {@link net.byteseek.parser.tree.ParseTree#getIntValue()} or
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()}.
 	 * <p>
-	 * An ANY_BITMASK type has no children, and must return an empty list of child nodes if 
-	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
+	 * An ANY_BITMASK type has no children.
 	 */		
 	ANY_BITMASK,
 
@@ -135,8 +131,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getTextValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}.
 	 * <p>
-	 * An ANY type has no children, and must return an empty list of child nodes if 
-	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
+	 * An ANY type has no children.
 	 */		
 	ANY,
 
@@ -164,8 +159,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}
 	 * <p>
-	 * A STRING type has no children, and must return an empty list of child nodes if 
-	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
+	 * A STRING type has no children.
 	 */
 	STRING,
 
@@ -185,8 +179,7 @@ public enum ParseTreeType {
 	 * {@link net.byteseek.parser.tree.ParseTree#getIntValue()} or 
 	 * {@link net.byteseek.parser.tree.ParseTree#getByteValue()}
 	 * <p>
-	 * A STRING type has no children, and must return an empty list of child nodes if 
-	 * {@link net.byteseek.parser.tree.ParseTree#getChildren()} is called.
+	 * A STRING type has no children.
 	 */
 	CASE_INSENSITIVE_STRING,
 	

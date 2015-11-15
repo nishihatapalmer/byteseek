@@ -90,8 +90,8 @@ public class StringReader extends AbstractReader {
 	 * Window created, or creates it if it's not already there. So no further
 	 * caching is required.
 	 * 
-	 * @param string
-	 * @param charset
+	 * @param string The string to read from.
+	 * @param charset The charset to use to conver the string to bytes.
 	 */
 	public StringReader(final String string, final Charset charset) {
 		super(string == null ? 0 : string.length(), NoCache.NO_CACHE);

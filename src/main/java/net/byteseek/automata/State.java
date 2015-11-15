@@ -231,7 +231,7 @@ public interface State<T> extends Iterable<Transition<T>>, DeepCopy {
 	/**
 	 * Adds all the associations of type T to the State.
 	 * 
-	 * @param associations
+	 * @param associationIterator
 	 *            An iterator over associations to add to the state.
 	 */
 	public void addAllAssociations(Iterator<T> associationIterator);

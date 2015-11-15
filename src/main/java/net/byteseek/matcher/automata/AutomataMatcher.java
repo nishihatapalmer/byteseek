@@ -44,8 +44,7 @@ import net.byteseek.matcher.Matcher;
  * implements Iterable<MatchResult<T>> to provide a way to successively return
  * matches for a position.
  * 
- * @param T
- *              The type of object associated with matching states in the Automata.
+ * @param <T>  The type of object associated with matching states in the Automata.
  * @author Matt palmer
  */
 public interface AutomataMatcher<T> extends Matcher {

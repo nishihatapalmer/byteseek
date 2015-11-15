@@ -48,7 +48,7 @@ import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
 
 /**
  * An abstract implementation of {@link Trie} providing most methods for
- * constructing a Trie from sequences provided to it.  It extends {@link net.byteseek.automata.GenericAutomata}.
+ * constructing a Trie from sequences provided to it. .
  * <p>
  * Implementors only have to provide constructors equivalent to those in this class,
  * and override the methods {@link #getSequenceLength(java.lang.Object)} and 
@@ -70,8 +70,7 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 
 	/**
 	 * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}
-	 * , {@link net.byteseek.automata.factory.ListStateFactory}, and the default
-	 * {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.compiler.regex.ByteSetMatcherTransitionFactory}.
+	 * and the default {@link net.byteseek.automata.factory.TransitionFactory}.
 	 */
 	public AbstractTrie() {
 		this(null, null);
@@ -79,7 +78,7 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 
 	/**
 	 * Constructs a Trie using the supplied {@link net.byteseek.automata.factory.StateFactory}
-	 * and the default {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.compiler.regex.ByteSetMatcherTransitionFactory}.
+	 * and the default {@link net.byteseek.automata.factory.TransitionFactory}.
 	 * 
 	 * @param stateFactory The StateFactory to use to create States for the Trie.
 	 */
@@ -88,8 +87,7 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 	}
 
 	/**
-	 * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}
-	 * , {@link net.byteseek.automata.factory.ListStateFactory}, and the supplied
+	 * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}, and the supplied
 	 * {@link net.byteseek.automata.factory.TransitionFactory}.
 	 * 
 	 * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.

@@ -48,9 +48,8 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     /**
      * Constructs a SequenceMatcherTrie with no sequences added to it initially.
-     * using the default {@link net.byteseek.automata.factory.StateFactory}
-     * , {@link net.byteseek.automata.factory.ListStateFactory}, and the default
-     * {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.compiler.regex.ByteSetMatcherTransitionFactory}.
+     * using the default {@link net.byteseek.automata.factory.StateFactory} and the default
+     * {@link net.byteseek.automata.factory.TransitionFactory}.
      */
     public ByteArrayTrie() {
         this(null, null, null);
@@ -58,9 +57,8 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     
     /**
-     * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}
-     * , {@link net.byteseek.automata.factory.ListStateFactory}, and the default
-     * {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.compiler.regex.ByteSetMatcherTransitionFactory}.
+     * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}, and the default
+     * {@link net.byteseek.automata.factory.TransitionFactory},
      * 
      * @param sequences A collection of byte arrays to add to the Trie.
      */
@@ -71,7 +69,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
      /**
      * Constructs a Trie using the supplied {@link net.byteseek.automata.factory.StateFactory}
-     * and the default {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.compiler.regex.ByteSetMatcherTransitionFactory}.
+     * and the default {@link net.byteseek.automata.factory.TransitionFactory}.
      * 
      * @param stateFactory The StateFactory to use to create States for the Trie.
      */
@@ -82,8 +80,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     /**
      * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}
-     * , {@link net.byteseek.automata.factory.ListStateFactory}, and the supplied
-     * {@link net.byteseek.automata.factory.TransitionFactory}.
+     * and the supplied {@link net.byteseek.automata.factory.TransitionFactory}.
      * 
      * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
      */
@@ -94,7 +91,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
     /**
      * Constructs a Trie using the supplied {@link net.byteseek.automata.factory.StateFactory}
-     * and the default {@link net.byteseek.automata.factory.TransitionFactory}, {@link net.byteseek.compiler.regex.ByteSetMatcherTransitionFactory}.
+     * and the default {@link net.byteseek.automata.factory.TransitionFactory}.
      * 
      * @param sequences The initial collection of byte arrays to add to the Trie.
      * @param stateFactory The StateFactory to use to create States for the Trie.
@@ -106,8 +103,7 @@ public class ByteArrayTrie extends AbstractTrie<byte[]> {
     
 
     /**
-     * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}
-     * , {@link net.byteseek.automata.factory.ListStateFactory}, and the supplied
+     * Constructs a Trie using the default {@link net.byteseek.automata.factory.StateFactory}, and the supplied
      * {@link net.byteseek.automata.factory.TransitionFactory}.
      * 
      * @param sequences The initial collection of byte arrays to add to the Trie.

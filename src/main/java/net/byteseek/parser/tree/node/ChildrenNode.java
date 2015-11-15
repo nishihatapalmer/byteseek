@@ -102,7 +102,8 @@ public final class ChildrenNode extends BaseNode {
 	 * <p>
 	 * 
 	 * @param type The ParseTreeType of this ChildrenNode.
-	 * @param children The list of child ParseTrees for this ChildrenNode.
+	 * @param child The ParseTree to be made the child of this node.
+	 * @param inverted Whether this node is inverted or not.
 	 */
 	public ChildrenNode(final ParseTreeType type, final ParseTree child, final boolean inverted) {
 		super(type);

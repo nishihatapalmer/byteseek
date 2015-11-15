@@ -133,7 +133,7 @@ public final class ParseTreeUtils {
 	 * Returns the first range value of a node passed in.  A range is defined by
 	 * a node with two integer child nodes.  Each range value must be an integer
 	 * in the range 0 to 255, as they define byte values, and the node passed in
-	 * must have the type {@link net.byteseek.parser.tree.ParseTreeType.RANGE}.
+	 * must have the type {@link net.byteseek.parser.tree.ParseTreeType#RANGE}.
 	 * 
 	 * @param rangeNode The node with two integer child nodes defining a range.
 	 * @return The integer value of the first range value.
@@ -150,7 +150,7 @@ public final class ParseTreeUtils {
 	 * Returns the second range value of a node passed in.  A range is defined by
 	 * a node with two integer child nodes.  Each range value must be an integer
 	 * in the range 0 to 255, as they define byte values, and the node passed in
-	 * must have the type {@link net.byteseek.parser.tree.ParseTreeType.RANGE}.
+	 * must have the type {@link net.byteseek.parser.tree.ParseTreeType#RANGE}.
 	 * 
 	 * @param rangeNode The node with two integer child nodes defining a range.
 	 * @return The integer value of the second range value.
@@ -213,9 +213,9 @@ public final class ParseTreeUtils {
 	 * @param repeatNode The node defining a repeat.
 	 * @return The first repeat value (minimum number of repeats) for the repeat node.
 	 * @throws ParseException If the node passed in does not have type 
-	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT},
-	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MANY},
-	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX},
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType#REPEAT},
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType#REPEAT_MIN_TO_MANY},
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType#REPEAT_MIN_TO_MAX},
      *                         there is no first repeat value.
      * @throws IllegalArgumentException if the repeatNode passed in is null.
 	 */
@@ -234,9 +234,9 @@ public final class ParseTreeUtils {
 	 * @param repeatNode The node defining a repeat.
 	 * @return The second repeat value (maximum number of repeats) for the repeat node.
 	 * @throws ParseException If the node passed in does not have type 
-	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT},
-	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX} or
-	 *                         {@link net.byteseek.parser.tree.ParseTreeType.REPEAT_MIN_TO_MAX}, or
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType#REPEAT},
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType#REPEAT_MIN_TO_MAX} or
+	 *                         {@link net.byteseek.parser.tree.ParseTreeType#REPEAT_MIN_TO_MAX}, or
 	 *                         there is no second repeat value.
      * @throws IllegalArgumentException if the repeatNode passed in is null.
 	 */	
@@ -253,7 +253,7 @@ public final class ParseTreeUtils {
 	 * as if it is an ALL_BITMASK.
 	 * 
 	 * @param allBitmask The all bitmask node.
-	 * @param set A set of bytes to add the values to.
+	 * @param bytes A set of bytes to add the values to.
 	 * @throws ParseException If there is no bitmask byte value or another problem occurs
 	 *                         parsing the value.
 	 * @throws IllegalArgumentException if the allBitmask or bytes passed in are null.
