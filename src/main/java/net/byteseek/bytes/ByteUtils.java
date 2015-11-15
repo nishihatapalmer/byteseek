@@ -31,7 +31,6 @@
 
 package net.byteseek.bytes;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
