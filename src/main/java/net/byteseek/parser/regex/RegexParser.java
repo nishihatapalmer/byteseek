@@ -391,7 +391,7 @@ public class RegexParser implements Parser<ParseTree> {
 		return new ChildrenNode(ParseTreeType.SET, buildList(parseTrees), INVERTED);
 	}
 	
-	private static final List<ParseTree> buildList(final ParseTree...parseTrees) {
+	private static List<ParseTree> buildList(final ParseTree...parseTrees) {
 		return Arrays.asList(parseTrees);
 	}
 	
