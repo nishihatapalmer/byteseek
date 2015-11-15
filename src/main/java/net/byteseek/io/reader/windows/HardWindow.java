@@ -165,7 +165,7 @@ public final class HardWindow implements Window {
 	
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[bytes: " + bytes + " bytes length: " + bytes.length + 
+		return getClass().getSimpleName() + "[bytes length: " + bytes.length +
 				                            " window length:" + length + " window pos:" + windowPosition + ']'; 
 	}
 }

@@ -108,7 +108,7 @@ public class ByteArrayReader extends AbstractReader {
 	
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[array:" + bytes + " length:" + bytes.length + " cache:" + cache + ']'; 
+		return getClass().getSimpleName() + "[length:" + bytes.length + " cache:" + cache + ']';
 	}
 
 }
