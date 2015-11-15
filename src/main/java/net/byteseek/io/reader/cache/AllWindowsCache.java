@@ -31,10 +31,6 @@
 
 package net.byteseek.io.reader.cache;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import gnu.trove.decorator.TLongObjectMapDecorator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
