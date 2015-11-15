@@ -51,19 +51,20 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 	private final Automata<T>	automata;
 
 	/**
-	 * 
-	 * @param automata
+	 * Constructs an NfaMatcher from an automata.
+	 *
+	 * @param automata The automata to match.
 	 */
 	public NfaMatcher(final Automata<T> automata) {
 		this.automata = automata;
 	}
 
 	/**
-	 * 
-	 * @param reader
-	 * @param matchPosition
-	 * @return
-	 * @throws IOException
+	 * Matches the automata at the position given in the WindowReader
+	 * @param reader The reader to match in.
+	 * @param matchPosition The position to match at.
+	 * @return true if the matcher matches at that position.
+	 * @throws IOException If there is an IO problem when reading.
 	 */
 	@Override
 	public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
@@ -111,10 +112,11 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 	}
 
 	/**
-	 * 
-	 * @param bytes
-	 * @param matchPosition
-	 * @return 
+	 * Matches the automata at the position given in the byte array.
+	 *
+	 * @param bytes The byte array to match in.
+	 * @param matchPosition The position to match at.
+	 * @return true if the automata matches at the position given in the byte array.
 	 */
 	@Override
 	public boolean matches(final byte[] bytes, final int matchPosition) {
