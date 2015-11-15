@@ -42,6 +42,7 @@ import java.io.InputStream;
 public final class ReaderInputStream extends InputStream {
 
     private final WindowReader reader;
+    private final boolean closeReaderOnClose;
 
     private long   pos;
     private long   mark;
@@ -49,7 +50,6 @@ public final class ReaderInputStream extends InputStream {
     private int currentWindowLength;
     private byte[] currentArray;
     private int currentArrayPos;
-    private boolean closeReaderOnClose;
 
 
     /**
