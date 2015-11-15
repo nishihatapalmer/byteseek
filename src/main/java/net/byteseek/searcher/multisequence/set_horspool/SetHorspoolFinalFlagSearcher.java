@@ -369,7 +369,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     
     /**
      * A factory class implementing the {@link ObjectFactory}, creating a 
-     * {@SearchInfo} for searching forwards.
+     * {@link SearchInfo} for searching forwards.
      */
     private class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
@@ -435,7 +435,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
     
     /**
      * A factory class implementing the {@link ObjectFactory}, creating a 
-     * {@SearchInfo} for searching backwards.
+     * {@link SearchInfo} for searching backwards.
      */
     private class BackwardInfoFactory implements ObjectFactory <SearchInfo> {
 
