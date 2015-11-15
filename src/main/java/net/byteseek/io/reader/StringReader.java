@@ -38,6 +38,7 @@ import java.nio.charset.UnsupportedCharsetException;
 import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A {@link WindowReader} which gives access to the bytes of a String, either using
@@ -94,14 +95,8 @@ public class StringReader extends AbstractReader {
 	 */
 	public StringReader(final String string, final Charset charset) {
 		super(string == null ? 0 : string.length(), NoCache.NO_CACHE);
-		if (string == null) {
-			throw new IllegalArgumentException(
-					"Null string passed in to StringReader.");
-		}
-		if (charset == null) {
-			throw new IllegalArgumentException(
-					"Null charset passed in to StringReader.");
-		}
+		ArgUtils.checkNullString(string, "string");
+		ArgUtils.checkNullObject(charset, "charset");
 		bytes = string.getBytes(charset);
 		this.charset = charset;
 	}

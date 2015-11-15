@@ -50,6 +50,7 @@ import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
 import net.byteseek.matcher.bytes.SetBitsetMatcher;
 import net.byteseek.matcher.bytes.TwoByteMatcher;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A fairly simple implementation of {@link ByteMatcherFactory}.  It attempts to build the
@@ -97,12 +98,11 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
      * @param bytes  The collection of bytes to match (or their inverse).
      * @param matchInverse   Whether the set values are inverted or not
      * @return A ByteMatcher which is optimal for that set of bytes.
+     * @throws IllegalArgumentException if the collection is null or empty.
      */
     @Override
     public ByteMatcher create(final Collection<Byte> bytes, final boolean matchInverse) {
-        if (bytes == null || bytes.isEmpty()) {
-            throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
-        }
+        ArgUtils.checkNullOrEmptyCollection(bytes, "bytes");
         // Produce the (possibly inverted) unique set of bytes:
         Set<Byte> uniqueValues = new LinkedHashSet<Byte>(bytes);
         final  Set<Byte> values = matchInverse? ByteUtils.invertedSet(uniqueValues) : uniqueValues;

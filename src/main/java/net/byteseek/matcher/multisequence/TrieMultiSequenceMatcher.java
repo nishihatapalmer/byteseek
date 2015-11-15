@@ -45,6 +45,7 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.automata.SequenceMatcherTrieFactory;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A {@link MultiSequenceMatcher} uses a {@link Trie} structure to match 
@@ -91,13 +92,8 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	 */
 	public TrieMultiSequenceMatcher(final TrieFactory<SequenceMatcher> factory,
 			final Collection<? extends SequenceMatcher> matchers) {
-		if (factory == null) {
-			throw new IllegalArgumentException("Null factory passed in to TrieMultiSequenceMatcher");
-		}
-		if (matchers == null || matchers.isEmpty()) {
-			throw new IllegalArgumentException(
-					"Null or empty SequenceMatcher collection passed in to TrieMultiSequenceMatcher.");
-		}
+		ArgUtils.checkNullObject(factory, "factory");
+		ArgUtils.checkNullOrEmptyCollection(matchers, "matchers");
 		this.trie = factory.create(matchers);
 	}
 

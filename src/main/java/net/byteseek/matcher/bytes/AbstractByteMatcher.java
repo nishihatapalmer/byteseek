@@ -36,6 +36,7 @@ import java.util.NoSuchElementException;
 
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A simple abstract base class which implements most of the methods required
@@ -126,9 +127,7 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
      */
     @Override    
     public SequenceMatcher repeat(int numberOfRepeats) {
-        if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("Number of repeats must be at least one.");
-        }
+        ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepests");
         if (numberOfRepeats == 1) {
             return this;
         }   

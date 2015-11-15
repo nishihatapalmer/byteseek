@@ -37,6 +37,7 @@ import java.util.List;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An abstract base class for compilers which compile a String expression into
@@ -55,9 +56,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	private final Parser<S> parser;
 
 	public AbstractCompiler(final Parser<S> parser) {
-		if (parser == null) {
-			throw new IllegalArgumentException("Null parser given to compiler constructor");
-		}
+		ArgUtils.checkNullObject(parser, "parser");
 		this.parser = parser;
 	}
 

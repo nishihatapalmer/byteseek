@@ -36,6 +36,7 @@ import java.io.IOException;
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.utils.ArgUtils;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -65,9 +66,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      */
     public SetBinarySearchMatcher(final Set<Byte> bytes, final boolean inverted) {
         super(inverted);
-        if (bytes == null || bytes.isEmpty()) {
-            throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
-        }
+        ArgUtils.checkNullOrEmptyCollection(bytes, "bytes");
         this.bytesToMatch = ByteUtils.toArray(bytes);
         Arrays.sort(this.bytesToMatch);
     }

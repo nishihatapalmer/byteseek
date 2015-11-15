@@ -42,6 +42,7 @@ import net.byteseek.automata.Transition;
 import net.byteseek.automata.factory.MutableStateFactory;
 import net.byteseek.automata.factory.StateFactory;
 import net.byteseek.automata.factory.TransitionFactory;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * This class helps to build an automata as it is invoked for each node of a regular 
@@ -110,9 +111,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 */
 	public GlushkovRegexBuilder(final TransitionFactory<T, S> transitionFactory,
 			final StateFactory<T> stateFactory) {
-		if (transitionFactory == null) {
-			throw new IllegalArgumentException("Transition factory cannot be null.");
-		}
+		ArgUtils.checkNullObject(transitionFactory, "transitionFactory");
 		this.transitionFactory = transitionFactory;
 		if (stateFactory == null) {
 			this.stateFactory = new MutableStateFactory<T>();

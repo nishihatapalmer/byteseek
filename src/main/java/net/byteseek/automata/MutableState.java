@@ -44,6 +44,7 @@ import java.util.Set;
 
 import net.byteseek.collections.IdentityHashSet;
 import net.byteseek.object.factory.DeepCopy;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An implementation of the {@link State} interface.
@@ -103,10 +104,7 @@ public class MutableState<T> implements State<T> {
 	 * @throws IllegalArgumentException if the State passed in is null.
 	 */
 	public MutableState(final State<T> other) {
-		if (other == null) {
-			throw new IllegalArgumentException(
-					"Other state passed in to copy constructor was null.");
-		}
+		ArgUtils.checkNullObject(other, "other");
 		this.isFinal = other.isFinal();
 		final List<Transition<T>> otherTransitions = other.getTransitions();
 		if (otherTransitions != null && otherTransitions.size() > 0) {

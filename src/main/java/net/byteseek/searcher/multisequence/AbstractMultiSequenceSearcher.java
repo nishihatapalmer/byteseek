@@ -41,6 +41,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.AbstractSearcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * This abstract base class for multi-sequence searchers holds the collection of 
@@ -78,9 +79,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * @param sequences The MultiSequenceMatcher to search for.
      */
     public AbstractMultiSequenceSearcher(final MultiSequenceMatcher sequences) {
-        if (sequences == null) {
-            throw new IllegalArgumentException("Null sequences passed in to searcher.");
-        }        
+        ArgUtils.checkNullObject(sequences, "sequences");
         this.sequences = sequences;
     }    
     

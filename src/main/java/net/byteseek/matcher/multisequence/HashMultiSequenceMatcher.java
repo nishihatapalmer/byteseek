@@ -38,6 +38,7 @@ import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 
 
 /**
@@ -78,9 +79,7 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
      */
     private HashMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchers) {
         // Store matcher list:
-        if (matchers == null || matchers.isEmpty()) {
-            throw new IllegalArgumentException("Null or empty matchers passed in.");
-        }
+        ArgUtils.checkNullOrEmptyCollection(matchers, "matchers");
         this.matchers = new ArrayList<SequenceMatcher>(matchers.size());
         
         //Calculate min length, max length and the hash of each matcher:

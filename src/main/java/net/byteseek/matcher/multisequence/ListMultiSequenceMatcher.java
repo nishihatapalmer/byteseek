@@ -40,6 +40,7 @@ import java.util.List;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A very simple MultiSequenceMatcher which simply tries all of the
@@ -78,14 +79,10 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      *         list have a length of zero.
      */
     public ListMultiSequenceMatcher(final List<byte[]> bytesToMatch) {
-        if (bytesToMatch == null) {
-            throw new IllegalArgumentException("Null collection of bytes passed in.");
-        }
+        ArgUtils.checkNullObject(bytesToMatch, "bytesToMatch");
         matchers = new ArrayList<SequenceMatcher>(bytesToMatch.size());
         for (final byte[] bytes : bytesToMatch) {
-            if (bytes == null) {
-                throw new IllegalArgumentException("A null byte array was in the list of arrays to match.");
-            }
+            ArgUtils.checkNullObject(bytes, "A byte array in the list of arrays.");
             final SequenceMatcher sequence = new ByteSequenceMatcher(bytes);
             matchers.add(sequence);
         }
@@ -118,14 +115,10 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
      *         SequenceMatchers in the collection are null.
      */
     public ListMultiSequenceMatcher(final Collection<? extends SequenceMatcher> matchersToUse) {
-        if (matchersToUse == null) {
-            throw new IllegalArgumentException("Null collection of matchers passed in.");
-        }
+        ArgUtils.checkNullObject(matchersToUse, "matchersToUser");
         matchers = new ArrayList<SequenceMatcher>(matchersToUse);
         for (final SequenceMatcher matcher : matchers) {
-            if (matcher == null) {
-                throw new IllegalArgumentException("A matcher in the collection was null.");
-            }
+            ArgUtils.checkNullObject(matcher, "a matcher in the matchersToUse collection");
         }
         if (matchers.isEmpty()) {
             minimumLength = 0;

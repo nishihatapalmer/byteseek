@@ -37,6 +37,7 @@ import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.FixedGapMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * A {@link ByteMatcher} which matches any byte at all.
@@ -132,9 +133,7 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
      */     
     @Override
     public SequenceMatcher repeat(int numberOfRepeats) {
-        if (numberOfRepeats < 1) {
-            throw new IllegalArgumentException("Number of repeats must be at least one.");
-        }
+        ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeatss");
         if (numberOfRepeats == 1) {
             return this;
         }           

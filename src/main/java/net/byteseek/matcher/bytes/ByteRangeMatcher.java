@@ -36,6 +36,7 @@ import java.io.IOException;
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An immutable {@link ByteMatcher} which matches a range of bytes, 
@@ -65,10 +66,8 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     public ByteRangeMatcher(final int minValue, final int maxValue, final boolean inverted) {
         super(inverted);
         // Preconditions - minValue & maxValue >= 0 and <= 255.  MinValue <= MaxValue
-        if (minValue < 0 || minValue > 255 || maxValue < 0 || maxValue > 255 ) {
-            final String error = String.format(ILLEGAL_ARGUMENTS, minValue, maxValue);
-            throw new IllegalArgumentException(error);
-        }
+        ArgUtils.checkRangeInclusive(minValue, 0, 255, "minValue");
+        ArgUtils.checkRangeInclusive(maxValue, 0, 255, "maxValue");
         if (minValue > maxValue) {
             minByteValue = maxValue;
             maxByteValue = minValue;

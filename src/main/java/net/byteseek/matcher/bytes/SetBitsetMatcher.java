@@ -36,6 +36,7 @@ import java.io.IOException;
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.utils.ArgUtils;
 
 import java.util.BitSet;
 import java.util.Set;
@@ -63,9 +64,7 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
      */
     public SetBitsetMatcher(final Set<Byte> values, final boolean inverted) {
         super(inverted);
-        if (values == null || values.isEmpty()) {
-            throw new IllegalArgumentException(ILLEGAL_ARGUMENTS);
-        }
+        ArgUtils.checkNullOrEmptyCollection(values, "values");
         for (final Byte b : values) {
             byteValues.set(b & 0xFF);
         }

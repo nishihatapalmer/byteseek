@@ -49,6 +49,7 @@ public final class ArgUtils {
     private static final String START_PAST_END_INDEX_ERROR          = "The start index %d is equal to or greater than the end index %d";
     private static final String START_PAST_LENGTH_ERROR             = "Start position %d is past the end, length = %d.";
     private static final String POSITIVE_INTEGER				    = "The number %d should be a positive integer.";
+	private static final String NUMBER_OUT_OF_RANGE                 = "The number %d is outside the range %d to %d : %s";
 
 	public static void checkNullObject(final Object object) {
 		if (object == null) {
@@ -211,7 +212,11 @@ public final class ArgUtils {
 		}
 	}    	
 
-	
+	public static void checkRangeInclusive(final int number, final int start, final int end, final String description) {
+		if (number < start || number > end) {
+			throw new IllegalArgumentException(String.format(NUMBER_OUT_OF_RANGE, number, start, end, description));
+		}
+	}
 
 
 	public static void checkNullString(final String string) {

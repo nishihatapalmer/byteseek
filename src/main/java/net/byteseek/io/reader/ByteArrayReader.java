@@ -35,6 +35,7 @@ import java.io.IOException;
 import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * Provides a reader interface over an array of bytes.
@@ -59,10 +60,7 @@ public class ByteArrayReader extends AbstractReader {
 	 */
 	public ByteArrayReader(final byte[] bytes) {
 		super(bytes == null ? 0 : bytes.length, NoCache.NO_CACHE);
-		if (bytes == null) {
-			throw new IllegalArgumentException(
-					"Null byte array passed in to ByteArrayReader.");
-		}
+		ArgUtils.checkNullObject(bytes, "bytes");
 		this.bytes = bytes;
 	}
 

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * An iterator which iterates over a {@link net.byteseek.io.reader.WindowReader} or a
@@ -115,9 +116,8 @@ public class ForwardSearchIterator<T> implements
 	 */
 	public ForwardSearchIterator(final Searcher<T> searcher,
 			final long fromPosition, final long toPosition, final WindowReader reader) {
-		if (searcher == null || reader == null) {
-			throw new IllegalArgumentException("Null searcher or byte reader.");
-		}
+		ArgUtils.checkNullObject(searcher, "searcher");
+		ArgUtils.checkNullObject(reader, "reader");
 		this.searcher = searcher;
 		this.reader = reader;
 		this.toPosition = toPosition;
@@ -178,9 +178,8 @@ public class ForwardSearchIterator<T> implements
 	 */
 	public ForwardSearchIterator(final Searcher<T> searcher,
 			final long fromPosition, final long toPosition, final byte[] bytes) {
-		if (searcher == null || bytes == null) {
-			throw new IllegalArgumentException("Null searcher or byte array.");
-		}
+		ArgUtils.checkNullObject(searcher, "searcher");
+		ArgUtils.checkNullObject(bytes, "bytes");
 		this.searcher = searcher;
 		this.bytes = bytes;
 		this.toPosition = toPosition;

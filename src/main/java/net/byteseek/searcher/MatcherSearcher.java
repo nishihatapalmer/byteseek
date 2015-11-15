@@ -37,6 +37,7 @@ import java.util.List;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.Matcher;
+import net.byteseek.utils.ArgUtils;
 
 
 /**
@@ -76,9 +77,7 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * @param matcher The Matcher to search for.
      */
     public MatcherSearcher(final Matcher matcher) {
-        if (matcher == null) {
-            throw new IllegalArgumentException("Null matcher passed in to MatcherSearcher.");
-        }
+        ArgUtils.checkNullObject(matcher, "matcher");
         this.matcher = matcher;
     }
     
