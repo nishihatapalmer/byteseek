@@ -393,7 +393,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	@Override
 	public Automata<T> buildMinToMaxAutomata(final int minRepeat, final int maxRepeat,
 			final Automata<T> repeatedAutomata) {
-		Automata<T> automata = null;
+		Automata<T> automata;
 		// If min repeat is zero, then we have up to max optional repeated
 		// states:
 		if (minRepeat == 0) {
