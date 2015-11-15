@@ -35,9 +35,6 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A cache which holds on to a number of bytes at the top and tail of a reader.
  * <p>
