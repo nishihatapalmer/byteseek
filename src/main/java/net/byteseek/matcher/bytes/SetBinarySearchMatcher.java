@@ -55,7 +55,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
 
     private static final String ILLEGAL_ARGUMENTS = "Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.";
 
-    private byte[] bytesToMatch;
+    private final byte[] bytesToMatch;
 
 
     /**
