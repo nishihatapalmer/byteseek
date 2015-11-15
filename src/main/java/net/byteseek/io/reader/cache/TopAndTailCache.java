@@ -97,6 +97,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
         }
     }
 
+    @Override
     public void clear() {
         cache.clear();
         tailCacheEntries.clear();
