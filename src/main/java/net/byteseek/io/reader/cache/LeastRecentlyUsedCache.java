@@ -76,11 +76,7 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
         final long windowPosition = window.getWindowPosition();
         if (!cache.containsKey(windowPosition)) {
             cache.put(windowPosition, window);
-            if (cache.exception != null) {
-                IOException ex = cache.exception;
-                cache.exception = null;
-                throw ex;
-            }
+            cache.checkIOException();
         }
     }
     
@@ -120,7 +116,15 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
                 }
             }
             return remove;
-        }   
+        }
+
+        public void checkIOException() throws IOException {
+            if (exception != null) {
+                final IOException ex = exception;
+                exception = null;
+                throw ex;
+            }
+        }
     }    
         
     
