@@ -69,32 +69,23 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	/**
 	 * Constructs a FileReader which defaults to an array size of 4096, caching
 	 * the last 32 most recently used Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}
-	 * .
-	 * 
-	 * @param file
-	 *            The file to read from.
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 *
+	 * @param file The file to read from.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException if the file passed in is null.
 	 */
 	public FileReader(final File file) throws FileNotFoundException {
-		this(file, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(
-				DEFAULT_CAPACITY));
+		this(file, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
 	/**
 	 * Constructs a FileReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096
 	 * using the WindowCache passed in to cache ArrayWindows.
 	 * 
-	 * @param file
-	 *            The file to read from.
-	 * @param cache
-	 *            the cache of Windows to use.
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param file  The file to read from.
+	 * @param cache The cache of Windows to use.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException if the file passed in is null.
 	 */
 	public FileReader(final File file, final WindowCache cache)
 			throws FileNotFoundException {
@@ -105,14 +96,10 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
 	 * caches the last 32 Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
-	 * @param file
-	 *            The file to read from.
-	 * @param windowSize
-	 *            the size of the byte array to read from the file.
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param file The file to read from.
+	 * @param windowSize The size of the byte array to read from the file.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException if the file passed in is null.
 	 */
 	public FileReader(final File file, final int windowSize)
 			throws FileNotFoundException {
@@ -124,17 +111,11 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * last most recently used Windows up to the capacity specified in a
 	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
-	 * @param file
-	 *            The file to read from.
-	 * @param windowSize
-	 *            the size of the byte array to read from the file.
-	 * @param capacity
-	 *            the number of byte arrays to cache (using a most recently used
-	 *            strategy).
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param file The file to read from.
+	 * @param windowSize the size of the byte array to read from the file.
+	 * @param capacity the number of byte arrays to cache (using a most recently used strategy).
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException if the file passed in is null.
 	 */
 	public FileReader(final File file, final int windowSize, final int capacity)
 			throws FileNotFoundException {
@@ -146,30 +127,22 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * caching the last 32 most recently used {@link net.byteseek.io.reader.windows.Window}s in a
 	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
-	 * @param path
-	 *            The path of the file to read from.
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param path The path of the file to read from.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException if the path passed in is null.
 	 */
 	public FileReader(final String path) throws FileNotFoundException {
-		this(new File(path), DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(
-				DEFAULT_CAPACITY));
+		this(new File(path), DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
 	/**
 	 * Constructs a FileReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096
 	 * using the {@link WindowCache} passed in to cache Windows.
 	 * 
-	 * @param path
-	 *            The path of the file to read from.
-	 * @param cache
-	 *            the cache of Windows to use.
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param path The path of the file to read from.
+	 * @param cache	The cache of Windows to use.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException If the path or cache passed in is null.
 	 */
 	public FileReader(final String path, final WindowCache cache)
 			throws FileNotFoundException {
@@ -180,19 +153,14 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * Constructs a FileReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
 	 * caches the last 32 Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
-	 * @param path
-	 *            The path of the file to read from.
-	 * @param windowSize
-	 *            the size of the byte array to read from the file.
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param path  The path of the file to read from.
+	 * @param windowSize The size of the byte array to read from the file.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException If the file passed in is null.
 	 */
 	public FileReader(final String path, final int windowSize)
 			throws FileNotFoundException {
-		this(new File(path), windowSize, new LeastRecentlyUsedCache(
-				DEFAULT_CAPACITY));
+		this(new File(path), windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
 	/**
@@ -200,17 +168,11 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * caches the last Windows up to the capacity supplied using a
 	 * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
 	 * 
-	 * @param path
-	 *            The path of the file to read from.
-	 * @param windowSize
-	 *            the size of the byte array to read from the file.
-	 * @param capacity
-	 *            the number of byte arrays to cache (using a most recently used
-	 *            strategy).
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param path The path of the file to read from.
+	 * @param windowSize The size of the byte array to read from the file.
+	 * @param capacity The number of byte arrays to cache (using a most recently used strategy).
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException if the file passed in is null.
 	 */
 	public FileReader(final String path, final int windowSize,
 			final int capacity) throws FileNotFoundException {
@@ -221,16 +183,11 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * Constructs a FileReader which reads the file into {@link net.byteseek.io.reader.windows.Window}s of the
 	 * specified size, using the {@link WindowCache} supplied to cache them.
 	 * 
-	 * @param file
-	 *            The file to read from.
-	 * @param windowSize
-	 *            the size of the byte array to read from the file.
-	 * @param cache
-	 *            the cache of Windows to use.
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 * @throws IllegalArgumentException
-	 *             if the file passed in is null.
+	 * @param file The file to read from.
+	 * @param windowSize The size of the byte array to read from the file.
+	 * @param cache The cache of Windows to use.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IllegalArgumentException If the file or cache passed in is null.
 	 */
 	public FileReader(final File file, final int windowSize,
 			final WindowCache cache) throws FileNotFoundException {
