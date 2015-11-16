@@ -34,6 +34,8 @@ package net.byteseek.io.reader.cache;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
 
+import java.io.IOException;
+
 /**
  * A {@link WindowCache} which wraps two further WindowCaches.  When a {@link net.byteseek.io.reader.windows.Window}
  * leaves the primary cache, it is automatically added to the secondary cache.
@@ -82,7 +84,7 @@ import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
      * {@inheritDoc}
      */
     @Override
-    public Window getWindow(final long position) {
+    public Window getWindow(final long position) throws IOException {
         Window window = primaryCache.getWindow(position);
         if (window == null) {
             window = secondaryCache.getWindow(position);
@@ -98,7 +100,7 @@ import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
      * {@inheritDoc}
      */
     @Override
-    public void addWindow(final Window window) {
+    public void addWindow(final Window window) throws IOException {
         primaryCache.addWindow(window);
     }
 
@@ -108,9 +110,17 @@ import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
      * mechanisms they use to clear themselves.
      */
     @Override
-    public void clear() {
-        primaryCache.clear();
+    public void clear() throws IOException {
+        IOException primaryException = null;
+        try {
+            primaryCache.clear();
+        } catch (IOException primaryCacheException) {
+            primaryException = primaryCacheException;
+        }
         secondaryCache.clear();
+        if (primaryException != null) {
+            throw primaryException;
+        }
     }
 
     
@@ -127,7 +137,7 @@ import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
      * @param fromCache The WindowCache from which the Window is leaving.
      */
     @Override
-    public void windowFree(final Window window, final WindowCache fromCache) {
+    public void windowFree(final Window window, final WindowCache fromCache) throws IOException {
         if (fromCache == primaryCache) {
             secondaryCache.addWindow(window);
         } else if (fromCache == secondaryCache) {

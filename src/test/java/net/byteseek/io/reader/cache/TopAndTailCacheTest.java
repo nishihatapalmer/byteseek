@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -115,7 +116,7 @@ public class TopAndTailCacheTest {
         assertNull(cache.getWindow(4096));
     }
 
-    private void addWindow(long position) {
+    private void addWindow(long position) throws IOException {
         cache.addWindow(new HardWindow(array, position, array.length));
     }
 

@@ -35,6 +35,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -73,7 +74,7 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
     }
 
     @Override
-    public void addWindow(final Window window) {
+    public void addWindow(final Window window) throws IOException {
         final long windowPos = window.getWindowPosition();
         cache.put(windowPos, window);
         // past top bytes, into tail bytes.

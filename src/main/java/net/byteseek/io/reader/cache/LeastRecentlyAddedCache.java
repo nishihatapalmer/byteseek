@@ -34,6 +34,8 @@ package net.byteseek.io.reader.cache;
 import net.byteseek.collections.LongLinkedHashMap;
 import net.byteseek.io.reader.windows.Window;
 
+import java.io.IOException;
+
 
 /**
  * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
@@ -61,7 +63,7 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
      * {@inheritDoc}
      */
     @Override
-    public Window getWindow(final long position) {
+    public Window getWindow(final long position) throws IOException {
         return cache.get(position);
     }
 
@@ -70,10 +72,15 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
      * {@inheritDoc}
      */
     @Override
-    public void addWindow(final Window window) {
+    public void addWindow(final Window window) throws IOException {
         final long windowPosition = window.getWindowPosition();
         if (!cache.containsKey(windowPosition)) {
             cache.put(windowPosition, window);
+            if (cache.exception != null) {
+                IOException ex = cache.exception;
+                cache.exception = null;
+                throw ex;
+            }
         }
     }
 
@@ -95,7 +102,8 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
     private class Cache extends LongLinkedHashMap<Window> {
 
         private final int capacity;
-        
+        private IOException exception = null;
+
         private Cache(int capacity) {
             super(capacity + 1);
             this.capacity = capacity;
@@ -105,7 +113,11 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
         protected boolean removeEldestEntry(final MapEntry<Window> eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
-                notifyWindowFree(eldest.getValue(), LeastRecentlyAddedCache.this);
+                try {
+                    notifyWindowFree(eldest.getValue(), LeastRecentlyAddedCache.this);
+                } catch (IOException ex) {
+                    exception = ex;
+                }
             }
             return remove;
         }   
@@ -116,5 +128,6 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
 	public String toString() {
 		return getClass().getSimpleName() + "[size: " + cache.size() + " capacity: " + cache.capacity + ']';  
 	}
-    
+
+
 }

@@ -35,6 +35,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -81,7 +82,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
     }
 
     @Override
-    public void addWindow(final Window window) {
+    public void addWindow(final Window window) throws IOException {
         final long windowPosition = window.getWindowPosition();
         final long windowEnd      = window.getWindowEndPosition();
         if (windowEnd > lastPositionSeen) {
@@ -113,7 +114,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
      *
      * @param tailCacheStart The start of the tail cache.
      */
-    private void checkNonTailWindows(final long tailCacheStart) {
+    private void checkNonTailWindows(final long tailCacheStart) throws IOException {
         for (int repeat = 0; repeat < 2; repeat++){
             int numberOfCacheEntries = tailCacheEntries.size();
             if (numberOfCacheEntries > 1) {

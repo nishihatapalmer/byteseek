@@ -33,6 +33,8 @@ package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
 
+import java.io.IOException;
+
 
 /**
  * A interface for classes which cache {@link net.byteseek.io.reader.windows.Window} objects.
@@ -52,22 +54,25 @@ public interface WindowCache {
      * 
      * @param position The position at which a Window begins in the cache.
      * @return A Window for the specified starting position, or null if the Window does not exist.
+     * @throws IOException if there was an IOException when getting the cached window.
      */
-    public Window getWindow(final long position);
+    public Window getWindow(final long position) throws IOException;
     
     
     /**
      * Adds a {@link net.byteseek.io.reader.windows.Window} to the cache.
      * 
      * @param window The Window to add to the cache.
+     * @throws IOException if there was a problem adding a Window.
      */
-    public void addWindow(final Window window);
+    public void addWindow(final Window window) throws IOException;
     
     
     /**
      * Clears all {@link net.byteseek.io.reader.windows.Window}s from the cache.
+     * @throws IOException if there was an IO problem clearing the cache.
      */
-    public void clear();
+    public void clear() throws IOException;
     
     
     /**
@@ -101,9 +106,10 @@ public interface WindowCache {
          * leaves a cache.
          * @param window The Window which is leaving a cache.
          * @param fromCache The cache that the Window is leaving.
+         * @throws IOException if an IOException occurs while freeing a window (which may involve adding a window to another cache).
          * 
          */
-        public void windowFree(final Window window, WindowCache fromCache);
+        public void windowFree(final Window window, WindowCache fromCache) throws IOException;
         
     }
     

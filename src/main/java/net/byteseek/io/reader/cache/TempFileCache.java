@@ -87,16 +87,13 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
      * {@inheritDoc}
      */
     @Override
-    public Window getWindow(final long position) {
+    public Window getWindow(final long position) throws IOException {
         Window window = null;
         final WindowInfo info = windowPositions.get(position);
         if (info != null) {
             final byte[] array = new byte[info.length];
-            try {
-                IOUtils.readBytes(file, array, info.filePosition);
-                window = new SoftWindow(array, position, info.length, this);
-            } catch (IOException justReturnNullWindow) {
-            }
+            IOUtils.readBytes(file, array, info.filePosition);
+            window = new SoftWindow(array, position, info.length, this);
         }
         return window;
     }
@@ -106,19 +103,16 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
      * {@inheritDoc}
      */
     @Override
-    public void addWindow(final Window window) {
+    public void addWindow(final Window window) throws IOException {
         final long windowPosition = window.getWindowPosition();
         final WindowInfo info = windowPositions.get(windowPosition);
         if (info == null) {
-            try {
-                createFileIfNotExists();
-                file.seek(nextFilePos);
-                file.write(window.getArray(), 0, window.length());
-                windowPositions.put(windowPosition, 
-                                    new WindowInfo(window.length(), nextFilePos));
-                nextFilePos += window.length();
-            } catch (IOException justFailToAddTheWindow) {
-            }
+            createFileIfNotExists();
+            file.seek(nextFilePos);
+            file.write(window.getArray(), 0, window.length());
+            windowPositions.put(windowPosition,
+                                new WindowInfo(window.length(), nextFilePos));
+            nextFilePos += window.length();
         }
     }
 
@@ -128,7 +122,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
      * and deletes the temporary file if it exists.
      */
     @Override
-    public void clear() {
+    public void clear() throws IOException {
         windowPositions.clear();
         deleteFileIfExists();
     }
@@ -155,18 +149,21 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
     }
     
 
-    private void deleteFileIfExists() {
+    private void deleteFileIfExists() throws IOException {
         if (tempFile != null) {
+            IOException fileCloseException = null;
             try {
                 file.close();
             } catch (IOException ex) {
+                fileCloseException = ex;
             } finally {
                 file = null;
-                //TODO: use SLF4J logging framework to log if file could not be deleted.
-                //      examine other places where logging could be useful.
                 tempFile.delete();
                 tempFile = null;
                 nextFilePos = 0;
+            }
+            if (fileCloseException != null) {
+                throw fileCloseException;
             }
         }
     }

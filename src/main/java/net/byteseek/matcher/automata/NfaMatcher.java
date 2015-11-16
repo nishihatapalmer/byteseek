@@ -116,6 +116,7 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 	 *
 	 * @param bytes The byte array to match in.
 	 * @param matchPosition The position to match at.
+	 *
 	 * @return true if the automata matches at the position given in the byte array.
 	 */
 	@Override

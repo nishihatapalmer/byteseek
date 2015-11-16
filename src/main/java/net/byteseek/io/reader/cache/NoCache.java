@@ -33,6 +33,8 @@ package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
 
+import java.io.IOException;
+
 
 /**
  * A {@link WindowCache} which holds on to no {@link net.byteseek.io.reader.windows.Window}
@@ -64,11 +66,11 @@ public final class NoCache extends AbstractFreeNotificationCache {
     /**
      * Does not actually add the {@link net.byteseek.io.reader.windows.Window} to the
      * cache, as the NoCache object performs no caching.
-     * 
+     *
      * @param window A Window to add (which it will not be).
      */
     @Override
-    public void addWindow(Window window) {
+    public void addWindow(Window window) throws IOException {
         notifyWindowFree(window, this);
     }
 

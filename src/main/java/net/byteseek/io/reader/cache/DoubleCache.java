@@ -33,6 +33,8 @@ package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
 
+import java.io.IOException;
+
 /**
  * A specialised cache which stores data in two caches.  The memory cache is checked
  * first.  If the data is not in the memory cache, the persistent cache is
@@ -77,7 +79,7 @@ public final class DoubleCache extends AbstractFreeNotificationCache implements 
      * {@inheritDoc}
      */
     @Override
-    public Window getWindow(final long position) {
+    public Window getWindow(final long position) throws IOException {
         Window window = memoryCache.getWindow(position);
         if (window == null) {
             window = persistentCache.getWindow(position);
@@ -92,7 +94,7 @@ public final class DoubleCache extends AbstractFreeNotificationCache implements 
      * {@inheritDoc}
      */
     @Override
-    public void addWindow(final Window window) {
+    public void addWindow(final Window window) throws IOException {
         memoryCache.addWindow(window);
         persistentCache.addWindow(window);
     }
@@ -102,9 +104,17 @@ public final class DoubleCache extends AbstractFreeNotificationCache implements 
      * mechanisms they use to clear themselves.
      */
     @Override
-    public void clear() {
-        memoryCache.clear();
+    public void clear() throws IOException {
+        IOException memCacheException = null;
+        try {
+            memoryCache.clear();
+        } catch (IOException ex) {
+            memCacheException = ex;
+        }
         persistentCache.clear();
+        if (memCacheException != null) {
+            throw memCacheException;
+        }
     }
 
    /**
@@ -115,7 +125,7 @@ public final class DoubleCache extends AbstractFreeNotificationCache implements 
     * @param fromCache The WindowCache from which the Window is leaving.
     */
     @Override
-    public void windowFree(final Window window, final WindowCache fromCache) {
+    public void windowFree(final Window window, final WindowCache fromCache) throws IOException {
         notifyWindowFree(window, this);
     }
 

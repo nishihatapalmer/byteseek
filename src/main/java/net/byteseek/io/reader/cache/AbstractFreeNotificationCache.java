@@ -32,6 +32,7 @@
 
 package net.byteseek.io.reader.cache;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,9 +100,17 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
      * @param window The Window which was removed from this cache.
      * @param fromCache The WindowCache from which the Window was removed.
      */
-    protected final void notifyWindowFree(final Window window, final WindowCache fromCache) {
+    protected final void notifyWindowFree(final Window window, final WindowCache fromCache) throws IOException {
+        IOException cacheException = null;
         for (int i = 0; i < windowObservers.size(); i++) {
-            windowObservers.get(i).windowFree(window, fromCache);
+            try {
+                windowObservers.get(i).windowFree(window, fromCache);
+            } catch (IOException ex) {
+                cacheException = ex;
+            }
+        }
+        if (cacheException != null) {
+            throw cacheException;
         }
     }
     
