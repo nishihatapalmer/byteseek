@@ -76,7 +76,7 @@ public final class ReaderInputStream extends InputStream {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
         this.closeReaderOnClose = closeReaderOnClose;
-        setPos(0L);
+        setWindowForPosition(0L);
     }
 
     @Override
@@ -152,7 +152,7 @@ public final class ReaderInputStream extends InputStream {
 
     @Override
     public synchronized void reset() throws IOException {
-       setPos(mark);
+       setWindowForPosition(mark);
     }
 
     @Override
@@ -162,7 +162,7 @@ public final class ReaderInputStream extends InputStream {
         }
     }
 
-    private void setPos(final long newPos) throws IOException {
+    private void setWindowForPosition(final long newPos) throws IOException {
         currentWindow = reader.getWindow(newPos);
         if (currentWindow != null) {
             pos                 = newPos;
@@ -181,7 +181,7 @@ public final class ReaderInputStream extends InputStream {
         currentArrayPos += moveBy;
         pos             += moveBy;
         if (currentArrayPos >= currentWindowLength) {
-            setPos(pos);
+            setWindowForPosition(pos);
         }
     }
 
