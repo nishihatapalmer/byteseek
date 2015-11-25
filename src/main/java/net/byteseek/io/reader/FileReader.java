@@ -132,7 +132,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * @throws IllegalArgumentException if the path passed in is null.
 	 */
 	public FileReader(final String path) throws FileNotFoundException {
-		this(new File(path), DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
+		this(path == null? null : new File(path), DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 */
 	public FileReader(final String path, final WindowCache cache)
 			throws FileNotFoundException {
-		this(new File(path), DEFAULT_WINDOW_SIZE, cache);
+		this(path == null? null : new File(path), DEFAULT_WINDOW_SIZE, cache);
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 */
 	public FileReader(final String path, final int windowSize)
 			throws FileNotFoundException {
-		this(new File(path), windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
+		this(path == null? null : new File(path), windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
 	/**
@@ -170,13 +170,13 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 * 
 	 * @param path The path of the file to read from.
 	 * @param windowSize The size of the byte array to read from the file.
-	 * @param capacity The number of byte arrays to cache (using a most recently used strategy).
+	 * @param capacity The number of byte arrays to cache (using a least recently used strategy).
 	 * @throws FileNotFoundException If the file does not exist.
 	 * @throws IllegalArgumentException if the file passed in is null.
 	 */
 	public FileReader(final String path, final int windowSize,
 			final int capacity) throws FileNotFoundException {
-		this(new File(path), windowSize, new LeastRecentlyUsedCache(capacity));
+		this(path == null? null : new File(path), windowSize, new LeastRecentlyUsedCache(capacity));
 	}
 
 	/**
@@ -213,17 +213,19 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	 */
 	@Override
 	protected Window createWindow(final long windowStart) throws IOException {
-		try {
-			randomAccessFile.seek(windowStart);
-			final byte[] bytes = new byte[windowSize];
-			final int totalRead = IOUtils.readBytes(randomAccessFile, bytes);
-			if (totalRead > 0) {
-				if (useSoftWindows) {
-					return new SoftWindow(bytes, windowStart, totalRead, this);
+		if (windowStart >= 0) {
+			try {
+				randomAccessFile.seek(windowStart);
+				final byte[] bytes = new byte[windowSize];
+				final int totalRead = IOUtils.readBytes(randomAccessFile, bytes);
+				if (totalRead > 0) {
+					if (useSoftWindows) {
+						return new SoftWindow(bytes, windowStart, totalRead, this);
+					}
+					return new HardWindow(bytes, windowStart, totalRead);
 				}
-				return new HardWindow(bytes, windowStart, totalRead);
+			} catch (final EOFException justReturnNull) {
 			}
-		} catch (final EOFException justReturnNull) {
 		}
 		return null;
 	}
