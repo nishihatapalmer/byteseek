@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2014, All rights reserved.
+ * Copyright Matt Palmer 2014-15, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -82,8 +82,8 @@ public final class ReaderInputStream extends InputStream {
     @Override
     public synchronized int read() throws IOException {
         if (pos > -1) {
-            final int readResult = currentArray[currentArrayPos++] & 0xFF;
-            checkWindowPos();
+            final int readResult = currentArray[currentArrayPos] & 0xFF;
+            addStreamPosition(1);
             return readResult;
         }
         return -1;
@@ -103,16 +103,14 @@ public final class ReaderInputStream extends InputStream {
             int available = currentWindowLength - currentArrayPos;
             if (available >= len) { // buffer copy is completely inside current window.
                 System.arraycopy(currentArray, currentArrayPos, b, off, len);
-                currentArrayPos += len;
-                checkWindowPos();
+                addStreamPosition(len);
                 return len;
             } else { // buffer copy may span more than one window (if there are more windows available...)
                 int copied = 0;
                 while (copied < len) {
                     System.arraycopy(currentArray, currentArrayPos, b, off + copied, available);
                     copied          += available;
-                    currentArrayPos += available;
-                    checkWindowPos();
+                    addStreamPosition(available);
                     if (currentWindow == null) { // no more windows available...
                         break;
                     }
@@ -149,7 +147,7 @@ public final class ReaderInputStream extends InputStream {
 
     @Override
     public synchronized void mark(int readAheadLimit) {
-        mark = pos + currentArrayPos;
+        mark = pos;
     }
 
     @Override
@@ -179,9 +177,10 @@ public final class ReaderInputStream extends InputStream {
         }
     }
 
-    private void checkWindowPos() throws IOException {
+    private void addStreamPosition(int moveBy) throws IOException {
+        currentArrayPos += moveBy;
+        pos             += moveBy;
         if (currentArrayPos >= currentWindowLength) {
-            pos += currentArrayPos;
             setPos(pos);
         }
     }
