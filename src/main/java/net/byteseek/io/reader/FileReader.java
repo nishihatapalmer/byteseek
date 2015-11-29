@@ -219,10 +219,8 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 				final byte[] bytes = new byte[windowSize];
 				final int totalRead = IOUtils.readBytes(randomAccessFile, bytes);
 				if (totalRead > 0) {
-					if (useSoftWindows) {
-						return new SoftWindow(bytes, windowStart, totalRead, this);
-					}
-					return new HardWindow(bytes, windowStart, totalRead);
+					return useSoftWindows? new SoftWindow(bytes, windowStart, totalRead, this)
+							             : new HardWindow(bytes, windowStart, totalRead);
 				}
 			} catch (final EOFException justReturnNull) {
 			}
