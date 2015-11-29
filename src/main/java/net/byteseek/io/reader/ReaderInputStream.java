@@ -43,6 +43,7 @@ public final class ReaderInputStream extends InputStream {
 
     private final WindowReader reader;
     private final boolean closeReaderOnClose;
+    private final boolean markSupported;
 
     private long   pos;
     private long   mark;
@@ -73,11 +74,26 @@ public final class ReaderInputStream extends InputStream {
      * @throws java.lang.IllegalArgumentException if the reader is null.
      */
     public ReaderInputStream(final WindowReader reader, boolean closeReaderOnClose) throws IOException {
+        this(reader, closeReaderOnClose, true);
+    }
+
+    /**
+     * Constructs a ReaderInputStream from a WindowReader.
+     *
+     * @param reader The WindowReader to back the InputStream.
+     * @param closeReaderOnClose Whether the underlying reader is closed when this input stream is closed
+     * @param markSupported Whether the stream will support mark() and reset().                          .
+     * @throws IOException If the ReaderInputStream cannot acquire a window for position 0.
+     * @throws java.lang.IllegalArgumentException if the reader is null.
+     */
+    public ReaderInputStream(final WindowReader reader, boolean closeReaderOnClose, boolean markSupported) throws IOException {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
         this.closeReaderOnClose = closeReaderOnClose;
+        this.markSupported      = markSupported;
         setWindowForPosition(0L);
     }
+
 
     @Override
     public synchronized int read() throws IOException {
@@ -142,7 +158,7 @@ public final class ReaderInputStream extends InputStream {
      */
     @Override
     public boolean markSupported() {
-        return true;
+        return markSupported;
     }
 
     @Override
@@ -152,28 +168,50 @@ public final class ReaderInputStream extends InputStream {
 
     @Override
     public synchronized void reset() throws IOException {
-       setWindowForPosition(mark);
+       if (markSupported) {
+           setWindowForPosition(mark);
+       } else {
+           super.reset(); // use default InputStream behaviour - throws an IO Exception.
+       }
+    }
+
+    @Override
+    public synchronized long skip(long n) throws IOException {
+        if (n <= 0 || pos < 0) {
+            return 0;
+        }
+        final long oldPos = pos;
+        setWindowForPosition(pos + n);
+        return currentWindow == null ? reader.length() - oldPos : n;
     }
 
     @Override
     public synchronized void close() throws IOException {
         if (closeReaderOnClose) {
             reader.close();
+            setNoMoreData();
         }
+    }
+
+    /**
+     * Returns the next read pos of the input stream reader.
+     * This method is provided mostly for testing purposes, and it is package protected.
+     * If we have read past the end of the stream, this value will be negative.
+     * @return The next read position in the stream, or -1 if there are no more bytes to consume.
+     */
+    synchronized long getNextReadPos() {
+        return pos;
     }
 
     private void setWindowForPosition(final long newPos) throws IOException {
         currentWindow = reader.getWindow(newPos);
-        if (currentWindow != null) {
+        if (currentWindow == null) {
+            setNoMoreData();
+        } else {
             pos                 = newPos;
             currentWindowLength = currentWindow.length();
             currentArray        = currentWindow.getArray();
             currentArrayPos     = reader.getWindowOffset(newPos);
-        } else {
-            pos                 = -1;
-            currentWindowLength = 0;
-            currentArray        = null;
-            currentArrayPos     = 0;
         }
     }
 
@@ -183,6 +221,13 @@ public final class ReaderInputStream extends InputStream {
         if (currentArrayPos >= currentWindowLength) {
             setWindowForPosition(pos);
         }
+    }
+
+    private void setNoMoreData() {
+        pos                 = -1;
+        currentWindowLength = 0;
+        currentArray        = null;
+        currentArrayPos     = 0;
     }
 
 }
