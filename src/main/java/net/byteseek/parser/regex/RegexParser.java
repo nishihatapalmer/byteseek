@@ -304,10 +304,10 @@ public class RegexParser implements Parser<ParseTree> {
 	/*
 	 * Ideas for future...
 	 */
-	//FEATURE: syntax for set subtraction: ['a'-'z' -'aeiou'] 
+	//FEATURE: syntax for set subtraction: ['a'-'z' -'aeiou']
 	//FEATURE: syntax to specify <options> which apply to the parsing. 
 	//FEATURE: syntax for text encoding options for strings: <::UTF-16BE::>
-	//FEATURE: long syntax for common sets e.g. ascii, tab, space, etc. 
+	//FEATURE: long syntax for common sets e.g. ascii, tab, space, etc.
 	
 	/*
 	 * Private syntactic character constants
@@ -687,7 +687,7 @@ public class RegexParser implements Parser<ParseTree> {
 			}
 											
 			case ANY: {
-				return BaseNode.ANY_NODE;
+				return BaseNode.ANY_NODE; //TODO: is an inverted ANY byte an error?  Throw exception or ignore?
 			}
 			
 			case ALL_BITMASK: {
@@ -728,7 +728,7 @@ public class RegexParser implements Parser<ParseTree> {
 			default: return null;
 		}
 	}
-	
+
 	
 	private ParseTree parseShorthand(final StringParseReader expression,
 						              final boolean inverted) throws ParseException {
