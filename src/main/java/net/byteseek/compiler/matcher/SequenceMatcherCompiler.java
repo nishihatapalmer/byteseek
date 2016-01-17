@@ -252,11 +252,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(	matcherNode, sequenceList); break;
     		case SEQUENCE:          		addSequenceMatcher(					matcherNode, sequenceList); break;
     		case REPEAT:          			addRepeatedSequence(				matcherNode, sequenceList); break;
-
-            //TODO: should we really treat alternatives as sets?  Seems like stretching the syntax to the point of meaninglessness.
-            case SET: 						// drop through - sets and alternatives are both treated as sets.
-     		case ALTERNATIVES: 				addSetMatcher(						matcherNode, sequenceList); break;
-    		
+            case SET:                       addSetMatcher(						matcherNode, sequenceList); break;
     		default: throw new ParseException(getTypeErrorMessage(matcherNode));
     	}
     	return sequenceList;
