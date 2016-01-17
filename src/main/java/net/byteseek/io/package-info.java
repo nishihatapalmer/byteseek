@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2014, All rights reserved.
+ * Copyright Matt Palmer 2015-16, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -29,43 +29,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.io.reader.cache;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-public class AllWindowsCacheTest {
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    @Test
-    public void testGetWindow() throws Exception {
-        fail("not implemented yet");
-
-    }
-
-    @Test
-    public void testAddWindow() throws Exception {
-        fail("not implemented yet");
-
-    }
-
-    @Test
-    public void testClear() throws Exception {
-        fail("not implemented yet");
-
-    }
-
-    @Test
-    public void testToString() throws Exception {
-        fail("not implemented yet");
-
-    }
-
-
-}
+/**
+ * A package containing classes related to I/O.
+ * <p>
+ * The reader sub-package provides a random-access interface to a variety
+ * of input sources.  This divides input sources into windows which can be
+ * cached using a variety of caching strategies.
+ * <p>
+ * This makes it possible to efficiently match and search over the window
+ * byte arrays directly, only adopting a less efficient approach when the match
+ * or search crosses window boundaries.
+ */
+package net.byteseek.io;
