@@ -90,6 +90,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Cloneabl
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("ObjectEquality")
     @Override
     public boolean add(T object) {
         return map.put(object, object) == object;
@@ -108,6 +109,7 @@ public final class IdentityHashSet<T> extends AbstractSet<T> implements Cloneabl
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public boolean contains(final Object object) {
         return map.containsKey(object);

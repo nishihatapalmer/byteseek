@@ -136,6 +136,7 @@ import java.io.IOException;
      * @param window The Window which is leaving either the primary or secondary cache.
      * @param fromCache The WindowCache from which the Window is leaving.
      */
+    @SuppressWarnings("ObjectEquality")
     @Override
     public void windowFree(final Window window, final WindowCache fromCache) throws IOException {
         if (fromCache == primaryCache) {

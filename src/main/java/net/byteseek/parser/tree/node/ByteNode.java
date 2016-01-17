@@ -68,7 +68,7 @@ public final class ByteNode extends BaseNode {
   
   
   public static ByteNode valueOf(final byte value, final boolean inverted) {
-	  return inverted? new ByteNode(value, inverted) : valueOf(value);
+	  return inverted? new ByteNode(value, true) : valueOf(value);
   }
   
   

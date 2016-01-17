@@ -264,6 +264,7 @@ public class MutableState<T> implements State<T> {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("ObjectEquality")
 	@Override
 	public boolean isDeterministic() {
 		if (transitions.size() > 1) {
@@ -363,6 +364,7 @@ public class MutableState<T> implements State<T> {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("SuspiciousMethodCalls")
 	@Override
 	public boolean removeAssociation(final Object association) {
 		final boolean wasRemoved = associations.remove(association);

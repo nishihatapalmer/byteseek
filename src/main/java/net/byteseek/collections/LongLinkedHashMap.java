@@ -313,6 +313,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             return add(new Node<T>(item, key));
         }
 
+        @SuppressWarnings("ObjectEquality")
         public T remove(Node<T> node) {
             if (node != null) {
                 node.previous.next = node.next;
@@ -330,6 +331,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             return null;
         }
 
+        @SuppressWarnings("ObjectEquality")
         public void moveToHead(Node<T> node) {
             if (node != head) {
                 remove(node);

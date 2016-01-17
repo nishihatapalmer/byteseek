@@ -257,6 +257,7 @@ public final class DfaBuilder<T> {
 	 */
 	private void replaceReachableReferences(final State<T> oldState, final State<T> newState) {
 		final Action<T> replaceWithNewState = new Action<T>() {
+			@SuppressWarnings("ObjectEquality")
 			@Override
 			public boolean process(final Step<T> step) {
 				final State<T> stateToUpdate = step.currentState;
