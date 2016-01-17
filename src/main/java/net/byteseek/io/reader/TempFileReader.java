@@ -198,11 +198,10 @@ public final class TempFileReader extends FileReader {
 			super.close(); // ensure the inherited random access file is closed first.
 		} finally {
 			fileDeleted = file.delete();
-		}
-		//TODO: this looks wrong - if exception in super.close() this won't run?
-		if (!fileDeleted) {
-			throw new IOException("Could not delete the temporary file:"
-					+ file.getAbsolutePath());
+			if (!fileDeleted) {
+				throw new IOException("Could not delete the temporary file:"
+						+ file.getAbsolutePath());
+			}
 		}
 	}
 	
