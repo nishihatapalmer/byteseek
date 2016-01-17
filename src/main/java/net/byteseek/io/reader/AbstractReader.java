@@ -263,7 +263,7 @@ public abstract class AbstractReader implements WindowReader {
 			try {
 				final Window window = getWindow(position);
 				if (window != null) {
-					position += (long) windowSize; //TODO: should be window length, not default window size?
+					position += (long) window.length();
 					return window;
 				}
 			} catch (final IOException throwNoSuchElementExceptionInstead) {
