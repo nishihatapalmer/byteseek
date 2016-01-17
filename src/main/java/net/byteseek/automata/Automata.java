@@ -50,7 +50,7 @@ public interface Automata<T> extends DeepCopy {
 	/**
 	 * Returns the initial {@link State} of the Automata.
 	 * 
-	 * @return State<T> the initial State of the automata.
+	 * @return The initial State of the automata.
 	 */
 	public State<T> getInitialState();
 

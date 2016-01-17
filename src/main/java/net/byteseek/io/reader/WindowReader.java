@@ -38,7 +38,7 @@ import java.io.IOException;
 
 /**
  * An interface for random access to bytes from an underlying byte source.
- * <p/>
+ * <p>
  * The interface supports two usage models:
  * 
  * <ul>
@@ -73,11 +73,11 @@ public interface WindowReader extends Closeable, Iterable<Window> {
 
 	/**
 	 * Returns a {@link net.byteseek.io.reader.windows.Window} for the given position.
-	 * <p/>
+	 * <p>
 	 * The Window does not have to begin at the position specified; the Window
 	 * only needs to contain a byte at the position requested. Use
 	 * getWindowOffset() to determine the position of the byte in the Window.
-	 * <p/>
+	 * <p>
 	 * A Window must only be returned if there is a legitimate byte for the
 	 * position requested, otherwise null must be returned. Any position less
 	 * than zero, or greater than or equal to the length of the reader MUST

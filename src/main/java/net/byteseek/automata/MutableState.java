@@ -225,7 +225,7 @@ public class MutableState<T> implements State<T> {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public final void appendNextStates(final Collection<State<T>> states, final byte value) {
@@ -240,7 +240,7 @@ public class MutableState<T> implements State<T> {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public final State<T> getNextState(final byte value) {
@@ -395,7 +395,7 @@ public class MutableState<T> implements State<T> {
 
 	/**
 	 * This is a convenience method, providing the initial map to:
-	 * <CODE>deepCopy(Map<DeepCopy, DeepCopy> oldToNewObjects)</CODE>
+	 * deepCopy(Map&lt;DeepCopy, DeepCopy&gt;oldToNewObjects)
 	 *
 	 * @return MutableState a deep copy of this object.
 	 * @see #deepCopy(java.util.Map) 

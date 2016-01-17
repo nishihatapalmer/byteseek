@@ -168,7 +168,7 @@ public final class ChildrenNode extends BaseNode {
 	/**
 	 * 	{@inheritDoc}
 	 * 
-	 * @throws IndexOutOfBoundsException if the childIndex < 0 or >= the number of children.
+	 * @throws IndexOutOfBoundsException if the childIndex &lt; 0 or &ge; the number of children.
 	 */
 	@Override
 	public ParseTree getChild(final int childIndex) {

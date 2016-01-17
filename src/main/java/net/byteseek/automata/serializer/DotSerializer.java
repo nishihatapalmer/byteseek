@@ -62,7 +62,7 @@ public final class DotSerializer<T> implements AutomataSerializer<T, String> {
 	/**
 	 * Builds a text representation of the automata in Graphviz DOT format.
 	 * http://www.graphviz.org/
-	 * <p/>
+	 * <p>
 	 * Graphviz can then render the automata using a variety of graph layout
 	 * algorithms, outputting the render to many common formats.
 	 * 

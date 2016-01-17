@@ -219,13 +219,12 @@ public final class DfaBuilder<T> {
 	 * This function joins all the automata into a single automata, by adding
 	 * all the transitions and associations of all the states after the first in
 	 * to the first state in the collection, and ensuring that any references to
-	 * the other states are updated to point to the first state. <o> If any of
+	 * the other states are updated to point to the first state. If any of
 	 * the first states are final, then the state returned will also be final.
 	 * 
 	 * @param automata
 	 *            An iterable set of states to join.
-	 * @return State<T> A State linking to all the initial States in the
-	 *         collection.
+	 * @return A State linking to all the initial States in the collection.
 	 */
 	public State<T> join(final Iterable<State<T>> automata) {
 		final Iterator<State<T>> automataFirstStates = automata.iterator();

@@ -235,7 +235,7 @@ public final class SearchUtils {
 	 * 
 	 * @param <T>
 	 *            The type of object associated with a match in the Searcher.
-	 * @return An empty list of SearchResult<T>.
+	 * @return An empty list of SearchResult&lt;T&gt;.
 	 */
 	public static <T> List<SearchResult<T>> noResults() {
 		return Collections.emptyList();

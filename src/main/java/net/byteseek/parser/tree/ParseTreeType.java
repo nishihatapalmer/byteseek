@@ -242,7 +242,7 @@ public enum ParseTreeType {
 	 *  |__ SET
 	 *  |    |__ RANGE (0x41) - (0x61)
 	 *  |    |__ BYTE  (0x7f)
-	 *  |__ STRING ('£$%&')
+	 *  |__ STRING ('£$%&amp;')
 	 * </code></pre></blockquote><p><p>
 	 * A set with no children has no bytes it can match, unless inverted, in which case it is
      * functionally equivalent to the ANY type.
@@ -285,7 +285,7 @@ public enum ParseTreeType {
 	 *   SEQUENCE
 	 *   |&nbsp;&nbsp;|&nbsp;&nbsp;|&nbsp;&nbsp;|
 	 *   a b c d
-	 * </code></pre></blockquote><p><p>
+	 * </code></pre></blockquote><p>
 	 * A sequence can not be inverted, hence calls to {@link net.byteseek.parser.tree.ParseTree#isValueInverted()}
 	 * must always return false.
 	 * <p>
@@ -311,7 +311,7 @@ public enum ParseTreeType {
 	 * REPEAT
 	 *  |__ INTEGER (7)
 	 *  |__ BYTE (0x09)
-	 * </code></pre></blockquote><p><p>
+	 * </code></pre></blockquote><p>
 	 * <p>
 	 * A repeat node can not be inverted, hence calls to {@link net.byteseek.parser.tree.ParseTree#isValueInverted()}
 	 * must always return false.
@@ -334,7 +334,7 @@ public enum ParseTreeType {
 	 * REPEAT
 	 *  |__ INTEGER (7)
 	 *  |__ BYTE (0x09)
-	 * </code></pre></blockquote><p><p>
+	 * </code></pre></blockquote><p>
 	 * <p>
 	 * A REPEAT_MIN_TO_MANY node can not be inverted, hence calls to {@link net.byteseek.parser.tree.ParseTree#isValueInverted()}
 	 * must always return false.
@@ -360,7 +360,7 @@ public enum ParseTreeType {
 	 *  |__ INTEGER (7)
 	 *  |__ INTEGER (12)  
 	 *  |__ BYTE (0x09)
-	 * </code></pre></blockquote><p><p>
+	 * </code></pre></blockquote><p>
 	 * <p>
 	 * A REPEAT_MIN_TO_MAX node can not be inverted, hence calls to {@link net.byteseek.parser.tree.ParseTree#isValueInverted()}
 	 * must always return false.

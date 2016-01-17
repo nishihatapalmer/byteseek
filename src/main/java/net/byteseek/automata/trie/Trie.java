@@ -95,7 +95,7 @@ public interface Trie<T> extends Automata<T> {
     /**
      * Returns a collection of all the sequences in the Trie.
      * 
-     * @return Collection<T> A collection of all the sequences in the Trie.
+     * @return A collection of all the sequences in the Trie.
      */
     public Collection<T> getSequences();
     

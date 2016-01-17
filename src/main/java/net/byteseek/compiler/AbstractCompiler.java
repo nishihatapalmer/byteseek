@@ -44,10 +44,8 @@ import net.byteseek.utils.ArgUtils;
  * an object of type T using a {@link Parser} to generate an abstract syntax
  * tree of type S.
  * 
- * @param <T>
- *            The type of object to build.
- * @param <S>
- *            The syntax to compile from using a Parser<S>
+ * @param <T> The type of object to build.
+ * @param <S> The syntax to compile from using a Parser&lt;S&gt;
  * 
  * @author Matt Palmer
  */

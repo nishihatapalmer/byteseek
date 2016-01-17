@@ -56,9 +56,9 @@ import net.byteseek.utils.ArgUtils;
  * any sort of byte matcher - single bytes, inverted bytes, ranges, bitmasks or arbitrary sets
  * of bytes.  For example (using the byteseek regular expression syntax):
  * <p>
- * <p/><code>
+ * <p><code>
  * 'begin:' [00 ff] \d \d \d \s 'end.'
- * </code><p/>
+ * </code><p>
  * <p>
  * would match a string starting with 'begin:', followed by either byte 00 or byte ff, then three digits and
  * some whitespace, followed by 'end.'.

@@ -57,7 +57,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
     
     /**
      * Returns whether there is a match or not at the given position in a byte array.
-     * <p/>
+     * <p>
      * It does not perform any bounds checking, so an IndexOutOfBoundsException
      * can be thrown by this method if matching is outside the bounds of the array.
      * <p>

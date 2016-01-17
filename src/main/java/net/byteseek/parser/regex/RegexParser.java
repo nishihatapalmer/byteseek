@@ -54,121 +54,121 @@ import net.byteseek.parser.tree.node.StringNode;
  * <p>
  * The parser has no state, so it is entirely thread-safe.
  * <p>
-  * <strong>Syntax</strong><br/>
+  * <strong>Syntax</strong><br>
   * The syntax is the byteseek regular expression syntax, which is designed to make
   * byte searching easier.  Mostly this involves bytes being directly specified as hexadecimal,
   * with ASCII chars in quoted strings. Matchers for bitmasks (all or any bits) are also provided.  
   * <p>
-  * <strong>Comments</strong><br/>
+  * <strong>Comments</strong><br>
   * Byteseek regular expressions can have comments in them, using a <strong>#</strong> symbol.  
   * All text following the comment symbol is ignored until the next end of line character.
   * <p><blockquote><pre><code>
   * 01 ff c1 # Match byte sequence 0x01, 0xff, 0xc1
-  *	</code></pre></blockquote></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Whitespace</strong></br>
+  * <strong>Whitespace</strong><br>
   * All spaces, tabs, new lines and carriage returns separating syntax elements will
   * be ignored, unless they appear within a quoted string.
   * <p><blockquote><pre><code>
   * 01ffc1               # match bytes 01 ff c1
   * 01       ff       c1 # match bytes 01 ff c1
   * 01 ff 'some text' c1 # match bytes 01 ff, the string 'some text', then the byte c1 
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Bytes</strong></br>
+  * <strong>Bytes</strong><br>
   * Bytes are written as 2 digit hexadecimal numbers (any case allowed).  Spacing between
   * them doesn't matter, as whitespace is ignored.  However, you can't separate the digits of a hex
   * character with whitespace.
   * <p><blockquote><pre><code>
   * 00 FF 1a dE # match byte 00, ff, 1a, de
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * To specify that you mean the inverse of a byte value (all other byte values), prepend a <strong>^</strong>
   * symbol to the byte value (with no separating whitespace).
   * <p><blockquote><pre><code>
   * 00 ^FF 1a ^dE # match byte 00, any byte but ff, byte 1a and any byte but dE. 
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p></p>
   * <p>
-  * <strong>Any byte</strong></br>
+  * <strong>Any byte</strong>
   * Any byte can be matched using the full stop symbol (as in most regular expression languages).
   * <p><blockquote><pre><code>
   * .       # matches any byte
   * 01 . ff # matches 0x01, followed by any byte, then 0xff
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Ranges</strong></br>
+  * <strong>Ranges</strong>
   * Ranges of byte values can be specified using a hypen separator to specify a range:
   * <p><blockquote><pre><code>
   * 00-7f # all the ascii bytes
   * 30-39 # all the digits
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * If you want every byte except within a range, prepend the range with a <strong>^</strong> symbol:
   * <p><blockquote><pre><code>
   * ^00-7f # all the non-ascii bytes
   * ^30-39 # all the bytes which are not ASCII digits
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * Ranges can also be specified using single quoted, single character strings:
   * <p><blockquote><pre><code>
   * 'a'-'z'  # all the lowercase ASCII letters. 
   * ^'0'-'9' # all the bytes which are not ASCII digits
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Strings</strong></br>
+  * <strong>Strings</strong>
   * Text (ASCII only) is delimited using single quotes:
   * <p><blockquote><pre><code>
   * 'testing testing 123' # the string 'testing testing 123'
   * 01 '01'               # the byte 0x01, followed by the text '01'
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Case insensitive strings</strong></br>
+  * <strong>Case insensitive strings</strong><br>
   * Case-insensitive text can be written delimited with `back-ticks`:
   * <p><blockquote><pre><code>
   * `HtMl public`         # match the text HTML PUBLIC case insensitively.
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Bitmasks</strong></br>
+  * <strong>Bitmasks</strong><br>
   * If you want to match a bitmask, there are two methods of doing so in byteseek.
-  * You can match all the bits in a bitmask, specified by the <strong>&</strong> symbol,
+  * You can match all the bits in a bitmask, specified by the <strong>&amp;</strong> symbol,
   * or you can match any of the bits in a bitmask, specified by the <strong>~</strong> symbol.
   * Prepend the appropriate bitmask symbol to a two digit hex number:
   * <p><blockquote><pre><code>
-  * &7F   # match all these bits    01111111
-  * &0F   # match all these bits    00001111
-  * &81   # match all these bits    10000001
+  * &amp;7F   # match all these bits    01111111
+  * &amp;0F   # match all these bits    00001111
+  * &amp;81   # match all these bits    10000001
   * ~7F   # match any of these bits 01111111
   * ~0F   # match any of these bits 00001111
   * ~81   # match any of these bits 10000001
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * The intention of the all bits match is that, to match all the bits
   * in a bitmask, a byte ANDed with the bitmask should equal the bitmask.
   * This means that an 'all bits' bitmask of zero will match all bytes.
   * <p><blockquote><pre><code>
-  * byteValue & bitmask == bitmask
-  *        01 & 01      == 01      match
-  *        ff & 01      == 01      match
-  *        02 & 01      == 00      no match
-  *        01 & 00      == 00      match
-  *        ff & 00      == 00      match
-  *	</code></pre></blockquote></p></p>
+  * byteValue &amp; bitmask == bitmask
+  *        01 &amp; 01      == 01      match
+  *        ff &amp; 01      == 01      match
+  *        02 &amp; 01      == 00      no match
+  *        01 &amp; 00      == 00      match
+  *        ff &amp; 00      == 00      match
+  *	</code></pre></blockquote><p>
   * The intention of the any bits match is that, to match any of the bits
   * in a bitmask, a byte ANDed with the bitmask should not be zero.  Note that
   * the result could be negative, as bytes in Java are signed.  This means
   * that an 'any bits' bitmask of zero will match no bytes at all.
   * <p><blockquote><pre><code>
-  * byteValue & bitmask != 00 
-  *        01 & 01      == 01      match
-  *        ff & 01      == 01      match
-  *        02 & 01      == 0       no match
-  *        01 & 00      == 00      no match
-  *        ff & 00      == 00      no match
-  *	</code></pre></blockquote></p></p>
+  * byteValue &amp; bitmask != 00
+  *        01 &amp; 01      == 01      match
+  *        ff &amp; 01      == 01      match
+  *        02 &amp; 01      == 0       no match
+  *        01 &amp; 00      == 00      no match
+  *        ff &amp; 00      == 00      no match
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Sets</strong></br>
+  * <strong>Sets</strong><br>
   * Sets of bytes can be specified using square brackets.  Sets can contain bytes, ranges, strings,
   * case insensitive strings, bitmasks and other sets.
   * <p><blockquote><pre><code>
   * [01 02 03]           # match the set of bytes 0x01, 0x02 or 0x03     
   * 'version' [01 02 03] # match the string 'version' followed by any of the bytes 0x01, 0x02 or 0x03. 
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * Sets can contain strings, which specify that those ASCII bytes are members of the set too, not a 
   * sequence of characters.  Case insensitive strings just specify all the bytes which could match
   * case insensitively.
@@ -176,36 +176,36 @@ import net.byteseek.parser.tree.node.StringNode;
   * ['0123456789']       # the set of all the digit bytes.
   * [ff '0123456789' 00] # the set of all the digit bytes and the bytes 0x00 and 0xff
   * [`HTML`]             # The set of bytes which case insensitively match HTML.
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * If you want to specify the inverse set, prepend the set with a <strong>^</strong> symbol:
   * <p><blockquote><pre><code>
   * ^['0'-'9']            # anything but the set of all the digit bytes.
   * ^[ff '0123456789' 00] # anything but the set of all the digit bytes and the bytes 0x00 and 0xff
   * ^[^'0'-'9']           # an inefficient (double negative) way of specifying all the digit bytes.
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p></p>
   * <p>
-  * <strong>Sub expressions</strong></br>
+  * <strong>Sub expressions</strong><br>
   * If you need to specify that something only applies to part of the whole expression,
   * then you can group subsequences into sub expressions using round brackets.
   * Sub expressions can also be nested within each other.  
   * <p><blockquote><pre><code>
   * 01 02 (03 04) 05       # this sub expression does nothing - the round brackets are superfluous
   * (01 02 (03 (04)) 05)   # these sub expressions also do nothing.
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * The above examples show sub expressions which are valid syntactically, but they don't do anything.  
   * The round brackets are entirely unnecessary.  Sub expressions become useful when you need to quantify
   * a part of an expression, for example, to say it repeats between 5 and 10 times.    
   * They are also needed when you want to specify a list of alternative sequences within an expression.   
   * These more interesting uses of sub expressions will become clear in the next sections.
   * <p>
-  * <strong>Alternatives</strong></br>
+  * <strong>Alternatives</strong><br>
   * Alternatives are written separated by a pipe character:
   * <p><blockquote><pre><code>
   * 'this' | 'that' | 00 FF 1a     # match 'this', 'that', or 0x00 0xFF 0x1a
   * 01 02 ('one'|'two'|'three') 03 # match the sequence 1, 2 followed by ('one', 'two' or 'three'), ending with 3
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Optional elements</strong></br>
+  * <strong>Optional elements</strong><br>
   * To specify that an element is optional, append a <strong>?</strong> symbol to the element.
   * If you want an entire expression to be optional, enclose it with round brackets and append
   * the question mark to it.
@@ -213,9 +213,9 @@ import net.byteseek.parser.tree.node.StringNode;
   * de?            # optional byte 0xde
   * 'extra fries'? # optional 'extra fries'
   * (01 02 03)?    # optional sequence of bytes (0x01 0x02 0x03)
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Zero to many elements</strong></br>
+  * <strong>Zero to many elements</strong><br>
   * To specify that an element can be repeated from zero to many times, append a <strong>*</strong> symbol
   * to the element.  If you want an entire expression to be repeated zero to many times, enclose it with
   * round brackets and append the * to it.
@@ -223,9 +223,9 @@ import net.byteseek.parser.tree.node.StringNode;
   * 10*                               # repeat byte 0x10 from zero to many times.
   * 'stuff'*                          # repeat 'stuff' zero to many times.
   * ('bytes' 00 01 02 'counting')*    # repeat entire expression in brackets from zero to many times.
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>One to many elements</strong></br>
+  * <strong>One to many elements</strong><br>
   * To specify that an element can be repeated from one to many times, append a <strong>+</strong> symbol
   * to the element.  If you want an entire expression to be repeated one to many times, enclose it with
   * round brackets and append the + to it.
@@ -233,9 +233,9 @@ import net.byteseek.parser.tree.node.StringNode;
   * 10+                               # repeat byte 0x10 from one to many times.
   * 'stuff'+                          # repeat 'stuff' one to many times.
   * ('bytes' 00 01 02 'counting')+    # repeat entire expression in brackets from one to many times.
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p> 
-  * <strong>Repeat exactly</strong></br>
+  * <strong>Repeat exactly</strong><br>
   * To specify that an element should be repeated an exact number of times, append a positive integer 
   * enclosed in curly brackets to the end of the element, e.g. <strong>ff{4}</strong>.
   * If you want to repeat an entire expression, enclose the expression in round brackets
@@ -244,9 +244,9 @@ import net.byteseek.parser.tree.node.StringNode;
   * 10{40}                              # repeat byte 0x10 forty times.
   * 'stuff'{3}                          # repeat 'stuff' three times.
   * ('bytes' 00 01 02 'counting'){9}    # repeat entire expression in brackets nine times.
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Repeat min to max times</strong></br>
+  * <strong>Repeat min to max times</strong><br>
   * To specify that an element can be repeated between a minimum and maximum number, append 
   * two positive integers separated by a comma, enclosed in curly brackets to the end of the
   * element , e.g. <strong>ff{2,6}</strong>.  If you want to specify an entire expression,
@@ -256,9 +256,9 @@ import net.byteseek.parser.tree.node.StringNode;
   * 'stuff'{3,6}                        # repeat 'stuff' between three and six times
   * ('bytes' 00 01 02 'counting'){1,3}  # repeat entire expression in brackets between 1 and 3 times.
   * ff{0,1}                             # repeat byte 0xff either zero or once - the same as <strong>ff?</strong> 
-  *	</code></pre></blockquote></p></p>
+  *	</code></pre></blockquote><p>
   * <p>
-  * <strong>Repeat min to many times</strong></br>
+  * <strong>Repeat min to many times</strong><br>
   * To specify that an element repeats at least a minimum number of times, but can repeat
   * infinitely afterwards, append a positive integer and star separated by a comma, and enclosed
   * in curly brackets to the end of the element, e.g. <strong>ff{5,*}</strong>.
@@ -270,9 +270,9 @@ import net.byteseek.parser.tree.node.StringNode;
   * ('bytes' 00 01 02 'counting'){1,*}  # repeat entire expression in brackets between 1 and infinite times.
   * ff{0,*}                             # repeat byte 0xff from zero to infinite times - the same as <strong>ff*</strong>	
   * ff{1,*}                             # repeat byte 0xff from one to infinite times - the same as <strong>ff+</strong>
-  *</code></pre></blockquote></p></p>
+  *</code></pre></blockquote><p>
   * <p>
-  * <strong>Shorthands</strong></br>
+  * <strong>Shorthands</strong><br>
   * There are many common bytes and sets of bytes which appear regularly in regular expressions.
   * Most regular expression languages support shorthands, which give you a memorable and often 
   * shorter way to specify them.  The shorthands supported by this parser are listed below.
@@ -295,7 +295,7 @@ import net.byteseek.parser.tree.node.StringNode;
   * \U   # not uppercase ascii chars   ^'A'-'Z'
   * \l   # lowercase ascii characters   'a'-'z'
   * \L   # not lowercase ascii chars   ^'a'-'z'  
-  *	</code></pre></blockquote></p></p> 
+  *	</code></pre></blockquote><p></p> 
   *
   * @author Matt Palmer
   */

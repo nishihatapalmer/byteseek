@@ -61,11 +61,11 @@ import java.util.List;
  * 
  * WuManberSearcher implements a variation of the classic multi-pattern
  * search algorithm invented by Wu and Manber.
- * <p/>
+ * <p>
  * The Wu Manber multi-pattern search aims to locate a large number of
  * patterns, while remaining sub-linear, shifting over bytes which can't
  * match any of the patterns.
- * <p/>
+ * <p>
  * Like Boyer-Moore-Horspool, it calculates a safe shift to make if there
  * is no match at the current position, which should be greater than one in
  * most cases - thus avoiding reading most of the bytes.  However, if shifts
@@ -73,7 +73,7 @@ import java.util.List;
  * chances are that most shifts will tend towards one, losing the advantage
  * of this sort of searching - and probably slower than just naively searching
  * one byte at a time, due to the additional overhead of finding the shifts.
- * </p>
+ * <p>
  * The Wu Manber search gets around this limitation by matching on more than
  * one byte at a time.  It looks at blocks of bytes (effectively extending the 
  * available alphabet), and calculates a hash code for them.  It uses this hash
@@ -84,18 +84,18 @@ import java.util.List;
  * will probably have.  However, we can tune the table size to fit our requirements - 
  * the table does not have to be as big as the possible permutations of a block,
  * and we will still get good performance on average.
- *  * </p>
+ * <p>
  * If a block size of one is chosen, this algorithm is broadly the same as running
  * the BoyerMooreHorspoolSearcher (using only one pattern, of course).  With multiple
  * patterns, and a block size of one, it is equivalent to the SetHorspoolSearcher 
  * algorithm (not currently implemented). 
- * <p/>
+ * <p>
  * There seems little point in having a block size greater than one if you are only 
  * searching a single pattern, as a higher block size is intended to mitigate the 
  * effects of the ever reducing safe shift when multiple patterns map to the same
  * single byte block.  With only one pattern (or even just a few patterns)
  * no additional benefit is gained by extending the alphabet into hash blocks.
- * <p/>
+ * <p>
  * This version of Wu Manber is only a partial implementation of the algorithm
  * described in the original paper, which specifies a particular method of verifying
  * whether a sequence has actually matched.  Byteseek allows any form of 

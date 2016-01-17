@@ -41,7 +41,7 @@ import net.byteseek.matcher.Matcher;
  * An interface for matchers which match Automata, extending the Matcher
  * interface with methods that return a collection of {@link MatchResult}s (or
  * an empty collection if no objects matched at that position). It also
- * implements Iterable<MatchResult<T>> to provide a way to successively return
+ * implements Iterable&lt;MatchResult&lt;T&gt;&gt; to provide a way to successively return
  * matches for a position.
  * 
  * @param <T>  The type of object associated with matching states in the Automata.
@@ -57,9 +57,9 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * This method will only return the first match it finds. An automata can
 	 * match more than one set of objects, which may exist in later States of the 
 	 * Automata (but at the same fundamental position in the WindowReader). To match the next
-	 * match in the Automata, call {@link #nextMatch(WindowReader, MatchResult).
+	 * match in the Automata, call {@link #nextMatch(WindowReader, MatchResult)}.
 	 * To match all objects the automata can match at the given position, use the method
-	 * {@link #allMatches(WindowReader, long).
+	 * {@link #allMatches(WindowReader, long)}.
 	 * 
 	 * @param reader
 	 *            The {@link WindowReader} to match in.
@@ -79,7 +79,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * match more than one set of objects, which may exist in later States of the 
 	 * Automata (but at the same fundamental position in the WindowReader). 
 	 * To match all objects the automata can match at the given position, use the method
-	 * {@link #allMatches(WindowReader, long)
+	 * {@link #allMatches(WindowReader, long)}
 	 *
 	 * @param reader
 	 *            The {@link WindowReader} to match in.
@@ -124,7 +124,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * match more than one set of objects, which may exist in later States of the 
 	 * Automata (but at the same fundamental position in the WindowReader). 
 	 * To match all objects the automata can match at the given position, use the method
-	 * {@link #allMatches(byte[], int)
+	 * {@link #allMatches(byte[], int)}
 	 * 
 	 * @param bytes
 	 *            The byte array to match in.
@@ -141,7 +141,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * match more than one set of objects, which may exist in later States of the 
 	 * Automata (but at the same fundamental position in the WindowReader). 
 	 * To match all objects the automata can match at the given position, use the method
-	 * {@link #allMatches(byte[], int)
+	 * {@link #allMatches(byte[], int)}
 	 
 	 * @param bytes
 	 *            The byte array to match in.

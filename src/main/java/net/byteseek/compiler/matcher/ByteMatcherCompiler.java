@@ -83,7 +83,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 
 	/**
 	 * Compiles a {@link ByteMatcher} from the expression (assuming the syntax
-	 * provided results in a match for a single byte), using a {@link ByteMatcherCompiler}.
+	 * provided results in a match for a single byte), using a ByteMatcherCompiler.
 	 * 
 	 * @param expression The regular expression syntax
 	 * @return ByteMatcher A ByteMatcher which matches a byte according to the expression.

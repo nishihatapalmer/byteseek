@@ -351,7 +351,7 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
 
 
     /**
-     * A class implementing ObjectFactory<SearchInfo>, which calculates the shift,
+     * A class implementing ObjectFactory&lt;SearchInfo&gt;, which calculates the shift,
      * the final shift and matcher to use when searching forwards with the
      * Tuned Wu-Manber search algorithm.
      */
@@ -452,7 +452,7 @@ public abstract class AbstractWuManberTunedSearcher extends AbstractMultiSequenc
 
 
     /**
-     * A class implementing ObjectFactory<SearchInfo>, which calculates the shift,
+     * A class implementing ObjectFactory&lt;SearchInfo&gt;, which calculates the shift,
      * the final shift and matcher to use when searching backwards with the
      * Tuned Wu-Manber search algorithm.
      */

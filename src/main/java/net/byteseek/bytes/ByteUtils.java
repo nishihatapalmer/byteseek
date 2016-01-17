@@ -110,7 +110,7 @@ public final class ByteUtils {
      * in a given bitmask.
      * <p>
      * Note that if the bitmask is zero, then this will match all bytes, since
-     * the matching algorithm is byte & bitmask == bitmask.
+     * the matching algorithm is byte &amp; bitmask == bitmask.
      * A bitmask of zero will always produce zero bits when ANDed with any byte.
      *
      * @param bitmask The bitmask.
@@ -126,7 +126,7 @@ public final class ByteUtils {
      * in a given bitmask.
      * <p>
      * Note that if the bitmask is zero, then this will never match any byte, since
-     * the matching algorithm is byte & bitmask != 0.
+     * the matching algorithm is byte &amp; bitmask != 0.
      * A bitmask of zero will always produce zero bits when ANDed with any byte, and
      * this can never be anything other than zero - which means no match.
      * 
@@ -656,7 +656,7 @@ public final class ByteUtils {
      * to specify a different set, call buildInvertedSet instead.
      *  
      * @param bytes A set of bytes.
-     * @return Set<Byte> A set of all other bytes.
+     * @return A set of all other bytes.
      * @throws IllegalArgumentException if the set of bytes passed in is null.
      */
     public static Set<Byte> invertedSet(final Set<Byte> bytes) {
@@ -703,7 +703,7 @@ public final class ByteUtils {
      * for the value passed in.  
      * 
      * @param value The value which should not appear in the set of bytes.
-     * @return Set<Byte> A set of all other bytes.
+     * @return A set of all other bytes.
      */
     public static Set<Byte> invertedSet(final byte value) {
         final Set<Byte> inverted = new HashSet<Byte>(342);

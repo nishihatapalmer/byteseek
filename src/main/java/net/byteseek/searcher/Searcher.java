@@ -223,7 +223,7 @@ public interface Searcher<T> {
 	 * searchers may defer calculating all the necessary parameters until the
 	 * first search is made. Calling this function ensures that all preparation
 	 * is complete before the first search forwards.
-	 * <p/>
+	 * <p>
 	 * Note: some implemented searchers use single-check lazy initialisation
 	 * with volatile fields. This means that if multiple threads attempt to
 	 * search with such a searcher simultaneously without it being prepared
@@ -231,18 +231,18 @@ public interface Searcher<T> {
 	 * (maximum as many times as the number of threads using that searcher
 	 * simultaneously). This will not produce an error, but would result in
 	 * unnecessary calculation.
-	 * <p/>
+	 * <p>
 	 * However (assuming multiple threads are involved), it may still be more
 	 * efficient to allow the occasional recalculation on first search, when
 	 * amortised against the cost of fully initialising a large number of search
 	 * objects before they are known to be needed. If only a few search objects
 	 * are used, then there may be no disadvantage to fully preparing all of
 	 * them ahead of time.
-	 * <p/>
+	 * <p>
 	 * Also note that this function is not itself guaranteed to be thread-safe,
 	 * in that calling it from multiple threads may result in multiple
 	 * initialisations (but should not produce an error).
-	 * <p/>
+	 * <p>
 	 * Calling this function only changes when (and possibly how many) final
 	 * calculations of search parameters are made. If this function is called,
 	 * it should be made from a single thread before allowing multiple threads
@@ -255,7 +255,7 @@ public interface Searcher<T> {
 	 * searchers may defer calculating all the necessary parameters until the
 	 * first search is made. Calling this function ensures that all preparation
 	 * is complete before the first search backwards.
-	 * <p/>
+	 * <p>
 	 * Note: some implemented searchers use single-check lazy initialisation
 	 * with volatile fields. This means that if multiple threads attempt to
 	 * search with such a searcher simultaneously without it being prepared
@@ -263,18 +263,18 @@ public interface Searcher<T> {
 	 * (maximum as many times as the number of threads using that searcher
 	 * simultaneously). This will not produce an error, but would result in
 	 * unnecessary calculation.
-	 * <p/>
+	 * <p>
 	 * However (assuming multiple threads are involved), it may still be more
 	 * efficient to allow the occasional recalculation on first search, when
 	 * amortised against the cost of fully initialising a large number of search
 	 * objects before they are known to be needed. If only a few search objects
 	 * are used, then there may be no disadvantage to fully preparing all of
 	 * them ahead of time.
-	 * <p/>
+	 * <p>
 	 * Also note that this function is not itself guaranteed to be thread-safe,
 	 * in that calling it from multiple threads may result in multiple
 	 * initialisations (but should not produce an error).
-	 * <p/>
+	 * <p>
 	 * Calling this function only changes when (and possibly how many) final
 	 * calculations of search parameters are made. If this function is called,
 	 * it should be made from a single thread before allowing multiple threads

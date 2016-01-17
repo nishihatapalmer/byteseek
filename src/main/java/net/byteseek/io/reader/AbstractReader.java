@@ -45,7 +45,7 @@ import net.byteseek.utils.ArgUtils;
 
 /**
  * An abstract implementation of the WindowReader interface, which also implements
- * Iterable<Window> to allow iterating over the Windows of a WindowReader.
+ * Iterable&lt;WindowReader&gt; to allow iterating over the Windows of a WindowReader.
  * <p>
  * It provides common Window and cache management services using a fixed Window
  * size, and a standard Window iterator

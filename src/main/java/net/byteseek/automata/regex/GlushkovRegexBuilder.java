@@ -125,9 +125,9 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * and joins them together with a transition on the transition bytes
 	 * defined by the source type.
 	 *
-	 * <p/><code>
-	 *   b      (0) --b--> [1]
-	 * </code><p/>
+	 * <p><code>
+	 *   b      (0) --b--&gt; [1]
+	 * </code><p>
 	 *
 	 * @param source The thing to transition on.
 	 * @param inverted Whether to match all other bytes, or just the one passed in.
@@ -147,10 +147,10 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * Builds a single automata out of a list of automata,
 	 * by turning them into a sequence from the start to the end of the list.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *   XYZ    (0) ----> (1) ----> (2) ----> [3]
 	 *                X         Y         Z
-	 * }</pre><p/>
+	 * }</pre><p>
 	 * 
 	 * To create an automata joining a sequence of automata together,
 	 * we must transition each final state on the left to its neighbour states on the right.
@@ -220,7 +220,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * each of the alternatives with each other.  In practice, retain one state and
 	 * add the transitions of the other initial states to it.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 * 
 	 * X|Y|Z    (0) ----> [1]
 	 *           |    X
@@ -228,7 +228,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *           |    Y
 	 *            ------> [3]
 	 *                Z
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * The initial state is final if any of the alternate initial states were final.
 	 *
@@ -255,7 +255,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * This is done by making the initial state final,
 	 * allowing for an instant match to cover the zero case.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *  X*     [0] ----> [1] __
 	 *              X    ^    |                
 	 *                   |____|                     
@@ -265,7 +265,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *              X    ^     Y        |
 	 *                   |______________|
 	 *                         X
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * Additionally, all of the final states loop back to the states that
 	 * the initial state points to, allowing for as many repetitions as needed.
@@ -291,7 +291,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * This is done by making all the final states loop back to the states
 	 * that the initial state points to, allowing for as many repetitions as needed.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *   X+     [0) ----> [1] __    
 	 *                X    ^    |      
 	 *                     |____|                     
@@ -301,7 +301,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *              X    ^     Y       |
 	 *                   |_____________|
 	 *                         X
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * It is the same as zeroToManyStates, except that the initial state is not made final.
 	 *
@@ -322,10 +322,10 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * Makes the automata passed in optional.
 	 * It does this by making the initial state final.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *     X?    [0] ----> [1]
 	 *                 X
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * @param optional THe automata to make optional.
 	 * @return An Automata which is optional.
@@ -342,13 +342,13 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * times, then it builds a zero-to-many automata. Finally, it joins both automata
 	 * together as a sequence.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *
 	 * X{2-*}  (0) ----> (1) ----> [2] ----> [3] __
 	 *               X         X         X    ^    |
 	 *                                        |____|
 	 *                                           X
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * @param minRepeat The minimum number of times to repeat.
 	 * @param repeatedAutomata The automata to repeat.
@@ -377,12 +377,12 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * joins both automata together as a sequence.  If the minimum number of repeats
 	 * is zero, it just builds up to the maximum number of repeated optional states.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *
 	 * X{2-4}  (0) ----> (1) ----> [2] ----> [3] ----> [4]
 	 *               X         X         X         X
 	 *                      
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * @param minRepeat The minimum number of times to repeat.
 	 * @param maxRepeat The maximum number of times to repeat.
@@ -415,12 +415,12 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * It achieves this by making a deep copy of the automata for each repeat,
 	 * which is made optional, and joining them together as a sequence.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *
 	 * (X){3}   [0] ----> [1] ----> [2] ----> [3]
 	 *                X         X         X
 	 * 
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * @param numberOptional the number of optional automata to repeat.
 	 * @param optional The automata to repeat.
@@ -442,12 +442,12 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * It achieves this by making a deep copy of the automata for each repeat,
 	 * and joining them together as a sequence.
 	 *
-	 * <p/><pre>{@code
+	 * <p><pre>{@code
 	 *
 	 * X{3}   (0) ----> (1) ----> (2) ----> [3]
 	 *              X         X         X
 	 *
-	 * }</pre><p/>
+	 * }</pre><p>
 	 *
 	 * @param repeatNumber The number of times to repeat the automata.
 	 * @param repeatedAutomata The automata to repeat.

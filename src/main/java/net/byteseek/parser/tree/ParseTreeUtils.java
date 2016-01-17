@@ -184,7 +184,7 @@ public final class ParseTreeUtils {
 	
 	
 	/**
-	 * Adds the bytes defined in a range ParseTree node to a Set<Byte> passed in.
+	 * Adds the bytes defined in a range ParseTree node to a Set of Bytes passed in.
 	 * 
 	 * @param range The range node passed in.
 	 * @param byteSet The set of bytes to add the byte range to.
@@ -279,6 +279,7 @@ public final class ParseTreeUtils {
 	 * as if it is an ANY_BITMASK.
  	 *
 	 * @param anyBitmask The any bitmask node.
+	 * @param bytes The collection of bytes to add the values to.
 	 * @throws ParseException If there is no bitmask byte value or another problem occurs
 	 *                         parsing the value.
 	 * @throws IllegalArgumentException if the anyBitmask or bytes passed in are null.
@@ -316,6 +317,7 @@ public final class ParseTreeUtils {
 	 * ensuring case-insensitivity.
 	 * 
 	 * @param caseInsensitive The text node to get a set of case insensitive byte values for.
+	 * @param bytes The collection of bytes to add the values to.
 	 * @throws ParseException If the ISO 8859-1 encoding is not supported.
 	 * @throws IllegalArgumentException if the string parsetree or the collection of bytes are null.
 	 */
@@ -328,7 +330,7 @@ public final class ParseTreeUtils {
 	
 	/**
 	 * Calculates the set of Bytes specified by the parent set node passed in.
-	 * Sets can contain bytes, strings (case sensitive & insensitive),
+	 * Sets can contain bytes, strings (case sensitive &amp; insensitive),
 	 * ranges, other sets nested inside them (both normal and inverted) and
 	 * bitmasks.
 	 * <p>
@@ -400,7 +402,7 @@ public final class ParseTreeUtils {
 	
 	/**
 	 * Calculates the value of a set given the parent set node (or inverted set
-	 * node).  Sets can contain bytes, strings (case sensitive & insensitive),
+	 * node).  Sets can contain bytes, strings (case sensitive &amp; insensitive),
 	 * ranges, other sets nested inside them (both normal and inverted) and
 	 * bitmasks.
 	 * <p>
