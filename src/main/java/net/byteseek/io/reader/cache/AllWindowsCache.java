@@ -38,6 +38,10 @@ import net.byteseek.io.reader.windows.Window;
 
 /**
  * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.windows.Window} objects.
+ * <p>
+ * Note that if SoftWindows are used rather than HardWindows, then the JRE can reclaim memory under
+ * low memory conditions, while the cache will retain the window metadata (and the SoftWindow can reload
+ * itself if required).
  * 
  * @author Matt Palmer
  */
