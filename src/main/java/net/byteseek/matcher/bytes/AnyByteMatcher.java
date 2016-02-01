@@ -87,7 +87,7 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        return prettyPrint ? " . " : ".";
+        return ".";
     }
 
 

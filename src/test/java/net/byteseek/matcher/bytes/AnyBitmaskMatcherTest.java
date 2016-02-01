@@ -1,6 +1,32 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
+ * This code is licensed under a standard 3-clause BSD license:
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package net.byteseek.matcher.bytes;
@@ -17,12 +43,12 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class BitMaskAnyBitsMatcherTest {
+public class AnyBitmaskMatcherTest {
 
     /**
      * 
      */
-    public BitMaskAnyBitsMatcherTest() {
+    public AnyBitmaskMatcherTest() {
     }
 
     /**
@@ -69,12 +95,49 @@ public class BitMaskAnyBitsMatcherTest {
         validateNoMatchInRange(matcher, 0, 127);
 
         SimpleTimer.timeMatcher("Bitmask Any 128", matcher);
-        
+
         // test all bit masks using different methods.
         for (int mask = 0; mask < 256; mask++) {
             matcher = new AnyBitmaskMatcher(b(mask));
             validateMatchBitsSet(matcher, b(mask));
             validateNoMatchBitsNotSet(matcher, b(mask));
+        }
+    }
+
+
+    /**
+     * Test of matches method, of class AnyBitmaskMatcher.
+     */
+    @Test
+    public void testMatchesInvertedByte() {
+        AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(255), true);
+        validateMatchInRange(matcher, 0, 0);
+        validateNoMatchInRange(matcher, 1, 255);
+
+        SimpleTimer.timeMatcher("Bitmask Any 255", matcher);
+
+        matcher = new AnyBitmaskMatcher(b(0), true);
+        validateMatchInRange(matcher, 0, 255);
+
+        SimpleTimer.timeMatcher("Bitmask Any 0", matcher);
+
+        matcher = new AnyBitmaskMatcher(b(254), true);
+        validateMatchInRange(matcher,  0, 1);
+        validateNoMatchInRange(matcher, 2, 255);
+
+        SimpleTimer.timeMatcher("Bitmask Any 254", matcher);
+
+        matcher = new AnyBitmaskMatcher(b(128), true);
+        validateMatchInRange(matcher, 0, 127);
+        validateNoMatchInRange(matcher, 128, 255);
+
+        SimpleTimer.timeMatcher("Bitmask Any 128", matcher);
+
+        // test all bit masks using different methods.
+        for (int mask = 0; mask < 256; mask++) {
+            matcher = new AnyBitmaskMatcher(b(mask), true);
+            validateInvertedMatchBitsSet(matcher, b(mask));
+            validateInvertedNoMatchBitsNotSet(matcher, b(mask));
         }
     }
 
@@ -105,6 +168,17 @@ public class BitMaskAnyBitsMatcherTest {
         }
     }
 
+    private void validateInvertedMatchBitsSet(AnyBitmaskMatcher matcher, int bitmask) {
+        if (bitmask > 0) { // This test won't work for a zero bitmask.
+            String description = String.format("0x%02x", bitmask);
+            for (int count = 0; count < 256; count++) {
+                String d2 = String.format("%s(%d)", description, count);
+                byte value = (byte) (count | bitmask);
+                assertEquals(d2, false, matcher.matches(value));
+            }
+        }
+    }
+
     private void validateNoMatchBitsNotSet(AnyBitmaskMatcher matcher, int bitmask) {
         String description = String.format("0x%02x", bitmask);
         final int invertedMask = bitmask ^ 0xFF;
@@ -112,6 +186,16 @@ public class BitMaskAnyBitsMatcherTest {
             String d2 = String.format("%s(%d)", description, count);
             byte value = (byte) (count & invertedMask);
             assertEquals(d2, false, matcher.matches(value));
+        }
+    }
+
+    private void validateInvertedNoMatchBitsNotSet(AnyBitmaskMatcher matcher, int bitmask) {
+        String description = String.format("0x%02x", bitmask);
+        final int invertedMask = bitmask ^ 0xFF;
+        for (int count = 0; count < 256; count++) { // zero byte matches everything.
+            String d2 = String.format("%s(%d)", description, count);
+            byte value = (byte) (count & invertedMask);
+            assertEquals(d2, true, matcher.matches(value));
         }
     }
 
@@ -125,6 +209,12 @@ public class BitMaskAnyBitsMatcherTest {
             AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(count));
             String expected = String.format("~%02x", count);
             assertEquals(expected, matcher.toRegularExpression(false));
+            assertEquals(expected, matcher.toRegularExpression(true));
+
+            matcher = new AnyBitmaskMatcher(b(count), true);
+            expected = String.format("^~%02x", count);
+            assertEquals(expected, matcher.toRegularExpression(false));
+            assertEquals(expected, matcher.toRegularExpression(true));
         }
     }
 

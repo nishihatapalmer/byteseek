@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -112,9 +112,8 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final String wrapper = inverted? "[^ &%02x]" : "&%02x";
-        final String regEx = String.format(wrapper, 0xFF & mBitMaskValue);
-        return prettyPrint ? ' ' + regEx + ' ' : regEx;
+        final String wrapper = inverted? "^&%02x" : "&%02x";
+        return String.format(wrapper, 0xFF & mBitMaskValue);
     }
 
 
