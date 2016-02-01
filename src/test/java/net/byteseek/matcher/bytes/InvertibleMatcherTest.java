@@ -91,19 +91,10 @@ public class InvertibleMatcherTest {
 	 */
 	public static class InvertibleMatcherImpl extends InvertibleMatcher {
 
-		/**
-		 * 
-		 * @param inverted
-		 */
 		public InvertibleMatcherImpl(boolean inverted) {
 			super(inverted);
 		}
 
-		/**
-		 * 
-		 * @param theByte
-		 * @return
-		 */
 		@Override
 		public boolean matches(byte theByte) {
 			throw new UnsupportedOperationException("Not supported yet.");
@@ -134,12 +125,6 @@ public class InvertibleMatcherTest {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
-		/**
-		 * 
-		 * @param reader
-		 * @param matchPosition
-		 * @return
-		 */
 		public boolean matchesNoBoundsCheck(WindowReader reader, long matchPosition) {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
@@ -151,7 +136,6 @@ public class InvertibleMatcherTest {
 
 		@Override
 		public Iterator<ByteMatcher> iterator() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	}
