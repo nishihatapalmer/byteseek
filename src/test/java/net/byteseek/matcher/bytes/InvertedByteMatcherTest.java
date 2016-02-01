@@ -71,6 +71,7 @@ public class InvertedByteMatcherTest {
             
             final String regularExpression = String.format("^%02x", theByte);
             assertEquals("regular expression", regularExpression, matcher.toRegularExpression(false));
+            assertEquals("regular expression", regularExpression, matcher.toRegularExpression(true));
             for (int x = 0; x < 256; x++) {
                 if (x != i) {
                     final byte match = (byte) x;
