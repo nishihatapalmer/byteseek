@@ -48,14 +48,14 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class ByteSetMatcherTest {
+public class SetMatcherTests {
     
     Random randomGenerator = new Random();
     
     /**
      * 
      */
-    public ByteSetMatcherTest() {
+    public SetMatcherTests() {
     }
 
     
@@ -111,19 +111,33 @@ public class ByteSetMatcherTest {
             testSet(bytesToTest);
         }
     }
-    
 
-    private void writeTestDefinition(int testnum, int totalTests, Set<Byte> bytesToTest) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.format("Test %d of %d\t{", testnum, totalTests));
-        for (Byte b : bytesToTest) {
-            builder.append(String.format("%02x ", b));
+    @Test
+    public void testRegularExpressions() {
+        int numberOfTests = 5;
+        for (int testnum = 0; testnum <= numberOfTests; testnum++) {
+            Set<Byte> bytesToTest = buildRandomByteSet();
+            writeTestDefinition(testnum, numberOfTests, bytesToTest);
+            testRegularExpression(bytesToTest);
         }
-        builder.append("}");
-        System.out.println(builder.toString());
     }
-    
-    
+
+    private void testRegularExpression(Set<Byte> bytesToTest) {
+
+        SetBitsetMatcher matcherNotInverted = new SetBitsetMatcher(bytesToTest, InvertibleMatcher.NOT_INVERTED);
+        testExpression("BitSetMatcher", matcherNotInverted, bytesToTest);
+
+        SetBitsetMatcher matcherInverted = new SetBitsetMatcher(bytesToTest, InvertibleMatcher.INVERTED);
+        testExpression("BitSetMatcher", matcherInverted, bytesToTest);
+
+        SetBinarySearchMatcher matcher2NotInverted = new SetBinarySearchMatcher(bytesToTest, InvertibleMatcher.NOT_INVERTED);
+        testExpression("BinarySearchMatcher", matcher2NotInverted, bytesToTest);
+
+        SetBinarySearchMatcher matcherInverted2 = new SetBinarySearchMatcher(bytesToTest, InvertibleMatcher.INVERTED);
+        testExpression("BinarySearchMatcher", matcherInverted2, bytesToTest);
+    }
+
+
     private void testSet(Set<Byte> testSet) {
         Set<Byte> otherBytes = ByteUtils.invertedSet(testSet);
         
@@ -149,7 +163,21 @@ public class ByteSetMatcherTest {
             assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(byteShouldNotMatch));
         }
     }
-    
+
+    private void testExpression(String description, InvertibleMatcher matcher, Set<Byte> bytesMatched) {
+        String expression = matcher.toRegularExpression(false);
+        assertEquals("Inversion of expression correct.", matcher.isInverted(), expression.startsWith("^"));
+    }
+
+    private void writeTestDefinition(int testnum, int totalTests, Set<Byte> bytesToTest) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("Test %d of %d\t{", testnum, totalTests));
+        for (Byte b : bytesToTest) {
+            builder.append(String.format("%02x ", b));
+        }
+        builder.append("}");
+        System.out.println(builder.toString());
+    }
     
     Set<Byte> buildRandomByteSet() {
         int numberOfElements = randomGenerator.nextInt(255) + 1;
