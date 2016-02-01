@@ -167,6 +167,12 @@ public class SetMatcherTests {
     private void testExpression(String description, InvertibleMatcher matcher, Set<Byte> bytesMatched) {
         String expression = matcher.toRegularExpression(false);
         assertEquals("Inversion of expression correct.", matcher.isInverted(), expression.startsWith("^"));
+
+        expression = matcher.toRegularExpression(true);
+        assertEquals("Inversion of expression correct.", matcher.isInverted(), expression.startsWith("^"));
+        if (bytesMatched.size() > 1) {
+            assertTrue("Spaces within the set", expression.contains(" "));
+        }
     }
 
     private void writeTestDefinition(int testnum, int totalTests, Set<Byte> bytesToTest) {

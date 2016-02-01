@@ -119,9 +119,12 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
             regularExpression.append('^');
         }
         regularExpression.append('[');
-
+        boolean firstItem = true;
         int firstBitSetPosition = byteValues.nextSetBit(0);
         while (firstBitSetPosition >= 0 && firstBitSetPosition < 256) {
+            if (prettyPrint && !firstItem) {
+                regularExpression.append(' ');
+            }
             int lastBitSetPosition = byteValues.nextClearBit(firstBitSetPosition) - 1;
             // If the next clear position doesn't exist, then all remaining values are set:
             if (lastBitSetPosition < 0) {
@@ -139,6 +142,7 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
                 lastBitSetPosition = firstBitSetPosition;
             }
             firstBitSetPosition = byteValues.nextSetBit(lastBitSetPosition + 1);
+            firstItem = false;
         }
         regularExpression.append(']');
         return regularExpression.toString();

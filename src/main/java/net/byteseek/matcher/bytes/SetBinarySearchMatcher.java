@@ -152,7 +152,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         int byteIndex = 0;
         int[] integers = ByteUtils.toIntArray(bytesToMatch);
         Arrays.sort(integers);
+        boolean firstItem = true;
         while (byteIndex < integers.length) {
+            if (prettyPrint && !firstItem) {
+                regularExpression.append(' ');
+            }
             int byteValue = integers[byteIndex];
 
             // Look for ranges of values from this position:
@@ -179,6 +183,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
                 regularExpression.append(byteVal);
                 byteIndex++;
             }
+            firstItem = false;
         }
         regularExpression.append(']');
         return regularExpression.toString();
