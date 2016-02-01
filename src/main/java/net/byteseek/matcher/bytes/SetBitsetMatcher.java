@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -53,7 +53,6 @@ import java.util.Set;
  */
 public final class SetBitsetMatcher extends InvertibleMatcher {
 
-    private static final String ILLEGAL_ARGUMENTS = "Null or empty Byte set passed in to ByteSetMatcher.";
     private final BitSet byteValues = new BitSet(256);
 
     /**
@@ -116,13 +115,11 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
-        if (prettyPrint) {
-            regularExpression.append(' ');
-        }
-        regularExpression.append('[');
         if (inverted) {
             regularExpression.append('^');
         }
+        regularExpression.append('[');
+
         int firstBitSetPosition = byteValues.nextSetBit(0);
         while (firstBitSetPosition >= 0 && firstBitSetPosition < 256) {
             int lastBitSetPosition = byteValues.nextClearBit(firstBitSetPosition) - 1;
@@ -144,9 +141,6 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
             firstBitSetPosition = byteValues.nextSetBit(lastBitSetPosition + 1);
         }
         regularExpression.append(']');
-        if (prettyPrint) {
-            regularExpression.append(' ');
-        }
         return regularExpression.toString();
     }
 

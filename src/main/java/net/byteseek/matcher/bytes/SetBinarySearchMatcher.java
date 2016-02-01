@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -53,10 +53,7 @@ import java.util.Set;
  */
 public final class SetBinarySearchMatcher extends InvertibleMatcher {
 
-    private static final String ILLEGAL_ARGUMENTS = "Null or empty set of bytes passed in to ByteSetBinarySearchMatcher.";
-
     private final byte[] bytesToMatch;
-
 
     /**
      * Constructs an immutable SetBinarySearchMatcher.
@@ -147,13 +144,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
-        if ( prettyPrint ) {
-            regularExpression.append(' ');
-        }
-        regularExpression.append('[');
         if (inverted) {
             regularExpression.append('^');
         }
+        regularExpression.append('[');
+
         int byteIndex = 0;
         int[] integers = ByteUtils.toIntArray(bytesToMatch);
         Arrays.sort(integers);
@@ -186,9 +181,6 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
             }
         }
         regularExpression.append(']');
-        if (prettyPrint) {
-            regularExpression.append(' ');
-        }
         return regularExpression.toString();
     }
     
