@@ -127,7 +127,7 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
      */
     @Override    
     public SequenceMatcher repeat(int numberOfRepeats) {
-        ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepests");
+        ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
         if (numberOfRepeats == 1) {
             return this;
         }   
