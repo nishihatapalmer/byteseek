@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -130,11 +130,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(prettyPrint? " [^ " : "[^");
-        builder.append(ByteUtils.byteToString(prettyPrint, byteToMiss & 0xFF));
-        builder.append(prettyPrint? " ] " : ']');
-        return builder.toString();
+        return '^' + ByteUtils.byteToString(false, byteToMiss & 0xFF);
     }
 
 
