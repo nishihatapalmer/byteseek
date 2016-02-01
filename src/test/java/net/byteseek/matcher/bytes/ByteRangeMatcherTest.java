@@ -97,7 +97,7 @@ public class ByteRangeMatcherTest {
             startValue = start;
             endValue = end;
         }
-        String regex = String.format("[%s%02x-%02x]", matcher.isInverted()? "^" : "", startValue, endValue);
+        String regex = String.format("%s%02x-%02x", matcher.isInverted()? "^" : "", startValue, endValue);
         assertEquals(regex, regex, matcher.toRegularExpression(false));
         String isInverted = matcher.isInverted()? "is" : "is not";
         int numberOfBytes = matcher.isInverted()? 255 - endValue + startValue : endValue - startValue + 1;

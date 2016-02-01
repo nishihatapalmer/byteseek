@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -46,8 +46,6 @@ import net.byteseek.utils.ArgUtils;
  *
  */
 public final class ByteRangeMatcher extends InvertibleMatcher {
-
-    private final static String ILLEGAL_ARGUMENTS = "Values must be between 0 and 255 inclusive: min=%d max=%d";
 
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
@@ -136,19 +134,12 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         final StringBuilder regularExpression = new StringBuilder();
-        if (prettyPrint) {
-            regularExpression.append(' ');
-        }
-        regularExpression.append('[');
         if (inverted) {
             regularExpression.append('^');
         }
         final String minValue = ByteUtils.byteToString(prettyPrint, minByteValue);
         final String maxValue = ByteUtils.byteToString(prettyPrint, maxByteValue);
-        regularExpression.append( String.format("%s-%s]", minValue, maxValue ));
-        if (prettyPrint) {
-            regularExpression.append(' ');
-        }
+        regularExpression.append( String.format("%s-%s", minValue, maxValue ));
         return regularExpression.toString();
     }
 
