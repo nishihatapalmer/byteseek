@@ -32,11 +32,17 @@
 package net.byteseek.matcher.bytes;
 
 import net.byteseek.bytes.ByteUtils;
+import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -44,6 +50,22 @@ import static org.junit.Assert.*;
  * @author matt
  */
 public class AnyBitmaskMatcherTest {
+
+    private WindowReader reader;
+
+    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
+
+    static {
+        BYTE_VALUES = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            BYTE_VALUES[i] = (byte) i;
+        }
+    }
+
+    @Before
+    public void setup() {
+        reader = new ByteArrayReader(BYTE_VALUES);
+    }
 
     /**
      * 
@@ -72,7 +94,7 @@ public class AnyBitmaskMatcherTest {
      * Test of matches method, of class AnyBitmaskMatcher.
      */
     @Test
-    public void testMatches_byte() {
+    public void testMatches_byte() throws IOException {
         AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(255));
         validateMatchInRange(matcher, 1, 255);
         validateNoMatchInRange(matcher, 0, 0);
@@ -109,7 +131,7 @@ public class AnyBitmaskMatcherTest {
      * Test of matches method, of class AnyBitmaskMatcher.
      */
     @Test
-    public void testMatchesInvertedByte() {
+    public void testMatchesInvertedByte() throws IOException {
         AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(255), true);
         validateMatchInRange(matcher, 0, 0);
         validateNoMatchInRange(matcher, 1, 255);
@@ -141,61 +163,79 @@ public class AnyBitmaskMatcherTest {
         }
     }
 
-    private void validateNoMatchInRange(AnyBitmaskMatcher matcher, int from, int to) {
+    private void validateNoMatchInRange(AnyBitmaskMatcher matcher, int from, int to) throws IOException {
         String description = String.format("%d:%d", from, to);
         for (int count = from; count <= to; count++) {
             String d2 = String.format("%s(%d)", description, count);
             assertEquals(d2, false, matcher.matches(b(count)));
+            assertEquals(d2, false, matcher.matches(reader, count));
+            assertEquals(d2, false, matcher.matches(BYTE_VALUES, count));
+            assertEquals(d2, false, matcher.matchesNoBoundsCheck(BYTE_VALUES, count));
         }
     }
 
-    private void validateMatchInRange(AnyBitmaskMatcher matcher, int from, int to) {
+    private void validateMatchInRange(AnyBitmaskMatcher matcher, int from, int to) throws IOException {
         String description = String.format("%d:%d", from, to);
         for (int count = from; count <= to; count++) {
             String d2 = String.format("%s(%d)", description, count);
             assertEquals(d2, true, matcher.matches(b(count)));
+            assertEquals(d2, true, matcher.matches(reader, count));
+            assertEquals(d2, true, matcher.matches(BYTE_VALUES, count));
+            assertEquals(d2, true, matcher.matchesNoBoundsCheck(BYTE_VALUES, count));
         }
     }
 
-    private void validateMatchBitsSet(AnyBitmaskMatcher matcher, int bitmask) {
+    private void validateMatchBitsSet(AnyBitmaskMatcher matcher, int bitmask) throws IOException {
         if (bitmask > 0) { // This test won't work for a zero bitmask.
             String description = String.format("0x%02x", bitmask);
             for (int count = 0; count < 256; count++) {
                 String d2 = String.format("%s(%d)", description, count);
                 byte value = (byte) (count | bitmask);
                 assertEquals(d2, true, matcher.matches(value));
+                assertEquals(d2, true, matcher.matches(reader, value & 0xFF));
+                assertEquals(d2, true, matcher.matches(BYTE_VALUES, value & 0xFF));
+                assertEquals(d2, true, matcher.matchesNoBoundsCheck(BYTE_VALUES, value & 0xFF));
             }
         }
     }
 
-    private void validateInvertedMatchBitsSet(AnyBitmaskMatcher matcher, int bitmask) {
+    private void validateInvertedMatchBitsSet(AnyBitmaskMatcher matcher, int bitmask) throws IOException {
         if (bitmask > 0) { // This test won't work for a zero bitmask.
             String description = String.format("0x%02x", bitmask);
             for (int count = 0; count < 256; count++) {
                 String d2 = String.format("%s(%d)", description, count);
                 byte value = (byte) (count | bitmask);
                 assertEquals(d2, false, matcher.matches(value));
+                assertEquals(d2, false, matcher.matches(reader, value & 0xFF));
+                assertEquals(d2, false, matcher.matches(BYTE_VALUES, value & 0xFF));
+                assertEquals(d2, false, matcher.matchesNoBoundsCheck(BYTE_VALUES, value & 0xFF));
             }
         }
     }
 
-    private void validateNoMatchBitsNotSet(AnyBitmaskMatcher matcher, int bitmask) {
+    private void validateNoMatchBitsNotSet(AnyBitmaskMatcher matcher, int bitmask) throws IOException {
         String description = String.format("0x%02x", bitmask);
         final int invertedMask = bitmask ^ 0xFF;
         for (int count = 0; count < 256; count++) { // zero byte matches everything.
             String d2 = String.format("%s(%d)", description, count);
             byte value = (byte) (count & invertedMask);
             assertEquals(d2, false, matcher.matches(value));
+            assertEquals(d2, false, matcher.matches(reader, value & 0xFF));
+            assertEquals(d2, false, matcher.matches(BYTE_VALUES, value & 0xFF));
+            assertEquals(d2, false, matcher.matchesNoBoundsCheck(BYTE_VALUES, value & 0xFF));
         }
     }
 
-    private void validateInvertedNoMatchBitsNotSet(AnyBitmaskMatcher matcher, int bitmask) {
+    private void validateInvertedNoMatchBitsNotSet(AnyBitmaskMatcher matcher, int bitmask) throws IOException {
         String description = String.format("0x%02x", bitmask);
         final int invertedMask = bitmask ^ 0xFF;
         for (int count = 0; count < 256; count++) { // zero byte matches everything.
             String d2 = String.format("%s(%d)", description, count);
             byte value = (byte) (count & invertedMask);
             assertEquals(d2, true, matcher.matches(value));
+            assertEquals(d2, true, matcher.matches(reader, value & 0xFF));
+            assertEquals(d2, true, matcher.matches(BYTE_VALUES, value & 0xFF));
+            assertEquals(d2, true, matcher.matchesNoBoundsCheck(BYTE_VALUES, value & 0xFF));
         }
     }
 
@@ -218,6 +258,24 @@ public class AnyBitmaskMatcherTest {
         }
     }
 
+    @Test
+    public void testToString() {
+        for (int count = 0; count < 256; count++) {
+            AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(count));
+            String toString = matcher.toString();
+            assertTrue(toString.contains(AnyBitmaskMatcher.class.getSimpleName()));
+            String expected = String.format("%02x", count);
+            assertTrue(toString.contains(expected));
+            assertTrue(toString.contains("inverted"));
+
+            matcher = new AnyBitmaskMatcher(b(count), true);
+            toString = matcher.toString();
+            assertTrue(toString.contains(AnyBitmaskMatcher.class.getSimpleName()));
+            assertTrue(toString.contains(expected));
+            assertTrue(toString.contains("inverted"));
+        }
+    }
+
     /**
      * Test of getMatchingBytes method, of class AnyBitmaskMatcher.
      */
@@ -225,19 +283,34 @@ public class AnyBitmaskMatcherTest {
     public void testGetMatchingBytes() {
         AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(255));
         byte[] expected = ByteUtils.getBytesInRange(1, 255);
-        assertArrayEquals("0xFF matches all bytes except zero",
-                expected, matcher.getMatchingBytes());
+        assertArrayEquals("0xFF matches all bytes except zero", expected, matcher.getMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(255), true);
+        expected = new byte[] {(byte) 00};
+        assertArrayEquals("inverted 0xFF matches zero only", expected, matcher.getMatchingBytes());
 
         matcher = new AnyBitmaskMatcher(b(0));
         assertArrayEquals("0x00 matches no bytes", new byte[0], matcher.getMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(0), true);
+        expected = ByteUtils.getAllByteValues();
+        assertArrayEquals("inverted 0x00 matches all bytes", expected, matcher.getMatchingBytes());
 
         matcher = new AnyBitmaskMatcher(b(254));
         expected = ByteUtils.getBytesInRange(2, 255);
         assertArrayEquals("0xFE matches everything except 1 and 0", expected, matcher.getMatchingBytes());
 
+        matcher = new AnyBitmaskMatcher(b(254), true);
+        expected = ByteUtils.getBytesInRange(0, 1);
+        assertArrayEquals("inverted 0xFE matches 1 and 0", expected, matcher.getMatchingBytes());
+
         matcher = new AnyBitmaskMatcher(b(128));
         expected = ByteUtils.getBytesInRange(128, 255);
         assertArrayEquals("0x80 matches all bytes from 128 to 255", expected, matcher.getMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(128), true);
+        expected = ByteUtils.getBytesInRange(0, 127);
+        assertArrayEquals("inverted 0x80 matches all bytes from 0 to 127", expected, matcher.getMatchingBytes());
     }
 
     /**
@@ -247,6 +320,7 @@ public class AnyBitmaskMatcherTest {
     public void testGetNumberOfMatchingBytes() {
         AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(255));
         assertEquals("0xFF matches 255 bytes", 255, matcher.getNumberOfMatchingBytes());
+
 
         matcher = new AnyBitmaskMatcher(b(0));
         assertEquals("0x00 matches 0 bytes", 0, matcher.getNumberOfMatchingBytes());
@@ -263,6 +337,23 @@ public class AnyBitmaskMatcherTest {
         matcher = new AnyBitmaskMatcher(b(128));
         assertEquals("0x80 matches 128 bytes", 128, matcher.getNumberOfMatchingBytes());
 
+        matcher = new AnyBitmaskMatcher(b(255));
+        assertEquals("0xFF matches 255 bytes", 255, matcher.getNumberOfMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(0), true);
+        assertEquals("inverted 0x00 matches 256 bytes", 256, matcher.getNumberOfMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(1), true);
+        assertEquals("inverted 0x01 matches 128 bytes", 128, matcher.getNumberOfMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(254), true);
+        assertEquals("inverted 0xFE matches 2 bytes", 2, matcher.getNumberOfMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(3), true);
+        assertEquals("inverted 0x03 matches 64 bytes", 64, matcher.getNumberOfMatchingBytes());
+
+        matcher = new AnyBitmaskMatcher(b(128), true);
+        assertEquals("inverted 0x80 matches 128 bytes", 128, matcher.getNumberOfMatchingBytes());
     }
 
     private byte b(int i) {
