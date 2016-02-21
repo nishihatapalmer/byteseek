@@ -144,7 +144,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[byte:" + byteToMiss + ']';
+    	return getClass().getSimpleName() + "[byte:" + String.format("%02x", byteToMiss & 0xFF) + ']';
     }
 
 
