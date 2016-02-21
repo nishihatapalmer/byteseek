@@ -32,11 +32,10 @@
 package net.byteseek.matcher.bytes;
 
 import net.byteseek.bytes.ByteUtils;
-import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.InvertibleMatcher;
-import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
-import net.byteseek.matcher.bytes.SetBitsetMatcher;
+import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.WindowReader;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.junit.Test;
@@ -49,6 +48,15 @@ import static org.junit.Assert.*;
 public class SetBinarySearchMatcherTest {
     
     Random randomGenerator = new Random();
+
+    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
+
+    static {
+        BYTE_VALUES = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            BYTE_VALUES[i] = (byte) i;
+        }
+    }
     
     /**
      * 
@@ -76,27 +84,27 @@ public class SetBinarySearchMatcherTest {
     
 
     /**
-     * Test of matches method, of class SetBinarySearchMatcher.
+     * Test of all matching methods, of class SetBinarySearchMatcher.
      * 
      * Can't build all possible subsets of a byte set = 2^256 possible sets,
      * so generates a large number of random byte sets and tests them.
      */
     @Test
-    public void testByteSet() {
+    public void testByteSet() throws IOException {
         int numberOfTests = 100;
         for (int testnum = 0; testnum <= numberOfTests; testnum++) {
             Set<Byte> bytesToTest = buildRandomByteSet();
-            writeTestDefinition(testnum, numberOfTests, bytesToTest);
+            writeTestDefinition("Test byte set", testnum, numberOfTests, bytesToTest);
             testSet(bytesToTest);
         }
     }
 
     @Test
     public void testRegularExpressions() {
-        int numberOfTests = 5;
+        int numberOfTests = 20;
         for (int testnum = 0; testnum <= numberOfTests; testnum++) {
             Set<Byte> bytesToTest = buildRandomByteSet();
-            writeTestDefinition(testnum, numberOfTests, bytesToTest);
+            writeTestDefinition("testRegularExpressions", testnum, numberOfTests, bytesToTest);
             testRegularExpression(bytesToTest);
         }
     }
@@ -115,7 +123,6 @@ public class SetBinarySearchMatcherTest {
         assertTrue("Matcher contains byte 255", toString.contains("-1"));
     }
 
-
     private void testRegularExpression(Set<Byte> bytesToTest) {
 
         SetBinarySearchMatcher matcher2NotInverted = new SetBinarySearchMatcher(bytesToTest, InvertibleMatcher.NOT_INVERTED);
@@ -125,7 +132,7 @@ public class SetBinarySearchMatcherTest {
         testExpression("BinarySearchMatcher", matcherInverted2, bytesToTest);
     }
 
-    private void testSet(Set<Byte> testSet) {
+    private void testSet(Set<Byte> testSet) throws IOException  {
         Set<Byte> otherBytes = ByteUtils.invertedSet(testSet);
         
         SetBinarySearchMatcher matcher2NotInverted = new SetBinarySearchMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
@@ -135,38 +142,87 @@ public class SetBinarySearchMatcherTest {
         testMatcher("BinarySearchMatcher", matcherInverted2, otherBytes, testSet);
     }
     
-    private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) {
+    private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) throws IOException {
+        // test of getNumberOfMatchingBYtes() method
         int numberOfMatchingBytes = matcher.getNumberOfMatchingBytes();
         assertEquals("Matches correct number of bytes", bytesMatched.size(), numberOfMatchingBytes);
 
+        // test of getMatchingBytes() method
         byte[] matchingBytes = matcher.getMatchingBytes();
         for (byte b : matchingBytes) {
             assertTrue("Contains byte " + b, bytesMatched.contains(b));
         }
 
+        // test of matches(byte) method
         for (Byte byteShouldMatch : bytesMatched) {
             assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(byteShouldMatch));
         }
-
         for (Byte byteShouldNotMatch : bytesNotMatched) {
             assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(byteShouldNotMatch));
         }
+
+        // test of matches(WindowReader) method:
+        WindowReader reader = new ByteArrayReader(BYTE_VALUES);
+        assertFalse(matcher.matches(reader, -1L));
+        assertFalse(matcher.matches(reader, 256L));
+        for (Byte byteShouldMatch : bytesMatched) {
+            long bytePosition = byteShouldMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(reader, bytePosition));
+        }
+        for (Byte byteShouldNotMatch : bytesNotMatched) {
+            long bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(reader, bytePosition));
+        }
+
+        // test of matches(byte[]) method
+        assertFalse(matcher.matches(BYTE_VALUES, -1));
+        assertFalse(matcher.matches(BYTE_VALUES, 256));
+        for (Byte byteShouldMatch : bytesMatched) {
+            int bytePosition = byteShouldMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(BYTE_VALUES, bytePosition));
+        }
+        for (Byte byteShouldNotMatch : bytesNotMatched) {
+            int bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(BYTE_VALUES, bytePosition));
+        }
+
+        // test of matchesNoBoundsCheck method
+        try {
+            assertFalse(matcher.matchesNoBoundsCheck(BYTE_VALUES, -1));
+            fail("Expected an ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            assertFalse(matcher.matchesNoBoundsCheck(BYTE_VALUES, 256));
+            fail("Expected an ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException expectedIgnore) {}
+
+        for (Byte byteShouldMatch : bytesMatched) {
+            int bytePosition = byteShouldMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matchesNoBoundsCheck(BYTE_VALUES, bytePosition));
+        }
+        for (Byte byteShouldNotMatch : bytesNotMatched) {
+            int bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matchesNoBoundsCheck(BYTE_VALUES, bytePosition));
+        }
+
     }
 
     private void testExpression(String description, InvertibleMatcher matcher, Set<Byte> bytesMatched) {
         String expression = matcher.toRegularExpression(false);
         assertEquals("Inversion of expression correct.", matcher.isInverted(), expression.startsWith("^"));
+        for (Byte byteMatched : bytesMatched) {
+            String value = Integer.toString(byteMatched & 0xFF, 16);
+            assertTrue(expression.contains(value));
+        }
 
         expression = matcher.toRegularExpression(true);
         assertEquals("Inversion of expression correct.", matcher.isInverted(), expression.startsWith("^"));
-        if (bytesMatched.size() > 1) {
-            assertTrue("Spaces within the set", expression.contains(" "));
-        }
     }
 
-    private void writeTestDefinition(int testnum, int totalTests, Set<Byte> bytesToTest) {
+    private void writeTestDefinition(String description, int testnum, int totalTests, Set<Byte> bytesToTest) {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("Test %d of %d\t{", testnum, totalTests));
+        builder.append(String.format("%s test %d of %d\t{", description, testnum, totalTests));
         for (Byte b : bytesToTest) {
             builder.append(String.format("%02x ", b));
         }

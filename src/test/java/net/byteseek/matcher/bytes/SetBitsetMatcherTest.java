@@ -33,8 +33,11 @@ package net.byteseek.matcher.bytes;
 
 import net.byteseek.bytes.ByteUtils;
 
+import java.io.IOException;
 import java.util.*;
 
+import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.WindowReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -45,6 +48,15 @@ import static org.junit.Assert.*;
 public class SetBitsetMatcherTest {
 
     Random randomGenerator = new Random();
+
+    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
+
+    static {
+        BYTE_VALUES = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            BYTE_VALUES[i] = (byte) i;
+        }
+    }
 
     /**
      *
@@ -78,7 +90,7 @@ public class SetBitsetMatcherTest {
      * so generates a large number of random byte sets and tests them.
      */
     @Test
-    public void testByteSet() {
+    public void testByteSet() throws IOException {
         int numberOfTests = 100;
         for (int testnum = 0; testnum <= numberOfTests; testnum++) {
             Set<Byte> bytesToTest = buildRandomByteSet();
@@ -120,7 +132,7 @@ public class SetBitsetMatcherTest {
     }
 
 
-    private void testSet(Set<Byte> testSet) {
+    private void testSet(Set<Byte> testSet) throws IOException {
         Set<Byte> otherBytes = ByteUtils.invertedSet(testSet);
 
         SetBitsetMatcher matcherNotInverted = new SetBitsetMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
@@ -130,33 +142,82 @@ public class SetBitsetMatcherTest {
         testMatcher("BitSetMatcher", matcherInverted, otherBytes, testSet);
     }
 
-    private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) {
+    private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) throws IOException {
+        // test of getNumberOfMatchingBYtes() method
         int numberOfMatchingBytes = matcher.getNumberOfMatchingBytes();
         assertEquals("Matches correct number of bytes", bytesMatched.size(), numberOfMatchingBytes);
 
+        // test of getMatchingBytes() method
         byte[] matchingBytes = matcher.getMatchingBytes();
         for (byte b : matchingBytes) {
             assertTrue("Contains byte " + b, bytesMatched.contains(b));
         }
 
+        // test of matches(byte) method
         for (Byte byteShouldMatch : bytesMatched) {
             assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(byteShouldMatch));
         }
-
         for (Byte byteShouldNotMatch : bytesNotMatched) {
             assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(byteShouldNotMatch));
         }
+
+        // test of matches(WindowReader) method:
+        WindowReader reader = new ByteArrayReader(BYTE_VALUES);
+        assertFalse(matcher.matches(reader, -1L));
+        assertFalse(matcher.matches(reader, 256L));
+        for (Byte byteShouldMatch : bytesMatched) {
+            long bytePosition = byteShouldMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(reader, bytePosition));
+        }
+        for (Byte byteShouldNotMatch : bytesNotMatched) {
+            long bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(reader, bytePosition));
+        }
+
+        // test of matches(byte[]) method
+        assertFalse(matcher.matches(BYTE_VALUES, -1));
+        assertFalse(matcher.matches(BYTE_VALUES, 256));
+        for (Byte byteShouldMatch : bytesMatched) {
+            int bytePosition = byteShouldMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(BYTE_VALUES, bytePosition));
+        }
+        for (Byte byteShouldNotMatch : bytesNotMatched) {
+            int bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(BYTE_VALUES, bytePosition));
+        }
+
+        // test of matchesNoBoundsCheck method
+        try {
+            assertFalse(matcher.matchesNoBoundsCheck(BYTE_VALUES, -1));
+            fail("Expected an ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            assertFalse(matcher.matchesNoBoundsCheck(BYTE_VALUES, 256));
+            fail("Expected an ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException expectedIgnore) {}
+
+        for (Byte byteShouldMatch : bytesMatched) {
+            int bytePosition = byteShouldMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matchesNoBoundsCheck(BYTE_VALUES, bytePosition));
+        }
+        for (Byte byteShouldNotMatch : bytesNotMatched) {
+            int bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matchesNoBoundsCheck(BYTE_VALUES, bytePosition));
+        }
+
     }
 
     private void testExpression(String description, InvertibleMatcher matcher, Set<Byte> bytesMatched) {
         String expression = matcher.toRegularExpression(false);
         assertEquals("Inversion of expression correct.", matcher.isInverted(), expression.startsWith("^"));
+        for (Byte byteMatched : bytesMatched) {
+            String value = Integer.toString(byteMatched & 0xFF, 16);
+            assertTrue(expression.contains(value));
+        }
 
         expression = matcher.toRegularExpression(true);
         assertEquals("Inversion of expression correct.", matcher.isInverted(), expression.startsWith("^"));
-        if (bytesMatched.size() > 1) {
-            assertTrue("Spaces within the set", expression.contains(" "));
-        }
     }
 
     private void writeTestDefinition(int testnum, int totalTests, Set<Byte> bytesToTest) {
