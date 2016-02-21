@@ -35,12 +35,15 @@ import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AllBitmaskMatcher;
 
+import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
@@ -120,11 +123,72 @@ public class AllBitmaskMatcherTest {
         // test all bit masks using different methods.
         for (int mask = 0; mask < 256; mask++) {
             matcher = new AllBitmaskMatcher(b(mask));
-            // test of length
-            assertEquals("length is one", 1, matcher.length());
+            testAbstractMethods(matcher);
             validateMatchBitsSet(matcher, b(mask));
             validateNoMatchBitsNotSet(matcher, b(mask));
         }
+    }
+
+    private void testAbstractMethods(ByteMatcher matcher) {
+        // test methods from abstract superclass
+        assertEquals("length is one", 1, matcher.length());
+
+        assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
+
+        try {
+            matcher.getMatcherForPosition(-1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            matcher.getMatcherForPosition(1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        assertEquals("reversed is identical", matcher, matcher.reverse());
+        assertEquals("subsequence of 0 is identical", matcher, matcher.subsequence(0));
+        try {
+            matcher.subsequence(-1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            matcher.subsequence(1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+        assertEquals("subsequence of 0,1 is identical", matcher, matcher.subsequence(0,1));
+        try {
+            matcher.subsequence(-1, 1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            matcher.subsequence(0, 2);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        int count = 0;
+        for (ByteMatcher itself : matcher) {
+            count++;
+            assertEquals("Iterating returns same matcher", matcher, itself);
+        }
+        assertEquals("Count of iterated matchers is one", 1, count);
+
+        Iterator<ByteMatcher> it = matcher.iterator();
+        try {
+            it.remove();
+            fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException expectedIgnore) {}
+
+
+        it = matcher.iterator();
+        try {
+            assertTrue(it.hasNext());
+            it.next();
+            assertFalse(it.hasNext());
+            it.next();
+            fail("Expected NoSuchElementException");
+        } catch (NoSuchElementException expectedIgnore) {}
     }
 
     /**
@@ -158,8 +222,18 @@ public class AllBitmaskMatcherTest {
         // test all bit masks using different methods.
         for (int mask = 0; mask < 256; mask++) {
             matcher = new AllBitmaskMatcher(b(mask), true);
-            // test of length
+            // test methods from abstract superclass
             assertEquals("length is one", 1, matcher.length());
+            assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
+            try {
+                matcher.getMatcherForPosition(-1);
+                fail("expected an IndexOutOfBoundsException");
+            } catch (IndexOutOfBoundsException expectedIgnore) {}
+            try {
+                matcher.getMatcherForPosition(1);
+                fail("expected an IndexOutOfBoundsException");
+            } catch (IndexOutOfBoundsException expectedIgnore) {}
+
             validateInvertedMatchBitsSet(matcher, b(mask));
             validateInvertedNoMatchBitsNotSet(matcher, b(mask));
         }

@@ -37,13 +37,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
-import java.util.Random;
+import java.util.*;
 
 import net.byteseek.matcher.bytes.ByteRangeMatcher;
 import net.byteseek.matcher.bytes.InvertibleMatcher;
 
-import java.util.List;
-import java.util.ArrayList;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -110,8 +108,8 @@ public class ByteRangeMatcherTest {
     }
 
     private void validateMatcher(ByteRangeMatcher matcher, int start, int end) throws IOException {
-        // test of length
-        assertEquals("length is one", 1, matcher.length());
+        // test methods from abstract superclass
+       testAbstractMethods(matcher);
 
         assertFalse("No match in reader pos -1", matcher.matches(reader, -1));
         assertFalse("No match in reader past length", matcher.matches(reader, reader.length() + 1));
@@ -177,5 +175,69 @@ public class ByteRangeMatcherTest {
         message = String.format("Testing byte array on range %d-%d, matcher %s inverted", start, end, matcher.isInverted()? "" : " not");
         assertArrayEquals(message, bytes, matcher.getMatchingBytes() );
     }
+
+
+    private void testAbstractMethods(ByteMatcher matcher) {
+        // test methods from abstract superclass
+        assertEquals("length is one", 1, matcher.length());
+
+        assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
+
+        try {
+            matcher.getMatcherForPosition(-1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            matcher.getMatcherForPosition(1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        assertEquals("reversed is identical", matcher, matcher.reverse());
+        assertEquals("subsequence of 0 is identical", matcher, matcher.subsequence(0));
+        try {
+            matcher.subsequence(-1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            matcher.subsequence(1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+        assertEquals("subsequence of 0,1 is identical", matcher, matcher.subsequence(0,1));
+        try {
+            matcher.subsequence(-1, 1);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        try {
+            matcher.subsequence(0, 2);
+            fail("expected an IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException expectedIgnore) {}
+
+        int count = 0;
+        for (ByteMatcher itself : matcher) {
+            count++;
+            assertEquals("Iterating returns same matcher", matcher, itself);
+        }
+        assertEquals("Count of iterated matchers is one", 1, count);
+
+        Iterator<ByteMatcher> it = matcher.iterator();
+        try {
+            it.remove();
+            fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException expectedIgnore) {}
+
+
+        it = matcher.iterator();
+        try {
+            assertTrue(it.hasNext());
+            it.next();
+            assertFalse(it.hasNext());
+            it.next();
+            fail("Expected NoSuchElementException");
+        } catch (NoSuchElementException expectedIgnore) {}
+    }
+
 
 }

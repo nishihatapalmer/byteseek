@@ -31,11 +31,19 @@
 package net.byteseek.matcher.bytes;
 
 import net.byteseek.bytes.ByteUtils;
+import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 
+import net.byteseek.matcher.sequence.FixedGapMatcher;
+import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -43,6 +51,23 @@ import static org.junit.Assert.*;
  * @author matt
  */
 public class AnyMatcherTest {
+
+
+    private WindowReader reader;
+
+    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
+
+    static {
+        BYTE_VALUES = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            BYTE_VALUES[i] = (byte) i;
+        }
+    }
+
+    @Before
+    public void setup() {
+        reader = new ByteArrayReader(BYTE_VALUES);
+    }
 
     /**
      * 
@@ -70,13 +95,40 @@ public class AnyMatcherTest {
      * Test of matches method, of class AnyByteMatcher.
      */
     @Test
-    public void testMatches_byte() {
+    public void testMatches_byte() throws IOException {
         for (int count = 0; count < 256; count++) {
             AnyByteMatcher matcher = new AnyByteMatcher();
             String description = String.format("matches: 0x%02x", count);
             assertEquals(description, true, matcher.matches(b(count)));
+            assertEquals(description, true, matcher.matches(reader, count));
+            assertEquals(description, true, matcher.matches(BYTE_VALUES, count));
+            assertEquals(description, true, matcher.matchesNoBoundsCheck(BYTE_VALUES, count));
+
         }
         SimpleTimer.timeMatcher("AnyMatcher", new AnyByteMatcher());
+    }
+
+    @Test
+    public void testLength() {
+        assertEquals("length is one", 1, new AnyByteMatcher().length());
+    }
+
+    @Test
+    public void testToString() {
+        String toString = new AnyByteMatcher().toString();
+        assertTrue(toString.contains(AnyByteMatcher.class.getSimpleName()));
+    }
+
+    @Test
+    public void testRepeat() {
+        SequenceMatcher matcher = new AnyByteMatcher().repeat(1);
+        assertEquals(AnyByteMatcher.class, matcher.getClass());
+
+        for (int i = 2; i < 10; i++) {
+            matcher = new AnyByteMatcher().repeat(i);
+            assertEquals("Length is " + i, i, matcher.length());
+            assertEquals("Class is a fixed gap", FixedGapMatcher.class, matcher.getClass());
+        }
     }
 
     /**
