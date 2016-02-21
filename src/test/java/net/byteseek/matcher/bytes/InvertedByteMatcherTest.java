@@ -98,6 +98,7 @@ public class InvertedByteMatcherTest {
     }
 
     private void testMatcher(ByteMatcher matcher, byte theByte, int index) throws IOException {
+        assertEquals("length is one", 1, matcher.length());
         assertFalse("no matche byte value",      matcher.matches(theByte));
         assertFalse("no matche window reader",   matcher.matches(reader, index));
         assertFalse("no matches array",           matcher.matches(BYTE_VALUES, index));

@@ -100,6 +100,7 @@ public class OneByteMatcherTest {
     }
 
     private void testMatcher(ByteMatcher matcher, byte theByte, int index) throws IOException {
+        assertEquals("length is one", 1, matcher.length());
         assertTrue("matches byte value",      matcher.matches(theByte));
         assertTrue("matches window reader",   matcher.matches(reader, index));
         assertTrue("matches array",           matcher.matches(BYTE_VALUES, index));

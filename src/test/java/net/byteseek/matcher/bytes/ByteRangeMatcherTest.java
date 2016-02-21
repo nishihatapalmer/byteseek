@@ -110,6 +110,9 @@ public class ByteRangeMatcherTest {
     }
 
     private void validateMatcher(ByteRangeMatcher matcher, int start, int end) throws IOException {
+        // test of length
+        assertEquals("length is one", 1, matcher.length());
+
         assertFalse("No match in reader pos -1", matcher.matches(reader, -1));
         assertFalse("No match in reader past length", matcher.matches(reader, reader.length() + 1));
         assertFalse("No match in array pos -1", matcher.matches(BYTE_VALUES, -1));

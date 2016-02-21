@@ -143,6 +143,9 @@ public class SetBitsetMatcherTest {
     }
 
     private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) throws IOException {
+        // test of length
+        assertEquals("length is one", 1, matcher.length());
+
         // test of getNumberOfMatchingBYtes() method
         int numberOfMatchingBytes = matcher.getNumberOfMatchingBytes();
         assertEquals("Matches correct number of bytes", bytesMatched.size(), numberOfMatchingBytes);
