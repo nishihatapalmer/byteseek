@@ -120,6 +120,8 @@ public class AllBitmaskMatcherTest {
         // test all bit masks using different methods.
         for (int mask = 0; mask < 256; mask++) {
             matcher = new AllBitmaskMatcher(b(mask));
+            // test of length
+            assertEquals("length is one", 1, matcher.length());
             validateMatchBitsSet(matcher, b(mask));
             validateNoMatchBitsNotSet(matcher, b(mask));
         }
@@ -156,6 +158,8 @@ public class AllBitmaskMatcherTest {
         // test all bit masks using different methods.
         for (int mask = 0; mask < 256; mask++) {
             matcher = new AllBitmaskMatcher(b(mask), true);
+            // test of length
+            assertEquals("length is one", 1, matcher.length());
             validateInvertedMatchBitsSet(matcher, b(mask));
             validateInvertedNoMatchBitsNotSet(matcher, b(mask));
         }
