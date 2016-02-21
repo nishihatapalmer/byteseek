@@ -31,9 +31,18 @@
 
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.bytes.ByteUtils;
+import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.OneByteMatcher;
 
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
+import net.byteseek.matcher.sequence.SequenceMatcher;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -42,10 +51,26 @@ import static org.junit.Assert.*;
  */
 public class OneByteMatcherTest {
 
+    private WindowReader reader;
+
+    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
+
+    static {
+        BYTE_VALUES = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            BYTE_VALUES[i] = (byte) i;
+        }
+    }
+
     /**
      * 
      */
     public OneByteMatcherTest() {
+    }
+
+    @Before
+    public void setup() {
+        reader = new ByteArrayReader(BYTE_VALUES);
     }
 
 
@@ -54,25 +79,74 @@ public class OneByteMatcherTest {
      * byte value.
      */
     @Test
-    public void testMatcher() {
+    public void testMatcher() throws IOException {
         for (int i = 0; i < 256; i++) {
             final byte theByte = (byte) i;
-            final OneByteMatcher matcher = new OneByteMatcher(theByte);
-            assertEquals("matches", true, matcher.matches(theByte));
-            assertEquals("1 byte matches", 1, matcher.getNumberOfMatchingBytes());
-            assertArrayEquals("matching bytes", new byte[] {theByte}, matcher.getMatchingBytes());
-            final String regularExpression = String.format("%02x", theByte);
-            assertEquals("regular expression", regularExpression, matcher.toRegularExpression(false));
-            for (int x = 0; x < 256; x++) {
-                if (x != i) {
-                    final byte nomatch = (byte) x;
-                    assertEquals("no match", false, matcher.matches(nomatch));
-                }
+            OneByteMatcher matcher = new OneByteMatcher(theByte);
+            testMatcher(matcher, theByte, i);
+
+            matcher = OneByteMatcher.valueOf(theByte);
+            testMatcher(matcher, theByte, i);
+
+            String hexByte = ByteUtils.byteToString(false, i);
+            hexByte = hexByte.toLowerCase();
+            matcher = new OneByteMatcher(hexByte);
+            testMatcher(matcher, theByte, i);
+
+            hexByte = hexByte.toUpperCase();
+            matcher = new OneByteMatcher(hexByte);
+            testMatcher(matcher, theByte, i);
+        }
+    }
+
+    private void testMatcher(ByteMatcher matcher, byte theByte, int index) throws IOException {
+        assertTrue("matches byte value",      matcher.matches(theByte));
+        assertTrue("matches window reader",   matcher.matches(reader, index));
+        assertTrue("matches array",           matcher.matches(BYTE_VALUES, index));
+        assertFalse("no match array -1",      matcher.matches(BYTE_VALUES, -1));
+        assertFalse("no match array 256",     matcher.matches(BYTE_VALUES, 256));
+        assertTrue("matches no bounds check", matcher.matchesNoBoundsCheck(BYTE_VALUES, index));
+        try {
+            matcher.matchesNoBoundsCheck(BYTE_VALUES, -1);
+            fail("Expected an ArrayIndexOutOfBoundsException at pos -1");
+        } catch(ArrayIndexOutOfBoundsException expectedIgnore) {}
+        try {
+            matcher.matchesNoBoundsCheck(BYTE_VALUES, 256);
+            fail("Expected an ArrayIndexOutOfBoundsException at pos 256");
+        } catch(ArrayIndexOutOfBoundsException expectedIgnore) {}
+        assertEquals("1 byte matches", 1, matcher.getNumberOfMatchingBytes());
+        assertArrayEquals("matching bytes", new byte[] {theByte}, matcher.getMatchingBytes());
+        final String regularExpression = String.format("%02x", theByte);
+        assertEquals("regular expression", regularExpression, matcher.toRegularExpression(false));
+        for (int x = 0; x < 256; x++) {
+            if (x != index) {
+                final byte nomatch = (byte) x;
+                assertFalse("no match byte value", matcher.matches(nomatch));
+                assertFalse("no match reader", matcher.matches(reader, x));
+                assertFalse("no match array",  matcher.matches(BYTE_VALUES, x));
+                assertFalse("no match array",  matcher.matchesNoBoundsCheck(BYTE_VALUES, x));
             }
-            if (i % 32 == 0) {
-                String message = String.format("Matching byte %d", i);
-                SimpleTimer.timeMatcher(message, matcher);
-            }
+        }
+        if (index % 32 == 0) {
+            String message = String.format("Matching byte %d", index);
+            SimpleTimer.timeMatcher(message, matcher);
+        }
+        String toString = matcher.toString();
+        assertTrue(toString.contains(OneByteMatcher.class.getSimpleName()));
+        assertTrue(toString.contains(String.format("%02x", theByte & 0xFF)));
+
+        SequenceMatcher repeated = matcher.repeat(1);
+        assertEquals("repeat once is the same class", OneByteMatcher.class, repeated.getClass());
+        final int REPEAT_NUM = 10;
+        repeated = matcher.repeat(REPEAT_NUM);
+        assertEquals("repeated ten times is a ByteSequenceMatcher", ByteSequenceMatcher.class, repeated.getClass());
+        assertEquals("Repeated ten times length is correct", REPEAT_NUM, repeated.length());
+        for (int i = 0; i < REPEAT_NUM; i++) {
+            ByteMatcher bm = repeated.getMatcherForPosition(i);
+            assertEquals("matcher matches single byte", 1, bm.getNumberOfMatchingBytes());
+            byte[] bytes = matcher.getMatchingBytes();
+            byte bytevalue = bytes[0];
+            assertEquals("matcher matches same byte", theByte, bytevalue);
         }
 
     }
