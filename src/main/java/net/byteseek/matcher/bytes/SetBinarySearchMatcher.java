@@ -147,45 +147,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         if (inverted) {
             regularExpression.append('^');
         }
-        regularExpression.append('[');
-
-        int byteIndex = 0;
-        int[] integers = ByteUtils.toIntArray(bytesToMatch);
-        Arrays.sort(integers);
-        boolean firstItem = true;
-        while (byteIndex < integers.length) {
-            if (prettyPrint && !firstItem) {
-                regularExpression.append(' ');
-            }
-            int byteValue = integers[byteIndex];
-
-            // Look for ranges of values from this position:
-            int lastValue = byteValue;
-            int searchIndex;
-            for (searchIndex = byteIndex + 1; searchIndex < integers.length; searchIndex++) {
-                int nextValue = integers[byteIndex];
-                if (nextValue == lastValue+1) {
-                    lastValue = nextValue;
-                } else {
-                    break;
-                }
-            }
-
-            // If we have a range of more than 2 contiguous positions,
-            // represent this as a range of values:
-            if (lastValue - byteValue > 2) {
-                final String minValue = ByteUtils.byteToString(prettyPrint, byteValue);
-                final String maxValue = ByteUtils.byteToString(prettyPrint, lastValue);
-                regularExpression.append( String.format("%s-%s", minValue, maxValue));
-                byteIndex = searchIndex + 1;
-            } else { // just write out this byte.
-                final String byteVal = ByteUtils.byteToString(prettyPrint, byteValue);
-                regularExpression.append(byteVal);
-                byteIndex++;
-            }
-            firstItem = false;
-        }
-        regularExpression.append(']');
+        regularExpression.append('[').append(ByteUtils.bytesToString(prettyPrint, bytesToMatch)).append(']');
         return regularExpression.toString();
     }
     

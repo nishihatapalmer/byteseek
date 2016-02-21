@@ -120,28 +120,13 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
         }
         regularExpression.append('[');
         boolean firstItem = true;
-        int firstBitSetPosition = byteValues.nextSetBit(0);
-        while (firstBitSetPosition >= 0 && firstBitSetPosition < 256) {
+        for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
             if (prettyPrint && !firstItem) {
                 regularExpression.append(' ');
             }
-            int lastBitSetPosition = byteValues.nextClearBit(firstBitSetPosition) - 1;
-            // If the next clear position doesn't exist, then all remaining values are set:
-            if (lastBitSetPosition < 0) {
-                lastBitSetPosition = 255;
+            if (byteValues.get(byteIndex)) {
+                regularExpression.append(ByteUtils.byteToString(prettyPrint, byteIndex));
             }
-            // If we have a range of more than 1 contiguous set positions,
-            // represent this as a range of values:
-            if (lastBitSetPosition - firstBitSetPosition > 1) {
-                final String minValue = ByteUtils.byteToString(prettyPrint, firstBitSetPosition);
-                final String maxValue = ByteUtils.byteToString(prettyPrint, lastBitSetPosition);
-                regularExpression.append(String.format("%s-%s", minValue, maxValue));
-            } else { // less than 2 contiguous set positions - just write out a single byte:
-                final String byteVal = ByteUtils.byteToString(prettyPrint, firstBitSetPosition);
-                regularExpression.append(byteVal);
-                lastBitSetPosition = firstBitSetPosition;
-            }
-            firstBitSetPosition = byteValues.nextSetBit(lastBitSetPosition + 1);
             firstItem = false;
         }
         regularExpression.append(']');

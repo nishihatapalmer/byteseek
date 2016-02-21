@@ -107,7 +107,7 @@ public class SetBitsetMatcherTest {
         assertTrue("Matcher contains class name", toString.contains(matcher.getClass().getSimpleName()));
         assertTrue("Matcher contains inversion", toString.contains("inverted"));
         assertTrue("Matcher contains byte 0", toString.contains("0"));
-        assertTrue("Matcher contains byte 255", toString.contains("-1"));
+        assertTrue("Matcher contains byte 255", toString.contains("255"));
     }
 
     private void testRegularExpression(Set<Byte> bytesToTest) {
