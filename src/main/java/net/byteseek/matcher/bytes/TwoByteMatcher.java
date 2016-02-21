@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2013-16, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,6 +40,7 @@ import net.byteseek.bytes.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
 
@@ -91,9 +92,6 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
      */
     public TwoByteMatcher(final Collection<Byte> twoBytes) {
     	ArgUtils.checkCollectionSizeNoNullElements(twoBytes, 2);
-    	if (twoBytes.size() != 2) {
-    		throw new IllegalArgumentException("Collection must have two elements");
-    	}
     	final Iterator<Byte> byteIterator = twoBytes.iterator();
     	this.firstByteToMatch = byteIterator.next();
     	this.secondByteToMatch = byteIterator.next();
@@ -190,7 +188,7 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
             return this;
         }
         if (getNumberOfMatchingBytes() == 1) {
-        	return new ByteMatcherSequenceMatcher(numberOfRepeats, OneByteMatcher.valueOf(firstByteToMatch));
+        	return new ByteSequenceMatcher(firstByteToMatch, numberOfRepeats);
         }
         return new ByteMatcherSequenceMatcher(numberOfRepeats, this);
     }    
@@ -198,8 +196,8 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
 
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[first byte:" + firstByteToMatch + 
-    			                            " second byte:" + secondByteToMatch + ']';
+    	return getClass().getSimpleName() + "[" + String.format("%02x", firstByteToMatch & 0xFF) + ' ' +
+    			                                  String.format("%02x", secondByteToMatch & 0xFF) + ']';
     }
     
     
