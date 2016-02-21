@@ -85,7 +85,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
         return window == null? false
-               : ((Arrays.binarySearch(bytesToMatch, 
+               : ((Arrays.binarySearch(bytesToMatch,
                        window.getByte(reader.getWindowOffset(matchPosition))) >= 0) ^ inverted);
     }    
 
@@ -96,9 +96,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
-        return (Arrays.binarySearch(bytes, bytes[matchPosition]) >= 0) ^ inverted;
+        if (matchPosition >= bytes.length || matchPosition < 0) {
+            return false;
+        }
+        return (Arrays.binarySearch(bytesToMatch, bytes[matchPosition]) >= 0) ^ inverted;
     }     
-    
 
     
     /**
@@ -106,7 +108,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
      */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
-        return (Arrays.binarySearch(bytes, bytes[matchPosition]) >= 0) ^ inverted;
+        return (Arrays.binarySearch(bytesToMatch, bytes[matchPosition]) >= 0) ^ inverted;
     }
     
 
