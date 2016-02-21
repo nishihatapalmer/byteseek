@@ -48,26 +48,16 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class SetMatcherTests {
+public class SetBinarySearchMatcherTest {
     
     Random randomGenerator = new Random();
     
     /**
      * 
      */
-    public SetMatcherTests() {
+    public SetBinarySearchMatcherTest() {
     }
 
-    
-    /**
-     * 
-     */
-    @SuppressWarnings("unused")
-	@Test(expected = IllegalArgumentException.class)
-    public void testNullBitSetMatcher() {
-        new SetBitsetMatcher(null, false);
-    }
-    
     /**
      * 
      */
@@ -82,22 +72,13 @@ public class SetMatcherTests {
      */
     @SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
-    public void testEmptyBitSetMatcher() {
-        new SetBitsetMatcher(new LinkedHashSet<Byte>(), false);
-    }
-    
-    /**
-     * 
-     */
-    @SuppressWarnings("unused")
-	@Test(expected = IllegalArgumentException.class)
     public void testEmptyBinarySearchMatcher() {
         new SetBinarySearchMatcher(new LinkedHashSet<Byte>(), false);
     }    
     
 
     /**
-     * Test of matches method, of class SetBitsetMatcher.
+     * Test of matches method, of class SetBinarySearchMatcher.
      * 
      * Can't build all possible subsets of a byte set = 2^256 possible sets,
      * so generates a large number of random byte sets and tests them.
@@ -124,12 +105,6 @@ public class SetMatcherTests {
 
     private void testRegularExpression(Set<Byte> bytesToTest) {
 
-        SetBitsetMatcher matcherNotInverted = new SetBitsetMatcher(bytesToTest, InvertibleMatcher.NOT_INVERTED);
-        testExpression("BitSetMatcher", matcherNotInverted, bytesToTest);
-
-        SetBitsetMatcher matcherInverted = new SetBitsetMatcher(bytesToTest, InvertibleMatcher.INVERTED);
-        testExpression("BitSetMatcher", matcherInverted, bytesToTest);
-
         SetBinarySearchMatcher matcher2NotInverted = new SetBinarySearchMatcher(bytesToTest, InvertibleMatcher.NOT_INVERTED);
         testExpression("BinarySearchMatcher", matcher2NotInverted, bytesToTest);
 
@@ -137,15 +112,8 @@ public class SetMatcherTests {
         testExpression("BinarySearchMatcher", matcherInverted2, bytesToTest);
     }
 
-
     private void testSet(Set<Byte> testSet) {
         Set<Byte> otherBytes = ByteUtils.invertedSet(testSet);
-        
-        SetBitsetMatcher matcherNotInverted = new SetBitsetMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
-        testMatcher("BitSetMatcher", matcherNotInverted, testSet, otherBytes);
-        
-        SetBitsetMatcher matcherInverted = new SetBitsetMatcher(testSet, InvertibleMatcher.INVERTED);
-        testMatcher("BitSetMatcher", matcherInverted, otherBytes, testSet);
         
         SetBinarySearchMatcher matcher2NotInverted = new SetBinarySearchMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
         testMatcher("BinarySearchMatcher", matcher2NotInverted, testSet, otherBytes);
