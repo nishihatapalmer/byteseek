@@ -139,7 +139,6 @@ public class OneByteMatcherTest {
         assertEquals("repeat once is the same class", OneByteMatcher.class, repeated.getClass());
         final int REPEAT_NUM = 10;
         repeated = matcher.repeat(REPEAT_NUM);
-        assertEquals("repeated ten times is a ByteSequenceMatcher", ByteSequenceMatcher.class, repeated.getClass());
         assertEquals("Repeated ten times length is correct", REPEAT_NUM, repeated.length());
         for (int i = 0; i < REPEAT_NUM; i++) {
             ByteMatcher bm = repeated.getMatcherForPosition(i);

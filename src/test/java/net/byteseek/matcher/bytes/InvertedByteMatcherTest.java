@@ -30,9 +30,19 @@
  */
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.bytes.ByteUtils;
+import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.InvertedByteMatcher;
 
+import net.byteseek.matcher.sequence.SequenceMatcher;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.Assert.*;
 
 /**
@@ -41,47 +51,106 @@ import static org.junit.Assert.*;
  */
 public class InvertedByteMatcherTest {
 
+    private WindowReader reader;
+
+    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
+
+    static {
+        BYTE_VALUES = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            BYTE_VALUES[i] = (byte) i;
+        }
+    }
+
     /**
      * 
      */
     public InvertedByteMatcherTest() {
     }
 
+    @Before
+    public void setup() {
+        reader = new ByteArrayReader(BYTE_VALUES);
+    }
 
     /**
      * Tests every possible byte value against every other non-matching
      * byte value.
      */
     @Test
-    public void testMatcher() {
+    public void testMatcher() throws IOException {
  
         for (int i = 0; i < 256; i++) {
             final byte theByte = (byte) i;
-            final InvertedByteMatcher matcher = new InvertedByteMatcher(theByte);
-            assertEquals("matches", false, matcher.matches(theByte));
-            assertEquals("255 byte matches", 255, matcher.getNumberOfMatchingBytes());
-            
-            byte[] matchingBytes = new byte[255];
-            int bytePos = 0;
-            for (int q = 0; q < 256; q++) {
-                if (q != i) matchingBytes[bytePos++] = (byte) q;
+            InvertedByteMatcher matcher = new InvertedByteMatcher(theByte);
+            testMatcher(matcher, theByte, i);
+
+            String hexByte = ByteUtils.byteToString(false, i);
+            hexByte = hexByte.toLowerCase();
+            matcher = new InvertedByteMatcher(hexByte);
+            testMatcher(matcher, theByte, i);
+
+            hexByte = hexByte.toUpperCase();
+            matcher = new InvertedByteMatcher(hexByte);
+            testMatcher(matcher, theByte, i);
+        }
+
+    }
+
+    private void testMatcher(ByteMatcher matcher, byte theByte, int index) throws IOException {
+        assertFalse("no matche byte value",      matcher.matches(theByte));
+        assertFalse("no matche window reader",   matcher.matches(reader, index));
+        assertFalse("no matches array",           matcher.matches(BYTE_VALUES, index));
+        assertFalse("no match array -1",      matcher.matches(BYTE_VALUES, -1));
+        assertFalse("no match array 256",     matcher.matches(BYTE_VALUES, 256));
+        assertFalse("no matches no bounds check", matcher.matchesNoBoundsCheck(BYTE_VALUES, index));
+        try {
+            matcher.matchesNoBoundsCheck(BYTE_VALUES, -1);
+            fail("Expected an ArrayIndexOutOfBoundsException at pos -1");
+        } catch(ArrayIndexOutOfBoundsException expectedIgnore) {}
+        try {
+            matcher.matchesNoBoundsCheck(BYTE_VALUES, 256);
+            fail("Expected an ArrayIndexOutOfBoundsException at pos 256");
+        } catch(ArrayIndexOutOfBoundsException expectedIgnore) {}
+        assertEquals("255 byte matches", 255, matcher.getNumberOfMatchingBytes());
+
+        byte[] bytesMatched = matcher.getMatchingBytes();
+        assertEquals("255 byte matches in array", 255, bytesMatched.length);
+        Set<Byte> bytesFound = new HashSet<Byte>();
+        for (byte b : bytesMatched) {
+            bytesFound.add(b);
+        }
+        assertEquals("255 distinct values matched", 255, bytesFound.size());
+        assertFalse("does not contain " + theByte, bytesFound.contains(theByte));
+
+        final String regularExpression = String.format("^%02x", theByte);
+        assertEquals("regular expression", regularExpression, matcher.toRegularExpression(false));
+
+        for (int x = 0; x < 256; x++) {
+            if (x != index) {
+                final byte nomatch = (byte) x;
+                assertTrue("match byte value", matcher.matches(nomatch));
+                assertTrue("match reader", matcher.matches(reader, x));
+                assertTrue("match array", matcher.matches(BYTE_VALUES, x));
+                assertTrue("match array", matcher.matchesNoBoundsCheck(BYTE_VALUES, x));
             }
-   
-            assertArrayEquals("matching bytes", matchingBytes, matcher.getMatchingBytes());
-            
-            final String regularExpression = String.format("^%02x", theByte);
-            assertEquals("regular expression", regularExpression, matcher.toRegularExpression(false));
-            assertEquals("regular expression", regularExpression, matcher.toRegularExpression(true));
-            for (int x = 0; x < 256; x++) {
-                if (x != i) {
-                    final byte match = (byte) x;
-                    assertEquals("matches", true, matcher.matches(match));
-                }
-            }
-            if (i % 32 == 0) {
-                String message = String.format("Matching byte %d", i);
-                SimpleTimer.timeMatcher(message, matcher);
-            }
+        }
+        if (index % 32 == 0) {
+            String message = String.format("Matching byte %d", index);
+            SimpleTimer.timeMatcher(message, matcher);
+        }
+        String toString = matcher.toString();
+        assertTrue(toString.contains(InvertedByteMatcher.class.getSimpleName()));
+        assertTrue(toString.contains(String.format("%02x", theByte & 0xFF)));
+
+        SequenceMatcher repeated = matcher.repeat(1);
+        assertEquals("repeat once is the same class", InvertedByteMatcher.class, repeated.getClass());
+        final int REPEAT_NUM = 10;
+        repeated = matcher.repeat(REPEAT_NUM);
+        assertEquals("Repeated ten times length is correct", REPEAT_NUM, repeated.length());
+        for (int i = 0; i < REPEAT_NUM; i++) {
+            ByteMatcher bm = repeated.getMatcherForPosition(i);
+            assertEquals("matcher matches 255 bytes", 255, bm.getNumberOfMatchingBytes());
         }
 
     }
