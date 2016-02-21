@@ -124,10 +124,18 @@ public class SetBitsetMatcherTest {
     }
 
     private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) {
-        assertEquals("Matches correct number of bytes", bytesMatched.size(), matcher.getNumberOfMatchingBytes());
+        int numberOfMatchingBytes = matcher.getNumberOfMatchingBytes();
+        assertEquals("Matches correct number of bytes", bytesMatched.size(), numberOfMatchingBytes);
+
+        byte[] matchingBytes = matcher.getMatchingBytes();
+        for (byte b : matchingBytes) {
+            assertTrue("Contains byte " + b, bytesMatched.contains(b));
+        }
+
         for (Byte byteShouldMatch : bytesMatched) {
             assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(byteShouldMatch));
         }
+
         for (Byte byteShouldNotMatch : bytesNotMatched) {
             assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(byteShouldNotMatch));
         }
