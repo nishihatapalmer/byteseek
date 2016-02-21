@@ -32,15 +32,9 @@
 package net.byteseek.matcher.bytes;
 
 import net.byteseek.bytes.ByteUtils;
-import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.InvertibleMatcher;
-import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
-import net.byteseek.matcher.bytes.SetBitsetMatcher;
 
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -101,6 +95,19 @@ public class SetBitsetMatcherTest {
             writeTestDefinition(testnum, numberOfTests, bytesToTest);
             testRegularExpression(bytesToTest);
         }
+    }
+
+    @Test
+    public void testSetToString() {
+        Set<Byte> bytes = new HashSet<Byte>();
+        bytes.add((byte) 0);
+        bytes.add((byte) 255);
+        ByteMatcher matcher = new SetBitsetMatcher(bytes, InvertibleMatcher.NOT_INVERTED);
+        String toString = matcher.toString();
+        assertTrue("Matcher contains class name", toString.contains(matcher.getClass().getSimpleName()));
+        assertTrue("Matcher contains inversion", toString.contains("inverted"));
+        assertTrue("Matcher contains byte 0", toString.contains("0"));
+        assertTrue("Matcher contains byte 255", toString.contains("-1"));
     }
 
     private void testRegularExpression(Set<Byte> bytesToTest) {
