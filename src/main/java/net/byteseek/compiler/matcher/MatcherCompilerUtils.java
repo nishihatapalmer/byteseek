@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2014, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -164,7 +164,7 @@ public final class MatcherCompilerUtils {
 	 */
 	public static ByteMatcher createCaseInsensitiveMatcher(final char caseChar) {
 		final byte firstByte = (byte) (caseChar & 0xFF);
-		if (caseChar >= 'a' && caseChar <= 'Z') {
+		if (caseChar >= 'a' && caseChar <= 'z') {
 			final byte secondByte = (byte) (firstByte - 32); 
 			return new TwoByteMatcher(firstByte, secondByte);
 		} else if (caseChar >= 'A' && caseChar <= 'Z') {
