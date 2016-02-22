@@ -86,7 +86,7 @@ public class SequenceMatcherCompilerTest {
 	 * @throws Exception 
 	 */
 	//TODO: fix tests:
-	/*
+
 	@Test
 	public void testBasicCompile() throws Exception {
 		basicTests("00", 1, OneByteMatcher.class);
@@ -114,22 +114,22 @@ public class SequenceMatcherCompilerTest {
 
 		basicTests("01fd [ef]   de", 4, ByteSequenceMatcher.class);
 
-		basicTests("01fd [ef fe]   de", 4, SequenceSequenceMatcher.class);
+		basicTests("01fd [ef fe]   de", 4, ByteMatcherSequenceMatcher.class);
 
 		basicTests("01{4}", 4, ByteSequenceMatcher.class);
 
 		basicTests("010203{6}", 8, ByteSequenceMatcher.class);
 
-		basicTests("[fffe]", 1, AllBitmaskMatcher.class);
+		basicTests("[fffe]", 1, TwoByteMatcher.class);
 		basicTests("[fffe]{5}", 5, ByteMatcherSequenceMatcher.class);
 
 		basicTests("(0102){2}", 4, ByteSequenceMatcher.class);
-		basicTests("(dd[ff03]){3}", 6, SequenceSequenceMatcher.class);
+		basicTests("(dd[ff03]){3}", 6, ByteMatcherSequenceMatcher.class);
 		basicTests("'start'(dd[ff03]){3}", 11, SequenceSequenceMatcher.class);
 
 		basicTests(".{1000}", 1000, FixedGapMatcher.class);
 	}
-*/
+
 
 	private SequenceMatcher basicTests(String expression, int length, Class<?> matcherClass) {
 		SequenceMatcher matcher = null;
