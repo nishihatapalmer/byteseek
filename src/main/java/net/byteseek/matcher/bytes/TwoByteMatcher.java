@@ -165,7 +165,12 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
      */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-    	return '[' + ByteUtils.bytesToString(prettyPrint, getMatchingBytes()) + ']';
+        if (getNumberOfMatchingBytes() == 1) {
+            return String.format("%02x", firstByteToMatch & 0xFF);
+        }
+        final String format = prettyPrint? "%02x %02x" : "%02x%02x";
+    	return '[' + String.format(format, firstByteToMatch  & 0xFF,
+                                           secondByteToMatch & 0xFF) + ']';
     }
 
 

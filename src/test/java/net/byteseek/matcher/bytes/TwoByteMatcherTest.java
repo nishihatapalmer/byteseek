@@ -151,10 +151,10 @@ public class TwoByteMatcherTest {
         assertTrue(toString.contains(String.format("%02x", second)));
 
         String regex = matcher.toRegularExpression(false);
-        assertTrue(regex.startsWith("["));
-        assertTrue(regex.endsWith("]"));
         assertTrue(regex.contains(String.format("%02x", first)));
         if (numMatches == 2) {
+            assertTrue(regex.startsWith("["));
+            assertTrue(regex.endsWith("]"));
             assertTrue(regex.contains(String.format("%02x", second)));
         }
 
