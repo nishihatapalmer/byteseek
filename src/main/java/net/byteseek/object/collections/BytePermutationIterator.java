@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.collections;
+package net.byteseek.object.collections;
 
 import java.util.ArrayList;
 import java.util.Iterator;

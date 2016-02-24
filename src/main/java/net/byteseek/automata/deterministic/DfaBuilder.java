@@ -48,7 +48,7 @@ import net.byteseek.automata.factory.TransitionFactory;
 import net.byteseek.automata.walker.Action;
 import net.byteseek.automata.walker.StateChildWalker;
 import net.byteseek.automata.walker.Step;
-import net.byteseek.collections.IdentityHashSet;
+import net.byteseek.object.collections.IdentityHashSet;
 import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
 
 /**

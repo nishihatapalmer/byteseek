@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import net.byteseek.collections.ImmutableListIterator;
+import net.byteseek.object.collections.ImmutableListIterator;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 

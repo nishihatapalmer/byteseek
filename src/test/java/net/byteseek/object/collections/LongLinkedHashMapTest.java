@@ -1,4 +1,4 @@
-package net.byteseek.collections;
+package net.byteseek.object.collections;
 
 import org.junit.Before;
 import org.junit.Test;

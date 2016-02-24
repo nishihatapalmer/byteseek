@@ -31,7 +31,7 @@
 
 package net.byteseek.io.reader.cache;
 
-import net.byteseek.collections.LongLinkedHashMap;
+import net.byteseek.object.collections.LongLinkedHashMap;
 import net.byteseek.io.reader.windows.Window;
 
 import java.io.IOException;

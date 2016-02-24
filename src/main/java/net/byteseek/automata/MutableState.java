@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import net.byteseek.collections.IdentityHashSet;
+import net.byteseek.object.collections.IdentityHashSet;
 import net.byteseek.object.factory.DeepCopy;
 import net.byteseek.utils.ArgUtils;
 

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.byteseek.collections.BytePermutationIterator;
+import net.byteseek.object.collections.BytePermutationIterator;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.multisequence.HashMultiSequenceMatcher;
