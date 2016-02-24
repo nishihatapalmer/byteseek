@@ -121,13 +121,13 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
         regularExpression.append('[');
         boolean firstItem = true;
         for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
-            if (prettyPrint && !firstItem) {
-                regularExpression.append(' ');
-            }
             if (byteValues.get(byteIndex)) {
+                if (prettyPrint && !firstItem) {
+                    regularExpression.append(' ');
+                }
                 regularExpression.append(ByteUtils.byteToString(prettyPrint, byteIndex));
+                firstItem = false;
             }
-            firstItem = false;
         }
         regularExpression.append(']');
         return regularExpression.toString();
