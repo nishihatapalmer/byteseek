@@ -36,8 +36,8 @@ import java.util.Collection;
 import net.byteseek.automata.State;
 import net.byteseek.automata.Transition;
 import net.byteseek.automata.factory.TransitionFactory;
-import net.byteseek.compiler.matcher.ByteMatcherFactory;
-import net.byteseek.compiler.matcher.OptimalByteMatcherFactory;
+import net.byteseek.matcher.bytes.ByteMatcherFactory;
+import net.byteseek.matcher.bytes.OptimalByteMatcherFactory;
 
 /**
  * An implementation of {@link TransitionFactory} which creates 

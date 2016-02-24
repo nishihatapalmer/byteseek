@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.compiler.matcher;
+package net.byteseek.matcher.bytes;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,16 +40,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.matcher.bytes.AllBitmaskMatcher;
-import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
-import net.byteseek.matcher.bytes.AnyByteMatcher;
-import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.ByteRangeMatcher;
-import net.byteseek.matcher.bytes.InvertedByteMatcher;
-import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.matcher.bytes.SetBinarySearchMatcher;
-import net.byteseek.matcher.bytes.SetBitsetMatcher;
-import net.byteseek.matcher.bytes.TwoByteMatcher;
 import net.byteseek.utils.ArgUtils;
 
 /**
@@ -85,7 +75,7 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
      */
     @Override
     public ByteMatcher create(final Collection<Byte> bytes) {
-        return create(bytes, ByteMatcherFactory.NOT_INVERTED);
+        return create(bytes, NOT_INVERTED);
     }
     
     

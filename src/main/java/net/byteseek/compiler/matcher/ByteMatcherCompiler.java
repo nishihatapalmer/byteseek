@@ -36,6 +36,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.byteseek.matcher.bytes.ByteMatcherFactory;
+import net.byteseek.matcher.bytes.OptimalByteMatcherFactory;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.compiler.AbstractCompiler;
 import net.byteseek.compiler.CompileException;
@@ -79,7 +81,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	// Protected static fields:
 
 	protected static ByteMatcherCompiler defaultCompiler;
-	protected static ByteMatcherFactory	 defaultFactory;
+	protected static ByteMatcherFactory defaultFactory;
 
 	/**
 	 * Compiles a {@link ByteMatcher} from the expression (assuming the syntax

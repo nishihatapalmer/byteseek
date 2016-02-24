@@ -37,6 +37,8 @@ import java.util.List;
 import net.byteseek.compiler.AbstractCompiler;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.compiler.Optimiser;
+import net.byteseek.matcher.bytes.ByteMatcherFactory;
+import net.byteseek.matcher.bytes.OptimalByteMatcherFactory;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceSequenceMatcher;
@@ -74,7 +76,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     /**
      * Compiles a SequenceMatcher from a byteSeek regular expression (limited to
      * syntax which produces fixed-length sequences).  It will use the default
-     * {@link OptimalByteMatcherFactory} to produce matchers for sets of bytes, a
+     * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} to produce matchers for sets of bytes, a
      * {@link SequenceMatcherOptimiser} to to optimise the sequence matchers produced.
      * and a {@link RegexParser} to parse the expression into an abstract syntax tree.
      * 
@@ -92,7 +94,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 
     
     /**
-     * Default constructor which uses the {@link OptimalByteMatcherFactory}
+     * Default constructor which uses the {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory}
      * to produce matchers for sets of bytes, and a {@link RegexParser} to produce
      * the abstract syntax tree.  It also uses the {@link SequenceMatcherOptimiser}
      * to optimise the sequence matchers produced.
@@ -120,7 +122,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * Constructor which uses the provided {@link Optimiser} to
      * produce a sequence from a list of sequences, and a {@link RegexParser}
      * to produce the abstract syntax tree. It also uses the
-     * {@link OptimalByteMatcherFactory} to produce matchers from sets of bytes.
+     * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} to produce matchers from sets of bytes.
      * 
      * @param optimiser The Optimiser to optimise sequence matchers.
      */
@@ -162,7 +164,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * <p>
      * If the parser is null, then the parser used will be the default parser defined
      * in {@link AbstractCompiler}.  If the factory is null, then the default
-     * {@link OptimalByteMatcherFactory} will be used.
+     * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} will be used.
      * 
      * @param parser The parser to use to produce the abstract syntax tree. 
      * @param byteFactoryToUse The ByteMatcherFactory used to produce matchers
@@ -181,7 +183,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * <p>
      * If the parser is null, then the parser used will be the default parser defined
      * in {@link AbstractCompiler}.  If the factory is null, then the default
-     * {@link OptimalByteMatcherFactory} will be used.
+     * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} will be used.
      * 
      * @param parser The parser to use to produce the abstract syntax tree. 
      * @param optimiser The Optimiser used to optimise the sequence matchers produced.
@@ -198,7 +200,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * product the abstract syntax tree.
      * <p>
      * If the parser is null, then the parser used will be the {@link RegexParser}.
-     * If the byte matcher factory is null, then a {@link OptimalByteMatcherFactory} will be used.
+     * If the byte matcher factory is null, then a {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} will be used.
      * If the sequence matcher factory is null, then a {@link SequenceMatcherOptimiser} will be used.
      * 
      * @param parser The parser to use to produce the abstract syntax tree. 

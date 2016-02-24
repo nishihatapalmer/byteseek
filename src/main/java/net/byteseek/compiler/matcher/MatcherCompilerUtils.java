@@ -33,14 +33,7 @@ package net.byteseek.compiler.matcher;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.byteseek.matcher.bytes.AllBitmaskMatcher;
-import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
-import net.byteseek.matcher.bytes.AnyByteMatcher;
-import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.bytes.ByteRangeMatcher;
-import net.byteseek.matcher.bytes.InvertedByteMatcher;
-import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.matcher.bytes.TwoByteMatcher;
+import net.byteseek.matcher.bytes.*;
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.parser.ParseException;
