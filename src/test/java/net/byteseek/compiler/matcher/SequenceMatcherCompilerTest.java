@@ -5,10 +5,6 @@
 
 package net.byteseek.compiler.matcher;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import net.byteseek.bytes.ByteUtils;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.matcher.bytes.*;
@@ -25,6 +21,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -152,6 +150,7 @@ public class SequenceMatcherCompilerTest {
 	}
 
 	private void testSequencesEquivalent(String expression, SequenceMatcher generated, SequenceMatcher compiled) {
+		assertFalse("expression does not contain more than one space in a row", expression.contains("  "));
 		assertEquals("Generated and compiled are same length: " + expression, generated.length(), compiled.length());
 		for (int i = 0; i < generated.length(); i++) {
 			ByteMatcher genMatcher = generated.getMatcherForPosition(i);
