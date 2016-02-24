@@ -35,11 +35,14 @@ package net.byteseek.object.lazy;
 import net.byteseek.object.factory.ObjectFactory;
 
 /**
- * This class creates objects using single-check
- * lazy initialisation, with volatile references.  This means that
- * if two threads attempt to get the object at the same time before it has
- * been fully initialised, it is possible for the object to be created 
- * more than once.  
+ * This class creates objects using single-check lazy initialisation,
+ * with volatile references and no synchronization.
+ * <p>
+ * This means that if two threads attempt to get the object at the same
+ * time before it has been fully initialised, it is possible for the object to be created
+ * more than once.  This is only worth doing if the object will always be created in the same way,
+ * and the occasional expense of doing this outweighs the tiny advantage of
+ * using a non-synchronized method.
  * 
  * @param <T> The type of object to instantiate lazily.
  * 
