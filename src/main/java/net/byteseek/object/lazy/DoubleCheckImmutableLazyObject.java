@@ -36,7 +36,8 @@ import net.byteseek.object.factory.ObjectFactory;
 
 /**
  * This class creates objects using double-check lazy initialisation,
- * with synchronization on the second check.  The object being created must be immutable.
+ * with synchronization on the second check, and no volatile references.
+ * The object being created must be immutable.
  * <p>
  * This means that if two threads attempt to get the object at the same time
  * before it has been fully initialised, the object will only be created once.
