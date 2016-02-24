@@ -39,7 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.matcher.bytes.AllBitmaskMatcher;
 import net.byteseek.matcher.bytes.AnyBitmaskMatcher;
 import net.byteseek.matcher.bytes.AnyByteMatcher;

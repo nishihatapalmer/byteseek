@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;

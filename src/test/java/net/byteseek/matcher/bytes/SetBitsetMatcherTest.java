@@ -31,7 +31,7 @@
 
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 
 import java.io.IOException;
 import java.util.*;

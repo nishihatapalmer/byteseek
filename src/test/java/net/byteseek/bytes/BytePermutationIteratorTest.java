@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.bytes.BytePermutationIterator;
+import net.byteseek.collections.BytePermutationIterator;
 
 import org.junit.Test;
 

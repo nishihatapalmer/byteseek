@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
 import net.byteseek.parser.StringParseReader;

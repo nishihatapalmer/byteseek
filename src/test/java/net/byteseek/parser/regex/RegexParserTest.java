@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;

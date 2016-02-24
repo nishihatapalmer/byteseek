@@ -5,7 +5,7 @@
 
 package net.byteseek.compiler.matcher;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.matcher.bytes.*;
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
@@ -15,7 +15,6 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceSequenceMatcher;
 import net.byteseek.parser.tree.ParseTree;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

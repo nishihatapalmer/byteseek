@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.bytes;
+package net.byteseek.utils;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;

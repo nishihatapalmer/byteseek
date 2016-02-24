@@ -1,6 +1,6 @@
 package net.byteseek.compiler.matcher;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.matcher.bytes.*;
 import org.junit.Before;
 import org.junit.BeforeClass;

@@ -30,10 +30,9 @@
  */
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.matcher.bytes.InvertedByteMatcher;
 
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Before;

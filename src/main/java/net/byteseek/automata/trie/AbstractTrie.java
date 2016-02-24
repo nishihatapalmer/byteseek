@@ -43,7 +43,7 @@ import net.byteseek.automata.Transition;
 import net.byteseek.automata.factory.MutableStateFactory;
 import net.byteseek.automata.factory.StateFactory;
 import net.byteseek.automata.factory.TransitionFactory;
-import net.byteseek.bytes.ByteUtils;
+import net.byteseek.utils.ByteUtils;
 import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
 
 /**
