@@ -145,6 +145,21 @@ public class SequenceMatcherCompilerTest {
 	};
 
 	@Test
+	public void testMultiExpressions() throws Exception {
+		List<String> expressions = new ArrayList<String>();
+		List<SequenceMatcher> generated = new ArrayList<SequenceMatcher>();
+		int totalLength = 0;
+		for (int i = 0; i < 10; i++) {
+			SequenceMatcher gen = createRandomSequenceMatcher();
+			totalLength += gen.length();
+			expressions.add(gen.toRegularExpression(false));
+			generated.add(gen);
+		}
+		SequenceMatcher joined = compiler.compile(expressions);
+		assertEquals("Length of joined expressions is correct", totalLength, joined.length());
+	}
+
+	@Test
 	public void testJoinExpressions() throws Exception {
 		Parser<ParseTree> parser = new RegexParser();
 		List<ParseTree> expressions = new ArrayList<ParseTree>();
