@@ -111,7 +111,7 @@ public final class MatcherCompilerUtils {
 												   final boolean currentInversion,
 												   final ByteMatcherFactory matcherFactory) throws ParseException {
 		final boolean isInverted = isInverted(node, currentInversion);
-		// If the set only has one element, it may be something we can directly represent
+		// If the set only has one element that matches something, it may be something we can directly represent
 		// with a dedicated matcher, rather than using the slower matcherFactory (as we
 		// are forced to calculate the set of byte values in the set to use it).
 		if (node.getNumChildren() == 1) {
@@ -122,7 +122,6 @@ public final class MatcherCompilerUtils {
 				case ALL_BITMASK: 	return createAllBitmaskMatcher(singleElement, isInverted);
 				case ANY_BITMASK: 	return createAnyBitmaskMatcher(singleElement, isInverted);
 				case RANGE: 		return createRangeMatcher(singleElement, isInverted);
-				//FIXME: not sure that nested set inversions work correctly.  Ensure good tests for these cases.
 				case SET:			return createMatcherFromSet(singleElement, isInverted, matcherFactory);
 			}
 		}
