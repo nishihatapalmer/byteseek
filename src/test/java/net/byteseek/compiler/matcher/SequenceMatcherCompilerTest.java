@@ -5,6 +5,12 @@
 
 package net.byteseek.compiler.matcher;
 
+import net.byteseek.parser.Parser;
+import net.byteseek.parser.regex.RegexParser;
+import net.byteseek.parser.tree.ParseTreeType;
+import net.byteseek.parser.tree.node.BaseNode;
+import net.byteseek.parser.tree.node.ByteNode;
+import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.matcher.bytes.*;
@@ -131,6 +137,30 @@ public class SequenceMatcherCompilerTest {
 		basicTests(".{1000}", 1000, FixedGapMatcher.class);
 	}
 
+	@Test(expected = CompileException.class)
+	public void testBadSequenceType() throws CompileException {
+		ParseTree badChild = new ChildrenNode(ParseTreeType.ZERO_TO_MANY, new ByteNode((byte) 0));
+		ParseTree sequence = new ChildrenNode(ParseTreeType.SEQUENCE, badChild);
+		compiler.compile(sequence);
+	};
+
+	@Test
+	public void testJoinExpressions() throws Exception {
+		Parser<ParseTree> parser = new RegexParser();
+		List<ParseTree> expressions = new ArrayList<ParseTree>();
+		List<SequenceMatcher> generated = new ArrayList<SequenceMatcher>();
+		for (int i = 0; i < 10; i++) {
+			SequenceMatcher gen = createRandomSequenceMatcher();
+			ParseTree parsed = parser.parse(gen.toRegularExpression(false));
+			expressions.add(parsed);
+			generated.add(gen);
+		}
+		ParseTree joined = compiler.joinExpressions(expressions);
+		assertEquals("Parse tree is children class", ChildrenNode.class, joined.getClass());
+		assertEquals("Parse tree has 10 children", 10, joined.getNumChildren());
+		//TODO: test that the child sequences are equivalent...
+	}
+
 	@Test
 	public void testRandomSequences() throws CompileException {
 		for (int testNo = 0; testNo < 1000; testNo++) {
@@ -145,7 +175,19 @@ public class SequenceMatcherCompilerTest {
 
 			compiled = SequenceMatcherCompiler.compileFrom(expression);
 			testSequencesEquivalent(expression, generated, compiled);
+
+			testCompiler(expression, generated, new SequenceMatcherCompiler(new RegexParser()));
+			testCompiler(expression, generated, new SequenceMatcherCompiler(new OptimalByteMatcherFactory()));
+			testCompiler(expression, generated, new SequenceMatcherCompiler(new SequenceMatcherOptimiser()));
+			testCompiler(expression, generated, new SequenceMatcherCompiler(new RegexParser(), new OptimalByteMatcherFactory()));
+			testCompiler(expression, generated, new SequenceMatcherCompiler(new RegexParser(), new SequenceMatcherOptimiser()));
+			testCompiler(expression, generated, new SequenceMatcherCompiler(new OptimalByteMatcherFactory(), new SequenceMatcherOptimiser()));
 		}
+	}
+
+	private void testCompiler(String expression, SequenceMatcher generated, SequenceMatcherCompiler comp) throws CompileException {
+		SequenceMatcher compiled = comp.compile(expression);
+		testSequencesEquivalent(expression, generated, compiled);
 	}
 
 	private void testSequencesEquivalent(String expression, SequenceMatcher generated, SequenceMatcher compiled) {
