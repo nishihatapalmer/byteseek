@@ -2,6 +2,7 @@
 byteseek is a Java library for efficiently matching patterns of bytes and searching for those patterns.  The main well-tested packages are:
 
 ####Matcher
+A package which contains various types of matcher for individual bytes or sequences of them.
 * bytes - matchers (and inverted matchers) for bytes, ranges of bytes, sets, any byte, and bitmasks.
 * sequence - matchers for sequences of bytes, byte matchers, fixed gaps and sequences of sequences.  
 
