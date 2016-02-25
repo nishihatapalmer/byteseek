@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.byteseek.object.factory.DeepCopy;
+import net.byteseek.utils.factory.DeepCopy;
 
 /**
  * State is an interface representing a single state of an automata. A state can

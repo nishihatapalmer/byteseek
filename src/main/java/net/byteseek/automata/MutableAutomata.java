@@ -39,7 +39,7 @@ import java.util.Map;
 import net.byteseek.automata.walker.Action;
 import net.byteseek.automata.walker.StateChildWalker;
 import net.byteseek.automata.walker.Step;
-import net.byteseek.object.factory.DeepCopy;
+import net.byteseek.utils.factory.DeepCopy;
 
 /**
  * A mutable implementation of {@link net.byteseek.automata.Automata} interface.

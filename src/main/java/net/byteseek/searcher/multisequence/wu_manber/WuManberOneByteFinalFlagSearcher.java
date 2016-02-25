@@ -33,7 +33,7 @@ package net.byteseek.searcher.multisequence.wu_manber;
 
 import java.io.IOException;
 
-import net.byteseek.object.collections.BytePermutationIterator;
+import net.byteseek.utils.collections.BytePermutationIterator;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -41,9 +41,9 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.object.lazy.DoubleCheckImmutableLazyObject;
-import net.byteseek.object.lazy.LazyObject;
-import net.byteseek.object.factory.ObjectFactory;
+import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
+import net.byteseek.utils.lazy.LazyObject;
+import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.Searcher;

@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import net.byteseek.object.collections.CollUtils;
+import net.byteseek.utils.collections.CollUtils;
 
 import org.junit.After;
 import org.junit.AfterClass;

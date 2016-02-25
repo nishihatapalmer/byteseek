@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2013-16. All rights reserved.
- * 
+ * Copyright Matt Palmer 2009-2011, All rights reserved.
+ *
  * This code is licensed under a standard 3-clause BSD license:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *  
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,55 +29,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.object.lazy;
+package net.byteseek.utils.factory;
 
-
-import net.byteseek.object.factory.ObjectFactory;
+import java.util.Map;
 
 /**
- * This class creates objects using double-check lazy initialisation,
- * with synchronization on the second check, and no volatile references.
- * The object being created must be immutable.
+ * DeepCopy
+ *
+ * An interface for deep copying of objects.
  * <p>
- * This means that if two threads attempt to get the object at the same time
- * before it has been fully initialised, the object will only be created once.
- * 
- * @param <T> The type of object to instantiate lazily.
- * 
+ * Each object implementing this  interface must return a deep copy of itself
+ * and any child objects that also implement the DeepCopy interface.
+ * <p>
+ * It requires an initially empty map of old to new objects to be passed in.
+ * This is forwarded to other child objects implementing DeepCopy, in order that
+ * only one copy of the same object is ever created.
+ *
  * @author Matt Palmer
  */
-public final class DoubleCheckImmutableLazyObject<T> implements LazyObject<T> {
-
-    private final ObjectFactory<T> factory;
-    private T object; // since the object is immutable, this field does not have to be volatile.
+public interface DeepCopy {
 
     /**
-     * Constructs a DoubleCheckLazyObject with an object factory to create the 
-     * object lazily.
-     * 
-     * @param factory A factory which can create an instance of type T.
+     * deepCopy returns a deep copy of the object implementing this interface.
+     *
+     * @param oldToNewObjects a map of old objects to their copies.
+     * @return DeepCopy a deep copy of the object implementing this interface.
      */
-    public DoubleCheckImmutableLazyObject(ObjectFactory<T> factory) {
-    	this.factory = factory;
-    }
-    
-   
-    /**
-     * Uses Double-Check lazy initialisation.  Only one instance will be created, no matter
-     * how many threads call this method.
-     * 
-     * @return An object of type T.
-     */
-    @Override
-    public final T get() {
-        if (object == null) {
-        	synchronized(this) {
-        		if (object == null) {
-        			object = factory.create();
-        		}
-        	}
-        }
-        return object;
-    }
-
+    DeepCopy deepCopy(final Map<DeepCopy,DeepCopy> oldToNewObjects);
 }

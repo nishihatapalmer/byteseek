@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,10 +28,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- /**
-  * A package providing utilities and classes relating to collections, 
-  * including a hash set which tests for equality based on object identity, 
-  * and an immutable list iterator, which does not allow removal of elements from the list.
-  */
- package net.byteseek.object.collections;
+
+/**
+ * A package containing a simple interface for getting objects lazily.
+ * Various implementations of the lazy object are given which allow different
+ * threading strategies to be applied to object creation.
+ * The SingleCheckLazyObject is not entirely thread-safe, and uses
+ * no synchronization, but may be usable in some scenarios.
+ * The DoubleCheckLazyObject uses synchronization to achieve thread-safety,
+ * guaranteeing that the object will only be created once.
+ * The DoubleCheckImmutableLazyObject also uses synchronization, but
+ * avoids the need for a volatile reference as long as the object being
+ * created is immutable.
+ * All of the LazyObject implementations use an underlying ObjectFactory to
+ * actually create the objects.  This allows us to apply different threading
+ * strategies to a factory.
+ */
+package net.byteseek.utils.lazy;

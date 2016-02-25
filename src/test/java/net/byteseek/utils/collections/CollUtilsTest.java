@@ -28,80 +28,51 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.object.collections;
+package net.byteseek.utils.collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.junit.Test;
 
-public class IdentityHashSetTest {
+public class CollUtilsTest {
 
 	@Test
-	public final void testConstructor() {
-		IdentityHashSet<Byte> test = new IdentityHashSet<Byte>();
-		assertTrue("Set is empty", test.isEmpty());
-		assertEquals("Set size is zero", 0, test.size());
+	public final void testContainsAny() {
+		try {
+			CollUtils.containsAny(null, null);
+			fail("Expected an Illegal Argument Exception for null collections");
+		} catch (IllegalArgumentException expected) {}
 
-		IdentityHashSet<Integer> test2 = new IdentityHashSet<Integer>();
-		assertTrue("Set is empty", test2.isEmpty());
-		assertEquals("Set size is zero", 0, test2.size());
+		try {
+			CollUtils.containsAny(new ArrayList<Integer>(), null);
+			fail("Expected an Illegal Argument Exception for null collections");
+		} catch (IllegalArgumentException expected) {}
+
 		
-		List<Integer> list = new ArrayList<Integer>();
-		Integer one = new Integer(1);
-		Integer two = new Integer(257);
-		Integer three = new Integer(1000000);
-		list.add(one);
-		list.add(two);
-		list.add(three);
+		try {
+			CollUtils.containsAny(null, new HashSet<Byte>());
+			fail("Expected an Illegal Argument Exception for null collections");
+		} catch (IllegalArgumentException expected) {}
 		
-		test2 = new IdentityHashSet<Integer>(list);
-		assertEquals("Hash set is same size as constructed list", list.size(), test2.size());
-		for (Integer value : list) {
-			assertTrue("Value is in the set", test2.contains(value));
-		}
+		Collection<Integer> collection = new ArrayList<Integer>();
+		Collection<Integer> values = new HashSet<Integer>();
+		assertFalse("empty collections do not contain any of each other", CollUtils.containsAny(collection,values));
+		assertFalse("empty collections do not contain any of each other", CollUtils.containsAny(values, collection));
 		
-		List<Integer> list2 = new ArrayList<Integer>();
-		Integer one2 = new Integer(1);
-		Integer two2 = new Integer(257);
-		Integer three2 = new Integer(1000000);
-		list.add(one2);
-		list.add(two2);
-		list.add(three2);
-		for (Integer value : list2) {
-			assertFalse("Value is not in the set", test2.contains(value));
-		}
+		collection.add(1);
+		assertFalse("empty values do not contain anything", CollUtils.containsAny(collection,values));
+		collection.add(2);
+		assertFalse("empty values do not contain anything", CollUtils.containsAny(collection,values));
+		
+		values.add(2);
+		assertTrue("both collections share 2", CollUtils.containsAny(collection,values));
+		assertTrue("both collections share 2", CollUtils.containsAny(values, collection));
 	}
 
-	@Test
-	public void testAdd() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testRemove() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testSize() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testContains() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testIterator() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testClone() {
-		//fail("Not implemented");
-	}
 }

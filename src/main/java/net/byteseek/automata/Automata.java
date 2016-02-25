@@ -33,7 +33,7 @@ package net.byteseek.automata;
 
 import java.util.Collection;
 
-import net.byteseek.object.factory.DeepCopy;
+import net.byteseek.utils.factory.DeepCopy;
 
 /**
  * An interface representing an automata, containing an initial {@link State}

@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2016, All rights reserved.
- *
+ * Copyright Matt Palmer 2013-16. All rights reserved.
+ * 
  * This code is licensed under a standard 3-clause BSD license:
- *
+ * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *  
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -29,19 +29,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+package net.byteseek.utils.lazy;
+
+
+import net.byteseek.utils.factory.ObjectFactory;
+
 /**
- * A package containing a simple interface for getting objects lazily.
- * Various implementations of the lazy object are given which allow different
- * threading strategies to be applied to object creation.
- * The SingleCheckLazyObject is not entirely thread-safe, and uses
- * no synchronization, but may be usable in some scenarios.
- * The DoubleCheckLazyObject uses synchronization to achieve thread-safety,
- * guaranteeing that the object will only be created once.
- * The DoubleCheckImmutableLazyObject also uses synchronization, but
- * avoids the need for a volatile reference as long as the object being
- * created is immutable.
- * All of the LazyObject implementations use an underlying ObjectFactory to
- * actually create the objects.  This allows us to apply different threading
- * strategies to a factory.
+ * This class creates objects using double-check lazy initialisation,
+ * with volatile references and synchronization on the second check.
+ * The object created does not have to be immutable.
+ * <p>
+ * This means that if two threads attempt to get the object at the same time
+ * before it has been fully initialised, the object will only be created once.
+ * 
+ * @param <T> The type of object to instantiate lazily.
+ * 
+ * @author Matt Palmer
  */
-package net.byteseek.object.lazy;
+public final class DoubleCheckLazyObject<T> implements LazyObject<T> {
+
+    private final ObjectFactory<T> factory;
+    private volatile T object;
+
+    /**
+     * Constructs a DoubleCheckLazyObject with an object factory to create the 
+     * object lazily.
+     * 
+     * @param factory A factory which can create an instance of type T.
+     */
+    public DoubleCheckLazyObject(ObjectFactory<T> factory) {
+    	this.factory = factory;
+    }
+    
+   
+    /**
+     * Uses Double-Check lazy initialisation.  Only one instance will be created, no matter
+     * how many threads call this method.
+     * 
+     * @return An object of type T.
+     */
+    @Override
+    public final T get() {
+        if (object == null) {
+        	synchronized(this) {
+        		if (object == null) {
+        			object = factory.create();
+        		}
+        	}
+        }
+        return object;
+    }
+
+}

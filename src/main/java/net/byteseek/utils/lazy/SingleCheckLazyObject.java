@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013-16. All rights reserved.
+ * Copyright Matt Palmer 2011-2016, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -29,55 +29,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.object.lazy;
+package net.byteseek.utils.lazy;
 
 
-import net.byteseek.object.factory.ObjectFactory;
+import net.byteseek.utils.factory.ObjectFactory;
 
 /**
- * This class creates objects using double-check lazy initialisation,
- * with volatile references and synchronization on the second check.
- * The object created does not have to be immutable.
+ * This class creates objects using single-check lazy initialisation,
+ * with volatile references and no synchronization.
  * <p>
- * This means that if two threads attempt to get the object at the same time
- * before it has been fully initialised, the object will only be created once.
+ * This means that if two threads attempt to get the object at the same
+ * time before it has been fully initialised, it is possible for the object to be created
+ * more than once.  This is only worth doing if the object will always be created in the same way,
+ * and the occasional expense of doing this outweighs the tiny advantage of
+ * using a non-synchronized method.
  * 
  * @param <T> The type of object to instantiate lazily.
  * 
  * @author Matt Palmer
  */
-public final class DoubleCheckLazyObject<T> implements LazyObject<T> {
+public final class SingleCheckLazyObject<T> implements LazyObject<T> {
 
     private final ObjectFactory<T> factory;
     private volatile T object;
 
     /**
-     * Constructs a DoubleCheckLazyObject with an object factory to create the 
+     * Constructs a SingleCheckLazyObject with an object factory to create the 
      * object lazily.
      * 
      * @param factory A factory which can create an instance of type T.
      */
-    public DoubleCheckLazyObject(ObjectFactory<T> factory) {
+    public SingleCheckLazyObject(ObjectFactory<T> factory) {
     	this.factory = factory;
     }
+
     
-   
     /**
-     * Uses Double-Check lazy initialisation.  Only one instance will be created, no matter
-     * how many threads call this method.
+     * Uses Single-Check lazy initialisation.  This can result in the field
+     * being initialised more than once.
      * 
      * @return An object of type T.
      */
     @Override
     public final T get() {
-        if (object == null) {
-        	synchronized(this) {
-        		if (object == null) {
-        			object = factory.create();
-        		}
-        	}
+        T result = object;
+        if (result == null) {
+            object = result = factory.create();
         }
-        return object;
+        return result;
     }
 
 }

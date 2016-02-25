@@ -37,7 +37,7 @@ import java.util.Set;
 
 import net.byteseek.automata.State;
 import net.byteseek.automata.Transition;
-import net.byteseek.object.collections.IdentityHashSet;
+import net.byteseek.utils.collections.IdentityHashSet;
 
 /**
  * Walks an automata from an initial {@link State}, visiting each one in the automata

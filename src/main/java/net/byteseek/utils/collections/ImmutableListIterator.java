@@ -1,11 +1,11 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
- * 
+ * Copyright Matt Palmer 2012, All rights reserved.
+ *
  * This code is licensed under a standard 3-clause BSD license:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright notice, 
  *    this list of conditions and the following disclaimer.
  * 
@@ -15,7 +15,7 @@
  * 
  *  * The names of its contributors may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- *  
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
@@ -28,23 +28,68 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package net.byteseek.utils.collections;
 
-package net.byteseek.object.lazy;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import net.byteseek.utils.ArgUtils;
 
 /**
- * An interface for (potentially) lazy object creation.
+ * An iterator over a list which prevents removal of items from the list.
+ * <p>
+ * Calling {@link #remove()} on this iterator will throw an {@link UnsupportedOperationException}.
  * 
  * @author Matt Palmer
- *
- * @param <T> The type of object to get lazily or otherwise.
  */
-public interface LazyObject<T> {
-	
+public class ImmutableListIterator<T> implements Iterator<T> {
+
+	private final List<T> list;
+	private int           index;
+
 	/**
-	 * Returns an instance of an object of type T.
+	 * Constructs an ImmutableListIterator.
 	 * 
-	 * @return An instance of an object of type T.
+	 * @param list The list to iterate over.
+	 * @throws IllegalArgumentException if the list passed in is null.
 	 */
-	public T get();
+	public ImmutableListIterator(final List<T> list) {
+		ArgUtils.checkNullCollection(list);
+		this.list = list;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasNext() {
+		return index < list.size();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public T next() {
+		if (hasNext()) {
+			return list.get(index++);
+		}
+		throw new NoSuchElementException(String.format(
+				"Index position %d is greater than or equal to the list size %d", index,
+				list.size()));
+	}
+
+	/**
+	 * Removal is not supported by the ImmutableListIterator.  Calling this method will
+	 * always throw a {@link UnsupportedOperationException}.
+	 * 
+	 * @throws UnsupportedOperationException if the method is called.
+	 */
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException(
+				"Removal not supported by the ImmutableListIterator.");
+	}
 
 }

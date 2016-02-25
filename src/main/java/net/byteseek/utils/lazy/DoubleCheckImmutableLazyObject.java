@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2013-16. All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -28,21 +28,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.object.factory;
+
+package net.byteseek.utils.lazy;
+
+
+import net.byteseek.utils.factory.ObjectFactory;
 
 /**
- * A simple interface for typed object factories.
+ * This class creates objects using double-check lazy initialisation,
+ * with synchronization on the second check, and no volatile references.
+ * The object being created must be immutable.
+ * <p>
+ * This means that if two threads attempt to get the object at the same time
+ * before it has been fully initialised, the object will only be created once.
+ * 
+ * @param <T> The type of object to instantiate lazily.
  * 
  * @author Matt Palmer
- * 
- * @param <T> The type of object the factory will instantiate.
  */
-public interface ObjectFactory<T> {
+public final class DoubleCheckImmutableLazyObject<T> implements LazyObject<T> {
 
-	/**
-	 * Creates an instance of an object of type T.
-	 * 
-	 * @return An instance of an object of type T.
-	 */
-	public T create();
+    private final ObjectFactory<T> factory;
+    private T object; // since the object is immutable, this field does not have to be volatile.
+
+    /**
+     * Constructs a DoubleCheckLazyObject with an object factory to create the 
+     * object lazily.
+     * 
+     * @param factory A factory which can create an instance of type T.
+     */
+    public DoubleCheckImmutableLazyObject(ObjectFactory<T> factory) {
+    	this.factory = factory;
+    }
+    
+   
+    /**
+     * Uses Double-Check lazy initialisation.  Only one instance will be created, no matter
+     * how many threads call this method.
+     * 
+     * @return An object of type T.
+     */
+    @Override
+    public final T get() {
+        if (object == null) {
+        	synchronized(this) {
+        		if (object == null) {
+        			object = factory.create();
+        		}
+        	}
+        }
+        return object;
+    }
+
 }

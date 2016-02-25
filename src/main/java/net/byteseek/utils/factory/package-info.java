@@ -1,8 +1,8 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
@@ -29,44 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.object.collections;
-
-import java.util.Collection;
-
-import net.byteseek.utils.ArgUtils;
-
 /**
- * A static utility class containing useful methods for collections.
- * 
- * @author Matt Palmer
- *
+ * A package containing interfaces for various types of object factory.
  */
-public final class CollUtils {
-	
-	/**
-	 * Private constructor for a static utility class.
-	 */
-	private CollUtils() {
-	}
-	
-	
-	/**
-	 * Returns true if the collection contains any of the values passed in.
-	 * 
-	 * @param collection The collection to check
-	 * @param values The values to check to see if any are in the collection.
-	 * @return true if the collection contains any of the values.
-	 * @throws IllegalArgumentException if either of the collections passed in are null.
-	 */
-    public static <T> boolean containsAny(final Collection<T> collection, final Iterable<T> values) {
-    	ArgUtils.checkNullCollection(collection, "parameter: collection");
-    	ArgUtils.checkNullObject(values, "parameter: values");
-    	for (final T value : values) {
-    		if (collection.contains(value)) {
-    			return true;
-    		}
-    	}
-    	return false;
-    }
-
-}
+package net.byteseek.utils.factory;
