@@ -57,7 +57,7 @@ public final class ByteMatcherTransitionFactory<T> implements TransitionFactory<
      * to create {@link net.byteseek.matcher.bytes.ByteMatcher}s based on sets of bytes.
      */
     public ByteMatcherTransitionFactory() {
-        matcherFactory = new OptimalByteMatcherFactory();
+        matcherFactory = OptimalByteMatcherFactory.FACTORY;
     }
 
     

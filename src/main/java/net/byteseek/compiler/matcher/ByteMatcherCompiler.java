@@ -105,7 +105,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 * @return ByteMatcher a matcher which matches the byte values in the array provided.
 	 */
 	public static ByteMatcher compileFrom(final byte[] bytes) {
-		defaultFactory = new OptimalByteMatcherFactory();
+		defaultFactory = OptimalByteMatcherFactory.FACTORY;
 		final Set<Byte> byteSet = ByteUtils.toSet(bytes);
 		return defaultFactory.create(byteSet, NOT_INVERTED);
 	}
@@ -121,7 +121,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 *         than those in the array provided.
 	 */
 	public static ByteMatcher compileInvertedFrom(final byte[] bytes) {
-		defaultFactory = new OptimalByteMatcherFactory();
+		defaultFactory = OptimalByteMatcherFactory.FACTORY;
 		final Set<Byte> byteSet = ByteUtils.toSet(bytes);
 		return defaultFactory.create(byteSet, INVERTED);
 	}
@@ -176,7 +176,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 */
 	public ByteMatcherCompiler(final Parser<ParseTree> parser, final ByteMatcherFactory factoryToUse) {
 		super(parser == null? new RegexParser() : parser);
-		matcherFactory = factoryToUse == null? new OptimalByteMatcherFactory() : factoryToUse;
+		matcherFactory = factoryToUse == null? OptimalByteMatcherFactory.FACTORY : factoryToUse;
 	}
 
 

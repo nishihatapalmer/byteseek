@@ -43,8 +43,8 @@ import net.byteseek.automata.Transition;
 import net.byteseek.automata.factory.MutableStateFactory;
 import net.byteseek.automata.factory.StateFactory;
 import net.byteseek.automata.factory.TransitionFactory;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
 
 /**
  * An abstract implementation of {@link Trie} providing most methods for
@@ -102,16 +102,13 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 	 * 
 	 * @param stateFactory The StateFactory to use to create States for the Trie.
 	 * @param transitionFactory The TransitionFactory to use to create Transitions for the Trie.
+	 * @throws IllegalArgumentException if the transition factory is null.
 	 */
-	//FIXME: give automata their own byte matching transitions.  These should be faster than
-	//       the byte matcher based ones (one less indirection).  Then we should use these by
-	//       default instead of ByteSetMatcherTransition objects, which create a dependency on
-	//       the matcher package from automata.
 	public AbstractTrie(final StateFactory<T> stateFactory,
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
+		ArgUtils.checkNullObject(transitionFactory, "transitionFactory");
 		this.stateFactory = stateFactory != null ? stateFactory : new MutableStateFactory<T>();
-		this.transitionFactory = transitionFactory != null ? transitionFactory
-				: new ByteMatcherTransitionFactory<T>();
+		this.transitionFactory = transitionFactory;
 		this.sequences = new ArrayList<T>();
 		setInitialState(this.stateFactory.create(State.NON_FINAL));
 	}

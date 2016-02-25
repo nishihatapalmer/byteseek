@@ -87,7 +87,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         
         //TODO: provide constructors to allow different byte sequences factories.
         //TODO: provide an ObjectFactory<LazyObject> to instantiate a LazyObject of choice.
-        byteMatcherFactory = new OptimalByteMatcherFactory();
+        byteMatcherFactory = OptimalByteMatcherFactory.FACTORY;
     }
     
     

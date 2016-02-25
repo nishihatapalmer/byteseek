@@ -212,7 +212,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     							   final Optimiser<SequenceMatcher> optimiser) {
         super(parser == null? new RegexParser() : parser);
         byteMatcherFactory = byteFactoryToUse != null? 
-        					 byteFactoryToUse :  new OptimalByteMatcherFactory();
+        					 byteFactoryToUse :  OptimalByteMatcherFactory.FACTORY;
     	this.optimiser = optimiser != null? 
     		             optimiser :  new SequenceMatcherOptimiser();
     }    

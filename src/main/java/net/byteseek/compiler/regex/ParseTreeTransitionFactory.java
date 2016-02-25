@@ -51,7 +51,7 @@ public final class ParseTreeTransitionFactory<T>
   }
   
   public ParseTreeTransitionFactory(final ByteMatcherFactory matcherFactory) {
-    this.matcherFactory = matcherFactory == null? new OptimalByteMatcherFactory()
+    this.matcherFactory = matcherFactory == null? OptimalByteMatcherFactory.FACTORY
     											: matcherFactory;
   }
 

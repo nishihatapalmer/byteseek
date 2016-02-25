@@ -63,7 +63,8 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
 
-    private static final String ILLEGAL_ARGUMENTS = "Null or empty Byte set passed in to ByteSetMatcher.";
+    public static ByteMatcherFactory FACTORY = new OptimalByteMatcherFactory();
+
     private static final int BINARY_SEARCH_THRESHOLD = 16;
 
     
