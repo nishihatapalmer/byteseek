@@ -6,6 +6,7 @@ byteseek is a Java library for efficiently matching patterns of bytes and search
 * sequence - matchers for sequences of bytes, byte matchers, fixed gaps and sequences of sequences.  
 
 ####Searcher
+All the search algorithms have been extended to work with sequences which can match more than one byte at a given position.  Any sequence search algorithm can work with any sequence matcher, no matter how it is composed.  All the search implementations are stream-friendly - the length of an input source is not required unless you explicitly want to work at the end of an input source.  
 * bytes - a naive searcher for byte matchers.
 * sequence - various implementations of the naive search, Boyer-Moore-Horspool, Signed Horspool and Sunday QuickSearch algorithms.
 
@@ -18,9 +19,6 @@ byteseek is a Java library for efficiently matching patterns of bytes and search
 
 ####Compiler
 * matchers - compilers from the byteseek abstract syntax tree to byte matchers and sequence matchers.
-
-All the provided match and search implementations are stream-friendly - the length of an input source is not required unless you explicitly want to work at the end of an input source.  All the search algorithms have been extended to work with sequences which can match more than one byte at a given position.  Any sequence search algorithm can work with any sequence matcher, no matter how it is composed.
-
 
 ##Untested
 Various other packages exist which are not currently tested, but will become so eventually.  These include:
