@@ -7,14 +7,18 @@ byteseek is a Java library for efficiently matching patterns of bytes and search
 
 ####Searcher
 All the search algorithms have been extended to work with sequences which can match more than one byte at a given position.  Any sequence search algorithm can work with any sequence matcher, no matter how it is composed.  All the search implementations are stream-friendly - the length of an input source is not required unless you explicitly want to work at the end of an input source.  
+
 * bytes - a naive searcher for byte matchers.
 * sequence - various implementations of the naive search, Boyer-Moore-Horspool, Signed Horspool and Sunday QuickSearch algorithms.
 
 ####IO
+Matchers and searchers can all work over byte arrays directly.  To work across other input sources requires the use of WindowReaders.  These read from the underlying input source, caching the byte arrays directly to allow for efficient matching and searching across them multiple times.
+
 * reader - readers for files, input streams, strings and byte arrays, and an adaptor from any reader back to an inputstream.  Readers cache the byte arrays read from the input sources using flexible caching strategies.
 * reader/cache - pluggable caching strategies for readers, including least recently added, least recently used, temporary file caches, two level caches, double caches and others.
 
 ####Parser
+A byte-oriented regular expression language is given to allow the easy construction of byte matchers, sequence matchers, and (eventually) finite state automata.  An abstract syntax tree is defined, so other regular expression syntaxes could be used if required.
 * regex - a parser for a byte-oriented regular expression language, which produces a byteseek abstract syntax tree.
 
 ####Compiler
