@@ -34,12 +34,14 @@ Various other packages exist which are not currently tested, but will become so 
 ####Compiler
 * regex - produces full regular expressions as finite state automata from the byteseek abstract syntax tree.
 
+Regular expressions are constructed as Glushkov finite state automata, rather than the more common Thompson construction.  However, the construction method has been adapted from the paper given below, which allows construction directly from the abstract syntax tree.
+
+> "A reexamination of the Glushkov and Thompson Constructions", by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
+
+
 ####Automata
 * Finite state automata with flexible transitions can be constructed. 
 * Non deterministic automata can be converted into deterministic automata.
 * Trie structures are provided from multi sequences. 
 * Utilities allow for easily walking the automata and producing DOT files (graphviz) from them.
 
-Automata are constructed as Glushkov automata, rather than the more common Thompson construction.  However, the construction method has been adapted from the paper given below, which allows construction directly from the abstract syntax tree.
-
-> "A reexamination of the Glushkov and Thompson Constructions", by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
