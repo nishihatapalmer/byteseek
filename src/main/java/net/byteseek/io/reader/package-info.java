@@ -30,8 +30,8 @@
  */
 
 /**
- * A package containing WindowReader classes which read bytes from various sources, including
- * input streams, files, strings and byte arrays.
+ * A package which provides a consistent random-access interface over a variety of
+ * input sources including files, input streams, strings and byte arrays.
  * <p>
  * All of these classes read into Windows, which encapsulate byte arrays read from the source.
  * This allows the search and matching algorithms to access the arrays directly, and for the windows
