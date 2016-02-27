@@ -14,7 +14,8 @@ A package which contains implementations of various search algorithms.  Most of 
 * sequence - various implementations of the naive search, Boyer-Moore-Horspool, Signed Horspool and Sunday QuickSearch algorithms.
 
 ####IO
-Matchers and searchers can all work over byte arrays directly.  To work across other input sources requires the use of WindowReaders.  These read from the underlying input source, caching the byte arrays directly to allow for efficient matching and searching across them multiple times.
+Matchers and searchers can all work over byte arrays directly.  In order to read efficiently from any other input source,
+readers provide a consistent random-access interface over files, input streams, strings and byte arrays.  Pluggable caching strategies allow tailoring the memory and performance for different use cases.
 
 * reader - readers for files, input streams, strings and byte arrays, and an adaptor from any reader back to an inputstream.  Readers cache the byte arrays read from the input sources using flexible caching strategies.
 * reader/cache - pluggable caching strategies for readers, including least recently added, least recently used, temporary file caches, two level caches, double caches and others.
