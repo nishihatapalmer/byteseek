@@ -1,5 +1,5 @@
 # byteseek
-byteseek is a Java library for efficiently matching patterns of bytes and searching for those patterns.  Published releases of byteseek are also available on maven central.  The main well-tested packages are:
+byteseek is a Java library for efficiently matching patterns of bytes and searching for those patterns.  Published releases of byteseek are also available on [maven central](https://search.maven.org/#search|ga|1|byteseek)i.  The main well-tested packages are:
 
 ####Matcher
 A package which contains various types of matcher for individual bytes or sequences of them.
@@ -19,7 +19,7 @@ readers provide a consistent random-access interface over files, input streams, 
 
 This package may be generally useful, independent of byteseek matching and searching.
 
-* reader - readers for files, input streams, strings and byte arrays, and an adaptor from any reader back to an inputstream.  Readers cache the byte arrays read from the input sources using flexible caching strategies.
+* reader - readers for files, input streams, strings and byte arrays, and an adapter from any reader back to an InputStream.  Readers cache the byte arrays read from the input sources using flexible caching strategies.
 * reader/cache - pluggable caching strategies for readers, including least recently added, least recently used, temporary file caches, two level caches, double caches and others.
 
 ####Parser
