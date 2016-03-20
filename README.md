@@ -1,5 +1,5 @@
 # byteseek
-byteseek is a Java library for efficiently matching patterns of bytes and searching for those patterns.  The main well-tested packages are:
+byteseek is a Java library for efficiently matching patterns of bytes and searching for those patterns.  Source code can be found at Github in the [byteseek repository](https://github.com/nishihatapalmer/byteseek). Published releases of byteseek are also available on [maven central](https://search.maven.org/#search|ga|1|byteseek).  The main well-tested packages are:
 
 ####Matcher
 A package which contains various types of matcher for individual bytes or sequences of them.
@@ -17,7 +17,9 @@ A package which contains implementations of various search algorithms.  Most of 
 Matchers and searchers can all work over byte arrays directly.  In order to read efficiently from any other input source,
 readers provide a consistent random-access interface over files, input streams, strings and byte arrays.  Pluggable caching strategies allow tailoring the memory and performance for different use cases.
 
-* reader - readers for files, input streams, strings and byte arrays, and an adaptor from any reader back to an inputstream.  Readers cache the byte arrays read from the input sources using flexible caching strategies.
+This package may be generally useful, independent of byteseek matching and searching.
+
+* reader - readers for files, input streams, strings and byte arrays, and an adapter from any reader back to an InputStream.  Readers cache the byte arrays read from the input sources using flexible caching strategies.
 * reader/cache - pluggable caching strategies for readers, including least recently added, least recently used, temporary file caches, two level caches, double caches and others.
 
 ####Parser
@@ -41,10 +43,11 @@ Various other packages exist which are not currently tested, but will become so 
 ####Compiler
 * regex - produces full regular expressions as finite state automata from the byteseek abstract syntax tree.
 
-Regular expressions are constructed as Glushkov finite state automata, rather than the more common Thompson construction.  However, the construction method has been adapted from the paper given below, which allows construction directly from the abstract syntax tree.
+Regular expressions are constructed as Glushkov finite state automata, rather than the more common [Thompson construction](https://en.wikipedia.org/wiki/Thompson's_construction).  Glushkov automata are generally more compact and have no empty transitions, which can improve performance and makes them simpler to work with.
 
-> "A reexamination of the Glushkov and Thompson Constructions", by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
+The [normal construction for Glushkov automata](https://en.wikipedia.org/wiki/Glushkov's_construction_algorithm) involves a somewhat complex and recursive analysis stage.  In byteseek, we construct a Glushkov automata directly from the abstract syntax tree, similarly to the Thompson construction but avoiding the need for any empty transitions. It has been adapted and extended from the method given in the paper below:
 
+> "[A reexamination of the Glushkov and Thompson Constructions](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.50.5883&rank=1)", by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
 
 ####Automata
 * Finite state automata with flexible transitions can be constructed. 
