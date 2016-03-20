@@ -45,7 +45,7 @@ Various other packages exist which are not currently tested, but will become so 
 
 Regular expressions are constructed as Glushkov finite state automata, rather than the more common [Thompson construction](https://en.wikipedia.org/wiki/Thompson's_construction).  Glushkov automata are generally more compact and have no empty transitions, which can improve performance and makes them simpler to work with.
 
-The [normal construction for Glushkov automata](https://en.wikipedia.org/wiki/Glushkov's_construction_algorithm) involves a somewhat complex and recursive analysis stage.  In byteseek, we construct a Glushkov automata directly from the abstract syntax tree, similarly to the Thompson construction but avoiding the need for any empty transitions. It has been adapated and extended from the method given in the paper below:
+The [normal construction for Glushkov automata](https://en.wikipedia.org/wiki/Glushkov's_construction_algorithm) involves a somewhat complex and recursive analysis stage.  In byteseek, we construct a Glushkov automata directly from the abstract syntax tree, similarly to the Thompson construction but avoiding the need for any empty transitions. It has been adapted and extended from the method given in the paper below:
 
 > "[A reexamination of the Glushkov and Thompson Constructions](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.50.5883&rank=1)", by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
 
