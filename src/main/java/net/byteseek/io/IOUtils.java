@@ -31,12 +31,7 @@
 
 package net.byteseek.io;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 /**
  * A static utility package containing some useful methods for reading and
@@ -52,6 +47,35 @@ public final class IOUtils {
 	 * Private constructor to prevent instantiating a utility class.
 	 */
 	private IOUtils() {
+	}
+
+	/**
+	 * Reads the bytes in a file into a single byte array and returns it.
+	 *
+	 * @param file The file to read.
+	 * @return A byte array containing the file contents, of the same size as the file.
+	 * @throws IOException If the file size is greater than INTEGER.MAX_VALUE, which is the
+	 *                     largest byte array that can be created.  Also if the number of bytes
+	 *                     read from the file does not match the size of the file, or if
+	 *                     any other IOException occurs during opening or reading the file.
+	 */
+	public static byte[] readEntireFile(final File file) throws IOException {
+		final long size = file.length();
+		if (size > Integer.MAX_VALUE) {
+			throw new IOException("File " + file + " of size " + size + " is greater than the maximum byte array size.");
+		}
+		final byte[] result = new byte[(int) size];
+		final int read;
+		final FileInputStream fileStream = new FileInputStream(file);
+		try {
+			read = readBytes(fileStream, result);
+		} finally {
+			fileStream.close();
+		}
+		if (read != size) {
+			throw new IOException("ERROR: Only read " + read + " of " + size + " byte in file " + file);
+		}
+		return result;
 	}
 
 	/**
