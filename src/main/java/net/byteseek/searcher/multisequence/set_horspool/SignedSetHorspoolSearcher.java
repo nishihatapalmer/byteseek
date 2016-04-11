@@ -72,7 +72,7 @@ import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
  * 
  * @author Matt Palmer
  */
-public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher {
+public class SignedSetHorspoolSearcher extends AbstractMultiSequenceSearcher {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
@@ -83,7 +83,7 @@ public class SetHorspoolFinalFlagSearcher extends AbstractMultiSequenceSearcher 
      * 
      * @param sequences A MultiSequenceMatcher containing the sequences to be searched for.
      */
-    public SetHorspoolFinalFlagSearcher(final MultiSequenceMatcher sequences) {
+    public SignedSetHorspoolSearcher(final MultiSequenceMatcher sequences) {
         super(sequences);
         forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
         backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());

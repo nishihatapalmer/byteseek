@@ -107,7 +107,7 @@ import java.util.List;
  * @author Matt Palmer
  */
 @SuppressWarnings("all") // code is entirely unfinished - do not use yet.
- public class WuManberOneByteFinalFlagSearcher {
+ public class SignedWuManberOneByteSearcher {
    
 
     /**
@@ -192,7 +192,7 @@ import java.util.List;
      * 
      * @param matcher 
      */
-    public WuManberOneByteFinalFlagSearcher(final MultiSequenceMatcher matcher) {
+    public SignedWuManberOneByteSearcher(final MultiSequenceMatcher matcher) {
         this(matcher, getBlockSize(matcher));
     }    
     
@@ -202,7 +202,7 @@ import java.util.List;
      * @param matcher 
      * @param blockSize 
      */
-    public WuManberOneByteFinalFlagSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
+    public SignedWuManberOneByteSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
         //super(createSearchInstance(matcher, blockSize));
     }
     

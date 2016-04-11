@@ -53,12 +53,11 @@ import net.byteseek.utils.lazy.SingleCheckLazyObject;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
-import net.byteseek.searcher.sequence.horspool.BoyerMooreHorspoolSearcher;
 
 /**
  * The SetHorspoolSearcher implements the Boyer-Moore-Horspool algorithm for
  * multiple sequences.  For a description of this algorithm, please see the
- * class {@link BoyerMooreHorspoolSearcher}.
+ * class {@link net.byteseek.searcher.sequence.horspool.UnrolledHorspoolSearcher}.
  * <p>
  * It extends that algorithm by calculating the shifts for all the sequences
  * to be searched for.  As the number of sequences rises, the performance of

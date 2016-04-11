@@ -35,6 +35,6 @@ package net.byteseek.searcher.multisequence.wu_manber;
  * 
  * @author Matt Palmer
  */
-public class AbstractWuManberFinalFlagSearcher {
+public class AbstractSignedWuManberSearcher {
     
 }

@@ -108,7 +108,7 @@ import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
  * 
  * @author Matt Palmer
  */
-public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
+public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
@@ -119,7 +119,7 @@ public final class HorspoolFinalFlagSearcher extends AbstractSequenceSearcher {
      * 
      * @param sequence The SequenceMatcher to search for.
      */
-    public HorspoolFinalFlagSearcher(final SequenceMatcher sequence) {
+    public SignedHorspoolSearcher(final SequenceMatcher sequence) {
         super(sequence);
         forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
         backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
