@@ -34,6 +34,23 @@ public class IOUtilsTest {
         assertFileBytesEqual(file, asciiFileArray);
     }
 
+    @Test
+    public void testReadEntireStream() throws Exception {
+        testReadEntireStream(asciiFile);
+        testReadEntireStream(zipFile);
+    }
+
+    private void testReadEntireStream(File file) throws Exception {
+        InputStream input = new FileInputStream(file);
+        try {
+            byte[] array = IOUtils.readEntireStream(input);
+            assertEquals("Read correct size", file.length(), array.length);
+            assertFileBytesEqual(file, array);
+        } finally {
+            input.close();
+        }
+    }
+
 
     @Test
     public void testReadBytes() throws Exception {

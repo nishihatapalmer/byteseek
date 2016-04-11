@@ -32,6 +32,8 @@
 package net.byteseek.io;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A static utility package containing some useful methods for reading and
@@ -75,6 +77,52 @@ public final class IOUtils {
 		if (read != size) {
 			throw new IOException("ERROR: Only read " + read + " of " + size + " byte in file " + file);
 		}
+		return result;
+	}
+
+	/**
+	 * Reads an input stream and returns a single array of bytes containing the stream contents.
+	 * <p>
+	 * The implementation builds a list of byte array buffers, then copies them into a single
+	 * byte array.  This will use a bit more than twice as much memory as the length of the stream.
+	 * <p>
+	 * The input stream is not closed when finished reading - that remains the responsibility of the
+	 * code which passes it in.
+	 *
+	 * @param input The input stream to read.
+	 * @return A byte array containing the stream contents.
+	 * @throws IOException If there is any problem reading from the InputStream.
+	 */
+	public static byte[] readEntireStream(final InputStream input) throws IOException {
+		final int BUFFER_SIZE = 4096;
+
+		// Read the stream into a list of byte buffers and calculate the length:
+		// Only place byte arrays the size of the buffer on to the list; retain the
+		// last buffer and how many bytes it represents.
+		final List<byte[]> bufferList = new ArrayList<byte[]>();
+		byte[] buffer = new byte[BUFFER_SIZE];
+		int totalRead = 0;
+		int bytesRead;
+		while ((bytesRead = readBytes(input, buffer)) == BUFFER_SIZE) {
+			totalRead += BUFFER_SIZE;
+			bufferList.add(buffer);
+			buffer = new byte[BUFFER_SIZE];
+		}
+		totalRead += bytesRead;
+
+		// Write the byte buffers into a single byte array, now we know the length.
+		// Process the list first, which are always the size of byte buffers,
+		// then add the final buffer, which may be smaller than that.
+		final byte[] result = new byte[totalRead];
+		final int numBuffers = bufferList.size();
+		int totalWritten = 0;
+		for (int bufferIndex = 0; bufferIndex < numBuffers; bufferIndex++) {
+			final byte[] bufferToWrite = bufferList.get(bufferIndex);
+			System.arraycopy(bufferToWrite, 0, result, totalWritten, BUFFER_SIZE);
+			totalWritten += BUFFER_SIZE;
+		}
+		System.arraycopy(buffer, 0, result, totalWritten, bytesRead);
+
 		return result;
 	}
 
