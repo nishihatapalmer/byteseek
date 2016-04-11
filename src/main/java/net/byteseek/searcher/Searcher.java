@@ -224,22 +224,7 @@ public interface Searcher<T> {
 	 * first search is made. Calling this function ensures that all preparation
 	 * is complete before the first search forwards.
 	 * <p>
-	 * Note: some implemented searchers use single-check lazy initialisation
-	 * with volatile fields. This means that if multiple threads attempt to
-	 * search with such a searcher simultaneously without it being prepared
-	 * first, it is possible that the fields may be initialised more than once
-	 * (maximum as many times as the number of threads using that searcher
-	 * simultaneously). This will not produce an error, but would result in
-	 * unnecessary calculation.
-	 * <p>
-	 * However (assuming multiple threads are involved), it may still be more
-	 * efficient to allow the occasional recalculation on first search, when
-	 * amortised against the cost of fully initialising a large number of search
-	 * objects before they are known to be needed. If only a few search objects
-	 * are used, then there may be no disadvantage to fully preparing all of
-	 * them ahead of time.
-	 * <p>
-	 * Also note that this function is not itself guaranteed to be thread-safe,
+	 * Note that this function is not itself guaranteed to be thread-safe,
 	 * in that calling it from multiple threads may result in multiple
 	 * initialisations (but should not produce an error).
 	 * <p>
@@ -256,22 +241,7 @@ public interface Searcher<T> {
 	 * first search is made. Calling this function ensures that all preparation
 	 * is complete before the first search backwards.
 	 * <p>
-	 * Note: some implemented searchers use single-check lazy initialisation
-	 * with volatile fields. This means that if multiple threads attempt to
-	 * search with such a searcher simultaneously without it being prepared
-	 * first, it is possible that the fields may be initialised more than once
-	 * (maximum as many times as the number of threads using that searcher
-	 * simultaneously). This will not produce an error, but would result in
-	 * unnecessary calculation.
-	 * <p>
-	 * However (assuming multiple threads are involved), it may still be more
-	 * efficient to allow the occasional recalculation on first search, when
-	 * amortised against the cost of fully initialising a large number of search
-	 * objects before they are known to be needed. If only a few search objects
-	 * are used, then there may be no disadvantage to fully preparing all of
-	 * them ahead of time.
-	 * <p>
-	 * Also note that this function is not itself guaranteed to be thread-safe,
+	 * Note that this function is not itself guaranteed to be thread-safe,
 	 * in that calling it from multiple threads may result in multiple
 	 * initialisations (but should not produce an error).
 	 * <p>
