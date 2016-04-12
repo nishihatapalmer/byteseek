@@ -139,7 +139,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
         final SequenceMatcher verifier = info.verifier;
         
         // Calculate safe bounds for the start of the search:
-        final int lastMatcherPosition = getMatcher().length() - 1;                
+        final int lastMatcherPosition = sequence.length() - 1;
         int searchPosition = fromPosition > 0?
                              fromPosition + lastMatcherPosition : lastMatcherPosition;
         
@@ -192,7 +192,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
         final SequenceMatcher verifier = info.verifier;
         
         // Initialise window search:
-        final long endSequencePosition = matcher.length() - 1;
+        final long endSequencePosition = sequence.length() - 1;
         final long finalPosition = toPosition + endSequencePosition;
         long searchPosition = fromPosition + endSequencePosition;        
         
@@ -205,7 +205,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
-            final int lastMatcherPosition = matcher.length() - 1;
+            final int lastMatcherPosition = sequence.length() - 1;
             final long distanceToEnd = finalPosition - window.getWindowPosition() + lastMatcherPosition;     
             final int lastSearchPosition = distanceToEnd < arrayEndPosition?
                                      (int) distanceToEnd : arrayEndPosition;
@@ -256,7 +256,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
         final SequenceMatcher verifier = info.verifier;
         
         // Calculate safe bounds for the start of the search:
-        final int firstPossiblePosition = bytes.length - getMatcher().length();        
+        final int firstPossiblePosition = bytes.length - sequence.length();
         int searchPosition = fromPosition < firstPossiblePosition?
                              fromPosition : firstPossiblePosition;
         
@@ -375,7 +375,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[sequence:" + matcher + ']'; 
+    	return getClass().getSimpleName() + "[sequence:" + sequence + ']';
     }
 
     
@@ -404,8 +404,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
         @Override
         public SearchInfo create() {
             // Get info about the matcher:
-            final SequenceMatcher sequence = getMatcher();            
-            final int sequenceLength = sequence.length();            
+            final int sequenceLength = sequence.length();
             
             // Create the search info object fields:
             final int lastPosition = sequenceLength - 1;
@@ -479,8 +478,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
         @Override
         public SearchInfo create() {
             // Get info about the matcher:
-            final SequenceMatcher sequence = getMatcher();            
-            final int sequenceLength = sequence.length();            
+            final int sequenceLength = sequence.length();
             
             // Create the search info object fields:
             final int lastPosition = sequenceLength - 1;
