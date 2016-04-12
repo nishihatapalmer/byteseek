@@ -70,10 +70,10 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Initialise:
-        final SequenceMatcher sequence = matcher;
+        final SequenceMatcher theSequence = sequence;
 
         // Calculate safe bounds for the search:
-        final int lastPossiblePosition = bytes.length - sequence.length();
+        final int lastPossiblePosition = bytes.length - theSequence.length();
         final int lastPosition = toPosition < lastPossiblePosition?
                                  toPosition : lastPossiblePosition;
         int searchPosition = fromPosition > 0?
@@ -81,7 +81,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
 
         // Search forwards
         while (searchPosition <= lastPosition) {
-            if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
+            if (theSequence.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
             searchPosition++;
@@ -96,7 +96,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
     public long doSearchForwards(final WindowReader reader, final long fromPosition,
             final long toPosition) throws IOException {
         // Initialise:
-        final SequenceMatcher sequence = matcher;  
+        final SequenceMatcher theSequence = sequence;
         long searchPosition = fromPosition > 0? 
                               fromPosition : 0;
         
@@ -113,7 +113,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
             
             // Search forwards up to the end of this window:
             while (searchPosition <= lastPosition) {
-                if (sequence.matches(reader, searchPosition)) {
+                if (theSequence.matches(reader, searchPosition)) {
                     return searchPosition;
                 }
                 searchPosition++;
@@ -125,18 +125,18 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
    
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Initialise:
-        final SequenceMatcher sequence = matcher;
+        final SequenceMatcher theSequence = sequence;
         
         // Calculate safe bounds for the search:
         final int lastPosition = toPosition > 0?
                                  toPosition : 0;
-        final int firstPossiblePosition = bytes.length - sequence.length();
+        final int firstPossiblePosition = bytes.length - theSequence.length();
         int searchPosition = fromPosition < firstPossiblePosition?
                              fromPosition : firstPossiblePosition;
         
         // Search backwards:
         while (searchPosition >= lastPosition) {
-            if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
+            if (theSequence.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition;
             }
             searchPosition--;
@@ -152,7 +152,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
     public long doSearchBackwards(final WindowReader reader, final long fromPosition,
             final long toPosition) throws IOException {
         // Initialise:
-        final SequenceMatcher sequence = matcher;
+        final SequenceMatcher theSequence = sequence;
         long searchPosition = withinLength(reader, fromPosition);
         
         // While there is data to search in:
@@ -167,7 +167,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
             
             // Search backwards:
             while (searchPosition >= lastSearchPosition) {
-                if (sequence.matches(reader, searchPosition)) {
+                if (theSequence.matches(reader, searchPosition)) {
                     return searchPosition;
                 }
                 searchPosition--;
