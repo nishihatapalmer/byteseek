@@ -40,6 +40,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.searcher.sequence.AbstractSequenceMatcherSearcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
@@ -108,7 +109,7 @@ import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
  * 
  * @author Matt Palmer
  */
-public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
+public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearcher {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
@@ -130,7 +131,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */    
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
@@ -157,7 +158,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             while (shift > 0) {
                 searchPosition += shift;
                 if (searchPosition > finalPosition) {
-                    return SearchUtils.noResults();
+                    return NO_MATCH;
                 }
                 shift = safeShifts[bytes[searchPosition] & 0xFF];
             }
@@ -165,7 +166,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             // The last byte matched - verify there is a complete match:
             final int startMatchPosition = searchPosition - lastMatcherPosition;
             if (verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
-                return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
+                return startMatchPosition; // match found.
             }
             
             // No match was found - shift forward by the next closest shift for
@@ -173,17 +174,16 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             searchPosition -= shift;
         }
         
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }    
         
-    
     /**
      * Searches forward using the Boyer Moore Horspool algorithm, using 
      * byte arrays from Windows to handle shifting, and the WindowReader interface
      * on the SequenceMatcher to verify whether a match exists.
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, final long fromPosition, 
+    protected long doSearchForwards(final WindowReader reader, final long fromPosition,
         final long toPosition) throws IOException {
             
         // Get the objects needed to search:
@@ -229,7 +229,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
                 final long totalShift = arraySearchPosition - arrayStartPosition;
                 final long matchPosition = searchPosition + totalShift - endSequencePosition;
                 if (verifier.matches(reader, matchPosition)) {
-                    return SearchUtils.singleResult(matchPosition, matcher); // match found.
+                    return matchPosition; // match found.
                 }
                 
                 // No match was found - shift forward by the next closest shift for
@@ -241,15 +241,14 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
 
-        return SearchUtils.noResults();        
+        return NO_MATCH;
     }
 
-    
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get objects needed for the search:
         final SearchInfo info = backwardInfo.get();
@@ -274,7 +273,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             while (shift > 0) {
                 searchPosition -= shift;
                 if (searchPosition < lastPosition) {
-                    return SearchUtils.noResults();
+                    return NO_MATCH;
                 }
                 shift = safeShifts[bytes[searchPosition] & 0xFF];
             }
@@ -283,7 +282,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             // A null verifier means we don't need a verifier, as the sequence
             // is only one byte long - which we have just matched above.
             if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
-                return SearchUtils.singleResult(searchPosition, matcher); // match found.
+                return searchPosition; // match found.
             }
 
             // No match was found - shift backward by the shift for the current byte.
@@ -291,15 +290,14 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             searchPosition += shift;     
         }
         
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
-    
     /**
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
+    protected long doSearchBackwards(final WindowReader reader,
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Initialise search:
@@ -342,7 +340,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
                 final int totalShift = arrayStartPosition - arraySearchPosition;
                 final long startMatchPosition = searchPosition - totalShift;
                 if (verifier == null || verifier.matches(reader, startMatchPosition + 1)) {
-                    return SearchUtils.singleResult(startMatchPosition, matcher); // match found.
+                    return startMatchPosition; // match found.
                 }
                 
                 // No match was found - shift backward by the shift for the current byte.
@@ -354,10 +352,9 @@ public final class SignedHorspoolSearcher extends AbstractSequenceSearcher {
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
 
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
-    
     /**
      * {@inheritDoc}
      */

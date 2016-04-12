@@ -34,13 +34,9 @@ package net.byteseek.searcher.bytes;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.searcher.AbstractSearcher;
-import net.byteseek.searcher.SearchResult;
-import net.byteseek.searcher.SearchUtils;
-import net.byteseek.utils.ArgUtils;
+import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * A Searcher which just looks for a single byte value.
@@ -48,32 +44,28 @@ import java.util.List;
  * This is an incredibly simple search algorithm, just looking at every single byte until it finds
  * it, or not.
  */
-public final class ByteSearcher extends AbstractSearcher<Byte> {
+public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     private final byte toSearchFor;
-    private final Byte byteValue;
 
     public ByteSearcher(final byte value) {
+        super(value);
         toSearchFor = value;
-        byteValue = Byte.valueOf(value);
     }
 
     public ByteSearcher(final Byte value) {
-        ArgUtils.checkNullObject(value, "Byte passed in cannot be null.");
+        super(value);
         toSearchFor = value;
-        byteValue = value;
     }
 
     public ByteSearcher(final OneByteMatcher value) {
-        ArgUtils.checkNullObject(value, "OneByteMatcher passed in cannot be null.");
-        toSearchFor = value.getMatchingBytes()[0];
-        byteValue = Byte.valueOf(toSearchFor);
+        super(value == null? null : value.getMatchingBytes()[0]);
+        toSearchFor = sequence.byteValue();
     }
 
     @Override
-    public List<SearchResult<Byte>> searchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+    public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         final byte searchByte = toSearchFor;
-        final Byte resultValue = byteValue;
         long searchPosition = fromPosition >=0? fromPosition : 0;
         Window window;
         // While we have a window to search in:
@@ -98,36 +90,34 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
                      arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
                 if (array[arraySearchPosition] == searchByte) {
                     final long matchPosition = searchPosition + arraySearchPosition - startWindowSearchPosition;
-                    return SearchUtils.singleResult(matchPosition, resultValue);
+                    return matchPosition;
                 }
             }
 
             // Move the search position onwards to the next window:
             searchPosition += (distanceToWindowEnd + 1);
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override
-    public List<SearchResult<Byte>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final byte searchByte = toSearchFor;
-        final Byte resultValue = byteValue;
         final int lastPosition = toPosition < bytes.length?
                                  toPosition : bytes.length - 1;
         int searchPosition = fromPosition > 0? fromPosition : 0;
         while (searchPosition <= lastPosition) {
             if (searchByte == bytes[searchPosition]) {
-                return SearchUtils.singleResult(searchPosition, resultValue);
+                return searchPosition;
             }
             searchPosition++;
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override
-    public List<SearchResult<Byte>> searchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+    public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         final byte searchByte = toSearchFor;
-        final Byte resultValue = byteValue;
         long searchPosition = fromPosition;
         Window window;
         // While we have a window to search in:
@@ -150,29 +140,28 @@ public final class ByteSearcher extends AbstractSearcher<Byte> {
                  arraySearchPosition >= endWindowSearchPosition; arraySearchPosition--) {
                 if (array[arraySearchPosition] == searchByte) {
                     final long matchPosition = searchPosition - (startWindowSearchPosition - arraySearchPosition);
-                    return SearchUtils.singleResult(matchPosition, resultValue);
+                    return matchPosition;
                 }
             }
 
             // Move the search position onwards to the next window:
             searchPosition -= (startWindowSearchPosition + 1);
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override
-    public List<SearchResult<Byte>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final byte searchByte = toSearchFor;
-        final Byte resultValue = byteValue;
         final int lastPosition = toPosition > 0? toPosition : 0;
         int searchPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
         while (searchPosition >= lastPosition) {
             if (searchByte == bytes[searchPosition]) {
-                return SearchUtils.singleResult(searchPosition, resultValue);
+                return searchPosition;
             }
             searchPosition--;
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override

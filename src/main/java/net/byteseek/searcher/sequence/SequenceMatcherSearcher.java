@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,13 +31,10 @@
 package net.byteseek.searcher.sequence;
 
 import java.io.IOException;
-import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchResult;
-import net.byteseek.searcher.SearchUtils;
 
 /**
  * SequenceMatcherSearcher searches for a sequence by trying for a match in each position.
@@ -58,7 +55,7 @@ import net.byteseek.searcher.SearchUtils;
  *
  * @author Matt Palmer
  */
-public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
+public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearcher {
 
 
     /**
@@ -70,38 +67,33 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
         super(sequence);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */    
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Initialise:
         final SequenceMatcher sequence = matcher;
-        
+
         // Calculate safe bounds for the search:
         final int lastPossiblePosition = bytes.length - sequence.length();
         final int lastPosition = toPosition < lastPossiblePosition?
                                  toPosition : lastPossiblePosition;
         int searchPosition = fromPosition > 0?
                              fromPosition : 0;
-        
+
         // Search forwards
         while (searchPosition <= lastPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return SearchUtils.singleResult(searchPosition, sequence);
+                return searchPosition;
             }
             searchPosition++;
         }
-        return SearchUtils.noResults();    
-    }    
-    
-    
+        return NO_MATCH;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, final long fromPosition, 
+    public long doSearchForwards(final WindowReader reader, final long fromPosition,
             final long toPosition) throws IOException {
         // Initialise:
         final SequenceMatcher sequence = matcher;  
@@ -122,20 +114,16 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
             // Search forwards up to the end of this window:
             while (searchPosition <= lastPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, sequence);
+                    return searchPosition;
                 }
                 searchPosition++;
             }
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
     
    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Initialise:
         final SequenceMatcher sequence = matcher;
         
@@ -149,19 +137,19 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
         // Search backwards:
         while (searchPosition >= lastPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return  SearchUtils.singleResult(searchPosition, sequence);
+                return searchPosition;
             }
             searchPosition--;
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
-    
-    
+
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, final long fromPosition, 
+    public long doSearchBackwards(final WindowReader reader, final long fromPosition,
             final long toPosition) throws IOException {
         // Initialise:
         final SequenceMatcher sequence = matcher;
@@ -180,12 +168,12 @@ public final class SequenceMatcherSearcher extends AbstractSequenceSearcher {
             // Search backwards:
             while (searchPosition >= lastSearchPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, sequence);
+                    return searchPosition;
                 }
                 searchPosition--;
             }
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
    

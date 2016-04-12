@@ -37,6 +37,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.searcher.AbstractSearcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
+import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
@@ -48,18 +49,15 @@ import java.util.List;
  * This is an incredibly simple search algorithm, just looking at every single byte until it finds
  * it, or not.
  */
-public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
-
-    private final ByteMatcher toSearchFor;
+public final class ByteMatcherSearcher extends AbstractSequenceSearcher<ByteMatcher> {
 
     public ByteMatcherSearcher(final ByteMatcher value) {
-        ArgUtils.checkNullObject(value, "ByteMatcher passed in cannot be null.");
-        toSearchFor = value;
+        super(value);
     }
 
     @Override
-    public List<SearchResult<ByteMatcher>> searchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final ByteMatcher searchByte = toSearchFor;
+    public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+        final ByteMatcher searchByte = sequence;
         long searchPosition = fromPosition >=0? fromPosition : 0;
         Window window;
         // While we have a window to search in:
@@ -84,32 +82,32 @@ public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
                  arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
                 if (searchByte.matches(array[arraySearchPosition])) {
                     final long matchPosition = searchPosition + arraySearchPosition - startWindowSearchPosition;
-                    return SearchUtils.singleResult(matchPosition, searchByte);
+                    return matchPosition;
                 }
             }
 
             // Move the search position onwards to the next window:
             searchPosition += (distanceToWindowEnd + 1);
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override
-    public List<SearchResult<ByteMatcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final ByteMatcher searchByte = toSearchFor;
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        final ByteMatcher searchByte = sequence;
         final int startPosition = fromPosition >= 0? fromPosition : 0;
         final int endPosition   = toPosition < bytes.length? toPosition : bytes.length - 1;
         for (int searchPosition = startPosition; searchPosition <= endPosition; searchPosition++) {
             if (searchByte.matches(bytes[searchPosition])) {
-                return SearchUtils.singleResult(searchPosition, searchByte);
+                return searchPosition;
             }
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override
-    public List<SearchResult<ByteMatcher>> searchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final ByteMatcher searchByte = toSearchFor;
+    public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+        final ByteMatcher searchByte = sequence;
         long searchPosition = fromPosition;
         Window window;
         // While we have a window to search in:
@@ -132,27 +130,27 @@ public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
                  arraySearchPosition >= endWindowSearchPosition; arraySearchPosition--) {
                 if (searchByte.matches(array[arraySearchPosition])) {
                     final long matchPosition = searchPosition - (startWindowSearchPosition - arraySearchPosition);
-                    return SearchUtils.singleResult(matchPosition, searchByte);
+                    return matchPosition;
                 }
             }
 
             // Move the search position onwards to the next window:
             searchPosition -= (startWindowSearchPosition + 1);
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override
-    public List<SearchResult<ByteMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final ByteMatcher searchByte = toSearchFor;
+    public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        final ByteMatcher searchByte = sequence;
         final int startPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
         final int endPosition   = toPosition > 0? toPosition : 0;
         for (int searchPosition = startPosition; searchPosition >= endPosition; searchPosition--) {
             if (searchByte.matches(bytes[searchPosition])) {
-                return SearchUtils.singleResult(searchPosition, searchByte);
+                return searchPosition;
             }
         }
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
     @Override
@@ -174,7 +172,7 @@ public final class ByteMatcherSearcher extends AbstractSearcher<ByteMatcher> {
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '[' + toSearchFor + ']';
+        return this.getClass().getSimpleName() + '[' + sequence + ']';
     }
 
 }

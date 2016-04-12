@@ -73,77 +73,76 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */    
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+
         // Get the objects needed to search:
         final int[] safeShifts = forwardInfo.get();
         final SequenceMatcher sequence = getMatcher();
-        
+
         // Calculate safe bounds for the search:
         final int length = sequence.length();
         final int finalPosition = bytes.length - length;
         final int lastLoopPosition = finalPosition - 1;
-        final int lastPosition = toPosition < lastLoopPosition?
-                                 toPosition : lastLoopPosition;
-        int searchPosition = fromPosition > 0?
-                             fromPosition : 0;
+        final int lastPosition = toPosition < lastLoopPosition ?
+                toPosition : lastLoopPosition;
+        int searchPosition = fromPosition > 0 ?
+                fromPosition : 0;
 
         // Search forwards.  The loop does not check for the final
         // position, as we shift on the byte after the sequence.
         while (searchPosition <= lastPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return SearchUtils.singleResult(searchPosition, sequence);
+                return searchPosition;
             }
             searchPosition += safeShifts[bytes[searchPosition + length] & 0xFF];
         }
-        
+
         // Check the final position if necessary:
-        if (searchPosition == finalPosition && 
-            toPosition     >= finalPosition &&
-            sequence.matches(bytes, finalPosition)) {
-            return SearchUtils.singleResult(finalPosition, sequence);
+        if (searchPosition == finalPosition &&
+                toPosition >= finalPosition &&
+                sequence.matches(bytes, finalPosition)) {
+            return finalPosition;
         }
 
-        return SearchUtils.noResults();
-    }        
-    
-    
+        return NO_MATCH;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, 
+    public long doSearchForwards(final WindowReader reader,
             final long fromPosition, final long toPosition ) throws IOException {
-        
+
         // Initialise
         final int[] safeShifts = forwardInfo.get();
         final SequenceMatcher sequence = getMatcher();
         final int length = sequence.length();
         long searchPosition = fromPosition;
-        
+
         // While there is a window to search in...
         // If there is no window immediately after the sequence,
         // then there is no match, since this is only invoked if the 
         // sequence is already crossing into another window.         
         Window window;
         while (searchPosition <= toPosition &&
-               (window = reader.getWindow(searchPosition + length)) != null) {
-            
+                (window = reader.getWindow(searchPosition + length)) != null) {
+
             // Initialise array search:
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition + length);
             final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = toPosition - window.getWindowPosition() + length ;
-            final int finalPosition = distanceToEnd < arrayEndPosition?
-                                (int) distanceToEnd : arrayEndPosition;
+            final long distanceToEnd = toPosition - window.getWindowPosition() + length;
+            final int finalPosition = distanceToEnd < arrayEndPosition ?
+                    (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;
-            
+
             // Search fowards in the array using the reader interface to match.
             // The loop does not check the final position, as we shift on the byte
             // after the sequence (so would get an IndexOutOfBoundsException in the final position).
             while (arraySearchPosition < finalPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, sequence);
+                    return searchPosition;
                 }
                 final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 searchPosition += shift;
@@ -152,23 +151,22 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
 
             // Check final position if necessary:
             if (arraySearchPosition == finalPosition ||
-                searchPosition == toPosition) {
+                    searchPosition == toPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, sequence);
+                    return searchPosition;
                 }
                 searchPosition += safeShifts[array[arraySearchPosition] & 0xFF];
             }
         }
 
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
-    
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get objects needed to search:
         final int[] safeShifts = backwardInfo.get();
@@ -186,7 +184,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         // immediately before the current search position.
         while (searchPosition >= lastLoopPosition) {
             if (sequence.matchesNoBoundsCheck(bytes, searchPosition)) {
-                return SearchUtils.singleResult(searchPosition, sequence);
+                return searchPosition;
             }
             searchPosition -= safeShifts[bytes[searchPosition - 1] & 0xFF];             
         }
@@ -195,10 +193,10 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
         if (searchPosition == 0 &&
             toPosition < 1 &&
             sequence.matches(bytes, 0)) {
-            return SearchUtils.singleResult(0, sequence);
+            return 0;
         }
 
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
     
     
@@ -206,7 +204,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
+    public long doSearchBackwards(final WindowReader reader,
             final long fromPosition, final long toPosition ) throws IOException {
         
          // Initialise 
@@ -238,7 +236,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             // before it.
             while (arraySearchPosition > arrayEndSearchPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, sequence);
+                    return searchPosition;
                 }
                 final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 searchPosition -= shift;
@@ -249,13 +247,13 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
             if (arraySearchPosition == arrayEndSearchPosition ||
                 searchPosition == toPosition) {
                 if (sequence.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, sequence);
+                    return searchPosition;
                 }
                 searchPosition -= safeShifts[array[arraySearchPosition] & 0xFF];
             }
         }
         
-        return SearchUtils.noResults();
+        return NO_MATCH;
     }
 
 
@@ -292,6 +290,7 @@ public final class SundayQuickSearcher extends AbstractSequenceSearcher {
          * A safe shift is either the length of the sequence plus one, if the
          * byte does not appear in the {@link SequenceMatcher}, or
          * the shortest distance it appears from the end of the matcher.
+         * The last character in the pattern is not processed.
          */
         @Override
         public int[] create() {
