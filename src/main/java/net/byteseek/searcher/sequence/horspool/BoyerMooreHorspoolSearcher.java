@@ -244,7 +244,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceMatcherSea
              // The first byte matched - verify there is a complete match.
             // There is only a verifier if the sequence length was greater than one;
             // if the sequence is only one in length, we have already found it.
-            if (toMatch.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
+            if (toMatch.matchesNoBoundsCheck(bytes, searchPosition)) {
                 return searchPosition; // match found.
             }
 
@@ -289,7 +289,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceMatcherSea
                 // Verify if there is a match.
                 final int totalShift = arrayStartPosition - arraySearchPosition;
                 final long sequencePosition = searchPosition - totalShift;
-                if (toMatch.matches(reader, sequencePosition + 1)) {
+                if (toMatch.matches(reader, sequencePosition)) {
                     return sequencePosition; // match found.
                 }
 
