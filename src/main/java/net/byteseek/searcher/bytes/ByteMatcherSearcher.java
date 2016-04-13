@@ -34,6 +34,7 @@ package net.byteseek.searcher.bytes;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.searcher.AbstractSearcher;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
@@ -53,6 +54,10 @@ public final class ByteMatcherSearcher extends AbstractSequenceSearcher<ByteMatc
 
     public ByteMatcherSearcher(final ByteMatcher value) {
         super(value);
+    }
+
+    public ByteMatcherSearcher(final byte value) {
+        super(OneByteMatcher.valueOf(value));
     }
 
     @Override

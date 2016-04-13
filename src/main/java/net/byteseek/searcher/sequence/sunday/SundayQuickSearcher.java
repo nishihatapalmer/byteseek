@@ -32,12 +32,14 @@
 package net.byteseek.searcher.sequence.sunday;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.sequence.AbstractSequenceMatcherSearcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
@@ -56,6 +58,39 @@ public final class SundayQuickSearcher extends AbstractSequenceMatcherSearcher {
 
     private final LazyObject<int[]> forwardInfo;
     private final LazyObject<int[]> backwardInfo;
+
+    /**
+    * Constructs a searcher for the bytes contained in the sequence string,
+    * encoded using the platform default character set.
+    *
+    * @param sequence The string to search for.
+    * @throws IllegalArgumentException if the sequence is null or empty.
+    */
+    public SundayQuickSearcher(final String sequence) {
+        this(sequence, Charset.defaultCharset());
+    }
+
+    /**
+     * Constructs a searcher for the bytes contained in the sequence string,
+     * encoded using the charset provided.
+     *
+     * @param sequence The string to search for.
+     * @param charset The charset to encode the string in.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     */
+    public SundayQuickSearcher(final String sequence, final Charset charset) {
+        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
+    }
+
+    /**
+     * Constructs a searcher for the byte array provided.
+     *
+     * @param sequence The byte sequence to search for.
+     * @throws IllegalArgumentException if the sequence is null or empty.
+     */
+    public SundayQuickSearcher(final byte[] sequence) {
+        this(sequence == null? null : new ByteSequenceMatcher(sequence));
+    }
 
     /**
      * Constructs a Sunday Quick searcher given a {@link SequenceMatcher}

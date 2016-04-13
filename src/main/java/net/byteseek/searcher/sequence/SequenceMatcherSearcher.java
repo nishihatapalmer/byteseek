@@ -79,7 +79,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
     public SequenceMatcherSearcher(final String sequence, final Charset charset) {
-        super(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
+        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
     }
 
     /**
@@ -89,7 +89,7 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public SequenceMatcherSearcher(final byte[] sequence) {
-        super(sequence == null? null : new ByteSequenceMatcher(sequence));
+        this(sequence == null? null : new ByteSequenceMatcher(sequence));
     }
 
     /**
