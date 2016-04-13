@@ -31,9 +31,11 @@
 package net.byteseek.searcher.sequence;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 /**
@@ -57,6 +59,38 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  */
 public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearcher {
 
+    /**
+     * Constructs a searcher for the bytes contained in the sequence string,
+     * encoded using the platform default character set.
+     *
+     * @param sequence The string to search for.
+     * @throws IllegalArgumentException if the sequence is null or empty.
+     */
+    public SequenceMatcherSearcher(final String sequence) {
+        this(sequence, Charset.defaultCharset());
+    }
+
+    /**
+     * Constructs a searcher for the bytes contained in the sequence string,
+     * encoded using the charset provided.
+     *
+     * @param sequence The string to search for.
+     * @param charset The charset to encode the string in.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     */
+    public SequenceMatcherSearcher(final String sequence, final Charset charset) {
+        super(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
+    }
+
+    /**
+     * Constructs a searcher for the byte array provided.
+     *
+     * @param sequence The byte sequence to search for.
+     * @throws IllegalArgumentException if the sequence is null or empty.
+     */
+    public SequenceMatcherSearcher(final byte[] sequence) {
+        super(sequence == null? null : new ByteSequenceMatcher(sequence));
+    }
 
     /**
      * Constructs a SequenceMatcherSearcher given a {@link SequenceMatcher}.
