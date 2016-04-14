@@ -103,10 +103,10 @@ import net.byteseek.utils.factory.ObjectFactory;
  * One initially counter-intuitive consequence of this type of search is that
  * the longer the pattern you are searching for, the better the performance
  * usually is, as the possible shifts will be correspondingly bigger.
- *
+ * 
  * @author Matt Palmer
  */
-public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearcher {
+public final class UnrolledSignedHorspoolSearcher extends AbstractSequenceMatcherSearcher {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
@@ -114,10 +114,10 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
     /**
      * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
      * to search for.
-     *
+     * 
      * @param sequence The SequenceMatcher to search for.
      */
-    public SignedHorspoolSearcher(final SequenceMatcher sequence) {
+    public UnrolledSignedHorspoolSearcher(final SequenceMatcher sequence) {
         super(sequence);
         forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
         backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
@@ -130,7 +130,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
      * @param sequence The string to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public SignedHorspoolSearcher(final String sequence) {
+    public UnrolledSignedHorspoolSearcher(final String sequence) {
         this(sequence, Charset.defaultCharset());
     }
 
@@ -142,7 +142,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
      * @param charset The charset to encode the string in.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public SignedHorspoolSearcher(final String sequence, final Charset charset) {
+    public UnrolledSignedHorspoolSearcher(final String sequence, final Charset charset) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
     }
 
@@ -153,7 +153,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
      * @param sequence The byte sequence to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public SignedHorspoolSearcher(final byte[] sequence) {
+    public UnrolledSignedHorspoolSearcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence));
     }
 
@@ -161,43 +161,54 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
 
     /**
      * {@inheritDoc}
-     */
+     */    
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-
+        
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
         final int[] safeShifts = info.shifts;
         final SequenceMatcher verifier = info.verifier;
-
+        
         // Calculate safe bounds for the start of the search:
         final int lastMatcherPosition = sequence.length() - 1;
         int searchPosition = fromPosition > 0?
-                fromPosition + lastMatcherPosition : lastMatcherPosition;
-
+                             fromPosition + lastMatcherPosition : lastMatcherPosition;
+        
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
         final int lastPossibleSearchPosition = toPosition + lastMatcherPosition;
         final int finalPosition = lastPossibleSearchPosition < lastPossiblePosition?
-                lastPossibleSearchPosition : lastPossiblePosition;
-
+                                  lastPossibleSearchPosition : lastPossiblePosition;
+        
         // Search forwards:
         while (searchPosition <= finalPosition) {
-            final int shift = safeShifts[bytes[searchPosition] & 0xFF];
-            if (shift > 0) {
+            
+            // Shift forward until there is a negative shift or we run out of
+            // search space.
+            int shift = safeShifts[bytes[searchPosition] & 0xFF];
+            while (shift > 0) {
                 searchPosition += shift;
-            } else {
-                // The last byte matched - verify there is a complete match:
-                final int startMatchPosition = searchPosition - lastMatcherPosition;
-                if (verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
-                    return startMatchPosition; // match found.
+                if (searchPosition > finalPosition) {
+                    return NO_MATCH;
                 }
-                searchPosition -= shift;
+                shift = safeShifts[bytes[searchPosition] & 0xFF];
             }
+            
+            // The last byte matched - verify there is a complete match:
+            final int startMatchPosition = searchPosition - lastMatcherPosition;
+            if (verifier.matchesNoBoundsCheck(bytes, startMatchPosition)) {
+                return startMatchPosition; // match found.
+            }
+            
+            // No match was found - shift forward by the next closest shift for
+            // the current byte. Subtract because the shift is negative.
+            searchPosition -= shift;
         }
+        
         return NO_MATCH;
-    }
-
+    }    
+        
     /**
      * Searches forward using the Boyer Moore Horspool algorithm, using 
      * byte arrays from Windows to handle shifting, and the WindowReader interface
@@ -205,56 +216,59 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
      */
     @Override
     protected long doSearchForwards(final WindowReader reader, final long fromPosition,
-                                    final long toPosition) throws IOException {
-
+        final long toPosition) throws IOException {
+            
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
         final int[] safeShifts = info.shifts;
         final SequenceMatcher verifier = info.verifier;
-
+        
         // Initialise window search:
         final long endSequencePosition = sequence.length() - 1;
         final long finalPosition = toPosition + endSequencePosition;
-        long searchPosition = fromPosition + endSequencePosition;
-
+        long searchPosition = fromPosition + endSequencePosition;        
+        
         // While there is a window to search in:
-        Window window;
+        Window window;      
         while (searchPosition <= finalPosition &&
-                (window = reader.getWindow(searchPosition)) != null) {
-
+               (window = reader.getWindow(searchPosition)) != null) {
+            
             // Initialise array search:
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
             final int lastMatcherPosition = sequence.length() - 1;
-            final long distanceToEnd = finalPosition - window.getWindowPosition() + lastMatcherPosition;
+            final long distanceToEnd = finalPosition - window.getWindowPosition() + lastMatcherPosition;     
             final int lastSearchPosition = distanceToEnd < arrayEndPosition?
-                    (int) distanceToEnd : arrayEndPosition;
-            int arraySearchPosition = arrayStartPosition;
-
+                                     (int) distanceToEnd : arrayEndPosition;
+            int arraySearchPosition = arrayStartPosition;            
+                        
             // Search forwards in this array:
             ARRAY_SEARCH: while (arraySearchPosition <= lastSearchPosition) {
 
                 // Shift forward until there is a negative shift or we run out of
                 // search space.
                 int shift = safeShifts[array[arraySearchPosition] & 0xFF];
-                if (shift > 0) {
+                while (shift > 0) {
                     arraySearchPosition += shift;
-                } else {
-                    // The last byte matched - verify there is a complete match:
-                    final long totalShift = arraySearchPosition - arrayStartPosition;
-                    final long matchPosition = searchPosition + totalShift - endSequencePosition;
-                    if (verifier.matches(reader, matchPosition)) {
-                        return matchPosition; // match found.
+                    if (arraySearchPosition > lastSearchPosition) {
+                        break ARRAY_SEARCH; // outside the array, move on.
                     }
-
-                    // No match was found - shift forward by the next closest shift for
-                    // the current byte. Subtract because the shift is negative.
-                    arraySearchPosition -= shift;
-
+                    shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 }
-            }
-
+                 
+                // The last byte matched - verify there is a complete match:
+                final long totalShift = arraySearchPosition - arrayStartPosition;
+                final long matchPosition = searchPosition + totalShift - endSequencePosition;
+                if (verifier.matches(reader, matchPosition)) {
+                    return matchPosition; // match found.
+                }
+                
+                // No match was found - shift forward by the next closest shift for
+                // the current byte. Subtract because the shift is negative.
+                arraySearchPosition -= shift;
+            } 
+            
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
@@ -267,43 +281,47 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
      */
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-
+        
         // Get objects needed for the search:
         final SearchInfo info = backwardInfo.get();
         final int[] safeShifts = info.shifts;
         final SequenceMatcher verifier = info.verifier;
-
+        
         // Calculate safe bounds for the start of the search:
         final int firstPossiblePosition = bytes.length - sequence.length();
         int searchPosition = fromPosition < firstPossiblePosition?
-                fromPosition : firstPossiblePosition;
-
+                             fromPosition : firstPossiblePosition;
+        
         // Calculate safe bounds for the end of the search:
         final int lastPosition = toPosition > 0?
-                toPosition : 0;
-
+                                 toPosition : 0;
+        
         // Search backwards:
         while (searchPosition >= lastPosition) {
-
+            
             // Shift backwards until there is a negative shift or we run out of
             // search space.
-            final int shift = safeShifts[bytes[searchPosition] & 0xFF];
-            if (shift > 0) {
+            int shift = safeShifts[bytes[searchPosition] & 0xFF];
+            while (shift > 0) {
                 searchPosition -= shift;
-            } else {
-                // The first byte matched - verify there is a complete match:
-                // A null verifier means we don't need a verifier, as the sequence
-                // is only one byte long - which we have just matched above.
-                if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
-                    return searchPosition; // match found.
+                if (searchPosition < lastPosition) {
+                    return NO_MATCH;
                 }
-
-                // No match was found - shift backward by the shift for the current byte.
-                // We add the shift, because it is negative.
-                searchPosition += shift;
+                shift = safeShifts[bytes[searchPosition] & 0xFF];
             }
-        }
+            
+            // The first byte matched - verify there is a complete match:
+            // A null verifier means we don't need a verifier, as the sequence
+            // is only one byte long - which we have just matched above.
+            if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
+                return searchPosition; // match found.
+            }
 
+            // No match was found - shift backward by the shift for the current byte.
+            // We add the shift, because it is negative.
+            searchPosition += shift;     
+        }
+        
         return NO_MATCH;
     }
 
@@ -312,52 +330,56 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
      */
     @Override
     protected long doSearchBackwards(final WindowReader reader,
-                                     final long fromPosition, final long toPosition ) throws IOException {
-
+            final long fromPosition, final long toPosition ) throws IOException {
+        
         // Initialise search:
         final SearchInfo info = backwardInfo.get();
         final int[] safeShifts = info.shifts;
-        final SequenceMatcher verifier = info.verifier;
+        final SequenceMatcher verifier = info.verifier;        
         long searchPosition = fromPosition;
-
+        
         // Search backwards across the windows:
         Window window;
         while (searchPosition >= toPosition &&
-                (window = reader.getWindow(searchPosition))!= null) {
-
+               (window = reader.getWindow(searchPosition))!= null) {
+            
             // Initialise the window search:
             final byte[] array = window.getArray();
-            final int arrayStartPosition = reader.getWindowOffset(searchPosition);
+            final int arrayStartPosition = reader.getWindowOffset(searchPosition);   
             final long distanceToEnd = toPosition - window.getWindowPosition();
             final int lastSearchPosition = distanceToEnd > 0?
-                    (int) distanceToEnd : 0;
+                                     (int) distanceToEnd : 0;
             int arraySearchPosition = arrayStartPosition;
-
+            
             // Search using the byte array for shifts, using the WindowReader
             // for verifiying the sequence with the matcher:          
             ARRAY_SEARCH: while (arraySearchPosition >= lastSearchPosition) {
-
+                
                 // Shift backward until there is a negative shift or we run out of
                 // search space.
-                final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
-                if (shift > 0) {
+                int shift = safeShifts[array[arraySearchPosition] & 0xFF];
+                while (shift > 0) {
                     arraySearchPosition -= shift;
-                } else {
-                    // The first byte matched - verify there is a complete match:
-                    // A null verifier means we don't need a verifier, as the sequence
-                    // is only one byte long - which we have just matched above.
-                    final int totalShift = arrayStartPosition - arraySearchPosition;
-                    final long startMatchPosition = searchPosition - totalShift;
-                    if (verifier == null || verifier.matches(reader, startMatchPosition + 1)) {
-                        return startMatchPosition; // match found.
+                    if (arraySearchPosition < lastSearchPosition) {
+                        break ARRAY_SEARCH; // outside the array, move on.
                     }
-
-                    // No match was found - shift backward by the shift for the current byte.
-                    // We add the shift, because it is negative.
-                    arraySearchPosition += shift;
+                    shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 }
+                
+                // The first byte matched - verify there is a complete match:
+                // A null verifier means we don't need a verifier, as the sequence
+                // is only one byte long - which we have just matched above.
+                final int totalShift = arrayStartPosition - arraySearchPosition;
+                final long startMatchPosition = searchPosition - totalShift;
+                if (verifier == null || verifier.matches(reader, startMatchPosition + 1)) {
+                    return startMatchPosition; // match found.
+                }
+                
+                // No match was found - shift backward by the shift for the current byte.
+                // We add the shift, because it is negative.
+                arraySearchPosition += shift;                
             }
-
+            
             // No match was found in this array - calculate the current search position:
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
@@ -372,7 +394,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
     public void prepareForwards() {
         forwardInfo.get();
     }
-
+    
 
     /**
      * {@inheritDoc}
@@ -381,45 +403,45 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
     public void prepareBackwards() {
         backwardInfo.get();
     }
-
-
+    
+    
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[sequence:" + sequence + ']';
+    	return getClass().getSimpleName() + "[sequence:" + sequence + ']';
     }
 
-
+    
     private static final class SearchInfo {
         private final int[] shifts;
         private final SequenceMatcher verifier;
-
+        
         private SearchInfo(final int[] shifts, final SequenceMatcher verifier) {
-            this.shifts = shifts;
-            this.verifier = verifier;
+        	this.shifts = shifts;
+        	this.verifier = verifier;
         }
     }
-
-
+    
+    
     private final class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
         private ForwardInfoFactory() {
         }
-
+        
         /**
          * Calculates the safe shifts to use if searching forwards.
          * A safe shift is either the length of the sequence, if the
          * byte does not appear in the {@link SequenceMatcher}, or
          * the shortest distance it appears from the end of the matcher.
-         */
+         */        
         @Override
         public SearchInfo create() {
             // Get info about the matcher:
             final int sequenceLength = sequence.length();
-
+            
             // Create the search info object fields:
             final int lastPosition = sequenceLength - 1;
             final SequenceMatcher verifier = (lastPosition == 0) ? AnyByteMatcher.ANY_BYTE_MATCHER
-                    : sequence.subsequence(0, lastPosition);
+            								                     : sequence.subsequence(0, lastPosition);
 
             // Check for the pathological case of positions matching all bytes, from the end to the start.
             // If there is such a matcher in the sequence, no shift can be bigger than this length.
@@ -435,7 +457,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
             }
 
             // Set the default shift to the length of the sequence
-            final int[] shifts = new int[256];
+            final int[] shifts = new int[256];            
             Arrays.fill(shifts, maxShift);
 
             // As long as we can shift more than one, work out the other possible shifts:
@@ -468,13 +490,13 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
             return new SearchInfo(shifts, verifier);
         }
     }
-
-
+    
+    
     private final class BackwardInfoFactory implements ObjectFactory<SearchInfo> {
 
         private BackwardInfoFactory() {
         }
-
+        
         /**
          * Calculates the safe shifts to use if searching backwards.
          * A safe shift is either the length of the sequence, if the
@@ -484,12 +506,12 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
          * If a shift is negative, it indicates that those bytes are in the
          * first position in the sequence, as well as giving the next closest
          * safe shift for those bytes (the positive value).
-         */
+         */        
         @Override
         public SearchInfo create() {
             // Get info about the matcher:
             final int sequenceLength = sequence.length();
-
+            
             // Create the search info object fields:
             final int lastPosition = sequenceLength - 1;
             final SequenceMatcher verifier = (lastPosition == 0)? null : sequence.subsequence(1, sequenceLength);
@@ -536,10 +558,10 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
             for (final byte b : matchingBytes) {
                 shifts[b & 0xFF] = -shifts[b & 0xFF];
             }
-
+            
             return new SearchInfo(shifts, verifier);
         }
-    }
+    }    
 
-
+    
 }

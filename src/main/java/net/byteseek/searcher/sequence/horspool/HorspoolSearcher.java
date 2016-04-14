@@ -77,7 +77,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  *
  * @author Matt Palmer
  */
-public final class BoyerMooreHorspoolSearcher extends AbstractSequenceMatcherSearcher {
+public final class HorspoolSearcher extends AbstractSequenceMatcherSearcher {
 
     private final LazyObject<int[]> forwardInfo;  // forwards searching shift table, calculated on demand.
     private final LazyObject<int[]> backwardInfo; // backwards searching shift table, calculated on demand.
@@ -88,7 +88,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceMatcherSea
      *
      * @param sequence The SequenceMatcher to search for.
      */
-    public BoyerMooreHorspoolSearcher(final SequenceMatcher sequence) {
+    public HorspoolSearcher(final SequenceMatcher sequence) {
         super(sequence);
         forwardInfo  = new DoubleCheckImmutableLazyObject<int[]>(new ForwardInfoFactory());
         backwardInfo = new DoubleCheckImmutableLazyObject<int[]>(new BackwardInfoFactory());
@@ -101,7 +101,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceMatcherSea
      * @param sequence The string to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public BoyerMooreHorspoolSearcher(final String sequence) {
+    public HorspoolSearcher(final String sequence) {
         this(sequence, Charset.defaultCharset());
     }
 
@@ -113,7 +113,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceMatcherSea
      * @param charset The charset to encode the string in.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public BoyerMooreHorspoolSearcher(final String sequence, final Charset charset) {
+    public HorspoolSearcher(final String sequence, final Charset charset) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
     }
 
@@ -123,7 +123,7 @@ public final class BoyerMooreHorspoolSearcher extends AbstractSequenceMatcherSea
      * @param sequence The byte sequence to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public BoyerMooreHorspoolSearcher(final byte[] sequence) {
+    public HorspoolSearcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence));
     }
 
