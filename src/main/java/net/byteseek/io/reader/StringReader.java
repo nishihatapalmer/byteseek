@@ -107,7 +107,7 @@ public class StringReader extends AbstractReader {
 	 */
 	@Override
 	protected Window createWindow(final long windowStart) throws IOException {
-		return new HardWindow(bytes, 0, bytes.length);
+		return windowStart == 0? new HardWindow(bytes, 0, bytes.length) : null;
 	}
 
 	/**
