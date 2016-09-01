@@ -53,18 +53,12 @@ import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
-import net.byteseek.searcher.multisequence.MultiSequenceMatcherSearcher;
-import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolFinalFlagSearcher;
-import net.byteseek.searcher.multisequence.set_horspool.SetHorspoolSearcher;
-import net.byteseek.searcher.multisequence.wu_manber.WuManberOneByteSearcher;
-import net.byteseek.searcher.multisequence.wu_manber.WuManberOneByteTunedSearcher;
-import net.byteseek.searcher.multisequence.wu_manber.WuManberTwoByteSearcher;
+import net.byteseek.searcher.multisequence.*;
 import net.byteseek.searcher.performance.SearcherProfiler.ProfileResult;
 import net.byteseek.searcher.performance.SearcherProfiler.ProfileResults;
-import net.byteseek.searcher.sequence.SequenceMatcherSearcher;
-import net.byteseek.searcher.sequence.horspool.BoyerMooreHorspoolSearcher;
-import net.byteseek.searcher.sequence.horspool.HorspoolFinalFlagSearcher;
-import net.byteseek.searcher.sequence.sunday.SundayQuickSearcher;
+import net.byteseek.searcher.sequence.*;
+import net.byteseek.searcher.sequence.SignedSuffixSearcher;
+import net.byteseek.searcher.sequence.SundayQuickSearcher;
 
 /**
  * Runs the searchers against different files and inputs to search for,
@@ -123,9 +117,9 @@ public class SearcherPerformanceTests {
 
 	public void profile(int numberOfTimes) {
 		try {
-			profileByteSearchers(numberOfTimes);
+			//profileByteSearchers(numberOfTimes);
 			//profileByteMatcherSearchers(numberOfTimes);
-			//profileSequenceSearchers(numberOfTimes);
+			profileSequenceSearchers(numberOfTimes);
 			//profileMultiSequenceSearchers(numberOfTimes);
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(SearcherPerformanceTests.class.getName()).log(Level.SEVERE, null, ex);
@@ -139,8 +133,8 @@ public class SearcherPerformanceTests {
 		OneByteMatcher matcher = OneByteMatcher.valueOf((byte) byteValue);
 		searchers.add(new MatcherSearcher(matcher));
 		searchers.add(new SequenceMatcherSearcher(matcher));
-		searchers.add(new BoyerMooreHorspoolSearcher(matcher));
-		searchers.add(new HorspoolFinalFlagSearcher(matcher));
+		searchers.add(new HorspoolSearcher(matcher));
+		searchers.add(new UnrolledHorspoolSearcher(matcher));
 		searchers.add(new SundayQuickSearcher(matcher));
 		searchers.add(new ByteSearcher(matcher));
 		searchers.add(new ByteMatcherSearcher(matcher));
@@ -149,11 +143,13 @@ public class SearcherPerformanceTests {
 
 	private Collection<Searcher<?>> getSequenceSearchers(SequenceMatcher sequence) {
 		List<Searcher<?>> searchers = new ArrayList<Searcher<?>>();
-		searchers.add(new MatcherSearcher(sequence));
-		searchers.add(new SequenceMatcherSearcher(sequence));
-		searchers.add(new BoyerMooreHorspoolSearcher(sequence));
-		searchers.add(new HorspoolFinalFlagSearcher(sequence));
-		searchers.add(new SundayQuickSearcher(sequence));
+		//searchers.add(new MatcherSearcher(sequence));
+		//searchers.add(new SequenceMatcherSearcher(sequence));
+		//searchers.add(new HorspoolSearcher(sequence));
+		searchers.add(new SignedHorspoolSearcher(sequence));
+		searchers.add(new SignedSuffixSearcher(sequence));
+		//searchers.add(new UnrolledHorspoolSearcher(sequence));
+		//searchers.add(new SundayQuickSearcher(sequence));
 		return searchers;
 	}
 
@@ -161,12 +157,11 @@ public class SearcherPerformanceTests {
 		List<Searcher<?>> searchers = new ArrayList<Searcher<?>>();
 		//searchers.add(new MatcherSearcher(multisequence));
 		//searchers.add(new MultiSequenceMatcherSearcher(multisequence));
-		//searchers.add(new SetHorspoolSearcher(multisequence));
-		//searchers.add(new SetHorspoolFinalFlagSearcher(multisequence));
+		searchers.add(new SetHorspoolSearcher(multisequence));
+		searchers.add(new SignedSetHorspoolSearcher(multisequence));
 		searchers.add(new WuManberOneByteSearcher(multisequence));
-		//searchers.add(new WuManberOneByteTunedSearcher(multisequence));
 		searchers.add(new WuManberTwoByteSearcher(multisequence));
-		//searchers.add(new WuManberOneByteFinalFlagSearcher(multisequence));
+		//searchers.add(new SignedWuManberOneByteSearcher(multisequence));
 		return searchers;
 	}
 
