@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.multisequence.wu_manber;
+package net.byteseek.searcher.multisequence;
 
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 

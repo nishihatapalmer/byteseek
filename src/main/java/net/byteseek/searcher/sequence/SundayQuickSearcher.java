@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.sequence.sunday;
+package net.byteseek.searcher.sequence;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

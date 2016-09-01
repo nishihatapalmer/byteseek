@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.searcher.multisequence.wu_manber;
+package net.byteseek.searcher.multisequence;
 
 /**
  * TO BE IMPLEMENTED.

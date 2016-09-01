@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.multisequence.set_horspool;
+package net.byteseek.searcher.multisequence;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 /**
  * The SetHorspoolSearcher implements the Boyer-Moore-Horspool algorithm for
  * multiple sequences.  For a description of this algorithm, please see the
- * class {@link net.byteseek.searcher.sequence.horspool.UnrolledHorspoolSearcher}.
+ * class {@link net.byteseek.searcher.sequence.UnrolledHorspoolSearcher}.
  * <p>
  * It extends that algorithm by calculating the shifts for all the sequences
  * to be searched for.  As the number of sequences rises, the performance of

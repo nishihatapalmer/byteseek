@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.byteseek.searcher.multisequence.set_horspool;
+package net.byteseek.searcher.multisequence;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -48,7 +48,6 @@ import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
-import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 
 /**
  * A class implementing the Set-Horspool Final-Flag algorithm. This is a variant
