@@ -42,7 +42,12 @@ import net.byteseek.searcher.SearchUtils;
 import net.byteseek.utils.ArgUtils;
 
 /**
- * TODO: describe abstract class, implementing convenience methods.
+ * An abstract base class for sequence searchers, providing implementations of Searcher list-based methods.
+ * <p>
+ * The SequenceSearcher defines some new search methods which only return a primitive int or long for a search
+ * result.  This is because a sequence searcher can only match a single sequence at a single position, so there
+ * is no need in general for lists of results.  Subclasses only need to implement the primitive methods - these
+ * convenience methods wrap them in lists for the more general Searcher interface.
  *
  * @author Matt Palmer
  */
