@@ -54,6 +54,11 @@ import net.byteseek.utils.factory.ObjectFactory;
  * it generally outperforms shifting algorithms for short patterns, since they cannot obtain
  * large shifts with short patterns.  When patterns become longer, shifts also tend to become
  * longer, and so they outperform ShiftOR since they don't need to examine every byte in the data.
+ * <p>
+ * Unlike most other implementations, it inherits from AbstractSequenceSearcher, rather than
+ * AbstractSequenceMatcherSearcher.  This is because it has to examine every byte in the data.
+ * Due to this, it can implement searching in Windows more efficiently than classes which have
+ * match sequences across window boundaries.
  *
  * @author Matt Palmer
  */
