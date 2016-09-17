@@ -55,8 +55,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      *         match was found.
      * @throws IOException
      */
-    public long searchSequenceForwards(WindowReader reader, long fromPosition, long toPosition)
-            throws IOException;
+    long searchSequenceForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
     /**
      * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -70,8 +69,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      *         match was found.
      * @throws IOException
      */
-    public long searchSequenceForwards(WindowReader reader, long fromPosition)
-            throws IOException;
+    long searchSequenceForwards(WindowReader reader, long fromPosition) throws IOException;
 
     /**
      * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -83,8 +81,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      *         match was found.
      * @throws IOException
      */
-    public long searchSequenceForwards(WindowReader reader)
-            throws IOException;
+    long searchSequenceForwards(WindowReader reader) throws IOException;
 
     /**
      * Searches bytes forwards provided by a byte array from the position given
@@ -99,7 +96,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      * @return The position a match was found at, or a negative number if no
      *         match was found.
      */
-    public int searchSequenceForwards(byte[] bytes, int fromPosition, int toPosition);
+    int searchSequenceForwards(byte[] bytes, int fromPosition, int toPosition);
 
     /**
      * Searches bytes forwards provided by a byte array from the position given
@@ -112,7 +109,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      * @return The position a match was found at, or a negative number if no
      *         match was found.
      */
-    public int searchSequenceForwards(byte[] bytes, int fromPosition);
+    int searchSequenceForwards(byte[] bytes, int fromPosition);
 
     /**
      * Searches bytes forwards provided by a byte array
@@ -122,7 +119,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      * @return The position a match was found at, or a negative number if no
      *         match was found.
      */
-    public int searchSequenceForwards(byte[] bytes);
+    int searchSequenceForwards(byte[] bytes);
 
     /**
      * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -138,7 +135,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      *         match was found.
      * @throws IOException
      */
-    public long searchSequenceBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
+    long searchSequenceBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
     /**
      * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -152,7 +149,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      *         match was found.
      * @throws IOException
      */
-    public long searchSequenceBackwards(WindowReader reader, long fromPosition) throws IOException;
+    long searchSequenceBackwards(WindowReader reader, long fromPosition) throws IOException;
 
     /**
      * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -164,8 +161,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      *         match was found.
      * @throws IOException
      */
-    public long searchSequenceBackwards(WindowReader reader)
-            throws IOException;
+    long searchSequenceBackwards(WindowReader reader) throws IOException;
 
     /**
      * Searches bytes backwards provided by a byte array, from the position
@@ -180,7 +176,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      * @return The position a match was found at, or a negative number if no
      *         match was found.
      */
-    public int searchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition);
+    int searchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition);
 
     /**
      * Searches bytes backwards provided by a byte array, from the position
@@ -193,7 +189,7 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      * @return The position a match was found at, or a negative number if no
      *         match was found.
      */
-    public int searchSequenceBackwards(byte[] bytes, int fromPosition);
+    int searchSequenceBackwards(byte[] bytes, int fromPosition);
 
     /**
      * Searches a byte array backwards, from the end to the start.
@@ -203,7 +199,6 @@ public interface SequenceSearcher<T> extends Searcher<T> {
      * @return The position a match was found at, or a negative number if no
      *         match was found.
      */
-    public int searchSequenceBackwards(byte[] bytes);
-    
+    int searchSequenceBackwards(byte[] bytes);
     
 }
