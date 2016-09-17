@@ -45,10 +45,18 @@ import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
 
 /**
+ * An implementation of the Shift OR search algorithm, extended to work with byte classes at
+ * any position.
+ * <p>
+ * It is very fast when matching short patterns, e.g. 8 or less in length.   It examines
+ * every position in the data (there is no shifting), but the core of the algorithm is
+ * very simple and uses bit-parallellism to determine where matches exist.  For this reason
+ * it generally outperforms shifting algorithms for short patterns, since they cannot obtain
+ * large shifts with short patterns.  When patterns become longer, shifts also tend to become
+ * longer, and so they outperform ShiftOR since they don't need to examine every byte in the data.
+ *
  * @author Matt Palmer
  */
-
-//TODO: fill in implementation - this is just a copy of Horspool right now.
 
 public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
 
@@ -117,7 +125,8 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe start and ends - do not know final length (input can be a stream).
         final int lastMatcherPosition = sequence.length() - 1;
         final long startPosition = fromPosition > 0 ? fromPosition : 0;
-        final long toPositionEndPos = toPosition + lastMatcherPosition; //TODO: prevent long overflow.
+        final long toPositionEndPos = toPosition < Long.MAX_VALUE - lastMatcherPosition?
+                                      toPosition + lastMatcherPosition : Long.MAX_VALUE;
 
         // Search forwards:
         long state = ~0L; // 64 1's bitmask.
@@ -155,8 +164,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe start and ends:
         final int lastMatcherPosition = sequence.length() - 1;
         final int startPosition = fromPosition > 0 ? fromPosition : 0;
-        final int lastPossiblePosition = bytes.length - 1; //TODO: prevent endpos overflow.
-        final int toPositionEndPos = toPosition + lastMatcherPosition; // shift or must scan up to the end of the pattern.
+        final int lastPossiblePosition = bytes.length - 1;
+        final int toPositionEndPos = toPosition < Integer.MAX_VALUE - lastMatcherPosition?
+                                     toPosition + lastMatcherPosition : Integer.MAX_VALUE; // shift or must scan up to the end of the pattern.
         final int finalPosition = toPositionEndPos < lastPossiblePosition ? toPositionEndPos : lastPossiblePosition;
 
         // Search forwards:
@@ -180,7 +190,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         // Determine safe end.
         final long finalSearchPosition = toPosition > 0? toPosition : 0;
-        final long fromPositionStart   = fromPosition + sequence.length() - 1; //TODO: avoid long overflow.
+        final int lastSequencePos = sequence.length() - 1;
+        final long fromPositionStart   = fromPosition < Long.MAX_VALUE - lastSequencePos?
+                                         fromPosition + lastSequencePos : Long.MAX_VALUE;
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask.
@@ -222,7 +234,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - 1;
-        final int fromPositionEndPos = fromPosition + sequence.length() - 1; //TODO: avoid int overflow.
+        final int lastSequencePos = sequence.length() - 1;
+        final int fromPositionEndPos = fromPosition < Integer.MAX_VALUE - lastSequencePos?
+                                       fromPosition + lastSequencePos : Integer.MAX_VALUE;
         final int startPosition = fromPositionEndPos < lastPossiblePosition ? fromPositionEndPos : lastPossiblePosition;
         final int finalPosition = toPosition > 0 ? toPosition : 0;
 
