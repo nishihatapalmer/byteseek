@@ -31,6 +31,26 @@
 
 /**
  * A package containing searchers for single sequences.  The sequences can match more than
- * one byte value in each position, but only one sequence can be searched at a time..
+ * one byte value in each position, but only one sequence can be searched at a time.
+ * <p>
+ * Although the performance of these searchers can vary depending on the data and pattern being searched,
+ * in general they perform from slowest to fastest:
+ * <ul>
+ * <li>SequenceMatcherSearcher  - naive search; no additional memory requirements</li>
+ * <li>SundayQuickSearcher      - simple adaption of HorspoolSearcher, not usually faster in practice.</li>
+ * <li>HorspoolSearcher         - simpler and faster variant of Boyer-Moore search</li>
+ * <li>UnrolledHorspoolSearcher - HorspoolSearcher with shift loop "unrolled" - usually faster than Horspool</li>
+ * <li>SignedHorspoolSearcher   - Variant of Horspool using Signed Searching  - usually fastest of Horspool variants.</li>
+ * <li>ShiftOrSearcher          - usually fastest for small pattern lengths, e.g. 8 or less in length).</li>
+ * <li>QF43Searcher             - usually fastest for most patterns except shorter patterns, where ShiftOr is fastest.</li>
+ * </ul>
+ * <p>
+ * Note that performance can vary depending on whether the pattern matches classes of bytes.
+ * Most of the searchers above will search much slower when large numbers of bytes can match
+ * in particular positions, particularly towards the end of the pattern.
+ * Also, the results above do not include the time to pre-process the pattern.  For short one-off
+ * searches, the SequenceMatcherSearcher may well outperform the others, as it has no
+ * pre-processing requirements.  As always, you should profile the searchers for the sort
+ * of searching you do to determine which best suits your needs.
  */
 package net.byteseek.searcher.sequence;
