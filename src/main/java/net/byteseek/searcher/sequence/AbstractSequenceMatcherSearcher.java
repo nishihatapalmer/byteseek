@@ -72,6 +72,7 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
         super(sequence);
     }
 
+
     /**
      * {@inheritDoc}
      * <p>
