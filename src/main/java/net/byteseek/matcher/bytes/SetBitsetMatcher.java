@@ -76,8 +76,7 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
-        return window == null? false
-               : (byteValues.get(window.getByte(reader.getWindowOffset(matchPosition)) & 0xFF) ^ inverted);
+        return window != null && (byteValues.get(window.getByte(reader.getWindowOffset(matchPosition)) & 0xFF) ^ inverted);
     }  
 
 
@@ -97,9 +96,8 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return byteValues.get(bytes[matchPosition] & 0xFF) ^ inverted;
-    }    
-    
-    
+    }
+
     /**
      * {@inheritDoc}
      */
