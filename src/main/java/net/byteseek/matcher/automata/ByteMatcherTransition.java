@@ -66,14 +66,7 @@ public class ByteMatcherTransition<T> implements Transition<T> {
 	}
 
 	/**
-	 * Copy constructor for the ByteMatcherTransition, taking another
-	 * ByteMatcherTransition to copy from, and another {@link State} to link to.
-	 * <p>
-	 * Since instances of this class are immutable, an identical copy of an instance
-	 * of this class will always be identical to the original, making a copy constructor
-	 * essentially useless.
-	 * <p>
-	 * This is really a convenience constructor, which copies the matcher out of 
+	 * A constructor which copies the matcher out of
 	 * an existing ByteMatcherTransition, but specifies a different State to 
 	 * link to.  It is equivalent to:
 	 * <code>ByteMatcherTransition(other.getMatcher(), someState);</code>
