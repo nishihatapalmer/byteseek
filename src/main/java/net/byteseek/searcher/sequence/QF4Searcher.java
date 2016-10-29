@@ -227,15 +227,14 @@ public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMa
         final int[] BITMASKS    = forwardInfo.get();
         final int   MASK        = TABLE_SIZE - 1;
 
-        // Determine safe start and ends:
-        final int LAST_TEXT_POSITION   = bytes.length - 1;
+        // Determine safe shifts, starts and ends:
         final int PATTERN_LENGTH       = localSequence.length();
-        final int LAST_PATTERN_POS     = PATTERN_LENGTH - 1;
-        final int PATTERN_START_OFFSET = PATTERN_LENGTH - QLEN;
-        final int SEARCH_SHIFT         = PATTERN_LENGTH - QLEN + 1;
+        final int PATTERN_MINUS_QLEN   = PATTERN_LENGTH - QLEN;
+        final int SEARCH_SHIFT         = PATTERN_MINUS_QLEN + 1;
         final int SEARCH_START         = (fromPosition > 0?
-                                          fromPosition : 0) + SEARCH_SHIFT - 1;
-        final int TO_END_POS           = toPosition + LAST_PATTERN_POS;
+                                          fromPosition : 0) + PATTERN_MINUS_QLEN;
+        final int TO_END_POS           = toPosition + PATTERN_LENGTH - 1;
+        final int LAST_TEXT_POSITION   = bytes.length - 1;
         final int SEARCH_END           = (TO_END_POS < LAST_TEXT_POSITION?
                                           TO_END_POS : LAST_TEXT_POSITION) - QLEN + 1;
 
@@ -253,7 +252,7 @@ public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMa
             MATCH: if (qGramMatch != 0) {
 
                 // Scan back across the other q-grams in the text to see if they also appear in the pattern:
-                final int PATTERN_START_POS = pos - PATTERN_START_OFFSET;
+                final int PATTERN_START_POS = pos - PATTERN_MINUS_QLEN;
                 for (pos -= QLEN; pos >= PATTERN_START_POS; pos -= QLEN) {
                     qGramHash =                        (bytes[pos + 3] & 0xFF);
                     qGramHash = (qGramHash << SHIFT) + (bytes[pos + 2] & 0xFF);
