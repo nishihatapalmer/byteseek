@@ -49,15 +49,16 @@ import net.byteseek.utils.factory.ObjectFactory;
  * any position.
  * <p>
  * It is very fast when matching short patterns, e.g. 8 or less in length.   It examines
- * every position in the data (there is no shifting), but the core of the algorithm is
- * very simple and uses bit-parallellism to determine where matches exist.  For this reason
- * it generally outperforms shifting algorithms for short patterns, since they cannot obtain
+ * every position in the data (despite its name there is no shifting the search position more than one),
+ * but the core of the algorithm is very simple and uses bit-parallellism to determine where matches exist.
+ * For this reason it generally outperforms shifting algorithms for short patterns, since they cannot obtain
  * large shifts with short patterns.  When patterns become longer, shifts also tend to become
  * longer, and so they outperform ShiftOR since they don't need to examine every byte in the data.
  * <p>
  * Unlike most other implementations, it inherits from AbstractSequenceSearcher, rather than
- * AbstractSequenceMatcherSearcher.  This is because it has to examine every byte in the data.
- * Due to this, it can implement searching in Windows more efficiently than classes which have
+ * AbstractSequenceMatcherSearcher.  This is because it has to examine every byte in the data,
+ * but doesn't have to ever use the actual matcher - it relies entirely on the pre-processed bitmasks.
+ * Due to this, it can implement searching across Windows more efficiently than classes which have to
  * match sequences across window boundaries.
  *
  * @author Matt Palmer
@@ -65,11 +66,10 @@ import net.byteseek.utils.factory.ObjectFactory;
 
 public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
 
-    private static final int MAX_LENGTH = 63; //TODO: 64?
+    private static final int MAX_LENGTH = 63; //TODO: 64?  Remove max length limitation by matching manually with matcher after this length.
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
-
 
     /**
      * Constructs a searcher given a {@link SequenceMatcher}
