@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2013-16, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -68,5 +68,16 @@ public final class CollUtils {
     	}
     	return false;
     }
+
+	public static boolean containsAny(final Collection<? extends Byte> collection, final byte[] values) {
+		ArgUtils.checkNullCollection(collection,"collection");
+		ArgUtils.checkNullByteArray(values, "values");
+		for (byte value : values) {
+			if (collection.contains(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }
