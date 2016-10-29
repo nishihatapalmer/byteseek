@@ -33,11 +33,13 @@ package net.byteseek.searcher.sequence;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.collections.BytePermutationIterator;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
@@ -47,19 +49,44 @@ import net.byteseek.utils.factory.ObjectFactory;
  * An implementation of the QF (Qgram-Filtering) algorithm by
  * Branislav Durian, Hannu Peltola, Leena Salmela and Jorma Tarhio
  * <p>
- * Length of q-grams QLEN = 4, and bit shift parameter SHIFT = 3, so this is QF43.
+ * Length of q-grams QLEN = 4, and bit shift parameter defaults to SHIFT = 3.
+ * Other bit shifts (which imply different table sizes) are possible to specify.
  *
  * @author Matt Palmer
  */
 
-public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
+public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
 
-    private final static int QLEN       = 4;
-    private final static int SHIFT      = 3; //TODO: choose this parameter dynamically to obtain good table size and mask.
-    private final static int TABLE_SIZE = (1 << (QLEN * SHIFT)); // two to the power QLEN * SHIFT = 2^12 = 4096.
+    private final static int QLEN                        = 4;
+    private final static QF4TableSize DEFAULT_TABLE_SIZE = QF4TableSize.SIZE_4K;
+    private final int SHIFT;
+    private final int TABLE_SIZE;
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
+
+    /**
+     * An enumeration of the valid table sizes for the QF4 Searcher, and the bit shift associated with each.
+     * If not specified in the constructor, defaults to a shift of 3, which gives a table size of 4K.
+     */
+    public enum QF4TableSize {
+
+        SIZE_32B(1), SIZE_256B(2),SIZE_4K(3), SIZE_64K(4), SIZE_1M(5), SIZE_16M(6), SIZE_256M(7);
+
+        private final int shift;
+
+        QF4TableSize(final int shift) {
+            this.shift = shift;
+        }
+
+        public int getTableSize() {
+            return 1 << (QLEN * shift);
+        }
+
+        public int getShift() {
+            return shift;
+        }
+    }
 
     /**
      * Constructs a searcher given a {@link SequenceMatcher}
@@ -67,8 +94,22 @@ public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
      *
      * @param sequence The SequenceMatcher to search for.
      */
-    public QF43Searcher(final SequenceMatcher sequence) {
+    public QF4Searcher(final SequenceMatcher sequence) {
+        this(sequence, DEFAULT_TABLE_SIZE);
+    }
+
+    /**
+     * Constructs a searcher given a {@link SequenceMatcher}
+     * to search for.
+     *
+     * @param sequence The SequenceMatcher to search for.
+     * @param tableSize The size to use for the bitmask filter table.
+     */
+    public QF4Searcher(final SequenceMatcher sequence, final QF4TableSize tableSize) {
         super(sequence);
+        ArgUtils.checkNullObject(tableSize, "tableSize");
+        SHIFT = tableSize.getShift();
+        TABLE_SIZE = tableSize.getTableSize();
         forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
         backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
     }
@@ -80,8 +121,20 @@ public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
      * @param sequence The string to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public QF43Searcher(final String sequence) {
-        this(sequence, Charset.defaultCharset());
+    public QF4Searcher(final String sequence) {
+        this(sequence, Charset.defaultCharset(), DEFAULT_TABLE_SIZE);
+    }
+
+    /**
+     * Constructs a searcher for the bytes contained in the sequence string,
+     * encoded using the platform default character set.
+     *
+     * @param sequence The string to search for.
+     * @param tableSize The size to use for the bitmask filter table.
+     * @throws IllegalArgumentException if the sequence is null or empty.
+     */
+    public QF4Searcher(final String sequence, final QF4TableSize tableSize) {
+        this(sequence, Charset.defaultCharset(), tableSize);
     }
 
     /**
@@ -92,8 +145,21 @@ public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
      * @param charset The charset to encode the string in.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public QF43Searcher(final String sequence, final Charset charset) {
+    public QF4Searcher(final String sequence, final Charset charset) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
+    }
+
+    /**
+     * Constructs a searcher for the bytes contained in the sequence string,
+     * encoded using the charset provided.
+     *
+     * @param sequence The string to search for.
+     * @param charset The charset to encode the string in.
+     * @param tableSize The size to use for the bitmask filter table.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     */
+    public QF4Searcher(final String sequence, final Charset charset, final QF4TableSize tableSize) {
+        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), tableSize);
     }
 
     /**
@@ -102,9 +168,21 @@ public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
      * @param sequence The byte sequence to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public QF43Searcher(final byte[] sequence) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence));
+    public QF4Searcher(final byte[] sequence) {
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_TABLE_SIZE);
     }
+
+    /**
+     * Constructs a searcher for the byte array provided.
+     *
+     * @param sequence The byte sequence to search for.
+     * @param tableSize The size to use for the bitmask filter table.
+     * @throws IllegalArgumentException if the sequence is null or empty.
+     */
+    public QF4Searcher(final byte[] sequence, QF4TableSize tableSize) {
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), tableSize);
+    }
+
 
     @Override
     public long doSearchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
@@ -196,50 +274,6 @@ public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
         }
         return NO_MATCH;
     }
-
-    /*
-    public int searchSequenceForwardsExperiment(final byte[] bytes, final int fromPosition, final int toPosition) {
-        // Get local references to member fields which are repeatedly accessed:
-        final SequenceMatcher localSequence = sequence;
-
-        // Get the pre-processed data needed to search:
-        final SearchInfo info   = forwardInfo.get();
-        final int[] BITMASKS    = info.getBitmasks();
-        final int   MASK        = info.getMask();
-
-        // Determine safe start and ends:
-        final int LASTPOSITION = bytes.length - 1;
-        final int MQ1          = localSequence.length() - QLEN + 1;
-        final int SEARCH_START = fromPosition > 0 ? fromPosition + MQ1 - 1: MQ1 - 1;
-
-        //TODO: minus QLEN, or minus QLEN + 1...?  seems to miss last position.
-        final int SEARCH_END   = toPosition < LASTPOSITION?
-                toPosition - QLEN : LASTPOSITION - QLEN;
-
-
-        // Search forwards, until a match is found or we reach the end of the data to be searched:
-        int qGramMatch = ~0;
-        for (int pos = SEARCH_START; pos <= SEARCH_END; pos += MQ1, qGramMatch = ~0) {
-            final int j = pos - MQ1 + QLEN;
-            while ((qGramMatch &= BITMASKS[(((((((bytes[pos + 3] & 0xFF)  << SHIFT) +
-                                                 (bytes[pos + 2] & 0xFF)) << SHIFT) +
-                                                 (bytes[pos + 1] & 0xFF)) << SHIFT) +
-                                                 (bytes[pos    ] & 0xFF)) & MASK]) != 0 && pos > j - QLEN) {
-                pos -= QLEN;
-            }
-            if (pos < j) {
-                for (int matchPos = j - QLEN + 1; matchPos <= j; matchPos++) {
-                    if (localSequence.matches(bytes, matchPos)) { //TODO: matchesNoBoundsCheck?  Is this safe here?
-                        return matchPos;
-                    }
-                }
-
-            }
-        }
-        return NO_MATCH;
-    }
-    */
-
 
     @Override
     public long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
@@ -360,6 +394,8 @@ public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
         }
     }
 
+    //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
+
     /**
      * A factory for the SearchInfo needed to search forwards.
      *
@@ -369,50 +405,66 @@ public final class QF43Searcher extends AbstractSequenceMatcherSearcher {
         private ForwardInfoFactory() {
         }
 
+        //TODO: explore QF variant that can search strings with fixed gaps embedded, since byteseek supports this.
+        //      Can only search to the right of the fixed gap without performance dying horribly.
+        //      So must be able to search for a good suffix of a string but match the actual string.
+        //      Implies analysis of the sequence while processing... if it encounters a bad block of permutations
+        //      which would swamp the table, stop pre-processing at that point and switch to this mode.
+
         /**
          * Calculates the bitmask table which tells us if a particular qgram in the text does not appear in the pattern.
-         * It acts rather like a Bloom filter - it can tell us that a qgram is definitely not in the pattern, but not
-         * whether it is in the pattern - false positives are possible.
+         * It can tell us that a qgram is definitely not in the pattern, but not whether it is in the pattern - false positives are possible.
+         * This is like a bloom filter, but using only a single hash function.
          * As soon as we see a qgram which is definitely not in the pattern, we can shift right past it.
          */
         @Override
         public SearchInfo create() {
 
-            //TODO: determine table size and SHIFT parameter dynamically from the pattern.
-
-            //TODO: deal with case where number of permutations would cause unacceptable and pointless pre-processing.
-            //      For example, 3 any bytes in a row (...) would give us 2^24 permutations to process.
-            //      Over some limit, may as well set all table entries to 1111 and be done with it.
-            //      search performance will be awful, but nothing is gained pointlessly processing 2^32 hash table
-            //      entries in a 4096 byte table in the pre-processing phase.  Once a set limit is exceeded, set
-            //      everything to one and stop any further pre-processing.
-
+            // Initialise constants
             final int PATTERN_LENGTH = sequence.length();
             final int MASK           = TABLE_SIZE - 1;
             final int MQ1            = PATTERN_LENGTH - QLEN + 1;
             final int[] B            = new int[TABLE_SIZE];
 
+            //TODO: validate Q_GRAM_LIMIT - how does performance change as table fills up?
+            final int QGRAM_LIMIT    = TABLE_SIZE * 4; // if number of qgrams = table size * 4, that is same as all available positions.  Collisions will reduce this, but it's a starting point.
+
+            // Set initial processing states
             int lastHash = 0;
             boolean haveLastHashValue = false;
             byte[] bytes0;
             byte[] bytes1 = sequence.getMatcherForPosition(PATTERN_LENGTH - 1).getMatchingBytes();
             byte[] bytes2 = sequence.getMatcherForPosition(PATTERN_LENGTH - 2).getMatchingBytes();
             byte[] bytes3 = sequence.getMatcherForPosition(PATTERN_LENGTH - 3).getMatchingBytes();
+            long totalQgrams = 0;
 
+            // Process all the qgrams in the pattern back from the end:
             for (int qGramStart = PATTERN_LENGTH - QLEN; qGramStart >= 0; qGramStart--) {
+
+                // Get the byte arrays for the qGram at the current qGramStart:
+                final int QGRAM_PHASE_BIT = (1 << ((PATTERN_LENGTH - qGramStart) % QLEN));
                 bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;             // shift byte arrays along one.
                 bytes3 = sequence.getMatcherForPosition(qGramStart).getMatchingBytes(); // get next byte array.
-                final int QGRAM_PHASE_BIT = (1 << ((PATTERN_LENGTH - qGramStart) % QLEN));
-                if (getNumPermutations(bytes0, bytes1, bytes2, bytes3) == 1L) { // no permutations to worry about.
-                    if (!haveLastHashValue) {
+
+                // Ensure we don't process too many qgrams unnecessarily, where the number of them exceed the useful table size.
+                final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
+                totalQgrams += numberOfPermutations;
+                if (totalQgrams > QGRAM_LIMIT) {
+                    Arrays.fill(B, 0xF); // set all entries to 1111 - they'll be mostly, of not all filled up anyway.
+                    break;               // stop further processing.
+                }
+
+                // Process the qgram permutations as efficiently as possible:
+                if (numberOfPermutations == 1L) { // no permutations to worry about.
+                    if (!haveLastHashValue) { // if we don't have a good last hash value, calculate the first 3 elements of it:
                         haveLastHashValue = true;
                         lastHash =                        (bytes0[0] & 0xFF);
                         lastHash = ((lastHash << SHIFT) + (bytes1[0] & 0xFF));
                         lastHash = ((lastHash << SHIFT) + (bytes2[0] & 0xFF));
                     }
-                    lastHash     = ((lastHash << SHIFT) + (bytes3[0] & 0xFF));
+                    lastHash     = ((lastHash << SHIFT) + (bytes3[0] & 0xFF)); // caldulate the new element of the qgram.
                     B[lastHash & MASK] |= QGRAM_PHASE_BIT;
-                } else { // more than one permutation to work through
+                } else { // more than one permutation to work through.
                     if (haveLastHashValue) { // Then bytes3 must contain all the additional permutations - just go through them.
                         haveLastHashValue = false;
                         for (final byte permutationValue : bytes3) {
