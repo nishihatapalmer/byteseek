@@ -49,6 +49,11 @@ import net.byteseek.utils.factory.ObjectFactory;
  * An implementation of the QF (Qgram-Filtering) algorithm by
  * Branislav Durian, Hannu Peltola, Leena Salmela and Jorma Tarhio.
  * <p>
+ * This algorithm is generally very fast for longer patterns, and quite
+ * reasonable for shorter ones.  It will often be the fastest, or very
+ * close to the fastest across a variety of alphabet sizes and pattern lengths.
+ * It is not faster than ShiftOR for shorter patterns (e.g. 8 or less).
+ * <p>
  * Length of q-grams QLEN = 4, and bit shift parameter defaults to SHIFT = 3.
  * Other bit shifts (which imply different table sizes) are possible to specify.
  *
