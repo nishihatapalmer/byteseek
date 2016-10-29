@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011, All rights reserved.
+ * Copyright Matt Palmer 2011-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -31,10 +31,7 @@
 
 package net.byteseek.utils.collections;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import net.byteseek.utils.ArgUtils;
 
@@ -50,51 +47,70 @@ import net.byteseek.utils.ArgUtils;
  * <li>{2, 5, 6}
  * <li>{2, 5, 7}
  * </ul>
- * It is not thread-safe, as it maintains state as it iterates.
+ * It is not thread-safe, as it maintains state as it iterates and is not synchronized.
  * 
  * @author Matt Palmer
  */
 public class BytePermutationIterator implements Iterator<byte[]> {
 
-    private final List<byte[]> byteArrays;
-    private final int[] permutationState;
+    private final byte[][] byteArrays;
     private final int length;
     private final byte[] permutation;
+    private final int[] permutationState;
 
-    
     /**
      * Constructor for the byte permutation iterator.
      * 
-     * @param byteArrays The list of byte arrays to produce permutations for
+     * @param arraylist The list of byte arrays to produce permutations for
      * @throws IllegalArgumentException if either the list of arrays is null or empty, or
      *         any of the byte arrays in the list are null or empty.
      */
-    public BytePermutationIterator(final List<byte[]> byteArrays) {
-        ArgUtils.checkNullOrEmptyCollection(byteArrays);
-        this.byteArrays = new ArrayList<byte[]>(byteArrays);
+    public BytePermutationIterator(final List<byte[]> arraylist) {
+        ArgUtils.checkNullOrEmptyCollection(arraylist);
+        this.byteArrays = new byte[arraylist.size()][];
+        arraylist.toArray(byteArrays);
         for (final byte[] array : this.byteArrays) {
         	ArgUtils.checkNullOrEmptyByteArray(array);
         }
-        this.length = byteArrays.size();
+        this.length = arraylist.size();
         this.permutationState = new int[length];
         this.permutation = new byte[length];
     }
 
-    
+    /**
+     * Constructor for the byte permutation iterator.
+     *
+     * @param byteArrays The list of byte arrays to produce permutations for
+     * @throws IllegalArgumentException if either the list of arrays is null or empty, or
+     *         any of the byte arrays in the list are null or empty.
+     */
+    public BytePermutationIterator(byte[]... byteArrays) {
+        ArgUtils.checkNullArray(byteArrays);
+        this.byteArrays = byteArrays;
+        for (final byte[] array : this.byteArrays) {
+            ArgUtils.checkNullOrEmptyByteArray(array);
+        }
+        this.length = byteArrays.length;
+        this.permutationState = new int[length];
+        this.permutation = new byte[length];
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean hasNext() {
-        return permutationState[0] < byteArrays.get(0).length;
+        return permutationState[0] < byteArrays[0].length;
     }
 
-    
     /**
      * Returns the next permutation of the list of byte arrays as a byte array.
      * <p>
-     * The byte array returned is defensively cloned on each call to next(), so it
-     * is safe to rely on the contents of the arrays returned across multiple calls to next().l  
+     * The byte array returned is modified on each call to next() - it is not cloned defensively.  While returning
+     * internal state is generally bad practice, it is not efficient to create a new array on each iteration of a
+     * possibly large number of permutations.  Modifying the returned array will not interfere with this iterator,
+     * although the array contents will be overwritten when next() is called again.
+     * If you need to retain copies of the permutation byte values, you must clone or copy the returned array.
      * 
      * @throws NoSuchElementException if there are no more permutations.
      */
@@ -103,11 +119,10 @@ public class BytePermutationIterator implements Iterator<byte[]> {
         if (hasNext()) {
             buildCurrentPermutation();
             buildNextPermutationState();
-            return permutation.clone();
+            return permutation;
         }
         throw new NoSuchElementException("No more permutations available for the byte arrays.");
     }
-
     
     /**
      * The remove operation is unsupported in the byte permutation iterator, as it
@@ -125,7 +140,7 @@ public class BytePermutationIterator implements Iterator<byte[]> {
         final byte[] localperm = permutation;
         for (int arrayIndex = 0; arrayIndex < length; arrayIndex++) {
             final int permutationIndex = permutationState[arrayIndex];
-            final byte[] array = byteArrays.get(arrayIndex);
+            final byte[] array = byteArrays[arrayIndex];
             localperm[arrayIndex] = array[permutationIndex];
         }
     }
@@ -135,7 +150,7 @@ public class BytePermutationIterator implements Iterator<byte[]> {
         boolean finished = false;
         int stateIndex = length - 1;
         while (!finished) {
-            final byte[] array = byteArrays.get(stateIndex);
+            final byte[] array = byteArrays[stateIndex];
 
             // Get a next possible state of the permutation:
             final int state = permutationState[stateIndex] + 1;
