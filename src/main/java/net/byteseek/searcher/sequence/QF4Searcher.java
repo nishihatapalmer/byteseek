@@ -73,10 +73,12 @@ public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMa
     /**
      * An enumeration of the valid table sizes for the QF4 Searcher, and the bit shift associated with each.
      * If not specified in the constructor, defaults to a shift of 3, which gives a table size of 4K.
+     * The table size refers to the number of elements in the array, not the total memory size of it in bytes,
+     * which depends on how the JRE implements those structures on different architectures.
      */
     public enum QF4TableSize {
 
-        SIZE_32B(1), SIZE_256B(2),SIZE_4K(3), SIZE_64K(4), SIZE_1M(5), SIZE_16M(6), SIZE_256M(7);
+        SIZE_1(0), SIZE_16(1), SIZE_256(2),SIZE_4K(3), SIZE_64K(4), SIZE_1M(5), SIZE_16M(6), SIZE_256M(7);
 
         private final int shift;
 
@@ -240,16 +242,16 @@ public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMa
         final int   MASK        = TABLE_SIZE - 1;
 
         // Determine safe start and ends:
-        final int LAST_POSITION    = bytes.length - 1;
-        final int PATTERN_LENGTH   = localSequence.length();
-        final int LAST_PATTERN_POS = PATTERN_LENGTH - 1;
+        final int LAST_TEXT_POSITION   = bytes.length - 1;
+        final int PATTERN_LENGTH       = localSequence.length();
+        final int LAST_PATTERN_POS     = PATTERN_LENGTH - 1;
         final int PATTERN_START_OFFSET = PATTERN_LENGTH - QLEN;
-        final int SEARCH_SHIFT     = PATTERN_LENGTH - QLEN + 1;
-        final int SEARCH_START     = (fromPosition > 0?
-                                      fromPosition : 0) + SEARCH_SHIFT - 1;
-        final int TO_END_POS       = toPosition + LAST_PATTERN_POS;
-        final int SEARCH_END       = (TO_END_POS < LAST_POSITION?
-                                      TO_END_POS : LAST_POSITION) - QLEN + 1;
+        final int SEARCH_SHIFT         = PATTERN_LENGTH - QLEN + 1;
+        final int SEARCH_START         = (fromPosition > 0?
+                                          fromPosition : 0) + SEARCH_SHIFT - 1;
+        final int TO_END_POS           = toPosition + LAST_PATTERN_POS;
+        final int SEARCH_END           = (TO_END_POS < LAST_TEXT_POSITION?
+                                          TO_END_POS : LAST_TEXT_POSITION) - QLEN + 1;
 
         // Search forwards, until a match is found or we reach the end of the data to be searched:
         for (int pos = SEARCH_START; pos <= SEARCH_END; pos += SEARCH_SHIFT) {
@@ -268,7 +270,7 @@ public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMa
                     qGramHash = (qGramHash << SHIFT) + (bytes[pos + 1] & 0xFF);
                     qGramHash = (qGramHash << SHIFT) + (bytes[pos]     & 0xFF);
                     qGramMatch &= BITMASKS[qGramHash & MASK];
-                    if (qGramMatch == 0) break MATCH;
+                    if (qGramMatch == 0) break MATCH; // qgram not found in pattern in the same phase.
                 }
                 // Verify whether we have a match or not.
                 final int FIRST_QGRAM_END_POS = PATTERN_START_POS + QLEN - 1;
@@ -466,6 +468,8 @@ public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMa
     private long getNumPermutations(final byte[] values1, final byte[] values2, final byte[] values3, final byte[] values4) {
         return values1.length * values2.length * values3.length * values4.length;
     }
+
+    //TODO: don't need different data for backwards search?  Re-use forwardinfo for backwards searching...
 
     /**
      * A factory for the pre-processed data needed to search backwards.
