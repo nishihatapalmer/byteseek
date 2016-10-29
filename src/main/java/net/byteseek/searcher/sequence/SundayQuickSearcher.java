@@ -335,6 +335,9 @@ public final class SundayQuickSearcher extends AbstractSequenceMatcherSearcher {
             final int numBytes = sequence.length();
             Arrays.fill(shifts, numBytes + 1);
 
+            //TODO: deal with pathological cases where we have embedded fixed gaps or any bytes that
+            //      fundamentally limit the max shift to the position they exist at.
+
             // Now set specific byte shifts for the bytes actually in
             // the sequence itself.  The shift is the distance of each character
             // from the end of the sequence, where the last position equals 1.
@@ -371,6 +374,9 @@ public final class SundayQuickSearcher extends AbstractSequenceMatcherSearcher {
             final int[] shifts = new int[256];
             final int numBytes = sequence.length();
             Arrays.fill(shifts, numBytes + 1);
+
+            //TODO: deal with pathological cases where we have embedded fixed gaps or any bytes that
+            //      fundamentally limit the max shift to the position they exist at.
 
             // Now set specific byte shifts for the bytes actually in
             // the sequence itself.  The shift is the distance of each character
