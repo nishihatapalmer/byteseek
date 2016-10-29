@@ -32,7 +32,6 @@ public class ValidateSequenceSearchersTest {
     //TODO: extend to search backwards and using window searching.
     //TODO: extend to compile patterns involving byte classes rather than just simple strings.
 
-
     @Test
     public void testSearchByteArrayForwards() throws IOException {
         for (SearchData searchData : data) {
@@ -83,7 +82,7 @@ public class ValidateSequenceSearchersTest {
             searchers.add(new ShiftOrSearcher(sequence));
         }
         if (sequence.length > 3) {
-           // searchers.add(new QF43Searcher(sequence));
+            searchers.add(new QF4Searcher(sequence));
         }
     }
 
