@@ -47,7 +47,7 @@ import net.byteseek.utils.factory.ObjectFactory;
 
 /**
  * An implementation of the QF (Qgram-Filtering) algorithm by
- * Branislav Durian, Hannu Peltola, Leena Salmela and Jorma Tarhio
+ * Branislav Durian, Hannu Peltola, Leena Salmela and Jorma Tarhio.
  * <p>
  * Length of q-grams QLEN = 4, and bit shift parameter defaults to SHIFT = 3.
  * Other bit shifts (which imply different table sizes) are possible to specify.
@@ -358,7 +358,7 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[sequence:" + sequence + ']';
+        return getClass().getSimpleName() + "[bitshift:" + SHIFT + " sequence:" + sequence + ']';
     }
 
     /**
