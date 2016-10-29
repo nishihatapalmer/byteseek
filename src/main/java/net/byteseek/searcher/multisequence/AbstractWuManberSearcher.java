@@ -94,7 +94,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  */
 public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSearcher {
         
-    private static final int HIGHEST_POWER_OF_TWO = 1073741824;
+    private static final int HIGHEST_POWER_OF_TWO = 1073741824; // highest positive power of two for an integer = 2^30.
 
     /**
      * A class holding the search information used in the Wu-Manber search.
