@@ -62,38 +62,20 @@ import net.byteseek.utils.factory.ObjectFactory;
 
 public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
-    private final static int QLEN                        = 4;
-    private final static QF4TableSize DEFAULT_TABLE_SIZE = QF4TableSize.SIZE_4K;
-    private final int SHIFT;
-    private final int TABLE_SIZE;
-
-    private final LazyObject<int[]> forwardInfo;
-    private final LazyObject<int[]> backwardInfo;
+    /**
+     * The length of q-grams processed by this searcher.
+     */
+    private final static int QLEN = 4;
 
     /**
-     * An enumeration of the valid table sizes for the QF4 Searcher, and the bit shift associated with each.
-     * If not specified in the constructor, defaults to a shift of 3, which gives a table size of 4K.
-     * The table size refers to the number of elements in the array, not the total memory size of it in bytes,
-     * which depends on how the JRE implements those structures on different architectures.
+     * The default table size for this searcher with 4096 elements, and a bit-shift of 3.
      */
-    public enum QF4TableSize {
+    private final static QF4TableSize DEFAULT_TABLE_SIZE = QF4TableSize.SIZE_4K;
 
-        SIZE_1(0), SIZE_16(1), SIZE_256(2),SIZE_4K(3), SIZE_64K(4), SIZE_1M(5), SIZE_16M(6), SIZE_256M(7);
-
-        private final int shift;
-
-        QF4TableSize(final int shift) {
-            this.shift = shift;
-        }
-
-        public int getTableSize() {
-            return 1 << (QLEN * shift);
-        }
-
-        public int getShift() {
-            return shift;
-        }
-    }
+    private final int SHIFT;
+    private final int TABLE_SIZE;
+    private final LazyObject<int[]> forwardInfo;
+    private final LazyObject<int[]> backwardInfo;
 
     /**
      * Constructs a searcher given a {@link SequenceMatcher}
@@ -371,6 +353,80 @@ public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMa
         return getClass().getSimpleName() + "[bitshift:" + SHIFT + " sequence:" + sequence + ']';
     }
 
+
+    /**
+     * An enumeration of the valid table sizes for the QF4 Searcher, and the bit shift associated with each.
+     * If not specified in the constructor, defaults to a shift of 3, which gives a table size of 4K.
+     * The table size refers to the number of elements in the array, not the total memory size of it in bytes,
+     * which depends on how the JRE implements those structures on different architectures.
+     */
+    public enum QF4TableSize {
+
+        //TODO: validate performance assertions in javadoc.
+        //TODO: calculate table load for different common string / byte class arrangements to predict
+        //      performance (validate against actual tests).
+
+        /**
+         * A single element table, giving incredibly poor performance - but using almost no additional memory.
+         * If a pattern is long with many byte classes such that it swamps all larger feasible tables, then it may make
+         * sense to pick this, since the larger table will contain essentially no more information, but will take a
+         * lot more space.  However, there are probably other algorithms which would perform better in this circumstance,
+         * e.g. ShiftOR.
+         */
+        SIZE_1(0),
+
+        /**
+         * A very small table of only 16 elements, whose performance is poor even for short patterns.
+         * There are few circumstances where this would be an appropriate choice.
+         */
+        SIZE_16(1),
+
+        /**
+         * A small table of 256 elements, which should perform reasonably for short patterns with very small or no byte classes.
+         */
+        SIZE_256(2),
+
+        /**
+         * A good sized table of 4096 elements, giving excellent performance even for long patterns (e.g. 2000), or for
+         * shorter patterns containing some byte classes.
+         */
+        SIZE_4K(3),
+
+        /**
+         * A large table of 65536 elements. //TODO: how does this perform?
+         */
+        SIZE_64K(4),
+
+        /**
+         * A very large table of about a million elements.  //TODO: how does this perform?
+         */
+        SIZE_1M(5),
+
+        /**
+         * An extremely large table of roughly 16 million elements. //TODO: how does this perform?  should we even keep it?
+         */
+        SIZE_16M(6),
+
+        /**
+         * A huge table of 256 million elements.  This could easily take a gigabyte of memory or more
+         * to just store the table.  //TODO: how does this perform?  should we even keep it?
+         */
+        SIZE_256M(7);
+
+        private final int shift;
+
+        QF4TableSize(final int shift) {
+            this.shift = shift;
+        }
+
+        public int getTableSize() {
+            return 1 << (QLEN * shift);
+        }
+
+        public int getShift() {
+            return shift;
+        }
+    }
 
     //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
 
