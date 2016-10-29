@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2016, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -59,6 +59,9 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  * Other wrapper convenience methods are also defined to simplify implementing the Searcher.
  * @author Matt Palmer
  */
+
+//TODO: remove need for SequenceMatcher - this is an abstraction over searching across windows with sequences.
+    //  should be possible to make this logic available for any sequence... introuce getSequenceLength() abstract method?
 public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
 
 
@@ -96,12 +99,11 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
         final int sequenceLength = sequence.length();
         final int lastSequencePosition = sequenceLength - 1;
         long searchPosition = fromPosition > 0?
-                fromPosition : 0;
+                              fromPosition : 0;
 
         // While there is data to search in:
         Window window;
-        while (searchPosition <= toPosition &&
-                (window = reader.getWindow(searchPosition)) != null) {
+        while (searchPosition <= toPosition && (window = reader.getWindow(searchPosition)) != null) {
 
             // Does the sequence fit into the searchable bytes of this window?
             // It may not if the start position of the window is already close
@@ -118,11 +120,10 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
                 final int lastMatchingPosition = arrayLastPosition - lastSequencePosition;
                 final long distanceToEnd = toPosition - windowStartPosition;
                 final int arrayMaxPosition = distanceToEnd < lastMatchingPosition?
-                        (int) distanceToEnd : lastMatchingPosition;
+                                       (int) distanceToEnd : lastMatchingPosition;
 
                 // Search forwards in the byte array of the window:
-                final int arrayResult =
-                        searchSequenceForwards(window.getArray(), arrayStartPosition, arrayMaxPosition);
+                final int arrayResult = searchSequenceForwards(window.getArray(), arrayStartPosition, arrayMaxPosition);
 
                 // Did we find a match?
                 if (arrayResult >= 0) {
@@ -147,9 +148,8 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
             // whichever comes first:
             final long lastWindowPosition = windowStartPosition + arrayLastPosition;
             final long lastSearchPosition = toPosition < lastWindowPosition?
-                    toPosition : lastWindowPosition;
-            final long readerResult =
-                    doSearchForwards(reader, searchPosition, lastSearchPosition);
+                                            toPosition : lastWindowPosition;
+            final long readerResult       = doSearchForwards(reader, searchPosition, lastSearchPosition);
 
             // Did we find a match?
             if (readerResult != NO_MATCH) {
@@ -209,17 +209,16 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
         // Initialise:
         final int lastSequencePosition = sequence.length() - 1;
         final long finalSearchPosition = toPosition > 0?
-                toPosition : 0;
+                                         toPosition : 0;
         long searchPosition = withinLength(reader, fromPosition);
 
         // While there is data to search in:
         Window window;
-        while (searchPosition >= finalSearchPosition &&
-                (window = reader.getWindow(searchPosition)) != null) {
+        while (searchPosition >= finalSearchPosition && (window = reader.getWindow(searchPosition)) != null) {
             // Get some info about the window:
-            final long windowStartPosition = window.getWindowPosition();
+            final long windowStartPosition     = window.getWindowPosition();
             final int arrayStartSearchPosition = reader.getWindowOffset(searchPosition);
-            final int arrayLastPosition = window.length() - 1;
+            final int arrayLastPosition        = window.length() - 1;
 
             // Does the sequence fit into the searchable bytes of this window 
             // from the current search position?  If it does, we can search
@@ -230,13 +229,10 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
                 // search position, if it happens to fall past the start of this window:
                 final long endOfSearchRelativeToWindow = finalSearchPosition - windowStartPosition;
                 final int arrayEndSearchPosition = endOfSearchRelativeToWindow > 0?
-                        (int) endOfSearchRelativeToWindow : 0;
+                                             (int) endOfSearchRelativeToWindow : 0;
 
                 // Search backwards in the byte array of the window:
-                final int arrayResults =
-                        searchSequenceBackwards(window.getArray(),
-                                arrayStartSearchPosition,
-                                arrayEndSearchPosition);
+                final int arrayResults = searchSequenceBackwards(window.getArray(), arrayStartSearchPosition, arrayEndSearchPosition);
 
                 // Did we find any matches?
                 if (arrayResults >= 0) {
@@ -265,15 +261,13 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
             // the sequence is too big to fit into one window doesn't mean we can
             // infer it won't fit into subsequent windows.  Therefore, we proceed on
             // a window by window basis.
-            final long firstPossibleFitPosition =
-                    windowStartPosition + arrayLastPosition - lastSequencePosition;
+            final long firstPossibleFitPosition = windowStartPosition + arrayLastPosition - lastSequencePosition;
             final long firstFitPosition = firstPossibleFitPosition < searchPosition?
-                    firstPossibleFitPosition : searchPosition;
+                                          firstPossibleFitPosition : searchPosition;
             final long searchToPosition = firstFitPosition > windowStartPosition?
-                    firstFitPosition : windowStartPosition;
+                                          firstFitPosition : windowStartPosition;
 
-            final long readerResult =
-                    doSearchBackwards(reader, searchPosition, searchToPosition);
+            final long readerResult = doSearchBackwards(reader, searchPosition, searchToPosition);
 
             // Did we find a match?
             if (readerResult != NO_MATCH) {
