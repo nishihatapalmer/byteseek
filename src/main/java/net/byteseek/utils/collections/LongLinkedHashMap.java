@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015, All rights reserved.
+ * Copyright Matt Palmer 2015-16, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -41,8 +41,8 @@ import java.util.NoSuchElementException;
  * A LinkedHashMap using primitive longs for keys.  This avoids boxing and unboxing
  * long and Long keys when accessing the linked hash map.
  * <p>
- * The implementation is compatible with Map from Java collections, but doesn't
- * implement it, as that interface assumes object keys.
+ * The implementation is essentially the same as Map from Java collections, but doesn't
+ * implement it, as that interface assumes object keys, and we use primitives.
  *
  * Created by Matt Palmer on 11/11/15.
  */
