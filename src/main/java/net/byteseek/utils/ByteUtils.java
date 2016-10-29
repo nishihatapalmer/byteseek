@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2014, All rights reserved.
+ * Copyright Matt Palmer 2009-2016, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -119,7 +119,7 @@ public final class ByteUtils {
     public static int countBytesMatchingAllBits(final byte bitmask) {
     	return 1 << countUnsetBits(bitmask);
     }
-    
+
 
     /**
      * Returns the number of bytes which would match any of the bits
@@ -293,7 +293,28 @@ public final class ByteUtils {
         addAll(bytes, setOfBytes);
         return setOfBytes;
     }
-    
+
+
+    /**
+     * Converts a collection of bytes into a byte array:
+     * @param collection The collection of bytes to convert.
+     * @return A byte array containing the bytes in the collection, in the order in which the collection iterates.
+     */
+    public static byte[] toByteArray(Collection<? extends Byte> collection) {
+        final byte[] result = new byte[collection.size()];
+        int byteIndex = 0;
+        for (Byte b : collection) {
+            result[byteIndex++] = b;
+        }
+        return result;
+    }
+
+
+    public static byte[] intersection(final Set<Byte> first, final byte[] second) {
+        final Set<Byte> s = toSet(second);
+        s.retainAll(first);
+        return toByteArray(s);
+    }
 
     /**
      * Returns a list of bytes from an array of bytes.
@@ -775,6 +796,7 @@ public final class ByteUtils {
         }
     }
 
+    //TODO: move power of two functions into MathUtils...?
     
     /**
      * Returns the log base 2 of an integer, rounded to the floor.
@@ -961,6 +983,7 @@ public final class ByteUtils {
         int bit1 = 0, bit2 = 0, bit3 = 0, bit4 = 0, bit5 = 0, bit6 = 0, bit7 = 0, bit8 = 0;
         for (final Byte b : bytes) {
             final int value = b & 0xFF;
+            // Add one to the counter for each bit if the corresponding bit is set.
             bit1 += value & 1;
             bit2 += (value & 2) >> 1;
             bit3 += (value & 4) >> 2;
@@ -1163,6 +1186,7 @@ public final class ByteUtils {
     /*
      * Private utility methods
      */
+    //TODO: should be in ArgUtils?
     
 	private static void checkNegativeRepeats(final int numberOfRepeats) {
 		if (numberOfRepeats < 0) {
