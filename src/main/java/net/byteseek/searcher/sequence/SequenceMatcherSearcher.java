@@ -57,7 +57,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  *
  * @author Matt Palmer
  */
-public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearcher {
+public final class SequenceMatcherSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
     /**
      * Constructs a searcher for the bytes contained in the sequence string,
@@ -99,6 +99,11 @@ public final class SequenceMatcherSearcher extends AbstractSequenceMatcherSearch
      */
     public SequenceMatcherSearcher(final SequenceMatcher sequence) {
         super(sequence);
+    }
+
+    @Override
+    protected int getSequenceLength() {
+        return sequence.length();
     }
 
     @Override

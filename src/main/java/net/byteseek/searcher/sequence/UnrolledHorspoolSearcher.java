@@ -34,7 +34,6 @@ package net.byteseek.searcher.sequence;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -42,14 +41,9 @@ import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.sequence.AbstractSequenceMatcherSearcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
-import net.byteseek.searcher.SearchResult;
-import net.byteseek.searcher.SearchUtils;
-import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
-
 
 
 /**
@@ -84,7 +78,7 @@ import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
  * 
  * @author Matt Palmer
  */
-public final class UnrolledHorspoolSearcher extends AbstractSequenceMatcherSearcher {
+public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
@@ -133,7 +127,11 @@ public final class UnrolledHorspoolSearcher extends AbstractSequenceMatcherSearc
     public UnrolledHorspoolSearcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence));
     }
-    
+
+    @Override
+    protected int getSequenceLength() {
+        return sequence.length();
+    }
     
     /**
      * {@inheritDoc}

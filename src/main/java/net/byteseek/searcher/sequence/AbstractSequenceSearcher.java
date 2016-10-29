@@ -81,6 +81,12 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
     }
 
     /**
+     * A method which returns the length of the sequence being searched.
+     * @return the length of the sequence being searched.
+     */
+    protected abstract int getSequenceLength();
+
+    /**
      * Methods to wrap sequence searcher methods, returning either a single result, or no results.
      */
 

@@ -55,15 +55,15 @@ import net.byteseek.utils.factory.ObjectFactory;
  * @author Matt Palmer
  */
 
-public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
+public final class QF4Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
     private final static int QLEN                        = 4;
     private final static QF4TableSize DEFAULT_TABLE_SIZE = QF4TableSize.SIZE_4K;
     private final int SHIFT;
     private final int TABLE_SIZE;
 
-    private final LazyObject<SearchInfo> forwardInfo;
-    private final LazyObject<SearchInfo> backwardInfo;
+    private final LazyObject<int[]> forwardInfo;
+    private final LazyObject<int[]> backwardInfo;
 
     /**
      * An enumeration of the valid table sizes for the QF4 Searcher, and the bit shift associated with each.
@@ -110,8 +110,8 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
         ArgUtils.checkNullObject(tableSize, "tableSize");
         SHIFT = tableSize.getShift();
         TABLE_SIZE = tableSize.getTableSize();
-        forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
-        backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
+        forwardInfo  = new DoubleCheckImmutableLazyObject<int[]>(new ForwardInfoFactory());
+        backwardInfo = new DoubleCheckImmutableLazyObject<int[]>(new BackwardInfoFactory());
     }
 
     /**
@@ -183,6 +183,11 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), tableSize);
     }
 
+    @Override
+    protected int getSequenceLength() {
+        return sequence.length();
+    }
+
 
     @Override
     public long doSearchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
@@ -190,9 +195,8 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info   = forwardInfo.get();
-        final int[] bitmasks    = info.getBitmasks();
-        final int   MASK        = info.getMask();
+        final int[] BITMASKS =  forwardInfo.get();
+        final int   MASK     =  TABLE_SIZE -1;
 
         //TODO: determine from/to position in doSearch()... routines.
 
@@ -227,9 +231,8 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info   = forwardInfo.get();
-        final int[] BITMASKS    = info.getBitmasks();
-        final int   MASK        = info.getMask();
+        final int[] BITMASKS    = forwardInfo.get();
+        final int   MASK        = TABLE_SIZE - 1;
 
         // Determine safe start and ends:
         final int LAST_POSITION    = bytes.length - 1;
@@ -361,38 +364,6 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
         return getClass().getSimpleName() + "[bitshift:" + SHIFT + " sequence:" + sequence + ']';
     }
 
-    /**
-     * A private class encapsulating the pre-processed data needed by this searcher.
-     */
-    private static final class SearchInfo {
-        private final int[] bitmasks;
-        private final int   mask;
-
-        public SearchInfo(int[] bitmasks, int mq1, int mask) {
-            this.bitmasks = bitmasks;
-            this.mask     = mask;
-        }
-
-        public int[] getBitmasks() {return bitmasks;}
-        public int getMask() {return mask;}
-    }
-
-    private static final class ParameterInfo {
-
-
-    }
-
-
-    private final class ParameterFactory implements ObjectFactory<ParameterInfo> {
-
-        private ParameterFactory() {
-        }
-
-        @Override
-        public ParameterInfo create() {
-            return null;
-        }
-    }
 
     //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
 
@@ -400,7 +371,7 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
      * A factory for the SearchInfo needed to search forwards.
      *
      */
-    private final class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
+    private final class ForwardInfoFactory implements ObjectFactory<int[]> {
 
         private ForwardInfoFactory() {
         }
@@ -418,12 +389,11 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
          * As soon as we see a qgram which is definitely not in the pattern, we can shift right past it.
          */
         @Override
-        public SearchInfo create() {
+        public int[] create() {
 
             // Initialise constants
             final int PATTERN_LENGTH = sequence.length();
             final int MASK           = TABLE_SIZE - 1;
-            final int MQ1            = PATTERN_LENGTH - QLEN + 1;
             final int[] B            = new int[TABLE_SIZE];
 
             //TODO: validate Q_GRAM_LIMIT - how does performance change as table fills up?
@@ -484,7 +454,7 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
                     }
                 }
             }
-            return new SearchInfo(B, MQ1, MASK);
+            return B;
         }
     }
 
@@ -495,7 +465,7 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
     /**
      * A factory for the pre-processed data needed to search backwards.
      */
-    private final class BackwardInfoFactory implements ObjectFactory<SearchInfo> {
+    private final class BackwardInfoFactory implements ObjectFactory<int[]> {
 
         private BackwardInfoFactory() {
         }
@@ -507,8 +477,8 @@ public final class QF4Searcher extends AbstractSequenceMatcherSearcher {
          * the shortest distance it appears from the end of the matcher.
          */
         @Override
-        public SearchInfo create() {
-            return new SearchInfo(null, 0, 0);
+        public int[] create() {
+            return null;
         }
 
     }

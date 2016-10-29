@@ -121,6 +121,11 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
     }
 
     @Override
+    protected int getSequenceLength() {
+        return sequence.length();
+    }
+
+    @Override
     public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();

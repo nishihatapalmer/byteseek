@@ -41,7 +41,6 @@ import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.sequence.AbstractSequenceMatcherSearcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
@@ -106,7 +105,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  *
  * @author Matt Palmer
  */
-public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearcher {
+public final class SignedHorspoolSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
@@ -158,6 +157,10 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
     }
 
 
+    @Override
+    protected int getSequenceLength() {
+        return sequence.length();
+    }
 
     /**
      * {@inheritDoc}

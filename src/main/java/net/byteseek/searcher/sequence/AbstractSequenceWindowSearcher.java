@@ -60,9 +60,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  * @author Matt Palmer
  */
 
-//TODO: remove need for SequenceMatcher - this is an abstraction over searching across windows with sequences.
-    //  should be possible to make this logic available for any sequence... introuce getSequenceLength() abstract method?
-public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
+public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequenceSearcher<T> {
 
 
     /**
@@ -71,10 +69,9 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
      *
      * @param sequence The SequenceMatcher to search for.
      */
-    public AbstractSequenceMatcherSearcher(final SequenceMatcher sequence) {
+    public AbstractSequenceWindowSearcher(final T sequence) {
         super(sequence);
     }
-
 
     /**
      * {@inheritDoc}
@@ -96,7 +93,7 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
     public long searchSequenceForwards(final WindowReader reader,
                                        final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int sequenceLength = sequence.length();
+        final int sequenceLength = getSequenceLength();
         final int lastSequencePosition = sequenceLength - 1;
         long searchPosition = fromPosition > 0?
                               fromPosition : 0;
@@ -207,7 +204,7 @@ public abstract class AbstractSequenceMatcherSearcher extends AbstractSequenceSe
     public long searchSequenceBackwards(final WindowReader reader,
                                         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
-        final int lastSequencePosition = sequence.length() - 1;
+        final int lastSequencePosition = getSequenceLength() - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
         long searchPosition = withinLength(reader, fromPosition);
