@@ -57,7 +57,6 @@ import net.byteseek.searcher.multisequence.*;
 import net.byteseek.searcher.performance.SearcherProfiler.ProfileResult;
 import net.byteseek.searcher.performance.SearcherProfiler.ProfileResults;
 import net.byteseek.searcher.sequence.*;
-import net.byteseek.searcher.sequence.SignedSuffixSearcher;
 import net.byteseek.searcher.sequence.SundayQuickSearcher;
 
 /**
@@ -147,7 +146,6 @@ public class SearcherPerformanceTests {
 		//searchers.add(new SequenceMatcherSearcher(sequence));
 		//searchers.add(new HorspoolSearcher(sequence));
 		searchers.add(new SignedHorspoolSearcher(sequence));
-		searchers.add(new SignedSuffixSearcher(sequence));
 		//searchers.add(new UnrolledHorspoolSearcher(sequence));
 		//searchers.add(new SundayQuickSearcher(sequence));
 		return searchers;
