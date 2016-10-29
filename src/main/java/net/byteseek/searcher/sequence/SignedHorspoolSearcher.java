@@ -425,9 +425,10 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
             // If there is such a matcher in the sequence, no shift can be bigger than this length.
             // The shift code would still work if we did not do this, but long gaps like .{2048) would
             // incur a high processing cost.
-            //TODO: the last pattern char is not relevant?  fix backwards too if necessary.
+            // Note: the last pattern character doesn't affect the shift table, so we don't care if there
+            // is an Any byte match in that position.
             int maxShift = sequenceLength;
-            for (int position = sequenceLength - 1; position >=0; position--) {
+            for (int position = sequenceLength - 2; position >=0; position--) {
                 final ByteMatcher matcher = sequence.getMatcherForPosition(position);
                 if (matcher.getNumberOfMatchingBytes() == 256) {
                     maxShift = sequenceLength - position;
@@ -500,12 +501,13 @@ public final class SignedHorspoolSearcher extends AbstractSequenceMatcherSearche
             // If there is such a matcher in the sequence, no shift can be bigger than this length.
             // The shift code would still work if we did not do this, but long gaps like .{2048) would
             // incur a high processing cost.
-            //TODO: the first pattern char is not relevant?
+            // Note: the first pattern character doesn't affect the shift table, so we don't care if there
+            // is an Any byte match in that position.
             int maxShift = sequenceLength;
-            for (int position = 0; position < sequenceLength; position++) {
+            for (int position = 1; position < sequenceLength; position++) {
                 final ByteMatcher matcher = sequence.getMatcherForPosition(position);
                 if (matcher.getNumberOfMatchingBytes() == 256) {
-                    maxShift = position + 1;
+                    maxShift = position + 1; // TODO: is this correct?
                     break;
                 }
             }
