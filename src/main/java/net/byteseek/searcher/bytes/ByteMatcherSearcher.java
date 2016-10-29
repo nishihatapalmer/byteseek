@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015, All rights reserved.
+ * Copyright Matt Palmer 2015-16, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -56,6 +56,11 @@ public final class ByteMatcherSearcher extends AbstractSequenceSearcher<ByteMatc
         super(value);
     }
 
+    @Override
+    protected int getSequenceLength() {
+        return 1;
+    }
+
     public ByteMatcherSearcher(final byte value) {
         super(OneByteMatcher.valueOf(value));
     }
@@ -86,8 +91,7 @@ public final class ByteMatcherSearcher extends AbstractSequenceSearcher<ByteMatc
             for (int arraySearchPosition = startWindowSearchPosition;
                  arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
                 if (searchByte.matches(array[arraySearchPosition])) {
-                    final long matchPosition = searchPosition + arraySearchPosition - startWindowSearchPosition;
-                    return matchPosition;
+                    return searchPosition + arraySearchPosition - startWindowSearchPosition;
                 }
             }
 
@@ -134,8 +138,7 @@ public final class ByteMatcherSearcher extends AbstractSequenceSearcher<ByteMatc
             for (int arraySearchPosition = startWindowSearchPosition;
                  arraySearchPosition >= endWindowSearchPosition; arraySearchPosition--) {
                 if (searchByte.matches(array[arraySearchPosition])) {
-                    final long matchPosition = searchPosition - (startWindowSearchPosition - arraySearchPosition);
-                    return matchPosition;
+                    return searchPosition - (startWindowSearchPosition - arraySearchPosition);
                 }
             }
 

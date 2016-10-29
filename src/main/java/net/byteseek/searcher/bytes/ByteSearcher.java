@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015, All rights reserved.
+ * Copyright Matt Palmer 2015-16, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -56,6 +56,11 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
     public ByteSearcher(final Byte value) {
         super(value);
         toSearchFor = value;
+    }
+
+    @Override
+    protected int getSequenceLength() {
+        return 1;
     }
 
     public ByteSearcher(final OneByteMatcher value) {
