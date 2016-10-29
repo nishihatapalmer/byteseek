@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2013-16, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -149,9 +149,15 @@ public final class ArgUtils {
 		if (bytes == null) {
     		throw new IllegalArgumentException(ARRAY_CANNOT_BE_NULL + ' ' + description);
     	}
-	}  
+	}
 
-	
+	public static void checkNullIntArray(final int[] integers, final String description) {
+		if (integers == null) {
+			throw new IllegalArgumentException(ARRAY_CANNOT_BE_NULL + ' ' + description);
+		}
+	}
+
+
 	public static void checkNullOrEmptyByteArray(final byte[] bytes) {
 		checkNullByteArray(bytes);
 		if (bytes.length == 0) {
@@ -285,5 +291,5 @@ public final class ArgUtils {
 		if (number < 1) {
 			throw new IllegalArgumentException(String.format(POSITIVE_INTEGER + ' ' + description, number));		}
 	}
-	
+
 }
