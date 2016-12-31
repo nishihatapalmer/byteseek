@@ -1,0 +1,16 @@
+//TODO: explore QF variant that can search strings with fixed gaps embedded, since byteseek supports this.
+//      Can only search to the right of the fixed gap without performance dying horribly.
+//      So must be able to search for a good suffix of a string but match the actual string.
+//      Implies analysis of the sequence while processing... if it encounters a bad block of permutations
+//      which would swamp the table, stop pre-processing at that point and switch to this mode.
+//       Against: byteseek provides primitives, don't put this kind of logic into the primitives.
+//                just because something won't work well with some kinds of pattern, we can't catch them
+//                all.  Analysis of what kind of search algorithm will work well with particular patterns
+//                or texts should be done at a higher level, and the appropriate algorithm selected then.
+//       Pros:    Reasonable to implement denial-of-service defences in the algorithms, so that we don't
+//                do vast amounts of unnecessary and time consuming processing if we hit certain pathological
+//                patterns.
+//      Conclusion: Not reasonable to silently switch to a different algorithm if we detect a pathological pattern.
+//                  This is the algorithm primitive which has been selected.
+//                  Reasonable to avoid a denial of service when processing pathological patterns with it.
+
