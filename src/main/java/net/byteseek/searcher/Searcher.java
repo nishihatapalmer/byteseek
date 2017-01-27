@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -64,8 +64,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchForwards(WindowReader reader,
-			long fromPosition, long toPosition) throws IOException;
+	List<SearchResult<T>> searchForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -79,8 +78,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchForwards(WindowReader reader, long fromPosition)
-			throws IOException;
+	List<SearchResult<T>> searchForwards(WindowReader reader, long fromPosition) throws IOException;
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -92,8 +90,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchForwards(WindowReader reader)
-			throws IOException;
+	List<SearchResult<T>> searchForwards(WindowReader reader) throws IOException;
 
 	/**
 	 * Searches bytes forwards provided by a byte array from the position given
@@ -108,8 +105,7 @@ public interface Searcher<T> {
 	 * @return The position a match was found at, or a negative number if no
 	 *         match was found.
 	 */
-	public List<SearchResult<T>> searchForwards(byte[] bytes, int fromPosition,
-			int toPosition);
+	public List<SearchResult<T>> searchForwards(byte[] bytes, int fromPosition, int toPosition);
 
 	/**
 	 * Searches bytes forwards provided by a byte array from the position given
@@ -148,8 +144,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchBackwards(WindowReader reader,
-			long fromPosition, long toPosition) throws IOException;
+	public List<SearchResult<T>> searchBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -163,8 +158,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchBackwards(WindowReader reader,
-			long fromPosition) throws IOException;
+	public List<SearchResult<T>> searchBackwards(WindowReader reader, long fromPosition) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -176,8 +170,7 @@ public interface Searcher<T> {
 	 *         match was found.
 	 * @throws IOException
 	 */
-	public List<SearchResult<T>> searchBackwards(WindowReader reader)
-			throws IOException;
+	public List<SearchResult<T>> searchBackwards(WindowReader reader) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a byte array, from the position
@@ -192,8 +185,7 @@ public interface Searcher<T> {
 	 * @return The position a match was found at, or a negative number if no
 	 *         match was found.
 	 */
-	public List<SearchResult<T>> searchBackwards(byte[] bytes,
-			int fromPosition, int toPosition);
+	public List<SearchResult<T>> searchBackwards(byte[] bytes, int fromPosition, int toPosition);
 
 	/**
 	 * Searches bytes backwards provided by a byte array, from the position
