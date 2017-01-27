@@ -43,7 +43,9 @@ import net.byteseek.utils.ArgUtils;
  *
  */
 public class StringParseReader {
-	
+
+	private static int MAXINT10 = Integer.MAX_VALUE / 10;
+
 	protected final String string;
 	protected final int length;
 	protected int position;
@@ -164,10 +166,10 @@ public class StringParseReader {
 		int digit = read();
 		int numDigits = 0;
 		while (digit >= '0' && digit <= '9') {
-			value = (value * 10) + digit - '0';
-			if (value > Integer.MAX_VALUE) {
+			if (value >= MAXINT10) {
 				throw new ParseException("Integer overflow - the digits ending at position " + position + " are bigger than Integer.MAX_VALUE");
 			}
+			value = (value * 10) + digit - '0';
 			numDigits++;
 			digit = read();
 		}
