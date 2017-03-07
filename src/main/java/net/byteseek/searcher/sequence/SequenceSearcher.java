@@ -36,7 +36,11 @@ import net.byteseek.searcher.Searcher;
 import java.io.IOException;
 
 /**
- * TODO: describe interface.
+ * Extends the searcher interface to add methods which return a single primitive value, rather
+ * than a list of SearchResults.  Sequences can only match at a single position, so a list of matches isn't necessary.
+ * Using these methods is more efficient and creates less garbage during searching, if we know
+ * we are searching for sequences.
+ *
  * Created by matt on 12/04/16.
  */
 public interface SequenceSearcher<T> extends Searcher<T> {
