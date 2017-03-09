@@ -47,8 +47,10 @@ import net.byteseek.utils.factory.ObjectFactory;
 
 
 /**
- * BoyerMooreHorspoolSearcher searches for a sequence using the
- * Boyer-Moore-Horspool algorithm.
+ * UnrolledHorspoolSearcher searches for a sequence using the
+ * Boyer-Moore-Horspool algorithm, and "unrolls" the main search loop
+ * by repeatedly shifting until there is a match to the last pattern position,
+ * before attempting verification of the full pattern.
  * <p>
  * This type of search algorithm does not need to examine every byte in 
  * the bytes being searched.  It is sub-linear, in general needing to
@@ -290,6 +292,7 @@ public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearch
             // The first byte matched - verify there is a complete match.
             // There is only a verifier if the sequence length was greater than one;
             // if the sequence is only one in length, we have already found it.
+            //TODO: why null matcher for backwards and ANY matcher for forwards?
             if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
                 return searchPosition; // match found.
             }
@@ -347,6 +350,7 @@ public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearch
                 // The first byte matched - verify there is a complete match.
                 final int totalShift = arrayStartPosition - arraySearchPosition;
                 final long sequencePosition = searchPosition - totalShift;
+                //TODO: why null matcher for backwards and ANY matcher for forwards?
                 if (verifier == null || verifier.matches(reader, sequencePosition + 1)) {
                     return sequencePosition; // match found.
                 }
