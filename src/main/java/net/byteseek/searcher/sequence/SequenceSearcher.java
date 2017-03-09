@@ -38,8 +38,7 @@ import java.io.IOException;
 /**
  * Extends the searcher interface to add methods which return a single primitive value, rather
  * than a list of SearchResults.  Sequences can only match at a single position, so a list of matches isn't necessary.
- * Using these methods is more efficient and creates less garbage during searching, if we know
- * we are searching for sequences.
+ * Using these methods is more efficient and creates less garbage during searching.
  *
  * Created by matt on 12/04/16.
  */
