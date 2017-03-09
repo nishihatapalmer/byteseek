@@ -45,7 +45,7 @@ import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
 
 /**
- * BoyerMooreHorspoolSearcher searches for a sequence using the
+ * HorspoolSearcher searches for a sequence using the
  * Boyer-Moore-Horspool algorithm.
  * <p>
  * This type of search algorithm does not need to examine every byte in 
