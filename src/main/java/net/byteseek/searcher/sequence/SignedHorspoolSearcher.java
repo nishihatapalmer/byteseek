@@ -47,12 +47,12 @@ import net.byteseek.utils.factory.ObjectFactory;
 
 
 /**
- * HorspoolFinalFlagSearcher searches for a sequence using a slightly modified form
+ * SignedHorspoolSearcher searches for a sequence using a slightly modified form
  * of the Boyer-Moore-Horspool algorithm. 
  * <p>
  * The basic idea consists of flagging the bytes which appear at the end of 
  * a pattern in the shift table, while preserving the shift values of the 
- * existing byte values, without needing additional storage.  It does this by
+ * existing values, without needing additional storage or lookups.  It does this by
  * making any shift values that exist for bytes of the final pattern position
  * negative.  Other methods of flagging the final bytes could also be used,
  * (e.g. using bit masking) but making a signed integer negative is quite natural
@@ -63,15 +63,12 @@ import net.byteseek.utils.factory.ObjectFactory;
  * In some ways, it is similar to the Tuned-Boyer-Moore-Horspool algorithm, which
  * makes the final shift value zero and preserves the original shift value in another 
  * variable.  However, this cannot handle byte classes (multiple bytes at one position)
- * without requiring another independent shift table for the lookup (although it
- * does permit a nice loop unrolling which isn't possible for my modification).
+ * without requiring another independent shift table for the lookup.
  * <p>
- * This modification was invented by the author of this code (Matt Palmer) 
- * in February 2012. I have not seen this idea applied before, although
- * it is possible that it has been independently discovered by other people.
- * Profiling indicates this implementation is about twice as fast as the 
- * Boyer-Moore-Horspool implementation, probably due to a simpler shift-loop
- * and not needing a special matcher object to see if the last bytes matched).
+ * This algorithm was invented by the author of this code (Matt Palmer)
+ * in February 2012. I have not seen this idea applied before, and I can find
+ * no reference to it in the literature, although it is of course possible that
+ * it has been independently discovered by other people.
  * <p>
  * This type of search algorithm does not need to examine every byte in 
  * the bytes being searched.  It is sub-linear, in general needing to
