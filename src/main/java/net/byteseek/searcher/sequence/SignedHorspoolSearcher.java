@@ -235,8 +235,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceWindowSearcher
             // Search forwards in this array:
             ARRAY_SEARCH: while (arraySearchPosition <= lastSearchPosition) {
 
-                // Shift forward until there is a negative shift or we run out of
-                // search space.
+                // Shift forward until there is a negative shift or we run out of search space.
                 int shift = safeShifts[array[arraySearchPosition] & 0xFF];
                 if (shift > 0) { // shift can never be exactly zero - it must be positive or negative.
                     arraySearchPosition += shift;
