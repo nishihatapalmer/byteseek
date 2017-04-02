@@ -219,8 +219,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceWindowSearcher
 
         // While there is a window to search in:
         Window window;
-        while (searchPosition <= finalPosition &&
-                (window = reader.getWindow(searchPosition)) != null) {
+        while (searchPosition <= finalPosition && (window = reader.getWindow(searchPosition)) != null) {
 
             // Initialise array search:
             final byte[] array = window.getArray();
@@ -321,8 +320,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceWindowSearcher
 
         // Search backwards across the windows:
         Window window;
-        while (searchPosition >= toPosition &&
-                (window = reader.getWindow(searchPosition))!= null) {
+        while (searchPosition >= toPosition && (window = reader.getWindow(searchPosition))!= null) {
 
             // Initialise the window search:
             final byte[] array = window.getArray();
