@@ -225,10 +225,9 @@ public final class SignedHorspoolSearcher extends AbstractSequenceWindowSearcher
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
-            final int lastMatcherPosition = sequence.length() - 1;
-            final long distanceToEnd = finalPosition - window.getWindowPosition() + lastMatcherPosition;
+            final long distanceToEnd = finalPosition - window.getWindowPosition() + endSequencePosition;
             final int lastSearchPosition = distanceToEnd < arrayEndPosition?
-                    (int) distanceToEnd : arrayEndPosition;
+                                     (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;
 
             // Search forwards in this array:
@@ -327,7 +326,7 @@ public final class SignedHorspoolSearcher extends AbstractSequenceWindowSearcher
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final long distanceToEnd = toPosition - window.getWindowPosition();
             final int lastSearchPosition = distanceToEnd > 0?
-                    (int) distanceToEnd : 0;
+                                     (int) distanceToEnd : 0;
             int arraySearchPosition = arrayStartPosition;
 
             // Search using the byte array for shifts, using the WindowReader
