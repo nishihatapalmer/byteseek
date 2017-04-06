@@ -119,9 +119,9 @@ public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<Se
         final int finalPosition = bytes.length - length;
         final int lastLoopPosition = finalPosition - 1;
         final int lastPosition = toPosition < lastLoopPosition ?
-                toPosition : lastLoopPosition;
+                                 toPosition : lastLoopPosition;
         int searchPosition = fromPosition > 0 ?
-                fromPosition : 0;
+                             fromPosition : 0;
 
         // Search forwards.  The loop does not check for the final
         // position, as we shift on the byte after the sequence.
@@ -169,7 +169,7 @@ public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<Se
             final int arrayEndPosition = window.length() - 1;
             final long distanceToEnd = toPosition - window.getWindowPosition() + length;
             final int finalPosition = distanceToEnd < arrayEndPosition ?
-                    (int) distanceToEnd : arrayEndPosition;
+                                (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;
 
             // Search fowards in the array using the reader interface to match.
