@@ -1,6 +1,9 @@
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.io.reader.FileReader;
+import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ByteUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -19,7 +22,7 @@ import static org.junit.Assert.fail;
  *
  * Created by matt on 03/05/16.
  */
-public class ValidateSequenceSearchersTest {
+public class CrossValidationSearchersTest {
 
     Random random = new Random(0);
 
@@ -38,7 +41,7 @@ public class ValidateSequenceSearchersTest {
             // test defined patterns:
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
-                testSearchers(pattern.getBytes(), searchData);
+               testSearchers(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
             for (int randomTest = 0; randomTest < 1000; randomTest++) {
@@ -66,6 +69,41 @@ public class ValidateSequenceSearchersTest {
         }
     }
 
+    @Test
+    public void testSearchReaderForwards() throws IOException {
+        for (SearchData searchData : data) {
+            // test defined patterns:
+            for (String pattern : searchData.patterns) {
+                createSearchers(pattern);
+                testReaderSearchers(pattern.getBytes(), searchData);
+            }
+            // test randomly selected patterns:
+            for (int randomTest = 0; randomTest < 1000; randomTest++) {
+                byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
+                createSearchers(pattern);
+                testReaderSearchers(pattern, searchData);
+            }
+        }
+    }
+
+    @Test
+    public void testSearchReaderBackwards() throws IOException {
+        for (SearchData searchData : data) {
+            // test defined patterns:
+            for (String pattern : searchData.patterns) {
+                createSearchers(pattern);
+                testReaderSearchersBackwards(pattern.getBytes(), searchData);
+            }
+            // test randomly selected patterns:
+            for (int randomTest = 0; randomTest < 1000; randomTest++) {
+                byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
+                createSearchers(pattern);
+                testReaderSearchersBackwards(pattern, searchData);
+            }
+        }
+    }
+
+
     private void createSearchers(String sequence) {
         createSearchers(sequence.getBytes());
     }
@@ -77,17 +115,14 @@ public class ValidateSequenceSearchersTest {
         searchers.add(new HorspoolSearcher(sequence));
         searchers.add(new UnrolledHorspoolSearcher(sequence));
         searchers.add(new SignedHorspoolSearcher(sequence));
-
-        if (sequence.length < 64) {
-            searchers.add(new ShiftOrSearcher(sequence));
-        }
+        searchers.add(new ShiftOrSearcher(sequence));
         if (sequence.length > 3) {
-            searchers.add(new QF4Searcher(sequence));
+            searchers.add(new QgramFilter4Searcher(sequence));
         }
     }
 
     private void testSearchers(byte[] pattern, SearchData dataToSearch) {
-        final Map<Integer, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Integer, List<SequenceSearcher<SequenceMatcher>>>();
+        final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
         final List<SequenceSearcher<SequenceMatcher>> usedSearchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
         for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
             usedSearchers.add(searcher);
@@ -96,9 +131,19 @@ public class ValidateSequenceSearchersTest {
         findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
     }
 
+    private void testReaderSearchers(byte[] pattern, SearchData dataToSearch) {
+        final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
+        final List<SequenceSearcher<SequenceMatcher>> usedSearchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            usedSearchers.add(searcher);
+            addAllSearchPositionsFor(searcher, dataToSearch.getReader(), resultMap);
+        }
+        findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
+    }
+
 
     private void testSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
-        final Map<Integer, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Integer, List<SequenceSearcher<SequenceMatcher>>>();
+        final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
         final List<SequenceSearcher<SequenceMatcher>> usedSearchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
         for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
             usedSearchers.add(searcher);
@@ -107,10 +152,19 @@ public class ValidateSequenceSearchersTest {
         findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
     }
 
+    private void testReaderSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
+        final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
+        final List<SequenceSearcher<SequenceMatcher>> usedSearchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            usedSearchers.add(searcher);
+            addAllBackwardsSearchPositionsFor(searcher, dataToSearch.getReader(), resultMap);
+        }
+        findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
+    }
 
     private void addAllSearchPositionsFor(SequenceSearcher<SequenceMatcher> searcher,
                                           byte[] dataToSearch,
-                                          Map<Integer, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
+                                          Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
         final int LENGTH = dataToSearch.length;
         int position = 0;
         while (position < LENGTH) {
@@ -121,17 +175,40 @@ public class ValidateSequenceSearchersTest {
             addResult(result, searcher, resultMap);
             if (result < position) {
                 // do search again so we can debug if we want to at this point:
-                // result = searcher.search(dataToSearch, position);
+                result = searcher.searchSequenceForwards(dataToSearch, position);
                 fail("Searcher " + searcher + " returned a match at " + result + " before current search position at " + position);
             }
             position = result + 1;
+        }
+    }
 
+    private void addAllSearchPositionsFor(SequenceSearcher<SequenceMatcher> searcher,
+                                          WindowReader dataToSearch,
+                                          Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
+        try {
+            final long LENGTH = dataToSearch.length();
+            long position = 0;
+            while (position < LENGTH) {
+                long result = searcher.searchSequenceForwards(dataToSearch, position);
+                if (result < 0) {
+                    return;
+                }
+                addResult(result, searcher, resultMap);
+                if (result < position) {
+                    // do search again so we can debug if we want to at this point:
+                    result = searcher.searchSequenceForwards(dataToSearch, position);
+                    fail("Searcher " + searcher + " returned a match at " + result + " before current search position at " + position);
+                }
+                position = result + 1;
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("IO Exception ocurred searching forwards with " + searcher + " in " + dataToSearch);
         }
     }
 
     private void addAllBackwardsSearchPositionsFor(SequenceSearcher<SequenceMatcher> searcher,
                                           byte[] dataToSearch,
-                                          Map<Integer, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
+                                          Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
         final int LENGTH = dataToSearch.length;
         int position = LENGTH - 1;
         while (position >= 0) {
@@ -149,9 +226,33 @@ public class ValidateSequenceSearchersTest {
         }
     }
 
-    private void addResult(int value,
+    private void addAllBackwardsSearchPositionsFor(SequenceSearcher<SequenceMatcher> searcher,
+                                                   WindowReader dataToSearch,
+                                                   Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
+        try {
+            final long LENGTH = dataToSearch.length();
+            long position = LENGTH - 1;
+            while (position >= 0) {
+                long result = searcher.searchSequenceBackwards(dataToSearch, position);
+                if (result < 0) {
+                    return;
+                }
+                addResult(result, searcher, resultMap);
+                if (result > position) {
+                    // do search again so we can debug if we want to at this point:
+                    // result = searcher.search(dataToSearch, position);
+                    fail("Searcher " + searcher + " returned a match at " + result + " after current search position at " + position);
+                }
+                position = result - 1;
+            }
+        } catch (IOException io) {
+            throw new RuntimeException("IO Exception ocurred searching backwards with " + searcher + " in " + dataToSearch);
+        }
+    }
+
+    private void addResult(long value,
                            SequenceSearcher<SequenceMatcher> searcher,
-                           Map<Integer, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
+                           Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
         List<SequenceSearcher<SequenceMatcher>> wrapperList = resultMap.get(value);
         if (wrapperList == null) {
             wrapperList = new ArrayList<SequenceSearcher<SequenceMatcher>>();
@@ -162,13 +263,13 @@ public class ValidateSequenceSearchersTest {
 
     private void findMismatches(List<SequenceSearcher<SequenceMatcher>> usedSearchers,
                                 byte[] pattern,
-                                Map<Integer, List<SequenceSearcher<SequenceMatcher>>> resultMap,
+                                Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap,
                                 SearchData dataToSearch) {
         final int NUM_SEARCHERS = usedSearchers.size();
         final List<String> errors = new ArrayList<String>();
-        for (Map.Entry<Integer, List<SequenceSearcher<SequenceMatcher>>> entry : resultMap.entrySet()) {
+        for (Map.Entry<Long, List<SequenceSearcher<SequenceMatcher>>> entry : resultMap.entrySet()) {
             //System.out.println("Match found for " + description + " at " + entry.getKey());
-            String message = dataToSearch.dataFile + "\t" + Arrays.toString(pattern) + "\tmatch at\t" + entry.getKey() ;
+            String message = dataToSearch.dataFile + "\t" + ByteUtils.bytesToString(true, pattern) + "\tmatch at\t" + entry.getKey() ;
             List<SequenceSearcher<SequenceMatcher>> resultsForEntry = entry.getValue();
             if (resultsForEntry.size() != NUM_SEARCHERS) {
                 Set<SequenceSearcher<SequenceMatcher>> newSet = new HashSet<SequenceSearcher<SequenceMatcher>>(usedSearchers);
@@ -220,9 +321,10 @@ public class ValidateSequenceSearchersTest {
     }
 
     private class SearchData {
-        public String dataFile;
-        public  String[] patterns;
-        public byte[] dataToSearch;
+        private String dataFile;
+        private  String[] patterns;
+        private byte[] dataToSearch;
+        private WindowReader reader;
 
         public SearchData(String resourceName, String... patterns) {
             this.dataFile = resourceName;
@@ -234,6 +336,12 @@ public class ValidateSequenceSearchersTest {
             }
             return dataToSearch;
         };
+        public WindowReader getReader() {
+            if (reader == null) {
+                reader = loadFileReader(dataFile);
+            }
+            return reader;
+        }
     }
 
     private byte[] getRandomPattern(byte[] dataToSearch, int length) {
@@ -247,6 +355,14 @@ public class ValidateSequenceSearchersTest {
 
     private byte[] loadDataToSearch(String resourceName)  {
         return getBytes(resourceName);
+    }
+
+    private WindowReader loadFileReader(String resourceName) {
+        try {
+            return new FileReader(getFile(resourceName));
+        } catch (IOException io) {
+            throw new RuntimeException("IO Exception occured reading file", io);
+        }
     }
 
     private byte[] getBytes(final String resourceName) {
