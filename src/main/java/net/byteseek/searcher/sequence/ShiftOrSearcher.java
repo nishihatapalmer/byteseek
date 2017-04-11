@@ -68,6 +68,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
     // number of bits to use for the shift-or algorithm bitmasks.
     private static final int WORD_LENGTH = 63; // can't use all 64 bits of a long due to being signed.
 
+    // forward and backwards search info, with lazy initialisation.
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
 
@@ -79,9 +80,6 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
      */
     public ShiftOrSearcher(final SequenceMatcher sequence) {
         super(sequence);
-        //if (sequence.length() > MAX_LENGTH) {
-        //    throw new IllegalArgumentException("The ShiftOrSearcher cannot search sequences longer than " + MAX_LENGTH);
-        //}
         forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
         backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
     }
@@ -268,7 +266,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             state = (state << 1) | bitmasks[bytes[pos] & 0xFF];
             if (state < localLimit &&                                  // first part of sequence found using bit-parallelism.
                     verifier.matchesNoBoundsCheck(bytes, pos + 1)) {   // verify rest manually with a SequenceMatcher.
-                return pos - lastMatcherPosition;
+                return pos - WORD_LENGTH + 1;
             }
         }
 
