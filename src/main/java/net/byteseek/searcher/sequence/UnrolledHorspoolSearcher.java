@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2016, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -50,7 +50,9 @@ import net.byteseek.utils.factory.ObjectFactory;
  * UnrolledHorspoolSearcher searches for a sequence using the
  * Boyer-Moore-Horspool algorithm, and "unrolls" the main search loop
  * by repeatedly shifting until there is a match to the last pattern position,
- * before attempting verification of the full pattern.
+ * before attempting verification of the full pattern.  This achieves faster
+ * performance than the standard Horspool search as full pattern verification is
+ * expensive compared with matching a single byte (avoids loop initialisation overhead).
  * <p>
  * This type of search algorithm does not need to examine every byte in 
  * the bytes being searched.  It is sub-linear, in general needing to
