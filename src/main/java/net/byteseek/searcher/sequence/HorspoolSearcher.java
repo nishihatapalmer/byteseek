@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2016, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -45,8 +45,9 @@ import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
 
 /**
- * HorspoolSearcher searches for a sequence using the
- * Boyer-Moore-Horspool algorithm.
+ * HorspoolSearcher searches for a sequence using the Boyer-Moore-Horspool algorithm.
+ * Although a simplification of the more sophisticated Boyer-Moore algorithm, it is normally
+ * faster than its better known parent due to a simpler structure and better memory cache hits.
  * <p>
  * This type of search algorithm does not need to examine every byte in 
  * the bytes being searched.  It is sub-linear, in general needing to
@@ -272,6 +273,7 @@ public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<Seque
         final int[] safeShifts = backwardInfo.get();
         final SequenceMatcher toMatch = sequence;
 
+        //TODO: search positions passed from SearchBackwards are match positions, not end of sequence positions?
 
         // Search backwards across the windows:
         Window window;
@@ -282,9 +284,9 @@ public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<Seque
             // Initialise the window search:
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
-            final long distanceToEnd = toPosition - window.getWindowPosition();
-            final int lastSearchPosition = distanceToEnd > 0?
-                    (int) distanceToEnd : 0;
+            final long distanceFromWindowStart = toPosition - window.getWindowPosition();
+            final int lastSearchPosition = distanceFromWindowStart > 0?
+                                     (int) distanceFromWindowStart : 0;
             int arraySearchPosition = arrayStartPosition;
 
             // Search using the byte array for shifts, using the WindowReader
