@@ -487,8 +487,15 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         final int SEARCH_END            = (toPosition > 0?
                                            toPosition : 0);
 
+        //TODO: short byte array may crash (e.g. 3 bytes long, can't fit first qgram).
+
         // Search backwards.  pos = place aligned with very start of pattern in the text (beginning of first q-gram).
         for (int pos = SEARCH_START; pos >= SEARCH_END; pos -= SEARCH_SHIFT) {
+
+            //TODO: remove debug statements.
+            //if (pos < 2530) {
+            //    System.out.println("debug!");
+            //}
 
             // Get the hash for the q-gram in the text aligned with the end of the pattern:
             int qGramHash =                        (bytes[pos + 3] & 0xFF);
@@ -521,17 +528,17 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
                 // All complete q-grams in the text matched one somewhere in the pattern.
                 // Verify whether we have an actual match in any of the qgram start positions:
-                final int firstQgramEndPos = patternStartPos + QLEN - 1;
-                final int lastMatchPos = firstQgramEndPos < LAST_MATCH_POSITION?
-                                         firstQgramEndPos : LAST_MATCH_POSITION;
-                for (int matchPos = patternStartPos; matchPos <= lastMatchPos; matchPos++) {
+                final int lastTestPos = patternStartPos - QLEN + 1;
+                final int lastMatchPos = lastTestPos > SEARCH_END?
+                                         lastTestPos : SEARCH_END;
+                for (int matchPos = patternStartPos; matchPos >= lastTestPos; matchPos--) {
                     if (localSequence.matchesNoBoundsCheck(bytes, matchPos)) {
                         return matchPos;
                     }
                 }
 
-                // No match - shift one back past the positions we have just verified.
-                pos = lastQgramStartPos; // TODO: take into account subtraction of SEARCH_SHIFT next...
+                // No match - shift one back past the positions we have just verified (main loop then substracts SEARCH_SHIFT)
+                pos = lastMatchPos - 1 + SEARCH_SHIFT;
             }
         }
         return NO_MATCH;
