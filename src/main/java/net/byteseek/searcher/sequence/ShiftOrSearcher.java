@@ -407,8 +407,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - verifier.length();
-        final int fromPositionEndPos = fromPosition < Integer.MAX_VALUE - WORD_LENGTH?
-                                       fromPosition + WORD_LENGTH : Integer.MAX_VALUE;
+        final int LAST_WORD_POS = WORD_LENGTH - 1;
+        final int fromPositionEndPos = fromPosition < Integer.MAX_VALUE - LAST_WORD_POS?
+                                       fromPosition + LAST_WORD_POS : Integer.MAX_VALUE;
         final int startPosition = fromPositionEndPos < lastPossiblePosition ?
                                   fromPositionEndPos : lastPossiblePosition;
         final int finalPosition = toPosition > 0 ? toPosition : 0;
