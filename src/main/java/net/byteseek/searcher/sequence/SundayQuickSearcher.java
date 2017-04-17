@@ -167,11 +167,10 @@ public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<Se
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition + length);
             final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = toPosition - window.getWindowPosition() + length;
+            final long distanceToEnd = toPosition + length - window.getWindowPosition();
             final int finalPosition = distanceToEnd < arrayEndPosition ?
                                 (int) distanceToEnd : arrayEndPosition;
             int arraySearchPosition = arrayStartPosition;
-
             // Search fowards in the array using the reader interface to match.
             // The loop does not check the final position, as we shift on the byte
             // after the sequence (so would get an IndexOutOfBoundsException in the final position).
@@ -190,7 +189,11 @@ public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<Se
                 if (theSequence.matches(reader, searchPosition)) {
                     return searchPosition;
                 }
-                searchPosition += safeShifts[array[arraySearchPosition] & 0xFF];
+                final int shiftByte = reader.readByte(searchPosition + length);
+                if (shiftByte < 0) {
+                    return NO_MATCH; // no further window to process.
+                }
+                searchPosition += safeShifts[shiftByte];
             }
         }
 
@@ -284,7 +287,11 @@ public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<Se
                 if (theSequence.matches(reader, searchPosition)) {
                     return searchPosition;
                 }
-                searchPosition -= safeShifts[array[arraySearchPosition] & 0xFF];
+                final int shiftByte = reader.readByte(searchPosition); // TODO: is this the actual position to read a byte at?
+                if (shiftByte < 0) {
+                    return NO_MATCH; // no further window to process.
+                }
+                searchPosition -= safeShifts[shiftByte];
             }
         }
         
