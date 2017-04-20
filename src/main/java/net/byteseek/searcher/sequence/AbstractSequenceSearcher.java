@@ -92,17 +92,13 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
      */
 
     @Override
-    public List<SearchResult<T>> searchForwards(final byte[] bytes,
-                                                final int fromPosition,
-                                                final int toPosition) {
+    public List<SearchResult<T>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final int result = searchSequenceForwards(bytes, fromPosition, toPosition);
         return result >= 0 ? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
     }
 
     @Override
-    public List<SearchResult<T>> searchForwards(final WindowReader reader,
-                                                final long fromPosition,
-                                                              final long toPosition)  throws IOException {
+    public List<SearchResult<T>> searchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         final long result = searchSequenceForwards(reader, fromPosition, toPosition);
         return result >= 0 ? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
     }
@@ -112,26 +108,23 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
      */
 
     @Override
-    public long searchSequenceForwards(final WindowReader reader,
-                                       final long fromPosition) throws IOException {
+    public long searchSequenceForwards(final WindowReader reader, final long fromPosition) throws IOException {
         return searchSequenceForwards(reader, fromPosition, Long.MAX_VALUE);
     }
 
     @Override
-    public long searchSequenceForwards(final WindowReader reader)
-            throws IOException {
+    public long searchSequenceForwards(final WindowReader reader) throws IOException {
         return searchSequenceForwards(reader, 0, Long.MAX_VALUE);
     }
 
     @Override
-    public int searchSequenceForwards(final byte[] bytes,
-                                      final int fromPosition) {
-        return searchSequenceForwards(bytes, fromPosition, bytes.length - 1);
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition) {
+        return searchSequenceForwards(bytes, fromPosition, bytes.length - getSequenceLength());
     }
 
     @Override
     public int searchSequenceForwards(final byte[] bytes) {
-        return searchSequenceForwards(bytes, 0, bytes.length - 1);
+        return searchSequenceForwards(bytes, 0, bytes.length - getSequenceLength());
     }
 
     /**
@@ -139,17 +132,13 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
      */
 
     @Override
-    public List<SearchResult<T>> searchBackwards(final byte[] bytes,
-                                                               final int fromPosition,
-                                                               final int toPosition) {
+    public List<SearchResult<T>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         final int result = searchSequenceBackwards(bytes, fromPosition, toPosition);
         return result >= 0? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
     }
 
     @Override
-    public List<SearchResult<T>> searchBackwards(final WindowReader reader,
-                                                               final long fromPosition,
-                                                               final long toPosition) throws IOException {
+    public List<SearchResult<T>> searchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         final long result = searchSequenceBackwards(reader, fromPosition, toPosition);
         return result >= 0? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
     }
@@ -159,26 +148,23 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
      */
 
     @Override
-    public long searchSequenceBackwards(final WindowReader reader,
-                                        final long fromPosition) throws IOException {
+    public long searchSequenceBackwards(final WindowReader reader, final long fromPosition) throws IOException {
         return searchSequenceBackwards(reader, fromPosition, 0);
     }
 
     @Override
-    public long searchSequenceBackwards(final WindowReader reader)
-            throws IOException {
+    public long searchSequenceBackwards(final WindowReader reader) throws IOException {
         return searchSequenceBackwards(reader, reader.length() - getSequenceLength(), 0);
     }
 
     @Override
-    public int searchSequenceBackwards(final byte[] bytes,
-                                       final int fromPosition) {
+    public int searchSequenceBackwards(final byte[] bytes, final int fromPosition) {
         return searchSequenceBackwards(bytes, fromPosition, 0);
     }
 
     @Override
     public int searchSequenceBackwards(final byte[] bytes) {
-        return searchSequenceBackwards(bytes, bytes.length - 1, 0);
+        return searchSequenceBackwards(bytes, bytes.length - getSequenceLength(), 0);
     }
 
 }
