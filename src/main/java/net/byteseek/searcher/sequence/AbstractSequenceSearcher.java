@@ -167,7 +167,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
     @Override
     public long searchSequenceBackwards(final WindowReader reader)
             throws IOException {
-        return searchSequenceBackwards(reader, reader.length() - 1, 0);
+        return searchSequenceBackwards(reader, reader.length() - getSequenceLength(), 0);
     }
 
     @Override
