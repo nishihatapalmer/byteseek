@@ -149,7 +149,6 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	protected final long withinLength(final WindowReader reader, final long position)
 			throws IOException {
 		final long positionToTry = position > 0 ? position : 0;
-		return reader.getWindow(positionToTry) != null ? positionToTry : reader
-				.length() - 1;
+		return reader.getWindow(positionToTry) != null ? positionToTry : reader.length() - 1;
 	}
 }
