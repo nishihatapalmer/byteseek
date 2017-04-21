@@ -31,9 +31,9 @@
 
 package net.byteseek.io.reader.cache;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
+import org.apache.mahout.math.map.AbstractLongObjectMap;
+import org.apache.mahout.math.map.OpenLongObjectHashMap;
 
 /**
  * A cache which holds on to a number of bytes at the top and tail of a reader.
@@ -48,7 +48,7 @@ public final class TopAndTailFixedLengthCache extends AbstractFreeNotificationCa
 
     final long topCacheEnd;
     final long tailCacheStart;
-    final TLongObjectMap<Window> cache;
+    final AbstractLongObjectMap<Window> cache;
 
     public TopAndTailFixedLengthCache(final long length, final long topTailBytes) {
         this(length, topTailBytes, topTailBytes);
@@ -57,7 +57,7 @@ public final class TopAndTailFixedLengthCache extends AbstractFreeNotificationCa
     public TopAndTailFixedLengthCache(final long length, final long topCacheBytes, final long tailCacheBytes) {
         this.topCacheEnd    = topCacheBytes;
         this.tailCacheStart = length - tailCacheBytes - 1;
-        this.cache          = new TLongObjectHashMap<Window>();
+        this.cache          = new OpenLongObjectHashMap<Window>();
     }
 
     @Override
