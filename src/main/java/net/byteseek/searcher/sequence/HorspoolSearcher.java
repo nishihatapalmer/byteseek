@@ -427,7 +427,7 @@ public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<Seque
                 }
             }
 
-            // Set the default shift to the length of the sequence
+            // Set the default shift to the maximum shift which can be made.
             final int[] shifts = new int[256];
             Arrays.fill(shifts, maxShift);
 
