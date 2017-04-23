@@ -30,7 +30,7 @@ This package may be generally useful, independent of byteseek matching and searc
 * reader/cache - pluggable caching strategies for readers, including least recently added, least recently used, temporary file caches, two level caches, double caches and others.
 
 #### Parser
-A byte-oriented regular expression language is given to allow the easy construction of byte matchers, sequence matchers, and (eventually) finite state automata.  An abstract syntax tree is defined, so other regular expression syntaxes could be used if required.
+A byte-oriented [regular expression language](syntax.md) is given to allow the easy construction of byte matchers, sequence matchers, and (eventually) finite state automata.  An abstract syntax tree is defined, so other regular expression syntaxes could be used if required.
 * regex - a parser for a byte-oriented regular expression language, which produces a byteseek abstract syntax tree.
 
 #### Compiler
