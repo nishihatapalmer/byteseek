@@ -51,6 +51,11 @@ import net.byteseek.automata.walker.Step;
 import net.byteseek.utils.collections.IdentityHashSet;
 import net.byteseek.matcher.automata.ByteMatcherTransitionFactory;
 
+//FIXME: This should probably just be a utility method in AutomataUtils.
+//       Converting an NFA to a DFA is just an algorithm.
+//       Or make it an abstract builder, with the transition facatory
+//       supplied by the implementor...?
+
 /**
  * A class which can convert a non-deterministic finite state automata into a
  * deterministic finite state automata, using the subset construction.
@@ -112,6 +117,8 @@ public final class DfaBuilder<T> {
 	//       the byte matcher based ones (one less indirection).  Then we should use these by
 	//       default instead of ByteSetMatcherTransition objects, which create a dependency on
 	//       the matcher package from automata.
+
+	// throw illegal argument exception
 	public DfaBuilder(final StateFactory<T> stateFactory,
 			final TransitionFactory<T, Collection<Byte>> transitionFactory) {
 		this.stateFactory = stateFactory == null ? new MutableStateFactory<T>() 
