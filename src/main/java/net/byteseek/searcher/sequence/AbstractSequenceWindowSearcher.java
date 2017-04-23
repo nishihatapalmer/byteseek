@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2016, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -56,7 +56,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  * </ul>
  * which require the implementor to use the reader interface on the sequence for
  * matching (or otherwise provide for searching sequences which cross window boundaries).
- * Other wrapper convenience methods are also defined to simplify implementing the Searcher.
+ *
  * @author Matt Palmer
  */
 
@@ -163,16 +163,21 @@ public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequence
     /**
      * This method searches forwards crossing window boundaries.  It is
      * called by the {@link #searchForwards(net.byteseek.io.reader.WindowReader, long, long)}
-     * method when it encounters a sequence which crosses from one window to another.
+     * method when it encounters a sequence which crosses from one window to the next window.
      * <p>
      * A simple way to implement this method is to use the WindowReader interface on the
      * matcher sequence. This at least removes window boundaries from validating
      * that a match exists. It will still be necessary to deal with window management
      * in the operation of the search algorithm itself.
      * <p>
-     * Implementations of this method do not need to worry about whether the search
-     * position parameters are within the reader, as this bounds checking is done
-     * by the searchForwards method which calls it.
+     * This method is called by the searchForwards() method, which will always request a search
+     * from the position in its current window where a potential match would have to cross over into another window,
+     * up to the last position in its window or the requested end of the search, whichever comes first.
+     * It does not guarantee that the length of the WindowReader input source is long enough for a match
+     * (e.g. the next window may not exist).
+     * <p>
+     * If no match is found, the method returns a negative number which represents the amount to shift
+     * onwards by.  -1 means move on one, -2 move on two, etc.
      *
      * @param reader The reader providing bytes to search in.
      * @param fromPosition The search position to search from.
@@ -207,11 +212,13 @@ public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequence
         final int lastSequencePosition = getSequenceLength() - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
+        //TODO: negative fromPosition not catered for by withinLength?  search back from -1 shouldn't go to zero.
         long searchPosition = withinLength(reader, fromPosition);
 
         // While there is data to search in:
         Window window;
         while (searchPosition >= finalSearchPosition && (window = reader.getWindow(searchPosition)) != null) {
+
             // Get some info about the window:
             final long windowStartPosition     = window.getWindowPosition();
             final int arrayStartSearchPosition = reader.getWindowOffset(searchPosition);
@@ -246,8 +253,11 @@ public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequence
                 }
             }
 
+            //TODO: this is wrong.  can end up here because sequence crossed over into *next* window (fails test)
+            //TODO: or have arrived here because it now crosses over into *previous* window (ran through array backwards)...
+
             // From the current search position, the sequence crosses over in to
-            // the next window, so we can't search directly in the window byte array.
+            // another window, so we can't search directly in the window byte array.
             // We must use the reader interface on the sequence to let it match
             // over more bytes than this window has available.
 
@@ -279,6 +289,7 @@ public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequence
     }
 
 
+    //TODO: update javadoc, negative numbers for better shifting.
     /**
      * This abstract method searches backwards crossing window boundaries.  It is
      * called by the {@link #searchBackwards(net.byteseek.io.reader.WindowReader, long, long)}
