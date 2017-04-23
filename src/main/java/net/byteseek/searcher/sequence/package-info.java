@@ -34,15 +34,15 @@
  * one byte value in each position, but only one sequence can be searched at a time.
  * <p>
  * Although the performance of these searchers can vary depending on the data and pattern being searched,
- * in general they perform from slowest to fastest:
+ * in general they perform from slowest to fastest (without taking into account any pre-processing time):
  * <ul>
  * <li>SequenceMatcherSearcher  - naive search; no additional memory requirements</li>
  * <li>SundayQuickSearcher      - simple adaption of HorspoolSearcher, not usually faster in practice.</li>
- * <li>HorspoolSearcher         - simpler and faster variant of Boyer-Moore search</li>
+ * <li>HorspoolSearcher         - simpler and faster variant of the classic Boyer-Moore search</li>
  * <li>UnrolledHorspoolSearcher - HorspoolSearcher with shift loop "unrolled" - usually faster than Horspool</li>
  * <li>SignedHorspoolSearcher   - Variant of Horspool using Signed Searching  - usually fastest of Horspool variants.</li>
  * <li>ShiftOrSearcher          - usually fastest for small pattern lengths, e.g. 8 or less in length).</li>
- * <li>QF43Searcher             - usually fastest for most patterns except shorter patterns, where ShiftOr is fastest.</li>
+ * <li>QgramFilter4Searcher     - usually fastest for most patterns except shorter patterns, where ShiftOr is fastest.</li>
  * </ul>
  * <p>
  * Note that performance can vary depending on whether the pattern matches classes of bytes.
