@@ -57,9 +57,4 @@ public class HorspoolSearcherTest {
         s = new HorspoolSearcher("1234567890");
         assertEquals("Length correct", 10, s.getSequenceLength() );
     }
-
-    @Test
-    public void testToString() throws Exception {
-
-    }
 }
