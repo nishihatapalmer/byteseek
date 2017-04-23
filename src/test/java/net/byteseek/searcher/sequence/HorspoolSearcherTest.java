@@ -5,6 +5,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * A test of non-search methods in the HorspoolSearcher.
+ *
+ * Search methods are comprehensively tested (and cross validated) across all the searchers in other test classes.
+ */
 public class HorspoolSearcherTest {
 
     // Test constructors
@@ -38,6 +43,8 @@ public class HorspoolSearcherTest {
     public void testConstructEmptyByteArray() {
         new HorspoolSearcher(new byte[0]);
     }
+
+    // Test length.
 
     @Test
     public void testGetSequenceLength() throws Exception {
