@@ -118,7 +118,7 @@ If the bitmask is zero, this is always true, so all byte values will match.  You
    ^&87                # 0x87 = 10000111. Match bytes without all of the bitmask bits set.
 ```
 
-Any bitmasks
+## Any bitmasks
 
 You can match a byte on whether any of its bits exist in a bitmask you supply.  To specify an Any bitmask use the ~ operator.  
 
