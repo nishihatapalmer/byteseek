@@ -528,6 +528,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
                     if (qGramMatch == 0) break MATCH;
                 }
 
+                //TODO: can result in ArrayIndexOutOfBoundsException... check logic here.
                 // All complete q-grams in the text matched one somewhere in the pattern.
                 // Verify whether we have an actual match in any of the qgram start positions:
                 final int lastTestPos = patternStartPos - QLEN + 1;
