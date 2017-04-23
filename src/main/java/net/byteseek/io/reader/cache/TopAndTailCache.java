@@ -31,9 +31,9 @@
 
 package net.byteseek.io.reader.cache;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
+import org.apache.mahout.math.map.AbstractLongObjectMap;
+import org.apache.mahout.math.map.OpenLongObjectHashMap;
 
 import java.io.IOException;
 import java.util.*;
@@ -58,7 +58,7 @@ import java.util.*;
  */
 public final class TopAndTailCache extends AbstractFreeNotificationCache {
 
-    private final TLongObjectMap<Window> cache;
+    private final AbstractLongObjectMap<Window> cache;
     private final List<Window> tailCacheEntries;
     private final int firstCacheSize;
     private final int secondCacheSize;
@@ -70,7 +70,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
     }
 
     public TopAndTailCache(final int firstCacheSize, final int secondCacheSize) {
-        this.cache = new TLongObjectHashMap<Window>();
+        this.cache = new OpenLongObjectHashMap<Window>();
         this.tailCacheEntries = new ArrayList<Window>();
         this.firstCacheSize  = firstCacheSize;
         this.secondCacheSize = secondCacheSize;
@@ -121,7 +121,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
                 final int nextToCheck = nextTailCacheToCheck;
                 final Window window = tailCacheEntries.get(nextToCheck);
                 if (window.getWindowEndPosition() < tailCacheStart) {
-                    cache.remove(window.getWindowPosition());
+                    cache.removeKey(window.getWindowPosition());
                     tailCacheEntries.remove(nextToCheck);
                     notifyWindowFree(window, this);
                 } else {

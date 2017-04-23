@@ -94,20 +94,23 @@ public class FileReaderTest {
 	}
 
 	@Test
-	public void testIterateWindows() {
+	public void testIterateWindows() throws IOException {
 		FileReaderIterator ri = new FileReaderIterator("/TestASCII.txt");
 		while (ri.hasNext()) {
-			WindowReader reader = ri.next();
-			testIterateReader(reader);
+			try (WindowReader reader = ri.next()) {
+				testIterateReader(reader);
+			}
 		}
+
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void testNoRemoveIterator() {
+	public void testNoRemoveIterator() throws IOException {
 		FileReaderIterator ri = new FileReaderIterator("/TestASCII.txt");
-		WindowReader reader = ri.next();
-		Iterator<Window> iterator = reader.iterator();
-		iterator.remove();
+		try(WindowReader reader = ri.next()) {
+			Iterator<Window> iterator = reader.iterator();
+			iterator.remove();
+		}
 	}
 
 	private void testIterateReader(WindowReader reader) {
@@ -125,46 +128,48 @@ public class FileReaderTest {
 	 */
 	@Test
 	public void testLength() throws IOException {
-		@SuppressWarnings("resource")
-		FileReader reader = new FileReader(getFile("/TestASCII.txt"));
-		assertEquals("length ASCII", 112280, reader.length());
-	
-		// no matter how the file reader sets its window sizes or cache strategies,
-		// it must make no difference to the total length of the data read.
-		FileReaderIterator iterator = new FileReaderIterator("/TestASCII.txt");
-		while (iterator.hasNext()) {
-			FileReader aReader = iterator.next();
-			long totalLength = 0;
-			for (Window window : aReader) {
-				totalLength += window.length();
+		FileReaderIterator iterator;
+		try (FileReader reader = new FileReader(getFile("/TestASCII.txt"))){
+			assertEquals("length ASCII", 112280, reader.length());
+
+			// no matter how the file reader sets its window sizes or cache strategies,
+			// it must make no difference to the total length of the data read.
+			iterator = new FileReaderIterator("/TestASCII.txt");
+			while (iterator.hasNext()) {
+				FileReader aReader = iterator.next();
+				long totalLength = 0;
+				for (Window window : aReader) {
+					totalLength += window.length();
+				}
+				assertEquals("sum of window lengths ASCII", 112280, totalLength);
 			}
-			assertEquals("sum of window lengths ASCII", 112280, totalLength);
+		}
+		try(FileReader reader = new FileReader(getFile("/TestASCII.zip"))) {
+			assertEquals("length ZIP", 45846, reader.length());
+
+			iterator = new FileReaderIterator("/TestASCII.zip");
+			while (iterator.hasNext()) {
+				FileReader aReader = iterator.next();
+				long totalLength = 0;
+				for (Window window : aReader) {
+					totalLength += window.length();
+				}
+				assertEquals("sum of window lengths ZIP", 45846, totalLength);
+			}
 		}
 
-		reader = new FileReader(getFile("/TestASCII.zip"));
-		assertEquals("length ZIP", 45846, reader.length());
+		try(FileReader reader = new FileReader(getFile("/TestEmpty.empty"))) {
+			assertEquals("length empty", 0, reader.length());
 
-		iterator = new FileReaderIterator("/TestASCII.zip");
-		while (iterator.hasNext()) {
-			FileReader aReader = iterator.next();
-			long totalLength = 0;
-			for (Window window : aReader) {
-				totalLength += window.length();
+			iterator = new FileReaderIterator("/TestEmpty.empty");
+			while (iterator.hasNext()) {
+				FileReader aReader = iterator.next();
+				long totalLength = 0;
+				for (Window window : aReader) {
+					totalLength += window.length();
+				}
+				assertEquals("sum of window lengths empty file", 0, totalLength);
 			}
-			assertEquals("sum of window lengths ZIP", 45846, totalLength);
-		}
-
-		reader = new FileReader(getFile("/TestEmpty.empty"));
-		assertEquals("length empty", 0, reader.length());
-
-		iterator = new FileReaderIterator("/TestEmpty.empty");
-		while (iterator.hasNext()) {
-			FileReader aReader = iterator.next();
-			long totalLength = 0;
-			for (Window window : aReader) {
-				totalLength += window.length();
-			}
-			assertEquals("sum of window lengths empty file", 0, totalLength);
 		}
 	}
 
@@ -182,16 +187,17 @@ public class FileReaderTest {
 
 		FileReaderIterator iterator = new FileReaderIterator("/TestASCII.txt");
 		while (iterator.hasNext()) {
-			FileReader reader = iterator.next();
+			try(FileReader reader = iterator.next()) {
 
-			// testReadByte known positions at and around the specified position:
-			testReadByte(reader, 112122, (byte) 0x50);
-			testReadByte(reader, 112271, (byte) 0x44);
-			testReadByte(reader, 112275, (byte) 0x6d);
-			testReadByte(reader, 112277, (byte) 0x2e);
+				// testReadByte known positions at and around the specified position:
+				testReadByte(reader, 112122, (byte) 0x50);
+				testReadByte(reader, 112271, (byte) 0x44);
+				testReadByte(reader, 112275, (byte) 0x6d);
+				testReadByte(reader, 112277, (byte) 0x2e);
 
-			// testReadByte randomly selected positions:
-			testRandomPositions("ascii file:", raf, reader, fileLength);
+				// testReadByte randomly selected positions:
+				testRandomPositions("ascii file:", raf, reader, fileLength);
+			}
 		}
 
 		raf.close();
@@ -202,17 +208,18 @@ public class FileReaderTest {
 
 		iterator = new FileReaderIterator("/TestASCII.zip");
 		while (iterator.hasNext()) {
-			FileReader reader = iterator.next();
+			try(FileReader reader = iterator.next()) {
 
-			// Test known positions at and around the specified position:
-			testReadByte(reader, 3, (byte) 0x04);
-			testReadByte(reader, 0, (byte) 0x50);
-			testReadByte(reader, 1584, (byte) 0xAA);
-			testReadByte(reader, 30359, (byte) 0x6F);
-			testReadByte(reader, 39898, (byte) 0xFB);
+				// Test known positions at and around the specified position:
+				testReadByte(reader, 3, (byte) 0x04);
+				testReadByte(reader, 0, (byte) 0x50);
+				testReadByte(reader, 1584, (byte) 0xAA);
+				testReadByte(reader, 30359, (byte) 0x6F);
+				testReadByte(reader, 39898, (byte) 0xFB);
 
-			// testReadByte randomly selected positions:
-			testRandomPositions("ascii file:", raf, reader, fileLength);
+				// testReadByte randomly selected positions:
+				testRandomPositions("ascii file:", raf, reader, fileLength);
+			}
 		}
 
 		raf.close();
@@ -244,7 +251,9 @@ public class FileReaderTest {
 
 		Iterator<FileReader> iterator = new FileReaderIterator("/TestASCII.zip");
 		while (iterator.hasNext()) {
-			testGetWindowData(iterator.next(), raf);
+			try(WindowReader wr = iterator.next()) {
+				testGetWindowData(wr, raf);
+			}
 		}
 	}
 
@@ -254,14 +263,15 @@ public class FileReaderTest {
 		RandomAccessFile raf = new RandomAccessFile(zipfile, "r");
 		Iterator<FileReader> iterator = new FileReaderIterator("/TestASCII.zip");
 		while (iterator.hasNext()) {
-			FileReader reader = iterator.next();
-			for (Window window : reader) {
-				byte[] original  = window.getArray().clone();
-				byte[] recovered = reader.reloadWindowBytes(window);
-				assertTrue("Length is enough orig=" + original.length + " win length=" + window.length() + " recovered len=" + recovered.length, recovered.length >= window.length());
-				for (int i=0; i < original.length; i++) {
-					if (original[i] != recovered[i]) {
-						fail("Bytes not the same at position " + i + " in recovered window: " + window);
+			try(FileReader reader = iterator.next()) {
+				for (Window window : reader) {
+					byte[] original = window.getArray().clone();
+					byte[] recovered = reader.reloadWindowBytes(window);
+					assertTrue("Length is enough orig=" + original.length + " win length=" + window.length() + " recovered len=" + recovered.length, recovered.length >= window.length());
+					for (int i = 0; i < original.length; i++) {
+						if (original[i] != recovered[i]) {
+							fail("Bytes not the same at position " + i + " in recovered window: " + window);
+						}
 					}
 				}
 			}
@@ -298,9 +308,11 @@ public class FileReaderTest {
 	public void testGetZeroWindow() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			Window window = it.next().getWindow(0);
-			assertNotNull("have window at 0: " , window);
-			assertEquals("window is at zero:", 0, window.getWindowPosition());
+			try(FileReader fr = it.next()){
+				Window window = fr.getWindow(0);
+				assertNotNull("have window at 0: ", window);
+				assertEquals("window is at zero:", 0, window.getWindowPosition());
+			}
 		}
 	}
 
@@ -308,7 +320,9 @@ public class FileReaderTest {
 	public void testGetMidWindow() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			assertNotNull("Have window at 512: ", it.next().getWindow(512));
+			try(FileReader fr = it.next()) {
+				assertNotNull("Have window at 512: ", fr.getWindow(512));
+			}
 		}
 	}
 
@@ -316,7 +330,9 @@ public class FileReaderTest {
 	public void testWindowAfterLength() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			assertNull("No window after length: ", it.next().getWindow(112281));
+			try(FileReader fr = it.next()) {
+				assertNull("No window after length: ", fr.getWindow(112281));
+			}
 		}
 	}
 
@@ -324,7 +340,9 @@ public class FileReaderTest {
 	public void testWindowLongAfterLength() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			assertNull("No window after length: ", it.next().getWindow(200000));
+			try(FileReader fr = it.next()) {
+				assertNull("No window after length: ", fr.getWindow(200000));
+			}
 		}
 	}
 
@@ -333,7 +351,9 @@ public class FileReaderTest {
 	public void testCreateNegativeWindow() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			assertNull("No window after length: ", it.next().createWindow(-1));
+			try(FileReader fr = it.next()) {
+				assertNull("No window after length: ", fr.createWindow(-1));
+			}
 		}
 	}
 
@@ -341,9 +361,11 @@ public class FileReaderTest {
 	public void testCreateZeroWindow() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			Window window = it.next().createWindow(0);
-			assertNotNull("have window at 0: ", window);
-			assertEquals("window is at zero:", 0, window.getWindowPosition());
+			try(FileReader fr = it.next()) {
+				Window window = fr.createWindow(0);
+				assertNotNull("have window at 0: ", window);
+				assertEquals("window is at zero:", 0, window.getWindowPosition());
+			}
 		}
 	}
 
@@ -351,7 +373,9 @@ public class FileReaderTest {
 	public void testCreateMidWindow() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			assertNotNull("Have window at 512: ", it.next().createWindow(512));
+			try(FileReader fr = it.next()) {
+				assertNotNull("Have window at 512: ", fr.createWindow(512));
+			}
 		}
 	}
 
@@ -359,7 +383,9 @@ public class FileReaderTest {
 	public void testCreateWindowAfterLength() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			assertNull("No window after length: ", it.next().createWindow(112281));
+			try(FileReader fr = it.next()) {
+				assertNull("No window after length: ", fr.createWindow(112281));
+			}
 		}
 	}
 
@@ -367,7 +393,9 @@ public class FileReaderTest {
 	public void testCreateWindowLongAfterLength() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			assertNull("No window after length: ", it.next().createWindow(200000));
+			try(FileReader fr = it.next()) {
+				assertNull("No window after length: ", fr.createWindow(200000));
+			}
 		}
 	}
 
@@ -375,9 +403,10 @@ public class FileReaderTest {
 	public void testSetSoftWindowRecoveryGetWindow() throws Exception {
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			FileReader reader = it.next();
-			reader.useSoftWindows(true);
-			assertEquals("Soft windows are returned", SoftWindow.class, reader.getWindow(0).getClass());
+			try(FileReader reader = it.next()) {
+				reader.useSoftWindows(true);
+				assertEquals("Soft windows are returned", SoftWindow.class, reader.getWindow(0).getClass());
+			}
 		}
 	}
 
@@ -386,109 +415,110 @@ public class FileReaderTest {
 	 * Test of getFile method, of class FileReader.
 	 */
 	@Test
-	public void testGetFile() {
+	public void testGetFile() throws IOException {
 		File testFile = getFile("/TestASCII.txt");
 		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
 		while (it.hasNext()) {
-			FileReader reader = it.next();
-			assertEquals("Files are correct.", testFile, reader.getFile());
+			try(FileReader reader = it.next()) {
+				assertEquals("Files are correct.", testFile, reader.getFile());
+			}
 		}
 	}
 
 	@Test
 	public void testCreateValidFileAndCache() {
 		File testFile = getFile("/TestASCII.txt");
-		try {
-			FileReader reader = new FileReader(testFile, NoCache.NO_CACHE);
-		} catch (Exception anything) {
+		try( FileReader reader = new FileReader(testFile, NoCache.NO_CACHE)) {
+		}
+		catch (Exception anything) {
 			fail("Should be no exception creating a valid file reader.");
 		}
 	}
 
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullFile() throws FileNotFoundException {
-		new FileReader((File) null);
+	public void testCreateNullFile() throws IOException {
+		try(FileReader fr = new FileReader((File) null)) {
+
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullCacheFile() throws FileNotFoundException {
-		new FileReader((File) null, null);
+	public void testCreateNullCacheFile() throws IOException {
+		try(FileReader fr = new FileReader((File) null, null)) {}
 	}
 
 	@Test
 	public void testCreateFileWindowSize() {
 		File testFile = getFile("/TestASCII.txt");
-		try {
-			FileReader reader = new FileReader(testFile, 1024);
+		try(FileReader reader = new FileReader(testFile, 1024)){
 		} catch (Exception e) {
 			fail("Should be no Exception from creating a valid FileReader.");
 		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullFileWindowSize() throws FileNotFoundException {
-		new FileReader((File) null, 1024);
+	public void testCreateNullFileWindowSize() throws IOException {
+		try(FileReader fr = new FileReader((File) null, 1024)) {}
 	}
 
 	@Test
 	public void testCreateFileWindowSizeCapacity() {
 		File testFile = getFile("/TestASCII.txt");
-		try {
-			FileReader reader = new FileReader(testFile, 1024, 32);
+		try(FileReader reader = new FileReader(testFile, 1024, 32)) {
 		} catch (Exception e) {
 			fail("Should be no Exception from creating a valid FileReader.");
 		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullFileWindowSizeCapacity() throws FileNotFoundException {
-		new FileReader((File) null, 1024, 32);
+	public void testCreateNullFileWindowSizeCapacity() throws IOException {
+		try(FileReader fr = new FileReader((File) null, 1024, 32)) {}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullPath() throws FileNotFoundException {
-		new FileReader((String) null);
+	public void testCreateNullPath() throws IOException {
+		try(FileReader fr = new FileReader((String) null)) {}
 	}
 
 	@Test
 	public void testCreatePathSize() {
 		String path = getFilePath("/TestASCII.txt");
-		try {
-			FileReader reader = new FileReader(path, 1024);
+		try(FileReader reader = new FileReader(path, 1024)) {
 		} catch (Exception e) {
 			fail("Should be no Exception from creating a valid FileReader.");
 		}
 }
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullPathCache() throws FileNotFoundException {
-		new FileReader((String) null, null);
+	public void testCreateNullPathCache() throws IOException {
+		try(FileReader fr = new FileReader((String) null, null)) {}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreatePathNullCache() throws FileNotFoundException {
-		new FileReader("/TestASCII.txt", null);
+	public void testCreatePathNullCache() throws IOException {
+		try(FileReader fr = new FileReader("/TestASCII.txt", null)) {}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullPathWindowSize() throws FileNotFoundException {
-		new FileReader((String) null, 1024);
+	public void testCreateNullPathWindowSize() throws IOException {
+		try(FileReader fr = new FileReader((String) null, 1024)) {}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullPathWindowSizeCapacity() throws FileNotFoundException {
-		new FileReader((String) null, 1024, 32);
+	public void testCreateNullPathWindowSizeCapacity() throws IOException {
+		try(FileReader fr = new FileReader((String) null, 1024, 32)) {}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateNullFileWindowSizeCache() throws FileNotFoundException {
-		new FileReader((File) null, 1024, null);
+	public void testCreateNullFileWindowSizeCache() throws IOException {
+		try (FileReader fr = new FileReader((File) null, 1024, null)) {
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateFileWindowSizeNullCache() throws FileNotFoundException {
-		new FileReader(getFile("/TestASCII.txt"), 1024, null);
+	public void testCreateFileWindowSizeNullCache() throws IOException {
+		try(FileReader fr = new FileReader(getFile("/TestASCII.txt"), 1024, null)) {}
 	}
 
 	/*
@@ -527,7 +557,7 @@ public class FileReaderTest {
 	 * constructions, which should make no difference to the functionality of the file reader,
 	 * (except the non-functional requirement of performance).
 	 */
-	private class FileReaderIterator implements Iterator<FileReader> {
+	private class FileReaderIterator implements Iterator<FileReader>{
 
 		private final String	filePath;
 

@@ -30,11 +30,13 @@
  */
 package net.byteseek.utils.collections;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
+import org.apache.mahout.math.map.AbstractLongObjectMap;
+import org.apache.mahout.math.map.OpenLongObjectHashMap;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import static org.apache.mahout.math.jet.math.Constants.EPSILON;
 
 
 /**
@@ -48,17 +50,17 @@ import java.util.NoSuchElementException;
  */
 public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry<T>> {
 
-    private final TLongObjectMap<Node<T>> map;
+    private final AbstractLongObjectMap<Node<T>> map;
     private final boolean orderByAccess;
     private final DoubleLinkedList<T> list = new DoubleLinkedList<T>();
 
     public LongLinkedHashMap() {
-        map = new TLongObjectHashMap<Node<T>>();
+        map = new OpenLongObjectHashMap<Node<T>>();
         this.orderByAccess = false;
     }
 
     public LongLinkedHashMap(int capacity) {
-        map = new TLongObjectHashMap<Node<T>>(capacity);
+        map = new OpenLongObjectHashMap<Node<T>>(capacity);
         this.orderByAccess = false;
     }
 
@@ -67,7 +69,9 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
     }
 
     public LongLinkedHashMap(int capacity, float loadFactor, boolean orderByAccess) {
-        map  = new TLongObjectHashMap<Node<T>>(capacity, loadFactor);
+        //note: Colt load factor is \in [0, 1), whereas trove is \in [0, 100), so we'll translate.
+        float loadFactorAdj = loadFactor/100;
+        map  = new OpenLongObjectHashMap<Node<T>>(capacity, Math.min(0.2d, loadFactorAdj - EPSILON), loadFactorAdj);
         this.orderByAccess = orderByAccess;
     }
 
@@ -121,7 +125,14 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      * @return The value associated with that key, or null if there was no value for the key.
      */
     public final T remove(long key) {
-        return list.remove(map.remove(key));
+        Node<T> val = map.get(key);
+        if(val != null) {
+            map.removeKey(key);
+            return list.remove(val);
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -202,7 +213,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
     private void checkEldestEntry() {
         final Node<T> first = list.firstNode();
         if (first != null && removeEldestEntry(first)) {
-            map.remove(first.key);
+            map.removeKey(first.key);
             list.remove(first);
         }
     }
