@@ -59,11 +59,13 @@ import java.io.IOException;
  *
  * @author Matt Palmer
  */
+//TODO: this is actually a write-through cache - rename.
 public final class DoubleCache extends AbstractFreeNotificationCache implements WindowCache.WindowObserver {
 
     private final WindowCache memoryCache;
     private final WindowCache persistentCache;
 
+    //TODO: no need for subscription and leave notification - can use a normal constructor?
     public static DoubleCache create(final WindowCache memoryCache, final WindowCache persistentCache) {
         final DoubleCache doubleCache = new DoubleCache(memoryCache, persistentCache);
         persistentCache.subscribe(doubleCache);
