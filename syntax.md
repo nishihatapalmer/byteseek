@@ -4,7 +4,7 @@ The byteseek syntax is very similar to standard regular expression languages, bu
 
 A pleasant feature is that there is no need to escape characters or bytes in any expression, which contributes to readability.  This is because specifying values to match is explicitly part of the syntax, rather than being implicit in the expression. 
 
-> **Note on compilers** Byteseek provides several diferent compilers for bytes, fixed length sequences and regular expressions, which all use the appropriate sub-set of this syntax.  The full RegexCompiler can use all of the syntax below.  The SequenceMatcherCompiler can use any syntax which results in a fixed length sequence, but not a variable length sequence or one with alternatives.  The ByteMatcherCompiler can use any syntax which results in matching at a single byte position (i.e. a sequence of length one).
+> **Note on compilers** Byteseek provides several diferent compilers for bytes, fixed length sequences and regular expressions, which all use the appropriate sub-set of this syntax.  The full RegexCompiler can use all of the syntax below.  The SequenceMatcherCompiler can use any syntax which results in a fixed length sequence, but not a variable length sequence or one with alternatives.  The ByteMatcherCompiler can use any syntax which results in matching at a single position (i.e. a sequence of length one).
 
 ## Bytes and byte sequences
 Bytes and byte sequences are written as sequences of case insensitive hex digits:
