@@ -2,6 +2,8 @@ package net.byteseek.searcher.sequence;
 
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.searcher.BackwardSearchIterator;
+import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.Searcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +43,7 @@ import java.io.InputStream;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by matt on 11/04/17.
@@ -50,12 +53,12 @@ public class DebugSearcherTest {
     private SequenceSearcher searcher;
     private String resourceName = "/romeoandjuliet.txt";
     //String private resourceName = "/hsapiensdna.txt";
-    private String pattern      = "ABCD";
+    private String pattern      = "some noyse Lady, come from that nest\r\nOf death, contagion, and v";
 
     @Before
     public void createSearcher() {
         //searcher = new SequenceMatcherSearcher(pattern);
-        searcher = new QgramFilter4Searcher(pattern);
+        searcher = new ShiftOrSearcher(pattern);
     }
 
     @Test
@@ -66,8 +69,13 @@ public class DebugSearcherTest {
 
     @Test
     public void testSearcherBytesBackwards() {
-        int result = searcher.searchSequenceBackwards(bytesFrom(resourceName),
-                0 ,0 );
+        BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, bytesFrom(resourceName));
+        long pos = Long.MAX_VALUE;
+        while (iterator.hasNext()) {
+            List<SearchResult> results = iterator.next();
+            SearchResult firstResult = results.get(0);
+            pos = firstResult.getMatchPosition();
+        }
     }
 
     @Test

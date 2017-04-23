@@ -54,16 +54,18 @@ import static org.junit.Assert.fail;
  */
 public class CrossValidationSearchersTest {
 
+    public static final int NUM_RANDOM_TESTS = 5000;
     Random random = new Random(0);
 
     private List<SequenceSearcher<SequenceMatcher>> searchers;
+
     SearchData[] data = {
             new SearchData("/romeoandjuliet.txt", "to", "art", "thou", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
             new SearchData("/hsapiensdna.txt", "AA", "CAG", "GATACA", "TGATCGA", "CAGGAGAG", "ATCGCATGA", "TCCAGAATCT", "ACACTTGCTCTTTAGAAGAGTGCT", "ATGCCTGCAGCAGAGGAGGCACACAGAGTGTTAA", "GCAGCTTTGGCCTCCTGGGTGCAAGCCATCCTCCTGCCCCAGCCTC")
     };
 
-    //TODO: extend to search backwards and using window searching.
     //TODO: extend to compile patterns involving byte classes rather than just simple strings.
+
 
     @Test
     public void testSearchByteArrayForwards() throws IOException {
@@ -71,10 +73,10 @@ public class CrossValidationSearchersTest {
             // test defined patterns:
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
-               testSearchers(pattern.getBytes(), searchData);
+                testSearchers(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < 1000; randomTest++) {
+            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testSearchers(pattern, searchData);
@@ -91,7 +93,7 @@ public class CrossValidationSearchersTest {
                 testSearchersBackwards(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < 1000; randomTest++) {
+            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testSearchersBackwards(pattern, searchData);
@@ -108,7 +110,7 @@ public class CrossValidationSearchersTest {
                 testReaderSearchers(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < 1000; randomTest++) {
+            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testReaderSearchers(pattern, searchData);
@@ -125,7 +127,7 @@ public class CrossValidationSearchersTest {
                 testReaderSearchersBackwards(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < 1000; randomTest++) {
+            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testReaderSearchersBackwards(pattern, searchData);
@@ -158,7 +160,7 @@ public class CrossValidationSearchersTest {
             usedSearchers.add(searcher);
             addAllSearchPositionsFor(searcher, dataToSearch.getData(), resultMap);
         }
-        findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
+        findMismatches("array forwards", usedSearchers, pattern, resultMap, dataToSearch);
     }
 
     private void testReaderSearchers(byte[] pattern, SearchData dataToSearch) {
@@ -168,7 +170,7 @@ public class CrossValidationSearchersTest {
             usedSearchers.add(searcher);
             addAllSearchPositionsFor(searcher, dataToSearch.getReader(), resultMap);
         }
-        findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
+        findMismatches("reader forwards", usedSearchers, pattern, resultMap, dataToSearch);
     }
 
 
@@ -179,7 +181,7 @@ public class CrossValidationSearchersTest {
             usedSearchers.add(searcher);
             addAllBackwardsSearchPositionsFor(searcher, dataToSearch.getData(), resultMap);
         }
-        findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
+        findMismatches("array backwards", usedSearchers, pattern, resultMap, dataToSearch);
     }
 
     private void testReaderSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
@@ -189,7 +191,7 @@ public class CrossValidationSearchersTest {
             usedSearchers.add(searcher);
             addAllBackwardsSearchPositionsFor(searcher, dataToSearch.getReader(), resultMap);
         }
-        findMismatches(usedSearchers, pattern, resultMap, dataToSearch);
+        findMismatches("reader backwards", usedSearchers, pattern, resultMap, dataToSearch);
     }
 
     private void addAllSearchPositionsFor(SequenceSearcher<SequenceMatcher> searcher,
@@ -249,7 +251,7 @@ public class CrossValidationSearchersTest {
             addResult(result, searcher, resultMap);
             if (result > position) {
                 // do search again so we can debug if we want to at this point:
-                // result = searcher.search(dataToSearch, position);
+                //result = searcher.searchSequenceBackwards(dataToSearch, position);
                 fail("Searcher " + searcher + " returned a match at " + result + " after current search position at " + position);
             }
             position = result - 1;
@@ -291,7 +293,8 @@ public class CrossValidationSearchersTest {
         wrapperList.add(searcher);
     }
 
-    private void findMismatches(List<SequenceSearcher<SequenceMatcher>> usedSearchers,
+    private void findMismatches(String searchDescription,
+                                List<SequenceSearcher<SequenceMatcher>> usedSearchers,
                                 byte[] pattern,
                                 Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap,
                                 SearchData dataToSearch) {
@@ -299,7 +302,7 @@ public class CrossValidationSearchersTest {
         final List<String> errors = new ArrayList<String>();
         for (Map.Entry<Long, List<SequenceSearcher<SequenceMatcher>>> entry : resultMap.entrySet()) {
             //System.out.println("Match found for " + description + " at " + entry.getKey());
-            String message = dataToSearch.dataFile + "\t" + ByteUtils.bytesToString(true, pattern) + "\tmatch at\t" + entry.getKey() ;
+            String message = searchDescription + "\t" + dataToSearch.dataFile + "\t" + ByteUtils.bytesToString(true, pattern) + "\tmatch at\t" + entry.getKey() ;
             List<SequenceSearcher<SequenceMatcher>> resultsForEntry = entry.getValue();
             if (resultsForEntry.size() != NUM_SEARCHERS) {
                 Set<SequenceSearcher<SequenceMatcher>> newSet = new HashSet<SequenceSearcher<SequenceMatcher>>(usedSearchers);
@@ -316,16 +319,38 @@ public class CrossValidationSearchersTest {
                     for (SequenceSearcher<SequenceMatcher> searcher : newSet) {
                         if (!first) message += ','; first = false;
                         message += searcher.getClass().getSimpleName();
+
+                        debugFailedSearcher(searcher, entry.getKey(), dataToSearch.dataFile);
                     }
                     //System.out.println(message);
                     errors.add(message);
                     fail("Mismatches occurred: " + errors);
                 }
-
             }
         }
         if (errors.size() > 0) {
             fail("Mismatches occurred: " + errors);
+        }
+    }
+
+    private void debugFailedSearcher(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
+        //debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
+        debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
+    }
+
+    private void debugFailedSearcherBytes(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
+        byte[] data = loadDataToSearch(dataToSearch);
+        searcher.searchSequenceForwards(data);
+        searcher.searchSequenceBackwards(data);
+    }
+
+    private void debugFailedSearcherWindow(SequenceSearcher searcher, long failedAtPosition, String dataToSearch) {
+        try {
+            WindowReader reader = loadFileReader(dataToSearch);
+            //searcher.searchSequenceForwards(reader);
+            searcher.searchSequenceBackwards(reader, 102408);
+        } catch (IOException ex) {
+            fail("IO Exception when reading");
         }
     }
 
