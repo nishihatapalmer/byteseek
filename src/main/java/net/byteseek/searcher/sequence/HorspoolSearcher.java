@@ -87,6 +87,7 @@ public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<Seque
      * to search for.
      *
      * @param sequence The SequenceMatcher to search for.
+     * @throws IllegalArgumentException if the sequence is null.
      */
     public HorspoolSearcher(final SequenceMatcher sequence) {
         super(sequence);
