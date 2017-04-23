@@ -170,7 +170,17 @@ Note that the last item shows a not operator within the set.  This is legal - bu
 
 ## Repetition
 
-You can specify that something repeats an exact number of times {n}, from a minimum to a maximum number of times {n,m}, and up to an unlimited number of times {n,*}.  There is also shorthand syntax for the common repeats zero-to-many (*) and one-to-many (+)
+You can specify that something repeats:
+
+ * an exact number of times `{n}`
+ * from a minimum to a maximum number of times `{n,m}`
+ * up to an unlimited number of times `{n,*}`
+ 
+There is also shorthand syntax for the common repeats:
+
+* zero-to-many `*`
+* one-to-many `+`
+*  optionality `?`
 
 ### Exact repeats
 
@@ -201,7 +211,7 @@ To specify that something repeats from a minimum number of times to an unlimited
 
 To specify that something repeats from zero to many times, you can write {0,*}.  Since this is such a common requirement, this can be replaced by a single * appended to the element to repeat *:
 ```
-  00*                                    # zero to many 0x00
+  00*                                     # zero to many 0x00
   'green bottle'*                         # zero to many green bottles.
 ```
 
@@ -210,7 +220,7 @@ To specify that something repeats from zero to many times, you can write {0,*}. 
 To specify that something repeats from one to many times, you can write {1,*}.  Since this is such a common requirement, this can be replaced by a single + appended to the element to repeat +:
 
 ```
-  00+                                    # one to many 0x00
+  00+                                     # one to many 0x00
   'green bottle'+                         # one to many green bottles.
 ```
 
