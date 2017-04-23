@@ -170,13 +170,16 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
 
     @Override
     public byte[] reloadWindowBytes(final Window window) throws IOException {
+        if (file == null) {
+            throw new WindowMissingException("Can't reload bytes for window " + window + " : cache file does not exist.");
+        }
         final WindowInfo info = windowPositions.get(window.getWindowPosition());
         if (info != null) {
             final byte[] array = new byte[info.length];
             IOUtils.readBytes(file, array, info.filePosition);
             return array;
         }
-        throw new WindowMissingException("No window exists in the cache for the window: " + window);
+        throw new WindowMissingException("Can't reload bytes for window " + window + " : not found in the cache.");
     }
 
 
