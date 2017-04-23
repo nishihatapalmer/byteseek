@@ -67,8 +67,10 @@ import net.byteseek.utils.factory.ObjectFactory;
  * @author Matt Palmer
  */
 //TODO: examine performance with large byte classes, grouped and separated.
-    //TODO: performance optimisation - don't filter every qgram - only filter every two...?
 
+
+    //TOOD: extend to search less than qgram by using naive search (what's left when there's no qgrams).
+    //      this will remove any limits on what can be searched for.
 public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
     /**
