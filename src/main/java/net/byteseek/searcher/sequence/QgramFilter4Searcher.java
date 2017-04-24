@@ -482,7 +482,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         final int PATTERN_LENGTH        = localSequence.length();
         final int PATTERN_MINUS_QLEN    = PATTERN_LENGTH - QLEN;
         final int LAST_QGRAM_START_POS  = (PATTERN_LENGTH & 0xFFFFFFFC) - QLEN; //TODO: make the intent of this clear.  unnecessary optimisation.
-        final int SEARCH_SHIFT          = PATTERN_MINUS_QLEN + 1; //TODO: is correct when going backwards?
+        final int SEARCH_SHIFT          = PATTERN_MINUS_QLEN + 1;
         final int LAST_MATCH_POSITION   = bytes.length - PATTERN_LENGTH;
         final int SEARCH_START          = (fromPosition < LAST_MATCH_POSITION?
                                            fromPosition : LAST_MATCH_POSITION);
@@ -493,11 +493,6 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
         // Search backwards.  pos = place aligned with very start of pattern in the text (beginning of first q-gram).
         for (int pos = SEARCH_START; pos >= SEARCH_END; pos -= SEARCH_SHIFT) {
-
-            //TODO: remove debug statements.
-            //if (pos < 2530) {
-            //    System.out.println("debug!");
-            //}
 
             // Get the hash for the q-gram in the text aligned with the end of the pattern:
             int qGramHash =                        (bytes[pos + 3] & 0xFF);
@@ -528,13 +523,12 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
                     if (qGramMatch == 0) break MATCH;
                 }
 
-                //TODO: can result in ArrayIndexOutOfBoundsException... check logic here.
                 // All complete q-grams in the text matched one somewhere in the pattern.
                 // Verify whether we have an actual match in any of the qgram start positions:
                 final int lastTestPos = patternStartPos - QLEN + 1;
                 final int lastMatchPos = lastTestPos > SEARCH_END?
                                          lastTestPos : SEARCH_END;
-                for (int matchPos = patternStartPos; matchPos >= lastTestPos; matchPos--) {
+                for (int matchPos = patternStartPos; matchPos >= lastMatchPos; matchPos--) {
                     if (localSequence.matchesNoBoundsCheck(bytes, matchPos)) {
                         return matchPos;
                     }
