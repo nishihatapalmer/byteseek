@@ -36,55 +36,55 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * A test of non-search methods in the HorspoolSearcher.
+ * A test of non-search methods in the ShiftOrSearcher.
  *
  * Search methods are comprehensively tested (and cross validated) across all the searchers in other test classes.
  */
-public class HorspoolSearcherTest {
+public class QgramFilter4SearcherTest {
 
     // Test constructors
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullSequence() {
-        new HorspoolSearcher((SequenceMatcher) null);
+        new ShiftOrSearcher((SequenceMatcher) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
-        new HorspoolSearcher((String) null);
+        new ShiftOrSearcher((String) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
-        new HorspoolSearcher("");
+        new ShiftOrSearcher("");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullCharset() {
-        new HorspoolSearcher("ABCDEFG", null);
+        new ShiftOrSearcher("ABCDEFG", null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullByteArray() {
-        new HorspoolSearcher((byte[]) null);
+        new ShiftOrSearcher((byte[]) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyByteArray() {
-        new HorspoolSearcher(new byte[0]);
+        new ShiftOrSearcher(new byte[0]);
     }
 
     // Test length.
 
     @Test
     public void testGetSequenceLength() throws Exception {
-        AbstractSequenceSearcher s = new HorspoolSearcher("A");
+        AbstractSequenceSearcher s = new ShiftOrSearcher("A");
         assertEquals("Length correct", 1, s.getSequenceLength() );
 
-        s = new HorspoolSearcher("AA");
+        s = new ShiftOrSearcher("AA");
         assertEquals("Length correct", 2, s.getSequenceLength() );
 
-        s = new HorspoolSearcher("1234567890");
+        s = new ShiftOrSearcher("1234567890");
         assertEquals("Length correct", 10, s.getSequenceLength() );
     }
 }
