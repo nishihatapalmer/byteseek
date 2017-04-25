@@ -182,13 +182,13 @@ public final class PositionHashMap<T> {
         while (probeIndex != index) { // stop once we get back to our original index value.
             keyState = localKeys[probeIndex];
             if (keyState == FREE_SLOT || keyState == REMOVED_SLOT) {
-                localKeys[index] = KEY_VALUE;
-                values[index]    = value;
+                localKeys[probeIndex] = KEY_VALUE;
+                values[probeIndex]    = value;
                 size++;
                 return;
             }
             if (keyState == KEY_VALUE) {
-                values[index] = value;
+                values[probeIndex] = value;
                 return;
             }
             probeIndex = (probeIndex + PROBE_INCREMENT) & TABLE_MASK;
@@ -232,8 +232,8 @@ public final class PositionHashMap<T> {
         while (probeIndex != index) { // stop once we get back to our original index value.
             keyState = localKeys[probeIndex];
             if (keyState == KEY_VALUE) { // found our key.
-                localKeys[index] = REMOVED_SLOT;
-                values[index]    = null;
+                localKeys[probeIndex] = REMOVED_SLOT;
+                values[probeIndex]    = null;
                 size--;
                 return true;
             }
@@ -257,7 +257,6 @@ public final class PositionHashMap<T> {
         Arrays.fill(values, null);
         size = 0;
     }
-
 
     /*
      * Private methods.
@@ -314,6 +313,19 @@ public final class PositionHashMap<T> {
             values = newValues;
         }
     }
+
+
+    /*
+     * Package protected methods to allow for more testing.
+     */
+    int getTableSize() {
+        return keys.length;
+    }
+
+    int getTableBits() {
+        return tablebits;
+    }
+
 
 
 }
