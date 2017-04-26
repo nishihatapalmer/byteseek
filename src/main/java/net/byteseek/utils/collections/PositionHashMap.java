@@ -55,9 +55,9 @@ public final class PositionHashMap<T> {
     // Constants:
 
     //TODO: constants too small?  keys of 1, 2, 3... all get index of 0.
-    private final static long HASH_MULTIPLY   = 0x13f92b101a3cd91L; // must be odd number greater than 32 bits.
+    private final static long HASH_MULTIPLY   = 0x113f92b101a3cd91L; // must be odd number greater than 32 bits.
     //TODO: large probe values give poor cache locality - investigate using smaller probe increments / different hash for probe.
-    private final static long PROBE_MULTIPLY  = 0x29b3a62c47ed203L; // must be odd number greater than 32 bits.
+    private final static long PROBE_MULTIPLY  = 0x129b3a62c47ed203L; // must be odd number greater than 32 bits.
     private final static int DEFAULT_CAPACITY = 32;                // default capacity under a load of 50%.
     private final static int FREE_SLOT        = 0;                 // flags that a slot is free - which Java initialises arrays to.
     private final static long ZERO_REPLACE    = Long.MIN_VALUE;    // A value to replace zero with - lets us use zero to indicate a free slot.
@@ -318,19 +318,5 @@ public final class PositionHashMap<T> {
             values = newValues;
         }
     }
-
-
-    /*
-     * Package protected methods to allow for more testing.
-     */
-    int getTableSize() {
-        return keys.length;
-    }
-
-    int getTableBits() {
-        return tablebits;
-    }
-
-
 
 }
