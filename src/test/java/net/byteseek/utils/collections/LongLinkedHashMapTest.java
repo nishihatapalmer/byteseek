@@ -212,7 +212,7 @@ public class LongLinkedHashMapTest {
         assertFalse("Insert order: First object has been removed", test.containsKey(1));
         assertEquals("Size is now two after adding 3", 2, test.size());
 
-        test = new LongLinkedHashMap<Object>(10, 1.1f, true) {
+        test = new LongLinkedHashMap<Object>(10, true) {
             @Override
             public boolean removeEldestEntry(LongLinkedHashMap.MapEntry<Object> entry) {
                 return size() > 2;
