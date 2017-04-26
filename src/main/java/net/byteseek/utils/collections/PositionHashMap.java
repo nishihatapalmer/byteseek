@@ -102,6 +102,16 @@ public final class PositionHashMap<T> {
         return size == 0;
     }
 
+
+    /**
+     * Returns true if the key is present in the map.
+     * @param key The key to check.
+     * @return true if the key is present in the map.
+     */
+    public boolean containsKey(final long key) {
+        return get(key) != null;
+    }
+
     /**
      * Returns the value for a given key, or null if the key isn't in the map.
      *
