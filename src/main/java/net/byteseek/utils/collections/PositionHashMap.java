@@ -54,7 +54,6 @@ public final class PositionHashMap<T> {
 
     // Constants:
 
-    //TODO: constants too small?  keys of 1, 2, 3... all get index of 0.
     private final static long HASH_MULTIPLY   = 0x113f92b101a3cd91L; // must be odd number greater than 32 bits.
     //TODO: large probe values give poor cache locality - investigate using smaller probe increments / different hash for probe.
     private final static long PROBE_MULTIPLY  = 0x129b3a62c47ed203L; // must be odd number greater than 32 bits.
