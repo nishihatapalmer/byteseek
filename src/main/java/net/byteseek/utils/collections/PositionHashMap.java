@@ -52,6 +52,8 @@ public final class PositionHashMap<T> {
     //      specially.  This would make the class capable of processing all long key values, at a small cost of testing for those vals,
     //      but still avoiding the need for a separate state table for all positions.
 
+    //TODO: configure load factor.
+
     // Constants:
 
     private final static long HASH_MULTIPLY   = 0x113f92b101a3cd91L; // must be odd number greater than 32 bits.
