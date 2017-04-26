@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-16, All rights reserved.
+ * Copyright Matt Palmer 2015-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,9 +30,6 @@
  */
 package net.byteseek.utils.collections;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -48,17 +45,17 @@ import java.util.NoSuchElementException;
  */
 public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry<T>> {
 
-    private final TLongObjectMap<Node<T>> map;
+    private final PositionHashMap<Node<T>> map;
     private final boolean orderByAccess;
     private final DoubleLinkedList<T> list = new DoubleLinkedList<T>();
 
     public LongLinkedHashMap() {
-        map = new TLongObjectHashMap<Node<T>>();
+        map = new PositionHashMap<Node<T>>();
         this.orderByAccess = false;
     }
 
     public LongLinkedHashMap(int capacity) {
-        map = new TLongObjectHashMap<Node<T>>(capacity);
+        map = new PositionHashMap<Node<T>>(capacity);
         this.orderByAccess = false;
     }
 
@@ -67,7 +64,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
     }
 
     public LongLinkedHashMap(int capacity, float loadFactor, boolean orderByAccess) {
-        map  = new TLongObjectHashMap<Node<T>>(capacity, loadFactor);
+        map  = new PositionHashMap<Node<T>>(capacity);
         this.orderByAccess = orderByAccess;
     }
 
