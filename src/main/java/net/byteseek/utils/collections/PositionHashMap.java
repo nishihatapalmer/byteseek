@@ -205,9 +205,9 @@ public final class PositionHashMap<T> {
      * Removes a key/value pair from the map with the provided key.
      *
      * @param key The key to remove the key/value pair for.
-     * @return true if the key was removed, false if it wasn't in the map.
+     * @return The object removed from the map, or null if the key wasn't there.
      */
-    public boolean remove(final long key) {
+    public T remove(final long key) {
         final long[] localKeys = keys;
         final int HASH_SHIFT   = 64 - tablebits;
         final long KEY_VALUE   = key == FREE_SLOT? ZERO_REPLACE : key; // we use zero to indicate a free slot, so key zero is replaced.
@@ -218,13 +218,15 @@ public final class PositionHashMap<T> {
         long keyState = localKeys[index];
         if (keyState == KEY_VALUE) { // found our key.
             localKeys[index] = REMOVED_SLOT;
-            values[index]    = null;
+            final T[] localValues = values;
+            final T retval = localValues[index];
+            localValues[index]    = null;
             size--;
-            return true;
+            return retval;
         }
 
         if (keyState == FREE_SLOT) { // key didn't exist
-            return false;
+            return null;
         }
 
         // We have a different key - probe for our key:
@@ -237,20 +239,22 @@ public final class PositionHashMap<T> {
             keyState = localKeys[probeIndex];
             if (keyState == KEY_VALUE) { // found our key.
                 localKeys[probeIndex] = REMOVED_SLOT;
-                values[probeIndex]    = null;
+                final T[] localValues = values;
+                final T retval = localValues[probeIndex];
+                localValues[probeIndex]    = null;
                 size--;
-                return true;
+                return retval;
             }
 
             if (keyState == FREE_SLOT) { // key didn't exist
-                return false;
+                return null;
             }
 
             probeIndex = (probeIndex + PROBE_INCREMENT) & TABLE_MASK;
         }
 
         // Went right around the map and couldn't find it - key didn't exist.
-        return false;
+        return null;
     }
 
     /**
