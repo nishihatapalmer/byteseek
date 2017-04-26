@@ -39,6 +39,10 @@ public class PositionHashMapTest {
 
         pmap.put(0, new Object());
         assertFalse(pmap.isEmpty());
+
+        pmap.remove(0);
+        assertTrue(pmap.isEmpty());
+        assertEquals(0, pmap.size());
     }
 
     @Test
@@ -72,12 +76,15 @@ public class PositionHashMapTest {
 
         final int size = pmap.size();
 
+        // Check updating existing keys:
+
         // Now replace the objects in the pmap against the same keys:
         for (Long key : compareMap.keySet()) {
             pmap.put(key, new Object());
         }
 
-        assertEquals(size, pmap.size()); // size shouldn't have changed.
+        // size shouldn't have changed.
+        assertEquals(size, pmap.size());
 
         // iterate over the keys in the compare map and ensure that the position map has different objects for the same key value:
         for (Long key : compareMap.keySet()) {
@@ -91,7 +98,35 @@ public class PositionHashMapTest {
 
     @Test
     public void testRemove() throws Exception {
+        PositionHashMap<Object> pmap = new PositionHashMap<Object>();
+        Map<Long,Object> compareMap = new HashMap<Long,Object>();
 
+        final int TOTAL_VALS = 2000;
+        final Random rand = new Random(0);
+
+        // Put different objects into random keys in both compareMap and positionMap:
+        for (int num = 0; num < TOTAL_VALS; num++) {
+            long randKey;
+            do {
+                randKey = rand.nextLong();
+            } while (randKey <= Long.MIN_VALUE + 1); // two smallest keys not allowed.
+            Object newObject = new Object();
+            pmap.put(randKey, newObject);
+            compareMap.put(randKey, newObject);
+        }
+
+        // ensure they have recorded the same number of elements before proceeding.
+        int size = pmap.size();
+        assertEquals(compareMap.size(), size);
+
+        // iterate over the keys in the compare map and ensure that the position map has the same objects for the same key value:
+        for (Long key : compareMap.keySet()) {
+            pmap.remove(key);
+            size--;
+            assertEquals(size, pmap.size());
+        }
+
+        assertTrue(pmap.isEmpty());
     }
 
     @Test
@@ -109,15 +144,7 @@ public class PositionHashMapTest {
 
         pmap.clear();
         assertTrue(pmap.isEmpty());
+        assertEquals(0, pmap.size());
     }
 
-    @Test
-    public void testGetTableSize() throws Exception {
-
-    }
-
-    @Test
-    public void testGetTableBits() throws Exception {
-
-    }
 }
