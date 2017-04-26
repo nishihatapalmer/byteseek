@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015, All rights reserved.
+ * Copyright Matt Palmer 2015-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,9 +31,8 @@
 
 package net.byteseek.io.reader.cache;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.collections.PositionHashMap;
 
 /**
  * A cache which holds on to a number of bytes at the top and tail of a reader.
@@ -48,7 +47,7 @@ public final class TopAndTailFixedLengthCache extends AbstractFreeNotificationCa
 
     final long topCacheEnd;
     final long tailCacheStart;
-    final TLongObjectMap<Window> cache;
+    final PositionHashMap<Window> cache;
 
     public TopAndTailFixedLengthCache(final long length, final long topTailBytes) {
         this(length, topTailBytes, topTailBytes);
@@ -57,7 +56,7 @@ public final class TopAndTailFixedLengthCache extends AbstractFreeNotificationCa
     public TopAndTailFixedLengthCache(final long length, final long topCacheBytes, final long tailCacheBytes) {
         this.topCacheEnd    = topCacheBytes;
         this.tailCacheStart = length - tailCacheBytes - 1;
-        this.cache          = new TLongObjectHashMap<Window>();
+        this.cache          = new PositionHashMap<Window>();
     }
 
     @Override

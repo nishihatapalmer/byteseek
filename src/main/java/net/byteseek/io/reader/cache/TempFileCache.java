@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,10 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.windows.*;
+import net.byteseek.utils.collections.PositionHashMap;
 
 
 /**
@@ -53,7 +52,7 @@ import net.byteseek.io.reader.windows.*;
  */
 public final class TempFileCache extends AbstractFreeNotificationCache implements SoftWindowRecovery {
 
-    private final TLongObjectMap<WindowInfo> windowPositions;
+    private final PositionHashMap<WindowInfo> windowPositions;
     private final File tempDir;
     private File tempFile;
     private RandomAccessFile file;
@@ -75,7 +74,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
      * @throws java.lang.IllegalArgumentException if the tempdir supplied is not a directory.
      */
     public TempFileCache(final File tempDir) {
-        windowPositions = new TLongObjectHashMap<WindowInfo>();
+        windowPositions = new PositionHashMap<WindowInfo>();
         this.tempDir = tempDir;
         if (tempDir != null && !tempDir.isDirectory()) {
             throw new IllegalArgumentException("The temp dir file supplied is not a directory: " + tempDir.getAbsolutePath());

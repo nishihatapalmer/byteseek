@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2014, All rights reserved.
+ * Copyright Matt Palmer 2014-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,9 +31,8 @@
 
 package net.byteseek.io.reader.cache;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.collections.PositionHashMap;
 
 import java.io.IOException;
 import java.util.*;
@@ -58,7 +57,7 @@ import java.util.*;
  */
 public final class TopAndTailCache extends AbstractFreeNotificationCache {
 
-    private final TLongObjectMap<Window> cache;
+    private final PositionHashMap<Window> cache;
     private final List<Window> tailCacheEntries;
     private final int firstCacheSize;
     private final int secondCacheSize;
@@ -70,7 +69,7 @@ public final class TopAndTailCache extends AbstractFreeNotificationCache {
     }
 
     public TopAndTailCache(final int firstCacheSize, final int secondCacheSize) {
-        this.cache = new TLongObjectHashMap<Window>();
+        this.cache = new PositionHashMap<Window>();
         this.tailCacheEntries = new ArrayList<Window>();
         this.firstCacheSize  = firstCacheSize;
         this.secondCacheSize = secondCacheSize;

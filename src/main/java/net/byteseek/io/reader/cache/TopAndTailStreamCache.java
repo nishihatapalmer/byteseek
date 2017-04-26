@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015, All rights reserved.
+ * Copyright Matt Palmer 2015-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,9 +31,8 @@
 
 package net.byteseek.io.reader.cache;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.collections.PositionHashMap;
 
 import java.io.IOException;
 import java.util.*;
@@ -52,7 +51,7 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
 
     final long topCacheBytes;
     final long tailCacheBytes;
-    final TLongObjectMap<Window> cache;
+    final PositionHashMap<Window> cache;
     final List<Window> tailEntries;
     long lastSeenPosition;
 
@@ -63,7 +62,7 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
     public TopAndTailStreamCache(final long topBytes, final long tailBytes) {
         this.topCacheBytes  = topBytes;
         this.tailCacheBytes = tailBytes;
-        cache               = new TLongObjectHashMap<Window>();
+        cache               = new PositionHashMap<Window>();
         tailEntries         = new ArrayList<Window>();
 
     }

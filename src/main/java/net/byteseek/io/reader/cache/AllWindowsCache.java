@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,9 +31,8 @@
 
 package net.byteseek.io.reader.cache;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.collections.PositionHashMap;
 
 
 /**
@@ -47,7 +46,7 @@ import net.byteseek.io.reader.windows.Window;
  */
 public final class AllWindowsCache extends AbstractFreeNotificationCache {
 
-    private final TLongObjectMap<Window> cache = new TLongObjectHashMap<Window>();
+    private final PositionHashMap<Window> cache = new PositionHashMap<Window>();
 
     /**
      * {@inheritDoc}
