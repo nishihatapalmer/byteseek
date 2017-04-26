@@ -55,15 +55,10 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
     }
 
     public LongLinkedHashMap(int capacity) {
-        map = new PositionHashMap<Node<T>>(capacity);
-        this.orderByAccess = false;
+       this(capacity, false);
     }
 
-    public LongLinkedHashMap(int capacity, float loadFactor) {
-        this(capacity, loadFactor, false);
-    }
-
-    public LongLinkedHashMap(int capacity, float loadFactor, boolean orderByAccess) {
+    public LongLinkedHashMap(int capacity, boolean orderByAccess) {
         map  = new PositionHashMap<Node<T>>(capacity);
         this.orderByAccess = orderByAccess;
     }
