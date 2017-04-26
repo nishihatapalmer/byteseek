@@ -101,7 +101,7 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
         private IOException exception = null;
 
         private Cache(int capacity) {
-            super(capacity + 1);
+            super(capacity);
             this.capacity = capacity;
         }
         
