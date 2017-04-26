@@ -119,7 +119,7 @@ public class PositionHashMapTest {
         int size = pmap.size();
         assertEquals(compareMap.size(), size);
 
-        // iterate over the keys in the compare map and ensure that the position map has the same objects for the same key value:
+        // iterate over the keys in the compare map and remove each key from the PositionHashMap.
         for (Long key : compareMap.keySet()) {
             pmap.remove(key);
             size--;
