@@ -44,26 +44,26 @@ public class BytePermutationIteratorTest {
 	@Test
 	public final void testBytePermutationIterator() {
 		try {
-			BytePermutationIterator it = new BytePermutationIterator(null);
+			BytePermutationIterator it = new BytePermutationIterator((List<byte[]>) null);
 			fail("Expected an Illegal Argument Exception for a null list");
 		} catch (IllegalArgumentException expected) {}
 		
 		List<byte[]> byteArrayList = new ArrayList<byte[]>();
 		try {
-			BytePermutationIterator it = new BytePermutationIterator(null);
+			BytePermutationIterator it = new BytePermutationIterator((List<byte[]>) null);
 			fail("Expected an Illegal Argument Exception for an empty list");
 		} catch (IllegalArgumentException expected) {}
 
 		byteArrayList.add(null);
 		try {
-			BytePermutationIterator it = new BytePermutationIterator(null);
+			BytePermutationIterator it = new BytePermutationIterator((byte[]) null);
 			fail("Expected an Illegal Argument Exception for a null byte array");
 		} catch (IllegalArgumentException expected) {}
 		
 		byteArrayList.clear();
 		byteArrayList.add(new byte[0]);
 		try {
-			BytePermutationIterator it = new BytePermutationIterator(null);
+			BytePermutationIterator it = new BytePermutationIterator((byte[]) null);
 			fail("Expected an Illegal Argument Exception for an empty byte array");
 		} catch (IllegalArgumentException expected) {}
 		
