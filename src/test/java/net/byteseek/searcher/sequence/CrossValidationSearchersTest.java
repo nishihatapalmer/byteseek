@@ -33,6 +33,7 @@ package net.byteseek.searcher.sequence;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.searcher.SearchResult;
 import net.byteseek.utils.ByteUtils;
 import org.junit.Test;
 
@@ -43,6 +44,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -198,9 +201,22 @@ public class CrossValidationSearchersTest {
                                           byte[] dataToSearch,
                                           Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
         final int LENGTH = dataToSearch.length;
-        int position = 0;
+        int result = searcher.searchSequenceForwards(dataToSearch);
+        List<SearchResult<SequenceMatcher>> resultList = searcher.searchForwards(dataToSearch);
+        assertTrue(resultList.size() < 2); // no more than one result.
+        long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+        assertEquals(result, result2);
+        if ( result < 0) {
+            return;
+        }
+        addResult(result, searcher, resultMap);
+        int position = result + 1;
         while (position < LENGTH) {
-            int result = searcher.searchSequenceForwards(dataToSearch, position);
+            result = searcher.searchSequenceForwards(dataToSearch, position);
+            resultList = searcher.searchForwards(dataToSearch, position);
+            assertTrue(resultList.size() < 2); // no more than one result.
+            result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+            assertEquals(result, result2);
             if (result < 0) {
                 return;
             }
@@ -219,9 +235,23 @@ public class CrossValidationSearchersTest {
                                           Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
         try {
             final long LENGTH = dataToSearch.length();
-            long position = 0;
+
+            long result = searcher.searchSequenceForwards(dataToSearch);
+            List<SearchResult<SequenceMatcher>> resultList = searcher.searchForwards(dataToSearch);
+            assertTrue(resultList.size() < 2); // no more than one result.
+            long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+            assertEquals(result, result2);
+            if (result < 0) {
+                return;
+            }
+            addResult(result, searcher, resultMap);
+            long position =  result + 1;
             while (position < LENGTH) {
-                long result = searcher.searchSequenceForwards(dataToSearch, position);
+                result = searcher.searchSequenceForwards(dataToSearch, position);
+                resultList = searcher.searchForwards(dataToSearch, position);
+                assertTrue(resultList.size() < 2); // no more than one result.
+                result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+                assertEquals(result, result2);
                 if (result < 0) {
                     return;
                 }
@@ -242,9 +272,23 @@ public class CrossValidationSearchersTest {
                                           byte[] dataToSearch,
                                           Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
         final int LENGTH = dataToSearch.length;
-        int position = LENGTH - 1;
+
+        int result = searcher.searchSequenceBackwards(dataToSearch);
+        List<SearchResult<SequenceMatcher>> resultList = searcher.searchBackwards(dataToSearch);
+        assertTrue(resultList.size() < 2); // no more than one result.
+        long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+        assertEquals(result, result2);
+        if (result < 0) {
+            return;
+        }
+        addResult(result, searcher, resultMap);
+        int position = result - 1;
         while (position >= 0) {
-            int result = searcher.searchSequenceBackwards(dataToSearch, position);
+            result = searcher.searchSequenceBackwards(dataToSearch, position);
+            resultList = searcher.searchBackwards(dataToSearch, position);
+            assertTrue(resultList.size() < 2); // no more than one result.
+            result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+            assertEquals(result, result2);
             if (result < 0) {
                 return;
             }
@@ -263,9 +307,23 @@ public class CrossValidationSearchersTest {
                                                    Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap) {
         try {
             final long LENGTH = dataToSearch.length();
-            long position = LENGTH - 1;
+            long result = searcher.searchSequenceBackwards(dataToSearch);
+            List<SearchResult<SequenceMatcher>> resultList = searcher.searchBackwards(dataToSearch);
+            assertTrue(resultList.size() < 2); // no more than one result.
+            long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+            assertEquals(result, result2);
+            if (result < 0) {
+                return;
+            }
+            addResult(result, searcher, resultMap);
+
+            long position = result - 1;
             while (position >= 0) {
-                long result = searcher.searchSequenceBackwards(dataToSearch, position);
+                result = searcher.searchSequenceBackwards(dataToSearch, position);
+                resultList = searcher.searchBackwards(dataToSearch, position);
+                assertTrue(resultList.size() < 2); // no more than one result.
+                result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+                assertEquals(result, result2);
                 if (result < 0) {
                     return;
                 }
