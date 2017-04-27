@@ -1,5 +1,14 @@
 package net.byteseek.compiler.matcher;
 
+import net.byteseek.compiler.CompileException;
+import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
+import net.byteseek.matcher.sequence.FixedGapMatcher;
+import net.byteseek.matcher.sequence.SequenceSequenceMatcher;
+import net.byteseek.parser.tree.ParseTree;
+import net.byteseek.parser.tree.ParseTreeType;
+import net.byteseek.parser.tree.node.ByteNode;
+import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.matcher.bytes.*;
 import org.junit.Before;
@@ -32,15 +41,37 @@ public class ByteMatcherCompilerTest {
         compiler = new ByteMatcherCompiler();
     }
 
-    @Test
-    public void testCompileFrom() throws Exception {
-
+    @Test(expected = CompileException.class)
+    public void testCompileNullExpression() throws CompileException {
+        compiler.compile((String) null);
     }
 
-    @Test
-    public void testCompileFrom1() throws Exception {
-
+    /**
+     *
+     * @throws CompileException
+     */
+    @Test(expected = CompileException.class)
+    public void testCompileEmptyExpression() throws CompileException {
+        compiler.compile("");
     }
+
+    /**
+     *
+     * @throws CompileException
+     */
+    @Test(expected = CompileException.class)
+    public void testCompileNullAST() throws CompileException {
+        compiler.compile((ParseTree) null);
+    }
+
+
+    @Test(expected = CompileException.class)
+    public void testBadSequenceType() throws CompileException {
+        ParseTree badChild = new ChildrenNode(ParseTreeType.ZERO_TO_MANY, new ByteNode((byte) 0));
+        ParseTree sequence = new ChildrenNode(ParseTreeType.SEQUENCE, badChild);
+        compiler.compile(sequence);
+    };
+
 
     @Test
     public void testCompileInvertedFrom() throws Exception {
@@ -54,6 +85,24 @@ public class ByteMatcherCompilerTest {
             String expression = generated.toRegularExpression(false);
 
             ByteMatcher compiled = compiler.compile(expression);
+
+            byte[] genBytes = generated.getMatchingBytes();
+            byte[] comBytes = compiled.getMatchingBytes();
+            assertEquals("Matcher " + generated + " matches same as " + compiled, genBytes.length, comBytes.length);
+            Set<Byte> comB = ByteUtils.toSet(comBytes);
+            for (byte b : genBytes) {
+                assertTrue(comB.contains(b));
+            }
+        }
+    }
+
+    @Test
+    public void testCompileFrom() throws Exception {
+        for (int testNo = 0; testNo < 1000; testNo++) {
+            ByteMatcher generated = createRandomByteMatcher();
+            String expression = generated.toRegularExpression(false);
+
+            ByteMatcher compiled = ByteMatcherCompiler.compileFrom(expression);
 
             byte[] genBytes = generated.getMatchingBytes();
             byte[] comBytes = compiled.getMatchingBytes();
