@@ -146,55 +146,41 @@ public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<Se
      * {@inheritDoc}
      */
     @Override
-    public long doSearchForwards(final WindowReader reader,
-            final long fromPosition, final long toPosition ) throws IOException {
+    public long doSearchForwards(final WindowReader reader, final long fromPosition, final long toPosition ) throws IOException {
 
         // Initialise
         final int[] safeShifts = forwardInfo.get();
         final SequenceMatcher theSequence = sequence;
-        final int length = theSequence.length();
-        long searchPosition = fromPosition;
-
-        // While there is a window to search in...
-        // If there is no window immediately after the sequence,
-        // then there is no match, since this is only invoked if the 
-        // sequence is already crossing into another window.         
+        final int length  = theSequence.length();
+        int arrayPosition = 0;
+        int windowLength  = 0;
+        byte[] array      = null;
         Window window;
-        while (searchPosition <= toPosition &&
-                (window = reader.getWindow(searchPosition + length)) != null) {
 
-            // Initialise array search:
-            final byte[] array = window.getArray();
-            final int arrayStartPosition = reader.getWindowOffset(searchPosition + length);
-            final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = toPosition + length - window.getWindowPosition();
-            final int finalPosition = distanceToEnd < arrayEndPosition ?
-                                (int) distanceToEnd : arrayEndPosition;
-            int arraySearchPosition = arrayStartPosition;
-            // Search fowards in the array using the reader interface to match.
-            // The loop does not check the final position, as we shift on the byte
-            // after the sequence (so would get an IndexOutOfBoundsException in the final position).
-            while (arraySearchPosition < finalPosition) {
-                if (theSequence.matches(reader, searchPosition)) {
-                    return searchPosition;
-                }
-                final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
-                searchPosition += shift;
-                arraySearchPosition += shift;
+        // Search forwards:
+        long searchPosition = fromPosition;
+        while (searchPosition <= toPosition) {
+
+            // Check for a match at the search position:
+            if (theSequence.matches(reader, searchPosition)) {
+                return searchPosition;
             }
 
-            // Check final position if necessary:
-            if (arraySearchPosition == finalPosition ||
-                    searchPosition == toPosition) {
-                if (theSequence.matches(reader, searchPosition)) {
-                    return searchPosition;
+            // If we need a window to get a shift for at the position one past the sequence:
+            if (arrayPosition >= windowLength) {
+                window = reader.getWindow(searchPosition + length);
+                if (window == null) { // no further data, so no further match possible.
+                    return NO_MATCH;
                 }
-                final int shiftByte = reader.readByte(searchPosition + length);
-                if (shiftByte < 0) {
-                    return NO_MATCH; // no further window to process.
-                }
-                searchPosition += safeShifts[shiftByte];
+                array = window.getArray();
+                arrayPosition = reader.getWindowOffset(searchPosition + length);
+                windowLength = window.length();
             }
+
+            // Shift the search position on by the safe shift:
+            final int shift = safeShifts[array[arrayPosition] & 0xFF];
+            searchPosition += shift;
+            arrayPosition += shift;
         }
 
         return NO_MATCH;
@@ -242,59 +228,40 @@ public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<Se
      * {@inheritDoc}
      */
     @Override
-    public long doSearchBackwards(final WindowReader reader,
-            final long fromPosition, final long toPosition ) throws IOException {
-        
-         // Initialise 
-        final int[] safeShifts = forwardInfo.get();
+    public long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition ) throws IOException {
+
+        // Initialise
+        final int[] safeShifts = backwardInfo.get();
         final SequenceMatcher theSequence = sequence;
-        long searchPosition = fromPosition;
-        
-        // While there is a window to search in...
-        // If there is no window immediately before the sequence,
-        // then there is no match, since this is only invoked if the 
-        // sequence is already crossing into another window.        
+        int arrayPosition = -1;
+        byte[] array      = null;
         Window window;
-        while (searchPosition >= toPosition &&
-               (window = reader.getWindow(searchPosition - 1)) != null) {
-            
-            // Initialise array search:
-            final byte[] array = window.getArray();
-            final int arrayStartPosition = reader.getWindowOffset(searchPosition - 1);
-            
-            // Search to the beginning of the array, or the final search position,
-            // whichver comes first.
-            final long endRelativeToWindow = toPosition - window.getWindowPosition();
-            final int arrayEndSearchPosition = endRelativeToWindow > 0?
-                                         (int) endRelativeToWindow : 0;
-            int arraySearchPosition = arrayStartPosition;
-            
-            // Search backwards in the array using the reader interface to match.
-            // The loop does not check the final position, as we shift on the byte
-            // before it.
-            while (arraySearchPosition > arrayEndSearchPosition) {
-                if (theSequence.matches(reader, searchPosition)) {
-                    return searchPosition;
-                }
-                final int shift = safeShifts[array[arraySearchPosition] & 0xFF];
-                searchPosition -= shift;
-                arraySearchPosition -= shift;
+
+        // Search backwards:
+        long searchPosition = fromPosition;
+        while (searchPosition >= toPosition) {
+
+            // Check for a match at the search position:
+            if (theSequence.matches(reader, searchPosition)) {
+                return searchPosition;
             }
 
-            // Check final position if necessary:
-            if (arraySearchPosition == arrayEndSearchPosition ||
-                searchPosition == toPosition) {
-                if (theSequence.matches(reader, searchPosition)) {
-                    return searchPosition;
+            // If we need a window to get a shift for at the position one before the sequence:
+            if (arrayPosition < 0) {
+                window = reader.getWindow(searchPosition - 1);
+                if (window == null) { // no further data, so no further match possible.
+                    return NO_MATCH;
                 }
-                final int shiftByte = reader.readByte(searchPosition); // TODO: is this the actual position to read a byte at?
-                if (shiftByte < 0) {
-                    return NO_MATCH; // no further window to process.
-                }
-                searchPosition -= safeShifts[shiftByte];
+                array = window.getArray();
+                arrayPosition = reader.getWindowOffset(searchPosition - 1);
             }
+
+            // Shift the search position back by the safe shift:
+            final int shift = safeShifts[array[arrayPosition] & 0xFF];
+            searchPosition -= shift;
+            arrayPosition -= shift;
         }
-        
+
         return NO_MATCH;
     }
 
