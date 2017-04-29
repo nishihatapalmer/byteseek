@@ -208,12 +208,14 @@ public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequence
     @Override
     public long searchSequenceBackwards(final WindowReader reader,
                                         final long fromPosition, final long toPosition) throws IOException {
+
         // Initialise:
         final int lastSequencePosition = getSequenceLength() - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
-        //TODO: negative fromPosition not catered for by withinLength?  search back from -1 shouldn't go to zero.
-        long searchPosition = withinLength(reader, fromPosition);
+        // Ensure we don't round *up* the from position to zero if it's already negative.
+        // Otherwise, ensure that the from Position is within the length of the reader.
+        long searchPosition = fromPosition < 0? fromPosition : withinLength(reader, fromPosition);
 
         // While there is data to search in:
         Window window;
@@ -253,26 +255,27 @@ public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequence
                 }
             }
 
-            //TODO: this is wrong.  can end up here because sequence crossed over into *next* window (fails test)
-            //TODO: or have arrived here because it now crosses over into *previous* window (ran through array backwards)...
-
             // From the current search position, the sequence crosses over in to
             // another window, so we can't search directly in the window byte array.
             // We must use the reader interface on the sequence to let it match
             // over more bytes than this window has available.
 
-            // Search back to the first position in this window where the sequence 
-            // would fit inside it (so we can use the array search on the next
-            // loop around), or the beginning of this window.  Windows may not always
-            // have the same length (in particular, the last window), so just because
-            // the sequence is too big to fit into one window doesn't mean we can
-            // infer it won't fit into subsequent windows.  Therefore, we proceed on
-            // a window by window basis.
-            final long firstPossibleFitPosition = windowStartPosition + arrayLastPosition - lastSequencePosition;
-            final long firstFitPosition = firstPossibleFitPosition < searchPosition?
-                                          firstPossibleFitPosition : searchPosition;
-            final long searchToPosition = firstFitPosition > windowStartPosition?
-                                          firstFitPosition : windowStartPosition;
+            // The sequence is either just crossing back into the previous window,
+            // or it is crossing over into the next window (it can be both, but this doesn't matter,
+            // what matters is whether the searchPosition is within the current window or the previous one,
+            // so we can calculate the correct position to search to.
+            final long possibleToPosition;
+            // If the sequence is now before the start of *this* window, cross over back into previous window.
+            if (searchPosition < windowStartPosition) {
+                possibleToPosition = searchPosition - lastSequencePosition + 1; // Align end of sequence with start of this window.
+            } else { // the sequence starts within the current window, but crosses into the *next* window
+                     // (can only happen on first search if we start crossed).
+                possibleToPosition = windowStartPosition + arrayLastPosition - lastSequencePosition + 1;
+            }
+
+            // Make sure the search position doesn't go back further than the final position.
+            final long searchToPosition = possibleToPosition > finalSearchPosition?
+                                          possibleToPosition : finalSearchPosition;
 
             final long readerResult = doSearchBackwards(reader, searchPosition, searchToPosition);
 
