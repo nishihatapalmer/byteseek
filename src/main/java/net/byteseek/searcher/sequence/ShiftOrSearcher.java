@@ -326,9 +326,10 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         final long[] bitmasks = info.getBitmasks();
 
         // Determine safe end.
+        final int LAST_WORD_POS = WORD_LENGTH - 1;
         final long finalSearchPosition = toPosition > 0? toPosition : 0;
-        final long fromPositionStart   = fromPosition < Long.MAX_VALUE - WORD_LENGTH?
-                                         fromPosition + WORD_LENGTH : Long.MAX_VALUE - verifier.length();
+        final long fromPositionStart   = fromPosition < Long.MAX_VALUE - LAST_WORD_POS?
+                                         fromPosition + LAST_WORD_POS : Long.MAX_VALUE - verifier.length();
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask.
@@ -341,19 +342,18 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             final int arrayStartPos   = reader.getWindowOffset(pos); // the position within the window array for this position.
             final long distanceToEnd = pos - finalSearchPosition;
             final int arrayEndPos = distanceToEnd < arrayStartPos?
-                    (int) (arrayStartPos - distanceToEnd) : 0;
+                             (int) (arrayStartPos - distanceToEnd) : 0;
 
             // Search backwards in the window array:
-            for (int arrayPos = arrayStartPos; arrayPos >= arrayEndPos; arrayPos--) {
+            for (int arrayPos = arrayStartPos; arrayPos >= arrayEndPos; arrayPos--, pos--) {
                 state = (state << 1) | bitmasks[array[arrayPos] & 0xFF];
                 if (state < localLimit) {
-                    final long currentPos = pos - arrayStartPos + arrayPos;
-                    if (verifier.matches(reader, currentPos + WORD_LENGTH)) {
-                        return currentPos;
+                    if (verifier.matches(reader, pos + WORD_LENGTH)) {
+                        return pos;
                     }
                 }
             }
-            pos -= (arrayStartPos + 1);
+            //pos--;
         }
 
         return NO_MATCH;
