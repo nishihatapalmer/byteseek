@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer, Temujin Palmer, 2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -57,7 +57,7 @@ import static org.junit.Assert.fail;
  */
 public class CrossValidationSearchersTest {
 
-    public static final int NUM_RANDOM_TESTS = 5000;
+    public static final int NUM_RANDOM_TESTS = 5000; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
     Random random = new Random(0);
 
     private List<SequenceSearcher<SequenceMatcher>> searchers;
@@ -68,7 +68,7 @@ public class CrossValidationSearchersTest {
     };
 
     //TODO: extend to compile patterns involving byte classes rather than just simple strings.
-
+    //TODO: test with FileReaders of different window sizes to flush out window boundary issues.
 
     @Test
     public void testSearchByteArrayForwards() throws IOException {
@@ -152,7 +152,7 @@ public class CrossValidationSearchersTest {
         searchers.add(new SignedHorspoolSearcher(sequence));
         searchers.add(new ShiftOrSearcher(sequence));
         if (sequence.length > 3) {
-            searchers.add(new QgramFilter4Searcher(sequence));
+            //searchers.add(new QgramFilter4Searcher(sequence));
         }
     }
 
@@ -223,7 +223,7 @@ public class CrossValidationSearchersTest {
             addResult(result, searcher, resultMap);
             if (result < position) {
                 // do search again so we can debug if we want to at this point:
-                result = searcher.searchSequenceForwards(dataToSearch, position);
+                //result = searcher.searchSequenceForwards(dataToSearch, position);
                 fail("Searcher " + searcher + " returned a match at " + result + " before current search position at " + position);
             }
             position = result + 1;
@@ -258,7 +258,7 @@ public class CrossValidationSearchersTest {
                 addResult(result, searcher, resultMap);
                 if (result < position) {
                     // do search again so we can debug if we want to at this point:
-                    result = searcher.searchSequenceForwards(dataToSearch, position);
+                    //result = searcher.searchSequenceForwards(dataToSearch, position);
                     fail("Searcher " + searcher + " returned a match at " + result + " before current search position at " + position);
                 }
                 position = result + 1;
@@ -330,7 +330,7 @@ public class CrossValidationSearchersTest {
                 addResult(result, searcher, resultMap);
                 if (result > position) {
                     // do search again so we can debug if we want to at this point:
-                    // result = searcher.search(dataToSearch, position);
+                    //result = searcher.searchSequenceBackwards(dataToSearch, position);
                     fail("Searcher " + searcher + " returned a match at " + result + " after current search position at " + position);
                 }
                 position = result - 1;
@@ -393,20 +393,20 @@ public class CrossValidationSearchersTest {
 
     private void debugFailedSearcher(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
         //debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
-        debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
+        //debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
     }
 
     private void debugFailedSearcherBytes(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
-        byte[] data = loadDataToSearch(dataToSearch);
-        searcher.searchSequenceForwards(data);
-        searcher.searchSequenceBackwards(data);
+        //byte[] data = loadDataToSearch(dataToSearch);
+        //searcher.searchSequenceForwards(data);
+        //searcher.searchSequenceBackwards(data);
     }
 
     private void debugFailedSearcherWindow(SequenceSearcher searcher, long failedAtPosition, String dataToSearch) {
         try {
             WindowReader reader = loadFileReader(dataToSearch);
-            //searcher.searchSequenceForwards(reader);
-            searcher.searchSequenceBackwards(reader, 102408);
+            searcher.searchSequenceForwards(reader);
+            //searcher.searchSequenceBackwards(reader, 102408);
         } catch (IOException ex) {
             fail("IO Exception when reading");
         }
@@ -450,6 +450,12 @@ public class CrossValidationSearchersTest {
             return dataToSearch;
         };
         public WindowReader getReader() {
+            if (reader == null) {
+                reader = loadFileReader(dataFile);
+            }
+            return reader;
+        }
+        public WindowReader getReader(int size) {
             if (reader == null) {
                 reader = loadFileReader(dataFile);
             }
