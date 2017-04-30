@@ -175,9 +175,10 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         final long[] bitmasks = info.getBitmasks();
 
         // Determine safe start and ends - do not know final length (input can be a stream).
+        final int LAST_WORD_POS = WORD_LENGTH - 1;
         final long startPosition = fromPosition > 0 ? fromPosition : 0;
-        final long toPositionEndPos = toPosition < Long.MAX_VALUE - WORD_LENGTH?
-                                      toPosition + WORD_LENGTH : Long.MAX_VALUE - verifier.length();
+        final long toPositionEndPos = toPosition < Long.MAX_VALUE - LAST_WORD_POS?
+                                      toPosition + LAST_WORD_POS : Long.MAX_VALUE - verifier.length();
 
         // Search forwards:
         long state = ~0L; // 64 1's bitmask.
@@ -190,16 +191,14 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             final long distanceToEnd = toPositionEndPos - pos;
             final int arrayEndPos = distanceToEnd < arrayWindowEndPos?
                     (int) distanceToEnd : arrayWindowEndPos;
-            for (int arrayPos = arrayStartPos; arrayPos <= arrayEndPos; arrayPos++) {
+            for (int arrayPos = arrayStartPos; arrayPos <= arrayEndPos; arrayPos++, pos++) {
                 state = (state << 1) | bitmasks[array[arrayPos] & 0xFF];
                 if (state < localLimit) {
-                    final long nextPos = pos + arrayPos - arrayStartPos + 1;
-                    if (verifier.matches(reader, nextPos)) {
-                        return nextPos - WORD_LENGTH;
+                    if (verifier.matches(reader, pos + 1)) {
+                        return pos - LAST_WORD_POS;
                     }
                 }
             }
-            pos += (arrayEndPos - arrayStartPos + 1);
         }
 
         return NO_MATCH;
@@ -253,10 +252,10 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         final long[] bitmasks = info.getBitmasks();
 
         // Determine safe start and ends:
+        final int LAST_WORD_POS = WORD_LENGTH - 1;
         final int startPosition = fromPosition > 0 ? fromPosition : 0;
-        final int lastMatcherPosition = sequence.length() - 1;
-        final int toPositionEndPos = toPosition < Integer.MAX_VALUE - WORD_LENGTH? // avoid integer overflows.
-                                     toPosition + WORD_LENGTH : Integer.MAX_VALUE;
+        final int toPositionEndPos = toPosition < Integer.MAX_VALUE - LAST_WORD_POS? // avoid integer overflows.
+                                     toPosition + LAST_WORD_POS : Integer.MAX_VALUE;
         final int lastPossiblePosition = bytes.length - verifier.length(); // leave room for verifying rest of pattern.
         final int finalPosition = toPositionEndPos < lastPossiblePosition ? toPositionEndPos : lastPossiblePosition;
 
@@ -266,7 +265,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             state = (state << 1) | bitmasks[bytes[pos] & 0xFF];
             if (state < localLimit &&                                  // first part of sequence found using bit-parallelism.
                     verifier.matchesNoBoundsCheck(bytes, pos + 1)) {   // verify rest manually with a SequenceMatcher.
-                return pos - WORD_LENGTH + 1;
+                return pos - LAST_WORD_POS;
             }
         }
 
@@ -353,7 +352,6 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
                     }
                 }
             }
-            //pos--;
         }
 
         return NO_MATCH;
