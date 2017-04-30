@@ -1,0 +1,5 @@
+.idea
+*.iml
+target
+droidSig/*.iml
+droidSig/droidSig.iml
