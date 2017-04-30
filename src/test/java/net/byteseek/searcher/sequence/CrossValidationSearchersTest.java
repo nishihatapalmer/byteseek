@@ -57,7 +57,9 @@ import static org.junit.Assert.fail;
  */
 public class CrossValidationSearchersTest {
 
-    public static final int NUM_RANDOM_TESTS = 5000; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
+    private static int[] windowSizes = {4096, 4095, 4097, 128, 127, 15, 16, 17};
+
+    public static final int NUM_RANDOM_TESTS = 500; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
     Random random = new Random(0);
 
     private List<SequenceSearcher<SequenceMatcher>> searchers;
@@ -68,7 +70,6 @@ public class CrossValidationSearchersTest {
     };
 
     //TODO: extend to compile patterns involving byte classes rather than just simple strings.
-    //TODO: test with FileReaders of different window sizes to flush out window boundary issues.
 
     @Test
     public void testSearchByteArrayForwards() throws IOException {
@@ -169,13 +170,14 @@ public class CrossValidationSearchersTest {
     private void testReaderSearchers(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
         final List<SequenceSearcher<SequenceMatcher>> usedSearchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
-        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
-            usedSearchers.add(searcher);
-            addAllSearchPositionsFor(searcher, dataToSearch.getReader(), resultMap);
+        for (WindowReader reader: dataToSearch.getReaders()) {
+            for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+                usedSearchers.add(searcher);
+                addAllSearchPositionsFor(searcher, reader, resultMap);
+            }
+            findMismatches("reader forwards", usedSearchers, pattern, resultMap, dataToSearch);
         }
-        findMismatches("reader forwards", usedSearchers, pattern, resultMap, dataToSearch);
     }
-
 
     private void testSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
@@ -190,11 +192,13 @@ public class CrossValidationSearchersTest {
     private void testReaderSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
         final List<SequenceSearcher<SequenceMatcher>> usedSearchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
-        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
-            usedSearchers.add(searcher);
-            addAllBackwardsSearchPositionsFor(searcher, dataToSearch.getReader(), resultMap);
+        for (WindowReader reader: dataToSearch.getReaders()) {
+            for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+                usedSearchers.add(searcher);
+                addAllBackwardsSearchPositionsFor(searcher, reader, resultMap);
+            }
+            findMismatches("reader backwards", usedSearchers, pattern, resultMap, dataToSearch);
         }
-        findMismatches("reader backwards", usedSearchers, pattern, resultMap, dataToSearch);
     }
 
     private void addAllSearchPositionsFor(SequenceSearcher<SequenceMatcher> searcher,
@@ -438,6 +442,7 @@ public class CrossValidationSearchersTest {
         private  String[] patterns;
         private byte[] dataToSearch;
         private WindowReader reader;
+        private List<WindowReader> readers;
 
         public SearchData(String resourceName, String... patterns) {
             this.dataFile = resourceName;
@@ -455,11 +460,14 @@ public class CrossValidationSearchersTest {
             }
             return reader;
         }
-        public WindowReader getReader(int size) {
-            if (reader == null) {
-                reader = loadFileReader(dataFile);
+        public List<WindowReader> getReaders() {
+            if (readers == null) {
+                readers = new ArrayList<WindowReader>();
+                for (int size : windowSizes) {
+                    readers.add(loadFileReader(dataFile, size));
+                }
             }
-            return reader;
+            return readers;
         }
     }
 
@@ -479,6 +487,14 @@ public class CrossValidationSearchersTest {
     private WindowReader loadFileReader(String resourceName) {
         try {
             return new FileReader(getFile(resourceName));
+        } catch (IOException io) {
+            throw new RuntimeException("IO Exception occured reading file", io);
+        }
+    }
+
+    private WindowReader loadFileReader(String resourceName, int windowSize) {
+        try {
+            return new FileReader(getFile(resourceName), windowSize);
         } catch (IOException io) {
             throw new RuntimeException("IO Exception occured reading file", io);
         }
@@ -507,7 +523,5 @@ public class CrossValidationSearchersTest {
         URL url = this.getClass().getResource(resourceName);
         return new File(url.getPath());
     }
-
-
 
 }
