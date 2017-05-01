@@ -31,6 +31,7 @@
 package net.byteseek.io.reader;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.HardWindow;
@@ -78,6 +79,48 @@ public class ByteArrayReader extends AbstractReader {
 	}
 
 	/**
+	 * Constructs a ByteArrayReader from a {@link java.lang.String}, using the
+	 * platform default {@link java.nio.charset.Charset} to encode the bytes of
+	 * the String.
+	 *
+	 * @param string
+	 *            The String to read using the platform specific charset encoding.
+	 */
+	public ByteArrayReader(final String string) {
+		this(string, Charset.defaultCharset());
+	}
+
+	/**
+	 * Constructs a ByteArrayReader from a {@link java.lang.String}, using the
+	 * supplied {@link java.nio.charset.Charset} to encode the bytes of the
+	 * String.
+	 *
+	 * @param string
+	 *            The String to read
+	 * @param charsetName
+	 *            The name of the Charset to use when encoding the bytes of the String.
+	 * @throws java.nio.charset.UnsupportedCharsetException If the charset name is not supported.
+	 */
+	public ByteArrayReader(final String string, final String charsetName) {
+		this(string, Charset.forName(charsetName));
+	}
+
+	/**
+	 * Constructs a ByteArrayReader from a {@link java.lang.String}, using the
+	 * supplied {@link java.nio.charset.Charset} to encode the bytes of the
+	 * String.
+	 *
+	 * @param string The string to read from.
+	 * @param charset The charset to use to convert the string to bytes.
+	 */
+	public ByteArrayReader(final String string, final Charset charset) {
+		super(string == null ? 0 : string.length(), NoCache.NO_CACHE);
+		ArgUtils.checkNullString(string, "string");
+		ArgUtils.checkNullObject(charset, "charset");
+		bytes = string.getBytes(charset);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -108,7 +151,7 @@ public class ByteArrayReader extends AbstractReader {
 	
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[length:" + bytes.length + " cache:" + cache + ']';
+		return getClass().getSimpleName() + "[length:" + bytes.length + ']';
 	}
 
 }
