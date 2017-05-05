@@ -161,9 +161,7 @@ public class CrossValidationSearchersTest {
         searchers.add(new UnrolledHorspoolSearcher(sequence));
         searchers.add(new SignedHorspoolSearcher(sequence));
         searchers.add(new ShiftOrSearcher(sequence));
-        if (sequence.length > 3) {
-            searchers.add(new QgramFilter4Searcher(sequence));
-        }
+        searchers.add(new QgramFilter4Searcher(sequence));
     }
 
     private void testSearchers(byte[] pattern, SearchData dataToSearch) {
