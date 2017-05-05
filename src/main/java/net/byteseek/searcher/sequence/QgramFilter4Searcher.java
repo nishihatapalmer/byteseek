@@ -77,8 +77,6 @@ import net.byteseek.utils.factory.ObjectFactory;
  */
 
 //TODO: examine performance with large byte classes, grouped and separated.
-//TODO: extend to search less than qgram by using naive search (what's left when there's no qgrams).
-//      this will remove any limits on what can be searched for.
 
 public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
@@ -111,7 +109,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * A lazy object which can create the information needed to search.
      * An array of bitmasks is used to determine whether a particular q-gram appears in the pattern.
      */
-    private final LazyObject<int[]> searchInfo;
+    private final LazyObject<SearchInfo> searchInfo;
 
     /**
      * Constructs a searcher given a {@link SequenceMatcher}
@@ -135,7 +133,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         ArgUtils.checkNullObject(tableSize, "tableSize");
         SHIFT = tableSize.getShift();
         TABLE_SIZE = tableSize.getTableSize();
-        searchInfo = new DoubleCheckImmutableLazyObject<int[]>(new SearchInfoFactory());
+        searchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new SearchInfoFactory());
     }
 
     /**
@@ -222,7 +220,11 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final int[] BITMASKS    = searchInfo.get();
+        final SearchInfo info = searchInfo.get();
+        if (info.shortSearcher != null) {
+            return info.shortSearcher.searchSequenceForwards(bytes, fromPosition, toPosition);
+        }
+        final int[] BITMASKS    = info.BITMASKS;
         final int   MASK        = TABLE_SIZE - 1;
 
         // Determine safe shifts, starts and ends:
@@ -284,6 +286,14 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         return NO_MATCH;
     }
 
+    @Override
+    public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+        final SearchInfo info = searchInfo.get();
+        if (info.shortSearcher != null) {
+            return info.shortSearcher.searchSequenceForwards(reader, fromPosition, toPosition);
+        }
+        return super.searchSequenceForwards(reader, fromPosition, toPosition);
+    }
 
     @Override
     public long doSearchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
@@ -291,8 +301,8 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final int[] BITMASKS =  searchInfo.get();
-        final int   MASK     =  TABLE_SIZE - 1;
+        final int[] BITMASKS  = searchInfo.get().BITMASKS;
+        final int   MASK      = TABLE_SIZE - 1;
 
         // Initialise window search:
         final int PATTERN_LENGTH     = localSequence.length();
@@ -437,13 +447,18 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
         // Get local references to member fields which are repeatedly accessed:
         final SequenceMatcher localSequence = sequence;
+        final int PATTERN_LENGTH        = localSequence.length();
 
         // Get the pre-processed data needed to search:
-        final int[] BITMASKS    = searchInfo.get();
+        final SearchInfo info = searchInfo.get();
+        if (info.shortSearcher != null) {
+            return info.shortSearcher.searchSequenceBackwards(bytes, fromPosition, toPosition);
+        }
+
+        final int[] BITMASKS    = info.BITMASKS;
         final int   MASK        = TABLE_SIZE - 1;
 
         // Determine safe shifts, starts and ends:
-        final int PATTERN_LENGTH        = localSequence.length();
         final int PATTERN_MINUS_QLEN    = PATTERN_LENGTH - QLEN;
         final int LAST_QGRAM_START_POS  = (PATTERN_LENGTH & 0xFFFFFFFC) - QLEN; //TODO: make the intent of this clear.  unnecessary optimisation.
         final int SEARCH_SHIFT          = PATTERN_MINUS_QLEN + 1;
@@ -505,6 +520,14 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         return NO_MATCH;
     }
 
+    @Override
+    public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+        final SearchInfo info = searchInfo.get();
+        if (info.shortSearcher != null) {
+            return info.shortSearcher.searchSequenceBackwards(reader, fromPosition, toPosition);
+        }
+        return super.searchSequenceBackwards(reader, fromPosition, toPosition);
+    }
 
     @Override
     public long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
@@ -512,8 +535,8 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final int[] BITMASKS =  searchInfo.get();
-        final int   MASK     =  TABLE_SIZE - 1;
+        final int[] BITMASKS = searchInfo.get().BITMASKS;
+        final int   MASK     = TABLE_SIZE - 1;
 
         // Initialise window search:
         final int PATTERN_LENGTH     = localSequence.length();
@@ -653,10 +676,6 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     }
 
 
-
-
-
-
     /**
      * {@inheritDoc}
      */
@@ -757,11 +776,24 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
     //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
 
+    private final class SearchInfo {
+        public final int[] BITMASKS;
+        public final SequenceSearcher<SequenceMatcher> shortSearcher;
+        public SearchInfo(final int[] bitmasks) {
+            BITMASKS      = bitmasks;
+            shortSearcher = null;
+        }
+        public SearchInfo(final SequenceSearcher<SequenceMatcher> searcher) {
+            BITMASKS           = null;
+            this.shortSearcher = searcher;
+        }
+    }
+
     /**
      * A factory for the SearchInfo needed to search forwards.
      *
      */
-    private final class SearchInfoFactory implements ObjectFactory<int[]> {
+    private final class SearchInfoFactory implements ObjectFactory<SearchInfo> {
 
         private SearchInfoFactory() {
         }
@@ -773,10 +805,14 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
          * As soon as we see a qgram which is definitely not in the pattern, we can shift right past it.
          */
         @Override
-        public int[] create() {
+        public SearchInfo create() {
 
             // Initialise constants
             final int PATTERN_LENGTH = sequence.length();
+            if (PATTERN_LENGTH < QLEN) {
+                return new SearchInfo(new SequenceMatcherSearcher(sequence));
+            }
+
             final int MASK           = TABLE_SIZE - 1;
             final int[] BITMASKS     = new int[TABLE_SIZE];
 
@@ -842,7 +878,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
                     }
                 }
             }
-            return BITMASKS;
+            return new SearchInfo(BITMASKS);
         }
     }
 
