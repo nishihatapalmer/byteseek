@@ -57,7 +57,7 @@ import static org.junit.Assert.fail;
  */
 public class CrossValidationSearchersTest {
 
-    private static int[] windowSizes = {4096, 4095, 4097, 128, 127, 15, 16, 17};
+    private static int[] windowSizes = {4096, 4095, 4097, 128, 127, 15, 16};
 
     public static final int NUM_RANDOM_TESTS = 500; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
     Random random = new Random(0);
@@ -109,12 +109,16 @@ public class CrossValidationSearchersTest {
     public void testSearchReaderForwards() throws IOException {
         for (SearchData searchData : data) {
             // test defined patterns:
+            System.out.println("Running tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
                 testReaderSearchers(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
             for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+                if (randomTest % 50 == 0) {
+                    System.out.println("Running random test " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testReaderSearchers(pattern, searchData);
@@ -125,6 +129,8 @@ public class CrossValidationSearchersTest {
     @Test
     public void testSearchReaderBackwards() throws IOException {
         for (SearchData searchData : data) {
+            System.out.println("Running tests for " + searchData.dataFile);
+
             // test defined patterns:
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
@@ -132,6 +138,9 @@ public class CrossValidationSearchersTest {
             }
             // test randomly selected patterns:
             for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+                if (randomTest % 50 == 0) {
+                    System.out.println("Running random test " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testReaderSearchersBackwards(pattern, searchData);
@@ -153,7 +162,7 @@ public class CrossValidationSearchersTest {
         searchers.add(new SignedHorspoolSearcher(sequence));
         searchers.add(new ShiftOrSearcher(sequence));
         if (sequence.length > 3) {
-            //searchers.add(new QgramFilter4Searcher(sequence));
+            searchers.add(new QgramFilter4Searcher(sequence));
         }
     }
 
@@ -397,7 +406,7 @@ public class CrossValidationSearchersTest {
 
     private void debugFailedSearcher(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
         //debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
-        //debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
+        debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
     }
 
     private void debugFailedSearcherBytes(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
@@ -409,8 +418,8 @@ public class CrossValidationSearchersTest {
     private void debugFailedSearcherWindow(SequenceSearcher searcher, long failedAtPosition, String dataToSearch) {
         try {
             WindowReader reader = loadFileReader(dataToSearch);
-            searcher.searchSequenceForwards(reader);
-            //searcher.searchSequenceBackwards(reader, 102408);
+            //searcher.searchSequenceForwards(reader);
+            searcher.searchSequenceBackwards(reader, 102408);
         } catch (IOException ex) {
             fail("IO Exception when reading");
         }
