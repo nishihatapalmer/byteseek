@@ -129,12 +129,12 @@ public class ByteArrayReader implements WindowReader {
 
 	@Override
 	public Window getWindow(final long position) throws IOException {
-		return windowBytes;
+		return (position >= 0 && position < windowBytes.length())? windowBytes : null;
 	}
 
 	@Override
 	public int getWindowOffset(final long position) {
-		return (int) (position % (long) windowBytes.length());
+		return windowBytes.length() > 0? (int) (position % (long) windowBytes.length()) : 0;
 	}
 
 	/**
