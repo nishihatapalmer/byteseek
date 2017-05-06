@@ -44,8 +44,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
+ * General tests for all searchers.
+ *
  * Created by matt on 05/05/17.
  */
+
+//TODO: tests for byte classes, not just byte strings...
+
 public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
