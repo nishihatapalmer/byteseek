@@ -55,14 +55,12 @@ import static org.junit.Assert.fail;
  *
  * Created by matt on 03/05/16.
  */
-public class CrossValidationSearchersTest {
+public class CrossValidationSearchersTest extends SearchersToTest {
 
     private static int[] windowSizes = {4096, 4095, 4097, 128, 127, 15, 16};
 
     public static final int NUM_RANDOM_TESTS = 500; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
     Random random = new Random(0);
-
-    private List<SequenceSearcher<SequenceMatcher>> searchers;
 
     SearchData[] data = {
             new SearchData("/romeoandjuliet.txt", "to", "art", "thou", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
@@ -148,21 +146,6 @@ public class CrossValidationSearchersTest {
         }
     }
 
-
-    private void createSearchers(String sequence) {
-        createSearchers(sequence.getBytes());
-    }
-
-    private void createSearchers(byte[] sequence) {
-        searchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
-        searchers.add(new SequenceMatcherSearcher(sequence));
-        searchers.add(new SundayQuickSearcher(sequence));
-        searchers.add(new HorspoolSearcher(sequence));
-        searchers.add(new UnrolledHorspoolSearcher(sequence));
-        searchers.add(new SignedHorspoolSearcher(sequence));
-        searchers.add(new ShiftOrSearcher(sequence));
-        searchers.add(new QgramFilter4Searcher(sequence));
-    }
 
     private void testSearchers(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher<SequenceMatcher>>> resultMap = new HashMap<Long, List<SequenceSearcher<SequenceMatcher>>>();
