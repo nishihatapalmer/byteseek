@@ -35,9 +35,12 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -51,7 +54,8 @@ public class GeneralSearcherTests extends SearchersToTest {
         byte[] data = new byte[0];
         for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
             try {
-                searcher.searchSequenceForwards(data);
+                int result = searcher.searchSequenceForwards(data);
+                assertTrue("searcher " + searcher, result < 0);
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -65,7 +69,8 @@ public class GeneralSearcherTests extends SearchersToTest {
         byte[] data = new byte[0];
         for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
             try {
-                searcher.searchSequenceBackwards(data);
+                int result = searcher.searchSequenceBackwards(data);
+                assertTrue("searcher " + searcher, result < 0);
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -78,7 +83,8 @@ public class GeneralSearcherTests extends SearchersToTest {
         WindowReader data = new ByteArrayReader(new byte[0]);
         for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
             try {
-                searcher.searchSequenceForwards(data);
+                long result = searcher.searchSequenceForwards(data);
+                assertTrue("searcher " + searcher, result < 0);
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -92,10 +98,87 @@ public class GeneralSearcherTests extends SearchersToTest {
         WindowReader data = new ByteArrayReader(new byte[0]);
         for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
             try {
-                searcher.searchSequenceBackwards(data);
+                long result = searcher.searchSequenceBackwards(data);
+                assertTrue("searcher " + searcher, result < 0);
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex);
             }
+        }
+    }
+
+    @Test
+    public void testSearchBackwardsArrayAroundZero() {
+        createSearchers("xyz");
+        byte[] data = "xyz".getBytes();
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            int result = searcher.searchSequenceBackwards(data, -1);
+            assertTrue("searcher " + searcher, result < 0);
+            result = searcher.searchSequenceBackwards(data, 0);
+            assertEquals("searcher " + searcher, result, 0);
+        }
+    }
+
+    @Test
+    public void testSearchBackwardsReaderAroundZero() throws IOException {
+        createSearchers("xxx");
+        WindowReader data = new ByteArrayReader("xxx");
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            long result = searcher.searchSequenceBackwards(data, -1);
+            assertTrue("searcher " + searcher, result < 0);
+            result = searcher.searchSequenceBackwards(data, 0);
+            assertEquals("searcher " + searcher, result, 0);
+        }
+    }
+
+    @Test
+    public void testSearchFowardsArrayAroundZero() {
+        createSearchers("xyz");
+        byte[] data = "xyzzzzzz".getBytes();
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            int result = searcher.searchSequenceForwards(data, 1);
+            assertTrue("searcher " + searcher, result < 0);
+            result = searcher.searchSequenceForwards(data, 0);
+            assertEquals("searcher " + searcher, 0, result);
+        }
+    }
+
+    @Test
+    public void testSearchForwardsReaderAroundZero() throws IOException {
+        createSearchers("xxx");
+        WindowReader data = new ByteArrayReader("xxxyyy");
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            long result = searcher.searchSequenceForwards(data, 1);
+            assertTrue("searcher " + searcher, result < 0);
+            result = searcher.searchSequenceForwards(data, 0);
+            assertEquals("searcher " + searcher, 0, result);
+        }
+    }
+
+    @Test
+    public void testSearchFowardsArrayBeforeEnd() {
+        createSearchers("xyz");
+        byte[] data = "---xyz".getBytes();
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            int result = searcher.searchSequenceForwards(data, 0);
+            assertEquals("searcher " + searcher, 3, result);
+            result = searcher.searchSequenceForwards(data, 0, 2);
+            assertTrue("searcher " + searcher, result < 0);
+            result = searcher.searchSequenceForwards(data, 0, 3);
+            assertEquals("searcher " + searcher, 3, result);
+        }
+    }
+
+    @Test
+    public void testSearchForwardsReaderBeforeEnd() throws IOException {
+        createSearchers("xyz");
+        WindowReader data = new ByteArrayReader("---xyz");
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            long result = searcher.searchSequenceForwards(data, 0);
+            assertEquals("searcher " + searcher, 3, result);
+            result = searcher.searchSequenceForwards(data, 0, 2);
+            assertTrue("searcher " + searcher, result < 0);
+            result = searcher.searchSequenceForwards(data, 0, 3);
+            assertEquals("searcher " + searcher, 3, result);
         }
     }
 
