@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-17, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -32,8 +32,8 @@ package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 
-import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
@@ -46,9 +46,12 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public class ByteArrayReader extends AbstractReader {
 
-	private final byte[] bytes;
+public class ByteArrayReader implements WindowReader {
+
+	private static final int NO_BYTE_AT_POSITION = -1;
+
+	private final Window windowBytes;
 
 	/**
 	 * Constructs a ByteArrayReader from an array of bytes.
@@ -60,9 +63,8 @@ public class ByteArrayReader extends AbstractReader {
 	 *            The byte array to wrap in a reader interface.
 	 */
 	public ByteArrayReader(final byte[] bytes) {
-		super(bytes == null ? 0 : bytes.length, NoCache.NO_CACHE);
 		ArgUtils.checkNullObject(bytes, "bytes");
-		this.bytes = bytes;
+		this.windowBytes = new HardWindow(bytes, 0, bytes.length);
 	}
 
 	/**
@@ -74,8 +76,7 @@ public class ByteArrayReader extends AbstractReader {
 	 *            The byte value to wrap in a WindowReader interface.
 	 */
 	public ByteArrayReader(final byte byteValue) {
-		super(1, NoCache.NO_CACHE);
-		bytes = new byte[] { byteValue };
+		this.windowBytes = new HardWindow(new byte[] { byteValue }, 0, 1);
 	}
 
 	/**
@@ -114,18 +115,26 @@ public class ByteArrayReader extends AbstractReader {
 	 * @param charset The charset to use to convert the string to bytes.
 	 */
 	public ByteArrayReader(final String string, final Charset charset) {
-		super(string == null ? 0 : string.length(), NoCache.NO_CACHE);
 		ArgUtils.checkNullString(string, "string");
 		ArgUtils.checkNullObject(charset, "charset");
-		bytes = string.getBytes(charset);
+		final byte[] bytes = string.getBytes(charset);
+		this.windowBytes = new HardWindow(bytes, 0, bytes.length);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@Override
-	protected Window createWindow(final long windowStart) throws IOException {
-		return windowStart == 0? new HardWindow(bytes, 0, bytes.length) : null;
+	public int readByte(final long position) throws IOException {
+		return (position >= 0 && position < windowBytes.length())? windowBytes.getByte((int) position) : NO_BYTE_AT_POSITION;
+	}
+
+	@Override
+	public Window getWindow(final long position) throws IOException {
+		return windowBytes;
+	}
+
+	@Override
+	public int getWindowOffset(final long position) {
+		return (int) (position % (long) windowBytes.length());
 	}
 
 	/**
@@ -133,25 +142,22 @@ public class ByteArrayReader extends AbstractReader {
 	 */
 	@Override
 	public long length() throws IOException {
-		return bytes.length;
+		return windowBytes.length();
 	}
 
-	/**
-	 * Returns the byte array backing this ByteArrayReader.
-	 * <p>
-	 * While this exposes mutable state, the intention of this class is to wrap
-	 * a byte array in a WindowReader interface, not to protect the byte array wrapped
-	 * by it.
-	 * 
-	 * @return The byte array that this reader wraps.
-	 */
-	public byte[] getByteArray() {
-		return bytes;
-	}
-	
+
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[length:" + bytes.length + ']';
+		return getClass().getSimpleName() + "[length:" + windowBytes.length() + ']';
 	}
 
+	@Override
+	public void close() throws IOException {
+		// nothing to close.
+	}
+
+	@Override
+	public Iterator<Window> iterator() {
+		return new WindowIterator(this);
+	}
 }
