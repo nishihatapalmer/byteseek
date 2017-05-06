@@ -49,7 +49,7 @@ import net.byteseek.utils.ArgUtils;
  * <p>
  * It provides common Window and cache management services using a fixed Window
  * size, and a standard Window iterator
- * {@link net.byteseek.io.reader.AbstractReader.WindowIterator}.
+ * {@link net.byteseek.io.reader.WindowIterator}.
  * 
  * @author Matt Palmer
  */
@@ -200,7 +200,7 @@ public abstract class AbstractReader implements WindowReader {
 	 */
 	@Override
 	public Iterator<Window> iterator() {
-		return new WindowIterator();
+		return new WindowIterator(this);
 	}
 
 	/**
@@ -235,54 +235,5 @@ public abstract class AbstractReader implements WindowReader {
 	 *             valid Window.
 	 */
 	protected abstract Window createWindow(final long windowStart) throws IOException;
-
-	/**
-	 * An iterator of {@link Window}s over a {@link WindowReader}.
-	 */
-	private class WindowIterator implements Iterator<Window> {
-
-		private int position = 0;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public boolean hasNext() {
-			try {
-				return getWindow(position) != null;
-			} catch (final IOException ex) {
-				return false;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public Window next() {
-			try {
-				final Window window = getWindow(position);
-				if (window != null) {
-					position += (long) window.length();
-					return window;
-				}
-			} catch (final IOException throwNoSuchElementExceptionInstead) {
-			}
-			throw new NoSuchElementException();
-		}
-
-		/**
-		 * Always throws UnsupportedOperationException. It is not possible to
-		 * remove a Window from a WindowReader.
-		 * 
-		 * @throws UnsupportedOperationException
-		 *             Always throws this exception.
-		 */
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException(
-					"Cannot remove a window from a reader.");
-		}
-	}
 
 }
