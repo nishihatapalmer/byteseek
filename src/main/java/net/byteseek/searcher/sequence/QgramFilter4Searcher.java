@@ -227,7 +227,8 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null,
+     *                                  or the shift is less than 1 or greater than 6.
      */
     public QgramFilter4Searcher(final String sequence, final Charset charset, final int shift) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), shift);
