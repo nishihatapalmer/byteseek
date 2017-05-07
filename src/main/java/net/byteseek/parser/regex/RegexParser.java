@@ -423,10 +423,16 @@ public class RegexParser implements Parser<ParseTree> {
 		for (int charPos = 0; charPos < string.length(); charPos++) {
 			final char currentChar = string.charAt(charPos);
 			if (currentChar == encodeChar) { // a quote in the string - encode it as a byte value.
-				if (encodeOpen) regex.append(encodeChar); // close the open string.
+				if (encodeOpen) {
+					regex.append(encodeChar); // close the open string.
+					encodeOpen = false;
+				}
 				regex.append(hexValue);
 			} else {
-				if (!encodeOpen) regex.append(encodeChar);
+				if (!encodeOpen) {
+					regex.append(encodeChar);
+					encodeOpen = true;
+				}
 				regex.append(currentChar);
 			}
 		}
