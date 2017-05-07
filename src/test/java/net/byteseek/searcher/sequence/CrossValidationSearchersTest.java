@@ -68,9 +68,12 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     };
 
     //TODO: extend to compile patterns involving byte classes rather than just simple strings.
+    //      have case insensitive tests now, but still need more involved tests with more complex classes.
+
+    //TODO: cross validate reader results against array results (load entire file into a single array).
 
     @Test
-    public void testSearchByteArrayForwards() throws IOException {
+    public void testSearchByteArrayForwards() throws Exception {
         for (SearchData searchData : data) {
             // test defined patterns:
             for (String pattern : searchData.patterns) {
@@ -78,16 +81,19 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 testSearchers(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+            for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
+                testSearchers(pattern, searchData);
+
+                createCaseInsensitiveSearchers(pattern);
                 testSearchers(pattern, searchData);
             }
         }
     }
 
     @Test
-    public void testSearchByteArrayBackwards() throws IOException {
+    public void testSearchByteArrayBackwards() throws Exception {
         for (SearchData searchData : data) {
             // test defined patterns:
             for (String pattern : searchData.patterns) {
@@ -95,16 +101,19 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 testSearchersBackwards(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+            for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
+                testSearchersBackwards(pattern, searchData);
+
+                createCaseInsensitiveSearchers(pattern);
                 testSearchersBackwards(pattern, searchData);
             }
         }
     }
 
     @Test
-    public void testSearchReaderForwards() throws IOException {
+    public void testSearchReaderForwards() throws Exception {
         for (SearchData searchData : data) {
             // test defined patterns:
             System.out.println("Running tests for " + searchData.dataFile);
@@ -113,19 +122,22 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 testReaderSearchers(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+            for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 if (randomTest % 50 == 0) {
                     System.out.println("Running random test " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testReaderSearchers(pattern, searchData);
+
+                createCaseInsensitiveSearchers(pattern);
+                testReaderSearchers(pattern, searchData);
             }
         }
     }
 
     @Test
-    public void testSearchReaderBackwards() throws IOException {
+    public void testSearchReaderBackwards() throws Exception {
         for (SearchData searchData : data) {
             System.out.println("Running tests for " + searchData.dataFile);
 
@@ -135,12 +147,15 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 testReaderSearchersBackwards(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
-            for (int randomTest = 0; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+            for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 if (randomTest % 50 == 0) {
                     System.out.println("Running random test " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
+                testReaderSearchersBackwards(pattern, searchData);
+
+                createCaseInsensitiveSearchers(pattern);
                 testReaderSearchersBackwards(pattern, searchData);
             }
         }
@@ -462,9 +477,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private byte[] getRandomPattern(byte[] dataToSearch, int length) {
-        if (length < 2) {
-            length = 2; // can't have a length less than 2 for SignedSuffixSearcher.
-        }
+        length = length > 0? length : 1; // ensure we have at least a length of one.
         int position = random.nextInt(dataToSearch.length - length - 1);
         byte[] result = Arrays.copyOfRange(dataToSearch, position, position + length);
         return result;
