@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.Parser;
@@ -374,7 +375,67 @@ public class RegexParser implements Parser<ParseTree> {
 		WORD_CHAR_SET 		= buildSet(DIGITS_RANGE, LOWERCASE_RANGE, UPPERCASE_RANGE, UNDERSCORE);
 		NOT_WORD_CHAR_SET 	= buildInvertedSet(DIGITS_RANGE, LOWERCASE_RANGE, UPPERCASE_RANGE, UNDERSCORE);
 	}
-	
+
+
+	/**
+	 * Public static utility method to encode strings in byteseek regex format.
+	 * Single quotes within the string passed in will be encoded as 0x27, the ASCII byte value of the quote,
+	 * with the remaining parts of the string enclosed in single quotes.
+	 *
+	 * @param string  A string to encode as a byteseek regular expression string.
+	 * @return A string encoded as a byteseek regex expression.
+	 * @throws IllegalArgumentException if the string passed in is null.
+	 */
+
+	public static String encodeString(final String string) {
+ 		return encodeString(string, '\'', "27");
+	}
+
+
+	/**
+	 * Public static utility method to encode case insensitive strings in byteseek regex format.
+	 * Backticks within the string passed in will be encoded as 0x60, the ASCII byte value of the backtick,
+	 * with the remaining parts of the string encoded in backticks.
+	 *
+	 * @param string A string to encode as a byteseek regular expression case insensitive string.
+	 * @return A string encoded as a byteseek regular expression case insensitive string.
+	 * @throws IllegalArgumentException if the string passed in is null.
+	 */
+	public static String encodeCaseInsensitiveString(final String string) {
+		return encodeString(string, '`', "60");
+	}
+
+
+	/**
+	 * Encoding method which finds a "quote" character within a string, and encodes it as a hex
+	 * byte value, enclosing the rest of the string within the quote character.
+	 *
+	 * @param string     The string to encode.
+	 * @param encodeChar The "quote" character which needs encoding.
+	 * @param hexValue   The hex value of the quote character to replace with in the string.
+	 * @return           A string with the encodeChar replaced by its hex value, and the remaining string
+	 *                   enclosed by the quote char.
+	 */
+	private static String encodeString(final String string, final char encodeChar, final String hexValue) {
+		ArgUtils.checkNullString(string);
+		StringBuilder regex = new StringBuilder(string.length() + 8);
+		boolean encodeOpen = false;
+		for (int charPos = 0; charPos < string.length(); charPos++) {
+			final char currentChar = string.charAt(charPos);
+			if (currentChar == encodeChar) { // a quote in the string - encode it as a byte value.
+				if (encodeOpen) regex.append(encodeChar); // close the open string.
+				regex.append(hexValue);
+			} else {
+				if (!encodeOpen) regex.append(encodeChar);
+				regex.append(currentChar);
+			}
+		}
+		if (encodeOpen) regex.append(encodeChar);
+		return regex.toString();
+	}
+
+
+
 	/*
 	 * Public static utility methods to build common parse tree nodes.
 	 */
