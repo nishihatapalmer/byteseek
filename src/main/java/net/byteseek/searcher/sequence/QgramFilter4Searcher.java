@@ -182,7 +182,15 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
     /**
      * Constructs a searcher for the bytes contained in the sequence string,
-     * encoded using the platform default character set.
+     * encoded using the platform default character set, and the shift which determines the table size.
+     * <b>Shifts and table sizes</b>
+     * <p>Shift 1 = table size of 16 elements</p>
+     * <p>Shift 2 = table size of 256 elements</p>
+     * <p>Shift 3 = table size of 4096 elements</p>
+     * <p>SHift 4 = table size of 65536 elements</p>
+     * <p>Shift 5 = table size of 1048576 elements</p>
+     * <p>Shift 6 = table size of 16777216 elements</p>
+     * <p>For most purposes a shift of 2 or 3 will be sufficient.</p>
      *
      * @param sequence The string to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
@@ -206,7 +214,15 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
     /**
      * Constructs a searcher for the bytes contained in the sequence string,
-     * encoded using the charset provided.
+     * encoded using the charset provided, and the shift which determines the table size.
+     * <b>Shifts and table sizes</b>
+     * <p>Shift 1 = table size of 16 elements</p>
+     * <p>Shift 2 = table size of 256 elements</p>
+     * <p>Shift 3 = table size of 4096 elements</p>
+     * <p>SHift 4 = table size of 65536 elements</p>
+     * <p>Shift 5 = table size of 1048576 elements</p>
+     * <p>Shift 6 = table size of 16777216 elements</p>
+     * <p>For most purposes a shift of 2 or 3 will be sufficient.</p>
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
@@ -228,7 +244,16 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     }
 
     /**
-     * Constructs a searcher for the byte array provided.
+     * Constructs a searcher for the byte array provided and the shift which determines the table size.
+     *
+     * <b>Shifts and table sizes</b>
+     * <p>Shift 1 = table size of 16 elements</p>
+     * <p>Shift 2 = table size of 256 elements</p>
+     * <p>Shift 3 = table size of 4096 elements</p>
+     * <p>SHift 4 = table size of 65536 elements</p>
+     * <p>Shift 5 = table size of 1048576 elements</p>
+     * <p>Shift 6 = table size of 16777216 elements</p>
+     * <p>For most purposes a shift of 2 or 3 will be sufficient.</p>
      *
      * @param sequence The byte sequence to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
