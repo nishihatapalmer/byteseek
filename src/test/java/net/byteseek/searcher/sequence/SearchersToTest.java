@@ -30,8 +30,14 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.compiler.CompileException;
+import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.parser.regex.RegexParser;
+import org.junit.Test;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,14 +48,64 @@ import java.util.List;
  */
 public class SearchersToTest {
 
+    private final static SequenceMatcherCompiler compiler = new SequenceMatcherCompiler();
+    private final char CASE_TOKEN = '`';    // backtick. 0x60
+    private final String HEX_CASE = "60";
+    private final char STRING_TOKEN = '\''; // single quote. 0x27
+    private final String HEX_QUOTE = "27";
+
     public List<SequenceSearcher<SequenceMatcher>> searchers;
 
 
-    public void createSearchers(String sequence) {
-        createSearchers(sequence.getBytes());
+    /**
+     * Creates searchers for case insensitive versions of a string.
+     *
+     * Any backticks within the string itself (which are the open/close quote characters of
+     * a case insensitive string in byteseek regular expressions), are replaced by the hex
+     * value of the backtick, with the rest of the string as case insensitive.  This
+     * ensures that all strings passed in can be recognised, even if they contain the case
+     * insensitive quote char (backtick).
+     *
+     * @param sequence The string to search for case insensitively.
+     * @throws CompileException
+     */
+    public void createCaseInsensitiveSearchers(String sequence) throws CompileException {
+        final String encodedString = RegexParser.encodeCaseInsensitiveString(sequence);
+        createSearchers(compiler.compile(encodedString));
     }
 
+
+    public void createCaseInsensitiveSearchers(byte[] sequence) throws CompileException {
+        final String newString = new String(sequence, Charset.forName("ISO-8859-1"));
+        createCaseInsensitiveSearchers(newString);
+    }
+
+    /**
+     * Create searchers for the ASCII byte values of the string passed in.
+     *
+     * @param sequence the ASCII string to search for.
+     */
+    public void createSearchers(String sequence) {
+        createSearchers(new ByteSequenceMatcher(sequence.getBytes()));
+    }
+
+
+    /**
+     * Create searchers for the byte sequence passed in.
+     *
+     * @param sequence The byte sequence to search for.
+     */
     public void createSearchers(byte[] sequence) {
+        createSearchers(new ByteSequenceMatcher(sequence));
+    }
+
+
+    /**
+     * Instantiate the searchers we want to test with the sequence matcher passed in.
+     *
+     * @param sequence The sequence matcher to search for.
+     */
+    public void createSearchers(SequenceMatcher sequence) {
         searchers = new ArrayList<SequenceSearcher<SequenceMatcher>>();
         searchers.add(new SequenceMatcherSearcher(sequence));
         searchers.add(new SundayQuickSearcher(sequence));
