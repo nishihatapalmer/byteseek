@@ -72,13 +72,24 @@ import net.byteseek.utils.factory.ObjectFactory;
  * It is possible to rewrite this in a simpler way with a single main loop
  * (and no initial q-gram match test outside of the inner loop).
  * The unrolled method given here is how the algorithm is presented in the original paper.
+ * <p>
+ * The algorithm permits q-grams of different lengths to be used.  This implementation uses a q-gram of length 4.
+ * Note that if a pattern shorter than the qgram length of 4 is passed in, this algorithm cannot search for it,
+ * and a different algorithm (ShiftOr) will be substituted, which is generally fastest for short patterns.
+ * ShiftOr creates a table of 256 elements, which in almost all cases will be smaller, or no larger,
+ * than the table produced by the QgramFilter4Searcher. It also requires less pre-processing time on average.
  *
  * @author Matt Palmer
  */
 
 //TODO: examine performance with large byte classes, grouped and separated.
+//TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
 
 public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+
+    /*************
+     * Constants *
+     *************/
 
     /**
      * The length of q-grams processed by this searcher.
@@ -86,17 +97,19 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     private final static int QLEN = 4;
 
     /**
-     * The default table size for this searcher is 4096 elements.
-     * For most purposes this table size gives good results.  For very long patterns (e.g.
-     * in the thousands), or patterns which contain byte classes which match a lot of bytes,
-     * then a larger table size may be required.  Smaller table sizes can be efficient for
-     * very short simple patterns, however very short patterns are better served by different algorithms
-     * such as ShiftOr.  The Qgram filtering algorithm was specifically designed for longer patterns.
+     * The default bit shift used by the hash function.  The bitshift and the length of the qgram determine
+     * the table size used by the algorithm, with the formula TABLESIZE = 1 << (QLEN * BITSHIFT)
      */
-    private final static QF4TableSize DEFAULT_TABLE_SIZE = QF4TableSize.SIZE_4K;
+    private final static int DEFAULT_SHIFT = 3; // gives a table size of 4096 elements = 1 << (4 * 3)
+
+
+    /**********
+     * Fields *
+     **********/
 
     /**
      * The number of bits to shift when calculating the qgram hash.
+     * Along with the qgram length, this determines the size of the hash table needed.
      */
     private final int SHIFT;
 
@@ -106,10 +119,21 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     private final int TABLE_SIZE;
 
     /**
-     * A lazy object which can create the information needed to search.
-     * An array of bitmasks is used to determine whether a particular q-gram appears in the pattern.
+     * A lazy object which can create the information needed to search with a factory when required.
+     * An array of bitmasks is used to determine whether a particular q-gram does not appear in the pattern,
+     * similar to a bloom filter, but also including the alignment of the qgram in the pattern.
      */
-    private final LazyObject<SearchInfo> searchInfo;
+    private final LazyObject<int[]> searchInfo;
+
+    /**
+     * A replacement searcher for sequences whose length is less than the qgram length, which this searcher cannot search for.
+     */
+    private final SequenceSearcher<SequenceMatcher> shortSearcher;
+
+
+    /****************
+     * Constructors *
+     ****************/
 
     /**
      * Constructs a searcher given a {@link SequenceMatcher}
@@ -118,7 +142,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @param sequence The SequenceMatcher to search for.
      */
     public QgramFilter4Searcher(final SequenceMatcher sequence) {
-        this(sequence, DEFAULT_TABLE_SIZE);
+        this(sequence, DEFAULT_SHIFT);
     }
 
     /**
@@ -126,14 +150,23 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * to search for.
      *
      * @param sequence The SequenceMatcher to search for.
-     * @param tableSize The size to use for the bitmask filter table.
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 6.
      */
-    public QgramFilter4Searcher(final SequenceMatcher sequence, final QF4TableSize tableSize) {
+    public QgramFilter4Searcher(final SequenceMatcher sequence, final int shift) {
         super(sequence);
-        ArgUtils.checkNullObject(tableSize, "tableSize");
-        SHIFT = tableSize.getShift();
-        TABLE_SIZE = tableSize.getTableSize();
-        searchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new SearchInfoFactory());
+        ArgUtils.checkRangeInclusive(shift, 1, 6, "shift");
+        if (sequence.length() >= QLEN) {  // equal to or bigger than a qgram - search with this algorithm.
+            SHIFT         = shift;
+            TABLE_SIZE    = 1 << (shift * QLEN);
+            searchInfo    = new DoubleCheckImmutableLazyObject<int[]>(new SearchInfoFactory());
+            shortSearcher = null;
+        } else {                          // smaller than a qgram - use the shiftOr searcher.
+            SHIFT         = 0;
+            TABLE_SIZE    = 0;
+            searchInfo    = null;
+            shortSearcher = new ShiftOrSearcher(sequence);
+        }
     }
 
     /**
@@ -144,7 +177,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public QgramFilter4Searcher(final String sequence) {
-        this(sequence, Charset.defaultCharset(), DEFAULT_TABLE_SIZE);
+        this(sequence, Charset.defaultCharset(), DEFAULT_SHIFT);
     }
 
     /**
@@ -152,11 +185,11 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * encoded using the platform default character set.
      *
      * @param sequence The string to search for.
-     * @param tableSize The size to use for the bitmask filter table.
-     * @throws IllegalArgumentException if the sequence is null or empty.
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 6.
      */
-    public QgramFilter4Searcher(final String sequence, final QF4TableSize tableSize) {
-        this(sequence, Charset.defaultCharset(), tableSize);
+    public QgramFilter4Searcher(final String sequence, final int shift) {
+        this(sequence, Charset.defaultCharset(), shift);
     }
 
     /**
@@ -177,11 +210,11 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @param tableSize The size to use for the bitmask filter table.
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public QgramFilter4Searcher(final String sequence, final Charset charset, final QF4TableSize tableSize) {
-        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), tableSize);
+    public QgramFilter4Searcher(final String sequence, final Charset charset, final int shift) {
+        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), shift);
     }
 
     /**
@@ -191,40 +224,40 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public QgramFilter4Searcher(final byte[] sequence) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_TABLE_SIZE);
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_SHIFT);
     }
 
     /**
      * Constructs a searcher for the byte array provided.
      *
      * @param sequence The byte sequence to search for.
-     * @param tableSize The size to use for the bitmask filter table.
-     * @throws IllegalArgumentException if the sequence is null or empty.
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public QgramFilter4Searcher(final byte[] sequence, final QF4TableSize tableSize) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence), tableSize);
+    public QgramFilter4Searcher(final byte[] sequence, final int shift) {
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), shift);
     }
 
-    @Override
-    protected int getSequenceLength() {
-        return sequence.length();
-    }
 
+     /******************
+     * Search Methods *
+     ******************/
 
     /**
      * {@inheritDoc}
      */
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        // If we need to use the short searcher (sequence smaller than a qgram), use it instead:
+        if (shortSearcher != null) {
+            return shortSearcher.searchSequenceForwards(bytes, fromPosition, toPosition);
+        }
+
         // Get local references to member fields which are repeatedly accessed:
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info = searchInfo.get();
-        if (info.shortSearcher != null) {
-            return info.shortSearcher.searchSequenceForwards(bytes, fromPosition, toPosition);
-        }
-        final int[] BITMASKS    = info.BITMASKS;
+        final int[] BITMASKS    = searchInfo.get();
         final int   MASK        = TABLE_SIZE - 1;
 
         // Determine safe shifts, starts and ends:
@@ -288,9 +321,8 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
     @Override
     public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final SearchInfo info = searchInfo.get();
-        if (info.shortSearcher != null) {
-            return info.shortSearcher.searchSequenceForwards(reader, fromPosition, toPosition);
+        if (shortSearcher != null) {
+            return shortSearcher.searchSequenceForwards(reader, fromPosition, toPosition);
         }
         return super.searchSequenceForwards(reader, fromPosition, toPosition);
     }
@@ -301,7 +333,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final int[] BITMASKS  = searchInfo.get().BITMASKS;
+        final int[] BITMASKS  = searchInfo.get();
         final int   MASK      = TABLE_SIZE - 1;
 
         // Initialise window search:
@@ -444,18 +476,17 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      */
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+        // If we need to use the short searcher (sequence smaller than a qgram), use it instead:
+        if (shortSearcher != null) {
+            return shortSearcher.searchSequenceBackwards(bytes, fromPosition, toPosition);
+        }
 
         // Get local references to member fields which are repeatedly accessed:
         final SequenceMatcher localSequence = sequence;
         final int PATTERN_LENGTH        = localSequence.length();
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info = searchInfo.get();
-        if (info.shortSearcher != null) {
-            return info.shortSearcher.searchSequenceBackwards(bytes, fromPosition, toPosition);
-        }
-
-        final int[] BITMASKS    = info.BITMASKS;
+        final int[] BITMASKS    = searchInfo.get();
         final int   MASK        = TABLE_SIZE - 1;
 
         // Determine safe shifts, starts and ends:
@@ -522,9 +553,8 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
 
     @Override
     public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final SearchInfo info = searchInfo.get();
-        if (info.shortSearcher != null) {
-            return info.shortSearcher.searchSequenceBackwards(reader, fromPosition, toPosition);
+        if (shortSearcher != null) {
+            return shortSearcher.searchSequenceBackwards(reader, fromPosition, toPosition);
         }
         return super.searchSequenceBackwards(reader, fromPosition, toPosition);
     }
@@ -535,7 +565,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final int[] BITMASKS = searchInfo.get().BITMASKS;
+        final int[] BITMASKS = searchInfo.get();
         final int   MASK     = TABLE_SIZE - 1;
 
         // Initialise window search:
@@ -694,109 +724,24 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     }
 
 
+    //TODO: table size, not bitshit.
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[bitshift:" + SHIFT + " sequence:" + sequence + ']';
     }
 
 
-    /**
-     * An enumeration of the valid table sizes for the QF4 Searcher, and the bit shift associated with each.
-     * If not specified in the constructor, defaults to a shift of 3, which gives a table size of 4K.
-     * The table size refers to the number of elements in the array, not the total memory size of it in bytes,
-     * which depends on how the JRE implements those structures on different architectures.
-     */
-    public enum QF4TableSize {
-
-        //TODO: validate performance assertions in javadoc.
-        //TODO: calculate table load for different common string / byte class arrangements to predict
-        //      performance (validate against actual tests).
-
-        /**
-         * A single element table, giving incredibly poor performance - but using almost no additional memory.
-         * If a pattern is long with many byte classes such that it swamps all larger feasible tables, then it may make
-         * sense to pick this, since the larger table will contain essentially no more information, but will take a
-         * lot more space.  However, there are probably other algorithms which would perform better in this circumstance,
-         * e.g. ShiftOR.
-         */
-        SIZE_1(0),
-
-        /**
-         * A very small table of only 16 elements, whose performance is poor even for short patterns.
-         * There are few circumstances where this would be an appropriate choice.
-         */
-        SIZE_16(1),
-
-        /**
-         * A small table of 256 elements, which should perform reasonably for short patterns with very small or no byte classes.
-         */
-        SIZE_256(2),
-
-        /**
-         * A good sized table of 4096 elements, giving excellent performance even for long patterns (e.g. 2000), or for
-         * shorter patterns containing some byte classes.
-         */
-        SIZE_4K(3),
-
-        /**
-         * A large table of 65536 elements. //TODO: how does this perform?
-         */
-        SIZE_64K(4),
-
-        /**
-         * A very large table of about a million elements.  //TODO: how does this perform?
-         */
-        SIZE_1M(5),
-
-        /**
-         * An extremely large table of roughly 16 million elements. //TODO: how does this perform?  should we even keep it?
-         */
-        SIZE_16M(6),
-
-        /**
-         * A huge table of 256 million elements.  This could easily take a gigabyte of memory or more
-         * to just store the table.  //TODO: how does this perform?  should we even keep it?
-         */
-        SIZE_256M(7);
-
-        private final int shift;
-
-        QF4TableSize(final int shift) {
-            this.shift = shift;
-        }
-
-        public int getTableSize() {
-            return 1 << (QLEN * shift);
-        }
-
-        public int getShift() {
-            return shift;
-        }
+    @Override
+    protected int getSequenceLength() {
+        return sequence.length();
     }
 
-    //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
-
-    private final class SearchInfo {
-        public final int[] BITMASKS;
-        public final SequenceSearcher<SequenceMatcher> shortSearcher;
-        public SearchInfo(final int[] bitmasks) {
-            BITMASKS      = bitmasks;
-            shortSearcher = null;
-        }
-        public SearchInfo(final SequenceSearcher<SequenceMatcher> searcher) {
-            BITMASKS           = null;
-            this.shortSearcher = searcher;
-        }
-    }
 
     /**
      * A factory for the SearchInfo needed to search forwards.
      *
      */
-    private final class SearchInfoFactory implements ObjectFactory<SearchInfo> {
-
-        private SearchInfoFactory() {
-        }
+    private final class SearchInfoFactory implements ObjectFactory<int[]> {
 
         /**
          * Calculates the bitmask table which tells us if a particular qgram in the text does not appear in the pattern.
@@ -805,14 +750,10 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
          * As soon as we see a qgram which is definitely not in the pattern, we can shift right past it.
          */
         @Override
-        public SearchInfo create() {
+        public int[] create() {
 
             // Initialise constants
             final int PATTERN_LENGTH = sequence.length();
-            if (PATTERN_LENGTH < QLEN) {
-                return new SearchInfo(new SequenceMatcherSearcher(sequence));
-            }
-
             final int MASK           = TABLE_SIZE - 1;
             final int[] BITMASKS     = new int[TABLE_SIZE];
 
@@ -878,9 +819,10 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
                     }
                 }
             }
-            return new SearchInfo(BITMASKS);
+            return BITMASKS;
         }
     }
+
 
     private long getNumPermutations(final byte[] values1, final byte[] values2, final byte[] values3, final byte[] values4) {
         return values1.length * values2.length * values3.length * values4.length;
