@@ -807,7 +807,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
                         }
                         haveLastHashValue = false; // after processing the permutations, we don't have a single last hash value.
                     } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
-                        final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes3, bytes2, bytes1, bytes0);
+                        final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2, bytes3);
                         while (qGramPermutations.hasNext()) {
                             final byte [] permutationValue = qGramPermutations.next();
                             lastHash =                        (permutationValue[0] & 0xFF);
