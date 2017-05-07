@@ -53,6 +53,8 @@ import static org.junit.Assert.fail;
 
 public class GeneralSearcherTests extends SearchersToTest {
 
+    // Tests for searching empty data:
+
     @Test
     public void testSearchForwardsEmptyByteArray() {
         createSearchers("x");
@@ -111,6 +113,68 @@ public class GeneralSearcherTests extends SearchersToTest {
         }
     }
 
+    // Tests where pattern is longer than the data.
+
+    @Test
+    public void testSearchForwardsShortByteArray() {
+        createSearchers("xyz123abc");
+        byte[] data = new byte[2];
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            try {
+                int result = searcher.searchSequenceForwards(data);
+                assertTrue("searcher " + searcher, result < 0);
+            } catch (Exception ex) {
+                fail("Searcher " + searcher + " had exception " + ex.getCause());
+            }
+        }
+    }
+
+
+    @Test
+    public void testSearchBackwardsShortByteArray() {
+        createSearchers("xyz123abc");
+        byte[] data = new byte[2];
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            try {
+                int result = searcher.searchSequenceBackwards(data);
+                assertTrue("searcher " + searcher, result < 0);
+            } catch (Exception ex) {
+                fail("Searcher " + searcher + " had exception " + ex.getCause());
+            }
+        }
+    }
+
+    @Test
+    public void testSearchForwardsShortReader() {
+        createSearchers("xyz123abc");
+        WindowReader data = new ByteArrayReader(new byte[2]);
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            try {
+                long result = searcher.searchSequenceForwards(data);
+                assertTrue("searcher " + searcher, result < 0);
+            } catch (Exception ex) {
+                fail("Searcher " + searcher + " had exception " + ex.getCause());
+            }
+        }
+    }
+
+
+    @Test
+    public void testSearchBackwardsShortReader() {
+        createSearchers("xyz123abc");
+        WindowReader data = new ByteArrayReader(new byte[2]);
+        for (SequenceSearcher<SequenceMatcher> searcher : searchers) {
+            try {
+                long result = searcher.searchSequenceBackwards(data);
+                assertTrue("searcher " + searcher, result < 0);
+            } catch (Exception ex) {
+                fail("Searcher " + searcher + " had exception " + ex);
+            }
+        }
+    }
+
+    // Boundary tests around the start of data.
+
     @Test
     public void testSearchBackwardsArrayAroundZero() {
         createSearchers("xyz");
@@ -159,6 +223,8 @@ public class GeneralSearcherTests extends SearchersToTest {
         }
     }
 
+    // Boundary tests at the end of data.
+
     @Test
     public void testSearchFowardsArrayBeforeEnd() {
         createSearchers("xyz");
@@ -186,5 +252,12 @@ public class GeneralSearcherTests extends SearchersToTest {
             assertEquals("searcher " + searcher, 3, result);
         }
     }
+
+    //TODO: need backwards end tests...?
+
+
+    //TODO: Boundary tests for not matching a pattern whichi is one past or before the search starts/ends (in middle of data).
+
+
 
 }
