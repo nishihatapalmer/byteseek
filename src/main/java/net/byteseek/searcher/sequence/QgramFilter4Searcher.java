@@ -793,7 +793,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
             // if number of qgrams = table size * 4, that is same as all available positions for all 4 bits.
             // Collisions will reduce this, but it's a starting point for a place where the table starts to become
             // fairly useless.
-            final int QGRAM_LIMIT    = TABLE_SIZE * 4;
+            final int QGRAM_LIMIT    = TABLE_SIZE * QLEN;
 
             // Set initial processing states
             int lastHash = 0;
