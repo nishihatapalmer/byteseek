@@ -683,15 +683,12 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
                          arrayPos <= ARRAY_SEARCH_END;  //TODO: <= or <?
                          pos += QLEN, arrayPos += QLEN) {
 
-                        try {
-                            // Get the hash for the q-gram in the text aligned with the next position back:
-                            qGramHash = (array[arrayPos + 3] & 0xFF);
-                            qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
-                            qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
-                            qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            int i = 0;
-                        }
+                        // Get the hash for the q-gram in the text aligned with the next position back:
+                        qGramHash = (array[arrayPos + 3] & 0xFF);
+                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
+                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
+                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
+
 
                         // If there is no match to the q-gram (in the same phase as the current q-gram match), shift past it.
                         qGramMatch &= BITMASKS[qGramHash & MASK];
