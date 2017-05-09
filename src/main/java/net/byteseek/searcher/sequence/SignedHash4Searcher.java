@@ -343,7 +343,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                                      (int) DISTANCE_TO_END + arrayPos : arrayEndPos;
 
             // Deal with qgrams crossing over back into previous window:
-            while (arrayPos < LAST_CROSS_POS) {
+            while (arrayPos <= LAST_CROSS_POS) {
 
                 // Calculate hash:
                 int hash =                        reader.readByte(searchPos - 3);
@@ -366,14 +366,19 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                 }
             }
 
+            // Check we aren't past the search end.
+            if (searchPos > SEARCH_END) {
+                return NO_MATCH;
+            }
+
             // Search forwards if there is still anything to search in this array:
             while (arrayPos <= LAST_ARRAY_POS) {
 
                 // Calculate hash:
-                int hash =                        (array[arrayPos - 3] & 0xFF);
-                hash     = (hash << localshift) + (array[arrayPos - 2] & 0xFF);
-                hash     = (hash << localshift) + (array[arrayPos - 1] & 0xFF);
-                hash     = (hash << localshift) + (array[arrayPos    ]  & 0xFF);
+                int hash = (array[arrayPos - 3] & 0xFF);
+                hash = (hash << localshift) + (array[arrayPos - 2] & 0xFF);
+                hash = (hash << localshift) + (array[arrayPos - 1] & 0xFF);
+                hash = (hash << localshift) + (array[arrayPos] & 0xFF);
 
                 // Get shift and either shift forwards, or verify then shift
                 final int shift = SHIFTS[hash & MASK];
