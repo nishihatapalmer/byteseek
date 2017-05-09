@@ -336,49 +336,26 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
 
             // Calculate array search end positions:
             final long DISTANCE_TO_END   = SEARCH_END - searchPos;
-            final int LAST_CROSS_POS     = DISTANCE_TO_END < LAST_QGRAM_POS?
-                                     (int) DISTANCE_TO_END : LAST_QGRAM_POS;
             final int REMAINING_IN_ARRAY = arrayEndPos - arrayPos;
             final int LAST_ARRAY_POS     = DISTANCE_TO_END < REMAINING_IN_ARRAY?
                                      (int) DISTANCE_TO_END + arrayPos : arrayEndPos;
-
-            // Deal with qgrams crossing over back into previous window:
-            while (arrayPos <= LAST_CROSS_POS) {
-
-                // Calculate hash:
-                int hash =                        reader.readByte(searchPos - 3);
-                hash     = (hash << localshift) + reader.readByte(searchPos - 2);
-                hash     = (hash << localshift) + reader.readByte(searchPos - 1);
-                hash     = (hash << localshift) + (array[arrayPos] & 0xFF);
-
-                // Get shift and either shift forwards, or verify then shift
-                final int shift = SHIFTS[hash & MASK];
-                if (shift > 0) {
-                    arrayPos  += shift;
-                    searchPos += shift;
-                } else {
-                    final long matchPos = searchPos - LAST_PATTERN_POS;
-                    if (localSequence.matches(reader, matchPos)) {
-                        return matchPos;
-                    }
-                    arrayPos  -= shift;
-                    searchPos -= shift;
-                }
-            }
-
-            // Check we aren't past the search end.
-            if (searchPos > SEARCH_END) {
-                return NO_MATCH;
-            }
 
             // Search forwards if there is still anything to search in this array:
             while (arrayPos <= LAST_ARRAY_POS) {
 
                 // Calculate hash:
-                int hash = (array[arrayPos - 3] & 0xFF);
-                hash = (hash << localshift) + (array[arrayPos - 2] & 0xFF);
-                hash = (hash << localshift) + (array[arrayPos - 1] & 0xFF);
-                hash = (hash << localshift) + (array[arrayPos] & 0xFF);
+                int hash;
+                if (arrayPos <= LAST_QGRAM_POS) {
+                    hash =                            reader.readByte(searchPos - 3);
+                    hash     = (hash << localshift) + reader.readByte(searchPos - 2);
+                    hash     = (hash << localshift) + reader.readByte(searchPos - 1);
+                    hash     = (hash << localshift) + (array[arrayPos] & 0xFF);
+                } else {
+                    hash =                        (array[arrayPos - 3] & 0xFF);
+                    hash = (hash << localshift) + (array[arrayPos - 2] & 0xFF);
+                    hash = (hash << localshift) + (array[arrayPos - 1] & 0xFF);
+                    hash = (hash << localshift) + (array[arrayPos] & 0xFF);
+                }
 
                 // Get shift and either shift forwards, or verify then shift
                 final int shift = SHIFTS[hash & MASK];
@@ -410,7 +387,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
         final int             localshift    = SHIFT;
 
         // Get the pre-processed data needed to search:
-        final int[] SHIFTS = forwardSearchInfo.get();
+        final int[] SHIFTS = backwardSearchInfo.get();
         final int   MASK   = TABLE_SIZE - 1;
 
         // Determine safe shifts, starts and ends:
@@ -709,7 +686,6 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                     }
                 }
             }
-
             return SHIFTS;
         }
     }
@@ -746,15 +722,15 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             int lastHash = 0;
             boolean haveLastHashValue = false;
             byte[] bytes0;
-            byte[] bytes1 = sequence.getMatcherForPosition(0).getMatchingBytes();
-            byte[] bytes2 = sequence.getMatcherForPosition(1).getMatchingBytes();
-            byte[] bytes3 = sequence.getMatcherForPosition(2).getMatchingBytes();
+            byte[] bytes1 = sequence.getMatcherForPosition(LAST_PATTERN_POS    ).getMatchingBytes();
+            byte[] bytes2 = sequence.getMatcherForPosition(LAST_PATTERN_POS - 1).getMatchingBytes();
+            byte[] bytes3 = sequence.getMatcherForPosition(LAST_PATTERN_POS - 2).getMatchingBytes();
 
-            // Process all the qgrams in the pattern from the start to one before the end of the pattern.
-            for (int qGramEnd = 3; qGramEnd < LAST_PATTERN_POS; qGramEnd++) {
+            // Process all the qgrams in the pattern from the end to one after the start of the pattern.
+            for (int qGramEnd = LAST_PATTERN_POS - 3; qGramEnd > 0; qGramEnd--) {
 
                 // Calcluate shift for qgrams at this position:
-                final int CURRENT_SHIFT = LAST_PATTERN_POS - qGramEnd;
+                final int CURRENT_SHIFT = qGramEnd; // TODO: check calculation for backwards match.
 
                 // Get the byte arrays for the qGram at the current qGramStart:
                 bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                    // shift byte arrays along one.
@@ -802,8 +778,8 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             // Make shifts for the last qgrams in the pattern negative:
 
             // Get byte arrays for last q-gram:
-            bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                            // shift byte arrays along one.
-            bytes3 = sequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
+            bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;             // shift byte arrays along one.
+            bytes3 = sequence.getMatcherForPosition(0).getMatchingBytes(); // get first byte array.
 
             // Ensure number of permutations aren't excessive:
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
@@ -847,7 +823,6 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                     }
                 }
             }
-
             return SHIFTS;
         }
     }
