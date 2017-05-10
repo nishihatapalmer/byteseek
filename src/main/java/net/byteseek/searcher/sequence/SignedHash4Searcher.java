@@ -427,7 +427,6 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                                     : shortSearcher.searchSequenceBackwards(reader, fromPosition, toPosition);
     }
 
-    //TODO: finish - this is just a copy of the forward search right now.
     @Override
     protected long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         // Get local copies of member fields
@@ -435,69 +434,58 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
         final int             localshift    = SHIFT;
 
         // Get the pre-processed data needed to search:
-        final int[] SHIFTS = forwardSearchInfo.get();
+        final int[] SHIFTS = backwardSearchInfo.get();
         final int   MASK   = TABLE_SIZE - 1;
 
         // Determine safe shifts, starts and ends:
-        final int LAST_PATTERN_POS = localSequence.length() - 1;
-        final int LAST_QGRAM_POS   = QLEN - 1;
-        final long SEARCH_END      = toPosition + LAST_PATTERN_POS;
-        long searchPos             = (fromPosition > 0?
-                                      fromPosition : 0) + LAST_PATTERN_POS;
+        final long SEARCH_START = fromPosition; // TODO: withinLength?  needed for doSearchBackwards?
+        final long SEARCH_END   = toPosition > 0?
+                                  toPosition : 0;
+
         // Search forwards:
         Window window;
+        long searchPos = SEARCH_START;
         while (searchPos >= SEARCH_END && (window = reader.getWindow(searchPos)) != null) {
 
             // Get window array info:
-            final byte[] array       = window.getArray();
-            final int    arrayEndPos = window.length() - 1;
-            int          arrayPos    = reader.getWindowOffset(searchPos);
+            final byte[] array               = window.getArray();
+            final int    WINDOW_LENGTH       = window.length();
 
-            // Deal with qgram crossing over back into previous window:
-            while (arrayPos < LAST_QGRAM_POS) { // TODO: crosses into next window, not previous window.
+            // Calculate safe starts and ends:
+            final int    CROSSOVER_QGRAM_POS = WINDOW_LENGTH - QLEN + 1;
+            final long DISTANCE_TO_END       = SEARCH_END - window.getWindowPosition();
+            final int  LAST_ARRAY_POS        = DISTANCE_TO_END > 0?
+                                         (int) DISTANCE_TO_END : 0;
+
+            // Search backwards if there is still anything to search in this array:
+            int arrayPos = reader.getWindowOffset(searchPos);
+            while (arrayPos >= LAST_ARRAY_POS) {
 
                 // Calculate hash:
-                int hash =                        reader.readByte(searchPos - 3);
-                hash     = (hash << localshift) + reader.readByte(searchPos - 2);
-                hash     = (hash << localshift) + reader.readByte(searchPos - 1);
-                hash     = (hash << localshift) + (array[arrayPos] & 0xFF);
-
-                // Get shift and either shift forwards, or verify then shift
-                final int shift = SHIFTS[hash & MASK];
-                if (shift > 0) {
-                    arrayPos  += shift;
-                    searchPos += shift;
+                int hash;
+                if (arrayPos >= CROSSOVER_QGRAM_POS) { // crosses over into next window?
+                    hash =                            reader.readByte(searchPos + 3);
+                    hash     = (hash << localshift) + reader.readByte(searchPos + 2);
+                    hash     = (hash << localshift) + reader.readByte(searchPos + 1);
+                    hash     = (hash << localshift) + (array[arrayPos] & 0xFF);
                 } else {
-                    final long matchPos = searchPos - LAST_PATTERN_POS;
-                    if (localSequence.matches(reader, matchPos)) {
-                        return matchPos;
-                    }
-                    arrayPos  -= shift;
-                    searchPos -= shift;
+                    hash =                        (array[arrayPos + 3] & 0xFF);
+                    hash = (hash << localshift) + (array[arrayPos + 2] & 0xFF);
+                    hash = (hash << localshift) + (array[arrayPos + 1] & 0xFF);
+                    hash = (hash << localshift) + (array[arrayPos] & 0xFF);
                 }
-            }
-
-            // Search forwards if there is still anything to search in this array:
-            while (arrayPos <= arrayEndPos) {
-
-                // Calculate hash:
-                int hash =                        (array[arrayPos - 3] & 0xFF);
-                hash     = (hash << localshift) + (array[arrayPos - 2] & 0xFF);
-                hash     = (hash << localshift) + (array[arrayPos - 1] & 0xFF);
-                hash     = (hash << localshift) + (array[arrayPos    ]  & 0xFF);
 
                 // Get shift and either shift forwards, or verify then shift
                 final int shift = SHIFTS[hash & MASK];
                 if (shift > 0) {
-                    arrayPos  += shift;
-                    searchPos += shift;
-                } else {
-                    final long matchPos = searchPos - LAST_PATTERN_POS;
-                    if (localSequence.matches(reader, matchPos)) {
-                        return matchPos;
-                    }
                     arrayPos  -= shift;
                     searchPos -= shift;
+                } else {
+                    if (localSequence.matches(reader, searchPos)) {
+                        return searchPos;
+                    }
+                    arrayPos  += shift;
+                    searchPos += shift;
                 }
             }
         }
