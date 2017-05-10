@@ -578,7 +578,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             byte[] bytes3 = sequence.getMatcherForPosition(2).getMatchingBytes();
 
             // Process all the qgrams in the pattern from the start to one before the end of the pattern.
-            for (int qGramEnd = 3; qGramEnd < LAST_PATTERN_POS; qGramEnd++) {
+            for (int qGramEnd = QLEN - 1; qGramEnd < LAST_PATTERN_POS; qGramEnd++) {
 
                 // Calcluate shift for qgrams at this position:
                 final int CURRENT_SHIFT = LAST_PATTERN_POS - qGramEnd;
@@ -715,7 +715,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             byte[] bytes3 = sequence.getMatcherForPosition(LAST_PATTERN_POS - 2).getMatchingBytes();
 
             // Process all the qgrams in the pattern from the end to one after the start of the pattern.
-            for (int qGramEnd = LAST_PATTERN_POS - 3; qGramEnd > 0; qGramEnd--) {
+            for (int qGramEnd = PATTERN_LENGTH - QLEN; qGramEnd > 0; qGramEnd--) {
 
                 // Calcluate shift for qgrams at this position:
                 final int CURRENT_SHIFT = qGramEnd; // TODO: check calculation for backwards match.
