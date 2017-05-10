@@ -97,11 +97,15 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     private final static int QLEN = 4;
 
     /**
-     * The default bit shift used by the hash function.  The bitshift and the length of the qgram determine
-     * the table size used by the algorithm, with the formula TABLESIZE = 1 << (QLEN * BITSHIFT)
+     * The maximum bitshift supported by this algorithm.
      */
-    private final static int DEFAULT_SHIFT = 3; // gives a table size of 4096 elements = 1 << (4 * 3)
+    private final static int MAX_SHIFT = 6; // the maximum shift supported by this algorithm.
 
+
+    /**
+     * The maximum number of qgrams the algorithm can process.
+     */
+    private final static int MAX_QGRAMS = (3 << (MAX_SHIFT * QLEN));
 
     /**********
      * Fields *
@@ -131,6 +135,112 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     private final SequenceSearcher<SequenceMatcher> shortSearcher;
 
 
+    /*********************************
+     * Public static utility methods *
+     *********************************/
+
+    /**
+     * Recommends a shift value which will give good performance for this algorithm given a SequenceMatcher.
+     * If there is no good shift for the pattern given, zero is returned, which indicates that the algorithm will
+     * use the replacement searcher already defined for short patterns (the ShiftOR searcher).
+     *
+     * @param sequence The SequenceMatcher to recommend a shift for.
+     * @return A shift value which should give reasonable performance for that matcher, or
+     *         zero which indicates that the replacement searcher will be used instead.
+     * @throws IllegalArgumentException if the sequence is null.
+     */
+    public static int recommendShift(final SequenceMatcher sequence) {
+        ArgUtils.checkNullObject(sequence, "sequence");
+        final int length = sequence.length();
+        if (length < QLEN) { // replacement sequence searcher will be used instead.
+            return 0;
+        }
+        return recommendShift(calculateTotalQgrams(sequence));
+    }
+
+    /**
+     * Recommends a shift value which will give good performance for this algorithm given a String.
+     * If there is no good shift for the pattern given, zero is returned, which indicates that the algorithm will
+     * use the replacement searcher already defined for short patterns (the ShiftOR searcher).
+     *
+     * @param sequence The String to recommend a shift for.
+     * @return A shift value which should give reasonable performance for that String, or
+     *         zero which indicates that the replacement searcher will be used instead.
+     * @throws IllegalArgumentException if the string is null or empty.
+     */
+    public static int recommendShift(final String sequence) {
+        ArgUtils.checkNullOrEmptyString(sequence, "sequence");
+        final int length = sequence.length();
+        if (length < QLEN) { // replacement sequence searcher will be used instead.
+            return 0;
+        }
+        return recommendShift(length - QLEN + 1);
+    }
+
+    /**
+     * Recommends a shift value which will give good performance for this algorithm given a byte array.
+     * If there is no good shift for the pattern given, zero is returned, which indicates that the algorithm will
+     * use the replacement searcher already defined for short patterns (the ShiftOR searcher).
+     *
+     * @param sequence The byte array to recommend a shift for.
+     * @return A shift value which should give reasonable performance for that byte array, or
+     *         zero which indicates that the replacement searcher will be used instead.
+     * @throws IllegalArgumentException if the byte array is null or empty.
+     */
+    public static int recommendShift(final byte[] sequence) {
+        ArgUtils.checkNullOrEmptyByteArray(sequence, "sequence");
+        final int length = sequence.length;
+        if (length < QLEN) { // replacement sequence searcher will be used instead.
+            return 0;
+        }
+        return recommendShift(length - QLEN + 1);
+    }
+
+    /**
+     * Recommends a shift value for a number of qgrams which will give good performance.
+     * Returns zero if there is no good shift value which indicates that the replacement searcher will be
+     * used instead.
+     *
+     * @param numQgrams The number of qgrams to be processed.
+     * @return A shift value which will give good performance for the algorithm, or zero if there is no good shift value.
+     */
+    public static int recommendShift(final int numQgrams) {
+        if (numQgrams < 1 || numQgrams > MAX_QGRAMS) {
+            return 0;
+        }
+        // Full table size = numQgrams / 4 (since we have QLEN=4 bit positions at each table position)
+        // We will target a table which is no more than 50% full to get good performance. //TODO: validate by profiling.
+        final int halfFullTable = numQgrams >>> 1; // divide num qgrams by 2.
+        for (int shift = 1; shift <= MAX_SHIFT; shift++) {
+            final int tablesize = (1 << (shift * QLEN));
+            if (tablesize >= halfFullTable) {
+                return shift;
+            }
+        }
+        return 0; // did not find a good shift value - return zero instead.
+    }
+
+    /**
+     * Calculates the total number of qgrams in a SequenceMatcher.
+     *
+     * @param matcher The SequenceMatcher to calculate the total number of qgrams for.
+     * @return The total number of qgrams in the sequence matcher.
+     */
+    public static int calculateTotalQgrams(final SequenceMatcher matcher) {
+        int totalQgrams = 0;
+        int qgram0;
+        int qgram1 = matcher.getNumBytesAtPosition(0);
+        int qgram2 = matcher.getNumBytesAtPosition(1);
+        int qgram3 = matcher.getNumBytesAtPosition(2);
+        final int length = matcher.length();
+        for (int qGramEnd = QLEN - 1; qGramEnd < length; qGramEnd++) {
+            qgram0 = qgram1; qgram1 = qgram2; qgram2 = qgram3;
+            qgram3 = matcher.getNumBytesAtPosition(qGramEnd);
+            totalQgrams += (qgram0 * qgram1 * qgram2 * qgram3);
+        }
+        return totalQgrams;
+    }
+
     /****************
      * Constructors *
      ****************/
@@ -142,13 +252,14 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @param sequence The SequenceMatcher to search for.
      */
     public QgramFilter4Searcher(final SequenceMatcher sequence) {
-        this(sequence, DEFAULT_SHIFT);
+        this(sequence, recommendShift(sequence));
     }
 
     /**
      * Constructs a searcher given a {@link SequenceMatcher} to search for, and the shift which determines
      * the table size used by the searcher.
      * <b>Shifts and table sizes</b>
+     * <p>Shift 0 = use replacement searcher instead (ShiftOr)</p>
      * <p>Shift 1 = table size of 16 elements</p>
      * <p>Shift 2 = table size of 256 elements</p>
      * <p>Shift 3 = table size of 4096 elements</p>
@@ -159,12 +270,12 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * *
      * @param sequence The SequenceMatcher to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 6.
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 6.
      */
     public QgramFilter4Searcher(final SequenceMatcher sequence, final int shift) {
         super(sequence);
-        ArgUtils.checkRangeInclusive(shift, 1, 6, "shift");
-        if (sequence.length() >= QLEN) {  // equal to or bigger than a qgram - search with this algorithm.
+        ArgUtils.checkRangeInclusive(shift, 0, MAX_SHIFT, "shift");
+        if (sequence.length() >= QLEN && shift > 0) {  // equal to or bigger than a qgram, and shift is valid.
             SHIFT         = shift;
             TABLE_SIZE    = 1 << (shift * QLEN);
             searchInfo    = new DoubleCheckImmutableLazyObject<int[]>(new SearchInfoFactory());
@@ -185,13 +296,14 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public QgramFilter4Searcher(final String sequence) {
-        this(sequence, Charset.defaultCharset(), DEFAULT_SHIFT);
+        this(sequence, Charset.defaultCharset(), recommendShift(sequence));
     }
 
     /**
      * Constructs a searcher for the bytes contained in the sequence string,
      * encoded using the platform default character set, and the shift which determines the table size.
      * <b>Shifts and table sizes</b>
+     * <p>Shift 0 = use replacement searcher instead (ShiftOr)</p>
      * <p>Shift 1 = table size of 16 elements</p>
      * <p>Shift 2 = table size of 256 elements</p>
      * <p>Shift 3 = table size of 4096 elements</p>
@@ -202,7 +314,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      *
      * @param sequence The string to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 6.
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 6.
      */
     public QgramFilter4Searcher(final String sequence, final int shift) {
         this(sequence, Charset.defaultCharset(), shift);
@@ -224,6 +336,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * Constructs a searcher for the bytes contained in the sequence string,
      * encoded using the charset provided, and the shift which determines the table size.
      * <b>Shifts and table sizes</b>
+     * <p>Shift 0 = use replacement searcher instead (ShiftOr)</p>
      * <p>Shift 1 = table size of 16 elements</p>
      * <p>Shift 2 = table size of 256 elements</p>
      * <p>Shift 3 = table size of 4096 elements</p>
@@ -236,7 +349,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @param charset The charset to encode the string in.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null,
-     *                                  or the shift is less than 1 or greater than 6.
+     *                                  or the shift is less than 0 or greater than 6.
      */
     public QgramFilter4Searcher(final String sequence, final Charset charset, final int shift) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), shift);
@@ -249,13 +362,14 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public QgramFilter4Searcher(final byte[] sequence) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_SHIFT);
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), recommendShift(sequence));
     }
 
     /**
      * Constructs a searcher for the byte array provided and the shift which determines the table size.
      *
      * <b>Shifts and table sizes</b>
+     * <p>Shift 0 = use replacement searcher instead (ShiftOr)</p>
      * <p>Shift 1 = table size of 16 elements</p>
      * <p>Shift 2 = table size of 256 elements</p>
      * <p>Shift 3 = table size of 4096 elements</p>
@@ -266,7 +380,8 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      *
      * @param sequence The byte sequence to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, the shift is less than
+     *                                  zero or greater than 6.
      */
     public QgramFilter4Searcher(final byte[] sequence, final int shift) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), shift);
