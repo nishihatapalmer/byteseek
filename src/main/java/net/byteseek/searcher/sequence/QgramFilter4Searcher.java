@@ -753,10 +753,9 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     }
 
 
-    //TODO: table size, not bitshit.
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[bitshift:" + SHIFT + " sequence:" + sequence + ']';
+        return getClass().getSimpleName() + "[tablesize:" + TABLE_SIZE + " sequence:" + sequence + ']';
     }
 
 
