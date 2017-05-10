@@ -207,9 +207,9 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
         if (numQgrams < 1 || numQgrams > MAX_QGRAMS) {
             return 0;
         }
-        // Full table size = numQgrams / 4 (since we have QLEN=4 bit positions at each table position)
+        // Full table size = numQgrams / 3 (since we have QLEN=3 bit positions at each table position)
         // We will target a table which is no more than 50% full to get good performance. //TODO: validate by profiling.
-        final int halfFullTable = numQgrams >>> 1; // divide num qgrams by 2.
+        final int halfFullTable = (numQgrams / 3) * 2;
         for (int shift = 1; shift <= MAX_SHIFT; shift++) {
             final int tablesize = (1 << (shift * QLEN));
             if (tablesize >= halfFullTable) {
@@ -267,7 +267,8 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 6 = table size of 262144 elements</p>
      * <p>Shift 7 = table size of 2097152 elements</p>
      * <p>Shift 8 = table size of 16777216 elements</p>
-     * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     * <p>For most purposes a shift of 3 or 4 will be sufficient.
+     *    Note that each table element contains 3 bit positions, so the effective storage is 3 * table size.</p>
      *
      * @param sequence The SequenceMatcher to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
@@ -314,6 +315,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 7 = table size of 2097152 elements</p>
      * <p>Shift 8 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     *    Note that each table element contains 3 bit positions, so the effective storage is 3 * table size.</p>
      *
      * @param sequence The string to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
@@ -348,8 +350,8 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 6 = table size of 262144 elements</p>
      * <p>Shift 7 = table size of 2097152 elements</p>
      * <p>Shift 8 = table size of 16777216 elements</p>
-
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     *    Note that each table element contains 3 bit positions, so the effective storage is 3 * table size.</p>
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
@@ -385,6 +387,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 7 = table size of 2097152 elements</p>
      * <p>Shift 8 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     *    Note that each table element contains 3 bit positions, so the effective storage is 3 * table size.</p>
      *
      * @param sequence The byte sequence to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
