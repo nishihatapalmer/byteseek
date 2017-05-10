@@ -81,7 +81,7 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      * The default bit shift used by the hash function.  The bitshift and the length of the qgram determine
      * the table size used by the algorithm, with the formula TABLESIZE = 1 << (QLEN * BITSHIFT)
      */
-    private final static int DEFAULT_SHIFT = 4;
+    private final static int DEFAULT_SHIFT = 6;
 
 
     /**********
@@ -138,7 +138,7 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>Shift 8 = table size of 65536 elements</p>
      * <p>Shift 9 = table size of 262144 elements</p>
      * <p>Shift 10 = table size of 1048576 elements</p>
-     * <p>For most purposes a shift of 4, 5 or 6will be sufficient.</p>
+     * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The SequenceMatcher to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)

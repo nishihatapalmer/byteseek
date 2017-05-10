@@ -81,7 +81,7 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * The default bit shift used by the hash function.  The bitshift and the length of the qgram determine
      * the table size used by the algorithm, with the formula TABLESIZE = 1 << (QLEN * BITSHIFT)
      */
-    private final static int DEFAULT_SHIFT = 3;
+    private final static int DEFAULT_SHIFT = 4;
 
 
     /**********
@@ -134,15 +134,17 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>SHift 4 = table size of 4096 elements</p>
      * <p>Shift 5 = table size of 32768 elements</p>
      * <p>Shift 6 = table size of 262144 elements</p>
+     * <p>Shift 7 = table size of 2097152 elements</p>
+     * <p>Shift 8 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
      *
      * @param sequence The SequenceMatcher to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 6.
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 8.
      */
     public SignedHash3Searcher(final SequenceMatcher sequence, final int shift) {
         super(sequence);
-        ArgUtils.checkRangeInclusive(shift, 1, 6, "shift");
+        ArgUtils.checkRangeInclusive(shift, 1, 8, "shift");
         if (sequence.length() >= QLEN) { // equal or bigger to qgram length - searchable by this algorithm
             SHIFT              = shift;
             TABLE_SIZE         = 1 << (shift * QLEN);
@@ -178,11 +180,13 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>SHift 4 = table size of 4096 elements</p>
      * <p>Shift 5 = table size of 32768 elements</p>
      * <p>Shift 6 = table size of 262144 elements</p>
+     * <p>Shift 7 = table size of 2097152 elements</p>
+     * <p>Shift 8 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
      *
      * @param sequence The string to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 6.
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 8.
      */
     public SignedHash3Searcher(final String sequence, final int shift) {
         this(sequence, Charset.defaultCharset(), shift);
@@ -210,12 +214,15 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>SHift 4 = table size of 4096 elements</p>
      * <p>Shift 5 = table size of 32768 elements</p>
      * <p>Shift 6 = table size of 262144 elements</p>
+     * <p>Shift 7 = table size of 2097152 elements</p>
+     * <p>Shift 8 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, the shift is less than
+     *                                  one or greater than 8.
      */
     public SignedHash3Searcher(final String sequence, final Charset charset, final int shift) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), shift);
@@ -240,11 +247,14 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>SHift 4 = table size of 4096 elements</p>
      * <p>Shift 5 = table size of 32768 elements</p>
      * <p>Shift 6 = table size of 262144 elements</p>
+     * <p>Shift 7 = table size of 2097152 elements</p>
+     * <p>Shift 8 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
      *
      * @param sequence The byte sequence to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, the shift is
+     *                                  less than one or greater than 8.
      */
     public SignedHash3Searcher(final byte[] sequence, final int shift) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), shift);

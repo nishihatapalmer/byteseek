@@ -73,7 +73,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  * (and no initial q-gram match test outside of the inner loop).
  * The unrolled method given here is how the algorithm is presented in the original paper.
  * <p>
- * The algorithm permits q-grams of different lengths to be used.  This implementation uses a q-gram of length 3.
+ * The algorithm permits q-grams of different lengths to be used.  This implementation uses a q-gram of length 2.
  * Note that if a pattern shorter than the qgram length of 4 is passed in, this algorithm cannot search for it,
  * and a different algorithm (ShiftOr) will be substituted, which is generally fastest for short patterns.
  * ShiftOr creates a table of 256 elements, which in almost all cases will be smaller, or no larger,
@@ -85,7 +85,7 @@ import net.byteseek.utils.factory.ObjectFactory;
 //TODO: examine performance with large byte classes, grouped and separated.
 //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
 
-public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
     /*************
      * Constants *
@@ -94,13 +94,13 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
     /**
      * The length of q-grams processed by this searcher.
      */
-    private final static int QLEN = 3;
+    private final static int QLEN = 2;
 
     /**
      * The default bit shift used by the hash function.  The bitshift and the length of the qgram determine
      * the table size used by the algorithm, with the formula TABLESIZE = 1 << (QLEN * BITSHIFT)
      */
-    private final static int DEFAULT_SHIFT = 4; // gives a table size of 4096 elements = 1 << (3 * 4)
+    private final static int DEFAULT_SHIFT = 6; // gives a table size of 4096 elements = 1 << (2 * 6)
 
 
     /**********
@@ -141,7 +141,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      *
      * @param sequence The SequenceMatcher to search for.
      */
-    public QgramFilter3Searcher(final SequenceMatcher sequence) {
+    public QgramFilter2Searcher(final SequenceMatcher sequence) {
         this(sequence, DEFAULT_SHIFT);
     }
 
@@ -149,23 +149,25 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * Constructs a searcher given a {@link SequenceMatcher} to search for, and the shift which determines
      * the table size used by the searcher.
      * <b>Shifts and table sizes</b>
-     * <p>Shift 1 = table size of 8 elements</p>
-     * <p>Shift 2 = table size of 64 elements</p>
-     * <p>Shift 3 = table size of 512 elements</p>
-     * <p>SHift 4 = table size of 4096 elements</p>
-     * <p>Shift 5 = table size of 32768 elements</p>
-     * <p>Shift 6 = table size of 262144 elements</p>
-     * <p>Shift 7 = table size of 2097152 elements</p>
-     * <p>Shift 8 = table size of 16777216 elements</p>
-     * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     * <p>Shift 1 = table size of 2 elements</p>
+     * <p>Shift 2 = table size of 16 elements</p>
+     * <p>Shift 3 = table size of 64 elements</p>
+     * <p>SHift 4 = table size of 256 elements</p>
+     * <p>Shift 5 = table size of 1024 elements</p>
+     * <p>Shift 6 = table size of 4096 elements</p>
+     * <p>Shift 7 = table size of 16384 elements</p>
+     * <p>Shift 8 = table size of 65536 elements</p>
+     * <p>Shift 9 = table size of 262144 elements</p>
+     * <p>Shift 10 = table size of 1048576 elements</p>
+     * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The SequenceMatcher to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 8.
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 10.
      */
-    public QgramFilter3Searcher(final SequenceMatcher sequence, final int shift) {
+    public QgramFilter2Searcher(final SequenceMatcher sequence, final int shift) {
         super(sequence);
-        ArgUtils.checkRangeInclusive(shift, 1, 8, "shift");
+        ArgUtils.checkRangeInclusive(shift, 1, 10, "shift");
         if (sequence.length() >= QLEN) {  // equal to or bigger than a qgram - search with this algorithm.
             SHIFT         = shift;
             TABLE_SIZE    = 1 << (shift * QLEN);
@@ -186,7 +188,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * @param sequence The string to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public QgramFilter3Searcher(final String sequence) {
+    public QgramFilter2Searcher(final String sequence) {
         this(sequence, Charset.defaultCharset(), DEFAULT_SHIFT);
     }
 
@@ -194,21 +196,23 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * Constructs a searcher for the bytes contained in the sequence string,
      * encoded using the platform default character set, and the shift which determines the table size.
      * <b>Shifts and table sizes</b>
-     * <p>Shift 1 = table size of 8 elements</p>
-     * <p>Shift 2 = table size of 64 elements</p>
-     * <p>Shift 3 = table size of 512 elements</p>
-     * <p>SHift 4 = table size of 4096 elements</p>
-     * <p>Shift 5 = table size of 32768 elements</p>
-     * <p>Shift 6 = table size of 262144 elements</p>
-     * <p>Shift 7 = table size of 2097152 elements</p>
-     * <p>Shift 8 = table size of 16777216 elements</p>
-     * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     * <p>Shift 1 = table size of 2 elements</p>
+     * <p>Shift 2 = table size of 16 elements</p>
+     * <p>Shift 3 = table size of 64 elements</p>
+     * <p>SHift 4 = table size of 256 elements</p>
+     * <p>Shift 5 = table size of 1024 elements</p>
+     * <p>Shift 6 = table size of 4096 elements</p>
+     * <p>Shift 7 = table size of 16384 elements</p>
+     * <p>Shift 8 = table size of 65536 elements</p>
+     * <p>Shift 9 = table size of 262144 elements</p>
+     * <p>Shift 10 = table size of 1048576 elements</p>
+     * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The string to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 8.
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 10.
      */
-    public QgramFilter3Searcher(final String sequence, final int shift) {
+    public QgramFilter2Searcher(final String sequence, final int shift) {
         this(sequence, Charset.defaultCharset(), shift);
     }
 
@@ -220,7 +224,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * @param charset The charset to encode the string in.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public QgramFilter3Searcher(final String sequence, final Charset charset) {
+    public QgramFilter2Searcher(final String sequence, final Charset charset) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
     }
 
@@ -228,24 +232,25 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * Constructs a searcher for the bytes contained in the sequence string,
      * encoded using the charset provided, and the shift which determines the table size.
      * <b>Shifts and table sizes</b>
-     * <p>Shift 1 = table size of 8 elements</p>
-     * <p>Shift 2 = table size of 64 elements</p>
-     * <p>Shift 3 = table size of 512 elements</p>
-     * <p>SHift 4 = table size of 4096 elements</p>
-     * <p>Shift 5 = table size of 32768 elements</p>
-     * <p>Shift 6 = table size of 262144 elements</p>
-     * <p>Shift 7 = table size of 2097152 elements</p>
-     * <p>Shift 8 = table size of 16777216 elements</p>
-
-     * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     * <p>Shift 1 = table size of 2 elements</p>
+     * <p>Shift 2 = table size of 16 elements</p>
+     * <p>Shift 3 = table size of 64 elements</p>
+     * <p>SHift 4 = table size of 256 elements</p>
+     * <p>Shift 5 = table size of 1024 elements</p>
+     * <p>Shift 6 = table size of 4096 elements</p>
+     * <p>Shift 7 = table size of 16384 elements</p>
+     * <p>Shift 8 = table size of 65536 elements</p>
+     * <p>Shift 9 = table size of 262144 elements</p>
+     * <p>Shift 10 = table size of 1048576 elements</p>
+     * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null,
-     *                                  or the shift is less than 1 or greater than 8.
+     *                                  or the shift is less than 1 or greater than 10.
      */
-    public QgramFilter3Searcher(final String sequence, final Charset charset, final int shift) {
+    public QgramFilter2Searcher(final String sequence, final Charset charset, final int shift) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), shift);
     }
 
@@ -255,7 +260,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * @param sequence The byte sequence to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public QgramFilter3Searcher(final byte[] sequence) {
+    public QgramFilter2Searcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_SHIFT);
     }
 
@@ -263,22 +268,24 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      * Constructs a searcher for the byte array provided and the shift which determines the table size.
      *
      * <b>Shifts and table sizes</b>
-     * <p>Shift 1 = table size of 8 elements</p>
-     * <p>Shift 2 = table size of 64 elements</p>
-     * <p>Shift 3 = table size of 512 elements</p>
-     * <p>SHift 4 = table size of 4096 elements</p>
-     * <p>Shift 5 = table size of 32768 elements</p>
-     * <p>Shift 6 = table size of 262144 elements</p>
-     * <p>Shift 7 = table size of 2097152 elements</p>
-     * <p>Shift 8 = table size of 16777216 elements</p>
-     * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
+     * <p>Shift 1 = table size of 2 elements</p>
+     * <p>Shift 2 = table size of 16 elements</p>
+     * <p>Shift 3 = table size of 64 elements</p>
+     * <p>SHift 4 = table size of 256 elements</p>
+     * <p>Shift 5 = table size of 1024 elements</p>
+     * <p>Shift 6 = table size of 4096 elements</p>
+     * <p>Shift 7 = table size of 16384 elements</p>
+     * <p>Shift 8 = table size of 65536 elements</p>
+     * <p>Shift 9 = table size of 262144 elements</p>
+     * <p>Shift 10 = table size of 1048576 elements</p>
+     * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The byte sequence to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, the shift is less than
-     *                                  one or greater than 8.
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
+     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, or the shift
+     *                                  is less than one or greater than 10.
      */
-    public QgramFilter3Searcher(final byte[] sequence, final int shift) {
+    public QgramFilter2Searcher(final byte[] sequence, final int shift) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), shift);
     }
 
@@ -320,8 +327,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
         for (int pos = SEARCH_START; pos <= SEARCH_END; pos += SEARCH_SHIFT) {
 
             // Get the hash for the q-gram in the text aligned with the end of the pattern:
-            int qGramHash =                        (bytes[pos + 2] & 0xFF);
-            qGramHash     = (qGramHash << SHIFT) + (bytes[pos + 1] & 0xFF);
+            int qGramHash =                        (bytes[pos + 1] & 0xFF);
             qGramHash     = (qGramHash << SHIFT) + (bytes[pos]     & 0xFF);
 
             // If there is any match to this q-gram in the pattern continue checking, otherwise shift past it.
@@ -334,8 +340,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
                 for (pos -= QLEN; pos >= FIRST_QGRAM_END_POS; pos -= QLEN) {
 
                     // Get the hash for the q-gram in the text aligned with the next position back:
-                    qGramHash =                        (bytes[pos + 2] & 0xFF);
-                    qGramHash = (qGramHash << SHIFT) + (bytes[pos + 1] & 0xFF);
+                    qGramHash =                        (bytes[pos + 1] & 0xFF);
                     qGramHash = (qGramHash << SHIFT) + (bytes[pos]     & 0xFF);
 
                     // If there is no match to the q-gram (in the same phase as the current q-gram match), shift past it.
@@ -347,7 +352,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
                 // Verify whether we have an actual match in any of the qgram start positions,
                 // without going past the last position a match can occur at.
                 final int LAST_VERIFY_POS = FIRST_QGRAM_END_POS < LAST_MATCH_POS?
-                        FIRST_QGRAM_END_POS : LAST_MATCH_POS;
+                                            FIRST_QGRAM_END_POS : LAST_MATCH_POS;
                 for (int matchPos = PATTERN_START_POS; matchPos <= LAST_VERIFY_POS; matchPos++) {
                     if (localSequence.matchesNoBoundsCheck(bytes, matchPos)) {
                         return matchPos;
@@ -383,7 +388,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
         final int PATTERN_MINUS_QLEN = PATTERN_LENGTH - QLEN;
         final int SEARCH_SHIFT       = PATTERN_MINUS_QLEN + 1;
         final long SEARCH_START      = (fromPosition > 0?
-                fromPosition : 0) + PATTERN_MINUS_QLEN;
+                                        fromPosition : 0) + PATTERN_MINUS_QLEN;
         final long TO_END_POS        = toPosition + PATTERN_MINUS_QLEN;
 
         // Search forwards.
@@ -398,29 +403,15 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
             final int LAST_WINDOW_POS = window.length() - 1;
 
             int arrayPos = reader.getWindowOffset(pos);
-            int qGramHash;
 
             // calculate qgram hash, possibly crossing window boundaries if the pos is at the end of a window already.
-            switch (LAST_WINDOW_POS - arrayPos) {
-                case 0 : { // two hash bytes lie in the next window:
-                    if ((qGramHash = reader.readByte(pos + 2)) < 0) {
-                        return NO_MATCH; // no window at this furthest position
-                    }
-                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 1));
-                    break;
+            int qGramHash;
+            if (LAST_WINDOW_POS - arrayPos == 0) { // one hash bytes lie in the next window:
+                if ((qGramHash = reader.readByte(pos + 1)) < 0) {
+                    return NO_MATCH; // no window at this furthest position
                 }
-                case 1 : { // one hash byte lies in the next window:
-                    if ((qGramHash = reader.readByte(pos + 2)) < 0) {
-                        return NO_MATCH; // no window at this furthest position
-                    }
-                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
-                    break;
-                }
-                default: { // all bytes of qgram are in this window:
-                    qGramHash =                        (array[arrayPos + 2] & 0xFF);
-                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
-                    break;
-                }
+            } else { // all bytes of qgram are in this window:
+                qGramHash = (array[arrayPos + 1] & 0xFF);
             }
 
             // first byte of qgram is always within the current window (position we originally obtained):
@@ -450,8 +441,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
                         // Get the hash for the q-gram in the text aligned with the next position back:
                         // No hashes here can cross a window boundary since the array search goes back to zero
                         // (or the end of the search), and we already dealt with a potential cross in the first hash.
-                        qGramHash = (array[arrayPos + 2] & 0xFF);
-                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
+                        qGramHash = (array[arrayPos + 1] & 0xFF);
                         qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
 
                         // If there is no match to the q-gram (in the same phase as the current q-gram match), shift past it.
@@ -472,8 +462,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
 
                         // Check for a qgram which crosses into next window:
                         if (window.length() - arrayPos < QLEN) { // qgram crosses into next window:
-                            qGramHash =                         reader.readByte(pos + 2);
-                            qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 1));
+                            qGramHash =                         reader.readByte(pos + 1);
                             qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
                             qGramMatch &= BITMASKS[qGramHash & MASK];
                             if (qGramMatch == 0) break MATCH;
@@ -531,8 +520,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
         for (int pos = SEARCH_START; pos >= SEARCH_END; pos -= SEARCH_SHIFT) {
 
             // Get the hash for the q-gram in the text aligned with the end of the pattern:
-            int qGramHash =                        (bytes[pos + 2] & 0xFF);
-            qGramHash     = (qGramHash << SHIFT) + (bytes[pos + 1] & 0xFF);
+            int qGramHash =                        (bytes[pos + 1] & 0xFF);
             qGramHash     = (qGramHash << SHIFT) + (bytes[pos]     & 0xFF);
 
             // If there is any match to this q-gram in the pattern continue checking, otherwise shift past it.
@@ -548,8 +536,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
                 for (pos += QLEN; pos <= LAST_PATTERN_SEARCH_POS; pos += QLEN) {
 
                     // Get the hash for the q-gram in the text aligned with the next position back:
-                    qGramHash =                        (bytes[pos + 2] & 0xFF);
-                    qGramHash = (qGramHash << SHIFT) + (bytes[pos + 1] & 0xFF);
+                    qGramHash =                        (bytes[pos + 1] & 0xFF);
                     qGramHash = (qGramHash << SHIFT) + (bytes[pos]     & 0xFF);
 
                     // If there is no match to the q-gram (in the same phase as the current q-gram match), shift past it.
@@ -599,7 +586,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
         final int TWO_QGRAMS_BACK_AND_ONE = SEARCH_SHIFT - QLEN;
         final long SEARCH_START      = fromPosition; // TODO: do we really need another constant for this?  withinLength()?
         final long SEARCH_END        = toPosition > 0?
-                toPosition : 0;
+                                       toPosition : 0;
 
         // Search backwards, pos is aligned with very start of pattern in the text.
         Window window;
@@ -615,26 +602,12 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
 
             // calculate qgram hash, possibly crossing into next window:
             int qGramHash;
-            switch (lastWindowPos - arrayPos) {
-                case 0 : { // two hash bytes lie in the next window:
-                    if ((qGramHash = reader.readByte(pos + 2)) < 0) { // no window at this furthest position
-                        return NO_MATCH;
-                    }
-                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 1));
-                    break;
+            if (lastWindowPos - arrayPos == 0) { // one hash byte lies in the next window:
+                if ((qGramHash = reader.readByte(pos + 1)) < 0) { // no window at this furthest position
+                    return NO_MATCH;
                 }
-                case 1 : { // one hash byte lies in the next window:
-                    if ((qGramHash = reader.readByte(pos + 2)) < 0) { // no window at this furthest position
-                        return NO_MATCH;
-                    }
-                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
-                    break;
-                }
-                default: { // all bytes of qgram are in this window:
-                    qGramHash =                        (array[arrayPos + 2] & 0xFF);
-                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
-                    break;
-                }
+            } else {
+                qGramHash = (array[arrayPos + 1] & 0xFF);
             }
 
             // first byte of qgram is always within the current window (position we originally obtained):
@@ -654,7 +627,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
                     final int  AVAILABLE_IN_ARRAY    = LAST_ARRAY_SEARCH_POS - arrayPos;
                     final long REMAINING_SEARCH      = LAST_PATTERN_SEARCH_POS - pos;
                     final int  ARRAY_SEARCH_END      = REMAINING_SEARCH < AVAILABLE_IN_ARRAY?
-                            (int) (arrayPos + REMAINING_SEARCH) : LAST_ARRAY_SEARCH_POS;
+                                     (int) (arrayPos + REMAINING_SEARCH) : LAST_ARRAY_SEARCH_POS;
 
                     // Search forwards in the current array for matching q-grams:
                     for (pos += QLEN, arrayPos += QLEN;
@@ -662,8 +635,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
                          pos += QLEN, arrayPos += QLEN) {
 
                         // Get the hash for the q-gram in the text aligned with the next position back:
-                        qGramHash = (array[arrayPos + 2] & 0xFF);
-                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
+                        qGramHash = (array[arrayPos + 1] & 0xFF);
                         qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
 
                         // If there is no match to the q-gram (in the same phase as the current q-gram match), shift past it.
@@ -676,11 +648,10 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
 
                         // Check for a qgram which crosses into next window:
                         if (arrayPos <= lastWindowPos) { // qgram crosses into previous window:
-                            qGramHash = reader.readByte(pos + 2);
+                            qGramHash = reader.readByte(pos + 1);
                             if (qGramHash < 0) {
                                 return NO_MATCH; // No window beyond this one - no match possible.
                             }
-                            qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 1));
                             qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos));
                             qGramMatch &= BITMASKS[qGramHash & MASK];
                             if (qGramMatch == 0) break MATCH;
@@ -777,7 +748,6 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
             boolean haveLastHashValue = false;
             byte[] bytes0;
             byte[] bytes1 = sequence.getMatcherForPosition(PATTERN_LENGTH - 1).getMatchingBytes();
-            byte[] bytes2 = sequence.getMatcherForPosition(PATTERN_LENGTH - 2).getMatchingBytes();
             long totalQgrams = 0;
 
             // Process all the qgrams in the pattern back from the end (shouldn't actually make a difference,
@@ -785,11 +755,11 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
 
                 // Get the byte arrays for the qGram at the current qGramStart:
                 final int QGRAM_PHASE_BIT = (1 << ((PATTERN_LENGTH - qGramStart) % QLEN));
-                bytes0 = bytes1; bytes1 = bytes2;                                       // shift byte arrays along one.
-                bytes2 = sequence.getMatcherForPosition(qGramStart).getMatchingBytes(); // get next byte array.
+                bytes0 = bytes1;                                                        // shift byte arrays along one.
+                bytes1 = sequence.getMatcherForPosition(qGramStart).getMatchingBytes(); // get next byte array.
 
                 // Ensure we don't process too many qgrams unnecessarily, where the number of them exceed the useful table size.
-                final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2);
+                final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
                 totalQgrams += numberOfPermutations;
                 if (totalQgrams > QGRAM_LIMIT) {
                     Arrays.fill(BITMASKS, 0xF); // set all entries to 1111 - they'll be mostly, if not all filled up anyway.
@@ -800,25 +770,23 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
                 if (numberOfPermutations == 1L) { // no permutations to worry about.
                     if (!haveLastHashValue) { // if we don't have a good last hash value, calculate the first 3 elements of it:
                         lastHash =                        (bytes0[0] & 0xFF);
-                        lastHash = ((lastHash << SHIFT) + (bytes1[0] & 0xFF));
                         haveLastHashValue = true;
                     }
-                    lastHash     = ((lastHash << SHIFT) + (bytes2[0] & 0xFF)); // calculate the new element of the qgram.
+                    lastHash     = ((lastHash << SHIFT) + (bytes1[0] & 0xFF)); // calculate the new element of the qgram.
                     BITMASKS[lastHash & MASK] |= QGRAM_PHASE_BIT;
                 } else { // more than one permutation to work through.
                     if (haveLastHashValue) { // Then bytes2 must contain all the additional permutations - just go through them.
-                        for (final byte permutationValue : bytes2) {
+                        for (final byte permutationValue : bytes1) {
                             final int permutationHash = ((lastHash << SHIFT) + (permutationValue & 0xFF));
                             BITMASKS[permutationHash & MASK] |= QGRAM_PHASE_BIT;
                         }
                         haveLastHashValue = false; // after processing the permutations, we don't have a single last hash value.
                     } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
-                        final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2);
+                        final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1);
                         while (qGramPermutations.hasNext()) {
                             final byte [] permutationValue = qGramPermutations.next();
                             lastHash =                        (permutationValue[0] & 0xFF);
                             lastHash = ((lastHash << SHIFT) + (permutationValue[1] & 0xFF));
-                            lastHash = ((lastHash << SHIFT) + (permutationValue[2] & 0xFF));
                             BITMASKS[lastHash & MASK] |= QGRAM_PHASE_BIT;
                         }
                     }
@@ -829,8 +797,8 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
     }
 
 
-    private long getNumPermutations(final byte[] values1, final byte[] values2, final byte[] values3) {
-        return values1.length * values2.length * values3.length;
+    private long getNumPermutations(final byte[] values1, final byte[] values2) {
+        return values1.length * values2.length;
     }
 
 }

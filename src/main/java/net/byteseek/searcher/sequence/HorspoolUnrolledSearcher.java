@@ -82,7 +82,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  * 
  * @author Matt Palmer
  */
-public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class HorspoolUnrolledSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;
@@ -93,7 +93,7 @@ public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearch
      * 
      * @param sequence The SequenceMatcher to search for.
      */
-    public UnrolledHorspoolSearcher(final SequenceMatcher sequence) {
+    public HorspoolUnrolledSearcher(final SequenceMatcher sequence) {
         super(sequence);
         forwardInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardInfoFactory());
         backwardInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardInfoFactory());
@@ -106,7 +106,7 @@ public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearch
      * @param sequence The string to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public UnrolledHorspoolSearcher(final String sequence) {
+    public HorspoolUnrolledSearcher(final String sequence) {
         this(sequence, Charset.defaultCharset());
     }
 
@@ -118,7 +118,7 @@ public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearch
      * @param charset The charset to encode the string in.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public UnrolledHorspoolSearcher(final String sequence, final Charset charset) {
+    public HorspoolUnrolledSearcher(final String sequence, final Charset charset) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
     }
 
@@ -128,7 +128,7 @@ public final class UnrolledHorspoolSearcher extends AbstractSequenceWindowSearch
      * @param sequence The byte sequence to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
-    public UnrolledHorspoolSearcher(final byte[] sequence) {
+    public HorspoolUnrolledSearcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence));
     }
 
