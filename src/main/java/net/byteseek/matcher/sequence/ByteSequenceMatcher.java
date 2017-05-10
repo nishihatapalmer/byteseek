@@ -400,7 +400,13 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         return OneByteMatcher.valueOf(byteArray[position + startArrayIndex]);
     }
 
-    
+    @Override
+    public int getNumBytesAtPosition(int position) {
+        ArgUtils.checkIndexOutOfBounds(length(), position);
+        return 1;
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -688,6 +694,12 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
         public ByteMatcher getMatcherForPosition(final int position) {
             ArgUtils.checkIndexOutOfBounds(length(), position);
             return OneByteMatcher.valueOf(byteArray[endArrayIndex - 1 - position]);
+        }
+
+        @Override
+        public int getNumBytesAtPosition(int position) {
+            ArgUtils.checkIndexOutOfBounds(length(), position);
+            return 1;
         }
 
 

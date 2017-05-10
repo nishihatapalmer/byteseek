@@ -304,7 +304,24 @@ public final class SequenceSequenceMatcher implements SequenceMatcher {
         return result;
    }
 
-    
+    @Override
+    public int getNumBytesAtPosition(int position) {
+        ArgUtils.checkIndexOutOfBounds(totalLength,  position);
+        int currentEndPosition = 0;
+        int result = 0;
+        for (final SequenceMatcher matcher : matchers) {
+            final int matcherLength = matcher.length();
+            currentEndPosition += matcherLength;
+            if (position < currentEndPosition) {
+                final int matcherOffset = position - (currentEndPosition - matcherLength);
+                result = matcher.getNumBytesAtPosition(matcherOffset);
+                break;
+            }
+        }
+        return result;
+    }
+
+
     /**
      * {@inheritDoc}
      */

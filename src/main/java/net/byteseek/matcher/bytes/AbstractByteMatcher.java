@@ -54,9 +54,18 @@ public abstract class AbstractByteMatcher implements ByteMatcher {
     @Override
     public final ByteMatcher getMatcherForPosition(final int position) {
         if (position != 0) {
-            throw new IndexOutOfBoundsException("ByteMatchers only have a matcher at position 0.");
+            throw new IndexOutOfBoundsException("ByteMatchers only have a matcher at position 0.  Position requested = " + position);
         }
         return this;
+    }
+
+
+    @Override
+    public final int getNumBytesAtPosition(final int position) {
+        if (position != 0) {
+            throw new IndexOutOfBoundsException("ByteMatchers only match at position 0.  Position requested = " + position);
+        }
+        return getNumberOfMatchingBytes();
     }
 
     

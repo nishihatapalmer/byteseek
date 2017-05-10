@@ -46,7 +46,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      * Returns a {@link ByteMatcher} which matches all the bytes at
      * the requested position in the sequence.
      *
-     * @param position The position in the byte matcher to return a dedicated byte matcher for.
+     * @param position The position in the sequence matcher to return a dedicated byte matcher for.
      * @return A ByteMatcher for the position in the sequence provided.
      * @throws IndexOutOfBoundsException if an attempt is made to get a ByteMatcher
      *                                   for a position outside of the sequence.
@@ -54,7 +54,16 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      */
     public ByteMatcher getMatcherForPosition(int position);
 
-    
+
+   /**
+    * Returns the number of bytes matched at the requested position in the sequence.
+    *
+    * @param position The position in the sequence matcher to return the number of matching bytes for.
+    * @return The number of bytes matching at the requested position.
+    * @throws IndexOutOfBoundsException if the position is less than 1 or equal to or greater than the length.
+    */
+    public int getNumBytesAtPosition(int position);
+
     /**
      * Returns whether there is a match or not at the given position in a byte array.
      * <p>

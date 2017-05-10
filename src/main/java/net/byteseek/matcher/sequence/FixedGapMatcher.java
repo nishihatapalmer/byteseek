@@ -79,6 +79,12 @@ public final class FixedGapMatcher implements SequenceMatcher {
         return AnyByteMatcher.ANY_BYTE_MATCHER;
     }
 
+    @Override
+    public int getNumBytesAtPosition(int position) {
+        ArgUtils.checkIndexOutOfBounds(length, position);
+        return 256;
+    }
+
 
     /**
      * {@inheritDoc}
