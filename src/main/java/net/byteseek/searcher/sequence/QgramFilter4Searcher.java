@@ -94,18 +94,18 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
     /**
      * The length of q-grams processed by this searcher.
      */
-    private final static int QLEN = 4;
+    public final static int QLEN = 4;
 
     /**
      * The maximum bitshift supported by this algorithm.
      */
-    private final static int MAX_SHIFT = 6; // the maximum shift supported by this algorithm.
+    public final static int MAX_SHIFT = 6; // the maximum shift supported by this algorithm.
 
 
     /**
      * The maximum number of qgrams the algorithm can process.
      */
-    private final static int MAX_QGRAMS = (3 << (MAX_SHIFT * QLEN));
+    public final static int MAX_QGRAMS = (3 << (MAX_SHIFT * QLEN));
 
     /**********
      * Fields *
