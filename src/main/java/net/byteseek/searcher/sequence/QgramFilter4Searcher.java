@@ -210,7 +210,7 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         }
         // Full table size = numQgrams / 4 (since we have QLEN=4 bit positions at each table position)
         // We will target a table which is no more than 50% full to get good performance. //TODO: validate by profiling.
-        final int halfFullTable = numQgrams >>> 1; // divide num qgrams by 2.
+        final int halfFullTable = (numQgrams * 2) / QLEN;
         for (int shift = 1; shift <= MAX_SHIFT; shift++) {
             final int tablesize = (1 << (shift * QLEN));
             if (tablesize >= halfFullTable) {
