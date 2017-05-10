@@ -94,17 +94,17 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
     /**
      * The length of q-grams processed by this searcher.
      */
-    private final static int QLEN = 2;
+    public final static int QLEN = 2;
 
     /**
      * The maximum bitshift supported by this algorithm.
      */
-    private final static int MAX_SHIFT = 10; // the maximum shift supported by this algorithm.
+    public final static int MAX_SHIFT = 10; // the maximum shift supported by this algorithm.
 
     /**
      * The maximum number of qgrams the algorithm can process.
      */
-    private final static int MAX_QGRAMS = (3 << (MAX_SHIFT * QLEN));
+    public final static int MAX_QGRAMS = (3 << (MAX_SHIFT * QLEN));
 
 
     /**********
@@ -274,7 +274,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      *
      * @param sequence The SequenceMatcher to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 10.
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 10.
      */
     public QgramFilter2Searcher(final SequenceMatcher sequence, final int shift) {
         super(sequence);
@@ -322,7 +322,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      *
      * @param sequence The string to search for.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 10.
+     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 10.
      */
     public QgramFilter2Searcher(final String sequence, final int shift) {
         this(sequence, Charset.defaultCharset(), shift);
@@ -361,7 +361,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      * @param charset The charset to encode the string in.
      * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null,
-     *                                  or the shift is less than 1 or greater than 10.
+     *                                  or the shift is less than 0 or greater than 10.
      */
     public QgramFilter2Searcher(final String sequence, final Charset charset, final int shift) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), shift);
