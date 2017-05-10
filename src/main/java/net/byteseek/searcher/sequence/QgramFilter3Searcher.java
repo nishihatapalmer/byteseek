@@ -134,6 +134,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
      */
     private final SequenceSearcher<SequenceMatcher> shortSearcher;
 
+
     /*********************************
      * Public static utility methods *
      *********************************/
@@ -209,7 +210,7 @@ public final class QgramFilter3Searcher extends AbstractSequenceWindowSearcher<S
         }
         // Full table size = numQgrams / 3 (since we have QLEN=3 bit positions at each table position)
         // We will target a table which is no more than 50% full to get good performance. //TODO: validate by profiling.
-        final int halfFullTable = (numQgrams * 2) / 3;
+        final int halfFullTable = (numQgrams * 2) / QLEN;
         for (int shift = 1; shift <= MAX_SHIFT; shift++) {
             final int tablesize = (1 << (shift * QLEN));
             if (tablesize >= halfFullTable) {
