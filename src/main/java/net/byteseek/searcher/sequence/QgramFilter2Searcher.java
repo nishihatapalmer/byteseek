@@ -230,12 +230,11 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
         int totalQgrams = 0;
         int qgram0;
         int qgram1 = matcher.getNumBytesAtPosition(0);
-        int qgram2 = matcher.getNumBytesAtPosition(1);
         final int length = matcher.length();
         for (int qGramEnd = QLEN - 1; qGramEnd < length; qGramEnd++) {
-            qgram0 = qgram1; qgram1 = qgram2;
-            qgram2 = matcher.getNumBytesAtPosition(qGramEnd);
-            totalQgrams += (qgram0 * qgram1 * qgram2);
+            qgram0 = qgram1;
+            qgram1 = matcher.getNumBytesAtPosition(qGramEnd);
+            totalQgrams += (qgram0 * qgram1);
         }
         return totalQgrams;
     }
