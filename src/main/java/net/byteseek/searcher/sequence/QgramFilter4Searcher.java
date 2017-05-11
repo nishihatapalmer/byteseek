@@ -139,6 +139,9 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * Public static utility methods *
      *********************************/
 
+    //TODO: take into account alphabet size - this influences how fast the table will fill up with distinct qgrams.
+    //TODO: or is it that small alphabets simply have a lower number of valid qgrams...?  may need longer qgrams.
+
     /**
      * Recommends a shift value which will give good performance for this algorithm given a SequenceMatcher.
      * If there is no good shift for the pattern given, zero is returned, which indicates that the algorithm will
@@ -212,12 +215,21 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
         // We will target a table which is no more than 50% full to get good performance. //TODO: validate by profiling.
         final int halfFullTable = (numQgrams * 2) / QLEN;
         for (int shift = 1; shift <= MAX_SHIFT; shift++) {
-            final int tablesize = (1 << (shift * QLEN));
-            if (tablesize >= halfFullTable) {
+            if (tableSize(shift) >= halfFullTable) {
                 return shift;
             }
         }
         return 0; // did not find a good shift value - return zero instead.
+    }
+
+    /**
+     * Returns the table size produced for a given shift.
+     *
+     * @param shift The shift to use.
+     * @return The table size for that shift.
+     */
+    public static int tableSize(final int shift) {
+        return 1 << (shift * QLEN);
     }
 
     /**
