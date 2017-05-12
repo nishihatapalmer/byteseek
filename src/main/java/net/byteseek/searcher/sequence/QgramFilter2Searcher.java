@@ -284,7 +284,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The SequenceMatcher to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 2)
      * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 10.
      */
     public QgramFilter2Searcher(final SequenceMatcher sequence, final int shift) {
@@ -332,7 +332,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The string to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 2)
      * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 10.
      */
     public QgramFilter2Searcher(final String sequence, final int shift) {
@@ -370,7 +370,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 2)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null,
      *                                  or the shift is less than 0 or greater than 10.
      */
@@ -406,7 +406,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      * <p>For most purposes a shift of 4, 5 or 6 will be sufficient.</p>
      *
      * @param sequence The byte sequence to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 2)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 2)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, or the shift
      *                                  is less than 0 or greater than 10.
      */

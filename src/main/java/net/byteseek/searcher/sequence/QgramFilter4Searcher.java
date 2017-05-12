@@ -279,10 +279,10 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 5 = table size of 1048576 elements</p>
      * <p>Shift 6 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 2 or 3 will be sufficient.</p>
-     *    Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.</p>
+     *    Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.
      *
      * @param sequence The SequenceMatcher to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power  (shift * 4)
      * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 6.
      */
     public QgramFilter4Searcher(final SequenceMatcher sequence, final int shift) {
@@ -324,10 +324,10 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 5 = table size of 1048576 elements</p>
      * <p>Shift 6 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 2 or 3 will be sufficient.</p>
-     *    Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.</p>
+     *    Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.
      *
      * @param sequence The string to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power  (shift * 4)
      * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 0 or greater than 6.
      */
     public QgramFilter4Searcher(final String sequence, final int shift) {
@@ -358,11 +358,11 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 5 = table size of 1048576 elements</p>
      * <p>Shift 6 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 2 or 3 will be sufficient.</p>
-     * Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.</p>
+     * Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power  (shift * 4)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null,
      *                                  or the shift is less than 0 or greater than 6.
      */
@@ -392,10 +392,10 @@ public final class QgramFilter4Searcher extends AbstractSequenceWindowSearcher<S
      * <p>Shift 5 = table size of 1048576 elements</p>
      * <p>Shift 6 = table size of 16777216 elements</p>
      * <p>For most purposes a shift of 2 or 3 will be sufficient.</p>
-     * Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.</p>
+     * Note that each table element contains 4 bit positions, so the effective storage is 4 * table size.
      *
      * @param sequence The byte sequence to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 4)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power  (shift * 4)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, the shift is less than
      *                                  zero or greater than 6.
      */
