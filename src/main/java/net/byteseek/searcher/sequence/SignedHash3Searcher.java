@@ -79,7 +79,7 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
     //TODO: validate best default shift for most cases, profile searching.
     /**
      * The default bit shift used by the hash function.  The bitshift and the length of the qgram determine
-     * the table size used by the algorithm, with the formula TABLESIZE = 1 << (QLEN * BITSHIFT)
+     * the table size used by the algorithm, with the formula TABLESIZE = 2 to power (QLEN * BITSHIFT)
      */
     private final static int DEFAULT_SHIFT = 4;
 
@@ -139,7 +139,7 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
      *
      * @param sequence The SequenceMatcher to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 3)
      * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 8.
      */
     public SignedHash3Searcher(final SequenceMatcher sequence, final int shift) {
@@ -185,7 +185,7 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
      *
      * @param sequence The string to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 3)
      * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than 1 or greater than 8.
      */
     public SignedHash3Searcher(final String sequence, final int shift) {
@@ -220,7 +220,7 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 3)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, the shift is less than
      *                                  one or greater than 8.
      */
@@ -252,7 +252,7 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
      * <p>For most purposes a shift of 3 or 4 will be sufficient.</p>
      *
      * @param sequence The byte sequence to search for.
-     * @param shift    The bitshift to use for the hash function.  Determines the table size = 1 << (shift * 3)
+     * @param shift    The bitshift to use for the hash function.  Determines the table size = 2 to power (shift * 3)
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null, the shift is
      *                                  less than one or greater than 8.
      */
