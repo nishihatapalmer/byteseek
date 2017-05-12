@@ -124,7 +124,7 @@ public class ByteArrayReader implements WindowReader {
 
 	@Override
 	public int readByte(final long position) throws IOException {
-		return (position >= 0 && position < windowBytes.length())? windowBytes.getByte((int) position) : NO_BYTE_AT_POSITION;
+		return (position >= 0 && position < windowBytes.length())? windowBytes.getByte((int) position) & 0xFF : NO_BYTE_AT_POSITION;
 	}
 
 	@Override
