@@ -664,9 +664,11 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                 totalQgrams += (num0 * num1 * num2 * num3);
                 // If we go beyond the max table load, stop further processing.
                 if ((totalQgrams >> 2) >= MAX_TABLE_SIZE) { // if there's four times as many qgrams as max table size (quarter bigger than max):
+                    qGramStartPos--; // going to break out of the loop, will be re-added after loop ends.
                     break; // no further value, halt processing of further qgrams. avoids pathological byte classes.
                 }
             }
+            qGramStartPos++; // qGram start is one less than the last successful loop - add one.
 
             // Determine final size of hash table:
             final int HASH_SIZE;
