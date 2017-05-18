@@ -47,18 +47,25 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
- * An implementation of the SignedHash algorithm by Matt Palmer.
+ * An implementation of the SignedHash online search algorithm by Matt Palmer.
  * <p>
- * This is essentially the Signed Wu-Manber algorithm applied to a single pattern instead of multiple patterns.  It uses
- * a hash of a q-gram to look up a safe shift.  Since q-grams appear less frequently than single bytes,
+ * This is essentially the Signed Wu-Manber algorithm applied to a single pattern instead of multiple patterns.
+ * It uses a hash of a q-gram to look up a safe shift.  Since q-grams appear less frequently than single bytes,
  * the corresponding shifts can be bigger, for longer or more complex patterns.
  * The bigger shifts then offset the additional cost of reading more bytes for the q-gram and
  * calculating its hash, leading to better performance.
  * <p>
  * The algorithm was inspired by Lecroq's adaptation of Wu-Manber for single pattern searching described in
  * "Fast Exact String Matching Algorithms".  However there are some significant differences - it doesn't require
- * a sentinel pattern at the end, it handles byte classes, it uses the signed-searching technique, and it uses
- * multiply-shift hashing which allows a greater choice of hash table sizes.
+ * a sentinel pattern at the end, it handles byte classes, it uses the signed-searching technique, it uses
+ * multiply-shift hashing (which allows a greater choice of hash table sizes), and it contains a method to select
+ * a good hash table size given the pattern to be searched for.
+ * <p>
+ * Performance depends on the size of the hash table selected.  Too small and there are too many false positives
+ * and small shifts. Too large and we incur unnecessary cache misses in memory.  By default the algorithm will
+ * select the smallest hash table which gives good performance for the number of q-grams in the pattern, up to a
+ * maximum size of 64k.  The algorithm will dynamically adapt to whatever maximum size is chosen to maximise the
+ * search performance at that size.  You can change the maximum permitted size, or choose the exact size of the table.
  * <p>
  * The core algorithm permits q-grams of different lengths to be used.  This implementation uses a q-gram of length 4.
  * Note that if a pattern shorter than the qgram length is passed in, this algorithm cannot search for it,
