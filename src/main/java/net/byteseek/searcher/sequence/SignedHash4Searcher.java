@@ -611,7 +611,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
     /**
      * A simple data class containing the shifts for searching and the bitshift needed for the hash-multiply hash function.
      */
-    private final class SearchInfo {
+    private final static class SearchInfo {
         public final int[] shifts;
         public final int bitshift;
         public SearchInfo(final int[] shifts, final int bitshift) {
@@ -619,6 +619,8 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             this.bitshift = bitshift;
         }
     }
+
+    private final static SearchInfo NULL_SEARCH_INFO = new SearchInfo(null, 0);
 
 
     /**
@@ -637,7 +639,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             // If the pattern is shorter than one qgram, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
             if (PATTERN_LENGTH < QLEN) {
-                return new SearchInfo(null, 0); // no shifts to calculate.
+                return NULL_SEARCH_INFO; // no shifts to calculate.
             }
 
             // Determine the maximum size of the hash table:
@@ -666,12 +668,6 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                 }
             }
 
-            // Determine max search shift allowed by the qGramStartPos.
-            // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
-            // and consequently the maximum shift we can support is lower than the full pattern would allow.
-            //TODO: what if we halted with a very low max shift?  Use fallback searcher?
-            final int MAX_SEARCH_SHIFT = 1; // TODO: finish...
-
             // Determine final size of hash table:
             final int HASH_SIZE;
             if (POWER_TWO_SIZE > 0) {       // specified by user - must use this size exactly.
@@ -679,98 +675,81 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             } else {
                 //TODO: or should it be the power of two *one higher* than ceilLogBase2 of total qgrams? What effective margin do we want?
                 final int qGramPowerTwoSize = ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
-                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?             // but not bigger than the maximum allowed.
-                            MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE?
-                                                      qGramPowerTwoSize : MIN_POWER_TWO_SIZE;
+                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?
+                            MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
+                                                      qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
             }
 
             // Determine bit shift for multiply-shift hash algorithm:
-            final int HASH_SHIFT = 64 - HASH_SIZE;// TODO: verify correct...?
+            final int HASH_SHIFT = 64 - HASH_SIZE;
+
+            // Determine max search shift allowed by the qGramStartPos.
+            // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
+            // and consequently the maximum shift we can support is lower than the full pattern would allow.
+            final int MAX_SEARCH_SHIFT = PATTERN_LENGTH - QLEN - qGramStartPos + 1;
+            if (MAX_SEARCH_SHIFT < 2) { //TODO: determine optimum cutoff : what shift gives better performance than the fallback?
+                return NULL_SEARCH_INFO; // if max shift is only one, no point in using this searcher, use fallback searcher.
+            }
 
             // Set up the hash table and initialize to the maximum shift allowed given qGramStartPos.
             final int[] SHIFTS = new int[1 << HASH_SIZE];
             Arrays.fill(SHIFTS, MAX_SEARCH_SHIFT);
 
+            // Set up the key values for hashing as we go along the pattern:
+            byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
+            byte[] bytes1 = sequence.getMatcherForPosition(qGramStartPos).getMatchingBytes();
+            byte[] bytes2 = sequence.getMatcherForPosition(qGramStartPos + 1).getMatchingBytes();
+            byte[] bytes3 = sequence.getMatcherForPosition(qGramStartPos + 2).getMatchingBytes();
+            int keyValue = 0;
+            boolean haveLastKeyValue = false;
 
-
-            /*
-            // Initialise constants
-            final int TABLE_SIZE = 1 << forwardHashTableSize;
-            final int HASH_SHIFT = 64 - forwardHashTableSize; //TODO: validate.
-            final int[] SHIFTS = new int[TABLE_SIZE];
-            final int MAX_PERMUTATIONS = TABLE_SIZE; // TODO: validate.
-
-
-            // Initialise shift table to the max possible shift
-            // The maximum shift isn't the pattern length, as in Horspool, because we are reading qgrams.
-            // The max shift will align the start of the pattern to the position one past the start of the last qgram read.
-            // TODO: check for pathological cases where there's no point in processing bits of the pattern
-            //       by scanning back from the end to find high permutation values.
+            // Process all the qgrams in the pattern from the qGram start pos to one before the end of the pattern.
             final int LAST_PATTERN_POS = PATTERN_LENGTH - 1;
-            final int MAX_SHIFT = PATTERN_LENGTH - QLEN + 1;
-            Arrays.fill(SHIFTS, MAX_SHIFT);
-
-            // Set initial processing states
-            int lastHash = 0;
-            int key;
-            boolean haveLastHashValue = false;
-            byte[] bytes0;
-            byte[] bytes1 = sequence.getMatcherForPosition(0).getMatchingBytes();
-            byte[] bytes2 = sequence.getMatcherForPosition(1).getMatchingBytes();
-            byte[] bytes3 = sequence.getMatcherForPosition(2).getMatchingBytes();
-
-            /*
-            // Process all the qgrams in the pattern from the start to one before the end of the pattern.
-            for (int qGramEnd = QLEN - 1; qGramEnd < LAST_PATTERN_POS; qGramEnd++) {
+            for (int qGramEnd = qGramStartPos + QLEN - 1; qGramEnd < LAST_PATTERN_POS; qGramEnd++) {
 
                 // Calcluate shift for qgrams at this position:
                 final int CURRENT_SHIFT = LAST_PATTERN_POS - qGramEnd;
 
                 // Get the byte arrays for the qGram at the current qGramStart:
-                bytes0 = bytes1;
-                bytes1 = bytes2;
-                bytes2 = bytes3;                    // shift byte arrays along one.
+                bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                    // shift byte arrays along one.
                 bytes3 = sequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
-                // Ensure we don't process too many permutations in pathological cases where multiple byte classes
-                // are adjacent to each other.  If there are too many, just set all shifts to the current value.
+                // Process the qgram permutations as efficiently as possible:
                 final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
-                if (numberOfPermutations > MAX_PERMUTATIONS) {  // too many permutations to bother processing.
-                    Arrays.fill(SHIFTS, CURRENT_SHIFT);         // just set the entire table to the current shift.
-                    haveLastHashValue = false;                  //TODO: should keep processing...?
-                } else {
-                    // Process the qgram permutations as efficiently as possible:
-                    if (numberOfPermutations == 1L) { // no permutations to worry about.
-                        if (!haveLastHashValue) { // if we don't have a good last hash value, calculate the first 3 elements of it:
-                            lastHash = ((((bytes0[0] & 0xFF) << 8) |
-                                    (bytes1[0] & 0xFF) << 8) |
-                                    (bytes2[0] & 0xFF) << 8);
+                if (numberOfPermutations == 1L) { // no permutations to worry about:
+                    if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
+                        keyValue = (((bytes0[0] & 0xFF) << 8) |
+                                     (bytes1[0] & 0xFF) << 8) |
+                                     (bytes2[0] & 0xFF);
+                        haveLastKeyValue = true;
+                    }
+                    keyValue = (keyValue << 8) | (bytes3[0] & 0xFF); // calculate the new qgram.
 
+                    // Calculate the hash from the key and put the shift value in the hash table.
+                    final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
+                    SHIFTS[hash] = CURRENT_SHIFT;
 
-                            lastHash = (bytes0[0] & 0xFF);
-                            lastHash = ((lastHash << SHIFT) + (bytes1[0] & 0xFF));
-                            lastHash = ((lastHash << SHIFT) + (bytes2[0] & 0xFF));
-                            haveLastHashValue = true;
+                } else { // more than one permutation to work through.
+                    if (haveLastKeyValue) { // Then bytes3 must contain all the additional permutations - just go through them.
+                        for (final byte permutationValue : bytes3) {
+                            final int permutationKey = ((keyValue << 8) | (permutationValue & 0xFF));
+                            final int hash = (int) ((permutationKey * HASH_MULTIPLY) >>> HASH_SHIFT);
+                            SHIFTS[hash] = CURRENT_SHIFT;
                         }
-                        lastHash = ((lastHash << SHIFT) + (bytes3[0] & 0xFF)); // calculate the new element of the qgram.
-                        SHIFTS[lastHash & MASK] = CURRENT_SHIFT;
-                    } else { // more than one permutation to work through.
-                        if (haveLastHashValue) { // Then bytes3 must contain all the additional permutations - just go through them.
-                            for (final byte permutationValue : bytes3) {
-                                final int permutationHash = ((lastHash << SHIFT) + (permutationValue & 0xFF));
-                                SHIFTS[permutationHash & MASK] = CURRENT_SHIFT;
-                            }
-                            haveLastHashValue = false; // after processing the permutations, we don't have a single last hash value.
-                        } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
-                            final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2, bytes3);
-                            while (qGramPermutations.hasNext()) {
-                                final byte[] permutationValue = qGramPermutations.next();
-                                lastHash = (permutationValue[0] & 0xFF);
-                                lastHash = ((lastHash << SHIFT) + (permutationValue[1] & 0xFF));
-                                lastHash = ((lastHash << SHIFT) + (permutationValue[2] & 0xFF));
-                                lastHash = ((lastHash << SHIFT) + (permutationValue[3] & 0xFF));
-                                SHIFTS[lastHash & MASK] = CURRENT_SHIFT;
-                            }
+                        haveLastKeyValue = false; // after processing the permutations, we don't have a single last key value.
+
+                    } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
+                        final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2, bytes3);
+                        while (qGramPermutations.hasNext()) {
+                            // Calculate the key value:
+                            final byte[] permutationValue = qGramPermutations.next();
+                            keyValue = ((((permutationValue[0] & 0xFF) << 8) |
+                                          (permutationValue[1] & 0xFF) << 8) |
+                                          (permutationValue[2] & 0xFF) << 8) |
+                                          (permutationValue[3] & 0xFF);
+                            // Calculate the hash from the key and put the shift value in the hash table.
+                            final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
+                            SHIFTS[hash] = CURRENT_SHIFT;
                         }
                     }
                 }
@@ -779,63 +758,59 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             // Make shifts for the last qgrams in the pattern negative:
 
             // Get byte arrays for last q-gram:
-            bytes0 = bytes1;
-            bytes1 = bytes2;
-            bytes2 = bytes3;                            // shift byte arrays along one.
+            bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                            // shift byte arrays along one.
             bytes3 = sequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
 
-            // Ensure number of permutations aren't excessive:
+            // Process the last qgram permutations as efficiently as possible:
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
-            if (numberOfPermutations > MAX_PERMUTATIONS) {
-                // too many permutations to bother processing, all entries become negative:
-                for (int tableIndex = 0; tableIndex < SHIFTS.length; tableIndex++) {
-                    SHIFTS[tableIndex] = -SHIFTS[tableIndex];
+            if (numberOfPermutations == 1L) { // no permutations to worry about:
+                if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
+                    keyValue = (((bytes0[0] & 0xFF) << 8) |
+                                 (bytes1[0] & 0xFF) << 8) |
+                                 (bytes2[0] & 0xFF);
                 }
-            } else {
-                // Process the qgram permutations as efficiently as possible:
-                if (numberOfPermutations == 1L) { // no permutations to worry about.
-                    if (!haveLastHashValue) {     // if we don't have a good last hash value, calculate the first 3 elements of it:
-                        lastHash = (bytes0[0] & 0xFF);
-                        lastHash = ((lastHash << SHIFT) + (bytes1[0] & 0xFF));
-                        lastHash = ((lastHash << SHIFT) + (bytes2[0] & 0xFF));
-                    }
-                    lastHash = ((lastHash << SHIFT) + (bytes3[0] & 0xFF)); // calculate the new element of the qgram.
-                    SHIFTS[lastHash & MASK] = -SHIFTS[lastHash & MASK];
-                } else { // more than one permutation to work through.
-                    if (haveLastHashValue) { // Then bytes3 must contain all the additional permutations - just go through them.
-                        for (final byte permutationValue : bytes3) {
-                            final int permutationHash = ((lastHash << SHIFT) + (permutationValue & 0xFF));
-                            final int currentShift = SHIFTS[permutationHash & MASK];
-                            if (currentShift > 0) {
-                                SHIFTS[permutationHash & MASK] = -currentShift;
-                            }
+                keyValue = (keyValue << 8) | (bytes3[0] & 0xFF); // calculate the new qgram.
+
+                // Calculate the hash from the key and make the shift value negative.
+                final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
+                SHIFTS[hash] = -SHIFTS[hash];
+
+            } else { // more than one permutation to work through.
+                if (haveLastKeyValue) { // Then bytes3 must contain all the additional permutations - just go through them.
+                    for (final byte permutationValue : bytes3) {
+                        final int permutationKey = ((keyValue << 8) | (permutationValue & 0xFF));
+                        final int hash = (int) ((permutationKey * HASH_MULTIPLY) >>> HASH_SHIFT);
+
+                        // If the current shift is positive make it negative.
+                        final int CURRENT_SHIFT = SHIFTS[hash];
+                        if (CURRENT_SHIFT > 0) {
+                            SHIFTS[hash] = -CURRENT_SHIFT;
                         }
-                    } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
-                        final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2, bytes3);
-                        while (qGramPermutations.hasNext()) {
-                            final byte[] permutationValue = qGramPermutations.next();
-                            lastHash = (permutationValue[0] & 0xFF);
-                            lastHash = ((lastHash << SHIFT) + (permutationValue[1] & 0xFF));
-                            lastHash = ((lastHash << SHIFT) + (permutationValue[2] & 0xFF));
-                            lastHash = ((lastHash << SHIFT) + (permutationValue[3] & 0xFF));
-                            final int currentShift = SHIFTS[lastHash & MASK];
-                            if (currentShift > 0) {
-                                SHIFTS[lastHash & MASK] = -currentShift;
-                            }
+                    }
+
+                } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
+                    final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2, bytes3);
+                    while (qGramPermutations.hasNext()) {
+                        // Calculate the key value:
+                        final byte[] permutationValue = qGramPermutations.next();
+                        keyValue = ((((permutationValue[0] & 0xFF) << 8) |
+                                      (permutationValue[1] & 0xFF) << 8) |
+                                      (permutationValue[2] & 0xFF) << 8) |
+                                      (permutationValue[3] & 0xFF);
+                        // Calculate the hash from the key and put the shift value in the hash table.
+                        final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
+
+                        // If the current shift is positive make it negative.
+                        final int CURRENT_SHIFT = SHIFTS[hash];
+                        if (CURRENT_SHIFT > 0) {
+                            SHIFTS[hash] = -CURRENT_SHIFT;
                         }
                     }
                 }
             }
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
-                */
-
-            return null;
-
         }
-
-
-
     }
 
     /**
