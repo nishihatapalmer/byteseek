@@ -75,8 +75,6 @@ import java.util.Arrays;
  * The substitute will also be used if Signed Hash can't achieve a maximum search shift better than 1.
  * ShiftOr creates a table of 256 elements, which in most cases will be the same or smaller
  * than the table used by this searcher, and whose pre-processing time is also faster.
- *
- * Created by Matt Palmer on 06/05/17.
  */
 public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
 
