@@ -72,8 +72,9 @@ import java.util.Arrays;
  * The core algorithm permits q-grams of different lengths to be used.  This implementation uses a q-gram of length 4.
  * Note that if a pattern shorter than the qgram length is passed in, this algorithm cannot search for it,
  * and a different algorithm (ShiftOr) will be substituted, which is generally fastest for short patterns.
+ * The substitute will also be used if Signed Hash can't achieve a maximum search shift better than 1.
  * ShiftOr creates a table of 256 elements, which in most cases will be the same or smaller
- * than the table used by this searcher, and whose pre-processing time is usually faster.
+ * than the table used by this searcher, and whose pre-processing time is also faster.
  *
  * Created by Matt Palmer on 06/05/17.
  */
