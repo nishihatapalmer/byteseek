@@ -97,7 +97,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
     /**
      * The minimum size of the hash table automatically selected by this algorithm, expressed as a power of two.
      */
-    private final static int MIN_POWER_TWO_SIZE = 5; // equals 2^4 = 32.
+    private final static int MIN_POWER_TWO_SIZE = 5; // equals 2^5 = 32.
 
     /**
      * The maximum size of the hash table supported by the algorithm, expressed as a power of two.
