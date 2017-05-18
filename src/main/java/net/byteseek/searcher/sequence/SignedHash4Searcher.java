@@ -63,8 +63,9 @@ import java.util.Arrays;
  * <p>
  * Performance depends on the size of the hash table selected.  Too small and there are too many false positives
  * and small shifts. Too large and we incur unnecessary cache misses in memory.  By default the algorithm will
- * select the smallest hash table which gives good performance for the number of q-grams in the pattern, up to a
- * maximum size of 64k. You can change the maximum permitted size, or choose the exact size of the table.
+ * select the smallest hash table which gives good performance for the number of q-grams in the pattern, from a
+ * minimum of 32 up to a maximum size of 64k elements.
+ * You can also change the maximum permitted size, or specify the exact size of the table.
  * <p>
  * The core algorithm permits q-grams of different lengths to be used.  This implementation uses a q-gram of length 4.
  * Note that if a pattern shorter than the qgram length is passed in, this algorithm cannot search for it,
