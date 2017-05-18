@@ -102,7 +102,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
     /**
      * The maximum size of the hash table supported by the algorithm, expressed as a power of two.
      */
-    private final static int MAX_POWER_TWO_SIZE = 28;
+    private final static int MAX_POWER_TWO_SIZE = 28; // 256Mb ought to be enough for anybody...
 
     //TODO: validate the restrictions on this value.  Unless the constant is around 64 bits, small values all end up
     //      mapping to zero, so adjacent keys get the same hash.  Concerning because I haven't seen discussion of this
