@@ -91,7 +91,6 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
      * The hash table size used by the hash function, expressed as a power of two.
      * A zero power of two tells the algorithm to select the smallest table which will give good performance.
      * A negative power of two means the algorithm limits the biggest table it will select to the (positive) power of two.
-     * If a required table is bigger than the maximum size, we revert to the replacement searcher (ShiftOr).
      */
     private final static int DEFAULT_POWER_TWO = -16; // automatically select a hash table size no larger than 2^16 = 65k.
 
