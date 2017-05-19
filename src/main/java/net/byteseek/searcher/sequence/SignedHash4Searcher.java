@@ -178,14 +178,9 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
         super(sequence);
         ArgUtils.checkRangeInclusive(powerTwoSize, -MAX_POWER_TWO_SIZE, MAX_POWER_TWO_SIZE, "powerTwoSize");
         POWER_TWO_SIZE = powerTwoSize;
-        if (sequence.length() >= QLEN) { // equal or bigger to qgram length - searchable by this algorithm
-            forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
-            backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
-        } else {                         // smaller than a qgram length - use a different searcher.
-            forwardSearchInfo  = null;
-            backwardSearchInfo = null;
-        }
-        fallbackSearcher = new DoubleCheckImmutableLazyObject<SequenceSearcher<SequenceMatcher>>(new ShortSearcherFactory());
+        forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
+        backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
+        fallbackSearcher   = new DoubleCheckImmutableLazyObject<SequenceSearcher<SequenceMatcher>>(new FallbackSearcherFactory());
     }
 
     /**
@@ -603,7 +598,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
      * rather than one which is more spiritually similar to this algorithm (e.g. the SignedHorspoolSearcher), or the
      * simplest possible algorithm (e.g. the SequenceMatcherSearcher).
      */
-    private final class ShortSearcherFactory implements ObjectFactory<SequenceSearcher<SequenceMatcher>> {
+    private final class FallbackSearcherFactory implements ObjectFactory<SequenceSearcher<SequenceMatcher>> {
 
         @Override
         public SequenceSearcher<SequenceMatcher> create() {
