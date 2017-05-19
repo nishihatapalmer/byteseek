@@ -72,7 +72,8 @@ import java.util.Arrays;
  * The core algorithm permits q-grams of different lengths to be used.  This implementation uses a q-gram of length 4.
  * Note that if a pattern shorter than the qgram length is passed in, this algorithm cannot search for it,
  * and a different algorithm (ShiftOr) will be substituted, which is generally fastest for short patterns.
- * The substitute will also be used if Signed Hash can't achieve a maximum search shift better than 1.
+ * The substitute will also be used if the pattern is equal to the length of the qgram, as this only gives a maximum
+ * shift of one - which is then just a more expensive way of looking at every single position (i.e. the naive search).
  * ShiftOr creates a table of 256 elements, which in most cases will be the same or smaller
  * than the table used by this searcher, and whose pre-processing time is also faster.
  */
@@ -635,9 +636,9 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             // Get local copies of fields:
             final SequenceMatcher localSequence = sequence;
 
-            // If the pattern is shorter than one qgram, the fallback searcher will be used instead.
+            // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
-            if (PATTERN_LENGTH < QLEN) {
+            if (PATTERN_LENGTH <= QLEN) {
                 return NULL_SEARCH_INFO; // no shifts to calculate.
             }
 
@@ -688,9 +689,6 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
             // and consequently the maximum shift we can support is lower than the full pattern would allow.
             final int MAX_SEARCH_SHIFT = PATTERN_LENGTH - QLEN - qGramStartPos + 1;
-            if (MAX_SEARCH_SHIFT < 2) { //TODO: determine optimum cutoff : what shift gives better performance than the fallback?
-                return NULL_SEARCH_INFO; // if max shift is not even one, no point in using this searcher, use fallback searcher.
-            }
 
             // Set up the hash table and initialize to the maximum shift allowed given qGramStartPos.
             final int[] SHIFTS = new int[1 << HASH_SIZE];
@@ -827,9 +825,9 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             // Get local copies of fields:
             final SequenceMatcher localSequence = sequence;
 
-            // If the pattern is shorter than one qgram, the fallback searcher will be used instead.
+            // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
-            if (PATTERN_LENGTH < QLEN) {
+            if (PATTERN_LENGTH <= QLEN) {
                 return NULL_SEARCH_INFO; // no shifts to calculate.
             }
 
@@ -882,9 +880,6 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
             // and consequently the maximum shift we can support is lower than the full pattern would allow.
             final int MAX_SEARCH_SHIFT = qGramStartPos - QLEN + 2;
-            if (MAX_SEARCH_SHIFT < 2) { //TODO: determine optimum cutoff : what shift gives better performance than the fallback?
-                return NULL_SEARCH_INFO; // if max shift is not even one, no point in using this searcher, use fallback searcher.
-            }
 
             // Set up the hash table and initialize to the maximum shift allowed given qGramStartPos.
             final int[] SHIFTS = new int[1 << HASH_SIZE];
