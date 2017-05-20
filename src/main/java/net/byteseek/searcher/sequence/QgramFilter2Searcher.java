@@ -818,6 +818,8 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
     public void prepareForwards() {
         if (searchInfo != null) {
             searchInfo.get();
+        } else {
+            shortSearcher.prepareForwards();
         }
     }
 
@@ -829,6 +831,8 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
     public void prepareBackwards() {
         if (searchInfo != null) {
             searchInfo.get();
+        } else {
+            shortSearcher.prepareBackwards();
         }
     }
 
