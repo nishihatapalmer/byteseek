@@ -82,7 +82,7 @@ public final class DoubleCheckLazyObject<T> implements LazyObject<T> {
 
     @Override
     public boolean created() {
-        return object == null;
+        return object != null;
     }
 
     @Override

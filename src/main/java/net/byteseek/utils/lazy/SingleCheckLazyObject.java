@@ -79,4 +79,9 @@ public final class SingleCheckLazyObject<T> implements LazyObject<T> {
         return result;
     }
 
+    @Override
+    public boolean created() {
+        return object != null;
+    }
+
 }
