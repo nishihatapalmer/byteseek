@@ -45,6 +45,12 @@ public interface LazyObject<T> {
 	 * 
 	 * @return An instance of an object of type T.
 	 */
-	public T get();
+	T get();
+
+	/**
+	 * Returns true if the object has been created.
+	 * @return true if the object has been created.
+	 */
+	boolean created();
 
 }
