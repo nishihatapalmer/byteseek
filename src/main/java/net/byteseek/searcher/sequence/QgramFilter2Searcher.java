@@ -816,7 +816,9 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      */
     @Override
     public void prepareForwards() {
-        searchInfo.get();
+        if (searchInfo != null) {
+            searchInfo.get();
+        }
     }
 
 
@@ -825,7 +827,9 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
      */
     @Override
     public void prepareBackwards() {
-        searchInfo.get();
+        if (searchInfo != null) {
+            searchInfo.get();
+        }
     }
 
 
