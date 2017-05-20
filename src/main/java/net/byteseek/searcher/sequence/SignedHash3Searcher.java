@@ -620,6 +620,10 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
             this.shifts   = shifts;
             this.bitshift = bitshift;
         }
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(tableSize:" + (shifts == null? 0 : shifts.length) + ")";
+        }
     }
 
     private final static SearchInfo NULL_SEARCH_INFO = new SearchInfo(null, 0);
