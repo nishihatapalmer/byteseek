@@ -564,10 +564,15 @@ public final class SignedHash3Searcher extends AbstractSequenceWindowSearcher<Se
     public String toString() {
         return getClass().getSimpleName() +
                 "(power 2 size:"   + POWER_TWO_SIZE +
-                " forward info:"   + forwardSearchInfo +
-                " backward info: " + backwardSearchInfo +
+                " forward info:"   + (forwardSearchInfo.created()?
+                                      forwardSearchInfo.get().shifts != null?
+                                      forwardSearchInfo : fallbackSearcher : forwardSearchInfo) +
+                " backward info: " + (backwardSearchInfo.created()?
+                                      backwardSearchInfo.get().shifts != null?
+                                      backwardSearchInfo : fallbackSearcher : backwardSearchInfo) +
                 " sequence:"       + sequence + ')';
     }
+
 
 
     /*********************
