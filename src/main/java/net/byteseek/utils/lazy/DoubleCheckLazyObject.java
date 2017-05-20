@@ -85,4 +85,9 @@ public final class DoubleCheckLazyObject<T> implements LazyObject<T> {
         return object == null;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + object == null? "{not yet created}" : object.toString() + ")";
+    }
+
 }
