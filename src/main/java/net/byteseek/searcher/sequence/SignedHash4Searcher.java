@@ -327,11 +327,11 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
         while (searchPos <= SEARCH_END) {
 
             // Calculate hash of qgram:
-            final int hash = (int) (((((((bytes[searchPos - 3] & 0xFF) << 8) | // build qgram (integer from bytes)
-                                         (bytes[searchPos - 2] & 0xFF) << 8) |
-                                         (bytes[searchPos - 1] & 0xFF) << 8) |
-                                         (bytes[searchPos    ] & 0xFF))
-                                    * HASH_MULTIPLY) >>> HASH_SHIFT);          // multiply-shift hash.
+            final int hash = (int) (((((((((bytes[searchPos - 3] & 0xFF)  << 8) | // build qgram (integer from bytes)
+                                           (bytes[searchPos - 2] & 0xFF)) << 8) |
+                                           (bytes[searchPos - 1] & 0xFF)) << 8) |
+                                           (bytes[searchPos    ] & 0xFF))
+                                       * HASH_MULTIPLY) >>> HASH_SHIFT);          // multiply-shift hash.
 
             // Get the shift for this qgram:
             final int shift = SHIFTS[hash];
@@ -394,15 +394,15 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
 
                 // Calculate hash:
                 final int hash = arrayPos < LAST_QGRAM_POS?
-                    (int) (((((((reader.readByte(searchPos - 3)) << 8) | // build qgram...
-                                (reader.readByte(searchPos - 2)) << 8) |
-                                (reader.readByte(searchPos - 1)) << 8) |
-                                (array[arrayPos] & 0xFF))
+                    (int) (((((((((reader.readByte(searchPos - 3)) << 8) | // build qgram...
+                                  (reader.readByte(searchPos - 2))) << 8) |
+                                  (reader.readByte(searchPos - 1))) << 8) |
+                                  (array[arrayPos] & 0xFF))
                            * HASH_MULTIPLY) >>> HASH_SHIFT)             // multiply shift hash.
-                  : (int) (((((((array[arrayPos - 3] & 0xFF) << 8) | // build qgram
-                                (array[arrayPos - 2] & 0xFF) << 8) |
-                                (array[arrayPos - 1] & 0xFF) << 8) |
-                                (array[arrayPos    ] & 0xFF))
+                  : (int) (((((((((array[arrayPos - 3] & 0xFF) << 8) | // build qgram
+                                  (array[arrayPos - 2] & 0xFF)) << 8) |
+                                  (array[arrayPos - 1] & 0xFF)) << 8) |
+                                  (array[arrayPos    ] & 0xFF))
                            * HASH_MULTIPLY) >>> HASH_SHIFT);        // multiply shift hash.
 
                 // Get shift and either shift forwards, or verify then shift
@@ -451,10 +451,10 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
         while (searchPos >= SEARCH_END) {
 
             // Calculate hash of qgram:
-            final int hash = (int) (((((((bytes[searchPos + 3] & 0xFF) << 8) | // build qgram
-                                         (bytes[searchPos + 2] & 0xFF) << 8) |
-                                         (bytes[searchPos + 1] & 0xFF) << 8) |
-                                         (bytes[searchPos    ] & 0xFF))
+            final int hash = (int) (((((((((bytes[searchPos + 3] & 0xFF) << 8) | // build qgram
+                                           (bytes[searchPos + 2] & 0xFF)) << 8) |
+                                           (bytes[searchPos + 1] & 0xFF)) << 8) |
+                                           (bytes[searchPos    ] & 0xFF))
                                      * HASH_MULTIPLY) >>> HASH_SHIFT);         // multiply shift hash.
 
             // Get the shift for this qgram:
@@ -519,15 +519,15 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
 
                 // Calculate hash:
                 final int hash = arrayPos >= CROSSOVER_QGRAM_POS?  // crosses over into next window?
-                    (int) (((((((reader.readByte(searchPos + 3)) << 8) | // build qgram
-                                (reader.readByte(searchPos + 2)) << 8) |
-                                (reader.readByte(searchPos + 1)) << 8) |
-                                (array[arrayPos] & 0xFF))
+                    (int) (((((((((reader.readByte(searchPos + 3)) << 8) | // build qgram
+                                  (reader.readByte(searchPos + 2))) << 8) |
+                                  (reader.readByte(searchPos + 1))) << 8) |
+                                  (array[arrayPos] & 0xFF))
                            * HASH_MULTIPLY) >>> HASH_SHIFT)              // multiply shift hash.
-                  : (int) (((((((array[arrayPos + 3] & 0xFF) << 8) |  // build qgram...
-                                (array[arrayPos + 2] & 0xFF) << 8) |
-                                (array[arrayPos + 1] & 0xFF) << 8) |
-                                (array[arrayPos    ] & 0xFF))
+                  : (int) (((((((((array[arrayPos + 3] & 0xFF) << 8) |  // build qgram...
+                                  (array[arrayPos + 2] & 0xFF)) << 8) |
+                                  (array[arrayPos + 1] & 0xFF)) << 8) |
+                                  (array[arrayPos    ] & 0xFF))
                            * HASH_MULTIPLY) >>> HASH_SHIFT);          // multiply shift hash.
 
                 // Get shift and either shift forwards, or verify then shift
@@ -696,7 +696,7 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
 
             // Set up the key values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
-            byte[] bytes1 = sequence.getMatcherForPosition(qGramStartPos).getMatchingBytes();
+            byte[] bytes1 = sequence.getMatcherForPosition(qGramStartPos    ).getMatchingBytes();
             byte[] bytes2 = sequence.getMatcherForPosition(qGramStartPos + 1).getMatchingBytes();
             byte[] bytes3 = sequence.getMatcherForPosition(qGramStartPos + 2).getMatchingBytes();
             int keyValue = 0;
@@ -717,9 +717,9 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                 final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
                 if (numberOfPermutations == 1L) { // no permutations to worry about:
                     if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                        keyValue = (((bytes0[0] & 0xFF) << 8) |
-                                     (bytes1[0] & 0xFF) << 8) |
-                                     (bytes2[0] & 0xFF);
+                        keyValue = ((((bytes0[0] & 0xFF)  << 8) |
+                                      (bytes1[0] & 0xFF)) << 8) |
+                                      (bytes2[0] & 0xFF);
                         haveLastKeyValue = true;
                     }
                     keyValue = (keyValue << 8) | (bytes3[0] & 0xFF); // calculate the new qgram.
@@ -742,10 +742,10 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                         while (qGramPermutations.hasNext()) {
                             // Calculate the key value:
                             final byte[] permutationValue = qGramPermutations.next();
-                            keyValue = ((((permutationValue[0] & 0xFF) << 8) |
-                                          (permutationValue[1] & 0xFF) << 8) |
-                                          (permutationValue[2] & 0xFF) << 8) |
-                                          (permutationValue[3] & 0xFF);
+                            keyValue = ((((((permutationValue[0] & 0xFF) << 8) |
+                                            (permutationValue[1] & 0xFF)) << 8) |
+                                            (permutationValue[2] & 0xFF)) << 8) |
+                                            (permutationValue[3] & 0xFF);
                             // Calculate the hash from the key and put the shift value in the hash table.
                             final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
                             SHIFTS[hash] = CURRENT_SHIFT;
@@ -764,9 +764,9 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
             if (numberOfPermutations == 1L) { // no permutations to worry about:
                 if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                    keyValue = (((bytes0[0] & 0xFF) << 8) |
-                                 (bytes1[0] & 0xFF) << 8) |
-                                 (bytes2[0] & 0xFF);
+                    keyValue = ((((bytes0[0] & 0xFF)  << 8) |
+                                  (bytes1[0] & 0xFF)) << 8) |
+                                  (bytes2[0] & 0xFF);
                 }
                 keyValue = (keyValue << 8) | (bytes3[0] & 0xFF); // calculate the new qgram.
 
@@ -792,10 +792,10 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                     while (qGramPermutations.hasNext()) {
                         // Calculate the key value:
                         final byte[] permutationValue = qGramPermutations.next();
-                        keyValue = ((((permutationValue[0] & 0xFF) << 8) |
-                                      (permutationValue[1] & 0xFF) << 8) |
-                                      (permutationValue[2] & 0xFF) << 8) |
-                                      (permutationValue[3] & 0xFF);
+                        keyValue = ((((((permutationValue[0] & 0xFF) << 8) |
+                                        (permutationValue[1] & 0xFF)) << 8) |
+                                        (permutationValue[2] & 0xFF)) << 8) |
+                                        (permutationValue[3] & 0xFF);
                         // Calculate the hash from the key and put the shift value in the hash table.
                         final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
 
@@ -908,9 +908,9 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                 final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
                 if (numberOfPermutations == 1L) { // no permutations to worry about:
                     if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                        keyValue = (((bytes0[0] & 0xFF) << 8) |
-                                     (bytes1[0] & 0xFF) << 8) |
-                                     (bytes2[0] & 0xFF);
+                        keyValue = ((((bytes0[0] & 0xFF)  << 8) |
+                                      (bytes1[0] & 0xFF)) << 8) |
+                                      (bytes2[0] & 0xFF);
                         haveLastKeyValue = true;
                     }
                     keyValue = (keyValue << 8) | (bytes3[0] & 0xFF); // calculate the new qgram.
@@ -933,10 +933,10 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                         while (qGramPermutations.hasNext()) {
                             // Calculate the key value:
                             final byte[] permutationValue = qGramPermutations.next();
-                            keyValue = ((((permutationValue[0] & 0xFF) << 8) |
-                                          (permutationValue[1] & 0xFF) << 8) |
-                                          (permutationValue[2] & 0xFF) << 8) |
-                                          (permutationValue[3] & 0xFF);
+                            keyValue = ((((((permutationValue[0] & 0xFF)  << 8) |
+                                            (permutationValue[1] & 0xFF)) << 8) |
+                                            (permutationValue[2] & 0xFF)) << 8) |
+                                            (permutationValue[3] & 0xFF);
                             // Calculate the hash from the key and put the shift value in the hash table.
                             final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
                             SHIFTS[hash] = CURRENT_SHIFT;
@@ -955,9 +955,9 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
             if (numberOfPermutations == 1L) { // no permutations to worry about:
                 if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                    keyValue = (((bytes0[0] & 0xFF) << 8) |
-                                 (bytes1[0] & 0xFF) << 8) |
-                                 (bytes2[0] & 0xFF);
+                    keyValue = ((((bytes0[0] & 0xFF) << 8) |
+                                  (bytes1[0] & 0xFF)) << 8) |
+                                  (bytes2[0] & 0xFF);
                 }
                 keyValue = (keyValue << 8) | (bytes3[0] & 0xFF); // calculate the new qgram.
 
@@ -983,10 +983,10 @@ public final class SignedHash4Searcher extends AbstractSequenceWindowSearcher<Se
                     while (qGramPermutations.hasNext()) {
                         // Calculate the key value:
                         final byte[] permutationValue = qGramPermutations.next();
-                        keyValue = ((((permutationValue[0] & 0xFF) << 8) |
-                                      (permutationValue[1] & 0xFF) << 8) |
-                                      (permutationValue[2] & 0xFF) << 8) |
-                                      (permutationValue[3] & 0xFF);
+                        keyValue = ((((((permutationValue[0] & 0xFF)  << 8) |
+                                        (permutationValue[1] & 0xFF)) << 8) |
+                                        (permutationValue[2] & 0xFF)) << 8) |
+                                        (permutationValue[3] & 0xFF);
                         // Calculate the hash from the key and put the shift value in the hash table.
                         final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
 
