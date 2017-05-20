@@ -542,12 +542,16 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
 
     @Override
     public void prepareForwards() {
-        forwardSearchInfo.get();
+        if (forwardSearchInfo.get().shifts == null) {
+            fallbackSearcher.get().prepareForwards();
+        }
     }
 
     @Override
     public void prepareBackwards() {
-        backwardSearchInfo.get();
+        if (backwardSearchInfo.get().shifts == null) {
+            fallbackSearcher.get().prepareBackwards();
+        }
     }
 
     @Override
