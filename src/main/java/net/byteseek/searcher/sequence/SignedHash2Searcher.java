@@ -608,7 +608,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
             // Set up the key values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
-            byte[] bytes1 = sequence.getMatcherForPosition(qGramStartPos    ).getMatchingBytes();
+            byte[] bytes1 = localSequence.getMatcherForPosition(qGramStartPos    ).getMatchingBytes();
             int hashValue = 0;
             boolean haveLastHashValue = false;
             final int MASK = TABLE_SIZE - 1;
@@ -622,7 +622,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
                 // Get the byte arrays for the qGram at the current qGramStart:
                 bytes0 = bytes1;                                                       // shift byte arrays along one.
-                bytes1 = sequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
+                bytes1 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
                 // Process the qgram permutations as efficiently as possible:
                 final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
@@ -658,7 +658,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
             // Get byte arrays for last q-gram:
             bytes0 = bytes1;               ;                            // shift byte arrays along one.
-            bytes1 = sequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
+            bytes1 = localSequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
 
             // Process the last qgram permutations as efficiently as possible:
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
@@ -775,7 +775,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
             // Set up the key values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
-            byte[] bytes1 = sequence.getMatcherForPosition(qGramStartPos ).getMatchingBytes();
+            byte[] bytes1 = localSequence.getMatcherForPosition(qGramStartPos ).getMatchingBytes();
             int hashValue = 0;
             boolean haveLastHashValue = false;
             final int MASK = TABLE_SIZE - 1;
@@ -789,7 +789,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
                 // Get the byte arrays for the qGram at the current qGramStart:
                 bytes0 = bytes1;                                                      // shift byte arrays along one.
-                bytes1 = sequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
+                bytes1 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
                 // Process the qgram permutations as efficiently as possible:
                 final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
@@ -827,7 +827,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
             // Get byte arrays for first q-gram:
             bytes0 = bytes1;                                               // shift byte arrays along one.
-            bytes1 = sequence.getMatcherForPosition(0).getMatchingBytes(); // get last byte array.
+            bytes1 = localSequence.getMatcherForPosition(0).getMatchingBytes(); // get last byte array.
 
             // Process the last qgram permutations as efficiently as possible:
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
