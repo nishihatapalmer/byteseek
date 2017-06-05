@@ -408,7 +408,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
     }
 
     @Override
-    public boolean fallbackBackwards() {
+    protected boolean fallbackBackwards() {
         return backwardSearchInfo.get().shifts == null;
     }
 
