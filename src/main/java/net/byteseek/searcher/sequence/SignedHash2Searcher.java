@@ -516,17 +516,6 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
      * Private methods *
      *******************/
 
-    private int getHashShift(final int tableSize) {
-        for (int shift = 2; shift < 11; shift++) {
-            final int shiftSize = 1 << (QLEN * shift);
-            if (shiftSize >= tableSize) {
-                return shift;
-            }
-        }
-        return 10; // max shift of 10 gives table size of 1M.
-    }
-
-
     /**
      * A simple data class containing the shifts for searching and the bitshift needed for the hash-multiply hash function.
      */
@@ -606,7 +595,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
             // Determine bit shift for bit shift hash algorithm
             // Find a bitshift which would give a table size equal or bigger than the hash table size we're using:
-            final int HASH_SHIFT = getHashShift(TABLE_SIZE);
+            final int HASH_SHIFT = getHashShift(TABLE_SIZE, QLEN);
 
             // Determine max search shift allowed by the qGramStartPos.
             // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
@@ -773,7 +762,7 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
             final int TABLE_SIZE = 1 << HASH_POWER_TWO_SIZE;
 
             // Determine bit shift for multiply-shift hash algorithm:
-            final int HASH_SHIFT = getHashShift(TABLE_SIZE);
+            final int HASH_SHIFT = getHashShift(TABLE_SIZE, QLEN);
 
             // Determine max search shift allowed by the qGramEndPos.
             // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
