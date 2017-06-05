@@ -35,7 +35,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.utils.ArgUtils;
+import net.byteseek.searcher.SearchIndexSize;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.utils.collections.BytePermutationIterator;
 import net.byteseek.utils.factory.ObjectFactory;
@@ -77,7 +77,7 @@ import java.util.Arrays;
  * ShiftOr creates a table of 256 elements, which in most cases will be the same or smaller
  * than the table used by this searcher, and whose pre-processing time is also faster.
  */
-public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher {
 
     /*************
      * Constants *
@@ -88,58 +88,22 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      */
     private final static int QLEN = 2;
 
-    /**
-     * The hash table size used by the hash function, expressed as a power of two.
-     * A zero power of two tells the algorithm to select the smallest table which will give good performance.
-     * A negative power of two means the algorithm limits the biggest table it will select to the (positive) power of two.
-     */
-    private final static int DEFAULT_POWER_TWO = -16; // automatically select a hash table size no larger than 2^16 = 65k.
-
-    /**
-     * The minimum size of the hash table automatically selected by this algorithm, expressed as a power of two.
-     */
-    private final static int MIN_POWER_TWO_SIZE = 5; // equals 2^5 = 32.
-
-    /**
-     * The maximum size of the hash table supported by the algorithm, expressed as a power of two.
-     */
-    private final static int MAX_POWER_TWO_SIZE = 28; // 256Mb ought to be enough for anybody...
-
-    //TODO: validate the restrictions on this value.  Unless the constant is around 64 bits, small values all end up
-    //      mapping to zero, so adjacent keys get the same hash.  Concerning because I haven't seen discussion of this
-    //      property about the hash function.  Small values end up as zero because the shift puts the higher bits into the
-    //      lower bits.  Unless the higher bits get populated during the multiply stage (overflow isn't a problem),
-    //      then all the lower bits are zero.
-    /**
-     * A constant used in the multiply-shift hash algorithm.  The qgram (as an integer) is multiplied by this
-     * value, which must be odd, and around 64 bits in length. Other than those restrictions, it's just a random value.
-     */
-    private final static long HASH_MULTIPLY = 0xee4c2ad3f592b105L;
-
 
     /**********
      * Fields *
      **********/
 
     /**
-     * The size of the hash table as a power of two.  Can also be zero (auto select a good size),
-     * and negative (auto select, but don't exceed the maximum of the (positive) power of two).
-     */
-    private final int POWER_TWO_SIZE;
-
-    /**
-     * A lazy object which can create the information needed to search.
-     * An array of shifts is used to determine how far it is safe to shift given a qgram seen in the text.
+     * A lazy object which can create the information needed to search forwards.
+     * An array of integers is used to determine how far it is safe to shift given a qgram seen in the text.
      */
     private final LazyObject<SearchInfo> forwardSearchInfo;
-    private final LazyObject<SearchInfo> backwardSearchInfo;
 
     /**
-     * A replacement searcher for sequences whose length is less than the qgram length, which this searcher cannot search for.
-     * Also used as a fallback in case it is not possible to create a hash table which would give reasonable performance
-     * (e.g. if the maximum table size isn't sufficient, or the pattern is pathological in some way).
+     * A lazy object which can create the information needed to search backwards.
+     * An array of integers is used to determine how far it is safe to shift given a qgram seen in the text.
      */
-    private final LazyObject<SequenceSearcher<SequenceMatcher>> fallbackSearcher;
+    private final LazyObject<SearchInfo> backwardSearchInfo;
 
 
     /****************
@@ -152,36 +116,26 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      * @param sequence The SequenceMatcher to search for.
      */
     public SignedHash2Searcher(final SequenceMatcher sequence) {
-        this(sequence, DEFAULT_POWER_TWO);
+        this(sequence, DEFAULT_SEARCH_INDEX_SIZE);
     }
 
     /**
-     * Constructs a searcher given a {@link SequenceMatcher} to search for, and a powerTwoSize which determines
-     * the size of the hash table used, up to maximum of 31, = 2^31, the largest possible array in Java.
+     * Constructs a searcher given a {@link SequenceMatcher} to search for, and the size of the search index to use.
      * <p>
-     * If the powerTwoSize is set to zero, then the smallest table size which could give good performance for the
-     * pattern will be automatically selected, although it may result in very large table sizes for some complex
-     * patterns.
-     * <p>
-     * If the powerTwoSize is negative, then the smallest good performing table size will also be automatically
-     * selected, up to a maximum size given by the positive value, e.g. -12 = 2^12 = no bigger than 4096 elements.
-     * If the pattern is too complex to be adequately represented by the available table size,
+     * If a pattern is too complex to be adequately represented by the available table size,
      * a replacement searcher will be used in place of this algorithm (which is ShiftOR).  This is because if the
      * hash table is too small, the available shifts will be very small too and searching will consequently be
      * very slow.  While ShiftOR isn't particularly fast, it is faster than using this algorithm poorly and
      * does not suffer at all from complexity in the patterns.
      *
      * @param sequence      The SequenceMatcher to search for.
-     * @param powerTwoSize  Determines the size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty or the shift is less than -28 or greater than 28.
+     * @param searchIndexSize  Determines the size of the hash table used by the search algorithm.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the searchIndexSize is null.
      */
-    public SignedHash2Searcher(final SequenceMatcher sequence, final int powerTwoSize) {
-        super(sequence);
-        ArgUtils.checkRangeInclusive(powerTwoSize, -MAX_POWER_TWO_SIZE, MAX_POWER_TWO_SIZE, "powerTwoSize");
-        POWER_TWO_SIZE = powerTwoSize;
+    public SignedHash2Searcher(final SequenceMatcher sequence, final SearchIndexSize searchIndexSize) {
+        super(sequence, searchIndexSize);
         forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
         backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
-        fallbackSearcher   = new DoubleCheckImmutableLazyObject<SequenceSearcher<SequenceMatcher>>(new FallbackSearcherFactory());
     }
 
     /**
@@ -192,7 +146,7 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public SignedHash2Searcher(final String sequence) {
-        this(sequence, Charset.defaultCharset(), DEFAULT_POWER_TWO);
+        this(sequence, Charset.defaultCharset(), DEFAULT_SEARCH_INDEX_SIZE);
     }
 
     /**
@@ -213,11 +167,11 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      * does not suffer at all from complexity in the patterns.
      *
      * @param sequence The string to search for.
-     * @param powerTwoSize  Determines the size of the hash table used by the search algorithm.
+     * @param searchIndexSize  Determines the size of the hash table used by the search algorithm.
      * @throws IllegalArgumentException if the sequence is null or empty or the powerTwoSize is less than -28 or greater than 28.
      */
-    public SignedHash2Searcher(final String sequence, final int powerTwoSize) {
-        this(sequence, Charset.defaultCharset(), powerTwoSize);
+    public SignedHash2Searcher(final String sequence, final SearchIndexSize searchIndexSize) {
+        this(sequence, Charset.defaultCharset(), searchIndexSize);
     }
 
     /**
@@ -251,11 +205,11 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @param powerTwoSize  Determines the size of the hash table used by the search algorithm.
+     * @param searchIndexSize  Determines the size of the hash table used by the search algorithm.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public SignedHash2Searcher(final String sequence, final Charset charset, final int powerTwoSize) {
-        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), powerTwoSize);
+    public SignedHash2Searcher(final String sequence, final Charset charset, final SearchIndexSize searchIndexSize) {
+        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), searchIndexSize);
     }
 
     /**
@@ -265,7 +219,7 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public SignedHash2Searcher(final byte[] sequence) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_POWER_TWO);
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_SEARCH_INDEX_SIZE);
     }
 
     /**
@@ -285,11 +239,11 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      * does not suffer at all from complexity in the patterns.
      *
      * @param sequence The byte sequence to search for.
-     * @param powerTwoSize Determines the size of the hash table used by the search algorithm.
+     * @param searchIndexSize Determines the size of the hash table used by the search algorithm.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public SignedHash2Searcher(final byte[] sequence, final int powerTwoSize) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence), powerTwoSize);
+    public SignedHash2Searcher(final byte[] sequence, final SearchIndexSize searchIndexSize) {
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), searchIndexSize);
     }
 
 
@@ -298,20 +252,16 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
      ******************/
 
     @Override
-    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    protected int doSearchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = forwardSearchInfo.get();
         final int[] SHIFTS          = searchInfo.shifts;
         final int HASH_SHIFT        = searchInfo.bitshift;
 
-        // Do we need to use the fallback searcher (no shifts available)?
-        if (SHIFTS == null) {
-            return fallbackSearcher.get().searchSequenceForwards(bytes, fromPosition, toPosition);
-        }
-
-        // Get local copies of member fields
+        // Get local copies of member fields and constants:
         final SequenceMatcher localSequence = sequence;
+        final int MASK = SHIFTS.length - 1;             // SHIFTS is always a power of two in length.
 
         // Determine safe shifts, starts and ends:
         final int LAST_PATTERN_POS     = localSequence.length() - 1;
@@ -327,12 +277,11 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
         while (searchPos <= SEARCH_END) {
 
             // Calculate hash of qgram:
-            final int hash = (int) (((((bytes[searchPos - 1] & 0xFF) << 8) | // build qgram (integer from bytes)
-                                       (bytes[searchPos    ] & 0xFF))
-                                    * HASH_MULTIPLY) >>> HASH_SHIFT);         // multiply-shift hash.
+            int hash =                        (bytes[searchPos - 1] & 0xFF);
+            hash     = (hash << HASH_SHIFT) + (bytes[searchPos    ] & 0xFF);
 
             // Get the shift for this qgram:
-            final int shift = SHIFTS[hash];
+            final int shift = SHIFTS[hash & MASK];
 
             // If we have a positive shift:
             if (shift > 0) {
@@ -349,10 +298,8 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
     }
 
     @Override
-    public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        return forwardSearchInfo.get().shifts != null?
-                super.searchSequenceForwards(reader, fromPosition, toPosition)
-                : fallbackSearcher.get().searchSequenceForwards(reader, fromPosition, toPosition);
+    protected boolean fallbackForwards() {
+        return forwardSearchInfo.get().shifts == null;
     }
 
     @Override
@@ -362,6 +309,7 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
         final SearchInfo searchInfo = forwardSearchInfo.get();
         final int[] SHIFTS          = searchInfo.shifts;
         final int   HASH_SHIFT      = searchInfo.bitshift;
+        final int MASK              = SHIFTS.length - 1; // SHIFTS is always a power of two in length.
 
         // Get local copies of member fields
         final SequenceMatcher localSequence = sequence;
@@ -391,16 +339,17 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
             while (arrayPos <= LAST_ARRAY_POS) {
 
                 // Calculate hash:
-                final int hash = arrayPos < LAST_QGRAM_POS?
-                        (int) (((((reader.readByte(searchPos - 1))  << 8) | // build qgram...
-                                  (array[arrayPos] & 0xFF))
-                                * HASH_MULTIPLY) >>> HASH_SHIFT)            // multiply shift hash.
-                      : (int) (((((array[arrayPos - 1] & 0xFF)  << 8) |     // build qgram
-                                  (array[arrayPos    ] & 0xFF))
-                                * HASH_MULTIPLY) >>> HASH_SHIFT);           // multiply shift hash.
+                int hash;
+                if (arrayPos <= LAST_QGRAM_POS) {
+                    hash =                        reader.readByte(searchPos - 1);
+                    hash = (hash << HASH_SHIFT) + (array[arrayPos] & 0xFF);
+                } else {
+                    hash =                        (array[arrayPos - 1] & 0xFF);
+                    hash = (hash << HASH_SHIFT) + (array[arrayPos] & 0xFF);
+                }
 
                 // Get shift and either shift forwards, or verify then shift
-                final int shift = SHIFTS[hash];
+                final int shift = SHIFTS[hash & MASK];
                 if (shift > 0) {
                     arrayPos  += shift;
                     searchPos += shift;
@@ -418,17 +367,13 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
     }
 
     @Override
-    public int searchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    protected int doSearchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition) {
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = backwardSearchInfo.get();
         final int[] SHIFTS          = searchInfo.shifts;
         final int   HASH_SHIFT      = searchInfo.bitshift;
-
-        // Do we need to use the fallback searcher (no shifts available)?
-        if (SHIFTS == null) {
-            return fallbackSearcher.get().searchSequenceBackwards(bytes, fromPosition, toPosition);
-        }
+        final int   MASK            = SHIFTS.length - 1;   // SHIFTS is always a power of two in length.
 
         // Get local copies of member fields
         final SequenceMatcher localSequence = sequence;
@@ -445,12 +390,11 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
         while (searchPos >= SEARCH_END) {
 
             // Calculate hash of qgram:
-            final int hash = (int) (((((bytes[searchPos + 1] & 0xFF) << 8) | // build qgram
-                                       (bytes[searchPos    ] & 0xFF))
-                                    * HASH_MULTIPLY) >>> HASH_SHIFT);        // multiply shift hash.
+            int hash =                        (bytes[searchPos + 1] & 0xFF);
+            hash     = (hash << HASH_SHIFT) + (bytes[searchPos    ] & 0xFF);
 
             // Get the shift for this qgram:
-            final int shift = SHIFTS[hash];
+            final int shift = SHIFTS[hash & MASK];
             if (shift > 0) {        // If we have a positive shift,
                 searchPos -= shift; // just shift backwards - no match here.
             } else {                // A negative shift means the last qgram may match.
@@ -464,10 +408,8 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
     }
 
     @Override
-    public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        return backwardSearchInfo.get().shifts != null?
-                super.searchSequenceBackwards(reader, fromPosition, toPosition)
-                : fallbackSearcher.get().searchSequenceBackwards(reader, fromPosition, toPosition);
+    public boolean fallbackBackwards() {
+        return backwardSearchInfo.get().shifts == null;
     }
 
     @Override
@@ -479,6 +421,7 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
         final SearchInfo searchInfo = backwardSearchInfo.get();
         final int[] SHIFTS          = searchInfo.shifts;
         final int HASH_SHIFT        = searchInfo.bitshift;
+        final int MASK              = SHIFTS.length - 1; // SHIFTS is always a power of two in length.
 
         // Determine safe shifts, starts and ends:
         final long SEARCH_START = fromPosition; // TODO: withinLength?  needed for doSearchBackwards?
@@ -510,16 +453,17 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
                 //      move past the end on the next iteration or two...
 
                 // Calculate hash:
-                final int hash = arrayPos >= CROSSOVER_QGRAM_POS?  // crosses over into next window?
-                        (int) (((((reader.readByte(searchPos + 1)) << 8) |   // build qgram
-                                  (array[arrayPos] & 0xFF))
-                               * HASH_MULTIPLY) >>> HASH_SHIFT)              // multiply shift hash.
-                      : (int) (((((array[arrayPos + 1] & 0xFF) << 8) |       // build qgram...
-                                  (array[arrayPos    ] & 0xFF))
-                               * HASH_MULTIPLY) >>> HASH_SHIFT);             // multiply shift hash.
+                int hash;
+                if (arrayPos >= CROSSOVER_QGRAM_POS) { // crosses over into next window?
+                    hash =                         reader.readByte(searchPos + 1);
+                    hash = (hash << HASH_SHIFT) + (array[arrayPos] & 0xFF);
+                } else {
+                    hash =                        (array[arrayPos + 1] & 0xFF);
+                    hash = (hash << HASH_SHIFT) + (array[arrayPos] & 0xFF);
+                }
 
                 // Get shift and either shift forwards, or verify then shift
-                final int shift = SHIFTS[hash];
+                final int shift = SHIFTS[hash & MASK];
                 if (shift > 0) {
                     arrayPos  -= shift;
                     searchPos -= shift;
@@ -557,10 +501,10 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
     @Override
     public String toString() {
         return getClass().getSimpleName() +
-                "(power 2 size:"   + POWER_TWO_SIZE +
+                "(index size:"     + searchIndexSize +
                 " forward info:"   + (forwardSearchInfo.created()?
                                       forwardSearchInfo.get().shifts != null?
-                                      forwardSearchInfo : fallbackSearcher : forwardSearchInfo) +
+                                      forwardSearchInfo : fallbackSearcher.get() : forwardSearchInfo) +
                 " backward info: " + (backwardSearchInfo.created()?
                                       backwardSearchInfo.get().shifts != null?
                                       backwardSearchInfo : fallbackSearcher : backwardSearchInfo) +
@@ -568,43 +512,18 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
     }
 
 
-    /*********************
-     * Protected methods *
-     *********************/
-
-    @Override
-    protected int getSequenceLength() {
-        return sequence.length();
-    }
-
-
     /*******************
-     * Private classes *
+     * Private methods *
      *******************/
 
-    /**
-     * A factory for a short sequence searcher, to fill in for sequences with a length less than the Qgram length.
-     * <p>
-     * <b>Design Note</b>
-     * <p>
-     * This allows a developer to pass any valid pattern into this search algorithm without error.  The alternative is
-     * to throw an IllegalArgumentException in the constructor if the pattern is too short, but this could easily
-     * lead to errors in user applications, since patterns are commonly supplied by the user, not the programmer.
-     * <p>
-     * While this decision violates the principle that these search algorithms are primitives and should not make high
-     * level decisions on behalf of the programmer, it seems the lesser of two evils to make it safe to use any search
-     * algorithm with any valid pattern, even if occasionally you don't quite get the algorithm you thought you specified.
-     * <p>
-     * Given this, we choose to supply the fastest known algorithm for short patterns (ShiftOr),
-     * rather than one which is more spiritually similar to this algorithm (e.g. the SignedHorspoolSearcher), or the
-     * simplest possible algorithm (e.g. the SequenceMatcherSearcher).
-     */
-    private final class FallbackSearcherFactory implements ObjectFactory<SequenceSearcher<SequenceMatcher>> {
-
-        @Override
-        public SequenceSearcher<SequenceMatcher> create() {
-            return new ShiftOrSearcher(sequence);  // the fastest searcher for short patterns.
+    private int getHashShift(final int tableSize) {
+        for (int shift = 2; shift < 11; shift++) {
+            final int shiftSize = 1 << (QLEN * shift);
+            if (shiftSize >= tableSize) {
+                return shift;
+            }
         }
+        return 10; // max shift of 10 gives table size of 1M.
     }
 
 
@@ -643,13 +562,10 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
             // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
             if (PATTERN_LENGTH <= QLEN) {
-                return NULL_SEARCH_INFO; // no shifts to calculate.
+                return NULL_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
             }
 
-            // Determine the maximum size of the hash table:
-            final int MAX_HASH_POWER_TWO_SIZE = (POWER_TWO_SIZE > 0)? POWER_TWO_SIZE
-                    : POWER_TWO_SIZE == 0? MAX_POWER_TWO_SIZE
-                    : -POWER_TWO_SIZE;
+            final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             // This will give us the size of the hash table and the starting position of the qgram to calculate shifts for,
@@ -664,6 +580,9 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
                 num0 = num1; // shift byte counts along.
                 num1 = localSequence.getNumBytesAtPosition(qGramStartPos); // get next count.
                 totalQgrams += (num0 * num1);
+
+                //TODO: might need to step back if we get a huge byte class... no point in processing it in the main loop.
+                //      at the moment, we stop when we exceed the max size... at the point we cross it, which might be a lot.
                 // If we go beyond the max table load, stop further processing.
                 if ((totalQgrams >> 2) >= MAX_TABLE_SIZE) { // if there's four times as many qgrams as max table size (quarter bigger than max):
                     qGramStartPos--; // make the sums add up, will be re-added when loop ends.
@@ -674,18 +593,20 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
 
             // Determine final size of hash table:
             final int HASH_SIZE;
-            if (POWER_TWO_SIZE > 0) {       // specified by user - must use this size exactly.
-                HASH_SIZE = POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
+            if (searchIndexSize.getSizeMethod() == SearchIndexSize.Method.EXACTLY) {       // specified by user - must use this size exactly.
+                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
             } else {
                 //TODO: or should it be the power of two *one higher* than ceilLogBase2 of total qgrams? What effective margin do we want?
                 final int qGramPowerTwoSize = ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
                 HASH_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?
-                        MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
-                        qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
+                            MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
+                                                      qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
             }
+            final int TABLE_SIZE = 1 << HASH_SIZE;
 
-            // Determine bit shift for multiply-shift hash algorithm:
-            final int HASH_SHIFT = 64 - HASH_SIZE;
+            // Determine bit shift for bit shift hash algorithm
+            // Find a bitshift which would give a table size equal or bigger than the hash table size we're using:
+            final int HASH_SHIFT = getHashShift(TABLE_SIZE);
 
             // Determine max search shift allowed by the qGramStartPos.
             // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
@@ -693,14 +614,15 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
             final int MAX_SEARCH_SHIFT = PATTERN_LENGTH - QLEN - qGramStartPos + 1;
 
             // Set up the hash table and initialize to the maximum shift allowed given qGramStartPos.
-            final int[] SHIFTS = new int[1 << HASH_SIZE];
+            final int[] SHIFTS = new int[TABLE_SIZE];
             Arrays.fill(SHIFTS, MAX_SEARCH_SHIFT);
 
             // Set up the key values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
             byte[] bytes1 = sequence.getMatcherForPosition(qGramStartPos    ).getMatchingBytes();
-            int keyValue = 0;
-            boolean haveLastKeyValue = false;
+            int hashValue = 0;
+            boolean haveLastHashValue = false;
+            final int MASK = TABLE_SIZE - 1;
 
             // Process all the qgrams in the pattern from the qGram start pos to one before the end of the pattern.
             final int LAST_PATTERN_POS = PATTERN_LENGTH - 1;
@@ -716,34 +638,28 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
                 // Process the qgram permutations as efficiently as possible:
                 final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
                 if (numberOfPermutations == 1L) { // no permutations to worry about:
-                    if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                        keyValue = bytes0[0] & 0xFF;
-                        haveLastKeyValue = true;
+                    if (!haveLastHashValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
+                        hashValue = bytes0[0] & 0xFF;
+                        haveLastHashValue = true;
                     }
-                    keyValue = ((keyValue << 8) | (bytes1[0] & 0xFF)) & 0xFFFF; // calculate the new qgram (mask to first two bytes).
-
-                    // Calculate the hash from the key and put the shift value in the hash table.
-                    final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
-                    SHIFTS[hash] = CURRENT_SHIFT;
-
+                    hashValue = (hashValue << HASH_SHIFT) +(bytes1[0] & 0xFF);
+                    SHIFTS[hashValue & MASK] = CURRENT_SHIFT;
                 } else { // more than one permutation to work through.
-                    if (haveLastKeyValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                    if (haveLastHashValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                        hashValue = hashValue << HASH_SHIFT;
                         for (final byte permutationValue : bytes1) {
-                            final int permutationKey = ((keyValue << 8) | (permutationValue & 0xFF)) & 0xFFFF;
-                            final int hash = (int) ((permutationKey * HASH_MULTIPLY) >>> HASH_SHIFT);
-                            SHIFTS[hash] = CURRENT_SHIFT;
+                            final int permutationHash = hashValue + (permutationValue & 0xFF);
+                            SHIFTS[permutationHash & MASK] = CURRENT_SHIFT;
                         }
-                        haveLastKeyValue = false; // after processing the permutations, we don't have a single last key value.
+                        haveLastHashValue = false; // after processing the permutations, we don't have a single last key value.
 
                     } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
                         final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1);
                         while (qGramPermutations.hasNext()) {
-                            // Calculate the key value:
+                            // Calculate the hash value:
                             final byte[] permutationValue = qGramPermutations.next();
-                            keyValue = ((permutationValue[0] & 0xFF)  << 8) | (permutationValue[1] & 0xFF);
-                            // Calculate the hash from the key and put the shift value in the hash table.
-                            final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
-                            SHIFTS[hash] = CURRENT_SHIFT;
+                            hashValue = ((permutationValue[0] & 0xFF) << HASH_SHIFT) + (permutationValue[1] & 0xFF);
+                            SHIFTS[hashValue & MASK] = CURRENT_SHIFT;
                         }
                     }
                 }
@@ -758,41 +674,34 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
             // Process the last qgram permutations as efficiently as possible:
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
             if (numberOfPermutations == 1L) { // no permutations to worry about:
-                if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                    keyValue = bytes0[0] & 0xFF;
+                if (!haveLastHashValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
+                    hashValue = bytes0[0] & 0xFF;
                 }
-                keyValue = ((keyValue << 8) | (bytes1[0] & 0xFF)) & 0xFFFF; // calculate the new qgram (mask to first two bytes).
-
-                // Calculate the hash from the key and make the shift value negative.
-                final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
-                SHIFTS[hash] = -SHIFTS[hash];
-
+                hashValue = ((hashValue << HASH_SHIFT) + (bytes1[0] & 0xFF)) & MASK;
+                SHIFTS[hashValue] = -SHIFTS[hashValue];
             } else { // more than one permutation to work through.
-                if (haveLastKeyValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                if (haveLastHashValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                    hashValue = hashValue << HASH_SHIFT;
                     for (final byte permutationValue : bytes1) {
-                        final int permutationKey = ((keyValue << 8) | (permutationValue & 0xFF)) & 0xFFFF;
-                        final int hash = (int) ((permutationKey * HASH_MULTIPLY) >>> HASH_SHIFT);
-
+                        final int permutationHash = (hashValue + (permutationValue & 0xFF)) & MASK;
                         // If the current shift is positive make it negative.
-                        final int CURRENT_SHIFT = SHIFTS[hash];
+                        final int CURRENT_SHIFT = SHIFTS[permutationHash];
                         if (CURRENT_SHIFT > 0) {
-                            SHIFTS[hash] = -CURRENT_SHIFT;
+                            SHIFTS[permutationHash] = -CURRENT_SHIFT;
                         }
                     }
 
                 } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
                     final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1);
                     while (qGramPermutations.hasNext()) {
-                        // Calculate the key value:
+                        // Calculate the hash value:
                         final byte[] permutationValue = qGramPermutations.next();
-                        keyValue = ((permutationValue[0] & 0xFF) << 8) | (permutationValue[1] & 0xFF);
-                        // Calculate the hash from the key and put the shift value in the hash table.
-                        final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
+                        hashValue = (((permutationValue[0] & 0xFF) << HASH_SHIFT) + (permutationValue[1] & 0xFF)) & MASK;
 
                         // If the current shift is positive make it negative.
-                        final int CURRENT_SHIFT = SHIFTS[hash];
+                        final int CURRENT_SHIFT = SHIFTS[hashValue];
                         if (CURRENT_SHIFT > 0) {
-                            SHIFTS[hash] = -CURRENT_SHIFT;
+                            SHIFTS[hashValue] = -CURRENT_SHIFT;
                         }
                     }
                 }
@@ -822,9 +731,7 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
             }
 
             // Determine the maximum size of the hash table:
-            final int MAX_HASH_POWER_TWO_SIZE = (POWER_TWO_SIZE > 0)? POWER_TWO_SIZE
-                    : POWER_TWO_SIZE == 0? MAX_POWER_TWO_SIZE
-                    : -POWER_TWO_SIZE;
+            final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             // This will give us the size of the hash table (if automatically selected) and the starting position of
@@ -841,6 +748,9 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
                 num0 = num1; // shift byte counts along.
                 num1 = localSequence.getNumBytesAtPosition(qGramStartPos); // get next count.
                 totalQgrams += (num0 * num1);
+
+                //TODO: might need to step back if we get a huge byte class... no point in processing it in the main loop.
+                //      at the moment, we stop when we exceed the max size... at the point we cross it, which might be a lot.
                 // If we go beyond the max table load, stop further processing.
                 if ((totalQgrams >> 2) >= MAX_TABLE_SIZE) { // if there's four times as many qgrams as max table size (quarter bigger than max):
                     qGramStartPos++; // make the sums add up, will be re-subtracted when loop ends.
@@ -851,18 +761,19 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
 
             // Determine final size of hash table:
             final int HASH_SIZE;
-            if (POWER_TWO_SIZE > 0) {       // specified by user - must use this size exactly.
-                HASH_SIZE = POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
-            } else {
+            if (searchIndexSize.getSizeMethod() == SearchIndexSize.Method.EXACTLY) {       // specified by user - must use this size exactly.
+                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
+            } else { // it's UP_TO the max size - pick an appropriate size:
                 //TODO: or should it be the power of two *one higher* than ceilLogBase2 of total qgrams? What effective margin do we want?
                 final int qGramPowerTwoSize = ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
                 HASH_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?
-                        MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
-                        qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
+                            MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
+                                                      qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
             }
+            final int TABLE_SIZE = 1 << HASH_SIZE;
 
             // Determine bit shift for multiply-shift hash algorithm:
-            final int HASH_SHIFT = 64 - HASH_SIZE;
+            final int HASH_SHIFT = getHashShift(TABLE_SIZE);
 
             // Determine max search shift allowed by the qGramEndPos.
             // If we bailed out early due to to many qgrams, then this will be further along than the start of the pattern,
@@ -870,14 +781,15 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
             final int MAX_SEARCH_SHIFT = qGramStartPos - QLEN + 2;
 
             // Set up the hash table and initialize to the maximum shift allowed given qGramStartPos.
-            final int[] SHIFTS = new int[1 << HASH_SIZE];
+            final int[] SHIFTS = new int[TABLE_SIZE];
             Arrays.fill(SHIFTS, MAX_SEARCH_SHIFT);
 
             // Set up the key values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
             byte[] bytes1 = sequence.getMatcherForPosition(qGramStartPos ).getMatchingBytes();
-            int keyValue = 0;
-            boolean haveLastKeyValue = false;
+            int hashValue = 0;
+            boolean haveLastHashValue = false;
+            final int MASK = TABLE_SIZE - 1;
 
             // Process all the qgrams in the pattern from the qGram end pos to one after the start of the pattern.
             final int LAST_PATTERN_POS = PATTERN_LENGTH - 1;
@@ -893,34 +805,30 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
                 // Process the qgram permutations as efficiently as possible:
                 final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
                 if (numberOfPermutations == 1L) { // no permutations to worry about:
-                    if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                        keyValue = bytes0[0] & 0xFF;
-                        haveLastKeyValue = true;
+                    if (!haveLastHashValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
+                        hashValue = bytes0[0] & 0xFF;
+                        haveLastHashValue = true;
                     }
-                    keyValue = ((keyValue << 8) | (bytes1[0] & 0xFF)) & 0xFFFF; // calculate the new qgram (mask to first two bytes).
+                    hashValue = ((hashValue << HASH_SHIFT) + (bytes1[0] & 0xFF));
 
                     // Calculate the hash from the key and put the shift value in the hash table.
-                    final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
-                    SHIFTS[hash] = CURRENT_SHIFT;
+                    SHIFTS[hashValue & MASK] = CURRENT_SHIFT;
 
                 } else { // more than one permutation to work through.
-                    if (haveLastKeyValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                    if (haveLastHashValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                        hashValue = hashValue << HASH_SHIFT;
                         for (final byte permutationValue : bytes1) {
-                            final int permutationKey = ((keyValue << 8) | (permutationValue & 0xFF)) & 0xFFFF;
-                            final int hash = (int) ((permutationKey * HASH_MULTIPLY) >>> HASH_SHIFT);
-                            SHIFTS[hash] = CURRENT_SHIFT;
+                            final int permutationHash = hashValue + (permutationValue & 0xFF);
+                            SHIFTS[permutationHash & MASK] = CURRENT_SHIFT;
                         }
-                        haveLastKeyValue = false; // after processing the permutations, we don't have a single last key value.
-
+                        haveLastHashValue = false; // after processing the permutations, we don't have a single last key value.
                     } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
                         final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1);
                         while (qGramPermutations.hasNext()) {
-                            // Calculate the key value:
+                            // Calculate the hash value:
                             final byte[] permutationValue = qGramPermutations.next();
-                            keyValue = ((permutationValue[0] & 0xFF)  << 8) | (permutationValue[1] & 0xFF);
-                            // Calculate the hash from the key and put the shift value in the hash table.
-                            final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
-                            SHIFTS[hash] = CURRENT_SHIFT;
+                            hashValue = ((permutationValue[0] & 0xFF)  << HASH_SHIFT) + (permutationValue[1] & 0xFF);
+                            SHIFTS[hashValue & MASK] = CURRENT_SHIFT;
                         }
                     }
                 }
@@ -935,25 +843,21 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
             // Process the last qgram permutations as efficiently as possible:
             final long numberOfPermutations = getNumPermutations(bytes0, bytes1);
             if (numberOfPermutations == 1L) { // no permutations to worry about:
-                if (!haveLastKeyValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
-                    keyValue = bytes0[0] & 0xFF;
+                if (!haveLastHashValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
+                    hashValue = bytes0[0] & 0xFF;
                 }
-                keyValue = ((keyValue << 8) | (bytes1[0] & 0xFF)) & 0xFFFF; // calculate the new qgram (mask to first two bytes).
-
-                // Calculate the hash from the key and make the shift value negative.
-                final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
-                SHIFTS[hash] = -SHIFTS[hash];
-
+                hashValue = ((hashValue << HASH_SHIFT) + (bytes1[0] & 0xFF)) & MASK;
+                SHIFTS[hashValue] = -SHIFTS[hashValue];
             } else { // more than one permutation to work through.
-                if (haveLastKeyValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                if (haveLastHashValue) { // Then bytes1 must contain all the additional permutations - just go through them.
+                    hashValue = hashValue << HASH_SHIFT;
                     for (final byte permutationValue : bytes1) {
-                        final int permutationKey = ((keyValue << 8) | (permutationValue & 0xFF)) & 0xFFFF;
-                        final int hash = (int) ((permutationKey * HASH_MULTIPLY) >>> HASH_SHIFT);
+                        final int permutationHash = (hashValue + (permutationValue & 0xFF)) & MASK;
 
                         // If the current shift is positive make it negative.
-                        final int CURRENT_SHIFT = SHIFTS[hash];
+                        final int CURRENT_SHIFT = SHIFTS[permutationHash];
                         if (CURRENT_SHIFT > 0) {
-                            SHIFTS[hash] = -CURRENT_SHIFT;
+                            SHIFTS[permutationHash] = -CURRENT_SHIFT;
                         }
                     }
 
@@ -962,14 +866,12 @@ public final class SignedHash2Searcher extends AbstractSequenceWindowSearcher<Se
                     while (qGramPermutations.hasNext()) {
                         // Calculate the key value:
                         final byte[] permutationValue = qGramPermutations.next();
-                        keyValue = ((permutationValue[0] & 0xFF)  << 8) | (permutationValue[1] & 0xFF);
-                        // Calculate the hash from the key and put the shift value in the hash table.
-                        final int hash = (int) ((keyValue * HASH_MULTIPLY) >>> HASH_SHIFT);
+                        hashValue = (((permutationValue[0] & 0xFF)  << HASH_SHIFT) + (permutationValue[1] & 0xFF)) & MASK;
 
                         // If the current shift is positive make it negative.
-                        final int CURRENT_SHIFT = SHIFTS[hash];
+                        final int CURRENT_SHIFT = SHIFTS[hashValue];
                         if (CURRENT_SHIFT > 0) {
-                            SHIFTS[hash] = -CURRENT_SHIFT;
+                            SHIFTS[hashValue] = -CURRENT_SHIFT;
                         }
                     }
                 }
