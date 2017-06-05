@@ -592,17 +592,17 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
             qGramStartPos++; // qGram start is now one less than the last successful loop - add one.
 
             // Determine final size of hash table:
-            final int HASH_SIZE;
+            final int HASH_POWER_TWO_SIZE;
             if (searchIndexSize.getSizeMethod() == SearchIndexSize.Method.EXACTLY) {       // specified by user - must use this size exactly.
-                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
+                HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
             } else {
                 //TODO: or should it be the power of two *one higher* than ceilLogBase2 of total qgrams? What effective margin do we want?
                 final int qGramPowerTwoSize = ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
-                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?
-                            MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
-                                                      qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
+                HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?
+                                      MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
+                                                                qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
             }
-            final int TABLE_SIZE = 1 << HASH_SIZE;
+            final int TABLE_SIZE = 1 << HASH_POWER_TWO_SIZE;
 
             // Determine bit shift for bit shift hash algorithm
             // Find a bitshift which would give a table size equal or bigger than the hash table size we're using:
@@ -760,17 +760,17 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
             qGramStartPos--; // qGram start is now one past the last successful loop - subtract one.
 
             // Determine final size of hash table:
-            final int HASH_SIZE;
+            final int HASH_POWER_TWO_SIZE;
             if (searchIndexSize.getSizeMethod() == SearchIndexSize.Method.EXACTLY) {       // specified by user - must use this size exactly.
-                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
+                HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
             } else { // it's UP_TO the max size - pick an appropriate size:
                 //TODO: or should it be the power of two *one higher* than ceilLogBase2 of total qgrams? What effective margin do we want?
                 final int qGramPowerTwoSize = ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
-                HASH_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?
+                HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize?
                             MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE? // but not bigger than the maximum allowed,
                                                       qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
             }
-            final int TABLE_SIZE = 1 << HASH_SIZE;
+            final int TABLE_SIZE = 1 << HASH_POWER_TWO_SIZE;
 
             // Determine bit shift for multiply-shift hash algorithm:
             final int HASH_SHIFT = getHashShift(TABLE_SIZE);
