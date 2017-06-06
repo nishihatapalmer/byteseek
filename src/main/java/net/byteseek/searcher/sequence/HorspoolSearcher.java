@@ -274,8 +274,6 @@ public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<Seque
         final int[] safeShifts = backwardInfo.get();
         final SequenceMatcher toMatch = sequence;
 
-        //TODO: search positions passed from SearchBackwards are match positions, not end of sequence positions?
-
         // Search backwards across the windows:
         Window window;
         long searchPosition = fromPosition;
