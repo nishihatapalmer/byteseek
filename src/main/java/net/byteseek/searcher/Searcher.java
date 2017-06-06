@@ -54,15 +54,11 @@ public interface Searcher<T> {
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to toPosition.
 	 * 
-	 * @param reader
-	 *            The byte reader giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @param toPosition
-	 *            The position to search up to.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
-	 * @throws IOException
+	 * @param reader       The byte reader giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @param toPosition   The position to search up to.
+	 * @return             The position a match was found at, or a negative number if no match was found.
+	 * @throws IOException if a problem occurs reading data.
 	 */
 	List<SearchResult<T>> searchForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
@@ -70,13 +66,10 @@ public interface Searcher<T> {
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to the end of the byte reader.
 	 * 
-	 * @param reader
-	 *            The byte reader giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
-	 * @throws IOException
+	 * @param reader       The window reader giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @return             The position a match was found at, or a negative number if no match was found.
+	 * @throws IOException if a problem occurs reading data.
 	 */
 	List<SearchResult<T>> searchForwards(WindowReader reader, long fromPosition) throws IOException;
 
@@ -84,11 +77,9 @@ public interface Searcher<T> {
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
 	 * start of the {@link WindowReader} to the end, if a match is not found.
 	 * 
-	 * @param reader
-	 *            The byte reader giving access to the bytes being searched.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
-	 * @throws IOException
+	 * @param reader  The byte reader giving access to the bytes being searched.
+	 * @return The position a match was found at, or a negative number if no match was found.
+	 * @throws IOException if a problem occurs reading data.
 	 */
 	List<SearchResult<T>> searchForwards(WindowReader reader) throws IOException;
 
@@ -96,14 +87,10 @@ public interface Searcher<T> {
 	 * Searches bytes forwards provided by a byte array from the position given
 	 * by fromPosition up to toPosition.
 	 * 
-	 * @param bytes
-	 *            The byte array giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @param toPosition
-	 *            The position to search up to.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
+	 * @param bytes        The byte array giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @param toPosition   The position to search up to.
+	 * @return The position a match was found at, or a negative number if no match was found.
 	 */
 	public List<SearchResult<T>> searchForwards(byte[] bytes, int fromPosition, int toPosition);
 
@@ -111,22 +98,17 @@ public interface Searcher<T> {
 	 * Searches bytes forwards provided by a byte array from the position given
 	 * by fromPosition up to the end of the byte array.
 	 * 
-	 * @param bytes
-	 *            The byte array giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
+	 * @param bytes        The byte array giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @return The position a match was found at, or a negative number if no match was found.
 	 */
 	public List<SearchResult<T>> searchForwards(byte[] bytes, int fromPosition);
 
 	/**
 	 * Searches bytes forwards provided by a byte array
 	 * 
-	 * @param bytes
-	 *            The byte array giving access to the bytes being searched.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
+	 * @param bytes The byte array giving access to the bytes being searched.
+	 * @return The position a match was found at, or a negative number if no match was found.
 	 */
 	public List<SearchResult<T>> searchForwards(byte[] bytes);
 
@@ -134,15 +116,11 @@ public interface Searcher<T> {
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to toPosition.
 	 * 
-	 * @param reader
-	 *            The byte reader giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @param toPosition
-	 *            The position to search back to.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
-	 * @throws IOException
+	 * @param reader       The byte reader giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @param toPosition   The position to search back to.
+	 * @return The position a match was found at, or a negative number if no match was found.
+	 * @throws IOException if a problem occurs reading the data.
 	 */
 	public List<SearchResult<T>> searchBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
@@ -150,13 +128,10 @@ public interface Searcher<T> {
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
 	 * position given by fromPosition up to the start of the reader.
 	 * 
-	 * @param reader
-	 *            The byte reader giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
-	 * @throws IOException
+	 * @param reader       The byte reader giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @return The position a match was found at, or a negative number if no match was found.
+	 * @throws IOException if a problem occurs reading the data.
 	 */
 	public List<SearchResult<T>> searchBackwards(WindowReader reader, long fromPosition) throws IOException;
 
@@ -164,11 +139,9 @@ public interface Searcher<T> {
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
 	 * end to the start.
 	 * 
-	 * @param reader
-	 *            The byte reader giving access to the bytes being searched.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
-	 * @throws IOException
+	 * @param reader The byte reader giving access to the bytes being searched.
+	 * @return The position a match was found at, or a negative number if no match was found.
+	 * @throws IOException if a problem occurs reading the data.
 	 */
 	public List<SearchResult<T>> searchBackwards(WindowReader reader) throws IOException;
 
@@ -176,14 +149,10 @@ public interface Searcher<T> {
 	 * Searches bytes backwards provided by a byte array, from the position
 	 * given by fromPosition up to toPosition.
 	 * 
-	 * @param bytes
-	 *            The byte array giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @param toPosition
-	 *            The position to search back to.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
+	 * @param bytes        The byte array giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @param toPosition   The position to search back to.
+	 * @return The position a match was found at, or a negative number if no match was found.
 	 */
 	public List<SearchResult<T>> searchBackwards(byte[] bytes, int fromPosition, int toPosition);
 
@@ -191,22 +160,17 @@ public interface Searcher<T> {
 	 * Searches bytes backwards provided by a byte array, from the position
 	 * given by fromPosition up to the start of the byte array.
 	 * 
-	 * @param bytes
-	 *            The byte array giving access to the bytes being searched.
-	 * @param fromPosition
-	 *            The position to search from.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
+	 * @param bytes        The byte array giving access to the bytes being searched.
+	 * @param fromPosition The position to search from.
+	 * @return The position a match was found at, or a negative number if no match was found.
 	 */
 	public List<SearchResult<T>> searchBackwards(byte[] bytes, int fromPosition);
 
 	/**
 	 * Searches a byte array backwards, from the end to the start.
 	 * 
-	 * @param bytes
-	 *            The byte array giving access to the bytes being searched.
-	 * @return The position a match was found at, or a negative number if no
-	 *         match was found.
+	 * @param bytes The byte array giving access to the bytes being searched.
+	 * @return The position a match was found at, or a negative number if no match was found.
 	 */
 	public List<SearchResult<T>> searchBackwards(byte[] bytes);
 
@@ -218,7 +182,7 @@ public interface Searcher<T> {
 	 * <p>
 	 * Note that this function is not itself guaranteed to be thread-safe,
 	 * in that calling it from multiple threads may result in multiple
-	 * initialisations (but should not produce an error).
+	 * initialisations (but must not produce an error).
 	 * <p>
 	 * Calling this function only changes when (and possibly how many) final
 	 * calculations of search parameters are made. If this function is called,
@@ -235,7 +199,7 @@ public interface Searcher<T> {
 	 * <p>
 	 * Note that this function is not itself guaranteed to be thread-safe,
 	 * in that calling it from multiple threads may result in multiple
-	 * initialisations (but should not produce an error).
+	 * initialisations (but must not produce an error).
 	 * <p>
 	 * Calling this function only changes when (and possibly how many) final
 	 * calculations of search parameters are made. If this function is called,
