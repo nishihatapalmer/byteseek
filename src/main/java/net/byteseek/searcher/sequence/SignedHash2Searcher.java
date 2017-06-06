@@ -424,13 +424,12 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
         final int MASK              = SHIFTS.length - 1; // SHIFTS is always a power of two in length.
 
         // Determine safe shifts, starts and ends:
-        final long SEARCH_START = fromPosition; // TODO: withinLength?  needed for doSearchBackwards?
         final long SEARCH_END   = toPosition > 0?
                                   toPosition : 0;
 
         // Search forwards:
         Window window;
-        long searchPos = SEARCH_START;
+        long searchPos = fromPosition;
         while (searchPos >= SEARCH_END && (window = reader.getWindow(searchPos)) != null) {
 
             // Get window array info:
