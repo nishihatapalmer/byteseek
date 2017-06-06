@@ -450,11 +450,6 @@ public final class SignedHash3Searcher extends AbstractSequenceFallbackSearcher 
             int arrayPos = reader.getWindowOffset(searchPos);
             while (arrayPos >= LAST_ARRAY_POS) {
 
-                //TODO: can this read past reader end?  what if next window doesn't exist...?
-                //      probably can, but may not matter.  If no room for another qgram,
-                //      then can get no more matches at current search pos.  hash may be wrong, but we'll
-                //      move past the end on the next iteration or two...
-
                 // Calculate hash:
                 int hash;
                 if (arrayPos >= CROSSOVER_QGRAM_POS) { // crosses over into next window?
