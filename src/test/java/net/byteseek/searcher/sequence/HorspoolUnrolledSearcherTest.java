@@ -36,55 +36,55 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * A test of non-search methods in the UnrolledHorspoolSearcher.
+ * A test of non-search methods in the HorspoolUnrolledSearcher.
  *
  * Search methods are comprehensively tested (and cross validated) across all the searchers in other test classes.
  */
-public class UnrolledHorspoolSearcherTest {
+public class HorspoolUnrolledSearcherTest {
 
     // Test constructors
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullSequence() {
-        new UnrolledHorspoolSearcher((SequenceMatcher) null);
+        new HorspoolUnrolledSearcher((SequenceMatcher) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
-        new UnrolledHorspoolSearcher((String) null);
+        new HorspoolUnrolledSearcher((String) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
-        new UnrolledHorspoolSearcher("");
+        new HorspoolUnrolledSearcher("");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullCharset() {
-        new UnrolledHorspoolSearcher("ABCDEFG", null);
+        new HorspoolUnrolledSearcher("ABCDEFG", null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullByteArray() {
-        new UnrolledHorspoolSearcher((byte[]) null);
+        new HorspoolUnrolledSearcher((byte[]) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyByteArray() {
-        new UnrolledHorspoolSearcher(new byte[0]);
+        new HorspoolUnrolledSearcher(new byte[0]);
     }
 
     // Test length.
 
     @Test
     public void testGetSequenceLength() throws Exception {
-        AbstractSequenceSearcher s = new UnrolledHorspoolSearcher("A");
+        AbstractSequenceSearcher s = new HorspoolUnrolledSearcher("A");
         assertEquals("Length correct", 1, s.getSequenceLength() );
 
-        s = new UnrolledHorspoolSearcher("AA");
+        s = new HorspoolUnrolledSearcher("AA");
         assertEquals("Length correct", 2, s.getSequenceLength() );
 
-        s = new UnrolledHorspoolSearcher("1234567890");
+        s = new HorspoolUnrolledSearcher("1234567890");
         assertEquals("Length correct", 10, s.getSequenceLength() );
     }
 }
