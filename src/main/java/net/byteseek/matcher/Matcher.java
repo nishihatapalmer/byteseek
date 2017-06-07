@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2013, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -48,28 +48,21 @@ public interface Matcher {
 	 * WindowReader. If the position to match at does not exist in the WindowReader, then no
 	 * exception is thrown - there will simply be no match.
 	 * 
-	 * @param reader
-	 *            The {@link WindowReader} to read from.
-	 * @param matchPosition
-	 *            The position to try to match at.
+	 * @param reader        The {@link WindowReader} to read from.
+	 * @param matchPosition The position to try to match at.
 	 * @return Whether there is a match at the given position.
-	 * @throws IOException
-	 *             if the WindowReader cannot read (but not for reads past the end of
-	 *             the WindowReader).
+	 * @throws IOException  if the WindowReader cannot read (but not for reads past the end of the WindowReader).
 	 * @throws NullPointerException if the WindowReader is null.
 	 */
-	public boolean matches(WindowReader reader, long matchPosition)
-			throws IOException;
+	public boolean matches(WindowReader reader, long matchPosition) throws IOException;
 
 	/**
 	 * Returns whether there is a match or not at the given position in a byte
 	 * array. If the position to match at does not exist in the byte array, then
 	 * no exception is thrown - there will simply be no match.
 	 * 
-	 * @param bytes
-	 *            An array of bytes to read from.
-	 * @param matchPosition
-	 *            The position to try to match at.
+	 * @param bytes         An array of bytes to read from.
+	 * @param matchPosition The position to try to match at.
 	 * @return Whether there is a match at the given position.
 	 * @throws NullPointerException if the byte array passed in is null.
 	 */
