@@ -48,14 +48,14 @@ import java.util.Collection;
  * 
  * @author Matt Palmer
  */
-public interface MatchResult<T> {
+public interface 	MatchResult<T> {
 
 	/**
 	 * Returns the position a match was found at.
 	 * 
 	 * @return The position a match was found at.
 	 */
-	public long getMatchPosition();
+	long getMatchPosition();
 
 	
 	/**
@@ -63,7 +63,7 @@ public interface MatchResult<T> {
 	 * 
 	 * @return The length of the match.
 	 */
-	public long getMatchLength();
+	long getMatchLength();
 
 	
 	/**
@@ -71,6 +71,6 @@ public interface MatchResult<T> {
 	 * 
 	 * @return The objects associated with the match.
 	 */
-	public Collection<T> getMatchingObjects();
+	Collection<T> getMatchingObjects();
 	
 }
