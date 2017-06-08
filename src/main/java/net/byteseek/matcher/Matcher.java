@@ -54,7 +54,7 @@ public interface Matcher {
 	 * @throws IOException  if the WindowReader cannot read (but not for reads past the end of the WindowReader).
 	 * @throws NullPointerException if the WindowReader is null.
 	 */
-	public boolean matches(WindowReader reader, long matchPosition) throws IOException;
+	boolean matches(WindowReader reader, long matchPosition) throws IOException;
 
 	/**
 	 * Returns whether there is a match or not at the given position in a byte
@@ -66,5 +66,5 @@ public interface Matcher {
 	 * @return Whether there is a match at the given position.
 	 * @throws NullPointerException if the byte array passed in is null.
 	 */
-	public boolean matches(byte[] bytes, int matchPosition);
+	boolean matches(byte[] bytes, int matchPosition);
 }
