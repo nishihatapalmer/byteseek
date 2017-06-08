@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
@@ -331,10 +332,15 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
             }
         }
         return null;   
-    }    
-    
-    
-    /**    
+    }
+
+
+    @Override
+    public long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+        return 0; //TODO: implement.
+    }
+
+    /**
      * {@inheritDoc}
      */ 
     @Override
@@ -348,8 +354,13 @@ public final class ListMultiSequenceMatcher implements MultiSequenceMatcher {
         }            
         return false;
     }
-    
-    
+
+    @Override
+    public long matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+        return 0; //TODO: implement.
+    }
+
+
     /**    
      * {@inheritDoc}
      */ 

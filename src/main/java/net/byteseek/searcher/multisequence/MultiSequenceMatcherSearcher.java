@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-17, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -37,10 +37,10 @@ import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 
 /**
@@ -77,7 +77,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader,
+    protected List<MatchResult> doSearchForwards(final WindowReader reader,
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final MultiSequenceMatcher matcher = sequences;  
@@ -113,7 +113,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
+    public List<MatchResult> searchForwards(final byte[] bytes, 
         final int fromPosition, final int toPosition) {
         
         // Initialise:
@@ -142,7 +142,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
      * {@inheritDoc}
      */    
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
+    protected List<MatchResult> doSearchBackwards(final WindowReader reader, 
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final MultiSequenceMatcher matcher = sequences;
@@ -176,7 +176,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
      * {@inheritDoc}
      */    
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
+    public List<MatchResult> searchBackwards(final byte[] bytes, 
         final int fromPosition, final int toPosition) {
         
         // Initialise:

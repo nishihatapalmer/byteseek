@@ -32,6 +32,7 @@
 package net.byteseek.matcher;
 
 import java.io.IOException;
+import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
 
@@ -42,6 +43,21 @@ import net.byteseek.io.reader.WindowReader;
  * @author Matt Palmer
  */
 public interface Matcher {
+
+	/**
+	 * Returns the number of matches at the given position in a WindowReader.
+	 * The actual match results are added to a list passed in to the method.
+	 * If the position to match at does not exist in the WindowReader, then no
+	 * exception is thrown - there will simply be no matches.
+	 *
+	 * @param reader        The {@link WindowReader} to read from.
+	 * @param matchPosition The position to try to match at.
+	 * @param results       The list of match results to append new matches to.
+	 * @return              The number of match results for the position.
+	 * @throws IOException  if the WindowReader cannot read (but not for reads past the end of the WindowReader).
+	 * @throws NullPointerException if the WindowReader is null.
+	 */
+	long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException;
 
 	/**
 	 * Returns whether there is a match or not at the given position in a
@@ -55,6 +71,20 @@ public interface Matcher {
 	 * @throws NullPointerException if the WindowReader is null.
 	 */
 	boolean matches(WindowReader reader, long matchPosition) throws IOException;
+
+	/**
+	 * Returns whether the number of matches at the given position in a byte
+	 * array. If the position to match at does not exist in the byte array, then
+	 * no exception is thrown - there will simply be no match.
+	 * The actual matches are added to a list of match results passed in to the mathod.
+	 *
+	 * @param bytes         An array of bytes to read from.
+	 * @param matchPosition The position to try to match at.
+	 * @param results       A list of MatchResults to append any matches to.
+	 * @return              The number of matches at that position.
+	 * @throws NullPointerException if the byte array passed in is null.
+	 */
+	long matches(byte[] bytes, int matchPosition, List<MatchResult> results);
 
 	/**
 	 * Returns whether there is a match or not at the given position in a byte

@@ -38,30 +38,29 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.utils.ArgUtils;
 
 /**
  * An iterator which iterates over a {@link net.byteseek.io.reader.WindowReader} or a
  * byte array, using a provided {@link Searcher}. Each iteration returns the
  * next set of search results, searching backwards.
- * 
- * @param <T>
- *            The type of object returned on a match by the Searcher.
+ *
  * @author Matt Palmer
  */
-public class BackwardSearchIterator<T> implements
-		Iterator<List<SearchResult<T>>> {
+public class BackwardSearchIterator implements
+		Iterator<List<MatchResult>> {
 
 	// immutable fields:
 	private final byte[] bytes;
 	private final WindowReader reader;
 	private final long toPosition;
-	private final Searcher<T> searcher;
+	private final Searcher searcher;
 
 	// private state:
 	private long searchPosition;
 	private boolean searchedForNext = false;
-	private List<SearchResult<T>> searchResults = Collections.emptyList();
+	private List<MatchResult> MatchResults = Collections.emptyList();
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
@@ -77,7 +76,7 @@ public class BackwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or WindowReader is null.
 	 */
-	public BackwardSearchIterator(final Searcher<T> searcher,
+	public BackwardSearchIterator(final Searcher searcher,
 			final WindowReader reader) throws IOException {
 		this(searcher, reader.length() - 1, 0, reader);
 	}
@@ -96,7 +95,7 @@ public class BackwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or WindowReader is null.
 	 */
-	public BackwardSearchIterator(final Searcher<T> searcher,
+	public BackwardSearchIterator(final Searcher searcher,
 			final WindowReader reader, final long fromPosition) {
 		this(searcher, fromPosition, 0, reader);
 	}
@@ -118,7 +117,7 @@ public class BackwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or WindowReader is null.
 	 */
-	public BackwardSearchIterator(final Searcher<T> searcher,
+	public BackwardSearchIterator(final Searcher searcher,
 			final long fromPosition, final long toPosition, final WindowReader reader) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(reader, "reader");
@@ -141,7 +140,7 @@ public class BackwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or byte array is null.
 	 */
-	public BackwardSearchIterator(final Searcher<T> searcher, final byte[] bytes) {
+	public BackwardSearchIterator(final Searcher searcher, final byte[] bytes) {
 		this(searcher, bytes.length - 1, 0, bytes);
 	}
 
@@ -159,7 +158,7 @@ public class BackwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or byte array is null.
 	 */
-	public BackwardSearchIterator(final Searcher<T> searcher,
+	public BackwardSearchIterator(final Searcher searcher,
 			final byte[] bytes, final int fromPosition) {
 		this(searcher, fromPosition, 0, bytes);
 	}
@@ -180,7 +179,7 @@ public class BackwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or array is null.
 	 */
-	public BackwardSearchIterator(final Searcher<T> searcher,
+	public BackwardSearchIterator(final Searcher searcher,
 			final int fromPosition, final int toPosition, final byte[] bytes) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(bytes, "bytes");
@@ -198,24 +197,24 @@ public class BackwardSearchIterator<T> implements
 	public boolean hasNext() {
 		if (!searchedForNext) {
 			try {
-				searchResults = getNextSearchResults();
+				MatchResults = getNextMatchResults();
 				searchedForNext = true;
 			} catch (final IOException ex) {
 				return false;
 			}
 		}
-		return !searchResults.isEmpty();
+		return !MatchResults.isEmpty();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<SearchResult<T>> next() {
+	public List<MatchResult> next() {
 		if (hasNext()) {
 			searchPosition = getNextSearchPosition();
 			searchedForNext = false;
-			return searchResults;
+			return MatchResults;
 		}
 		throw new NoSuchElementException();
 	}
@@ -251,8 +250,8 @@ public class BackwardSearchIterator<T> implements
 		searchedForNext = false;
 	}
 
-	private List<SearchResult<T>> getNextSearchResults() throws IOException {
-		List<SearchResult<T>> nextMatchingPosition = Collections.emptyList();
+	private List<MatchResult> getNextMatchResults() throws IOException {
+		List<MatchResult> nextMatchingPosition = Collections.emptyList();
 		if (reader != null) {
 			nextMatchingPosition = searcher.searchBackwards(reader,
 					searchPosition, toPosition);
@@ -265,7 +264,7 @@ public class BackwardSearchIterator<T> implements
 
 	private long getNextSearchPosition() {
 		long furthestPosition = Long.MAX_VALUE;
-		for (final SearchResult<T> result : searchResults) {
+		for (final MatchResult result : MatchResults) {
 			final long resultPosition = result.getMatchPosition();
 			if (resultPosition < furthestPosition) {
 				furthestPosition = resultPosition;

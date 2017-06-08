@@ -132,7 +132,7 @@ public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<S
     /**
      * A replacement searcher for sequences whose length is less than the qgram length, which this searcher cannot search for.
      */
-    private final SequenceSearcher<SequenceMatcher> shortSearcher;
+    private final SequenceSearcher shortSearcher;
 
 
     /*********************************

@@ -49,7 +49,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public final class FixedGapMatcher implements SequenceMatcher {
+public final class FixedGapMatcher extends AbstractSequenceMatcher {
 
 	private static final String ONE_ANY_MATCHER    = ".";
 	private static final String TWO_ANY_MATCHERS   = "..";

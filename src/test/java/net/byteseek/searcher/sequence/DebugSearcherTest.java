@@ -32,11 +32,8 @@ package net.byteseek.searcher.sequence;
 
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.searcher.BackwardSearchIterator;
-import net.byteseek.searcher.SearchResult;
-import net.byteseek.searcher.Searcher;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,8 +101,8 @@ public class DebugSearcherTest {
         BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, bytesFrom(resourceName));
         long pos = Long.MAX_VALUE;
         while (iterator.hasNext()) {
-            List<SearchResult> results = iterator.next();
-            SearchResult firstResult = results.get(0);
+            List<MatchResult> results = iterator.next();
+            MatchResult firstResult = results.get(0);
             pos = firstResult.getMatchPosition();
         }
     }
@@ -113,7 +110,7 @@ public class DebugSearcherTest {
     //@Test
     public void testSearcherReaderForwards() throws IOException {
         long result = searcher.searchSequenceForwards(readerFrom(resourceName),
-                0 ,0 );
+                0, 0);
     }
 
     //@Test

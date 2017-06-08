@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,88 +32,141 @@
 package net.byteseek.searcher;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
+import net.byteseek.matcher.Matcher;
 
 /**
  * An abstract searcher implementation which provides default implementations of
  * many of the overloaded search methods, providing default values to the real
- * search methods.
- * 
- * @param <T>
- *            The type of object returned on a match by this Searcher.
+ * search methods, and wrapping search results in lists if the version which returns a new list is selected.
+ * Implementations only have to implement the four main methods for forwards and backwards searching over byte arrays
+ * and WindowReaders, which add results into a list of results passed in to the method.
+ *
  * @author Matt Palmer
  */
-public abstract class AbstractSearcher<T> implements Searcher<T> {
+public abstract class AbstractSearcher implements Searcher {
 
-	/**
-	 * {@inheritDoc}
-	 */
+	 /*************************************
+	  * Wrap search results in a new list *
+	  *************************************/
+
 	@Override
-	public List<SearchResult<T>> searchForwards(final WindowReader reader,
-			final long fromPosition) throws IOException {
+	public List<MatchResult> searchForwards(final WindowReader reader,
+											final long fromPosition, long toPosition) throws IOException {
+		final List<MatchResult> results = new ArrayList<MatchResult>(1); // most of the time we'll have one or no results.
+		searchForwards(reader, fromPosition, toPosition, results);
+		return results;
+	}
+
+	@Override
+	public List<MatchResult> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+		final List<MatchResult> results = new ArrayList<MatchResult>(1); // most of the time we'll have one or no results.
+		searchForwards(bytes, fromPosition, toPosition, results);
+		return results;
+	}
+
+
+	@Override
+	public List<MatchResult> searchBackwards(final WindowReader reader,
+											 final long fromPosition, final long toPosition) throws IOException {
+		final List<MatchResult> results = new ArrayList<MatchResult>(1); // most of the time we'll have one or no results.
+		searchBackwards(reader, fromPosition, toPosition, results);
+		return results;
+	}
+
+	@Override
+	public List<MatchResult> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+		final List<MatchResult> results = new ArrayList<MatchResult>(1); // most of the time we'll have one or no results.
+		searchBackwards(bytes, fromPosition, toPosition, results);
+		return results;
+	}
+
+
+	/**************************************************
+	 * Choose defaults for overridden search methods. *
+	 **************************************************/
+
+	@Override
+	public long searchForwards(final WindowReader reader, final long fromPosition, final List<MatchResult> results) throws IOException {
+		return searchForwards(reader, fromPosition, Long.MAX_VALUE, results);
+	}
+
+	@Override
+	public List<MatchResult> searchForwards(final WindowReader reader, final long fromPosition) throws IOException {
 		return searchForwards(reader, fromPosition, Long.MAX_VALUE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<SearchResult<T>> searchForwards(final WindowReader reader)
-			throws IOException {
+	public long searchForwards(final WindowReader reader, final List<MatchResult> results) throws IOException {
+		return searchForwards(reader, 0, Long.MAX_VALUE, results);
+	}
+
+	@Override
+	public List<MatchResult> searchForwards(final WindowReader reader) throws IOException {
 		return searchForwards(reader, 0, Long.MAX_VALUE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<SearchResult<T>> searchForwards(final byte[] bytes,
-			final int fromPosition) {
+	public long searchForwards(final byte[] bytes, final int fromPosition,final  List<MatchResult> results) {
+		return searchForwards(bytes, fromPosition, bytes.length - 1, results);
+	}
+
+	@Override
+	public List<MatchResult> searchForwards(final byte[] bytes, final int fromPosition) {
 		return searchForwards(bytes, fromPosition, bytes.length - 1);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<SearchResult<T>> searchForwards(final byte[] bytes) {
+	public long searchForwards(final byte[] bytes, final List<MatchResult> results) {
+		return searchForwards(bytes, 0, bytes.length - 1, results);
+	}
+
+	@Override
+	public List<MatchResult> searchForwards(final byte[] bytes) {
 		return searchForwards(bytes, 0, bytes.length - 1);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<SearchResult<T>> searchBackwards(final WindowReader reader,
-			final long fromPosition) throws IOException {
+	public long searchBackwards(final WindowReader reader, final long fromPosition, final List<MatchResult> results) throws IOException {
+		return searchBackwards(reader, fromPosition, 0, results);
+	}
+
+	@Override
+	public List<MatchResult> searchBackwards(final WindowReader reader, final long fromPosition) throws IOException {
 		return searchBackwards(reader, fromPosition, 0);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<SearchResult<T>> searchBackwards(final WindowReader reader)
-			throws IOException {
+	public long searchBackwards(final WindowReader reader, final List<MatchResult> results) throws IOException {
+		return searchBackwards(reader, reader.length() - 1, 0, results);
+	}
+
+	@Override
+	public List<MatchResult> searchBackwards(final WindowReader reader) throws IOException {
 		return searchBackwards(reader, reader.length() - 1, 0);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<SearchResult<T>> searchBackwards(final byte[] bytes,
-			final int fromPosition) {
+	public long searchBackwards(final byte[] bytes, final int fromPosition, final List<MatchResult> results) {
+		return searchBackwards(bytes, fromPosition, 0, results);
+	}
+
+	@Override
+	public List<MatchResult> searchBackwards(final byte[] bytes, final int fromPosition) {
 		return searchBackwards(bytes, fromPosition, 0);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<SearchResult<T>> searchBackwards(final byte[] bytes) {
+	public long searchBackwards(final byte[] bytes, final List<MatchResult> results) {
+		return searchBackwards(bytes, bytes.length - 1, 0, results);
+	}
+
+	@Override
+	public List<MatchResult> searchBackwards(final byte[] bytes) {
 		return searchBackwards(bytes, bytes.length - 1, 0);
 	}
 
@@ -127,7 +180,8 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	 * (unless the reader itself has a length of zero, in which case -1 will be
 	 * returned).
 	 * <p>
-	 * It achieves this function by trying to read data from the position given
+	 * It achieves this by trying to read data from the position given
+	 * //TODO: why adjust to zero if position is negative...?  negative position will have no data, and isn't that the right result?
 	 * (adjusted to be zero if the position was negative). If there is data
 	 * there, then the position is returned. If there is no data at that
 	 * position, then the position is beyond the length of the data, hence the
@@ -146,9 +200,11 @@ public abstract class AbstractSearcher<T> implements Searcher<T> {
 	 * @throws IOException
 	 *             if the reader cannot be read from.
 	 */
-	protected final long withinLength(final WindowReader reader, final long position)
+
+	protected long withinLength(final WindowReader reader, final long position)
 			throws IOException {
 		final long positionToTry = position > 0 ? position : 0;
 		return reader.getWindow(positionToTry) != null ? positionToTry : reader.length() - 1;
 	}
+
 }

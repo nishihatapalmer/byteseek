@@ -36,9 +36,9 @@ import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 
 /**
@@ -67,7 +67,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, 
+    protected List<MatchResult> doSearchForwards(final WindowReader reader,
             final long fromPosition, final long toPosition) throws IOException {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
@@ -120,7 +120,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
                             backMatcher.allMatchesBackwards(reader, matchEndPosition);
                     if (!matches.isEmpty()) {
                         // See if any of the matches are within the bounds of the search:
-                        final List<SearchResult<SequenceMatcher>> results = 
+                        final List<MatchResult> results = 
                             SearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                                 fromPosition, toPosition);
                         if (!results.isEmpty()) {
@@ -147,7 +147,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
+    public List<MatchResult> searchForwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
@@ -188,7 +188,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
                 if (!matches.isEmpty()) {
 
                     // See if any of the matches are within the bounds of the search:
-                    final List<SearchResult<SequenceMatcher>> results = 
+                    final List<MatchResult> results = 
                         SearchUtils.resultsBackFromPosition(searchPosition, matches, 
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
@@ -212,7 +212,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
      */
     //FIXME: copy of do search forwards gradually evolving to a backwards search...
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader,
+    protected List<MatchResult> doSearchBackwards(final WindowReader reader,
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise
         final SearchInfo info = forwardInfo.get();
@@ -257,7 +257,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
                             matcher.allMatches(reader, startMatchPosition);
                     if (!matches.isEmpty()) {
                         // See if any of the matches are within the bounds of the search:
-                        final List<SearchResult<SequenceMatcher>> results = 
+                        final List<MatchResult> results = 
                             SearchUtils.resultsAtPosition(startMatchPosition, matches);
                         if (!results.isEmpty()) {
                             return results;
@@ -284,7 +284,7 @@ public class WuManberTwoByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    public List<MatchResult> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         // Get info needed to search with:
         final SearchInfo info = backwardInfo.get();
         final int[] safeShifts = info.shifts;

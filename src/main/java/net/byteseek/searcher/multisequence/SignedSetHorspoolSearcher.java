@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -39,6 +39,7 @@ import java.util.Set;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceReverseMatcher;
 import net.byteseek.matcher.multisequence.MultiSequenceUtils;
@@ -46,7 +47,6 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 
 /**
@@ -93,7 +93,7 @@ public class SignedSetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */    
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public List<MatchResult> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
@@ -128,7 +128,7 @@ public class SignedSetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             // The last bytes matched - verify the rest of the sequences.
             final Collection<SequenceMatcher> matches = verifier.allMatchesBackwards(bytes, searchPosition);
             if (!matches.isEmpty()) {
-                final List<SearchResult<SequenceMatcher>> results = 
+                final List<MatchResult> results = 
                     SearchUtils.resultsBackFromPosition(searchPosition, matches, 
                                                        fromPosition, toPosition);
                 if (!results.isEmpty()) {
@@ -149,7 +149,7 @@ public class SignedSetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */ 
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, final long fromPosition, 
+    protected List<MatchResult> doSearchForwards(final WindowReader reader, final long fromPosition, 
         final long toPosition) throws IOException {
             
         // Get the objects needed to search:
@@ -195,7 +195,7 @@ public class SignedSetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                 final Collection<SequenceMatcher> matches = 
                         verifier.allMatchesBackwards(reader, matchEndPosition);
                 if (!matches.isEmpty()) {
-                    final List<SearchResult<SequenceMatcher>> results = 
+                    final List<MatchResult> results = 
                         SearchUtils.resultsBackFromPosition(matchEndPosition, matches, 
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
@@ -220,7 +220,7 @@ public class SignedSetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public List<MatchResult> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get objects needed for the search:
         final SearchInfo info = backwardInfo.get();
@@ -269,7 +269,7 @@ public class SignedSetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
+    protected List<MatchResult> doSearchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Get the objects needed to search:

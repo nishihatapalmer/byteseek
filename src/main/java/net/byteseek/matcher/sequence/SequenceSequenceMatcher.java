@@ -51,7 +51,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public final class SequenceSequenceMatcher implements SequenceMatcher {
+public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
 
     private final SequenceMatcher[] matchers;
     

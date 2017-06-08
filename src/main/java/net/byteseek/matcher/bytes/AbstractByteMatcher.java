@@ -34,6 +34,7 @@ package net.byteseek.matcher.bytes;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import net.byteseek.matcher.sequence.AbstractSequenceMatcher;
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
@@ -44,7 +45,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractByteMatcher implements ByteMatcher {
+public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implements ByteMatcher {
     
     /**
      * {@inheritDoc}

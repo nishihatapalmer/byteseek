@@ -1288,7 +1288,30 @@ public class RegexParserTest {
 			fail(description + " with expression " + expression + " was expected to generate a ParseException");
 		} catch (ParseException expected) {}
 	}
-	
 
-	
+
+	@Test
+	public void testEncodeString() throws Exception {
+		//fail("TODO");
+	}
+
+	@Test
+	public void testEncodeCaseInsensitiveString() throws Exception {
+		//fail("TODO");
+	}
+
+	@Test
+	public void testBuildRange() throws Exception {
+		//fail("TODO");
+	}
+
+	@Test
+	public void testBuildSet() throws Exception {
+		//fail("TODO");
+	}
+
+	@Test
+	public void testBuildInvertedSet() throws Exception {
+		//fail("TODO");
+	}
 }

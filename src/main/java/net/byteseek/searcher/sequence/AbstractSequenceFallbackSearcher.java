@@ -78,12 +78,12 @@ public abstract class AbstractSequenceFallbackSearcher extends AbstractSequenceW
      * Also used as a fallback in case it is not possible to create a hash table which would give reasonable performance
      * (e.g. if the maximum table size isn't sufficient, or the pattern is pathological in some way).
      */
-    protected final LazyObject<SequenceSearcher<SequenceMatcher>> fallbackSearcher;
+    protected final LazyObject<SequenceSearcher> fallbackSearcher;
 
     public AbstractSequenceFallbackSearcher(final SequenceMatcher sequence, SearchIndexSize searchIndexSize) {
         super(sequence);
         this.searchIndexSize = searchIndexSize;
-        fallbackSearcher     = new DoubleCheckImmutableLazyObject<SequenceSearcher<SequenceMatcher>>(new FallbackSearcherFactory());
+        fallbackSearcher     = new DoubleCheckImmutableLazyObject<SequenceSearcher>(new FallbackSearcherFactory());
     }
 
 
@@ -193,10 +193,10 @@ public abstract class AbstractSequenceFallbackSearcher extends AbstractSequenceW
      * rather than one which is more spiritually similar to this algorithm (e.g. the SignedHorspoolSearcher), or the
      * simplest possible algorithm (e.g. the SequenceMatcherSearcher).
      */
-    private final class FallbackSearcherFactory implements ObjectFactory<SequenceSearcher<SequenceMatcher>> {
+    private final class FallbackSearcherFactory implements ObjectFactory<SequenceSearcher> {
 
         @Override
-        public SequenceSearcher<SequenceMatcher> create() {
+        public SequenceSearcher create() {
             return new ShiftOrSearcher(sequence);  // the fastest searcher for short patterns, and largley ignores pattern complexity.
         }
     }

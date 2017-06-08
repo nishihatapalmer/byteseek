@@ -36,10 +36,9 @@ import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
-import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.AbstractSearcher;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.utils.ArgUtils;
 
@@ -65,7 +64,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<SequenceMatcher> {
+public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
     
     /**
      * 
@@ -81,8 +80,28 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
     public AbstractMultiSequenceSearcher(final MultiSequenceMatcher sequences) {
         ArgUtils.checkNullObject(sequences, "sequences");
         this.sequences = sequences;
-    }    
-    
+    }
+
+
+    @Override
+    public long searchForwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
+        return 0; //TODO: implement.
+    }
+
+    @Override
+    public long searchForwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
+        return 0; //TODO: implement.
+    }
+
+    @Override
+    public long searchBackwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
+        return 0; //TODO: implement.
+    }
+
+    @Override
+    public long searchBackwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
+        return 0; //TODO: implement.
+    }
     
     /**
      * Returns the {@link MultiSequenceMatcher} to be searched for.
@@ -111,7 +130,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * @throws IOException If the reader encounters a problem reading bytes.
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final WindowReader reader, 
+    public List<MatchResult> searchForwards(final WindowReader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final int longestMatchEndPosition = sequences.getMaximumLength() - 1;
@@ -141,7 +160,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
                                        (int) distanceToEnd : lastMatchingPosition; 
                         
                 // Search forwards in the byte array of the window:
-                final List<SearchResult<SequenceMatcher>> arrayResult = 
+                final List<MatchResult> arrayResult = 
                         searchForwards(window.getArray(), arrayStartPosition, arrayMaxPosition);
                 // Did we find a match?
                 if (!arrayResult.isEmpty()) {
@@ -168,7 +187,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             final long lastWindowPosition = windowStartPosition + arrayLastPosition;
             final long lastSearchPosition = toPosition < lastWindowPosition?
                                             toPosition : lastWindowPosition;
-            final List<SearchResult<SequenceMatcher>> readerResult = 
+            final List<MatchResult> readerResult = 
                     doSearchForwards(reader, searchPosition, lastSearchPosition);
             
             // Did we find a match?
@@ -205,7 +224,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      *         If there are no results, then the list is empty (not null).
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
-    protected abstract List<SearchResult<SequenceMatcher>> doSearchForwards(WindowReader reader, 
+    protected abstract List<MatchResult> doSearchForwards(WindowReader reader, 
             long fromPosition, long toPosition) throws IOException;
 
     
@@ -227,7 +246,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      * @throws IOException If the reader encounters a problem reading bytes.
      */    
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final WindowReader reader, 
+    public List<MatchResult> searchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final int smallestMatchEndPosition = sequences.getMinimumLength() - 1;
@@ -256,7 +275,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
 
                 // Search backwards in the byte array of the window:
                 final byte[] array = window.getArray();
-                final List<SearchResult<SequenceMatcher>> arrayResult = 
+                final List<MatchResult> arrayResult = 
                         searchBackwards(array, searchStartPosition, searchEndPosition);
                 
                 // Did we find a match?
@@ -283,7 +302,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
             // Search back to the first position in the previous window where any 
             // of the sequences might still cross over into the current window.
             final long lastCrossingPosition = windowStartPosition - longestMatchEndPosition;
-            final List<SearchResult<SequenceMatcher>> readerResult =
+            final List<MatchResult> readerResult =
                     doSearchBackwards(reader, searchPosition, lastCrossingPosition);
             
             // Did we find a match?
@@ -316,7 +335,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher<Seq
      *         If there are no results, the list is empty (not null).
      * @throws IOException If the reader encounters difficulties reading bytes.
      */    
-    protected abstract List<SearchResult<SequenceMatcher>> doSearchBackwards(WindowReader reader,
+    protected abstract List<MatchResult> doSearchBackwards(WindowReader reader,
             long fromPosition, long toPosition) throws IOException;
     
     

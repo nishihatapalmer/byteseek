@@ -34,6 +34,7 @@ package net.byteseek.matcher.automata;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.byteseek.automata.Automata;
@@ -46,17 +47,22 @@ import net.byteseek.matcher.MatchResult;
  * 
  * @author Matt Palmer
  */
-public final class NfaMatcher<T> implements AutomataMatcher<T> {
+public final class NfaMatcher implements AutomataMatcher {
 
-	private final Automata<T>	automata;
+	private final Automata	automata;
 
 	/**
 	 * Constructs an NfaMatcher from an automata.
 	 *
 	 * @param automata The automata to match.
 	 */
-	public NfaMatcher(final Automata<T> automata) {
+	public NfaMatcher(final Automata automata) {
 		this.automata = automata;
+	}
+
+	@Override
+	public long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+		return 0; //TODO: implement.
 	}
 
 	/**
@@ -70,8 +76,8 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 	public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
 		// Setup 
 		long currentPosition = matchPosition;
-		Set<State<T>> nextStates = new LinkedHashSet<State<T>>();
-		Set<State<T>> activeStates = new LinkedHashSet<State<T>>();
+		Set<State> nextStates = new LinkedHashSet<State>();
+		Set<State> activeStates = new LinkedHashSet<State>();
 		activeStates.add(automata.getInitialState());
 		Window window = reader.getWindow(currentPosition);
 
@@ -86,7 +92,7 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 			while (!activeStates.isEmpty() && windowPos < windowLength) {
 
 				// See if any active states are final (a match).
-				for (final State<T> currentState : activeStates) {
+				for (final State currentState : activeStates) {
 					if (currentState.isFinal()) {
 						return true;
 					}
@@ -94,13 +100,13 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 
 				// No match was found, find the next distinct states to follow:
 				final byte currentByte = bytes[windowPos++];
-				for (final State<T> currentState : activeStates) {
+				for (final State currentState : activeStates) {
 					currentState.appendNextStates(nextStates, currentByte);
 				}
 
 				// Make the next states active.  The last active set is 
 				// re-used for the next states to be processed.
-				final Set<State<T>> lastActiveSet = activeStates;
+				final Set<State> lastActiveSet = activeStates;
 				activeStates = nextStates;
 				nextStates = lastActiveSet;
 				nextStates.clear();
@@ -109,6 +115,11 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 			window = reader.getWindow(currentPosition);
 		}
 		return false;
+	}
+
+	@Override
+	public long matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+		return 0; //TODO: implement.
 	}
 
 	/**
@@ -125,15 +136,15 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 		final int length = bytes.length;
 		if (matchPosition >= 0 && matchPosition < length) {
 			int currentPosition = matchPosition;
-			Set<State<T>> nextStates = new LinkedHashSet<State<T>>();
-			Set<State<T>> activeStates = new LinkedHashSet<State<T>>();
+			Set<State> nextStates = new LinkedHashSet<State>();
+			Set<State> activeStates = new LinkedHashSet<State>();
 			activeStates.add(automata.getInitialState());
 
 			// Match automata:
 			while (!activeStates.isEmpty() && currentPosition < length) {
 
 				// See if any active states are final (a match).
-				for (final State<T> currentState : activeStates) {
+				for (final State currentState : activeStates) {
 					if (currentState.isFinal()) {
 						return true;
 					}
@@ -141,13 +152,13 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 
 				// No match was found, find the next distinct states to follow:
 				final byte currentByte = bytes[currentPosition++];
-				for (final State<T> currentState : activeStates) {
+				for (final State currentState : activeStates) {
 					currentState.appendNextStates(nextStates, currentByte);
 				}
 
 				// Make the next states active.  The last active set is cleared 
 				// and re-used for the next states.
-				final Set<State<T>> lastActiveSet = activeStates;
+				final Set<State> lastActiveSet = activeStates;
 				activeStates = nextStates;
 				nextStates = lastActiveSet;
 				nextStates.clear();
@@ -157,38 +168,38 @@ public final class NfaMatcher<T> implements AutomataMatcher<T> {
 	}
 
 	@Override
-	public MatchResult<T> firstMatch(WindowReader reader, long matchPosition) throws IOException {
+	public MatchResult firstMatch(WindowReader reader, long matchPosition) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MatchResult<T> nextMatch(WindowReader reader, MatchResult<T> lastMatch) throws IOException {
+	public MatchResult nextMatch(WindowReader reader, MatchResult lastMatch) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<MatchResult<T>> allMatches(WindowReader reader, long matchPosition)
+	public Collection<MatchResult> allMatches(WindowReader reader, long matchPosition)
 			throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MatchResult<T> firstMatch(byte[] bytes, int matchPosition) {
+	public MatchResult firstMatch(byte[] bytes, int matchPosition) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MatchResult<T> nextMatch(byte[] bytes, MatchResult<T> lastMatch) {
+	public MatchResult nextMatch(byte[] bytes, MatchResult lastMatch) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<MatchResult<T>> allMatches(byte[] bytes, int matchPosition) {
+	public Collection<MatchResult> allMatches(byte[] bytes, int matchPosition) {
 		// TODO Auto-generated method stub
 		return null;
 	}

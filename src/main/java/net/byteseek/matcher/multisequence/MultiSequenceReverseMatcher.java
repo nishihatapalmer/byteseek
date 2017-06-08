@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 //TODO: should this simply be a translation class with no knowledge of the
@@ -221,7 +222,12 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
     public List<SequenceMatcher> getSequenceMatchers() {
         return reversed.getSequenceMatchers();
     }
-    
+
+
+    @Override
+    public long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+        return 0; //TODO: implement.
+    }
 
     /**
      * {@inheritDoc}
@@ -230,8 +236,13 @@ public final class MultiSequenceReverseMatcher implements MultiSequenceMatcher {
     public boolean matches(WindowReader reader, long matchPosition) throws IOException {
         return reversed.matches(reader, matchPosition);
     }
-    
-    
+
+    @Override
+    public long matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+        return 0; //TODO: implement.
+    }
+
+
     /**
      * {@inheritDoc}
      */    

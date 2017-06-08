@@ -30,47 +30,44 @@
  */
 package net.byteseek.matcher;
 
-import java.util.Collection;
-
 /**
- * An interface for a simple data carrying class to hold the results of matching something at a
- * given position, with a length and a collection of associated matching objects.
- * <p>
- * Many matchers will not use the MatchResult interface, as what matched and how
- * long the match is implicit from the type of matching being done. For
- * example, when matching sequences, it is obvious what matched and how long the
- * match was, so there is no need to introduce an intermediate result object.
- * However, some matchers can match more than once, and may be associated with
- * different objects for different stages of matching. These types of matchers
- * will typically return a MatchResult or a collection of them.
- * 
- * @param <T> The type of object associated with the match.
- * 
+ * A simple data carrying class to hold the results of matching something at a
+ * given position, with a match length.
+ *
  * @author Matt Palmer
  */
-public interface 	MatchResult<T> {
+public class MatchResult {
+
+	private final long matchPosition;
+	private final long matchLength;
+
+	/**
+	 * Constructs a MatchResult given a match position and a match length.
+	 *
+	 * @param matchPosition The position a match was found at.
+	 * @param matchLength   The length of the match.
+	 */
+	public MatchResult(final long matchPosition, final long matchLength) {
+		this.matchPosition = matchPosition;
+		this.matchLength   = matchLength;
+	}
 
 	/**
 	 * Returns the position a match was found at.
 	 * 
 	 * @return The position a match was found at.
 	 */
-	long getMatchPosition();
+	public long getMatchPosition() {
+		return matchPosition;
+	}
 
-	
 	/**
 	 * Returns the length of the match.
 	 * 
 	 * @return The length of the match.
 	 */
-	long getMatchLength();
-
-	
-	/**
-	 * Returns the objects associated with the match.
-	 * 
-	 * @return The objects associated with the match.
-	 */
-	Collection<T> getMatchingObjects();
+	public long getMatchLength() {
+		return matchLength;
+	}
 	
 }

@@ -35,10 +35,9 @@ import java.io.IOException;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.AbstractSearcher;
-import net.byteseek.searcher.SearchResult;
-import net.byteseek.searcher.SearchUtils;
 import net.byteseek.utils.ArgUtils;
 
 /**
@@ -52,7 +51,7 @@ import net.byteseek.utils.ArgUtils;
  *
  * @author Matt Palmer
  */
-public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> implements SequenceSearcher<T> {
+public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher implements SequenceSearcher {
 
     protected final int NO_MATCH = -1;
 
@@ -92,15 +91,27 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
      */
 
     @Override
-    public List<SearchResult<T>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public long searchForwards(final byte[] bytes,
+                               final int fromPosition, final int toPosition,
+                               final List<MatchResult> results) {
         final int result = searchSequenceForwards(bytes, fromPosition, toPosition);
-        return result >= 0 ? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
+        if (result >= 0) {
+            results.add(new MatchResult(result, getSequenceLength()));
+            return 1;
+        }
+        return 0;
     }
 
     @Override
-    public List<SearchResult<T>> searchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+    public long searchForwards(final WindowReader reader,
+                               final long fromPosition, final long toPosition,
+                                final List<MatchResult> results) throws IOException {
         final long result = searchSequenceForwards(reader, fromPosition, toPosition);
-        return result >= 0 ? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
+        if (result >= 0) {
+            results.add(new MatchResult(result, getSequenceLength()));
+            return 1;
+        }
+        return 0;
     }
 
     /**
@@ -132,15 +143,27 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher<T> im
      */
 
     @Override
-    public List<SearchResult<T>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public long searchBackwards(final byte[] bytes,
+                                final int fromPosition, final int toPosition,
+                                final List<MatchResult> results) {
         final int result = searchSequenceBackwards(bytes, fromPosition, toPosition);
-        return result >= 0? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
+        if (result >= 0) {
+            results.add(new MatchResult(result, getSequenceLength()));
+            return 1;
+        }
+        return 0;
     }
 
     @Override
-    public List<SearchResult<T>> searchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+    public long searchBackwards(final WindowReader reader,
+                                final long fromPosition, final long toPosition,
+                                final List<MatchResult> results) throws IOException {
         final long result = searchSequenceBackwards(reader, fromPosition, toPosition);
-        return result >= 0? SearchUtils.singleResult(result, sequence) : SearchUtils.<T>noResults();
+        if (result >= 0) {
+            results.add(new MatchResult(result, getSequenceLength()));
+            return 1;
+        }
+        return 0;
     }
 
     /**

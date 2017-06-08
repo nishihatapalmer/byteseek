@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-16, All rights reserved.
+ * Copyright Matt Palmer 2015-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,14 +35,8 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
-import net.byteseek.searcher.AbstractSearcher;
-import net.byteseek.searcher.SearchResult;
-import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.sequence.AbstractSequenceSearcher;
-import net.byteseek.utils.ArgUtils;
-
 import java.io.IOException;
-import java.util.List;
 
 /**
  * A Searcher which looks for a byte which matches the ByteMatcher.

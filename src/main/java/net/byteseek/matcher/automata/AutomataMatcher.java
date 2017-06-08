@@ -44,10 +44,9 @@ import net.byteseek.matcher.Matcher;
  * implements Iterable&lt;MatchResult&lt;T&gt;&gt; to provide a way to successively return
  * matches for a position.
  * 
- * @param <T>  The type of object associated with matching states in the Automata.
  * @author Matt palmer
  */
-public interface AutomataMatcher<T> extends Matcher {
+public interface AutomataMatcher extends Matcher {
 
 	/**
 	 * Returns the first {@link MatchResult} for the position given, or null if no objects matched. 
@@ -70,7 +69,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * @throws IOException
 	 *             If there was a problem reading bytes in the WindowReader.
 	 */
-	public MatchResult<T> firstMatch(WindowReader reader, long matchPosition) throws IOException;
+	public MatchResult firstMatch(WindowReader reader, long matchPosition) throws IOException;
 
 	/**
 	 * Returns the next {@link MatchResult} for the last MatchResult given, or null if no objects matched. 
@@ -90,7 +89,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * @throws IOException
 	 *             If there was a problem reading bytes in the WindowReader.
 	 */
-	public MatchResult<T> nextMatch(WindowReader reader, MatchResult<T> lastMatch) throws IOException;
+	public MatchResult nextMatch(WindowReader reader, MatchResult lastMatch) throws IOException;
 
 	/**
 	 * Returns a collection of {@link MatchResult}s at the position given, or an
@@ -111,7 +110,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * @throws IOException
 	 * 				If there was a problem reading bytes in the WindowReader.
 	 */
-	public Collection<MatchResult<T>> allMatches(WindowReader reader, long matchPosition)
+	public Collection<MatchResult> allMatches(WindowReader reader, long matchPosition)
 			throws IOException;
 
 	/**
@@ -132,7 +131,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 *            The position to attempt a match at.
 	 * @return A MatchResult, or null if no match was found.
 	 */
-	public MatchResult<T> firstMatch(byte[] bytes, int matchPosition);
+	public MatchResult firstMatch(byte[] bytes, int matchPosition);
 
 	/**
 	 * Returns the next {@link MatchResult} for the last MatchResult given, or null if no objects matched. 
@@ -149,7 +148,7 @@ public interface AutomataMatcher<T> extends Matcher {
 	 *            The last MatchResult you have.
 	 * @return A MatchResult, or null if no match occurred.
 	 */
-	public MatchResult<T> nextMatch(byte[] bytes, MatchResult<T> lastMatch);
+	public MatchResult nextMatch(byte[] bytes, MatchResult lastMatch);
 
 	/**
 	 * Returns a collection of {@link MatchResult}s at the position given, or an
@@ -167,6 +166,6 @@ public interface AutomataMatcher<T> extends Matcher {
 	 * @return A Collection of MatchResults, or an empty collection if no
 	 *         objects matched.
 	 */
-	public Collection<MatchResult<T>> allMatches(byte[] bytes, int matchPosition);
+	public Collection<MatchResult> allMatches(byte[] bytes, int matchPosition);
 
 }

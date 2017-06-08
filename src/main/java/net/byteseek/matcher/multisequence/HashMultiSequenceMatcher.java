@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
 
@@ -161,8 +162,18 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+        return 0; //TODO: implement.
+    }
+
     public boolean matches(WindowReader reader, long matchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public long matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+        return 0; //TODO: implement.
     }
 
     public boolean matches(byte[] bytes, int matchPosition) {

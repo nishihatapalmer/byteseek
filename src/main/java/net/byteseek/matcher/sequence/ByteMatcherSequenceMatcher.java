@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -69,7 +70,7 @@ import net.byteseek.utils.ArgUtils;
  *   
  * @author Matt Palmer
  */
-public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
+public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 
     private final int length;
     private final int startArrayIndex; // the position to start at (an inclusive value)
@@ -468,7 +469,9 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
             window = reader.getWindow(matchPosition + bytesMatchedSoFar);
         }
         return false;
-    }    
+    }
+
+
     
     
     /**
@@ -492,7 +495,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
         return false;
     }
 
-    
+
     /**
      * {@inheritDoc}
      * 
@@ -768,7 +771,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 	 * 
 	 * @author Matt Palmer
 	 */
-    public static final class ReverseByteMatcherSequenceMatcher implements SequenceMatcher {
+    public static final class ReverseByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 
     	private final ByteMatcher[] matchers;
         private final int startArrayIndex; // the position to start at (an inclusive value)
@@ -928,7 +931,7 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
 		
 		
 		@Override
-		public boolean matches(WindowReader reader, long matchPosition) throws IOException {
+		public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
             final int matchStart = startArrayIndex;
             final int matchLength = endArrayIndex - startArrayIndex;
             final int matchEnd = endArrayIndex - 1;
@@ -957,7 +960,6 @@ public final class ByteMatcherSequenceMatcher implements SequenceMatcher {
             return false;
 		}
 
-		
 		@Override
 		public boolean matches(byte[] bytes, int matchPosition) {
             if (matchPosition + length() <= bytes.length && matchPosition >= 0) {

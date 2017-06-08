@@ -36,9 +36,9 @@ import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 
 /**
@@ -64,7 +64,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
+    public List<MatchResult> searchForwards(final byte[] bytes,
             final int fromPosition, final int toPosition) {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
@@ -95,7 +95,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
                 if (!matches.isEmpty()) {
 
                     // See if any of the matches are within the bounds of the search:
-                    final List<SearchResult<SequenceMatcher>> results = 
+                    final List<MatchResult> results = 
                         SearchUtils.resultsBackFromPosition(searchPosition, matches, 
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
@@ -117,7 +117,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, 
+    protected List<MatchResult> doSearchForwards(final WindowReader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
@@ -154,7 +154,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
                             backMatcher.allMatchesBackwards(reader, matchEndPosition);
                     if (!matches.isEmpty()) {
                         // See if any of the matches are within the bounds of the search:
-                        final List<SearchResult<SequenceMatcher>> results = 
+                        final List<MatchResult> results = 
                             SearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                                 fromPosition, toPosition);
                         if (!results.isEmpty()) {
@@ -179,7 +179,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
+    public List<MatchResult> searchBackwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
         // Get info needed to search with:
         final SearchInfo info = backwardInfo.get();
@@ -222,7 +222,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
+    protected List<MatchResult> doSearchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition) throws IOException {
         // Get the objects needed to search:
         final SearchInfo info = backwardInfo.get();

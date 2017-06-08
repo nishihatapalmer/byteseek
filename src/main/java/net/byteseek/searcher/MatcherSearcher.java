@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,6 +36,7 @@ import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.Matcher;
 import net.byteseek.utils.ArgUtils;
 
@@ -66,7 +67,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public final class MatcherSearcher extends AbstractSearcher<Matcher> {
+public final class MatcherSearcher extends AbstractSearcher {
 
     private final Matcher matcher;
     
@@ -80,8 +81,8 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         ArgUtils.checkNullObject(matcher, "matcher");
         this.matcher = matcher;
     }
-    
-    
+
+
     /**
      * {@inheritDoc}
      * <p>
@@ -100,8 +101,9 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * @throws IOException if a problem occurred reading bytes from the WindowReader.
      */
     @Override
-    public List<SearchResult<Matcher>> searchForwards(final WindowReader reader, final long fromPosition, 
-           final long toPosition) throws IOException {
+    public long searchForwards(final WindowReader reader,
+                               final long fromPosition, final long toPosition,
+                               final List<MatchResult> results) throws IOException {
         
         // Initialise search:
         final Matcher theMatcher = matcher;    
@@ -121,22 +123,24 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
             
             // Search forwards in the window:
             while (searchPosition <= finalPosition) {
-                if (theMatcher.matches(reader, searchPosition)) {
-                    return SearchUtils.singleResult(searchPosition, theMatcher);
+                final long numMatches = theMatcher.matches(reader, searchPosition, results);
+                if (numMatches > 0) {
+                    return numMatches;
                 }
                 searchPosition++;
             }
-            
         }
-        return SearchUtils.noResults();
+        return 0;
     }
-    
-    
+
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<Matcher>> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public long searchForwards(final byte[] bytes,
+                               final int fromPosition, final int toPosition,
+                               final List<MatchResult> results) {
         
         // Use a local reference to the matcher for performance reasons:
         final Matcher theMatcher = matcher;
@@ -150,12 +154,13 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         
         // Search forwards:
         while (searchPosition <= searchEndPosition) {
-            if (theMatcher.matches(bytes, searchPosition)) {
-                return SearchUtils.singleResult(searchPosition, theMatcher);
+            final long numMatches = theMatcher.matches(bytes, searchPosition, results);
+            if (numMatches > 0) {
+                return numMatches;
             }
             searchPosition++;
         }
-        return SearchUtils.noResults();
+        return 0;
     }
   
    
@@ -163,8 +168,9 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<Matcher>> searchBackwards(final WindowReader reader, final long fromPosition, 
-           final long toPosition) throws IOException {
+    public long searchBackwards(final WindowReader reader,
+                                final long fromPosition, final long toPosition,
+                                List<MatchResult> results) throws IOException {
         
         // Initialise search:
         final Matcher theMatcher = matcher;        
@@ -174,12 +180,13 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         
         // Search backwards:
         while (searchPosition >= endSearchPosition) {
-            if (theMatcher.matches(reader, searchPosition)) {
-                return SearchUtils.singleResult(searchPosition, theMatcher);
+            final long numMatches = theMatcher.matches(reader, searchPosition, results);
+            if (numMatches > 0) {
+                return numMatches;
             }
             searchPosition--;
         }
-        return SearchUtils.noResults();
+        return 0;
     }
 
     
@@ -187,7 +194,9 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<Matcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public long searchBackwards(final byte[] bytes,
+                                final int fromPosition, final int toPosition,
+                                final List<MatchResult> results) {
         // Initialise search:
         final Matcher theMatcher = matcher;
         final int lastPossiblePosition = bytes.length - 1;
@@ -198,15 +207,15 @@ public final class MatcherSearcher extends AbstractSearcher<Matcher> {
         
         // Search backwards:
         while (searchPosition >= endSearchPosition) {
-            if (theMatcher.matches(bytes, searchPosition)) {
-                return SearchUtils.singleResult(searchPosition, theMatcher);
+            final long numMatches = theMatcher.matches(bytes, searchPosition, results);
+            if (numMatches > 0) {
+                return numMatches;
             }
             searchPosition--;
         }
-        return SearchUtils.noResults();
+        return 0;
     }
 
-    
     /**
      * {@inheritDoc}
      */

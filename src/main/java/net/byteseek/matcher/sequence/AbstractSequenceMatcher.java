@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,29 +28,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.searcher;
+package net.byteseek.matcher.sequence;
 
-import org.junit.Test;
+import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.List;
 
-public class SearchResultTest {
+/**
+ * Created by matt on 08/06/17.
+ */
+public abstract class AbstractSequenceMatcher implements SequenceMatcher {
 
-    @Test
-    public void testResult() throws Exception {
-        for (long test = 0; test < 100; test++) {
-            Object obj = new Object();
-            SearchResult<Object> testResult = new SearchResult(test, obj);
-            assertEquals(test, testResult.getMatchPosition());
-            assertEquals(obj, testResult.getMatchingObject());
+    @Override
+    public long matches(final WindowReader reader, final long matchPosition, final List<MatchResult> results) throws IOException {
+        if (matches(reader, matchPosition)) {
+            results.add(new MatchResult(matchPosition, length()));
+            return 1;
         }
+        return 0;
     }
 
-    @Test
-    public void testToString() throws Exception {
-        SearchResult<Object> res = new SearchResult(1234567890, null);
-        String out = res.toString();
-        assertTrue(out.contains(SearchResult.class.getSimpleName()));
-        assertTrue(out.contains("1234567890"));
+    @Override
+    public long matches(final byte[] bytes, final int matchPosition, final List<MatchResult> results) {
+        if (matches(bytes, matchPosition)) {
+            results.add(new MatchResult(matchPosition, length()));
+            return 1;
+        }
+        return 0;
     }
+
 }

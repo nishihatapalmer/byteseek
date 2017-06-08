@@ -43,6 +43,7 @@ import net.byteseek.automata.trie.Trie;
 import net.byteseek.automata.trie.TrieFactory;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.automata.SequenceMatcherTrieFactory;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
@@ -316,12 +317,22 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 		return null;
 	}
 
+	@Override
+	public long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+		return 0; //TODO: implement.
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
 		return firstMatch(reader, matchPosition) != null;
+	}
+
+	@Override
+	public long matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+		return 0; //TODO: implement.
 	}
 
 	/**

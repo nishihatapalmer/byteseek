@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2013, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.bytes.ByteMatcherFactory;
 import net.byteseek.matcher.bytes.OptimalByteMatcherFactory;
 import net.byteseek.io.reader.windows.Window;
@@ -50,14 +51,12 @@ import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.SingleCheckLazyObject;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
-import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 
 /**
  * The SetHorspoolSearcher implements the Boyer-Moore-Horspool algorithm for
  * multiple sequences.  For a description of this algorithm, please see the
- * class {@link net.byteseek.searcher.sequence.UnrolledHorspoolSearcher}.
+ * class {@link net.byteseek.searcher.sequence.HorspoolUnrolledSearcher}.
  * <p>
  * It extends that algorithm by calculating the shifts for all the sequences
  * to be searched for.  As the number of sequences rises, the performance of
@@ -88,13 +87,14 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         //TODO: provide an ObjectFactory<LazyObject> to instantiate a LazyObject of choice.
         byteMatcherFactory = OptimalByteMatcherFactory.FACTORY;
     }
-    
-    
+
+
+
     /**
      * {@inheritDoc}
      */    
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
+    public List<MatchResult> searchForwards(final byte[] bytes, 
             final int fromPosition, final int toPosition) {
         
         // Get the objects needed to search:
@@ -133,7 +133,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             if (!matches.isEmpty()) {
                 // Build a result list, filtering out any which don't fall within
                 // the "from" or "to" positions of the search.
-                final List<SearchResult<SequenceMatcher>> results = 
+                final List<MatchResult> results = 
                     SearchUtils.resultsBackFromPosition(searchPosition, matches, 
                                                         fromPosition, toPosition);
                 if (!results.isEmpty()) {
@@ -146,14 +146,16 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
         }
         
         return SearchUtils.noResults();
-    }    
-        
-    
+    }
+
+
+
+
     /**
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, final long fromPosition, 
+    protected List<MatchResult> doSearchForwards(final WindowReader reader, final long fromPosition, 
         final long toPosition) throws IOException {
             
         // Get the objects needed to search:
@@ -199,7 +201,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                 final Collection<SequenceMatcher> matches = 
                         verifier.allMatchesBackwards(reader, matchEndPosition);
                 if (!matches.isEmpty()) {
-                    final List<SearchResult<SequenceMatcher>> results = 
+                    final List<MatchResult> results = 
                         SearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
@@ -223,7 +225,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public List<MatchResult> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
         // Get objects needed for the search:
         final SearchInfo info = backwardInfo.get();
@@ -272,7 +274,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
      * {@inheritDoc}
      */
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
+    protected List<MatchResult> doSearchBackwards(final WindowReader reader, 
             final long fromPosition, final long toPosition ) throws IOException {
         
         // Initialise

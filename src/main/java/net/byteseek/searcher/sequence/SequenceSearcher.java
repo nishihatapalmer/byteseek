@@ -42,7 +42,7 @@ import java.io.IOException;
  *
  * Created by matt on 12/04/16.
  */
-public interface SequenceSearcher<T> extends Searcher<T> {
+public interface SequenceSearcher extends Searcher {
 
     /**
      * Searches bytes forwards provided by a {@link WindowReader} object, from the

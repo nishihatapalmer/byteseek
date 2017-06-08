@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-12, All rights reserved.
+ * Copyright Matt Palmer 2011-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,6 +33,7 @@ package net.byteseek.searcher.multisequence;
 
 import java.io.IOException;
 
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.utils.collections.BytePermutationIterator;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
@@ -44,10 +45,8 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.Searcher;
-import net.byteseek.searcher.multisequence.AbstractMultiSequenceSearcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,7 +173,7 @@ import java.util.List;
     }    
     
     
-    private static Searcher<SequenceMatcher> createSearchInstance(
+    private static Searcher createSearchInstance(
             final MultiSequenceMatcher matcher, final int blockSize) {
         return new OneByteBlockSearcher(matcher);
         /*
@@ -524,7 +523,7 @@ import java.util.List;
             super(matcher, 1);
         }
         
-        public List<SearchResult<SequenceMatcher>> searchForwards(final byte[] bytes, 
+        public List<MatchResult> searchForwards(final byte[] bytes,
                 final int fromPosition, final int toPosition) {
             // Get info needed to search with:
             final SearchInfo info = forwardInfo.get();
@@ -555,7 +554,7 @@ import java.util.List;
                     if (!matches.isEmpty()) {
                         
                         // See if any of the matches are within the bounds of the search:
-                        final List<SearchResult<SequenceMatcher>> results = 
+                        final List<MatchResult> results = 
                             SearchUtils.resultsBackFromPosition(searchPosition, matches, 
                                                                 fromPosition, toPosition);
                         if (!results.isEmpty()) {
@@ -575,7 +574,7 @@ import java.util.List;
         
         
         @Override
-        protected List<SearchResult<SequenceMatcher>> doSearchForwards(final WindowReader reader, 
+        protected List<MatchResult> doSearchForwards(final WindowReader reader, 
                 final long fromPosition, final long toPosition) throws IOException {
             // Get info needed to search with:
             final SearchInfo info = forwardInfo.get();
@@ -613,7 +612,7 @@ import java.util.List;
                                 backMatcher.allMatchesBackwards(reader, matchEndPosition);
                         if (!matches.isEmpty()) {
                             // Convert the matches into search results, filtering on the ends of the search:
-                            final List<SearchResult<SequenceMatcher>> results = 
+                            final List<MatchResult> results = 
                                 SearchUtils.resultsBackFromPosition(matchEndPosition, matches, 
                                                                     fromPosition, toPosition);
                             if (!results.isEmpty()) {
@@ -636,7 +635,7 @@ import java.util.List;
         }
 
         @Override
-        protected List<SearchResult<SequenceMatcher>> doSearchBackwards(final WindowReader reader, 
+        protected List<MatchResult> doSearchBackwards(final WindowReader reader, 
                 final long fromPosition, final long toPosition) throws IOException {
             // Get the objects needed to search:
             final SearchInfo info = backwardInfo.get();
@@ -686,7 +685,7 @@ import java.util.List;
         }
 
         
-        public List<SearchResult<SequenceMatcher>> searchBackwards(final byte[] bytes, 
+        public List<MatchResult> searchBackwards(final byte[] bytes, 
                 final int fromPosition, final int toPosition) {
             // Get info needed to search with:
             final SearchInfo info = backwardInfo.get();

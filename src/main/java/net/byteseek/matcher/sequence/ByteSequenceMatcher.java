@@ -55,7 +55,7 @@ import net.byteseek.utils.ArgUtils;
  *
  * @author Matt Palmer
  */
-public final class ByteSequenceMatcher implements SequenceMatcher {
+public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
     
     private final byte[] byteArray;
     private final int startArrayIndex; // the position to start at (an inclusive value)
@@ -494,7 +494,7 @@ public final class ByteSequenceMatcher implements SequenceMatcher {
      * A ReverseByteArrayMatcher is a matcher which matches the reverse order of bytes in a byte array.
      * 
      */
-    public static final class ReverseByteArrayMatcher implements SequenceMatcher {
+    public static final class ReverseByteArrayMatcher extends AbstractSequenceMatcher {
          
          private final byte[] byteArray;
          private final int startArrayIndex; // the position to start in the array (inclusive)

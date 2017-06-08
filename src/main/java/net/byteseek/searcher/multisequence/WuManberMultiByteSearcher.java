@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012, All rights reserved.
+ * Copyright Matt Palmer 2012-17, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -35,9 +35,9 @@ import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchResult;
 import net.byteseek.searcher.SearchUtils;
 
 /**
@@ -73,17 +73,17 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
     }        
 
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchForwards(WindowReader reader, long searchPosition, long lastSearchPosition) throws IOException {
+    protected List<MatchResult> doSearchForwards(WindowReader reader, long searchPosition, long lastSearchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected List<SearchResult<SequenceMatcher>> doSearchBackwards(WindowReader reader, long searchPosition, long lastSearchPosition) throws IOException {
+    protected List<MatchResult> doSearchBackwards(WindowReader reader, long searchPosition, long lastSearchPosition) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public List<SearchResult<SequenceMatcher>> searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+    public List<MatchResult> searchForwards(byte[] bytes, int fromPosition, int toPosition) {
         // Get info needed to search with:
         final SearchInfo info = forwardInfo.get();
         final int[] safeShifts = info.shifts;
@@ -122,7 +122,7 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
                 if (!matches.isEmpty()) {
 
                     // See if any of the matches are within the bounds of the search:
-                    final List<SearchResult<SequenceMatcher>> results = 
+                    final List<MatchResult> results = 
                         SearchUtils.resultsBackFromPosition(searchPosition, matches, 
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
@@ -139,7 +139,7 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
     }
 
     @Override
-	public List<SearchResult<SequenceMatcher>> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+	public List<MatchResult> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     

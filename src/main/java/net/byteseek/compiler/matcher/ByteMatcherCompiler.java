@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -54,6 +54,7 @@ import net.byteseek.parser.tree.node.ChildrenNode;
  * abstract syntax tree provided by the {@link AbstractCompiler} class,
  * which it extends.
  * <p>
+ *     //TODO: don't think this is true anymore.  Doesn't process a sequence, or nested values, only syntax which produces a single byte.
  * It will interpret all regular expression syntax, calculating the union
  * of all byte values which the regular expression could match.
  * Hence, any regular expression can be fed to this compiler,

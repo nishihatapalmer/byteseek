@@ -38,30 +38,29 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import net.byteseek.utils.ArgUtils;
 
 /**
  * An iterator which iterates over a {@link net.byteseek.io.reader.WindowReader} or a
  * byte array, using a provided {@link Searcher}. Each iteration returns the
  * next set of search results, searching forwards.
- * 
- * @param <T>
- *            The type of object returned on a match by the Searcher.
+ *
  * @author Matt Palmer
  */
-public class ForwardSearchIterator<T> implements
-		Iterator<List<SearchResult<T>>> {
+public class ForwardSearchIterator implements
+		Iterator<List<MatchResult>> {
 
 	// immutable fields:
 	private final byte[] bytes;
 	private final WindowReader reader;
 	private final long toPosition;
-	private final Searcher<T> searcher;
+	private final Searcher searcher;
 
 	// private state:
 	private long searchPosition;
 	private boolean searchedForNext;
-	private List<SearchResult<T>> searchResults = Collections.emptyList();
+	private List<MatchResult> matchResults = Collections.emptyList();
 
 	/**
 	 * Constructs a ForwardSearchIterator from a {@link Searcher} and
@@ -75,7 +74,7 @@ public class ForwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or WindowReader is null.
 	 */
-	public ForwardSearchIterator(final Searcher<T> searcher, final WindowReader reader) {
+	public ForwardSearchIterator(final Searcher searcher, final WindowReader reader) {
 		this(searcher, 0, Long.MAX_VALUE, reader);
 	}
 
@@ -93,7 +92,7 @@ public class ForwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or WindowReader is null.
 	 */
-	public ForwardSearchIterator(final Searcher<T> searcher,
+	public ForwardSearchIterator(final Searcher searcher,
 			final WindowReader reader, final long fromPosition) {
 		this(searcher, fromPosition, Long.MAX_VALUE, reader);
 	}
@@ -114,7 +113,7 @@ public class ForwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or WindowReader is null.
 	 */
-	public ForwardSearchIterator(final Searcher<T> searcher,
+	public ForwardSearchIterator(final Searcher searcher,
 			final long fromPosition, final long toPosition, final WindowReader reader) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(reader, "reader");
@@ -137,7 +136,7 @@ public class ForwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or byte array is null.
 	 */
-	public ForwardSearchIterator(final Searcher<T> searcher, final byte[] bytes) {
+	public ForwardSearchIterator(final Searcher searcher, final byte[] bytes) {
 		this(searcher, 0, bytes.length - 1, bytes);
 	}
 
@@ -155,7 +154,7 @@ public class ForwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or byte array is null.
 	 */
-	public ForwardSearchIterator(final Searcher<T> searcher,
+	public ForwardSearchIterator(final Searcher searcher,
 			final byte[] bytes, final long fromPosition) {
 		this(searcher, fromPosition, bytes.length - 1, bytes);
 	}
@@ -176,7 +175,7 @@ public class ForwardSearchIterator<T> implements
 	 * @throws IllegalArgumentException
 	 *             if the Searcher or array is null.
 	 */
-	public ForwardSearchIterator(final Searcher<T> searcher,
+	public ForwardSearchIterator(final Searcher searcher,
 			final long fromPosition, final long toPosition, final byte[] bytes) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(bytes, "bytes");
@@ -194,24 +193,24 @@ public class ForwardSearchIterator<T> implements
 	public boolean hasNext() {
 		if (!searchedForNext) {
 			try {
-				searchResults = getNextSearchResults();
+				matchResults = getNextMatchResults();
 				searchedForNext = true;
 			} catch (final IOException ex) {
 				return false;
 			}
 		}
-		return !searchResults.isEmpty();
+		return !matchResults.isEmpty();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<SearchResult<T>> next() {
+	public List<MatchResult> next() {
 		if (hasNext()) {
 			searchPosition = getNextSearchPosition();
 			searchedForNext = false;
-			return searchResults;
+			return matchResults;
 		}
 		throw new NoSuchElementException();
 	}
@@ -247,8 +246,8 @@ public class ForwardSearchIterator<T> implements
 		searchedForNext = false;
 	}
 
-	private List<SearchResult<T>> getNextSearchResults() throws IOException {
-		List<SearchResult<T>> nextResults = Collections.emptyList();
+	private List<MatchResult> getNextMatchResults() throws IOException {
+		List<MatchResult> nextResults = Collections.emptyList();
 		if (reader != null) {
 			nextResults = searcher.searchForwards(reader, searchPosition,
 					toPosition);
@@ -261,7 +260,7 @@ public class ForwardSearchIterator<T> implements
 
 	private long getNextSearchPosition() {
 		long furthestPosition = Long.MIN_VALUE;
-		for (final SearchResult<T> result : searchResults) {
+		for (final MatchResult result : matchResults) {
 			final long resultPosition = result.getMatchPosition();
 			if (resultPosition > furthestPosition) {
 				furthestPosition = resultPosition;

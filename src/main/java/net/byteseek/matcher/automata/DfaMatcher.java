@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import net.byteseek.automata.Automata;
 import net.byteseek.automata.State;
@@ -42,11 +43,12 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 
+
 /**
  * 
  * @author Matt Palmer
  */
-public class DfaMatcher<T> implements AutomataMatcher<T> {
+public class DfaMatcher<T> implements AutomataMatcher {
 
 	private final Automata<T>	automata;
 
@@ -57,6 +59,11 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 */
 	public DfaMatcher(final Automata<T> automata) {
 		this.automata = automata;
+	}
+
+	@Override
+	public long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+		return 0; //TODO: implement.
 	}
 
 	/**
@@ -93,6 +100,11 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 		return false;
 	}
 
+	@Override
+	public long matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+		return 0; //TODO: implement.
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -124,7 +136,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MatchResult<T> firstMatch(final WindowReader reader, final long matchPosition)
+	public MatchResult firstMatch(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		// Setup
 		long currentPosition = matchPosition;
@@ -144,7 +156,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 				if (state.isFinal()) {
 					final long matchLength = currentPosition - matchPosition + windowPos
 							- windowStart;
-					return new DfaMatchResult<T>(matchPosition, matchLength, state);
+					return new DfaMatchResult(matchPosition, matchLength, state);
 				}
 
 				// No match was found, find the next state to follow:
@@ -161,14 +173,14 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MatchResult<T> nextMatch(final WindowReader reader, final MatchResult<T> lastMatch)
+	public MatchResult nextMatch(final WindowReader reader, final MatchResult lastMatch)
 			throws IOException {
 		if (lastMatch instanceof DfaMatchResult) {
 			final long matchPosition = lastMatch.getMatchPosition();
 			final long startPosition = matchPosition + lastMatch.getMatchLength();
 			long currentPosition = startPosition;
 			Window window = reader.getWindow(currentPosition);
-			State<T> state = ((DfaMatchResult<T>) lastMatch).getMatchingState();
+			State<T> state = ((DfaMatchResult) lastMatch).getMatchingState();
 			// While we have a window on the data to match in:
 			while (window != null) {
 				final byte[] bytes = window.getArray();
@@ -187,7 +199,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 					if (state != null && state.isFinal()) {
 						final long matchLength = currentPosition - matchPosition + windowPos
 								- windowStart;
-						return new DfaMatchResult<T>(matchPosition, matchLength, state);
+						return new DfaMatchResult(matchPosition, matchLength, state);
 					}
 				}
 				currentPosition += windowLength - windowStart;
@@ -201,13 +213,13 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Collection<MatchResult<T>> allMatches(final WindowReader reader, final long matchPosition)
+	public Collection<MatchResult> allMatches(final WindowReader reader, final long matchPosition)
 			throws IOException {
 		// Setup
 		long currentPosition = matchPosition;
 		Window window = reader.getWindow(currentPosition);
 		State<T> state = automata.getInitialState();
-		Collection<MatchResult<T>> results = Collections.emptyList();
+		Collection<MatchResult> results = Collections.emptyList();
 		// While we have a window on the data to match in:
 		while (window != null) {
 			final byte[] bytes = window.getArray();
@@ -221,11 +233,11 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 				// See if the active states is final (a match).
 				if (state.isFinal()) {
 					if (results.isEmpty()) {
-						results = new ArrayList<MatchResult<T>>();
+						results = new ArrayList<MatchResult>();
 					}
 					final long matchLength = currentPosition - matchPosition + windowPos
 							- windowStart;
-					results.add(new DfaMatchResult<T>(matchPosition, matchLength, state));
+					results.add(new DfaMatchResult(matchPosition, matchLength, state));
 				}
 
 				// No match was found, find the next state to follow:
@@ -242,7 +254,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MatchResult<T> firstMatch(final byte[] bytes, final int matchPosition) {
+	public MatchResult firstMatch(final byte[] bytes, final int matchPosition) {
 		// Setup
 		final int length = bytes.length;
 		if (matchPosition >= 0 && matchPosition < length) {
@@ -255,7 +267,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 				// See if the next state is final (a match).
 				if (currentState.isFinal()) {
 					final long matchLength = currentPosition - matchPosition;
-					return new DfaMatchResult<T>(matchPosition, matchLength, currentState);
+					return new DfaMatchResult(matchPosition, matchLength, currentState);
 				}
 
 				// No match was found, find the next state to follow:
@@ -270,7 +282,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MatchResult<T> nextMatch(final byte[] bytes, final MatchResult<T> lastMatch) {
+	public MatchResult nextMatch(final byte[] bytes, final MatchResult lastMatch) {
 		if (lastMatch instanceof DfaMatchResult) {
 			// Setup
 			final int length = bytes.length;
@@ -278,7 +290,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 			final int startPosition = (int) (matchPosition + lastMatch.getMatchLength());
 			if (startPosition >= 0 && startPosition < length) {
 				int currentPosition = startPosition;
-				State<T> currentState = ((DfaMatchResult<T>) lastMatch).getMatchingState();
+				State<T> currentState = ((DfaMatchResult) lastMatch).getMatchingState();
 
 				// While there is a state to process:
 				while (currentState != null && currentPosition < length) {
@@ -290,7 +302,7 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 					// See if the next state is final (a match).
 					if (currentState != null && currentState.isFinal()) {
 						final long matchLength = currentPosition - matchPosition;
-						return new DfaMatchResult<T>(matchPosition, matchLength, currentState);
+						return new DfaMatchResult(matchPosition, matchLength, currentState);
 					}
 				}
 			}
@@ -302,10 +314,10 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Collection<MatchResult<T>> allMatches(final byte[] bytes, final int matchPosition) {
+	public Collection<MatchResult> allMatches(final byte[] bytes, final int matchPosition) {
 		// Setup
 		final int length = bytes.length;
-		Collection<MatchResult<T>> results = Collections.emptyList();
+		Collection<MatchResult> results = Collections.emptyList();
 		if (matchPosition >= 0 && matchPosition < length) {
 			int currentPosition = matchPosition;
 			State<T> currentState = automata.getInitialState();
@@ -316,10 +328,10 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 				// See if the next state is final (a match).
 				if (currentState.isFinal()) {
 					if (results.isEmpty()) {
-						results = new ArrayList<MatchResult<T>>();
+						results = new ArrayList<MatchResult>();
 					}
 					final long matchLength = currentPosition - matchPosition;
-					results.add(new DfaMatchResult<T>(matchPosition, matchLength, currentState));
+					results.add(new DfaMatchResult(matchPosition, matchLength, currentState));
 				}
 
 				// No match was found, find the next state to follow:
@@ -340,33 +352,20 @@ public class DfaMatcher<T> implements AutomataMatcher<T> {
 	 *
 	 * @param <T> The type of object associated with States in the Automata.
 	 */
-	private static final class DfaMatchResult<T> implements MatchResult<T> {
+	private static final class DfaMatchResult<T> extends MatchResult {
 
-		private final long			matchPosition;
-		private final long			matchLength;
+
 		private State<T>			matchingState;
 		public DfaMatchResult(final long matchPosition, 
 				              final long matchLength,
 				              final State<T> matchingState) {
-			this.matchPosition = matchPosition;
-			this.matchLength   = matchLength;
+			super(matchPosition, matchLength);
 			this.matchingState = matchingState;
 		}
 
-		@Override
-		public Collection<T> getMatchingObjects() {
-			return matchingState.getAssociations();
-		}
-
-		@Override
-		public long getMatchPosition() {
-			return matchPosition;
-		}
-
-		@Override
-		public long getMatchLength() {
-			return matchLength;
-		}
+		//public Collection<T> getMatchingObjects() {
+		//	return matchingState.getAssociations();
+		//}
 		
 		private State<T> getMatchingState() {
 			return matchingState;
