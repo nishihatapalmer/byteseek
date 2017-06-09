@@ -151,16 +151,9 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
     /**
      * Constructs a searcher for the bytes contained in the sequence string,
-     * encoded using the platform default character set, and a powerTwoSize which determines
-     * the size of the hash table used, up to maximum of 31, = 2^31, the largest possible array in Java.
+     * encoded using the platform default character set, and the size of the search index to use.
      * <p>
-     * If the powerTwoSize is set to zero, then the smallest table size which could give good performance for the
-     * pattern will be automatically selected, although it may result in very large table sizes for some complex
-     * patterns.
-     * <p>
-     * If the powerTwoSize is negative, then the smallest good performing table size will also be automatically
-     * selected, up to a maximum size given by the positive value, e.g. -12 = 2^12 = no bigger than 4096 elements.
-     * If the pattern is too complex to be adequately represented by the available table size,
+     * If a pattern is too complex to be adequately represented by the available table size,
      * a replacement searcher will be used in place of this algorithm (which is ShiftOR).  This is because if the
      * hash table is too small, the available shifts will be very small too and searching will consequently be
      * very slow.  While ShiftOR isn't particularly fast, it is faster than using this algorithm poorly and
@@ -188,16 +181,9 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
     /**
      * Constructs a searcher for the bytes contained in the sequence string,
-     * encoded using the charset provided, and a powerTwoSize which determines
-     * the size of the hash table used, up to maximum of 31, = 2^31, the largest possible array in Java.
+     * encoded using the charset provided, and the size of the search index to use.
      * <p>
-     * If the powerTwoSize is set to zero, then the smallest table size which could give good performance for the
-     * pattern will be automatically selected, although it may result in very large table sizes for some complex
-     * patterns.
-     * <p>
-     * If the powerTwoSize is negative, then the smallest good performing table size will also be automatically
-     * selected, up to a maximum size given by the positive value, e.g. -12 = 2^12 = no bigger than 4096 elements.
-     * If the pattern is too complex to be adequately represented by the available table size,
+     * If a pattern is too complex to be adequately represented by the available table size,
      * a replacement searcher will be used in place of this algorithm (which is ShiftOR).  This is because if the
      * hash table is too small, the available shifts will be very small too and searching will consequently be
      * very slow.  While ShiftOR isn't particularly fast, it is faster than using this algorithm poorly and
@@ -223,16 +209,9 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
     }
 
     /**
-     * Constructs a searcher for the byte array provided and a powerTwoSize which determines
-     * the size of the hash table used, up to maximum of 31, = 2^31, the largest possible array in Java.
+     * Constructs a searcher for the byte array provided, and the size of the search index to use.
      * <p>
-     * If the powerTwoSize is set to zero, then the smallest table size which could give good performance for the
-     * pattern will be automatically selected, although it may result in very large table sizes for some complex
-     * patterns.
-     * <p>
-     * If the powerTwoSize is negative, then the smallest good performing table size will also be automatically
-     * selected, up to a maximum size given by the positive value, e.g. -12 = 2^12 = no bigger than 4096 elements.
-     * If the pattern is too complex to be adequately represented by the available table size,
+     * If a pattern is too complex to be adequately represented by the available table size,
      * a replacement searcher will be used in place of this algorithm (which is ShiftOR).  This is because if the
      * hash table is too small, the available shifts will be very small too and searching will consequently be
      * very slow.  While ShiftOR isn't particularly fast, it is faster than using this algorithm poorly and
