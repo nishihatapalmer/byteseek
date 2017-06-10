@@ -82,7 +82,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  * 
  * @author Matt Palmer
  */
-public final class HorspoolUnrolledSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<SequenceMatcher> {
 
     private final LazyObject<SearchInfo> forwardInfo;
     private final LazyObject<SearchInfo> backwardInfo;

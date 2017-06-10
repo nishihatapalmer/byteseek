@@ -77,7 +77,7 @@ import java.util.Arrays;
  * ShiftOr creates a table of 256 elements, which in most cases will be the same or smaller
  * than the table used by this searcher, and whose pre-processing time is also faster.
  */
-public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher {
+public final class SignedHash2Searcher extends AbstractHashSearcher {
 
     /*************
      * Constants *
@@ -235,8 +235,8 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = forwardSearchInfo.get();
-        final int[] SHIFTS          = searchInfo.shifts;
-        final int HASH_SHIFT        = searchInfo.bitshift;
+        final int[] SHIFTS          = searchInfo.table;
+        final int HASH_SHIFT        = searchInfo.shift;
 
         // Get local copies of member fields and constants:
         final SequenceMatcher localSequence = sequence;
@@ -277,17 +277,12 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
     }
 
     @Override
-    protected boolean fallbackForwards() {
-        return forwardSearchInfo.get().shifts == null;
-    }
-
-    @Override
     protected long doSearchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = forwardSearchInfo.get();
-        final int[] SHIFTS          = searchInfo.shifts;
-        final int   HASH_SHIFT      = searchInfo.bitshift;
+        final int[] SHIFTS          = searchInfo.table;
+        final int   HASH_SHIFT      = searchInfo.shift;
         final int MASK              = SHIFTS.length - 1; // SHIFTS is always a power of two in length.
 
         // Get local copies of member fields
@@ -350,8 +345,8 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = backwardSearchInfo.get();
-        final int[] SHIFTS          = searchInfo.shifts;
-        final int   HASH_SHIFT      = searchInfo.bitshift;
+        final int[] SHIFTS          = searchInfo.table;
+        final int   HASH_SHIFT      = searchInfo.shift;
         final int   MASK            = SHIFTS.length - 1;   // SHIFTS is always a power of two in length.
 
         // Get local copies of member fields
@@ -387,19 +382,14 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
     }
 
     @Override
-    protected boolean fallbackBackwards() {
-        return backwardSearchInfo.get().shifts == null;
-    }
-
-    @Override
     protected long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         // Get local copies of member fields
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = backwardSearchInfo.get();
-        final int[] SHIFTS          = searchInfo.shifts;
-        final int HASH_SHIFT        = searchInfo.bitshift;
+        final int[] SHIFTS          = searchInfo.table;
+        final int HASH_SHIFT        = searchInfo.shift;
         final int MASK              = SHIFTS.length - 1; // SHIFTS is always a power of two in length.
 
         // Determine safe shifts, starts and ends:
@@ -458,54 +448,28 @@ public final class SignedHash2Searcher extends AbstractSequenceFallbackSearcher 
      ******************/
 
     @Override
-    public void prepareForwards() {
-        if (forwardSearchInfo.get().shifts == null) {
-            fallbackSearcher.get().prepareForwards();
-        }
-    }
-
-    @Override
-    public void prepareBackwards() {
-        if (backwardSearchInfo.get().shifts == null) {
-            fallbackSearcher.get().prepareBackwards();
-        }
-    }
-
-    @Override
     public String toString() {
         return getClass().getSimpleName() +
                 "(index size:"     + searchIndexSize +
-                " forward info:"   + (forwardSearchInfo.created()?
-                                      forwardSearchInfo.get().shifts != null?
-                                      forwardSearchInfo : fallbackSearcher.get() : forwardSearchInfo) +
-                " backward info: " + (backwardSearchInfo.created()?
-                                      backwardSearchInfo.get().shifts != null?
-                                      backwardSearchInfo : fallbackSearcher : backwardSearchInfo) +
+                " forward info:"   + getForwardSearchDescription(forwardSearchInfo) +
+                " backward info: " + getBackwardSearchDescription(backwardSearchInfo) +
                 " sequence:"       + sequence + ')';
     }
 
 
-    /*******************
-     * Private methods *
-     *******************/
+    /*********************
+     * Protected methods *
+     *********************/
 
-    /**
-     * A simple data class containing the shifts for searching and the bitshift needed for the hash-multiply hash function.
-     */
-    private final static class SearchInfo {
-        public final int[] shifts;
-        public final int bitshift;
-        public SearchInfo(final int[] shifts, final int bitshift) {
-            this.shifts   = shifts;
-            this.bitshift = bitshift;
-        }
-        @Override
-        public String toString() {
-            return getClass().getSimpleName() + "(tableSize:" + (shifts == null? 0 : shifts.length) + ")";
-        }
+    @Override
+    protected boolean fallbackForwards() {
+        return forwardSearchInfo.get().table == null;
     }
 
-    private final static SearchInfo NULL_SEARCH_INFO = new SearchInfo(null, 0);
+    @Override
+    protected boolean fallbackBackwards() {
+        return backwardSearchInfo.get().table == null;
+    }
 
 
     /**

@@ -32,7 +32,6 @@ package net.byteseek.searcher.sequence;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchIndexSize;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
@@ -51,41 +50,41 @@ import java.io.IOException;
  *
  * Created by matt on 03/06/17.
  */
-public abstract class AbstractSequenceFallbackSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public abstract class AbstractFallbackSearcher extends AbstractWindowSearcher<SequenceMatcher> {
 
-    /**
-     * The maximum number of elements in a hash table.
-     */
-    private final static int MAX_TABLE_SIZE = 1 << 20; // 2^20 = 1M elements.
-
-    /**
-     * The minimum hash table size expressed as a power of two.
-     */
-    protected final static int MIN_POWER_TWO_SIZE = 5; // no table sizes less than 2^5 = 32.
-
-    /**
-     * The hash table size used by the hash function, along with the method to select it (up to a maximum of 64k).
-     */
-    protected final static SearchIndexSize DEFAULT_SEARCH_INDEX_SIZE = SearchIndexSize.MAX_64K; // automatically select a hash table size no larger than 64k elements.
-
-    /**
-     * The maximum size of the search index and the method used to select it.
-     */
-    protected final SearchIndexSize searchIndexSize;
-
-    /**
+     /**
      * A replacement searcher for sequences whose length is less than the qgram length, which this searcher cannot search for.
      * Also used as a fallback in case it is not possible to create a hash table which would give reasonable performance
      * (e.g. if the maximum table size isn't sufficient, or the pattern is pathological in some way).
      */
     protected final LazyObject<SequenceSearcher> fallbackSearcher;
 
-    public AbstractSequenceFallbackSearcher(final SequenceMatcher sequence, SearchIndexSize searchIndexSize) {
+    public AbstractFallbackSearcher(final SequenceMatcher sequence) {
         super(sequence);
-        this.searchIndexSize = searchIndexSize;
-        fallbackSearcher     = new DoubleCheckImmutableLazyObject<SequenceSearcher>(new FallbackSearcherFactory());
+        fallbackSearcher = new DoubleCheckImmutableLazyObject<SequenceSearcher>(new FallbackSearcherFactory());
     }
 
+    @Override
+    public void prepareForwards() {
+        if (fallbackForwards()) {
+            fallbackSearcher.get().prepareForwards();
+        }
+    }
+
+    @Override
+    public void prepareBackwards() {
+        if (fallbackBackwards()) {
+            fallbackSearcher.get().prepareBackwards();
+        }
+    }
+
+    protected String getForwardSearchDescription(LazyObject<?> searchInfo) {
+        return (searchInfo.created()? fallbackForwards()? fallbackSearcher.get() : searchInfo.get() : searchInfo).toString();
+    }
+
+    protected String getBackwardSearchDescription(LazyObject<?> searchInfo) {
+        return (searchInfo.created()? fallbackBackwards()? fallbackSearcher.get() : searchInfo.get() : searchInfo).toString();
+    }
 
     /**
      * Returns true if the fallback searcher should be used instead for forwards searches.
@@ -147,29 +146,6 @@ public abstract class AbstractSequenceFallbackSearcher extends AbstractSequenceW
     @Override
     protected int getSequenceLength() {
         return sequence.length();
-    }
-
-    /**
-     * Returns a shift for the shift-add hash function given a table size and q-gram length.
-     * It will return the shift which gives the same size or bigger than the table size specified,
-     * up to a maximum table size or shift.
-     *
-     * @param hashTableSize The size of the hash table to be used.
-     * @param qGramLength   The length of the q-grams being hashed.
-     * @return The bit-shift to use with the shift-add hash algorithm for the given table size.
-     */
-    protected int getHashShift(final int hashTableSize, final int qGramLength) {
-        final int MAX_SHIFT = 10;
-        for (int shift = 1; shift < MAX_SHIFT; shift++) {
-            final int tableSize = 1 << (qGramLength * shift);
-            if (tableSize >= hashTableSize) {
-                return shift;
-            }
-            if (tableSize > MAX_TABLE_SIZE) {
-                return shift - 1;
-            }
-        }
-        return MAX_SHIFT;
     }
 
     /*******************

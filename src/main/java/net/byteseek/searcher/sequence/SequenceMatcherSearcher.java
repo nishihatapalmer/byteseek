@@ -57,7 +57,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  *
  * @author Matt Palmer
  */
-public final class SequenceMatcherSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class SequenceMatcherSearcher extends AbstractWindowSearcher<SequenceMatcher> {
 
     /**
      * Constructs a searcher for the bytes contained in the sequence string,

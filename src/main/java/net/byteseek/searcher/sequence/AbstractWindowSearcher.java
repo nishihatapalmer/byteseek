@@ -60,7 +60,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  * @author Matt Palmer
  */
 
-public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequenceSearcher<T> {
+public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher<T> {
 
     /**
      * Constructs a sequence searcher given a {@link SequenceMatcher}
@@ -68,7 +68,7 @@ public abstract class AbstractSequenceWindowSearcher<T> extends AbstractSequence
      *
      * @param sequence The SequenceMatcher to search for.
      */
-    public AbstractSequenceWindowSearcher(final T sequence) {
+    public AbstractWindowSearcher(final T sequence) {
         super(sequence);
     }
 

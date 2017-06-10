@@ -85,7 +85,7 @@ import net.byteseek.utils.factory.ObjectFactory;
 //TODO: examine performance with large byte classes, grouped and separated.
 //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
 
-public final class QgramFilter2Searcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class QgramFilter2Searcher extends AbstractWindowSearcher<SequenceMatcher> {
 
     /*************
      * Constants *

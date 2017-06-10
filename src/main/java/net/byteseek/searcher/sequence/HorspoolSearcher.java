@@ -77,7 +77,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  *
  * @author Matt Palmer
  */
-public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatcher> {
 
     private final LazyObject<int[]> forwardInfo;  // forwards searching shift table, calculated on demand.
     private final LazyObject<int[]> backwardInfo; // backwards searching shift table, calculated on demand.
@@ -410,6 +410,10 @@ public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<Seque
             // Get info about the matcher:
             final int sequenceLength = sequence.length();
 
+            //TODO: positions matching *most* bytes will overwrite almost all earlier ones.
+            //      define a cut-off (count bytes matched vs length.?) where there's no
+            //      point in further processing?
+
             // Check for the pathological case of positions matching all bytes, from the end to the start.
             // If there is such a matcher in the sequence, no shift can be bigger than this length.
             // The shift code would still work if we did not do this, but long gaps like .{2048) would
@@ -420,7 +424,7 @@ public final class HorspoolSearcher extends AbstractSequenceWindowSearcher<Seque
             for (int position = 1; position < sequenceLength; position++) {
                 final ByteMatcher matcher = sequence.getMatcherForPosition(position);
                 if (matcher.getNumberOfMatchingBytes() == 256) {
-                    maxShift = position + 1; //TODO: check correct.
+                    maxShift = position + 1;
                     break;
                 }
             }

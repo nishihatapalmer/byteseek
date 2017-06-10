@@ -49,7 +49,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  *
  * @author Matt Palmer
  */
-public final class SundayQuickSearcher extends AbstractSequenceWindowSearcher<SequenceMatcher> {
+public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMatcher> {
 
     private final LazyObject<int[]> forwardInfo;
     private final LazyObject<int[]> backwardInfo;
