@@ -114,36 +114,44 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
 
     protected final static SearchInfo NO_SEARCH_INFO = new SearchInfo(null, 0);
 
+    /*
+     * These should be lambdas, but our minimum java version is still at 7.
+     */
     protected static interface TableStrategy {
-        void processTablePosition(final int[] shiftTable, final int position);
+        void processTablePosition(final int[] shiftTable, final int position, final int value);
     }
 
     protected static final class SetValue implements TableStrategy {
-        private int valueToSet;
-        public void setValue(final int value) {
-            valueToSet = value;
-        }
         @Override
-        public void processTablePosition(final int[] shiftTable, final int position) {
-            shiftTable[position] = valueToSet;
+        public void processTablePosition(final int[] shiftTable, final int position, final int value) {
+            shiftTable[position] = value;
+        }
+    }
+
+    protected static final class OrValue implements TableStrategy {
+        @Override
+        public void processTablePosition(final int[] shiftTable, final int position, final int value) {
+            shiftTable[position] |= value;
         }
     }
 
     protected static final class MakeNegative implements TableStrategy {
         @Override
-        public void processTablePosition(final int[] shiftTable, final int position) {
-            final int value = shiftTable[position];
-            if (value > 0) {
-                shiftTable[position] = -value;
+        public void processTablePosition(final int[] shiftTable, final int position, final int value) {
+            final int currentValue = shiftTable[position];
+            if (currentValue > 0) {
+                shiftTable[position] = -currentValue;
             }
         }
     }
-
+    protected static final SetValue SET_VALUE = new SetValue();
+    protected static final OrValue  OR_VALUE  = new OrValue();
     protected static final MakeNegative MAKE_NEGATIVE = new MakeNegative();
 
-    protected int processQ4Shift(final TableStrategy strategy, final int[] SHIFTS, final int currentHashValue,
-                               final boolean haveLastHashValue, final int HASH_SHIFT,
-                               final byte[] bytes0, final byte[] bytes1, final byte[] bytes2, final byte[] bytes3) {
+    protected int processQ4Shift(final TableStrategy strategy, final int newValue,
+                                 final int[] SHIFTS, final int currentHashValue,
+                                 final boolean haveLastHashValue, final int HASH_SHIFT,
+                                 final byte[] bytes0, final byte[] bytes1, final byte[] bytes2, final byte[] bytes3) {
         final long numberOfPermutations = bytes0.length * bytes1.length * bytes2.length * bytes3.length;
         final int MASK = SHIFTS.length - 1;
         final boolean returnHashValue;
@@ -156,14 +164,14 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
                 hashValue = (hashValue << HASH_SHIFT) + (bytes2[0] & 0xFF);
             }
             hashValue = ((hashValue << HASH_SHIFT) + (bytes3[0] & 0xFF));
-            strategy.processTablePosition(SHIFTS, hashValue & MASK);
+            strategy.processTablePosition(SHIFTS, hashValue & MASK, newValue);
         } else { // more than one permutation to work through.
             returnHashValue = false; // after processing the permutations, we don't have a single last key value.
             if (haveLastHashValue) { // Then bytes3 must contain all the additional permutations - just go through them.
                 hashValue = hashValue << HASH_SHIFT;
                 for (final byte permutationValue : bytes3) {
                     final int permutationHash = hashValue + (permutationValue & 0xFF);
-                    strategy.processTablePosition(SHIFTS, permutationHash & MASK);
+                    strategy.processTablePosition(SHIFTS, permutationHash & MASK, newValue);
                 }
             } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
                 final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2, bytes3);
@@ -174,7 +182,7 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
                     hashValue = (hashValue << HASH_SHIFT) + (permutationValue[1] & 0xFF);
                     hashValue = (hashValue << HASH_SHIFT) + (permutationValue[2] & 0xFF);
                     hashValue = (hashValue << HASH_SHIFT) + (permutationValue[3] & 0xFF);
-                    strategy.processTablePosition(SHIFTS, hashValue & MASK);
+                    strategy.processTablePosition(SHIFTS, hashValue & MASK, newValue);
                 }
             }
         }
