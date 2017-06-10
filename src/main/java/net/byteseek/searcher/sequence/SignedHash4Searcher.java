@@ -36,7 +36,6 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.SearchIndexSize;
-import net.byteseek.utils.collections.BytePermutationIterator;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
@@ -458,7 +457,6 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
      * Public methods *
      ******************/
 
-    //TODO:
     @Override
     public String toString() {
         return getClass().getSimpleName() +
@@ -601,7 +599,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             // Make shifts for the last qgrams in the pattern negative:
 
             // Get byte arrays for last q-gram:
-            bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;    ;                            // shift byte arrays along one.
+            bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                                // shift byte arrays along one.
             bytes3 = localSequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
 
             // Process the last qgram permutations as efficiently as possible:
@@ -669,7 +667,6 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
         private SearchInfo buildSearchInfo(final int TABLE_SIZE, final int qGramStartPos) {
             // Get local copies of fields:
             final SequenceMatcher localSequence = sequence;
-            final int PATTERN_LENGTH = localSequence.length();
 
             // Determine bit shift for multiply-shift hash algorithm:
             final int HASH_SHIFT = getHashShift(TABLE_SIZE, QLEN);
