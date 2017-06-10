@@ -49,12 +49,27 @@ import java.util.List;
 public class SearchersToTest {
 
     private final static SequenceMatcherCompiler compiler = new SequenceMatcherCompiler();
-    private final char CASE_TOKEN = '`';    // backtick. 0x60
-    private final String HEX_CASE = "60";
-    private final char STRING_TOKEN = '\''; // single quote. 0x27
-    private final String HEX_QUOTE = "27";
 
     public List<SequenceSearcher> searchers;
+
+    /**
+     * Instantiate the searchers we want to test with the sequence matcher passed in.
+     *
+     * @param sequence The sequence matcher to search for.
+     */
+    public void createSearchers(SequenceMatcher sequence) {
+        searchers = new ArrayList<SequenceSearcher>();
+        searchers.add(new SequenceMatcherSearcher(sequence));
+        //searchers.add(new SundayQuickSearcher(sequence));
+        searchers.add(new HorspoolSearcher(sequence));
+        //searchers.add(new HorspoolUnrolledSearcher(sequence));
+        //searchers.add(new SignedHorspoolSearcher(sequence));
+        //searchers.add(new ShiftOrSearcher(sequence));
+        //searchers.add(new QgramFilter4Searcher(sequence));
+        searchers.add(new SignedHash2Searcher(sequence));
+        searchers.add(new SignedHash3Searcher(sequence));
+        searchers.add(new SignedHash4Searcher(sequence));
+    }
 
 
     /**
@@ -100,22 +115,4 @@ public class SearchersToTest {
     }
 
 
-    /**
-     * Instantiate the searchers we want to test with the sequence matcher passed in.
-     *
-     * @param sequence The sequence matcher to search for.
-     */
-    public void createSearchers(SequenceMatcher sequence) {
-        searchers = new ArrayList<SequenceSearcher>();
-        searchers.add(new SequenceMatcherSearcher(sequence));
-        //searchers.add(new SundayQuickSearcher(sequence));
-        searchers.add(new HorspoolSearcher(sequence));
-        //searchers.add(new HorspoolUnrolledSearcher(sequence));
-        //searchers.add(new SignedHorspoolSearcher(sequence));
-        //searchers.add(new ShiftOrSearcher(sequence));
-        //searchers.add(new QgramFilter4Searcher(sequence));
-        searchers.add(new SignedHash2Searcher(sequence));
-        searchers.add(new SignedHash3Searcher(sequence));
-        searchers.add(new SignedHash4Searcher(sequence));
-    }
 }
