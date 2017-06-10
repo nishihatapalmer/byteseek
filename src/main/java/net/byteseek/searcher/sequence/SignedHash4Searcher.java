@@ -505,7 +505,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             // If the pattern is shorter than one qgram, or equal to it in length, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
             if (PATTERN_LENGTH <= QLEN) {
-                return NULL_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
+                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
             }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
@@ -539,7 +539,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             // If we exceeded max qgrams at the first qgram value, there is nothing we can usefully process
             // with this search algorithm, use fallback searcher instead.
             if (finalQgramPos > PATTERN_LENGTH - QLEN) {
-                return NULL_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used instead.
+                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used instead.
             }
 
             // We have all needed parameters, and aren't falling back - build the search info.
@@ -592,7 +592,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
                 // Process the shift for this hash value:
                 shiftStrategy.setValue(LAST_PATTERN_POS - qGramEnd);
                 hashValue = processQ4Shift(shiftStrategy, SHIFTS, hashValue, haveLastHashValue, HASH_SHIFT,
-                                           bytes0, bytes1, bytes2, bytes3);
+                        bytes0, bytes1, bytes2, bytes3);
                 haveLastHashValue = hashValue >= 0;
             }
 
@@ -604,7 +604,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
 
             // Process the last qgram permutations as efficiently as possible:
             processQ4Shift(MAKE_NEGATIVE, SHIFTS, hashValue, haveLastHashValue, HASH_SHIFT,
-                           bytes0, bytes1, bytes2, bytes3);
+                    bytes0, bytes1, bytes2, bytes3);
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
         }
@@ -626,7 +626,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
             if (PATTERN_LENGTH <= QLEN) {
-                return NULL_SEARCH_INFO; // no shifts to calculate.
+                return NO_SEARCH_INFO; // no shifts to calculate.
             }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
@@ -657,7 +657,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
 
             // If the first qgram swamps the search algorithm, use the fallback searcher instead.
             if (finalQgramPos < QLEN - 1) {
-                return NULL_SEARCH_INFO;
+                return NO_SEARCH_INFO;
             }
 
             // We have all the information we need and we aren't falling back - build the search info:
@@ -698,7 +698,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
 
                 shiftStrategy.setValue(qGramEnd);
                 hashValue = processQ4Shift(shiftStrategy, SHIFTS, hashValue, haveLastHashValue, HASH_SHIFT,
-                                           bytes0, bytes1, bytes2, bytes3);
+                        bytes0, bytes1, bytes2, bytes3);
                 haveLastHashValue = (hashValue >= 0);
             }
 
@@ -709,7 +709,7 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             bytes3 = localSequence.getMatcherForPosition(0).getMatchingBytes(); // get last byte array.
 
             processQ4Shift(MAKE_NEGATIVE, SHIFTS, hashValue, haveLastHashValue, HASH_SHIFT,
-                           bytes0, bytes1, bytes2, bytes3);
+                    bytes0, bytes1, bytes2, bytes3);
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
         }

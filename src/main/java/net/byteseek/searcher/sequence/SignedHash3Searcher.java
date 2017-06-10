@@ -497,7 +497,7 @@ public final class SignedHash3Searcher extends AbstractHashSearcher {
             // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
             if (PATTERN_LENGTH <= QLEN) {
-                return NULL_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
+                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
             }
 
             final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
@@ -667,7 +667,7 @@ public final class SignedHash3Searcher extends AbstractHashSearcher {
             // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
             if (PATTERN_LENGTH <= QLEN) {
-                return NULL_SEARCH_INFO; // no shifts to calculate.
+                return NO_SEARCH_INFO; // no shifts to calculate.
             }
 
             // Determine the maximum size of the hash table:

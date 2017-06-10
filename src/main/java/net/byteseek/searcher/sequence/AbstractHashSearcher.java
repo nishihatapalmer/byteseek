@@ -112,7 +112,7 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
         }
     }
 
-    protected final static SearchInfo NULL_SEARCH_INFO = new SearchInfo(null, 0);
+    protected final static SearchInfo NO_SEARCH_INFO = new SearchInfo(null, 0);
 
     protected static interface TableStrategy {
         void processTablePosition(final int[] shiftTable, final int position);
