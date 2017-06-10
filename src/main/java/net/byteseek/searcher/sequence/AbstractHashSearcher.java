@@ -61,19 +61,6 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
     }
 
     /**
-     * Makes a table entry negative if it isn't already.
-     *
-     * @param table    The table to alter.
-     * @param position The position to check if there is a negative value at.
-     */
-    protected void makeNegative(final int[] table, final int position) {
-        final int value = table[position];
-        if (value > 0) {
-            table[position] = -value;
-        }
-    }
-
-    /**
      * Returns a shift for the shift-add hash function given a table size and q-gram length.
      * It will return the shift which gives the same size or bigger than the table size specified,
      * up to a maximum table size or shift.
