@@ -589,9 +589,9 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
                 bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
                 // Process the shift for this hash value:
-                hashValue = processQ4Shift(SET_VALUE, LAST_PATTERN_POS - qGramEnd, SHIFTS,
-                                           hashValue, haveLastHashValue, HASH_SHIFT,
-                                           bytes0, bytes1, bytes2, bytes3);
+                hashValue = processQ4Hash(SET_VALUE, LAST_PATTERN_POS - qGramEnd, SHIFTS,
+                        hashValue, haveLastHashValue, HASH_SHIFT,
+                        bytes0, bytes1, bytes2, bytes3);
                 haveLastHashValue = hashValue >= 0;
             }
 
@@ -602,9 +602,9 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             bytes3 = localSequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
 
             // Process the last qgram permutations as efficiently as possible:
-            processQ4Shift(MAKE_NEGATIVE, 0, SHIFTS,
-                           hashValue, haveLastHashValue, HASH_SHIFT,
-                           bytes0, bytes1, bytes2, bytes3);
+            processQ4Hash(MAKE_NEGATIVE, 0, SHIFTS,
+                    hashValue, haveLastHashValue, HASH_SHIFT,
+                    bytes0, bytes1, bytes2, bytes3);
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
         }
@@ -695,9 +695,9 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
                 bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                         // shift byte arrays along one.
                 bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
-                hashValue = processQ4Shift(SET_VALUE, qGramEnd, SHIFTS,
-                                           hashValue, haveLastHashValue, HASH_SHIFT,
-                                           bytes0, bytes1, bytes2, bytes3);
+                hashValue = processQ4Hash(SET_VALUE, qGramEnd, SHIFTS,
+                        hashValue, haveLastHashValue, HASH_SHIFT,
+                        bytes0, bytes1, bytes2, bytes3);
                 haveLastHashValue = (hashValue >= 0);
             }
 
@@ -707,9 +707,9 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                  // shift byte arrays along one.
             bytes3 = localSequence.getMatcherForPosition(0).getMatchingBytes(); // get last byte array.
 
-            processQ4Shift(MAKE_NEGATIVE, 0, SHIFTS,
-                           hashValue, haveLastHashValue, HASH_SHIFT,
-                           bytes0, bytes1, bytes2, bytes3);
+            processQ4Hash(MAKE_NEGATIVE, 0, SHIFTS,
+                    hashValue, haveLastHashValue, HASH_SHIFT,
+                    bytes0, bytes1, bytes2, bytes3);
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
         }

@@ -148,10 +148,10 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
     protected static final OrValue  OR_VALUE  = new OrValue();
     protected static final MakeNegative MAKE_NEGATIVE = new MakeNegative();
 
-    protected int processQ4Shift(final TableStrategy strategy, final int newValue,
-                                 final int[] SHIFTS, final int currentHashValue,
-                                 final boolean haveLastHashValue, final int HASH_SHIFT,
-                                 final byte[] bytes0, final byte[] bytes1, final byte[] bytes2, final byte[] bytes3) {
+    protected int processQ4Hash(final TableStrategy strategy, final int newValue,
+                                final int[] SHIFTS, final int currentHashValue,
+                                final boolean haveLastHashValue, final int HASH_SHIFT,
+                                final byte[] bytes0, final byte[] bytes1, final byte[] bytes2, final byte[] bytes3) {
         final long numberOfPermutations = bytes0.length * bytes1.length * bytes2.length * bytes3.length;
         final int MASK = SHIFTS.length - 1;
         final boolean returnHashValue;
