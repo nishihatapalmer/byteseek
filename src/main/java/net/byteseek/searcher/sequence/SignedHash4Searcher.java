@@ -718,9 +718,4 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
         }
     }
 
-    /*******************************
-     * Utility classes and methods *
-     *******************************/
-
-
 }
