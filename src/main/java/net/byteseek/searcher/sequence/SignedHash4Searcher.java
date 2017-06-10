@@ -578,7 +578,6 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             byte[] bytes2 = localSequence.getMatcherForPosition(qGramStartPos + 1).getMatchingBytes();
             byte[] bytes3 = localSequence.getMatcherForPosition(qGramStartPos + 2).getMatchingBytes();
 
-
             // Process all the qgrams in the pattern from the qGram start pos to one before the end of the pattern.
             int hashValue = -1;
             final int LAST_PATTERN_POS = PATTERN_LENGTH - 1;
