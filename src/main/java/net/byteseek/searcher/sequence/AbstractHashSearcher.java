@@ -136,9 +136,8 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
     protected static final MakeNegative MAKE_NEGATIVE = new MakeNegative();
 
 
-    protected int processQ3Hash(final TableStrategy strategy, final int newValue,
-                                final int[] SHIFTS, final int currentHashValue,
-                                final boolean haveLastHashValue, final int HASH_SHIFT,
+    protected int processQ3Hash(final TableStrategy strategy, final int newValue, final int[] SHIFTS,
+                                final int currentHashValue, final int HASH_SHIFT,
                                 final byte[] bytes0, final byte[] bytes1, final byte[] bytes2) {
         final int MASK = SHIFTS.length - 1;
         final boolean returnHashValue;
@@ -147,14 +146,14 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
         final long numberOfPermutations = bytes0.length * bytes1.length * bytes2.length;
         if (numberOfPermutations == 1L) { // no permutations to worry about:
             returnHashValue = true;
-            if (!haveLastHashValue) { // if we don't have a good last hash value, calculate the first 2 elements of it:
+            if (hashValue < 0) { // if we don't have a good last hash value, calculate the first 2 elements of it:
                 hashValue = ((bytes0[0] & 0xFF) << HASH_SHIFT) + (bytes1[0] & 0xFF);
             }
             hashValue = (hashValue << HASH_SHIFT) +(bytes2[0] & 0xFF);
             strategy.processTablePosition(SHIFTS, hashValue & MASK, newValue);
         } else { // more than one permutation to work through.
             returnHashValue = false;
-            if (haveLastHashValue) { // Then bytes2 must contain all the additional permutations - just go through them.
+            if (hashValue >= 0) { // Then bytes2 must contain all the additional permutations - just go through them.
                 hashValue = hashValue << HASH_SHIFT;
                 for (final byte permutationValue : bytes2) {
                     final int permutationHash = hashValue + (permutationValue & 0xFF);
@@ -176,9 +175,8 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
     }
 
 
-    protected int processQ4Hash(final TableStrategy strategy, final int newValue,
-                                final int[] SHIFTS, final int currentHashValue,
-                                final boolean haveLastHashValue, final int HASH_SHIFT,
+    protected int processQ4Hash(final TableStrategy strategy, final int newValue, final int[] SHIFTS,
+                                final int currentHashValue, final int HASH_SHIFT,
                                 final byte[] bytes0, final byte[] bytes1, final byte[] bytes2, final byte[] bytes3) {
         final long numberOfPermutations = bytes0.length * bytes1.length * bytes2.length * bytes3.length;
         final int MASK = SHIFTS.length - 1;
@@ -186,7 +184,7 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
         int hashValue = currentHashValue;
         if (numberOfPermutations == 1L) { // no permutations to worry about:
             returnHashValue = true;
-            if (!haveLastHashValue) { // if we don't have a good last key value, calculate the first 3 elements of it:
+            if (hashValue < 0) { // if we don't have a good last key value, calculate the first 3 elements of it:
                 hashValue =                             (bytes0[0] & 0xFF);
                 hashValue = (hashValue << HASH_SHIFT) + (bytes1[0] & 0xFF);
                 hashValue = (hashValue << HASH_SHIFT) + (bytes2[0] & 0xFF);
@@ -195,7 +193,7 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
             strategy.processTablePosition(SHIFTS, hashValue & MASK, newValue);
         } else { // more than one permutation to work through.
             returnHashValue = false; // after processing the permutations, we don't have a single last key value.
-            if (haveLastHashValue) { // Then bytes3 must contain all the additional permutations - just go through them.
+            if (hashValue >= 0) { // Then bytes3 must contain all the additional permutations - just go through them.
                 hashValue = hashValue << HASH_SHIFT;
                 for (final byte permutationValue : bytes3) {
                     final int permutationHash = hashValue + (permutationValue & 0xFF);
