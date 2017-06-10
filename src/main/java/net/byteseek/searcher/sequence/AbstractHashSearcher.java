@@ -148,6 +148,47 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
     protected static final OrValue  OR_VALUE  = new OrValue();
     protected static final MakeNegative MAKE_NEGATIVE = new MakeNegative();
 
+
+    protected int processQ3Hash(final TableStrategy strategy, final int newValue,
+                                final int[] SHIFTS, final int currentHashValue,
+                                final boolean haveLastHashValue, final int HASH_SHIFT,
+                                final byte[] bytes0, final byte[] bytes1, final byte[] bytes2) {
+        final int MASK = SHIFTS.length - 1;
+        final boolean returnHashValue;
+        int hashValue = currentHashValue;
+        // Process the qgram permutations as efficiently as possible:
+        final long numberOfPermutations = bytes0.length * bytes1.length * bytes2.length;
+        if (numberOfPermutations == 1L) { // no permutations to worry about:
+            returnHashValue = true;
+            if (!haveLastHashValue) { // if we don't have a good last hash value, calculate the first 2 elements of it:
+                hashValue = ((bytes0[0] & 0xFF) << HASH_SHIFT) + (bytes1[0] & 0xFF);
+            }
+            hashValue = (hashValue << HASH_SHIFT) +(bytes2[0] & 0xFF);
+            strategy.processTablePosition(SHIFTS, hashValue & MASK, newValue);
+        } else { // more than one permutation to work through.
+            returnHashValue = false;
+            if (haveLastHashValue) { // Then bytes2 must contain all the additional permutations - just go through them.
+                hashValue = hashValue << HASH_SHIFT;
+                for (final byte permutationValue : bytes2) {
+                    final int permutationHash = hashValue + (permutationValue & 0xFF);
+                    strategy.processTablePosition(SHIFTS, permutationHash & MASK, newValue);
+                }
+            } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
+                final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2);
+                while (qGramPermutations.hasNext()) {
+                    // Calculate the hash value:
+                    final byte[] permutationValue = qGramPermutations.next();
+                    hashValue = (((permutationValue[0] & 0xFF) << HASH_SHIFT) +
+                                  (permutationValue[1] & 0xFF) << HASH_SHIFT) +
+                                  (permutationValue[2] & 0xFF);
+                    strategy.processTablePosition(SHIFTS, hashValue & MASK, newValue);
+                }
+            }
+        }
+        return returnHashValue? (hashValue & MASK) : -1;
+    }
+
+
     protected int processQ4Hash(final TableStrategy strategy, final int newValue,
                                 final int[] SHIFTS, final int currentHashValue,
                                 final boolean haveLastHashValue, final int HASH_SHIFT,
