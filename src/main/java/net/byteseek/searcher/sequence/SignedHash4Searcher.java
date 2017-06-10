@@ -590,8 +590,8 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
 
                 // Process the shift for this hash value:
                 hashValue = processQ4Hash(SET_VALUE, LAST_PATTERN_POS - qGramEnd, SHIFTS,
-                        hashValue, haveLastHashValue, HASH_SHIFT,
-                        bytes0, bytes1, bytes2, bytes3);
+                                          hashValue, haveLastHashValue, HASH_SHIFT,
+                                          bytes0, bytes1, bytes2, bytes3);
                 haveLastHashValue = hashValue >= 0;
             }
 
@@ -603,8 +603,8 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
 
             // Process the last qgram permutations as efficiently as possible:
             processQ4Hash(MAKE_NEGATIVE, 0, SHIFTS,
-                    hashValue, haveLastHashValue, HASH_SHIFT,
-                    bytes0, bytes1, bytes2, bytes3);
+                          hashValue, haveLastHashValue, HASH_SHIFT,
+                          bytes0, bytes1, bytes2, bytes3);
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
         }
@@ -696,8 +696,8 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
                 bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
                 hashValue = processQ4Hash(SET_VALUE, qGramEnd, SHIFTS,
-                        hashValue, haveLastHashValue, HASH_SHIFT,
-                        bytes0, bytes1, bytes2, bytes3);
+                                          hashValue, haveLastHashValue, HASH_SHIFT,
+                                          bytes0, bytes1, bytes2, bytes3);
                 haveLastHashValue = (hashValue >= 0);
             }
 
@@ -708,8 +708,8 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
             bytes3 = localSequence.getMatcherForPosition(0).getMatchingBytes(); // get last byte array.
 
             processQ4Hash(MAKE_NEGATIVE, 0, SHIFTS,
-                    hashValue, haveLastHashValue, HASH_SHIFT,
-                    bytes0, bytes1, bytes2, bytes3);
+                          hashValue, haveLastHashValue, HASH_SHIFT,
+                          bytes0, bytes1, bytes2, bytes3);
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
         }
