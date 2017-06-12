@@ -33,14 +33,12 @@ package net.byteseek.searcher.sequence;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.SearchIndexSize;
-import net.byteseek.utils.collections.BytePermutationIterator;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
@@ -82,7 +80,12 @@ import net.byteseek.utils.factory.ObjectFactory;
 //TODO: examine performance with large byte classes, grouped and separated.
 //TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
 
-public final class QgramFilter4Searcher extends AbstractHashSearcher {
+public final class QgramFilter4Searcher extends AbstractQgramSearcher {
+
+    //TODO: passes current tests, but is broken.  If the qGramStartPos in the searchinfo isn't at the very end (or start) of the
+    //      pattern (because of pathological byte classes), then it will break.  Modify search algorithms to take account of the
+    //      fact that we may not have qgrams for the entire pattern.  Have to stop testing after that point and fall back to
+    //      verification of a match (with a correspondingly small shift as a result).
 
     /*************
      * Constants *
@@ -99,9 +102,14 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
      **********/
 
     /**
-     * A lazy object which can create the information needed to search with a factory when required.
+     * A lazy object which can create the information needed to search forwards.
      */
-    private final LazyObject<SearchInfo> searchInfo;
+    private final LazyObject<SearchInfo> forwardSearchInfo;
+
+    /**
+     * A lazy object which can create the information needed to search backwards.
+     */
+    private final LazyObject<SearchInfo> backwardSearchInfo;
 
 
     /****************
@@ -132,7 +140,8 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
      */
     public QgramFilter4Searcher(final SequenceMatcher sequence, final SearchIndexSize searchIndexSize) {
         super(sequence, searchIndexSize);
-        searchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new SearchInfoFactory());
+        forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
+        backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
     }
 
     /**
@@ -227,9 +236,6 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
     * Search Methods *
     ******************/
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int doSearchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
@@ -237,7 +243,7 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info = searchInfo.get();
+        final SearchInfo info = forwardSearchInfo.get();
         final int[] BITMASKS  = info.table;
         final int   SHIFT     = info.shift;
         final int   MASK      = BITMASKS.length - 1; // BITMASKS will always be a power of two size.
@@ -307,7 +313,7 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info = searchInfo.get();
+        final SearchInfo info = forwardSearchInfo.get();
         final int[] BITMASKS  = info.table;
         final int   SHIFT     = info.shift;
         final int   MASK      = BITMASKS.length - 1; // BITMASKS is always a power of two size.
@@ -445,10 +451,6 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
         return NO_MATCH;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int doSearchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
@@ -457,7 +459,7 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
         final int PATTERN_LENGTH        = localSequence.length();
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info   = searchInfo.get();
+        final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
@@ -529,7 +531,7 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
 
         // Get the pre-processed data needed to search:
         // Get the pre-processed data needed to search:
-        final SearchInfo info   = searchInfo.get();
+        final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
@@ -539,14 +541,13 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
         final int PATTERN_MINUS_QLEN = PATTERN_LENGTH - QLEN;
         final int SEARCH_SHIFT       = PATTERN_MINUS_QLEN + 1;
         final int TWO_QGRAMS_BACK_AND_ONE = SEARCH_SHIFT - QLEN;
-        final long SEARCH_START      = fromPosition; // TODO: do we really need another constant for this?  withinLength()?
         final long SEARCH_END        = toPosition > 0?
                                        toPosition : 0;
 
         // Search backwards, pos is aligned with very start of pattern in the text.
         Window window;
         long pos;
-        for (pos = SEARCH_START;
+        for (pos = fromPosition;
              (window = reader.getWindow(pos)) != null && pos >= SEARCH_END;
              pos -= SEARCH_SHIFT) {
 
@@ -678,7 +679,8 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
     public String toString() {
         return getClass().getSimpleName() +
                 "(index size:"  + searchIndexSize +
-                " search info:" + getForwardSearchDescription(searchInfo) +
+                " forward search info:" + getForwardSearchDescription(forwardSearchInfo) +
+                " backward search info:" + getForwardSearchDescription(backwardSearchInfo) +
                 " sequence:"    + sequence + ')';
     }
 
@@ -689,12 +691,12 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
 
     @Override
     protected boolean fallbackForwards() {
-        return searchInfo.get().table == null;
+        return forwardSearchInfo.get().table == null;
     }
 
     @Override
     protected boolean fallbackBackwards() {
-        return searchInfo.get().table == null;
+        return backwardSearchInfo.get().table == null;
     }
 
 
@@ -703,99 +705,201 @@ public final class QgramFilter4Searcher extends AbstractHashSearcher {
      *******************/
 
     /**
-     * A factory for the SearchInfo needed to search.
-     *
+     * A factory for the shift table and hash bitshift needed to search forwards.
      */
-    private final class SearchInfoFactory implements ObjectFactory<SearchInfo> {
+    private final class ForwardSearchInfoFactory implements ObjectFactory<SearchInfo> {
 
         /**
-         * Calculates the bitmask table which tells us if a particular qgram in the text does not appear in the pattern.
-         * It can tell us that a qgram is definitely not in the pattern, but not whether it is in the pattern - false positives are possible.
-         * This is like a bloom filter, but using only a single hash function.
-         * As soon as we see a qgram which is definitely not in the pattern, we can shift right past it.
+         * Calculates the info required for forwards searching.
+         * Determines the optimum hash table size and hash bit shift.
+         * Defends against patterns which are too short or which have large qgram classes which would overwhelm the algorithm.
+         * Either falls back to the fallback searcher, or chooses to use a smaller part of the pattern in those cases.
          */
         @Override
         public SearchInfo create() {
+            // Get local copies of fields:
+            final SequenceMatcher localSequence = sequence;
 
-            /*
-            // Initialise constants
-            final int PATTERN_LENGTH = sequence.length();
-            final int MASK           = TABLE_SIZE - 1;
-            final int[] BITMASKS     = new int[TABLE_SIZE];
+            // If the pattern is shorter than one qgram, or equal to it in length, the fallback searcher will be used instead.
+            final int PATTERN_LENGTH = localSequence.length();
+            if (PATTERN_LENGTH <= QLEN) {
+                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
+            }
 
-            //TODO: validate Q_GRAM_LIMIT - how does performance change as table fills up?
-            //                            - and how does table fill up at this limit?
-            // if number of qgrams = table size * 4, that is same as all available positions for all 4 bits.
-            // Collisions will reduce this, but it's a starting point for a place where the table starts to become
-            // fairly useless.
-            final int QGRAM_LIMIT    = TABLE_SIZE * QLEN;
+            // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
+            final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
+            //TODO: is there a smaller (or larger) max qgrams at which it would be sensible to stop processing?
+            final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
 
-            // Set initial processing states
-            int lastHash = 0;
-            boolean haveLastHashValue = false;
-            byte[] bytes0;
-            byte[] bytes1 = sequence.getMatcherForPosition(PATTERN_LENGTH - 1).getMatchingBytes();
-            byte[] bytes2 = sequence.getMatcherForPosition(PATTERN_LENGTH - 2).getMatchingBytes();
-            byte[] bytes3 = sequence.getMatcherForPosition(PATTERN_LENGTH - 3).getMatchingBytes();
-            long totalQgrams = 0;
+            int num0;
+            int num1 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 1);
+            int num2 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 2);
+            int num3 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 3);
 
-            // Process all the qgrams in the pattern back from the end (shouldn't actually make a difference,
-            for (int qGramStart = PATTERN_LENGTH - QLEN; qGramStart >= 0; qGramStart--) {
+            // Scan backwards along the pattern, counting qgrams as we go.
+            int totalQgrams = 0;
+            int finalQgramPos = 0;
+            for (int qGramStartPos = PATTERN_LENGTH - QLEN; qGramStartPos >= 0; qGramStartPos--) {
+                // Calculate total qgrams as we scan along:
+                num0 = num1; num1 = num2; num2 = num3;                     // shift byte counts along.
+                num3 = localSequence.getNumBytesAtPosition(qGramStartPos); // get next count.
+                totalQgrams += (num0 * num1 * num2 * num3);
 
-                // Get the byte arrays for the qGram at the current qGramStart:
-                final int QGRAM_PHASE_BIT = (1 << ((PATTERN_LENGTH - qGramStart) % QLEN));
-                bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;             // shift byte arrays along one.
-                bytes3 = sequence.getMatcherForPosition(qGramStart).getMatchingBytes(); // get next byte array.
-
-                // Ensure we don't process too many qgrams unnecessarily, where the number of them exceed the useful table size.
-                final long numberOfPermutations = getNumPermutations(bytes0, bytes1, bytes2, bytes3);
-                totalQgrams += numberOfPermutations;
-                if (totalQgrams > QGRAM_LIMIT) {
-                    //TODO: fix - don't set all entries to 1111, performance drops off a cliff.
-                    //TODO:       Should stop processing and have a max distance we can scan back before validation.
-                    Arrays.fill(BITMASKS, 0xF); // set all entries to 1111 - they'll be mostly, if not all filled up anyway.
-                    break;                      // stop further processing.
-                }
-
-                // Process the qgram permutations as efficiently as possible:
-                if (numberOfPermutations == 1L) { // no permutations to worry about.
-                    if (!haveLastHashValue) { // if we don't have a good last hash value, calculate the first 3 elements of it:
-                        lastHash =                        (bytes0[0] & 0xFF);
-                        lastHash = ((lastHash << SHIFT) + (bytes1[0] & 0xFF));
-                        lastHash = ((lastHash << SHIFT) + (bytes2[0] & 0xFF));
-                        haveLastHashValue = true;
-                    }
-                    lastHash     = ((lastHash << SHIFT) + (bytes3[0] & 0xFF)); // calculate the new element of the qgram.
-                    BITMASKS[lastHash & MASK] |= QGRAM_PHASE_BIT;
-                } else { // more than one permutation to work through.
-                    if (haveLastHashValue) { // Then bytes3 must contain all the additional permutations - just go through them.
-                        for (final byte permutationValue : bytes3) {
-                            final int permutationHash = ((lastHash << SHIFT) + (permutationValue & 0xFF));
-                            BITMASKS[permutationHash & MASK] |= QGRAM_PHASE_BIT;
-                        }
-                        haveLastHashValue = false; // after processing the permutations, we don't have a single last hash value.
-                    } else { // permutations may exist anywhere and in more than one place, use a BytePermutationIterator:
-                        final BytePermutationIterator qGramPermutations = new BytePermutationIterator(bytes0, bytes1, bytes2, bytes3);
-                        while (qGramPermutations.hasNext()) {
-                            final byte [] permutationValue = qGramPermutations.next();
-                            lastHash =                        (permutationValue[0] & 0xFF);
-                            lastHash = ((lastHash << SHIFT) + (permutationValue[1] & 0xFF));
-                            lastHash = ((lastHash << SHIFT) + (permutationValue[2] & 0xFF));
-                            lastHash = ((lastHash << SHIFT) + (permutationValue[3] & 0xFF));
-                            BITMASKS[lastHash & MASK] |= QGRAM_PHASE_BIT;
-                        }
-                    }
+                // If we go beyond the max qgrams, stop further processing.
+                if (totalQgrams > MAX_QGRAMS) {
+                    finalQgramPos = qGramStartPos + 1; // don't process qgrams that take us beyond the max value.
+                    break; // no further value, halt processing of further qgrams. avoids pathological byte classes.
                 }
             }
 
-            return BITMASKS;
-            */ return null;
+            // If we exceeded max qgrams at the first qgram value, there is nothing we can usefully process
+            // with this search algorithm, use fallback searcher instead.
+            if (finalQgramPos > PATTERN_LENGTH - QLEN) {
+                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used instead.
+            }
+
+            // We have all needed parameters, and aren't falling back - build the search info.
+            return buildSearchInfo(getTableSize(totalQgrams), finalQgramPos);
+        }
+
+        /**
+         * Builds the search info for forwards searching, given the table size to create and the position at
+         * which the search info should be calculated from in the pattern.
+         *
+         * @param TABLE_SIZE     The table size to create.
+         * @param qGramStartPos  The qgram position to start building the search info from.
+         * @return search info for forwards searching.
+         */
+        private SearchInfo buildSearchInfo(final int TABLE_SIZE, final int qGramStartPos) {
+            // Get local copies of fields:
+            final SequenceMatcher localSequence = sequence;
+            final int PATTERN_LENGTH            = localSequence.length();
+
+            // Determine bit shift for bit shift hash algorithm
+            final int HASH_SHIFT = getHashShift(TABLE_SIZE, QLEN);
+
+            // Set up the hash table.
+            final int[] BITMASKS = new int[TABLE_SIZE];
+
+            // Set up the key values for hashing as we go along the pattern:
+            byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
+            byte[] bytes1 = localSequence.getMatcherForPosition(PATTERN_LENGTH - 1).getMatchingBytes();
+            byte[] bytes2 = localSequence.getMatcherForPosition(PATTERN_LENGTH - 2).getMatchingBytes();
+            byte[] bytes3 = localSequence.getMatcherForPosition(PATTERN_LENGTH - 3).getMatchingBytes();
+
+            // Process all the qgrams in the pattern from the qGram start pos to one before the end of the pattern.
+            int hashValue = -1;
+            for (int qGramEnd = PATTERN_LENGTH - QLEN; qGramEnd >= qGramStartPos; qGramEnd--) {
+                // Get the byte arrays for the qGram at the current qGramStart:
+                bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                         // shift byte arrays along one.
+                bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
+
+                // Calculate the hash value and OR the bitmask with the qgram phase bit:
+                final int QGRAM_PHASE_BIT = 1 << (qGramEnd & 0x3);
+                hashValue = processQ4Hash(OR_VALUE, QGRAM_PHASE_BIT, BITMASKS, hashValue, HASH_SHIFT,
+                                          bytes0, bytes1, bytes2, bytes3);
+            }
+
+            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramStartPos);
         }
     }
 
+    /**
+     * A factory for the shift table and hash bitshift needed to search backwards.
+     */
+    private final class BackwardSearchInfoFactory implements ObjectFactory<SearchInfo> {
 
-    private long getNumPermutations(final byte[] values1, final byte[] values2, final byte[] values3, final byte[] values4) {
-        return values1.length * values2.length * values3.length * values4.length;
+        /**
+         * Calculates the info required for forwards searching.
+         * Determines the optimum hash table size and hash bit shift.
+         * Defends against patterns which are too short or which have large qgram classes which would overwhelm the algorithm.
+         * Either falls back to the fallback searcher, or chooses to use a smaller part of the pattern in those cases.
+         */
+        @Override
+        public SearchInfo create() {
+            // Get local copies of fields:
+            final SequenceMatcher localSequence = sequence;
+
+            // If the pattern is shorter than one qgram, or equal to it in length, the fallback searcher will be used instead.
+            final int PATTERN_LENGTH = localSequence.length();
+            if (PATTERN_LENGTH <= QLEN) {
+                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
+            }
+
+            // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
+            final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
+            //TODO: is there a smaller (or larger) max qgrams at which it would be sensible to stop processing?
+            final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
+
+            int num0;
+            int num1 = localSequence.getNumBytesAtPosition(0);
+            int num2 = localSequence.getNumBytesAtPosition(1);
+            int num3 = localSequence.getNumBytesAtPosition(2);
+
+            // Scan forwards along the pattern, counting qgrams as we go.
+            int totalQgrams = 0;
+            int finalQgramPos = 0;
+            for (int qGramEndPos = QLEN - 1; qGramEndPos < PATTERN_LENGTH; qGramEndPos++) {
+                // Calculate total qgrams as we scan along:
+                num0 = num1; num1 = num2; num2 = num3;                     // shift byte counts along.
+                num3 = localSequence.getNumBytesAtPosition(qGramEndPos); // get next count.
+                totalQgrams += (num0 * num1 * num2 * num3);
+
+                // If we go beyond the max qgrams, stop further processing.
+                if (totalQgrams > MAX_QGRAMS) {
+                    finalQgramPos = qGramEndPos - 1; // don't process qgrams that take us beyond the max value.
+                    break; // no further value, halt processing of further qgrams. avoids pathological byte classes.
+                }
+            }
+
+            // If we exceeded max qgrams at the first qgram value, there is nothing we can usefully process
+            // with this search algorithm, use fallback searcher instead.
+            if (finalQgramPos < QLEN - 1) {
+                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used instead.
+            }
+
+            // We have all needed parameters, and aren't falling back - build the search info.
+            return buildSearchInfo(getTableSize(totalQgrams), finalQgramPos);
+        }
+
+        /**
+         * Builds the search info for forwards searching, given the table size to create and the position at
+         * which the search info should be calculated from in the pattern.
+         *
+         * @param TABLE_SIZE   The table size to create.
+         * @param qGramEndPos  The qgram position to start building the search info from.
+         * @return search info for forwards searching.
+         */
+        private SearchInfo buildSearchInfo(final int TABLE_SIZE, final int qGramEndPos) {
+            // Get local copies of fields:
+            final SequenceMatcher localSequence = sequence;
+
+            // Determine bit shift for bit shift hash algorithm
+            final int HASH_SHIFT = getHashShift(TABLE_SIZE, QLEN);
+
+            // Set up the hash table.
+            final int[] BITMASKS = new int[TABLE_SIZE];
+
+            // Set up the byte values for hashing as we go along the pattern:
+            byte[] bytes0;
+            byte[] bytes1 = localSequence.getMatcherForPosition(0).getMatchingBytes();
+            byte[] bytes2 = localSequence.getMatcherForPosition(1).getMatchingBytes();
+            byte[] bytes3 = localSequence.getMatcherForPosition(2).getMatchingBytes();
+
+            // Process all the qgrams in the pattern from the qGram start pos to the qgram end pos (last qgram we processed).
+            int hashValue = -1;
+            for (int qGramEnd = QLEN + 1; qGramEnd <= qGramEndPos; qGramEnd--) {
+                // Get the byte arrays for the qGram at the current qGramStart:
+                bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                         // shift byte arrays along one.
+                bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
+
+                // Calculate the hash value and OR the bitmask with the qgram phase bit:
+                final int QGRAM_PHASE_BIT = 1 << (qGramEnd & 0x3);
+                hashValue = processQ4Hash(OR_VALUE, QGRAM_PHASE_BIT, BITMASKS, hashValue, HASH_SHIFT,
+                                          bytes0, bytes1, bytes2, bytes3);
+            }
+
+            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramEndPos);
+        }
     }
-
 }
