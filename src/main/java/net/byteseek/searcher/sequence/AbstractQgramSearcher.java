@@ -8,7 +8,7 @@ import net.byteseek.utils.collections.BytePermutationIterator;
 /**
  * Created by matt on 09/06/17.
  */
-public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
+public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
 
     /**
      * The maximum number of elements in a hash table.
@@ -30,7 +30,7 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
      */
     protected final SearchIndexSize searchIndexSize;
 
-    public AbstractHashSearcher(final SequenceMatcher sequence, SearchIndexSize searchIndexSize) {
+    public AbstractQgramSearcher(final SequenceMatcher sequence, SearchIndexSize searchIndexSize) {
         super(sequence);
         this.searchIndexSize = searchIndexSize;
     }
@@ -89,17 +89,24 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
     protected final static class SearchInfo {
         public final int[] table;
         public final int shift;
+        public final int finalQgramStartPos;
         public SearchInfo(final int[] table, final int shift) {
+            this(table, shift, 0);
+        }
+        public SearchInfo(final int[] table, final int shift, final int finalQgramStartPos) {
             this.table = table;
             this.shift = shift;
+            this.finalQgramStartPos = finalQgramStartPos;
         }
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "(tableSize:" + (table == null? 0 : table.length) + ")";
+            return getClass().getSimpleName() + "(table size:" + (table == null? 0 : table.length) +
+                                                " hash shift:" + shift +
+                                                " finalQgramStartPos:" + finalQgramStartPos + ")";
         }
     }
 
-    protected final static SearchInfo NO_SEARCH_INFO = new SearchInfo(null, 0);
+    protected final static SearchInfo NO_SEARCH_INFO = new SearchInfo(null, 0, 0);
 
     /*
      * These should be lambdas, but our minimum java version is still at 7.
@@ -148,7 +155,7 @@ public abstract class AbstractHashSearcher extends AbstractFallbackSearcher {
             if (hashValue < 0) { // if we don't have a good last key value, calculate the first 3 elements of it:
                 hashValue = bytes0[0] & 0xFF;
             }
-            hashValue = (hashValue << HASH_SHIFT) +(bytes1[0] & 0xFF);
+            hashValue = (hashValue << HASH_SHIFT) + (bytes1[0] & 0xFF);
             strategy.processTablePosition(SHIFTS, hashValue & MASK, newValue);
         } else { // more than one permutation to work through.
             returnHashValue = false;
