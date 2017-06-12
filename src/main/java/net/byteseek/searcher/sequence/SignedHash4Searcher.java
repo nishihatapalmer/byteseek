@@ -75,7 +75,7 @@ import java.util.Arrays;
  * ShiftOr creates a table of 256 elements, which in most cases will be the same or smaller
  * than the table used by this searcher, and whose pre-processing time is also faster.
  */
-public final class SignedHash4Searcher extends AbstractHashSearcher {
+public final class SignedHash4Searcher extends AbstractQgramSearcher {
 
     /*************
      * Constants *
@@ -93,13 +93,11 @@ public final class SignedHash4Searcher extends AbstractHashSearcher {
 
     /**
      * A lazy object which can create the information needed to search forwards.
-     * An array of integers is used to determine how far it is safe to shift given a qgram seen in the text.
      */
     private final LazyObject<SearchInfo> forwardSearchInfo;
 
     /**
      * A lazy object which can create the information needed to search backwards.
-     * An array of integers is used to determine how far it is safe to shift given a qgram seen in the text.
      */
     private final LazyObject<SearchInfo> backwardSearchInfo;
 
