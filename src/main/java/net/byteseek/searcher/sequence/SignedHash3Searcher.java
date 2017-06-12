@@ -36,8 +36,6 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.SearchIndexSize;
-import net.byteseek.utils.ByteUtils;
-import net.byteseek.utils.collections.BytePermutationIterator;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
@@ -77,7 +75,7 @@ import java.util.Arrays;
  * ShiftOr creates a table of 256 elements, which in most cases will be the same or smaller
  * than the table used by this searcher, and whose pre-processing time is also faster.
  */
-public final class SignedHash3Searcher extends AbstractHashSearcher {
+public final class SignedHash3Searcher extends AbstractQgramSearcher {
 
     /*************
      * Constants *
@@ -95,13 +93,11 @@ public final class SignedHash3Searcher extends AbstractHashSearcher {
 
     /**
      * A lazy object which can create the information needed to search forwards.
-     * An array of integers is used to determine how far it is safe to shift given a qgram seen in the text.
      */
     private final LazyObject<SearchInfo> forwardSearchInfo;
 
     /**
      * A lazy object which can create the information needed to search backwards.
-     * An array of integers is used to determine how far it is safe to shift given a qgram seen in the text.
      */
     private final LazyObject<SearchInfo> backwardSearchInfo;
 
@@ -246,10 +242,8 @@ public final class SignedHash3Searcher extends AbstractHashSearcher {
         final int LAST_PATTERN_POS = localSequence.length() - 1;
         final int DATA_END_POS     = bytes.length - 1;
         final int LAST_SEARCH_POS  = toPosition + LAST_PATTERN_POS;
-        final int SEARCH_END       = LAST_SEARCH_POS < DATA_END_POS?
-                                     LAST_SEARCH_POS : DATA_END_POS;
-        final int SEARCH_START     = fromPosition > 0?
-                                     fromPosition : 0;
+        final int SEARCH_END       = LAST_SEARCH_POS < DATA_END_POS? LAST_SEARCH_POS : DATA_END_POS;
+        final int SEARCH_START     = fromPosition > 0? fromPosition : 0;
 
         // Search forwards:
         int searchPos = SEARCH_START + LAST_PATTERN_POS; // look at the end of the pattern to determine shift.
@@ -502,6 +496,7 @@ public final class SignedHash3Searcher extends AbstractHashSearcher {
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
+            //TODO: is this the best max qgrams for this type of searcher?
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE;
             int num0;
             int num1 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 1);
@@ -547,7 +542,7 @@ public final class SignedHash3Searcher extends AbstractHashSearcher {
             final int[] SHIFTS = new int[TABLE_SIZE];
             Arrays.fill(SHIFTS, MAX_SEARCH_SHIFT);
 
-            // Set up the key values for hashing as we go along the pattern:
+            // Set up the values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
             byte[] bytes1 = localSequence.getMatcherForPosition(qGramStartPos    ).getMatchingBytes();
             byte[] bytes2 = localSequence.getMatcherForPosition(qGramStartPos + 1).getMatchingBytes();
@@ -556,21 +551,14 @@ public final class SignedHash3Searcher extends AbstractHashSearcher {
             int hashValue = -1;
             final int LAST_PATTERN_POS = PATTERN_LENGTH - 1;
             for (int qGramEnd = qGramStartPos + QLEN - 1; qGramEnd < LAST_PATTERN_POS; qGramEnd++) {
-                // Get the byte arrays for the qGram at the current qGramStart:
                 bytes0 = bytes1; bytes1 = bytes2;                                          // shift byte arrays along one.
                 bytes2 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
-
-                // Calculate the hash value and set the shift for it:
                 hashValue = processQ3Hash(SET_VALUE, LAST_PATTERN_POS - qGramEnd, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1, bytes2);
             }
 
             // Make shifts for the last qgrams in the pattern negative:
-
-            // Get byte arrays for last q-gram:
             bytes0 = bytes1; bytes1 = bytes2;                                                  // shift byte arrays along one.
             bytes2 = localSequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
-
-            // Calculate the hash value(s) for the qgrams and make them negative.
             processQ3Hash(MAKE_NEGATIVE, 0, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1, bytes2);
 
             return new SearchInfo(SHIFTS, HASH_SHIFT);
