@@ -39,7 +39,7 @@
  * <li>SequenceMatcherSearcher  - naive search; no additional memory requirements</li>
  * <li>SundayQuickSearcher      - simple adaption of HorspoolSearcher, not usually faster in practice.</li>
  * <li>HorspoolSearcher         - simpler and faster variant of the classic Boyer-Moore search</li>
- * <li>UnrolledHorspoolSearcher - HorspoolSearcher with shift loop "unrolled" - usually faster than Horspool</li>
+ * <li>HorspoolUnrolledSearcher - HorspoolSearcher with shift loop "unrolled" - usually faster than Horspool</li>
  * <li>SignedHorspoolSearcher   - Variant of Horspool using Signed Searching  - usually fastest of Horspool variants.</li>
  * <li>ShiftOrSearcher          - usually fastest for small pattern lengths, e.g. 8 or less in length).</li>
  * <li>QgramFilterSearcher      - usually fastest for most patterns except shorter patterns, where ShiftOr is fastest.</li>
