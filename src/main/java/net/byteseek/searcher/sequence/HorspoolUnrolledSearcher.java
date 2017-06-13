@@ -402,13 +402,11 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         	this.verifier = verifier;
         }
     }
-    
-    
+
+    private final static int MAX_BYTES = 1024; // four times the table length fills 98% of positions with random selection.
+
     private final class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-        private ForwardInfoFactory() {
-        }
-        
         /**
          * Calculates the safe shifts to use if searching forwards.
          * A safe shift is either the length of the sequence, if the
@@ -418,25 +416,31 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         @Override
         public SearchInfo create() {
             // Get info about the matcher:
-            final int sequenceLength = sequence.length();
+            final SequenceMatcher localSequence = sequence;
+            final int sequenceLength = localSequence.length();
             
             // Create the search info object fields:
             final int lastPosition = sequenceLength - 1;
-            final ByteMatcher byteMatcher = sequence.getMatcherForPosition(lastPosition);
+            final ByteMatcher byteMatcher = localSequence.getMatcherForPosition(lastPosition);
             final SequenceMatcher verifier = (lastPosition == 0)? AnyByteMatcher.ANY_BYTE_MATCHER
-            												    : sequence.subsequence(0, lastPosition); 
+            												    : localSequence.subsequence(0, lastPosition);
 
-            // Check for the pathological case of positions matching all bytes, from the end to the start.
-            // If there is such a matcher in the sequence, no shift can be bigger than this length.
-            // The shift code would still work if we did not do this, but long gaps like .{2048) would
-            // incur a high processing cost.
+            // Find the max shift possible by scanning back and counting the bytes matched.
+            // If we find 256 bytes in one place then nothing can match past that position.
+            // If we exceed four times the table size, 98% of positions would be filled assuming a uniform random distribution.
+            // This is not optimal - many complicated patterns could cause a bit more processing than strictly required,
+            // but it does avoid denial of service and completely unnecessary processing.
             // Note: the last pattern character doesn't affect the shift table, so we don't care if there
-            // is an Any byte match in that position.
+            //       is an Any byte match in that position.  The final position gives the same max shift
+            //       as not looking at all, so we don't process that one either.
             int maxShift = sequenceLength;
-            for (int position = sequenceLength - 2; position >=0; position--) {
-                final ByteMatcher matcher = sequence.getMatcherForPosition(position);
-                if (matcher.getNumberOfMatchingBytes() == 256) {
-                    maxShift = sequenceLength - position;  //TODO: check correct.
+            int totalBytes = 0;
+            for (int position = sequenceLength - 2; position > 0; position--) {
+                final int numBytes = localSequence.getNumBytesAtPosition(position);
+                totalBytes += numBytes;
+                // Stop if we execeed the max bytes, or the bytes for the current position would overwrite everything after it.
+                if (totalBytes > MAX_BYTES || numBytes == 256 ) {
+                    maxShift = sequenceLength - position; //TODO: check correct.
                     break;
                 }
             }
@@ -454,7 +458,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
                 // from the end of the sequence, but we do not create a shift for
                 // the very last position.
                 for (int sequencePos = processShiftsFromPos; sequencePos < lastPosition; sequencePos++) {
-                    final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
+                    final ByteMatcher aMatcher = localSequence.getMatcherForPosition(sequencePos);
                     final byte[] matchingBytes = aMatcher.getMatchingBytes();
                     final int distanceFromEnd = sequenceLength - sequencePos - 1;
                     for (final byte b : matchingBytes) {
@@ -470,9 +474,6 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
     
     private final class BackwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-        private BackwardInfoFactory() {
-        }
-        
         /**
          * Calculates the safe shifts to use if searching backwards.
          * A safe shift is either the length of the sequence, if the
@@ -483,26 +484,31 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         @Override
         public SearchInfo create() {
             // Get info about the matcher:
-            final int sequenceLength = sequence.length();
+            final SequenceMatcher localSequence = sequence;
+            final int sequenceLength = localSequence.length();
             
             // Create the search info object fields
             final int lastPosition = sequenceLength - 1;
-            final ByteMatcher byteMatcher = sequence.getMatcherForPosition(0);
+            final ByteMatcher byteMatcher = localSequence.getMatcherForPosition(0);
             final SequenceMatcher verifier = (lastPosition == 0)? null 
-            													: sequence.subsequence(1, sequenceLength);
+            													: localSequence.subsequence(1, sequenceLength);
 
-            // Check for the pathological case of positions matching all bytes, from the end to the start.
-            // If there is such a matcher in the sequence, no shift can be bigger than this length.
-            // The shift code would still work if we did not do this, but long gaps like .{2048) would
-            // incur a high processing cost.
-            // Note: the first pattern character doesn't affect the shift table, so we don't care if there
-            // is an Any byte match in that position.
-
+            // Find the max shift possible by scanning back and counting the bytes matched.
+            // If we find 256 bytes in one place then nothing can match past that position.
+            // If we exceed four times the table size, 98% of positions would be filled assuming a uniform random distribution.
+            // This is not optimal - many complicated patterns could cause a bit more processing than strictly required,
+            // but it does avoid denial of service and completely unnecessary processing.
+            // Note: the last pattern character doesn't affect the shift table, so we don't care if there
+            //       is an Any byte match in that position.  The final position leads to the same max shift
+            //       as not looking at all, so we don't process that position either.
             int maxShift = sequenceLength;
-            for (int position = 1; position < sequenceLength; position++) {
-                final ByteMatcher matcher = sequence.getMatcherForPosition(position);
-                if (matcher.getNumberOfMatchingBytes() == 256) {
-                    maxShift = position + 1; //TODO: check correct.
+            int totalBytes = 0;
+            for (int position = 1; position < sequenceLength - 1; position++) {
+                final int numBytes = localSequence.getNumBytesAtPosition(position);
+                totalBytes += numBytes;
+                // Stop if we execeed the max bytes, or the bytes for the current position would overwrite everything after it.
+                if (totalBytes > MAX_BYTES || numBytes == 256 ) {
+                    maxShift = position + 1;
                     break;
                 }
             }
@@ -519,7 +525,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
                 // the sequence itself.  The shift is the position in the sequence,
                 // but we do not create a shift for the first position 0.
                 for (int sequencePos = processShiftsFromPos; sequencePos > 0; sequencePos--) {
-                    final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequencePos);
+                    final ByteMatcher aMatcher = localSequence.getMatcherForPosition(sequencePos);
                     final byte[] matchingBytes = aMatcher.getMatchingBytes();
                     for (final byte b : matchingBytes) {
                         shifts[b & 0xFF] = sequencePos;
