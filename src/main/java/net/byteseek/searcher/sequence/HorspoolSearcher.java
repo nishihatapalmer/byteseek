@@ -411,10 +411,6 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
             final SequenceMatcher localSequence = sequence;
             final int sequenceLength = localSequence.length();
 
-            //TODO: positions matching *most* bytes will overwrite almost all earlier ones.
-            //      define a cut-off (count bytes matched vs length.?) where there's no
-            //      point in further processing?
-
             // Find the max shift possible by scanning back and counting the bytes matched.
             // If we find 256 bytes in one place then nothing can match past that position.
             // If we exceed four times the table size, 98% of positions would be filled assuming a uniform random distribution.
