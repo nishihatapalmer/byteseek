@@ -46,6 +46,12 @@ import net.byteseek.utils.factory.ObjectFactory;
 
 
 /**
+ * An implementation of the Sunday Quick searcher algorithm described in
+ * "A very fast substring search algorithm", by SUNDAY D.M., 1990.
+ * <p>
+ * It is a modification of the Horspool search algorithm.  Sunday realised that you can shift on the
+ * position one past the end of the pattern, not just on the end of the pattern.  Although this leads to larger
+ * shifts, in practice the algorithm does not obtain better performance than Horspool.
  *
  * @author Matt Palmer
  */
@@ -287,8 +293,10 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
     public String toString() {
     	return getClass().getSimpleName() + "[sequence:" + sequence + ']';
     }
-    
-    
+
+
+    private final static int MAX_BYTES = 1024; // four times the table length fills 98% of positions with random selection.
+
     private final class ForwardInfoFactory implements ObjectFactory<int[]> {
 
         private ForwardInfoFactory() {
@@ -303,22 +311,41 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
          */
         @Override
         public int[] create() {
-            // First set the default shift to the length of the sequence plus one.
-            final int[] shifts = new int[256];
-            final int numBytes = sequence.length();
-            Arrays.fill(shifts, numBytes + 1);
+            final SequenceMatcher localSequence = sequence;
+            final int sequenceLength = localSequence.length();
 
-            //TODO: deal with pathological cases where we have embedded fixed gaps or any bytes that
-            //      fundamentally limit the max shift to the position they exist at.
+            // Find the max shift possible by scanning back and counting the bytes matched.
+            // If we find 256 bytes in one place then nothing can match past that position.
+            // If we exceed four times the table size, 98% of positions would be filled assuming a uniform random distribution.
+            // This is not optimal - many complicated patterns could cause a bit more processing than strictly required,
+            // but it does avoid denial of service and completely unnecessary processing.
+            // Note: The final position gives the same max shift as not looking at all, so we don't process that one.
+            int posToProcessFrom = 0;
+            int totalBytes = 0;
+            for (int position = sequenceLength - 1; position > 0; position--) {
+                final int numBytes = localSequence.getNumBytesAtPosition(position);
+                totalBytes += numBytes;
+                // Stop if we execeed the max bytes, or the bytes for the current position would overwrite everything after it.
+                if (totalBytes > MAX_BYTES || numBytes == 256 ) {
+                    posToProcessFrom = position;
+                    break;
+                }
+            }
+
+            // Set the default shift to the max shift allowable given the final pos processed.
+            final int maxShift = sequenceLength - posToProcessFrom + 1;
+            final int[] shifts = new int[256];
+            Arrays.fill(shifts, maxShift);
 
             // Now set specific byte shifts for the bytes actually in
             // the sequence itself.  The shift is the distance of each character
             // from the end of the sequence, where the last position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
-            for (int sequenceByteIndex = 0; sequenceByteIndex < numBytes; sequenceByteIndex++) {
-                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
-                final byte[] matchingBytes = aMatcher.getMatchingBytes();
-                final int distanceFromEnd = numBytes - sequenceByteIndex;
+            // We start processing from the posToProcessFrom, which is the last position deemed to be worth processing
+            // given large byte classes or very long sequences which would swamp the shift table.
+            for (int position = posToProcessFrom; position < sequenceLength; position++) {
+                final byte[] matchingBytes = localSequence.getMatcherForPosition(position).getMatchingBytes();
+                final int distanceFromEnd = sequenceLength - position;
                 for (final byte b : matchingBytes) {
                     shifts[b & 0xFF] = distanceFromEnd;
                 }
@@ -342,23 +369,40 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
          */        
         @Override
         public int[] create() {
-            // First set the default shift to the length of the sequence
-            // (negative if search direction is reversed)
-            final int[] shifts = new int[256];
-            final int numBytes = sequence.length();
-            Arrays.fill(shifts, numBytes + 1);
+            // Get basic info about the sequence:
+            final SequenceMatcher localSequence = sequence;
+            final int sequenceLength = localSequence.length();
 
-            //TODO: deal with pathological cases where we have embedded fixed gaps or any bytes that
-            //      fundamentally limit the max shift to the position they exist at.
+            // Find the max shift possible by scanning back and counting the bytes matched.
+            // If we find 256 bytes in one place then nothing can match past that position.
+            // If we exceed four times the table size, 98% of positions would be filled assuming a uniform random distribution.
+            // This is not optimal - many complicated patterns could cause a bit more processing than strictly required,
+            // but it does avoid denial of service and completely unnecessary processing.
+            // Note: The final position gives the same max shift as not looking at all, so we don't process that one.
+            int posToProcessFrom = sequenceLength - 1;
+            int totalBytes = 0;
+            for (int position = 0; position < sequenceLength - 1; position++) {
+                final int numBytes = localSequence.getNumBytesAtPosition(position);
+                totalBytes += numBytes;
+                // Stop if we execeed the max bytes, or the bytes for the current position would overwrite everything after it.
+                if (totalBytes > MAX_BYTES || numBytes == 256 ) {
+                    posToProcessFrom = position;
+                    break;
+                }
+            }
+
+            // Set the default shift to the max shift allowable given the final pos processed.
+            final int maxShift = posToProcessFrom + 2;
+            final int[] shifts = new int[256];
+            Arrays.fill(shifts, maxShift);
 
             // Now set specific byte shifts for the bytes actually in
             // the sequence itself.  The shift is the distance of each character
             // from the start of the sequence, where the first position equals 1.
             // Each position can match more than one byte (e.g. if a byte class appears).
-            for (int sequenceByteIndex = numBytes - 1; sequenceByteIndex >= 0; sequenceByteIndex--) {
-                final ByteMatcher aMatcher = sequence.getMatcherForPosition(sequenceByteIndex);
-                final byte[] matchingBytes = aMatcher.getMatchingBytes();
-                final int distanceFromStart = sequenceByteIndex + 1;
+            for (int position = posToProcessFrom; position >= 0; position--) {
+                final byte[] matchingBytes = localSequence.getMatcherForPosition(position).getMatchingBytes();
+                final int distanceFromStart = position + 1;
                 for (final byte b : matchingBytes) {
                     shifts[b & 0xFF] = distanceFromStart;
                 }
