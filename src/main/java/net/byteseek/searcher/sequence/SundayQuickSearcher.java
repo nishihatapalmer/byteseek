@@ -37,7 +37,6 @@ import java.util.Arrays;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
