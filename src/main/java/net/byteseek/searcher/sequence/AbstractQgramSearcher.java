@@ -89,20 +89,20 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
     protected final static class SearchInfo {
         public final int[] table;
         public final int shift;
-        public final int finalQgramStartPos;
+        public final int finalQgramPos;
         public SearchInfo(final int[] table, final int shift) {
             this(table, shift, 0);
         }
         public SearchInfo(final int[] table, final int shift, final int finalQgramStartPos) {
             this.table = table;
             this.shift = shift;
-            this.finalQgramStartPos = finalQgramStartPos;
+            this.finalQgramPos = finalQgramStartPos;
         }
         @Override
         public String toString() {
             return getClass().getSimpleName() + "(table size:" + (table == null? 0 : table.length) +
                                                 " hash shift:" + shift +
-                                                " finalQgramStartPos:" + finalQgramStartPos + ")";
+                                                " finalQgramPos:" + finalQgramPos + ")";
         }
     }
 
