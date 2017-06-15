@@ -36,6 +36,10 @@ import net.byteseek.utils.ByteUtils;
 import net.byteseek.utils.collections.BytePermutationIterator;
 
 /**
+ * An abstract class providing common constants, methods and classes for search algorithms
+ * which operate on q-grams rather than individual bytes, and which use the shift-add
+ * hash algorithm.
+ *
  * Created by matt on 09/06/17.
  */
 public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
@@ -168,9 +172,10 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
             }
         }
     }
-    protected static final SetValue SET_VALUE = new SetValue();
-    protected static final OrValue  OR_VALUE  = new OrValue();
-    protected static final MakeNegative MAKE_NEGATIVE = new MakeNegative();
+
+    protected static final TableStrategy SET_VALUE     = new SetValue();
+    protected static final TableStrategy OR_VALUE      = new OrValue();
+    protected static final TableStrategy MAKE_NEGATIVE = new MakeNegative();
 
     protected int processQ2Hash(final TableStrategy strategy, final int newValue, final int[] SHIFTS,
                                 final int currentHashValue, final int HASH_SHIFT,

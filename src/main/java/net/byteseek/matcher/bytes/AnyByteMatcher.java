@@ -50,7 +50,7 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
      * A static AnyByteMatcher to return - there only needs to be one
      * AnyByteMatcher.
      */
-    public static final AnyByteMatcher ANY_BYTE_MATCHER = new AnyByteMatcher();
+    public static final ByteMatcher ANY_BYTE_MATCHER = new AnyByteMatcher();
     
     
     // A static 256-element array containing all the bytes.

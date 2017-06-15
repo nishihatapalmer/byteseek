@@ -830,7 +830,7 @@ public class RegexParser implements Parser<ParseTree> {
 		final List<ParseTree> setNodes = new ArrayList<ParseTree>();
 		int currentChar = expression.read();
 		boolean requireRangeValue = false;
-		PARSE_SET: while (currentChar >= 0) {
+		while (currentChar >= 0) {
 			if (foundAtoms(currentChar, expression, setNodes)) {
 				if (requireRangeValue) {
 					createRange(setNodes, expression);
@@ -838,7 +838,7 @@ public class RegexParser implements Parser<ParseTree> {
 				}
 			} else if (!foundWhitespaceAndComments(currentChar, expression)) {
 				if (currentChar == CLOSE_SET) {
-					break PARSE_SET;
+					break;
 				}
 				if (currentChar == RANGE_SEPARATOR) {
 					requireRangeValue = true;

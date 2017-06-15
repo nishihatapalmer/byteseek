@@ -161,7 +161,7 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
         return NO_MATCH;
     }
     
-   
+    @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Initialise:
         final SequenceMatcher theSequence = sequence;

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015, All rights reserved.
+ * Copyright Matt Palmer 2015-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,10 +33,21 @@ package net.byteseek.io.reader.windows;
 import java.io.IOException;
 
 /**
+ * An interface to support the re-loading of window bytes from the original source
+ * or some cache.
+ *
  * Created by matt on 02/10/15.
  */
 public interface SoftWindowRecovery {
 
+    /**
+     * Given the window passed in, the correct bytes for that window will be returned.
+     * It does not modify the window passed in, or change any bytes associated with it.
+     *
+     * @param window The window for which the bytes should be returned.
+     * @return The bytes for the window passed in.
+     * @throws IOException If there was a problem obtaining the bytes for the window.
+     */
     byte[] reloadWindowBytes(Window window) throws IOException;
 
 }

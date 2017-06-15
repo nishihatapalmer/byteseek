@@ -214,6 +214,7 @@ public class FileReader extends AbstractReader implements SoftWindowRecovery {
 	@Override
 	protected Window createWindow(final long windowStart) throws IOException {
 		if (windowStart >= 0) {
+			//noinspection EmptyCatchBlock
 			try {
 				randomAccessFile.seek(windowStart);
 				final byte[] bytes = new byte[windowSize];

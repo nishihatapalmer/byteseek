@@ -67,6 +67,7 @@ class WindowIterator implements Iterator<Window> {
      */
     @Override
     public Window next() {
+        //noinspection EmptyCatchBlock
         try {
             final Window window = reader.getWindow(position);
             if (window != null) {

@@ -33,7 +33,6 @@ package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.Window;

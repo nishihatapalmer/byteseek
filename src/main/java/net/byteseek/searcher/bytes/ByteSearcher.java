@@ -46,16 +46,12 @@ import java.io.IOException;
  */
 public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
-    private final byte toSearchFor;
-
     public ByteSearcher(final byte value) {
         super(value);
-        toSearchFor = value;
     }
 
     public ByteSearcher(final Byte value) {
         super(value);
-        toSearchFor = value;
     }
 
     @Override
@@ -64,13 +60,12 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
     }
 
     public ByteSearcher(final OneByteMatcher value) {
-        super(value == null? null : value.getMatchingBytes()[0]);
-        toSearchFor = sequence.byteValue();
+        super(value == null? null : value.getByteValue());
     }
 
     @Override
     public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final byte searchByte = toSearchFor;
+        final byte searchByte = sequence.byteValue();
         long searchPosition = fromPosition >=0? fromPosition : 0;
         Window window;
         // While we have a window to search in:
@@ -94,8 +89,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
             for (int arraySearchPosition = startWindowSearchPosition;
                      arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
                 if (array[arraySearchPosition] == searchByte) {
-                    final long matchPosition = searchPosition + arraySearchPosition - startWindowSearchPosition;
-                    return matchPosition;
+                    return searchPosition + arraySearchPosition - startWindowSearchPosition;
                 }
             }
 
@@ -107,7 +101,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final byte searchByte = toSearchFor;
+        final byte searchByte = sequence.byteValue();
         final int lastPosition = toPosition < bytes.length?
                                  toPosition : bytes.length - 1;
         int searchPosition = fromPosition > 0? fromPosition : 0;
@@ -122,7 +116,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     @Override
     public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final byte searchByte = toSearchFor;
+        final byte searchByte = sequence.byteValue();
         long searchPosition = fromPosition;
         Window window;
         // While we have a window to search in:
@@ -144,8 +138,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
             for (int arraySearchPosition = startWindowSearchPosition;
                  arraySearchPosition >= endWindowSearchPosition; arraySearchPosition--) {
                 if (array[arraySearchPosition] == searchByte) {
-                    final long matchPosition = searchPosition - (startWindowSearchPosition - arraySearchPosition);
-                    return matchPosition;
+                    return searchPosition - (startWindowSearchPosition - arraySearchPosition);
                 }
             }
 
@@ -157,7 +150,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final byte searchByte = toSearchFor;
+        final byte searchByte = sequence.byteValue();
         final int lastPosition = toPosition > 0? toPosition : 0;
         int searchPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
         while (searchPosition >= lastPosition) {
@@ -188,7 +181,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
      */
     @Override
     public String toString() {
-        final int value = toSearchFor & 0xFF;
+        final int value = sequence.byteValue() & 0xFF;
         return this.getClass().getSimpleName() + '[' + String.format("%02X", value) + ']';
     }
 

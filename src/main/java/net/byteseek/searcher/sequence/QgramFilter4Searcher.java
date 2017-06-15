@@ -243,22 +243,20 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info = forwardSearchInfo.get();
-        final int[] BITMASKS  = info.table;
-        final int   SHIFT     = info.shift;
-        final int   MASK      = BITMASKS.length - 1; // BITMASKS will always be a power of two size.
+        final SearchInfo info      = forwardSearchInfo.get();
+        final int[] BITMASKS       = info.table;
+        final int   SHIFT          = info.shift;
+        final int   PATTERN_LENGTH = info.finalQgramPos + 1; // the effective search length is the end of the last qgram we could process.
+        final int   MASK           = BITMASKS.length - 1;    // BITMASKS will always be a power of two size.
 
         // Determine safe shifts, starts and ends:
-        final int PATTERN_LENGTH       = localSequence.length();
         final int PATTERN_MINUS_QLEN   = PATTERN_LENGTH - QLEN;
         final int SEARCH_SHIFT         = PATTERN_MINUS_QLEN + 1;
-        final int SEARCH_START         = (fromPosition > 0?
-                                          fromPosition : 0) + PATTERN_MINUS_QLEN;
+        final int SEARCH_START         = (fromPosition > 0? fromPosition : 0) + PATTERN_MINUS_QLEN;
         final int TO_END_POS           = toPosition + PATTERN_LENGTH - 1;
-        final int LAST_TEXT_POSITION   = bytes.length - 1;
-        final int LAST_MATCH_POS       = bytes.length - PATTERN_LENGTH;
-        final int SEARCH_END           = (TO_END_POS < LAST_TEXT_POSITION?
-                                          TO_END_POS : LAST_TEXT_POSITION) - QLEN + 1;
+        final int LAST_MATCH_POS       = bytes.length - localSequence.length(); // length may not be same as pattern_length for searching.
+        final int LAST_TEXT_POSITION   = LAST_MATCH_POS + PATTERN_LENGTH - 1;
+        final int SEARCH_END           = (TO_END_POS < LAST_TEXT_POSITION? TO_END_POS : LAST_TEXT_POSITION) - QLEN + 1;
 
         // Search forwards.
         for (int pos = SEARCH_START; pos <= SEARCH_END; pos += SEARCH_SHIFT) {
@@ -292,8 +290,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                 // All complete q-grams in the text matched one somewhere in the pattern.
                 // Verify whether we have an actual match in any of the qgram start positions,
                 // without going past the last position a match can occur at.
-                final int LAST_VERIFY_POS = FIRST_QGRAM_END_POS < LAST_MATCH_POS?
-                        FIRST_QGRAM_END_POS : LAST_MATCH_POS;
+                final int LAST_VERIFY_POS = FIRST_QGRAM_END_POS < LAST_MATCH_POS? FIRST_QGRAM_END_POS : LAST_MATCH_POS;
                 for (int matchPos = PATTERN_START_POS; matchPos <= LAST_VERIFY_POS; matchPos++) {
                     if (localSequence.matchesNoBoundsCheck(bytes, matchPos)) {
                         return matchPos;
@@ -313,17 +310,16 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info = forwardSearchInfo.get();
-        final int[] BITMASKS  = info.table;
-        final int   SHIFT     = info.shift;
-        final int   MASK      = BITMASKS.length - 1; // BITMASKS is always a power of two size.
+        final SearchInfo info      = forwardSearchInfo.get();
+        final int[] BITMASKS       = info.table;
+        final int   SHIFT          = info.shift;
+        final int   PATTERN_LENGTH = info.finalQgramPos;
+        final int   MASK           = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Initialise window search:
-        final int PATTERN_LENGTH     = localSequence.length();
         final int PATTERN_MINUS_QLEN = PATTERN_LENGTH - QLEN;
         final int SEARCH_SHIFT       = PATTERN_MINUS_QLEN + 1;
-        final long SEARCH_START      = (fromPosition > 0?
-                                        fromPosition : 0) + PATTERN_MINUS_QLEN;
+        final long SEARCH_START      = (fromPosition > 0? fromPosition : 0) + PATTERN_MINUS_QLEN;
         final long TO_END_POS        = toPosition + PATTERN_MINUS_QLEN;
 
         // Search forwards.
@@ -732,29 +728,30 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
 
             int num0;
-            int num1 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 1);
-            int num2 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 2);
-            int num3 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 3);
+            int num1 = localSequence.getNumBytesAtPosition(0);
+            int num2 = localSequence.getNumBytesAtPosition(1);
+            int num3 = localSequence.getNumBytesAtPosition(2);
 
-            // Scan backwards along the pattern, counting qgrams as we go.
+            // Scan forwards along the pattern counting qgrams as we go.  If there are too many, we halt processing
+            // giving a shorter pattern to search with and a shorter maximum shift.
             int totalQgrams = 0;
             int finalQgramPos = 0;
-            for (int qGramStartPos = PATTERN_LENGTH - QLEN; qGramStartPos >= 0; qGramStartPos--) {
+            for (int qGramEndPos = QLEN - 1; qGramEndPos < PATTERN_LENGTH; qGramEndPos++) {
                 // Calculate total qgrams as we scan along:
                 num0 = num1; num1 = num2; num2 = num3;                     // shift byte counts along.
-                num3 = localSequence.getNumBytesAtPosition(qGramStartPos); // get next count.
+                num3 = localSequence.getNumBytesAtPosition(qGramEndPos); // get next count.
                 totalQgrams += (num0 * num1 * num2 * num3);
 
                 // If we go beyond the max qgrams, stop further processing.
                 if (totalQgrams > MAX_QGRAMS) {
-                    finalQgramPos = qGramStartPos + 1; // don't process qgrams that take us beyond the max value.
+                    finalQgramPos = qGramEndPos - 1; // don't process qgrams that take us beyond the max value.
                     break; // no further value, halt processing of further qgrams. avoids pathological byte classes.
                 }
             }
 
             // If we exceeded max qgrams at the first qgram value, there is nothing we can usefully process
             // with this search algorithm, use fallback searcher instead.
-            if (finalQgramPos > PATTERN_LENGTH - QLEN) {
+            if (finalQgramPos < QLEN) {
                 return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used instead.
             }
 
@@ -767,13 +764,12 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
          * which the search info should be calculated from in the pattern.
          *
          * @param TABLE_SIZE     The table size to create.
-         * @param qGramStartPos  The qgram position to start building the search info from.
+         * @param qGramEndPos    The position of the end of the qgram to start building the search info from.
          * @return search info for forwards searching.
          */
-        private SearchInfo buildSearchInfo(final int TABLE_SIZE, final int qGramStartPos) {
+        private SearchInfo buildSearchInfo(final int TABLE_SIZE, final int qGramEndPos) {
             // Get local copies of fields:
             final SequenceMatcher localSequence = sequence;
-            final int PATTERN_LENGTH            = localSequence.length();
 
             // Determine bit shift for bit shift hash algorithm
             final int HASH_SHIFT = getHashShift(TABLE_SIZE, QLEN);
@@ -783,13 +779,13 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
             // Set up the key values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
-            byte[] bytes1 = localSequence.getMatcherForPosition(PATTERN_LENGTH - 1).getMatchingBytes();
-            byte[] bytes2 = localSequence.getMatcherForPosition(PATTERN_LENGTH - 2).getMatchingBytes();
-            byte[] bytes3 = localSequence.getMatcherForPosition(PATTERN_LENGTH - 3).getMatchingBytes();
+            byte[] bytes1 = localSequence.getMatcherForPosition(qGramEndPos    ).getMatchingBytes();
+            byte[] bytes2 = localSequence.getMatcherForPosition(qGramEndPos - 1).getMatchingBytes();
+            byte[] bytes3 = localSequence.getMatcherForPosition(qGramEndPos - 2).getMatchingBytes();
 
             // Process all the qgrams in the pattern from the qGram start pos to one before the end of the pattern.
             int hashValue = -1;
-            for (int qGramEnd = PATTERN_LENGTH - QLEN; qGramEnd >= qGramStartPos; qGramEnd--) {
+            for (int qGramEnd = qGramEndPos - 3; qGramEnd >= 0; qGramEnd--) {
                 // Get the byte arrays for the qGram at the current qGramStart:
                 bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                         // shift byte arrays along one.
                 bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
@@ -800,7 +796,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                                           bytes0, bytes1, bytes2, bytes3);
             }
 
-            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramStartPos);
+            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramEndPos);
         }
     }
 

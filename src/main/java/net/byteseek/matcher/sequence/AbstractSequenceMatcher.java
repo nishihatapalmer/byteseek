@@ -37,6 +37,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * An abstract helper subclass that implements the methods that require a  list of MatchResults.
+ * Peformms the addition of a new result into the result list for all sequence matchers.
+ *
  * Created by matt on 08/06/17.
  */
 public abstract class AbstractSequenceMatcher implements SequenceMatcher {

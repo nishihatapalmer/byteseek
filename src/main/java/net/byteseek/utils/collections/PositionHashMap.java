@@ -81,6 +81,7 @@ public final class PositionHashMap<T> {
         tablebits = ByteUtils.ceilLogBaseTwo(initialCapacity * 2); // number of bits in a number rounded up to highest power of two size.
         final int initialSize = 1 << tablebits; // 50% load at initial capacity. //TODO: adjust once profiled.
         keys   = new long[initialSize];
+        //noinspection unchecked
         values = (T[]) new Object[initialSize];
     }
 
@@ -292,7 +293,7 @@ public final class PositionHashMap<T> {
             final long[] oldKeys   = keys;
             final T[]    oldValues = values;
             final long[] newKeys   = new long[newSize];
-            final T[]    newValues = (T[]) new Object[newSize];
+            @SuppressWarnings("unchecked") final T[] newValues = (T[]) new Object[newSize];
 
             // Set up new keys and values, iterating over old ones to rehash them:
             for (int oldIndex = 0; oldIndex < length; oldIndex++) {

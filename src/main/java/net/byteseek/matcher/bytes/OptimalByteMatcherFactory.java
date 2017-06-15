@@ -63,7 +63,7 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
 
-    public static ByteMatcherFactory FACTORY = new OptimalByteMatcherFactory();
+    public static final ByteMatcherFactory FACTORY = new OptimalByteMatcherFactory();
 
     private static final int BINARY_SEARCH_THRESHOLD = 16;
 

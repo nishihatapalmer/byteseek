@@ -53,7 +53,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 
 	private final Parser<S> parser;
 
-	public AbstractCompiler(final Parser<S> parser) {
+	protected AbstractCompiler(final Parser<S> parser) {
 		ArgUtils.checkNullObject(parser, "parser");
 		this.parser = parser;
 	}
@@ -158,9 +158,8 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 *
 	 * @param expressions A list of expressions to join together.
 	 * @return S Another abstract syntax tree containing the join of all the trees passed in.
-	 * @throws ParseException  An exception which occurs when parsing the expressions.
 	 * @throws CompileException An exception which occurs during compilation of the expressions.
 	 */
-	protected abstract S joinExpressions(List<S> expressions) throws ParseException, CompileException;
+	protected abstract S joinExpressions(List<S> expressions) throws CompileException;
 
 }

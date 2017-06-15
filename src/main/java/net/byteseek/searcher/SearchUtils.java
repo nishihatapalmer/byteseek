@@ -68,8 +68,7 @@ public final class SearchUtils {
 	public static  List<MatchResult> searchAllForwards(
 			final Searcher searcher, final byte[] bytes) {
 		final List<MatchResult> results = new ArrayList<MatchResult>();
-		final ForwardSearchIterator iterator = new ForwardSearchIterator(
-				searcher, bytes);
+		final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, bytes);
 		while (iterator.hasNext()) {
 			results.addAll(iterator.next());
 		}
@@ -90,8 +89,7 @@ public final class SearchUtils {
 	public static  List<MatchResult> searchAllForwards(
 			final Searcher searcher, final WindowReader reader) {
 		final List<MatchResult> results = new ArrayList<MatchResult>();
-		final ForwardSearchIterator iterator = new ForwardSearchIterator(
-				searcher, reader);
+		final ForwardSearchIterator iterator = new ForwardSearchIterator(searcher, reader);
 		while (iterator.hasNext()) {
 			results.addAll(iterator.next());
 		}
@@ -111,8 +109,7 @@ public final class SearchUtils {
 	public static  List<MatchResult> searchAllBackwards(
 			final Searcher searcher, final byte[] bytes) {
 		final List<MatchResult> results = new ArrayList<MatchResult>();
-		final BackwardSearchIterator iterator = new BackwardSearchIterator(
-				searcher, bytes);
+		final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, bytes);
 		while (iterator.hasNext()) {
 			results.addAll(iterator.next());
 		}
@@ -135,8 +132,7 @@ public final class SearchUtils {
 	public static  List<MatchResult> searchAllBackwards(
 			final Searcher searcher, final WindowReader reader) throws IOException {
 		final List<MatchResult> results = new ArrayList<MatchResult>();
-		final BackwardSearchIterator iterator = new BackwardSearchIterator(
-				searcher, reader);
+		final BackwardSearchIterator iterator = new BackwardSearchIterator(searcher, reader);
 		while (iterator.hasNext()) {
 			results.addAll(iterator.next());
 		}

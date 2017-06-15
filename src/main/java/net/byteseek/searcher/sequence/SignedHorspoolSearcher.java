@@ -231,7 +231,7 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
             int arraySearchPosition = arrayStartPosition;
 
             // Search forwards in this array:
-            ARRAY_SEARCH: while (arraySearchPosition <= lastSearchPosition) {
+            while (arraySearchPosition <= lastSearchPosition) {
 
                 // Shift forward until there is a negative shift or we run out of search space.
                 int shift = safeShifts[array[arraySearchPosition] & 0xFF];
@@ -331,7 +331,7 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
 
             // Search using the byte array for shifts, using the WindowReader
             // for verifiying the sequence with the matcher:          
-            ARRAY_SEARCH: while (arraySearchPosition >= lastSearchPosition) {
+            while (arraySearchPosition >= lastSearchPosition) {
 
                 // Shift backward until there is a negative shift or we run out of
                 // search space.

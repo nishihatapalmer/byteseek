@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.byteseek.matcher.MatchResult;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -682,7 +681,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 	}
 
 	
-	private void populateMatchers(final List<? extends SequenceMatcher> list) {
+	private void populateMatchers(final Iterable<? extends SequenceMatcher> list) {
 		int matcherPos = 0;
 		for (final SequenceMatcher sequence : list) {
 			for (final ByteMatcher matcher : sequence) {
@@ -711,7 +710,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
     }
     
     
-	private int countTotalLength(final List<? extends SequenceMatcher> list) {
+	private int countTotalLength(final Iterable<? extends SequenceMatcher> list) {
 		int totalLength = 0;
 		for (final SequenceMatcher sequence : list) {
 			totalLength += sequence.length();

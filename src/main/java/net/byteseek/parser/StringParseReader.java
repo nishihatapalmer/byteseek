@@ -44,7 +44,7 @@ import net.byteseek.utils.ArgUtils;
  */
 public class StringParseReader {
 
-	private static int MAXINT10 = Integer.MAX_VALUE / 10;
+	private static final int MAXINT10 = Integer.MAX_VALUE / 10;
 
 	protected final String string;
 	protected final int length;

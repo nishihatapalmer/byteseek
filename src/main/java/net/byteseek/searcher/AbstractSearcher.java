@@ -37,7 +37,6 @@ import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
-import net.byteseek.matcher.Matcher;
 
 /**
  * An abstract searcher implementation which provides default implementations of
