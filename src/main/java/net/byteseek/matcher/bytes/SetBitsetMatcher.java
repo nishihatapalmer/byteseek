@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2016, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -39,7 +39,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.utils.ArgUtils;
 
 import java.util.BitSet;
-import java.util.Set;
+import java.util.Collection;
 
 
 /**
@@ -58,10 +58,10 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     /**
      * Constructs a SetBitsetMatcher from a set of bytes.
      *
-     * @param values A set of bytes
+     * @param values A collection of bytes
      * @param inverted Whether matching is on the set of bytes or their inverse.
      */
-    public SetBitsetMatcher(final Set<Byte> values, final boolean inverted) {
+    public SetBitsetMatcher(final Collection<Byte> values, final boolean inverted) {
         super(inverted);
         ArgUtils.checkNullOrEmptyCollection(values, "values");
         for (final Byte b : values) {

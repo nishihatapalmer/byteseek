@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2016, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -39,9 +39,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.utils.ArgUtils;
 
 import java.util.Arrays;
-import java.util.Set;
-
-
+import java.util.Collection;
 
 /**
  * A SetBinarySearchMatcher is a {@link ByteMatcher} which
@@ -58,10 +56,10 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
     /**
      * Constructs an immutable SetBinarySearchMatcher.
      * 
-     * @param bytes The Set of bytes to match.
+     * @param bytes The collection of bytes to match.
      * @param inverted Whether the set of bytes is inverted or not.
      */
-    public SetBinarySearchMatcher(final Set<Byte> bytes, final boolean inverted) {
+    public SetBinarySearchMatcher(final Collection<Byte> bytes, final boolean inverted) {
         super(inverted);
         ArgUtils.checkNullOrEmptyCollection(bytes, "bytes");
         this.bytesToMatch = ByteUtils.toArray(bytes);
