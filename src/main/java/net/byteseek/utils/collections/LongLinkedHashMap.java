@@ -365,8 +365,12 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             this.key  = key;
         }
 
-        public boolean equals(Node otherNode) {
-            return key != otherNode.key || !item.equals(otherNode.item);
+        public boolean equals(final Object otherNode) {
+            if (otherNode instanceof Node) {
+                final Node other = (Node) otherNode;
+                return key == other.key && item.equals(other.item);
+            }
+            return false;
         }
 
         @Override
