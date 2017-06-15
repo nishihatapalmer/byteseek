@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -130,10 +130,8 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 		}
 		try {
 			return doCompile(ast);
-		} catch (IllegalArgumentException e) {
-			throw new CompileException(e.getMessage());
-		} catch (ParseException ex) {
-			throw new CompileException(ex.getMessage());
+		} catch (IllegalArgumentException | ParseException e) {
+			throw new CompileException(e.getMessage(), e);
 		}
 	}
 
