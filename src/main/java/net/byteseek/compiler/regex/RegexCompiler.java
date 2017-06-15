@@ -232,8 +232,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     }
 
     @Override
-    protected ParseTree joinExpressions(final List<ParseTree> expressions)
-        throws ParseException, CompileException {
+    protected ParseTree joinExpressions(final List<ParseTree> expressions) throws CompileException {
       return new ChildrenNode(ParseTreeType.ALTERNATIVES, expressions);
     }
 

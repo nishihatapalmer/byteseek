@@ -328,7 +328,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
     }
     
 	@Override
-	protected ParseTree joinExpressions(List<ParseTree> expressions) throws ParseException, CompileException {
+	protected ParseTree joinExpressions(List<ParseTree> expressions) throws CompileException {
 		return new ChildrenNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED);
     }    
 

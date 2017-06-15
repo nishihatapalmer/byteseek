@@ -223,8 +223,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 
 	
 	@Override
-	protected ParseTree joinExpressions(List<ParseTree> expressions) 
-			throws ParseException, CompileException {
+	protected ParseTree joinExpressions(List<ParseTree> expressions) throws CompileException {
 		return new ChildrenNode(ParseTreeType.SET, expressions, NOT_INVERTED);
 	}
 	

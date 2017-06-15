@@ -60,12 +60,12 @@ public class SearchersToTest {
     public void createSearchers(SequenceMatcher sequence) {
         searchers = new ArrayList<SequenceSearcher>();
         searchers.add(new SequenceMatcherSearcher(sequence));
-        //searchers.add(new SundayQuickSearcher(sequence));
+        searchers.add(new SundayQuickSearcher(sequence));
         searchers.add(new HorspoolSearcher(sequence));
-        //searchers.add(new HorspoolUnrolledSearcher(sequence));
+        searchers.add(new HorspoolUnrolledSearcher(sequence));
         //searchers.add(new SignedHorspoolSearcher(sequence));
         //searchers.add(new ShiftOrSearcher(sequence));
-        //searchers.add(new QgramFilter4Searcher(sequence));
+        searchers.add(new QgramFilter4Searcher(sequence));
         searchers.add(new SignedHash2Searcher(sequence));
         searchers.add(new SignedHash3Searcher(sequence));
         searchers.add(new SignedHash4Searcher(sequence));
