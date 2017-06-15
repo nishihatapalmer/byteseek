@@ -68,11 +68,8 @@ public final class IOUtils {
 		}
 		final byte[] result = new byte[(int) size];
 		final int read;
-		final FileInputStream fileStream = new FileInputStream(file);
-		try {
+		try (FileInputStream fileStream = new FileInputStream(file)) {
 			read = readBytes(fileStream, result);
-		} finally {
-			fileStream.close();
 		}
 		if (read != size) {
 			throw new IOException("ERROR: Only read " + read + " of " + size + " byte in file " + file);
