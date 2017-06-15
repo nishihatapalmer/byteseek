@@ -151,18 +151,26 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
     private void deleteFileIfExists() throws IOException {
         if (tempFile != null) {
             IOException fileCloseException = null;
+            String      fileDetails = "";
+            boolean tempFileDeleted;
             try {
                 file.close();
             } catch (IOException ex) {
                 fileCloseException = ex;
             } finally {
                 file = null;
-                tempFile.delete();
+                tempFileDeleted = tempFile.delete();
+                if (!tempFileDeleted) {
+                    fileDetails = tempFile.getAbsolutePath();
+                }
                 tempFile = null;
                 nextFilePos = 0;
             }
             if (fileCloseException != null) {
                 throw fileCloseException;
+            }
+            if (!tempFileDeleted) {
+                throw new TempFileNotDeletedException("Temp file was not deleted: " + fileDetails);
             }
         }
     }
@@ -201,4 +209,18 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
 	public String toString() {
 		return getClass().getSimpleName() + "[temp file: " + tempFile + " window positions recorded:" + windowPositions.size() + ']';  
 	}
+
+    private class TempFileNotDeletedException extends IOException {
+
+        /**
+         * Constructs a WindowMissingException with a descriptive message.
+         *
+         * @param message
+         *            The message to include with the exception.
+         */
+        public TempFileNotDeletedException(final String message) {
+            super(message);
+        }
+
+    }
 }
