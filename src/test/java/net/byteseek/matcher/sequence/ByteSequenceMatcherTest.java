@@ -648,8 +648,8 @@ public class ByteSequenceMatcherTest {
 		try {
 			iterator.remove();
 			fail("expected an unsupported operation exception removing from the iterator");
-		} catch (UnsupportedOperationException ex) {};
-		
+		} catch (UnsupportedOperationException ex) {}
+
 		assertTrue("Byte matcher iterator must always have at least one element [" + expected + ']', iterator.hasNext());
 		int position = 0;
 		while (iterator.hasNext()) {
@@ -666,7 +666,7 @@ public class ByteSequenceMatcherTest {
 		try {
 			iterator.next();
 			fail("expected NoSuchElementException");
-		} catch (NoSuchElementException ex) {};
+		} catch (NoSuchElementException ex) {}
 	}
 
 	
@@ -691,8 +691,8 @@ public class ByteSequenceMatcherTest {
 		try {
 			iterator.remove();
 			fail("expected an unsupported operation exception removing from the iterator");
-		} catch (UnsupportedOperationException ex) {};
-		
+		} catch (UnsupportedOperationException ex) {}
+
 		assertTrue("Byte matcher iterator must always have at least one element", iterator.hasNext());
 		int position = expected.length();
 		while (iterator.hasNext()) {
@@ -709,7 +709,7 @@ public class ByteSequenceMatcherTest {
 		try {
 			iterator.next();
 			fail("expected NoSuchElementException");
-		} catch (NoSuchElementException ex) {};
+		} catch (NoSuchElementException ex) {}
 	}
 	
 	// /////////////////////////////

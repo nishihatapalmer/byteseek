@@ -60,17 +60,17 @@ public class BaseNodeTest {
 		try { 
 			node.getByteValue();
 			fail("Expected a ParseException if asked for the byte value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		try { 
 			node.getIntValue();
 			fail("Expected a ParseException if asked for the int value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		try { 
 			node.getTextValue();
 			fail("Expected a ParseException if asked for the text value");
-		} catch (ParseException allIsFine) {};
+		} catch (ParseException allIsFine) {}
 		
 		/*
 		try {

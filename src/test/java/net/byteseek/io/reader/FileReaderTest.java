@@ -53,8 +53,6 @@ import net.byteseek.io.reader.cache.AllWindowsCache;
 import net.byteseek.io.reader.cache.NoCache;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  *

@@ -339,13 +339,6 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
     /**
      * {@inheritDoc}
      */
-    // Suppress warnings about null in this method.  Eclipse believes that the startMatcher or
-    // the endMatcher could be null at the end of the loop.  This can only be true if there is a bug.
-    // It should not happen otherwise, as we already test that the beginIndex and endIndex are within
-    // the bounds of the SequenceSequenceMatcher total length - the sum of all the SequenceMatchers in it.
-    // Therefore, a failure to find a SequenceMatcher within those bounds would represent a genuine 
-    // programming error somewhere, which could then result in a NullPointerException thrown in this method.
-    @SuppressWarnings("null")
 	@Override
     public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
         ArgUtils.checkIndexOutOfBounds(totalLength, beginIndex, endIndex);
@@ -374,6 +367,9 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
                 break;
             }
         }
+
+        assert startMatcher != null;
+        assert endMatcher != null;
 
         // If there's only one matcher involved, then return a subsequence of it:
         //if (startMatcher == endMatcher) {

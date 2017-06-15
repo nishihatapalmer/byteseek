@@ -130,13 +130,13 @@ public class StringNodeTest {
 		try { 
 			node.getByteValue();
 			fail(description + "Expected a ParseException if asked for the byte value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		try { 
 			node.getIntValue();
 			fail(description + "Expected a ParseException if asked for the int value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		assertEquals(description + "Child list is empty", 0, node.getNumChildren());	
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}

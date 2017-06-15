@@ -32,12 +32,9 @@ package net.byteseek.searcher.sequence;
 
 import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.WindowReader;
-import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

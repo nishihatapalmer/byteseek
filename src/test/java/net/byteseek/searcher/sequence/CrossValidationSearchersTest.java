@@ -458,7 +458,8 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 dataToSearch = loadDataToSearch(dataFile);
             }
             return dataToSearch;
-        };
+        }
+
         public WindowReader getReader() {
             if (reader == null) {
                 reader = loadFileReader(dataFile);

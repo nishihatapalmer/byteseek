@@ -446,7 +446,7 @@ public class FixedGapMatcherTest {
 			try {
 				iterator.remove();
 				fail("Expected an UnsupportedOperationException");
-			} catch (UnsupportedOperationException expected) {};
+			} catch (UnsupportedOperationException expected) {}
 
 			ByteMatcher match = iterator.next();
 			assertEquals("FixedGapMatcher iterator produces a match for 256 bytes", 256, match.getNumberOfMatchingBytes());

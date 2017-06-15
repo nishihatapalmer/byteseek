@@ -84,8 +84,8 @@ public class ByteNodeTest {
 		try { 
 			node.getTextValue();
 			fail("Expected a ParseException if asked for the text value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		assertEquals("Child list is empty", 0, node.getNumChildren());
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}

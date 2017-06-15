@@ -70,9 +70,7 @@ import java.io.InputStream;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by matt on 11/04/17.

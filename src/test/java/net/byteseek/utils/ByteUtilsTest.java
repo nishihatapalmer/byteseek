@@ -238,9 +238,9 @@ public class ByteUtilsTest {
         try {
         	ByteUtils.getAllBitMaskForBytes((byte[]) null);
         	fail("Expected an illegal argument exception on null byte array");
-        } catch (IllegalArgumentException expected) {};
-    	
-    	// only one byte mask matches 11111111 - the bitmask is the same as the byte:
+        } catch (IllegalArgumentException expected) {}
+
+        // only one byte mask matches 11111111 - the bitmask is the same as the byte:
         byte[] bytes = new byte[] {(byte) 0xFF};
         Byte expectedValue = Byte.valueOf((byte) 0xFF);
         assertEquals("11111111", expectedValue, ByteUtils.getAllBitMaskForBytes(bytes));
@@ -494,9 +494,9 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.addBytesNotMatchingAllBitMask((byte) 0x00, null);
     		fail("Collection passed in cannot be null");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	for (int bitmask = 0; bitmask < 256; bitmask++) {
+    	} catch (IllegalArgumentException expected) {}
+
+        for (int bitmask = 0; bitmask < 256; bitmask++) {
     		Set<Byte> expected = new HashSet<Byte>(192);
     		for (int b = 0; b < 256; b++) {
     			if ((((byte) b) & ((byte) bitmask)) != (byte) bitmask) {
@@ -555,9 +555,9 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.addBytesMatchingAnyBitMask((byte) 0x00, null);
     		fail("Collection passed in cannot be null");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	for (int bitmask = 0; bitmask < 256; bitmask++) {
+    	} catch (IllegalArgumentException expected) {}
+
+        for (int bitmask = 0; bitmask < 256; bitmask++) {
     		Set<Byte> expected = new HashSet<Byte>(192);
     		for (int b = 0; b < 256; b++) {
     			if ((((byte) b) & ((byte) bitmask)) != 0) {
@@ -578,9 +578,9 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.addBytesNotMatchingAnyBitMask((byte) 0x00, null);
     		fail("Collection passed in cannot be null");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	for (int bitmask = 0; bitmask < 256; bitmask++) {
+    	} catch (IllegalArgumentException expected) {}
+
+        for (int bitmask = 0; bitmask < 256; bitmask++) {
     		Set<Byte> expected = new HashSet<Byte>(192);
     		for (int b = 0; b < 256; b++) {
     			if ((((byte) b) & ((byte) bitmask)) == 0) {
@@ -615,9 +615,9 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.toList(null);
     		fail("Array passed in cannot be null");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	Random r = new Random();
+    	} catch (IllegalArgumentException expected) {}
+
+        Random r = new Random();
     	for (int i = 0; i <256; i++) {
     		byte[] test = new byte[i];
     		for (int j = 0; j < i; j++) {
@@ -636,24 +636,24 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.getBytesInRange(-1, 3);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException expected) {}
+
+        try {
     		ByteUtils.getBytesInRange(1, -3);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException expected) {}
+
+        try {
     		ByteUtils.getBytesInRange(1, 257);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException expected) {}
+
+        try {
     		ByteUtils.getBytesInRange(257, -1);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException expected) {};
+    	} catch (IllegalArgumentException expected) {}
 
-    	for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
     		for (int j = 0; j< 256; j++) {
     			final int start = i < j? i : j;
     			final int end   = i < j? j : i;
@@ -673,30 +673,30 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.addBytesInRange(-1, 3, null);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	List<Byte> expected = new ArrayList<Byte>();
+    	} catch (IllegalArgumentException expected) {}
+
+        List<Byte> expected = new ArrayList<Byte>();
     	try {
     		ByteUtils.addBytesInRange(-1, 3, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException ex) {}
+
+        try {
     		ByteUtils.addBytesInRange(1, -3, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException ex) {}
+
+        try {
     		ByteUtils.addBytesInRange(1, 257, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException ex) {}
+
+        try {
     		ByteUtils.addBytesInRange(257, -1, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
+    	} catch (IllegalArgumentException ex) {}
 
-    	for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
     		for (int j = 0; j< 256; j++) {
     			final int start = i < j? i : j;
     			final int end   = i < j? j : i;
@@ -717,30 +717,30 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.addBytesNotInRange(-1, 3, null);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	Set<Byte> expected = new HashSet<Byte>();
+    	} catch (IllegalArgumentException expected) {}
+
+        Set<Byte> expected = new HashSet<Byte>();
     	try {
     		ByteUtils.addBytesNotInRange(-1, 3, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException ex) {}
+
+        try {
     		ByteUtils.addBytesNotInRange(1, -3, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException ex) {}
+
+        try {
     		ByteUtils.addBytesNotInRange(1, 257, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
-    	
-    	try {
+    	} catch (IllegalArgumentException ex) {}
+
+        try {
     		ByteUtils.addBytesNotInRange(257, -1, expected);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException ex) {};
+    	} catch (IllegalArgumentException ex) {}
 
-    	for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
     		for (int j = 0; j< 256; j++) {
     			final int start = i < j? i : j;
     			final int end   = i < j? j : i;
@@ -764,9 +764,9 @@ public class ByteUtilsTest {
     	try {
     		ByteUtils.addInvertedByteValues((byte) 1, null);
     		fail("Expected illegal argument exception");
-    	} catch (IllegalArgumentException expected) {};
-    	
-    	for (int i = 0; i < 256; i++ ) {
+    	} catch (IllegalArgumentException expected) {}
+
+        for (int i = 0; i < 256; i++ ) {
     		Set<Byte> bytes = new HashSet<Byte>();
     		ByteUtils.addInvertedByteValues((byte) i, bytes);
     		assertEquals("Size of set is 255", 255, bytes.size());
@@ -1707,4 +1707,4 @@ public class ByteUtilsTest {
     	return list;    	
     }
     
-};
+}

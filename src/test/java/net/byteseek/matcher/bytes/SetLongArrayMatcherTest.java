@@ -167,11 +167,11 @@ public class SetLongArrayMatcherTest {
         assertFalse(matcher.matches(reader, -1L));
         assertFalse(matcher.matches(reader, 256L));
         for (Byte byteShouldMatch : bytesMatched) {
-            long bytePosition = byteShouldMatch.byteValue() & 0xff;
+            long bytePosition = byteShouldMatch & 0xff;
             assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(reader, bytePosition));
         }
         for (Byte byteShouldNotMatch : bytesNotMatched) {
-            long bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            long bytePosition = byteShouldNotMatch & 0xff;
             assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(reader, bytePosition));
         }
 
@@ -179,11 +179,11 @@ public class SetLongArrayMatcherTest {
         assertFalse(matcher.matches(BYTE_VALUES, -1));
         assertFalse(matcher.matches(BYTE_VALUES, 256));
         for (Byte byteShouldMatch : bytesMatched) {
-            int bytePosition = byteShouldMatch.byteValue() & 0xff;
+            int bytePosition = byteShouldMatch & 0xff;
             assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(BYTE_VALUES, bytePosition));
         }
         for (Byte byteShouldNotMatch : bytesNotMatched) {
-            int bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            int bytePosition = byteShouldNotMatch & 0xff;
             assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(BYTE_VALUES, bytePosition));
         }
 
@@ -199,11 +199,11 @@ public class SetLongArrayMatcherTest {
         } catch (ArrayIndexOutOfBoundsException expectedIgnore) {}
 
         for (Byte byteShouldMatch : bytesMatched) {
-            int bytePosition = byteShouldMatch.byteValue() & 0xff;
+            int bytePosition = byteShouldMatch & 0xff;
             assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matchesNoBoundsCheck(BYTE_VALUES, bytePosition));
         }
         for (Byte byteShouldNotMatch : bytesNotMatched) {
-            int bytePosition = byteShouldNotMatch.byteValue() & 0xff;
+            int bytePosition = byteShouldNotMatch & 0xff;
             assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matchesNoBoundsCheck(BYTE_VALUES, bytePosition));
         }
 

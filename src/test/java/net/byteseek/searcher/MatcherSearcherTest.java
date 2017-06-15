@@ -30,11 +30,8 @@
  */
 package net.byteseek.searcher;
 
-import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.MatcherSearcher;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * A test of non-search methods in the MatcherSearcher.

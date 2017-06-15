@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -41,13 +40,10 @@ public class IOUtilsTest {
     }
 
     private void testReadEntireStream(File file) throws Exception {
-        InputStream input = new FileInputStream(file);
-        try {
+        try (InputStream input = new FileInputStream(file)) {
             byte[] array = IOUtils.readEntireStream(input);
             assertEquals("Read correct size", file.length(), array.length);
             assertFileBytesEqual(file, array);
-        } finally {
-            input.close();
         }
     }
 

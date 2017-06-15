@@ -97,14 +97,14 @@ public class TwoByteMatcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCollectionOneByte() {
         List<Byte> list = new ArrayList<Byte>();
-        list.add((byte) 00);
+        list.add((byte) 0);
         ByteMatcher matcher = new TwoByteMatcher(list);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCollectionThreeBytes() {
         List<Byte> list = new ArrayList<Byte>();
-        list.add((byte) 00);
+        list.add((byte) 0);
         list.add((byte) 20);
         list.add((byte) 82);
         ByteMatcher matcher = new TwoByteMatcher(list);

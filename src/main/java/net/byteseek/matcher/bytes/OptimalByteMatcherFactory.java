@@ -220,7 +220,7 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
     private static List<Integer> getSortedByteValues(final Set<Byte> byteSet) {
         final List<Integer> sortedByteValues = new ArrayList<Integer>();
         for (final Byte b : byteSet) {
-            sortedByteValues.add(Integer.valueOf(b.byteValue() & 0xFF));
+            sortedByteValues.add(Integer.valueOf(b & 0xFF));
         }
         Collections.sort(sortedByteValues);
         return sortedByteValues;

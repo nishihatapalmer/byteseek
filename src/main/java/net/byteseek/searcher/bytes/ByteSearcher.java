@@ -65,7 +65,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     @Override
     public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final byte searchByte = sequence.byteValue();
+        final byte searchByte = sequence;
         long searchPosition = fromPosition >=0? fromPosition : 0;
         Window window;
         // While we have a window to search in:
@@ -101,7 +101,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final byte searchByte = sequence.byteValue();
+        final byte searchByte = sequence;
         final int lastPosition = toPosition < bytes.length?
                                  toPosition : bytes.length - 1;
         int searchPosition = fromPosition > 0? fromPosition : 0;
@@ -116,7 +116,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     @Override
     public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
-        final byte searchByte = sequence.byteValue();
+        final byte searchByte = sequence;
         long searchPosition = fromPosition;
         Window window;
         // While we have a window to search in:
@@ -150,7 +150,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-        final byte searchByte = sequence.byteValue();
+        final byte searchByte = sequence;
         final int lastPosition = toPosition > 0? toPosition : 0;
         int searchPosition = fromPosition < bytes.length? fromPosition : bytes.length - 1;
         while (searchPosition >= lastPosition) {
@@ -181,7 +181,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
      */
     @Override
     public String toString() {
-        final int value = sequence.byteValue() & 0xFF;
+        final int value = sequence & 0xFF;
         return this.getClass().getSimpleName() + '[' + String.format("%02X", value) + ']';
     }
 

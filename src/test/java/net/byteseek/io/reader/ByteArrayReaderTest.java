@@ -2,8 +2,6 @@ package net.byteseek.io.reader;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class ByteArrayReaderTest {
 
     @Test

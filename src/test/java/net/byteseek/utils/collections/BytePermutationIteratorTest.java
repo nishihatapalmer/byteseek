@@ -100,7 +100,7 @@ public class BytePermutationIteratorTest {
 		try {
 			it.next();
 			fail("Expected a NoSuchElementException");
-		} catch (NoSuchElementException expected) {};
+		} catch (NoSuchElementException expected) {}
 	}
 
 	@Test

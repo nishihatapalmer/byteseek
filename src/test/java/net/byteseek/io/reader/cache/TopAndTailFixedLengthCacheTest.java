@@ -2,8 +2,6 @@ package net.byteseek.io.reader.cache;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class TopAndTailFixedLengthCacheTest {
 
     @Test

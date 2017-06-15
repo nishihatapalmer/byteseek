@@ -1,6 +1,5 @@
 package net.byteseek.compiler.matcher;
 
-import net.byteseek.compiler.regex.RegexCompiler;
 import net.byteseek.matcher.bytes.*;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.parser.ParseException;
@@ -36,11 +35,11 @@ public class MatcherCompilerUtilsTest {
 
     @Test
     public void testIsInverted() throws Exception {
-        ByteNode node = new ByteNode((byte) 00, false);
+        ByteNode node = new ByteNode((byte) 0, false);
         assertFalse(MatcherCompilerUtils.isInverted(node, false));
         assertTrue(MatcherCompilerUtils.isInverted(node, true));
 
-        node = new ByteNode((byte) 00, true);
+        node = new ByteNode((byte) 0, true);
         assertTrue(MatcherCompilerUtils.isInverted(node, false));
         assertFalse(MatcherCompilerUtils.isInverted(node, true));
     }
@@ -108,12 +107,12 @@ public class MatcherCompilerUtilsTest {
 
     @Test
     public void testCreateAnyMatcher() throws Exception {
-        ParseTree node = new ByteNode((byte) 00);
+        ParseTree node = new ByteNode((byte) 0);
         ByteMatcher matcher = MatcherCompilerUtils.createAnyMatcher(node);
         assertEquals("Matcher is an any matcher", AnyByteMatcher.class, matcher.getClass());
 
         try {
-            node = new ByteNode((byte) 00, true);
+            node = new ByteNode((byte) 0, true);
             MatcherCompilerUtils.createAnyMatcher(node);
             fail("Expected a ParseException if attempting to compile an inverted node into an Any Matcher.");
         } catch (ParseException expectedIgnore) {}
@@ -121,7 +120,7 @@ public class MatcherCompilerUtilsTest {
 
     @Test
     public void testCreateAnyMatcherInversion() throws Exception {
-        ParseTree node = new ByteNode((byte) 00);
+        ParseTree node = new ByteNode((byte) 0);
         ByteMatcher matcher = MatcherCompilerUtils.createAnyMatcher(node, false);
         assertEquals("Matcher is an any matcher", AnyByteMatcher.class, matcher.getClass());
 
@@ -130,7 +129,7 @@ public class MatcherCompilerUtilsTest {
             fail("Expected a ParseException if attempting to compile an inverted node into an Any Matcher.");
         } catch (ParseException expectedIgnore) {}
 
-        node = new ByteNode((byte) 00, true);
+        node = new ByteNode((byte) 0, true);
         matcher = MatcherCompilerUtils.createAnyMatcher(node, true);
         assertEquals("Matcher is an any matcher", AnyByteMatcher.class, matcher.getClass());
 
@@ -239,13 +238,13 @@ public class MatcherCompilerUtilsTest {
 
     @Test(expected = ParseException.class)
     public void testNotCorrectRangeType() throws ParseException {
-        ParseTree badNode = new ByteNode((byte) 00);
+        ParseTree badNode = new ByteNode((byte) 0);
         MatcherCompilerUtils.createRangeMatcher(badNode);
     }
 
     @Test(expected = ParseException.class)
     public void testNotCorrectRangeTypeInverted() throws ParseException {
-        ParseTree badNode = new ByteNode((byte) 00);
+        ParseTree badNode = new ByteNode((byte) 0);
         MatcherCompilerUtils.createRangeMatcher(badNode, true);
     }
 
@@ -263,7 +262,7 @@ public class MatcherCompilerUtilsTest {
 
     @Test(expected = ParseException.class)
     public void testNotCorrectRangeOneChild() throws ParseException {
-        ParseTree firstNode  = new ByteNode((byte) 00);
+        ParseTree firstNode  = new ByteNode((byte) 0);
         List<ParseTree> children = new ArrayList<ParseTree>();
         children.add(firstNode);
         ParseTree badNode = new ChildrenNode(ParseTreeType.RANGE, children);
@@ -272,7 +271,7 @@ public class MatcherCompilerUtilsTest {
 
     @Test(expected = ParseException.class)
     public void testNotCorrectRangeOneChildInverted() throws ParseException {
-        ParseTree firstNode  = new ByteNode((byte) 00);
+        ParseTree firstNode  = new ByteNode((byte) 0);
         List<ParseTree> children = new ArrayList<ParseTree>();
         children.add(firstNode);
         ParseTree badNode = new ChildrenNode(ParseTreeType.RANGE, children);
@@ -281,7 +280,7 @@ public class MatcherCompilerUtilsTest {
 
     @Test(expected = ParseException.class)
     public void testNotCorrectRangeThreeChild() throws ParseException {
-        ParseTree firstNode  = new ByteNode((byte) 00);
+        ParseTree firstNode  = new ByteNode((byte) 0);
         List<ParseTree> children = new ArrayList<ParseTree>();
         children.add(firstNode);
         children.add(firstNode);
@@ -292,7 +291,7 @@ public class MatcherCompilerUtilsTest {
 
     @Test(expected = ParseException.class)
     public void testNotCorrectRangeThreeChildInverted() throws ParseException {
-        ParseTree firstNode  = new ByteNode((byte) 00);
+        ParseTree firstNode  = new ByteNode((byte) 0);
         List<ParseTree> children = new ArrayList<ParseTree>();
         children.add(firstNode);
         children.add(firstNode);
@@ -348,8 +347,8 @@ public class MatcherCompilerUtilsTest {
 
     @Test
     public void testCreateByteMatchersFromSet() throws Exception {
-        ParseTree byteNode = new ByteNode((byte) 00);
-        ParseTree inverted = new ByteNode((byte) 00, true);
+        ParseTree byteNode = new ByteNode((byte) 0);
+        ParseTree inverted = new ByteNode((byte) 0, true);
         testSingleSetValue(byteNode, inverted, OneByteMatcher.class, InvertedByteMatcher.class, 1);
 
         // Put this in a nested set - same results expected:

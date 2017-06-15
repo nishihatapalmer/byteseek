@@ -8,7 +8,6 @@ package net.byteseek.compiler.matcher;
 import net.byteseek.parser.Parser;
 import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTreeType;
-import net.byteseek.parser.tree.node.BaseNode;
 import net.byteseek.parser.tree.node.ByteNode;
 import net.byteseek.parser.tree.node.ChildrenNode;
 import net.byteseek.utils.ByteUtils;
@@ -142,7 +141,7 @@ public class SequenceMatcherCompilerTest {
 		ParseTree badChild = new ChildrenNode(ParseTreeType.ZERO_TO_MANY, new ByteNode((byte) 0));
 		ParseTree sequence = new ChildrenNode(ParseTreeType.SEQUENCE, badChild);
 		compiler.compile(sequence);
-	};
+	}
 
 	@Test
 	public void testMultiExpressions() throws Exception {

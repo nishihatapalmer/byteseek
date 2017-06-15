@@ -140,18 +140,18 @@ public class ChildrenNodeTest {
 		try { 
 			node.getByteValue();
 			fail(description + "Expected a ParseException if asked for the byte value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		try { 
 			node.getIntValue();
 			fail(description + "Expected a ParseException if asked for the int value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		try { 
 			node.getTextValue();
 			fail(description + "Expected a ParseException if asked for the text value");
-		} catch (ParseException allIsFine) {};
-		
+		} catch (ParseException allIsFine) {}
+
 		assertEquals(description + "Child list has correct number of children " + numChildren, numChildren, node.getNumChildren());
 		for (int i = 0; i < numChildren; i++) {
 			ParseTree child = node.getChild(i);
@@ -165,7 +165,7 @@ public class ChildrenNodeTest {
 			try {
 				iterator.remove();
 				fail("Expected an unsupportedoperationexception");
-			} catch (UnsupportedOperationException expected) {};
+			} catch (UnsupportedOperationException expected) {}
 		}
 		
 		int i = 0;
@@ -178,18 +178,18 @@ public class ChildrenNodeTest {
 		try {
 			node.getChild(-1);
 			fail("Expected an indexoutofbounds exception");
-		} catch (IndexOutOfBoundsException expected) {};
-		
+		} catch (IndexOutOfBoundsException expected) {}
+
 		try {
 			node.getChild(numChildren);
 			fail("Expected an indexoutofbounds exception");
-		} catch (IndexOutOfBoundsException expected) {};
-		
+		} catch (IndexOutOfBoundsException expected) {}
+
 		try {
 			node.getChild(numChildren + 1);
 			fail("Expected an indexoutofbounds exception");
-		} catch (IndexOutOfBoundsException expected) {};
-			
+		} catch (IndexOutOfBoundsException expected) {}
+
 		assertTrue("toString contains class name", node.toString().contains(node.getClass().getSimpleName()));
 	}
 

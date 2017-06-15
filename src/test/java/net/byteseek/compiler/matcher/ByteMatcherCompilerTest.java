@@ -1,10 +1,6 @@
 package net.byteseek.compiler.matcher;
 
 import net.byteseek.compiler.CompileException;
-import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
-import net.byteseek.matcher.sequence.ByteSequenceMatcher;
-import net.byteseek.matcher.sequence.FixedGapMatcher;
-import net.byteseek.matcher.sequence.SequenceSequenceMatcher;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.node.ByteNode;
@@ -70,7 +66,7 @@ public class ByteMatcherCompilerTest {
         ParseTree badChild = new ChildrenNode(ParseTreeType.ZERO_TO_MANY, new ByteNode((byte) 0));
         ParseTree sequence = new ChildrenNode(ParseTreeType.SEQUENCE, badChild);
         compiler.compile(sequence);
-    };
+    }
 
 
     @Test

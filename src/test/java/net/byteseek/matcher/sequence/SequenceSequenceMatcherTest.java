@@ -635,7 +635,6 @@ public class SequenceSequenceMatcherTest {
 			fail("expected an unsupported operation exception removing from the iterator");
 		} catch (UnsupportedOperationException ex) {
 		}
-		;
 
 		assertTrue("Byte matcher iterator must always have at least one element [" + expected + ']', iterator.hasNext());
 		int position = 0;
@@ -655,7 +654,6 @@ public class SequenceSequenceMatcherTest {
 			fail("expected NoSuchElementException");
 		} catch (NoSuchElementException ex) {
 		}
-		;
 	}
 
 

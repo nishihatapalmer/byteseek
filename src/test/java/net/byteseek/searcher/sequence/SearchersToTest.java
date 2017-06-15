@@ -35,7 +35,6 @@ import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.parser.regex.RegexParser;
-import org.junit.Test;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;

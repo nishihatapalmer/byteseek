@@ -326,7 +326,7 @@ public class ReaderInputStreamTest {
         public long length() throws IOException {
             return 0;
         }
-    };
+    }
 
     private FileInputStream getFileInputStream(final String resourceName) throws IOException {
         return new FileInputStream(getFile(resourceName));

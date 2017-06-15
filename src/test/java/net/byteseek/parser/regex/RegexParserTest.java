@@ -770,12 +770,12 @@ public class RegexParserTest {
 		expectParseException("nothing to quantify", "*");
 		expectParseException("double many", "01**");
 		
-		testByte(testZeroToMany("01*"),     (byte) 01, false);
-		testByte(testZeroToMany("(01)*"),   (byte) 01, false);
-		testByte(testZeroToMany("(01 *)"),  (byte) 01, false);
-		testByte(testZeroToMany("^01*"),    (byte) 01, true);
-		testByte(testZeroToMany("(^01)*"),  (byte) 01, true);
-		testByte(testZeroToMany("(^01 *)"), (byte) 01, true);
+		testByte(testZeroToMany("01*"),     (byte) 1, false);
+		testByte(testZeroToMany("(01)*"),   (byte) 1, false);
+		testByte(testZeroToMany("(01 *)"),  (byte) 1, false);
+		testByte(testZeroToMany("^01*"),    (byte) 1, true);
+		testByte(testZeroToMany("(^01)*"),  (byte) 1, true);
+		testByte(testZeroToMany("(^01 *)"), (byte) 1, true);
 		
 		testAllBitmask(testZeroToMany("&fe*"),      (byte) 0xfe, false);
 		testAllBitmask(testZeroToMany("( &e1 )*"),  (byte) 0xe1, false);
@@ -822,12 +822,12 @@ public class RegexParserTest {
 		expectParseException("nothing to quantify", "+");
 		expectParseException("double many", "01++");
 		
-		testByte(testOneToMany("01+"),     (byte) 01, false);
-		testByte(testOneToMany("(01)+"),   (byte) 01, false);
-		testByte(testOneToMany("(01 +)"),  (byte) 01, false);
-		testByte(testOneToMany("^01+"),    (byte) 01, true);
-		testByte(testOneToMany("(^01)+"),  (byte) 01, true);
-		testByte(testOneToMany("(^01 +)"), (byte) 01, true);
+		testByte(testOneToMany("01+"),     (byte) 1, false);
+		testByte(testOneToMany("(01)+"),   (byte) 1, false);
+		testByte(testOneToMany("(01 +)"),  (byte) 1, false);
+		testByte(testOneToMany("^01+"),    (byte) 1, true);
+		testByte(testOneToMany("(^01)+"),  (byte) 1, true);
+		testByte(testOneToMany("(^01 +)"), (byte) 1, true);
 		
 		testAllBitmask(testOneToMany("&fe+"),      (byte) 0xfe, false);
 		testAllBitmask(testOneToMany("( &e1 )+"),  (byte) 0xe1, false);
@@ -873,12 +873,12 @@ public class RegexParserTest {
 		expectParseException("nothing to make optional", "?");
 		expectParseException("double optional", "01??");
 		
-		testByte(testOptional("01?"),    (byte) 01, false);
-		testByte(testOptional("(01)?"),  (byte) 01, false);
-		testByte(testOptional("(01 ?)"), (byte) 01, false);
-		testByte(testOptional("^01?"),    (byte) 01, true);
-		testByte(testOptional("(^01)?"),  (byte) 01, true);
-		testByte(testOptional("(^01 ?)"), (byte) 01, true);
+		testByte(testOptional("01?"),    (byte) 1, false);
+		testByte(testOptional("(01)?"),  (byte) 1, false);
+		testByte(testOptional("(01 ?)"), (byte) 1, false);
+		testByte(testOptional("^01?"),    (byte) 1, true);
+		testByte(testOptional("(^01)?"),  (byte) 1, true);
+		testByte(testOptional("(^01 ?)"), (byte) 1, true);
 
 		testAllBitmask(testOptional("&fe?"),      (byte) 0xfe, false);
 		testAllBitmask(testOptional("( &e1 )?"),  (byte) 0xe1, false);
@@ -950,8 +950,8 @@ public class RegexParserTest {
 		testCaseInsensitiveString(testRepeats("`html`{45}", 45), "html");
 		testCaseInsensitiveString(testRepeats("`html`\r{45}", 45), "html");
 		
-		testByteSequence(testRepeats("(01 02 03){32}", 32), new byte[] {(byte)01, (byte)02, (byte)03});
-		testByteSequence(testRepeats(" ( 01 02 03 )   {32} ", 32), new byte[] {(byte)01, (byte)02, (byte)03});
+		testByteSequence(testRepeats("(01 02 03){32}", 32), new byte[] {(byte) 1, (byte) 2, (byte) 3});
+		testByteSequence(testRepeats(" ( 01 02 03 )   {32} ", 32), new byte[] {(byte) 1, (byte) 2, (byte) 3});
 		
 		testAny(testRepeats(".{3}", 3));
 		testAny(testRepeats(".   {3}", 3));
@@ -1003,8 +1003,8 @@ public class RegexParserTest {
 		testCaseInsensitiveString(testRepeatMinToMany("`html`{45,*}", 45), "html");
 		testCaseInsensitiveString(testRepeatMinToMany("`html`\r{45,*}", 45), "html");
 		
-		testByteSequence(testRepeatMinToMany("(01 02 03){32,*}", 32), new byte[] {(byte)01, (byte)02, (byte)03});
-		testByteSequence(testRepeatMinToMany(" ( 01 02 03 )   {32,*} ", 32), new byte[] {(byte)01, (byte)02, (byte)03});
+		testByteSequence(testRepeatMinToMany("(01 02 03){32,*}", 32), new byte[] {(byte) 1, (byte) 2, (byte) 3});
+		testByteSequence(testRepeatMinToMany(" ( 01 02 03 )   {32,*} ", 32), new byte[] {(byte) 1, (byte) 2, (byte) 3});
 		
 		testAny(testRepeatMinToMany(".{3,*}", 3));
 		testAny(testRepeatMinToMany(".   {3,*}", 3));
@@ -1056,8 +1056,8 @@ public class RegexParserTest {
 		testCaseInsensitiveString(testRepeatMinToMax("`html`{45,3}", 45, 3), "html");
 		testCaseInsensitiveString(testRepeatMinToMax("`html`\r{45,54}", 45, 54), "html");
 		
-		testByteSequence(testRepeatMinToMax("(01 02 03){32,987}", 32, 987), new byte[] {(byte)01, (byte)02, (byte)03});
-		testByteSequence(testRepeatMinToMax(" ( 01 02 03 )   {32,23} ", 32, 23), new byte[] {(byte)01, (byte)02, (byte)03});
+		testByteSequence(testRepeatMinToMax("(01 02 03){32,987}", 32, 987), new byte[] {(byte) 1, (byte) 2, (byte) 3});
+		testByteSequence(testRepeatMinToMax(" ( 01 02 03 )   {32,23} ", 32, 23), new byte[] {(byte) 1, (byte) 2, (byte) 3});
 		
 		testAny(testRepeatMinToMax(".{3,6}", 3, 6));
 		testAny(testRepeatMinToMax(".   {3,10}", 3, 10));

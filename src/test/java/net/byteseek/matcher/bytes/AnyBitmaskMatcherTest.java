@@ -364,7 +364,7 @@ public class AnyBitmaskMatcherTest {
         assertArrayEquals("0xFF matches all bytes except zero", expected, matcher.getMatchingBytes());
 
         matcher = new AnyBitmaskMatcher(b(255), true);
-        expected = new byte[] {(byte) 00};
+        expected = new byte[] {(byte) 0};
         assertArrayEquals("inverted 0xFF matches zero only", expected, matcher.getMatchingBytes());
 
         matcher = new AnyBitmaskMatcher(b(0));

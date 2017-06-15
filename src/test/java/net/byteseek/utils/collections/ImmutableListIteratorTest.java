@@ -46,8 +46,8 @@ public class ImmutableListIteratorTest {
 		try {
 			ImmutableListIterator<Integer> test = new ImmutableListIterator<Integer>(null);
 			fail("Expected an IllegalArgumentException");
-		} catch (IllegalArgumentException expected) {};
-		
+		} catch (IllegalArgumentException expected) {}
+
 		ImmutableListIterator<Integer> test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
 			
 		List<Integer> testList = new ArrayList<Integer>();
@@ -81,8 +81,8 @@ public class ImmutableListIteratorTest {
 		try {
 			test.next();
 			fail("Expected a NoSuchElementException");
-		} catch (NoSuchElementException expected) {};
-		
+		} catch (NoSuchElementException expected) {}
+
 		test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
 		assertFalse("Empty list does not have next", test.hasNext());
 		
@@ -105,15 +105,15 @@ public class ImmutableListIteratorTest {
 		try {
 			test.remove();
 			fail("Expected an UnsupportedOperationException");
-		} catch (UnsupportedOperationException expected) {};
-		
+		} catch (UnsupportedOperationException expected) {}
+
 		test = new ImmutableListIterator<Integer>(new ArrayList<Integer>());
 		try {
 			test.remove();
 			fail("Expected an UnsupportedOperationException");
-		} catch (UnsupportedOperationException expected) {};
+		} catch (UnsupportedOperationException expected) {}
 
-		
+
 		List<Integer> testList = new ArrayList<Integer>();
 		testList.add(1);
 		testList.add(257);
@@ -124,7 +124,7 @@ public class ImmutableListIteratorTest {
 			try {
 				test.remove();
 				fail("Expected an UnsupportedOperationException");
-			} catch (UnsupportedOperationException expected) {};
+			} catch (UnsupportedOperationException expected) {}
 			test.next();
 		}
 	}
