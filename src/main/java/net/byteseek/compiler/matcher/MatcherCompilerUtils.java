@@ -118,6 +118,7 @@ public final class MatcherCompilerUtils {
 	 * @throws ParseException if the node would end up inverted
 	 *                        (inverted Any nodes are not allowed as they would match nothing).
 	 */
+	@SuppressWarnings("SameReturnValue")
 	public static ByteMatcher createAnyMatcher(final ParseTree node, final boolean currentInversion) throws ParseException {
 		if (isInverted(node, currentInversion)) {
 			throw new ParseException("Cannot invert the value of the Any matcher - matching nothing is not permitted.");
