@@ -77,15 +77,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  * @author Matt Palmer
  */
 
-//TODO: examine performance with large byte classes, grouped and separated.
-//TODO: tests for all code paths through processing sequences, including single bytes, sequences, including byte classes and gaps.
-
 public final class QgramFilter4Searcher extends AbstractQgramSearcher {
-
-    //TODO: passes current tests, but is broken.  If the qGramStartPos in the searchinfo isn't at the very end (or start) of the
-    //      pattern (because of pathological byte classes), then it will break.  Modify search algorithms to take account of the
-    //      fact that we may not have qgrams for the entire pattern.  Have to stop testing after that point and fall back to
-    //      verification of a match (with a correspondingly small shift as a result).
 
     /*************
      * Constants *
@@ -243,20 +235,20 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info      = forwardSearchInfo.get();
-        final int[] BITMASKS       = info.table;
-        final int   SHIFT          = info.shift;
-        final int   PATTERN_LENGTH = info.finalQgramPos + 1; // the effective search length is the end of the last qgram we could process.
-        final int   MASK           = BITMASKS.length - 1;    // BITMASKS will always be a power of two size.
+        final SearchInfo info     = forwardSearchInfo.get();
+        final int[] BITMASKS      = info.table;
+        final int   SHIFT         = info.shift;
+        final int   SEARCH_LENGTH = info.finalQgramPos + 1; // length of pattern to search with is one greater than the final qgram position.
+        final int   MASK          = BITMASKS.length - 1;    // BITMASKS will always be a power of two size.
 
         // Determine safe shifts, starts and ends:
-        final int PATTERN_MINUS_QLEN   = PATTERN_LENGTH - QLEN;
-        final int SEARCH_SHIFT         = PATTERN_MINUS_QLEN + 1;
-        final int SEARCH_START         = (fromPosition > 0? fromPosition : 0) + PATTERN_MINUS_QLEN;
-        final int TO_END_POS           = toPosition + PATTERN_LENGTH - 1;
-        final int LAST_MATCH_POS       = bytes.length - localSequence.length(); // length may not be same as pattern_length for searching.
-        final int LAST_TEXT_POSITION   = LAST_MATCH_POS + PATTERN_LENGTH - 1;
-        final int SEARCH_END           = (TO_END_POS < LAST_TEXT_POSITION? TO_END_POS : LAST_TEXT_POSITION) - QLEN + 1;
+        final int SLEN_MINUS_QLEN    = SEARCH_LENGTH - QLEN;
+        final int SEARCH_SHIFT       = SLEN_MINUS_QLEN + 1;
+        final int SEARCH_START       = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
+        final int TO_END_POS         = toPosition + SEARCH_LENGTH - 1;
+        final int LAST_MATCH_POS     = bytes.length - localSequence.length(); // length may not be same as pattern_length for searching.
+        final int LAST_TEXT_POSITION = LAST_MATCH_POS + SEARCH_LENGTH - 1;
+        final int SEARCH_END         = (TO_END_POS < LAST_TEXT_POSITION? TO_END_POS : LAST_TEXT_POSITION) - QLEN + 1;
 
         // Search forwards.
         for (int pos = SEARCH_START; pos <= SEARCH_END; pos += SEARCH_SHIFT) {
@@ -272,7 +264,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
             MATCH: if (qGramMatch != 0) {
 
                 // Scan back across the other q-grams in the text to see if they also appear in the pattern:
-                final int PATTERN_START_POS   = pos - PATTERN_MINUS_QLEN;
+                final int PATTERN_START_POS   = pos - SLEN_MINUS_QLEN;
                 final int FIRST_QGRAM_END_POS = PATTERN_START_POS + QLEN - 1;
                 for (pos -= QLEN; pos >= FIRST_QGRAM_END_POS; pos -= QLEN) {
 
@@ -310,17 +302,17 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SequenceMatcher localSequence = sequence;
 
         // Get the pre-processed data needed to search:
-        final SearchInfo info      = forwardSearchInfo.get();
-        final int[] BITMASKS       = info.table;
-        final int   SHIFT          = info.shift;
-        final int   PATTERN_LENGTH = info.finalQgramPos;
-        final int   MASK           = BITMASKS.length - 1; // BITMASKS is always a power of two size.
+        final SearchInfo info     = forwardSearchInfo.get();
+        final int[] BITMASKS      = info.table;
+        final int   SHIFT         = info.shift;
+        final int   SEARCH_LENGTH = info.finalQgramPos + 1; // length  of pattern to search with is one greater than the final qgram pos we use.
+        final int   MASK          = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Initialise window search:
-        final int PATTERN_MINUS_QLEN = PATTERN_LENGTH - QLEN;
-        final int SEARCH_SHIFT       = PATTERN_MINUS_QLEN + 1;
-        final long SEARCH_START      = (fromPosition > 0? fromPosition : 0) + PATTERN_MINUS_QLEN;
-        final long TO_END_POS        = toPosition + PATTERN_MINUS_QLEN;
+        final int SLEN_MINUS_QLEN = SEARCH_LENGTH - QLEN;
+        final int SEARCH_SHIFT    = SLEN_MINUS_QLEN + 1;
+        final long SEARCH_START   = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
+        final long TO_END_POS     = toPosition + SLEN_MINUS_QLEN;
 
         // Search forwards.
         Window window;
@@ -378,7 +370,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
             MATCH: if (qGramMatch != 0) {
 
                 // Scan back across the other q-grams in the text to see if they also appear in the pattern:
-                final long PATTERN_START_POS   = pos - PATTERN_MINUS_QLEN;
+                final long PATTERN_START_POS   = pos - SLEN_MINUS_QLEN;
                 final long FIRST_QGRAM_END_POS = PATTERN_START_POS + QLEN - 1;
 
                 while (pos >= FIRST_QGRAM_END_POS) { // Process all qgrams back to the first qgram end pos:
@@ -449,53 +441,50 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
     @Override
     protected int doSearchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
-
         // Get local references to member fields which are repeatedly accessed:
         final SequenceMatcher localSequence = sequence;
-        final int PATTERN_LENGTH        = localSequence.length();
 
         // Get the pre-processed data needed to search:
         final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
+        final int SEARCH_LENGTH = info.finalQgramPos + 1;
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Determine safe shifts, starts and ends:
-        final int PATTERN_MINUS_QLEN      = PATTERN_LENGTH - QLEN;
-        final int SEARCH_SHIFT            = PATTERN_MINUS_QLEN + 1;
-        final int TWO_QGRAMS_BACK_AND_ONE = SEARCH_SHIFT - QLEN;
-        final int LAST_MATCH_POSITION     = bytes.length - PATTERN_LENGTH;
-        final int SEARCH_START            = fromPosition < LAST_MATCH_POSITION?
-                                            fromPosition : LAST_MATCH_POSITION;
-        final int SEARCH_END              = toPosition > 0?
-                                            toPosition : 0;
+        final int SLEN_MINUS_QLEN     = SEARCH_LENGTH - QLEN;
+        final int SEARCH_SHIFT        = SLEN_MINUS_QLEN + 1;
+        final int TWO_QGRAMS_FROM_END = SLEN_MINUS_QLEN - QLEN;
+        final int LAST_MATCH_POSITION = bytes.length - localSequence.length();
+        final int SEARCH_START        = fromPosition < LAST_MATCH_POSITION? fromPosition : LAST_MATCH_POSITION;
+        final int SEARCH_END          = toPosition > 0? toPosition : 0;
 
         // Search backwards.  pos = place aligned with very start of pattern in the text (beginning of first q-gram).
         for (int pos = SEARCH_START; pos >= SEARCH_END; pos -= SEARCH_SHIFT) {
 
             // Get the hash for the q-gram in the text aligned with the end of the pattern:
-            int qGramHash =                        (bytes[pos + 3] & 0xFF);
-            qGramHash     = (qGramHash << SHIFT) + (bytes[pos + 2] & 0xFF);
+            int qGramHash =                        (bytes[pos    ] & 0xFF);
             qGramHash     = (qGramHash << SHIFT) + (bytes[pos + 1] & 0xFF);
-            qGramHash     = (qGramHash << SHIFT) + (bytes[pos]     & 0xFF);
+            qGramHash     = (qGramHash << SHIFT) + (bytes[pos + 2] & 0xFF);
+            qGramHash     = (qGramHash << SHIFT) + (bytes[pos + 3] & 0xFF);
 
             // If there is any match to this q-gram in the pattern continue checking, otherwise shift past it.
             int qGramMatch = BITMASKS[qGramHash & MASK];
             MATCH: if (qGramMatch != 0) {
 
                 // Scan forwards across the other complete sequential q-grams in the text to see if they also appear in the pattern:
-                final int patternStartPos = pos;
-                final int LAST_PATTERN_SEARCH_POS = pos + TWO_QGRAMS_BACK_AND_ONE;
+                final int PATTERN_START_POS = pos;
+                final int LAST_FILTER_POS   = pos + TWO_QGRAMS_FROM_END;
 
                 // Loop needs to stop when there are no more complete q-grams to process.  So pos must be the start position of the
-                // last *complete* q-gram in the pattern.
-                for (pos += QLEN; pos <= LAST_PATTERN_SEARCH_POS; pos += QLEN) {
+                // last *complete* q-gram in the pattern, and last filter pos is the last position it's safe to add another QLEN.
+                for (pos += QLEN; pos <= LAST_FILTER_POS; pos += QLEN) {
 
                     // Get the hash for the q-gram in the text aligned with the next position back:
-                    qGramHash =                        (bytes[pos + 3] & 0xFF);
-                    qGramHash = (qGramHash << SHIFT) + (bytes[pos + 2] & 0xFF);
+                    qGramHash =                        (bytes[pos    ] & 0xFF);
                     qGramHash = (qGramHash << SHIFT) + (bytes[pos + 1] & 0xFF);
-                    qGramHash = (qGramHash << SHIFT) + (bytes[pos]     & 0xFF);
+                    qGramHash = (qGramHash << SHIFT) + (bytes[pos + 2] & 0xFF);
+                    qGramHash = (qGramHash << SHIFT) + (bytes[pos + 3] & 0xFF);
 
                     // If there is no match to the q-gram (in the same phase as the current q-gram match), shift past it.
                     qGramMatch &= BITMASKS[qGramHash & MASK];
@@ -504,17 +493,16 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
                 // All complete q-grams in the text matched one somewhere in the pattern.
                 // Verify whether we have an actual match in any of the qgram start positions:
-                final int lastTestPos = patternStartPos - QLEN + 1; // tests are BACK from the start of the pattern.
-                final int lastMatchPos = lastTestPos > SEARCH_END?
-                                         lastTestPos : SEARCH_END;
-                for (int matchPos = patternStartPos; matchPos >= lastMatchPos; matchPos--) {
+                final int LAST_VERIFY_POS = PATTERN_START_POS - QLEN + 1; // tests are BACK from the start of the pattern.
+                final int LAST_MATCH_POS  = LAST_VERIFY_POS > SEARCH_END? LAST_VERIFY_POS : SEARCH_END;
+                for (int matchPos = PATTERN_START_POS; matchPos >= LAST_MATCH_POS; matchPos--) {
                     if (localSequence.matchesNoBoundsCheck(bytes, matchPos)) {
                         return matchPos;
                     }
                 }
 
-                // No match - shift one back past the positions we have just verified (main loop then substracts SEARCH_SHIFT)
-                pos = lastMatchPos - 1 + SEARCH_SHIFT;
+                // No match - shift one back past the positions we have just verified
+                pos = LAST_MATCH_POS - 1 + SEARCH_SHIFT; // main loop then substracts SEARCH_SHIFT, so we have LAST_MATCH_POS - 1.
             }
         }
         return NO_MATCH;
@@ -530,15 +518,14 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
+        final int SEARCH_LENGTH = info.finalQgramPos + 1;
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Initialise window search:
-        final int PATTERN_LENGTH     = localSequence.length();
-        final int PATTERN_MINUS_QLEN = PATTERN_LENGTH - QLEN;
-        final int SEARCH_SHIFT       = PATTERN_MINUS_QLEN + 1;
-        final int TWO_QGRAMS_BACK_AND_ONE = SEARCH_SHIFT - QLEN;
-        final long SEARCH_END        = toPosition > 0?
-                                       toPosition : 0;
+        final int SLEN_MINUS_QLEN = SEARCH_LENGTH - QLEN;
+        final int SEARCH_SHIFT    = SLEN_MINUS_QLEN + 1;
+        final int TWO_QGRAMS_BACK = SLEN_MINUS_QLEN - QLEN;
+        final long SEARCH_END     = toPosition > 0? toPosition : 0;
 
         // Search backwards, pos is aligned with very start of pattern in the text.
         Window window;
@@ -553,69 +540,59 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
             int lastWindowPos = window.length() - 1;
 
             // calculate qgram hash, possibly crossing into next window:
-            int qGramHash;
+            // first byte of qgram is always within the current window (position we originally obtained):
+            int qGramHash = array[arrayPos] & 0xFF;
             switch (lastWindowPos - arrayPos) {
                 case 0 : { // three hash bytes lie in the next window:
-                    if ((qGramHash = reader.readByte(pos + 3)) < 0) { // no window at this furthest position
-                        return NO_MATCH;
-                    }
-                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 2));
                     qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 1));
+                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 2));
+                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 3));
                     break;
                 }
                 case 1 : { // two hash bytes lie in the next window:
-                    if ((qGramHash = reader.readByte(pos + 3)) < 0) { // no window at this furthest position
-                        return NO_MATCH;
-                    }
-                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 2));
                     qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
+                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 2));
+                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 3));
                     break;
                 }
                 case 2 : { // one hash byte lies in the next window:
-                    if ((qGramHash = reader.readByte(pos + 3)) < 0) { // no window at this furthest position
-                        return NO_MATCH;
-                    }
-                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
                     qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
+                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
+                    qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 3));
                     break;
                 }
                 default: { // all bytes of qgram are in this window:
-                    qGramHash =                        (array[arrayPos + 3] & 0xFF);
-                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
                     qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
+                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
+                    qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 3] & 0xFF);
                     break;
                 }
             }
-
-            // first byte of qgram is always within the current window (position we originally obtained):
-            qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
 
             // If there is any match to this q-gram in the pattern continue checking, otherwise shift past it (main loop)
             int qGramMatch = BITMASKS[qGramHash & MASK];
             MATCH: if (qGramMatch != 0) {
 
                 // Scan forward across the other q-grams in the text to see if they also appear in the pattern:
-                final long PATTERN_START_POS    = pos;
-                final long LAST_PATTERN_SEARCH_POS = PATTERN_START_POS + TWO_QGRAMS_BACK_AND_ONE;
+                final long PATTERN_START_POS = pos;
+                final long LAST_FILTER_POS   = PATTERN_START_POS + TWO_QGRAMS_BACK;
 
-                while (pos <= LAST_PATTERN_SEARCH_POS) { // Process all qgrams up to just moving into the last qgram:
+                while (pos <= LAST_FILTER_POS) { // Process all qgrams up to the last position where it's safe to add another QLEN.
 
                     final int  LAST_ARRAY_SEARCH_POS = lastWindowPos - QLEN + 1; // can only search in array up to QLEN - 1 from end.
                     final int  AVAILABLE_IN_ARRAY    = LAST_ARRAY_SEARCH_POS - arrayPos;
-                    final long REMAINING_SEARCH      = LAST_PATTERN_SEARCH_POS - pos;
+                    final long REMAINING_SEARCH      = LAST_FILTER_POS - pos;
                     final int  ARRAY_SEARCH_END      = REMAINING_SEARCH < AVAILABLE_IN_ARRAY?
                                      (int) (arrayPos + REMAINING_SEARCH) : LAST_ARRAY_SEARCH_POS;
 
                     // Search forwards in the current array for matching q-grams:
-                    for (pos += QLEN, arrayPos += QLEN;
-                         arrayPos <= ARRAY_SEARCH_END;
-                         pos += QLEN, arrayPos += QLEN) {
+                    for (pos += QLEN, arrayPos += QLEN; arrayPos <= ARRAY_SEARCH_END; pos += QLEN, arrayPos += QLEN) {
 
                         // Get the hash for the q-gram in the text aligned with the next position back:
-                        qGramHash = (array[arrayPos + 3] & 0xFF);
-                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
+                        qGramHash =                        (array[arrayPos    ] & 0xFF);
                         qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
-                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
+                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
+                        qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 3] & 0xFF);
 
                         // If there is no match to the q-gram (in the same phase as the current q-gram match), shift past it.
                         qGramMatch &= BITMASKS[qGramHash & MASK];
@@ -623,17 +600,15 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                     }
 
                     // Finished processing this window - is there any more to do?
-                    if (pos <= LAST_PATTERN_SEARCH_POS) {
+                    if (pos <= LAST_FILTER_POS) {
 
                         // Check for a qgram which crosses into next window:
                         if (arrayPos <= lastWindowPos) { // qgram crosses into previous window:
-                            qGramHash = reader.readByte(pos + 3);
-                            if (qGramHash < 0) {
-                                return NO_MATCH; // No window beyond this one - no match possible.
-                            }
-                            qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 2));
+
+                            qGramHash =                         reader.readByte(pos    );
                             qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 1));
-                            qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos));
+                            qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 2));
+                            qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 3));
                             qGramMatch &= BITMASKS[qGramHash & MASK];
                             if (qGramMatch == 0) break MATCH;
                             pos += QLEN;
@@ -642,7 +617,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                         // Now we are in another window - get window details:
                         window = reader.getWindow(pos);
                         if (window == null) { // Should not happen given how this method is called, but still test.
-                            break MATCH; // cannot match here if there is no previous window to match in.
+                            break MATCH; // cannot match here if there is no next window to match in.
                         }
                         array         = window.getArray();
                         arrayPos      = reader.getWindowOffset(pos);
@@ -832,9 +807,9 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
             int num2 = localSequence.getNumBytesAtPosition(1);
             int num3 = localSequence.getNumBytesAtPosition(2);
 
-            // Scan forwards along the pattern, counting qgrams as we go.
+            // Scan forwards along the pattern, counting qgrams as we go, stop if there are too many.
             int totalQgrams = 0;
-            int finalQgramPos = 0;
+            int finalQgramPos = PATTERN_LENGTH - 1;
             for (int qGramEndPos = QLEN - 1; qGramEndPos < PATTERN_LENGTH; qGramEndPos++) {
                 // Calculate total qgrams as we scan along:
                 num0 = num1; num1 = num2; num2 = num3;                     // shift byte counts along.
@@ -884,7 +859,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
             // Process all the qgrams in the pattern from the qGram start pos to the qgram end pos (last qgram we processed).
             int hashValue = -1;
-            for (int qGramEnd = QLEN + 1; qGramEnd <= qGramEndPos; qGramEnd--) {
+            for (int qGramEnd = QLEN - 1; qGramEnd <= qGramEndPos; qGramEnd++) {
                 // Get the byte arrays for the qGram at the current qGramStart:
                 bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                         // shift byte arrays along one.
                 bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
