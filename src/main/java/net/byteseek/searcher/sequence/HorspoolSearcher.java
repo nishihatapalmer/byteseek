@@ -365,7 +365,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
                 totalBytes += numBytes;
                 // Stop if we execeed the max bytes, or the bytes for the current position would overwrite everything after it.
                 if (totalBytes > MAX_BYTES || numBytes == 256 ) {
-                    maxShift = sequenceLength - position; //TODO: check correct.
+                    maxShift = sequenceLength - position;
                     break;
                 }
             }
