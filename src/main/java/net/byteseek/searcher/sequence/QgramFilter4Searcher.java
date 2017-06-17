@@ -378,6 +378,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                     // Calculate the last position we can search in the current window array:
                     // TODO: can a position within the pattern be before the search end...?
                     final long DISTANCE_TO_FIRST_QGRAM_END_POS = pos - FIRST_QGRAM_END_POS;
+                    //TODO: bug - we go BACK a qlen if we're at this position, so last position must be QLEN?
                     final int  LAST_ARRAY_SEARCHPOS = DISTANCE_TO_FIRST_QGRAM_END_POS <= arrayPos?
                                                 (int) (arrayPos - DISTANCE_TO_FIRST_QGRAM_END_POS) : 0;
 
@@ -576,11 +577,11 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
                 while (pos <= LAST_FILTER_POS) { // Process all qgrams up to the last position where it's safe to add another QLEN.
 
-                    final int  LAST_ARRAY_SEARCH_POS = lastWindowPos - QLEN + 1; // can only search in array up to QLEN - 1 from end.
-                    final int  AVAILABLE_IN_ARRAY    = LAST_ARRAY_SEARCH_POS - arrayPos;
+                    final int  LAST_SAFE_ARRAY_POS   = lastWindowPos - QLEN - QLEN + 1;
+                    final int  AVAILABLE_IN_ARRAY    = LAST_SAFE_ARRAY_POS - arrayPos;
                     final long REMAINING_SEARCH      = LAST_FILTER_POS - pos;
                     final int  ARRAY_SEARCH_END      = REMAINING_SEARCH < AVAILABLE_IN_ARRAY?
-                                     (int) (arrayPos + REMAINING_SEARCH) : LAST_ARRAY_SEARCH_POS;
+                                     (int) (arrayPos + REMAINING_SEARCH) : LAST_SAFE_ARRAY_POS;
 
                     // Search forwards in the current array for matching q-grams:
                     for (pos += QLEN, arrayPos += QLEN; arrayPos <= ARRAY_SEARCH_END; pos += QLEN, arrayPos += QLEN) {
