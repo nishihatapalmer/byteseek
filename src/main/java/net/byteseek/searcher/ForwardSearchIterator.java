@@ -83,17 +83,12 @@ public class ForwardSearchIterator implements
 	 * {@link net.byteseek.io.reader.WindowReader}, searching forwards from the
 	 * position specified in the WindowReader to the end of the WindowReader.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param reader
-	 *            The WindowReader to search in.
-	 * @param fromPosition
-	 *            The position to start searching forwards from.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or WindowReader is null.
+	 * @param searcher     The Searcher to use.
+	 * @param reader       The WindowReader to search in.
+	 * @param fromPosition The position to start searching forwards from.
+	 * @throws IllegalArgumentException if the Searcher or WindowReader is null.
 	 */
-	public ForwardSearchIterator(final Searcher searcher,
-			final WindowReader reader, final long fromPosition) {
+	public ForwardSearchIterator(final Searcher searcher, final WindowReader reader, final long fromPosition) {
 		this(searcher, fromPosition, Long.MAX_VALUE, reader);
 	}
 
@@ -102,19 +97,13 @@ public class ForwardSearchIterator implements
 	 * {@link net.byteseek.io.reader.WindowReader}, searching forwards from the
 	 * position specified to the final position.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param fromPosition
-	 *            The position to start searching forwards from.
-	 * @param toPosition
-	 *            The final position to search up to in the WindowReader.
-	 * @param reader
-	 *            The WindowReader to search in.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or WindowReader is null.
+	 * @param searcher     The Searcher to use.
+	 * @param fromPosition The position to start searching forwards from.
+	 * @param toPosition   The final position to search up to in the WindowReader.
+	 * @param reader       The WindowReader to search in.
+	 * @throws IllegalArgumentException if the Searcher or WindowReader is null.
 	 */
-	public ForwardSearchIterator(final Searcher searcher,
-			final long fromPosition, final long toPosition, final WindowReader reader) {
+	public ForwardSearchIterator(final Searcher searcher, final long fromPosition, final long toPosition, final WindowReader reader) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(reader, "reader");
 		this.searcher = searcher;
@@ -129,12 +118,9 @@ public class ForwardSearchIterator implements
 	 * array, searching forwards from the start of the array to the end of the
 	 * array.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param bytes
-	 *            The byte array to search in.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or byte array is null.
+	 * @param searcher The Searcher to use.
+	 * @param bytes    The byte array to search in.
+	 * @throws IllegalArgumentException if the Searcher or byte array is null.
 	 */
 	public ForwardSearchIterator(final Searcher searcher, final byte[] bytes) {
 		this(searcher, 0, bytes.length - 1, bytes);
@@ -145,17 +131,12 @@ public class ForwardSearchIterator implements
 	 * array, searching forwards from the position specified in the byte array
 	 * to the end of the array.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param bytes
-	 *            The byte array to search in.
-	 * @param fromPosition
-	 *            The position to start searching backwards from.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or byte array is null.
+	 * @param searcher     The Searcher to use.
+	 * @param bytes        The byte array to search in.
+	 * @param fromPosition The position to start searching backwards from.
+	 * @throws IllegalArgumentException if the Searcher or byte array is null.
 	 */
-	public ForwardSearchIterator(final Searcher searcher,
-			final byte[] bytes, final long fromPosition) {
+	public ForwardSearchIterator(final Searcher searcher, final byte[] bytes, final long fromPosition) {
 		this(searcher, fromPosition, bytes.length - 1, bytes);
 	}
 
@@ -164,19 +145,13 @@ public class ForwardSearchIterator implements
 	 * array, searching forwards from the position specified in the array to the
 	 * final position specified.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param fromPosition
-	 *            The position to start searching forwards from.
-	 * @param toPosition
-	 *            The final position to search up to in the array.
-	 * @param bytes
-	 *            The byte array to search in.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or array is null.
+	 * @param searcher     The Searcher to use.
+	 * @param fromPosition The position to start searching forwards from.
+	 * @param toPosition   The final position to search up to in the array.
+	 * @param bytes        The byte array to search in.
+	 * @throws IllegalArgumentException if the Searcher or array is null.
 	 */
-	public ForwardSearchIterator(final Searcher searcher,
-			final long fromPosition, final long toPosition, final byte[] bytes) {
+	public ForwardSearchIterator(final Searcher searcher, final long fromPosition, final long toPosition, final byte[] bytes) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(bytes, "bytes");
 		this.searcher = searcher;

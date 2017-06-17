@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-12, All rights reserved.
+ * Copyright Matt Palmer 2011-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -48,8 +48,7 @@ import net.byteseek.utils.ArgUtils;
  *
  * @author Matt Palmer
  */
-public class BackwardSearchIterator implements
-		Iterator<List<MatchResult>> {
+public class BackwardSearchIterator implements Iterator<List<MatchResult>> {
 
 	// immutable fields:
 	private final byte[] bytes;
@@ -60,24 +59,19 @@ public class BackwardSearchIterator implements
 	// private state:
 	private long searchPosition;
 	private boolean searchedForNext = false;
-	private List<MatchResult> MatchResults = Collections.emptyList();
+	private List<MatchResult> matchResults = Collections.emptyList();
 
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
 	 * {@link net.byteseek.io.reader.WindowReader}, searching backwards from the end
 	 * of the WindowReader to the start of the WindowReader.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param reader
-	 *            The WindowReader to search in.
-	 * @throws IOException
-	 *             If determining the length of the WindowReader causes an error.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or WindowReader is null.
+	 * @param searcher The Searcher to use.
+	 * @param reader   The WindowReader to search in.
+	 * @throws IOException  If determining the length of the WindowReader causes an error.
+	 * @throws IllegalArgumentException if the Searcher or WindowReader is null.
 	 */
-	public BackwardSearchIterator(final Searcher searcher,
-			final WindowReader reader) throws IOException {
+	public BackwardSearchIterator(final Searcher searcher, final WindowReader reader) throws IOException {
 		this(searcher, reader.length() - 1, 0, reader);
 	}
 
@@ -86,17 +80,12 @@ public class BackwardSearchIterator implements
 	 * {@link net.byteseek.io.reader.WindowReader}, searching backwards from the
 	 * position specified in the WindowReader to the start of the WindowReader.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param reader
-	 *            The WindowReader to search in.
-	 * @param fromPosition
-	 *            The position to start searching backwards from.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or WindowReader is null.
+	 * @param searcher     The Searcher to use.
+	 * @param reader       The WindowReader to search in.
+	 * @param fromPosition The position to start searching backwards from.
+	 * @throws IllegalArgumentException if the Searcher or WindowReader is null.
 	 */
-	public BackwardSearchIterator(final Searcher searcher,
-			final WindowReader reader, final long fromPosition) {
+	public BackwardSearchIterator(final Searcher searcher, final WindowReader reader, final long fromPosition) {
 		this(searcher, fromPosition, 0, reader);
 	}
 
@@ -106,19 +95,13 @@ public class BackwardSearchIterator implements
 	 * position specified in the WindowReader to the final position specified in the
 	 * WindowReader.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param fromPosition
-	 *            The position to start searching backwards from.
-	 * @param toPosition
-	 *            The final position to search up to in the WindowReader.
-	 * @param reader
-	 *            The WindowReader to search in.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or WindowReader is null.
+	 * @param searcher     The Searcher to use.
+	 * @param fromPosition The position to start searching backwards from.
+	 * @param toPosition   The final position to search up to in the WindowReader.
+	 * @param reader       The WindowReader to search in.
+	 * @throws IllegalArgumentException if the Searcher or WindowReader is null.
 	 */
-	public BackwardSearchIterator(final Searcher searcher,
-			final long fromPosition, final long toPosition, final WindowReader reader) {
+	public BackwardSearchIterator(final Searcher searcher, final long fromPosition, final long toPosition, final WindowReader reader) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(reader, "reader");
 		this.searcher = searcher;
@@ -133,12 +116,9 @@ public class BackwardSearchIterator implements
 	 * array, searching backwards from the end of the array to the start of the
 	 * array.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param bytes
-	 *            The byte array to search in.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or byte array is null.
+	 * @param searcher The Searcher to use.
+	 * @param bytes    The byte array to search in.
+	 * @throws IllegalArgumentException if the Searcher or byte array is null.
 	 */
 	public BackwardSearchIterator(final Searcher searcher, final byte[] bytes) {
 		this(searcher, bytes.length - 1, 0, bytes);
@@ -149,17 +129,12 @@ public class BackwardSearchIterator implements
 	 * array, searching backwards from the position specified in the byte array
 	 * to the start of the array.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param bytes
-	 *            The byte array to search in.
-	 * @param fromPosition
-	 *            The position to start searching backwards from.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or byte array is null.
+	 * @param searcher     The Searcher to use.
+	 * @param bytes        The byte array to search in.
+	 * @param fromPosition The position to start searching backwards from.
+	 * @throws IllegalArgumentException if the Searcher or byte array is null.
 	 */
-	public BackwardSearchIterator(final Searcher searcher,
-			final byte[] bytes, final int fromPosition) {
+	public BackwardSearchIterator(final Searcher searcher, final byte[] bytes, final int fromPosition) {
 		this(searcher, fromPosition, 0, bytes);
 	}
 
@@ -168,19 +143,13 @@ public class BackwardSearchIterator implements
 	 * array, searching backwards from the position specified in the array to
 	 * the final position specified.
 	 * 
-	 * @param searcher
-	 *            The Searcher to use.
-	 * @param fromPosition
-	 *            The position to start searching backwards from.
-	 * @param toPosition
-	 *            The final position to search up to in the array.
-	 * @param bytes
-	 *            The byte array to search in.
-	 * @throws IllegalArgumentException
-	 *             if the Searcher or array is null.
+	 * @param searcher     The Searcher to use.
+	 * @param fromPosition The position to start searching backwards from.
+	 * @param toPosition   The final position to search up to in the array.
+	 * @param bytes        The byte array to search in.
+	 * @throws IllegalArgumentException if the Searcher or array is null.
 	 */
-	public BackwardSearchIterator(final Searcher searcher,
-			final int fromPosition, final int toPosition, final byte[] bytes) {
+	public BackwardSearchIterator(final Searcher searcher, final int fromPosition, final int toPosition, final byte[] bytes) {
 		ArgUtils.checkNullObject(searcher, "searcher");
 		ArgUtils.checkNullObject(bytes, "bytes");
 		this.searcher = searcher;
@@ -197,13 +166,13 @@ public class BackwardSearchIterator implements
 	public boolean hasNext() {
 		if (!searchedForNext) {
 			try {
-				MatchResults = getNextMatchResults();
+				matchResults = getNextMatchResults();
 				searchedForNext = true;
 			} catch (final IOException ex) {
 				return false;
 			}
 		}
-		return !MatchResults.isEmpty();
+		return !matchResults.isEmpty();
 	}
 
 	/**
@@ -214,7 +183,7 @@ public class BackwardSearchIterator implements
 		if (hasNext()) {
 			searchPosition = getNextSearchPosition();
 			searchedForNext = false;
-			return MatchResults;
+			return matchResults;
 		}
 		throw new NoSuchElementException();
 	}
@@ -253,18 +222,16 @@ public class BackwardSearchIterator implements
 	private List<MatchResult> getNextMatchResults() throws IOException {
 		List<MatchResult> nextMatchingPosition = Collections.emptyList();
 		if (reader != null) {
-			nextMatchingPosition = searcher.searchBackwards(reader,
-					searchPosition, toPosition);
+			nextMatchingPosition = searcher.searchBackwards(reader, searchPosition, toPosition);
 		} else if (bytes != null) {
-			nextMatchingPosition = searcher.searchBackwards(bytes,
-					(int) searchPosition, (int) toPosition);
+			nextMatchingPosition = searcher.searchBackwards(bytes, (int) searchPosition, (int) toPosition);
 		}
 		return nextMatchingPosition;
 	}
 
 	private long getNextSearchPosition() {
 		long furthestPosition = Long.MAX_VALUE;
-		for (final MatchResult result : MatchResults) {
+		for (final MatchResult result : matchResults) {
 			final long resultPosition = result.getMatchPosition();
 			if (resultPosition < furthestPosition) {
 				furthestPosition = resultPosition;
