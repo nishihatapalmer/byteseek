@@ -39,7 +39,6 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.searcher.AbstractSearcher;
-import net.byteseek.searcher.SearchUtils;
 import net.byteseek.utils.ArgUtils;
 
 /**
@@ -165,7 +164,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
                 // Did we find a match?
                 if (!arrayResult.isEmpty()) {
                     final long readerOffset = searchPosition - arrayStartPosition;
-                    return SearchUtils.addPositionToResults(arrayResult, readerOffset);
+                    return MultiSearchUtils.addPositionToResults(arrayResult, readerOffset);
                 }
                 
                 // Continue the search one on from where we last looked:
@@ -173,7 +172,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
 
                 // Did we pass the final toPosition?  In which case, we're finished.
                 if (searchPosition > toPosition) {
-                    return SearchUtils.noResults();
+                    return MultiSearchUtils.noResults();
                 }
             }
 
@@ -199,7 +198,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
             searchPosition = lastSearchPosition + 1;
         }
         
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
     
@@ -281,7 +280,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
                 // Did we find a match?
                 if (!arrayResult.isEmpty()) {
                     final long readerOffset = searchPosition - searchStartPosition;
-                    return SearchUtils.addPositionToResults(arrayResult, readerOffset);
+                    return MultiSearchUtils.addPositionToResults(arrayResult, readerOffset);
                 }
                 
                 // Continue the search one on from where we last looked:
@@ -290,7 +289,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
 
                 // Did we pass the final search position?  In which case, we're finished.
                 if (searchPosition < finalSearchPosition) {
-                    return SearchUtils.noResults();
+                    return MultiSearchUtils.noResults();
                 }
             }
 
@@ -314,7 +313,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
             searchPosition = lastCrossingPosition - 1;
         }
         
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
     
 

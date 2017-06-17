@@ -39,7 +39,6 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchUtils;
 
 /**
  * An implementation of the Wu-Manber search algorithm that works with a block
@@ -96,7 +95,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
 
                     // See if any of the matches are within the bounds of the search:
                     final List<MatchResult> results = 
-                        SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                        MultiSearchUtils.resultsBackFromPosition(searchPosition, matches,
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
                         return results;
@@ -109,7 +108,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
             }
         }
 
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
 
@@ -155,7 +154,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
                     if (!matches.isEmpty()) {
                         // See if any of the matches are within the bounds of the search:
                         final List<MatchResult> results = 
-                            SearchUtils.resultsBackFromPosition(matchEndPosition, matches,
+                            MultiSearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                                 fromPosition, toPosition);
                         if (!results.isEmpty()) {
                             return results;
@@ -171,7 +170,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
 
-        return SearchUtils.noResults();                    
+        return MultiSearchUtils.noResults();
     }
 
 
@@ -206,7 +205,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
                 final Collection<SequenceMatcher> matches =
                         verifier.allMatches(bytes, searchPosition);
                 if (!matches.isEmpty()) {
-                    return SearchUtils.resultsAtPosition(searchPosition, matches);
+                    return MultiSearchUtils.resultsAtPosition(searchPosition, matches);
                 }
                 searchPosition--; // no safe shift other than to advance one on.
 
@@ -214,7 +213,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
                 searchPosition -= safeShift; 
             }
         }
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
 
@@ -256,7 +255,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
                     final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                     final Collection<SequenceMatcher> matches = verifier.allMatches(reader, startMatchPosition);
                     if (!matches.isEmpty()) {
-                        return SearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
+                        return MultiSearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
                     }
 
                     arraySearchPosition--; // no match, shift back one.
@@ -269,7 +268,7 @@ public class WuManberOneByteSearcher extends AbstractWuManberSearcher {
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
 
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
 
     }
     

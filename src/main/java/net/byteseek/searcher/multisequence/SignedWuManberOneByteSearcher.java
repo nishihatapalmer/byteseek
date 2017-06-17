@@ -45,7 +45,6 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
-import net.byteseek.searcher.SearchUtils;
 import net.byteseek.searcher.Searcher;
 
 import java.util.ArrayList;
@@ -555,7 +554,7 @@ import java.util.List;
                         
                         // See if any of the matches are within the bounds of the search:
                         final List<MatchResult> results = 
-                            SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                            MultiSearchUtils.resultsBackFromPosition(searchPosition, matches,
                                                                 fromPosition, toPosition);
                         if (!results.isEmpty()) {
                             return results;
@@ -569,7 +568,7 @@ import java.util.List;
                 } 
             }
             
-            return SearchUtils.noResults();
+            return MultiSearchUtils.noResults();
         }
         
         
@@ -613,7 +612,7 @@ import java.util.List;
                         if (!matches.isEmpty()) {
                             // Convert the matches into search results, filtering on the ends of the search:
                             final List<MatchResult> results = 
-                                SearchUtils.resultsBackFromPosition(matchEndPosition, matches, 
+                                MultiSearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                                     fromPosition, toPosition);
                             if (!results.isEmpty()) {
                                 return results;
@@ -631,7 +630,7 @@ import java.util.List;
                 searchPosition += arraySearchPosition - arrayStartPosition;
             }
 
-            return SearchUtils.noResults();   
+            return MultiSearchUtils.noResults();
         }
 
         @Override
@@ -669,7 +668,7 @@ import java.util.List;
                         final long startMatchPosition = searchPosition + arraySearchPosition - arrayStartPosition;
                         final Collection<SequenceMatcher> matches = verifier.allMatches(reader, startMatchPosition);
                         if (!matches.isEmpty()) {
-                            return SearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
+                            return MultiSearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
                         }
                         arraySearchPosition += safeShift; // no match, shift back.
                     } else { // No match was found - shift backward by the shift for the current byte:
@@ -681,7 +680,7 @@ import java.util.List;
                 searchPosition -= (arrayStartPosition - arraySearchPosition);
             }
 
-            return SearchUtils.noResults();
+            return MultiSearchUtils.noResults();
         }
 
         
@@ -712,7 +711,7 @@ import java.util.List;
                     final Collection<SequenceMatcher> matches =
                             verifier.allMatches(bytes, searchPosition);
                     if (!matches.isEmpty()) {
-                        return SearchUtils.resultsAtPosition(searchPosition, matches);
+                        return MultiSearchUtils.resultsAtPosition(searchPosition, matches);
                     }
                     
                     // No matches, shift backwards:
@@ -721,7 +720,7 @@ import java.util.List;
                     searchPosition -= safeShift; // subtract, as the shift is positive.
                 }
             }
-            return SearchUtils.noResults();
+            return MultiSearchUtils.noResults();
         }
     }
     

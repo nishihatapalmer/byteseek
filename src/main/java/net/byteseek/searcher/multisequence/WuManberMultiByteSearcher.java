@@ -38,7 +38,6 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchUtils;
 
 /**
  * THIS CLASS IS NOT YET FULLY IMPLEMENTED.
@@ -123,7 +122,7 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
 
                     // See if any of the matches are within the bounds of the search:
                     final List<MatchResult> results = 
-                        SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                        MultiSearchUtils.resultsBackFromPosition(searchPosition, matches,
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
                         return results;
@@ -135,7 +134,7 @@ public class WuManberMultiByteSearcher extends AbstractWuManberSearcher {
                 searchPosition += safeShift; 
             }
         }
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
     @Override

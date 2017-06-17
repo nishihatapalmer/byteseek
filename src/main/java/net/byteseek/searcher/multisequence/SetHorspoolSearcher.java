@@ -51,7 +51,6 @@ import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.SingleCheckLazyObject;
-import net.byteseek.searcher.SearchUtils;
 
 /**
  * The SetHorspoolSearcher implements the Boyer-Moore-Horspool algorithm for
@@ -123,7 +122,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             while (!endOfSequence.matches(currentByte)) {
                 searchPosition += safeShifts[currentByte & 0xff];
                 if (searchPosition > finalPosition) {
-                    return SearchUtils.noResults();
+                    return MultiSearchUtils.noResults();
                 }
                 currentByte = bytes[searchPosition];                
             }
@@ -134,7 +133,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                 // Build a result list, filtering out any which don't fall within
                 // the "from" or "to" positions of the search.
                 final List<MatchResult> results = 
-                    SearchUtils.resultsBackFromPosition(searchPosition, matches, 
+                    MultiSearchUtils.resultsBackFromPosition(searchPosition, matches,
                                                         fromPosition, toPosition);
                 if (!results.isEmpty()) {
                     return results;
@@ -145,7 +144,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             searchPosition += safeShifts[currentByte & 0xff];
         }
         
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
 
@@ -202,7 +201,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                         verifier.allMatchesBackwards(reader, matchEndPosition);
                 if (!matches.isEmpty()) {
                     final List<MatchResult> results = 
-                        SearchUtils.resultsBackFromPosition(matchEndPosition, matches,
+                        MultiSearchUtils.resultsBackFromPosition(matchEndPosition, matches,
                                                             fromPosition, toPosition);
                     if (!results.isEmpty()) {
                         return results;
@@ -217,7 +216,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
 
-        return SearchUtils.noResults();        
+        return MultiSearchUtils.noResults();
     }
 
     
@@ -251,7 +250,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             while (!startOfSequence.matches(currentByte)) {
                 searchPosition -= safeShifts[currentByte & 0xFF];
                 if (searchPosition < lastPosition) {
-                    return SearchUtils.noResults();
+                    return MultiSearchUtils.noResults();
                 }
                 currentByte = bytes[searchPosition];
             }
@@ -259,14 +258,14 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             // The first bytes matched - verify the rest of the sequences:
             final Collection<SequenceMatcher> matches = verifier.allMatches(bytes, searchPosition);
             if (!matches.isEmpty()) {
-                return SearchUtils.resultsAtPosition(searchPosition, matches);
+                return MultiSearchUtils.resultsAtPosition(searchPosition, matches);
             }
 
             // No match was found - shift backward by the shift for the current byte:
             searchPosition -= safeShifts[currentByte & 0xff];            
         }
         
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
     
@@ -316,7 +315,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
                 final long startMatchPosition = searchPosition - (arrayStartPosition - arraySearchPosition);
                 final Collection<SequenceMatcher> matches = verifier.allMatches(reader, startMatchPosition);
                 if (!matches.isEmpty()) {
-                    return SearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
+                    return MultiSearchUtils.resultsAtPosition(startMatchPosition, matches); // match found.
                 }
                 
                 // No match was found - shift backward by the shift for the current byte:
@@ -327,7 +326,7 @@ public class SetHorspoolSearcher extends AbstractMultiSequenceSearcher {
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
 
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
     

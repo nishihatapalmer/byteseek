@@ -41,7 +41,6 @@ import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.multisequence.MultiSequenceMatcher;
 import net.byteseek.matcher.multisequence.TrieMultiSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchUtils;
 
 /**
  * This class implements the {@link net.byteseek.searcher.Searcher} interface,
@@ -99,13 +98,13 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             while (searchPosition <= lastPosition) {
                 final Collection<SequenceMatcher> matches = matcher.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
-                    return SearchUtils.resultsAtPosition(searchPosition, matches);
+                    return MultiSearchUtils.resultsAtPosition(searchPosition, matches);
                 }
                 searchPosition++;
             }
             
         }
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
 
@@ -130,11 +129,11 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         while (searchPosition <= lastPosition) {
             final Collection<SequenceMatcher> matches = matcher.allMatches(bytes, searchPosition);
             if (!matches.isEmpty()) {
-                return SearchUtils.resultsAtPosition(searchPosition, matches);
+                return MultiSearchUtils.resultsAtPosition(searchPosition, matches);
             }
             searchPosition++;
         }
-        return SearchUtils.noResults();           
+        return MultiSearchUtils.noResults();
     }
 
 
@@ -162,13 +161,13 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
             while (searchPosition >= lastSearchPosition) {
                 final Collection<SequenceMatcher> matches = matcher.allMatches(reader, searchPosition);
                 if (!matches.isEmpty()) {
-                    return SearchUtils.resultsAtPosition(searchPosition, matches);
+                    return MultiSearchUtils.resultsAtPosition(searchPosition, matches);
                 }
                 searchPosition--;
             }
         }
         
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
 
@@ -193,11 +192,11 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         while (searchPosition >= lastPosition) {
             final Collection<SequenceMatcher> matches = matcher.allMatches(bytes, searchPosition);            
             if (!matches.isEmpty()) {
-                return SearchUtils.resultsAtPosition(searchPosition, matches);
+                return MultiSearchUtils.resultsAtPosition(searchPosition, matches);
             }
             searchPosition--;
         }
-        return SearchUtils.noResults();
+        return MultiSearchUtils.noResults();
     }
 
     
