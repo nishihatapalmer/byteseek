@@ -221,6 +221,7 @@ public class ForwardSearchIterator implements
 		searchedForNext = false;
 	}
 
+	//TODO: make more efficient next() passing in a pre-existing list of results.
 	private List<MatchResult> getNextMatchResults() throws IOException {
 		List<MatchResult> nextResults = Collections.emptyList();
 		if (reader != null) {

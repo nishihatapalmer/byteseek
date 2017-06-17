@@ -61,6 +61,9 @@ public class BackwardSearchIterator implements Iterator<List<MatchResult>> {
 	private boolean searchedForNext = false;
 	private List<MatchResult> matchResults = Collections.emptyList();
 
+	//TODO: allow specifying whether results should be one past last search, or carry on from past the last match...
+	//      some searches want to pick up the search after the end of a matched pattern (no overlapping matches).
+
 	/**
 	 * Constructs a BackwardSearchIterator from a {@link Searcher} and
 	 * {@link net.byteseek.io.reader.WindowReader}, searching backwards from the end
@@ -175,6 +178,7 @@ public class BackwardSearchIterator implements Iterator<List<MatchResult>> {
 		return !matchResults.isEmpty();
 	}
 
+	//TODO: make more efficient next() passing in a pre-existing list of results.
 	/**
 	 * {@inheritDoc}
 	 */
