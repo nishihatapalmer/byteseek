@@ -757,7 +757,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
             // Process all the qgrams in the pattern from the qGram start pos to one before the end of the pattern.
             int hashValue = -1;
-            for (int qGramEnd = qGramEndPos - 3; qGramEnd >= 0; qGramEnd--) {
+            for (int qGramEnd = qGramEndPos - QLEN + 1; qGramEnd >= 0; qGramEnd--) {
                 // Get the byte arrays for the qGram at the current qGramStart:
                 bytes0 = bytes1; bytes1 = bytes2; bytes2 = bytes3;                         // shift byte arrays along one.
                 bytes3 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
