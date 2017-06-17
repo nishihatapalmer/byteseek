@@ -266,7 +266,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                 // Scan back across the other q-grams in the text to see if they also appear in the pattern:
                 final int PATTERN_START_POS   = pos - SLEN_MINUS_QLEN;
                 final int FIRST_QGRAM_END_POS = PATTERN_START_POS + QLEN - 1;
-                for (pos -= QLEN; pos >= FIRST_QGRAM_END_POS; pos -= QLEN) {
+                for (pos -= QLEN; pos > FIRST_QGRAM_END_POS; pos -= QLEN) {
 
                     // Get the hash for the q-gram in the text aligned with the next position back:
                     qGramHash =                        (bytes[pos + 3] & 0xFF);
@@ -373,7 +373,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                 final long PATTERN_START_POS   = pos - SLEN_MINUS_QLEN;
                 final long FIRST_QGRAM_END_POS = PATTERN_START_POS + QLEN - 1;
 
-                while (pos >= FIRST_QGRAM_END_POS) { // Process all qgrams back to the first qgram end pos:
+                while (pos > FIRST_QGRAM_END_POS) { // Process qgrams while it is safe to go back another qgram.
 
                     // Calculate the last position we can search in the current window array:
                     // TODO: can a position within the pattern be before the search end...?
@@ -382,14 +382,12 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                                                 (int) (arrayPos - DISTANCE_TO_FIRST_QGRAM_END_POS) : 0;
 
                     // Search back in the current array for matching q-grams:
-                    for (pos -= QLEN, arrayPos -= QLEN;
-                         arrayPos >= LAST_ARRAY_SEARCHPOS;
-                         pos -= QLEN, arrayPos -= QLEN) {
+                    for (pos -= QLEN, arrayPos -= QLEN; arrayPos >= LAST_ARRAY_SEARCHPOS; pos -= QLEN, arrayPos -= QLEN) {
 
                         // Get the hash for the q-gram in the text aligned with the next position back:
                         // No hashes here can cross a window boundary since the array search goes back to zero
                         // (or the end of the search), and we already dealt with a potential cross in the first hash.
-                        qGramHash = (array[arrayPos + 3] & 0xFF);
+                        qGramHash =                        (array[arrayPos + 3] & 0xFF);
                         qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 2] & 0xFF);
                         qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
                         qGramHash = (qGramHash << SHIFT) + (array[arrayPos] & 0xFF);
@@ -400,7 +398,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                     }
 
                     // If we still have some filtering to go in the previous window...
-                    if (pos >= FIRST_QGRAM_END_POS) {
+                    if (pos > FIRST_QGRAM_END_POS) {
 
                         // Get the previous window:
                         window = reader.getWindow(pos);
@@ -513,7 +511,6 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         // Get local references to member fields which are repeatedly accessed:
         final SequenceMatcher localSequence = sequence;
 
-        // Get the pre-processed data needed to search:
         // Get the pre-processed data needed to search:
         final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
