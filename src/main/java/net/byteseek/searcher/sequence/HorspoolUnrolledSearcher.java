@@ -293,7 +293,6 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             // The first byte matched - verify there is a complete match.
             // There is only a verifier if the sequence length was greater than one;
             // if the sequence is only one in length, we have already found it.
-            //TODO: why null matcher for backwards and ANY matcher for forwards?
             if (verifier == null || verifier.matchesNoBoundsCheck(bytes, searchPosition + 1)) {
                 return searchPosition; // match found.
             }
@@ -351,7 +350,6 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
                 // The first byte matched - verify there is a complete match.
                 final int totalShift = arrayStartPosition - arraySearchPosition;
                 final long sequencePosition = searchPosition - totalShift;
-                //TODO: why null matcher for backwards and ANY matcher for forwards?
                 if (verifier == null || verifier.matches(reader, sequencePosition + 1)) {
                     return sequencePosition; // match found.
                 }
