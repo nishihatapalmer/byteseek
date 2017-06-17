@@ -511,7 +511,6 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
             // and the stopping position tells us where to start building the shift table from and the maximum shift
             // the algorithm can make.
             final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
-            //TODO: is there a smaller (or larger) max qgrams at which it would be sensible to stop processing?
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
             int totalQgrams = 0;
             int finalQgramPos = 0;

@@ -44,6 +44,8 @@ import net.byteseek.utils.collections.BytePermutationIterator;
  */
 public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
 
+    //TODO: test MAX QGRAMS for each searcher implementing this, to see where the cut off should be.
+
     /**
      * The maximum number of elements in a hash table.
      */

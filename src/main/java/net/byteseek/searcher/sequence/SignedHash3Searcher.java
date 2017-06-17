@@ -496,7 +496,6 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
-            //TODO: is this the best max qgrams for this type of searcher?
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE;
             int num0;
             int num1 = localSequence.getNumBytesAtPosition(PATTERN_LENGTH - 1);

@@ -696,7 +696,6 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
-            //TODO: is there a smaller (or larger) max qgrams at which it would be sensible to stop processing?
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
 
             int num0;
@@ -796,7 +795,6 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
-            //TODO: is there a smaller (or larger) max qgrams at which it would be sensible to stop processing?
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
 
             int num0;
