@@ -76,12 +76,16 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     public void testSearchByteArrayForwards() throws Exception {
         for (SearchData searchData : data) {
             // test defined patterns:
+            System.out.println("Running byte array forwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
                 testSearchers(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+                if (randomTest % 50 == 0) {
+                    System.out.println("Running byte array forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testSearchers(pattern, searchData);
@@ -96,12 +100,16 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     public void testSearchByteArrayBackwards() throws Exception {
         for (SearchData searchData : data) {
             // test defined patterns:
+            System.out.println("Running byte array backwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
                 testSearchersBackwards(pattern.getBytes(), searchData);
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
+                if (randomTest % 50 == 0) {
+                    System.out.println("Running byte array backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
                 testSearchersBackwards(pattern, searchData);
@@ -116,7 +124,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     public void testSearchReaderForwards() throws Exception {
         for (SearchData searchData : data) {
             // test defined patterns:
-            System.out.println("Running tests for " + searchData.dataFile);
+            System.out.println("Running reader forwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
                 testReaderSearchers(pattern.getBytes(), searchData);
@@ -124,7 +132,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 if (randomTest % 50 == 0) {
-                    System.out.println("Running random test " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                    System.out.println("Running reader forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
@@ -139,7 +147,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     @Test
     public void testSearchReaderBackwards() throws Exception {
         for (SearchData searchData : data) {
-            System.out.println("Running tests for " + searchData.dataFile);
+            System.out.println("Running reader backwards defined tests for " + searchData.dataFile);
 
             // test defined patterns:
             for (String pattern : searchData.patterns) {
@@ -149,7 +157,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
                 if (randomTest % 50 == 0) {
-                    System.out.println("Running random test " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                    System.out.println("Running reader backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
