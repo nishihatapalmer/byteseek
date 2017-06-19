@@ -703,7 +703,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
                 bytes1 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
                 // Calculate the hash value and OR the bitmask with the qgram phase bit:
-                final int QGRAM_PHASE_BIT = 1 << (qGramEnd % QLEN);
+                final int QGRAM_PHASE_BIT = 1 << (qGramEnd & 0x1);
                 hashValue = processQ2Hash(OR_VALUE, QGRAM_PHASE_BIT, BITMASKS, hashValue, HASH_SHIFT, bytes0, bytes1);
             }
 
@@ -796,7 +796,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
                 bytes1 = localSequence.getMatcherForPosition(qGramEnd).getMatchingBytes(); // get next byte array.
 
                 // Calculate the hash value and OR the bitmask with the qgram phase bit:
-                final int QGRAM_PHASE_BIT = 1 << (qGramEnd % QLEN);
+                final int QGRAM_PHASE_BIT = 1 << (qGramEnd & 0x1);
                 hashValue = processQ2Hash(OR_VALUE, QGRAM_PHASE_BIT, BITMASKS, hashValue, HASH_SHIFT, bytes0, bytes1);
             }
 
