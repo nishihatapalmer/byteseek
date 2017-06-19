@@ -287,8 +287,8 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
         final int LAST_PATTERN_POS = localSequence.length() - 1;
         final int LAST_QGRAM_POS   = QLEN - 1;
         final long SEARCH_END      = toPosition + LAST_PATTERN_POS;
-        long searchPos             = (fromPosition > 0?
-                                      fromPosition : 0) + LAST_PATTERN_POS;
+        long searchPos             = (fromPosition > 0? fromPosition : 0) + LAST_PATTERN_POS;
+
         // Search forwards:
         Window window;
         while (searchPos <= SEARCH_END && (window = reader.getWindow(searchPos)) != null) {
@@ -351,10 +351,8 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
 
         // Determine safe shifts, starts and ends:
         final int LAST_MATCH_POS = bytes.length - localSequence.length();
-        final int SEARCH_START   = fromPosition < LAST_MATCH_POS?
-                                   fromPosition : LAST_MATCH_POS;
-        final int SEARCH_END     = toPosition > 0?
-                                   toPosition : 0;
+        final int SEARCH_START   = fromPosition < LAST_MATCH_POS? fromPosition : LAST_MATCH_POS;
+        final int SEARCH_END     = toPosition > 0? toPosition : 0;
 
         // Search backwards:
         int searchPos = SEARCH_START;
