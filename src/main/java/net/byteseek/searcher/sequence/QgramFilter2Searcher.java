@@ -305,6 +305,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
 
         // Initialise window search:
         final int SLEN_MINUS_QLEN = SEARCH_LENGTH - QLEN;
+        final int SECOND_QGRAM_START_OFFSET = SLEN_MINUS_QLEN - QLEN;
         final int SEARCH_SHIFT    = SLEN_MINUS_QLEN + 1;
         final long SEARCH_START   = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
         final long TO_END_POS     = toPosition + SLEN_MINUS_QLEN;
@@ -344,21 +345,18 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
             int qGramMatch = BITMASKS[qGramHash & MASK];
             MATCH: if (qGramMatch != 0) {
 
-                // Scan back across the other q-grams in the text to see if they also appear in the pattern:
+                // Scan back across the other q-grams in the text to see if they also may appear in the pattern:
                 final long PATTERN_START_POS   = pos - SLEN_MINUS_QLEN;
                 final long FIRST_QGRAM_END_POS = PATTERN_START_POS + QLEN - 1;
 
                 while (pos > FIRST_QGRAM_END_POS) { // Process qgrams while it is safe to go back another qgram.
 
                     // Calculate the last position we can search in the current window array:
-                    // TODO: can a position within the pattern be before the search end...?
-                    final long DISTANCE_TO_FIRST_QGRAM_END_POS = pos - FIRST_QGRAM_END_POS;
-                    //TODO: bug - we go BACK a qlen if we're at this position, so last position must be QLEN?
-                    final int  LAST_ARRAY_SEARCHPOS = DISTANCE_TO_FIRST_QGRAM_END_POS <= arrayPos?
-                                                      (int) (arrayPos - DISTANCE_TO_FIRST_QGRAM_END_POS) : 0;
+                    // This is MAX(QLEN, pos in array of second qgram start pos).
+                    final int LAST_ARRAY_SEARCH_POS = Math.max(QLEN, arrayPos - SECOND_QGRAM_START_OFFSET);
 
                     // Search back in the current array for matching q-grams:
-                    for (pos -= QLEN, arrayPos -= QLEN; arrayPos >= LAST_ARRAY_SEARCHPOS; pos -= QLEN, arrayPos -= QLEN) {
+                    for (pos -= QLEN, arrayPos -= QLEN; arrayPos >= LAST_ARRAY_SEARCH_POS; pos -= QLEN, arrayPos -= QLEN) {
 
                         // Get the hash for the q-gram in the text aligned with the next position back:
                         // No hashes here can cross a window boundary since the array search goes back to zero
