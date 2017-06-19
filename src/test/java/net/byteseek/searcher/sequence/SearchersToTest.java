@@ -62,8 +62,10 @@ public class SearchersToTest {
         searchers.add(new SundayQuickSearcher(sequence));
         searchers.add(new HorspoolSearcher(sequence));
         searchers.add(new HorspoolUnrolledSearcher(sequence));
-        //searchers.add(new SignedHorspoolSearcher(sequence));
-        //searchers.add(new ShiftOrSearcher(sequence));
+        searchers.add(new SignedHorspoolSearcher(sequence));
+        searchers.add(new ShiftOrSearcher(sequence));
+        searchers.add(new QgramFilter2Searcher(sequence));
+        searchers.add(new QgramFilter3Searcher(sequence));
         searchers.add(new QgramFilter4Searcher(sequence));
         searchers.add(new SignedHash2Searcher(sequence));
         searchers.add(new SignedHash3Searcher(sequence));
