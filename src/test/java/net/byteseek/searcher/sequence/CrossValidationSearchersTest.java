@@ -51,6 +51,11 @@ import static org.junit.Assert.fail;
  * Searches for the same patterns using all sequence searchers and reports any mismatches between them.
  * This helps us to detect bugs in the search algorithms by ensuring they all find the same patterns
  * in the same texts in the same positions.
+ * <p>
+ * It also does some very unscientific timings of the search algorithms.  This should not be relied on as
+ * accurate benchmarks of the algorithms, but it does flag when algorithms have severely degraded performance.
+ * There is another JMH (Java Microbenchmarking Harness) project to benchmark the search algorithms against each other
+ * and over different types of data and pattern lengths.
  *
  * Created by matt on 03/05/16.
  */
@@ -59,7 +64,10 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     //private static int[] windowSizes = {4096, 4095, 4097, 128, 127, 15, 16}; // more complex tests take ages to run, look for boundary conditions.
     private static int[] windowSizes = {4096}; // simple test with window of 4096 byte size (default).
 
-    public static final int NUM_RANDOM_TESTS = 500; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
+    public static final int NUM_RANDOM_TESTS = 2050; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
+    public static final int TEST_UPDATE_INTERVAL = 200; // refresh test message every number of tests...
+    public static final int TIMING_UPDATE_INTERVAL = 1000; // refresh timings every number of tests...
+
     Random random = new Random(0);
 
     SearchData[] data = {
@@ -72,146 +80,224 @@ public class CrossValidationSearchersTest extends SearchersToTest {
 
     //TODO: cross validate reader results against array results (load entire file into a single array).
 
+    //TODO: backwards searches seem to take a lot more time than forwards searches... profile this.
+
     @Test
     public void testSearchByteArrayForwards() throws Exception {
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
+        int numTimes = 0;
         for (SearchData searchData : data) {
             // test defined patterns:
             System.out.println("Running byte array forwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
-                testSearchers(pattern.getBytes(), searchData);
+                updateTimes(searcherTimings, testSearchers(pattern.getBytes(), searchData));
+                numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % 50 == 0) {
+                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
                     System.out.println("Running byte array forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
+                if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
+                    outputTimes(searcherTimings, numTimes);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
-                testSearchers(pattern, searchData);
+                updateTimes(searcherTimings, testSearchers(pattern, searchData));
+                numTimes++;
 
                 createCaseInsensitiveSearchers(pattern);
-                testSearchers(pattern, searchData);
+                updateTimes(searcherTimings, testSearchers(pattern, searchData));
+                numTimes++;
             }
         }
+        outputTimes(searcherTimings, numTimes);
     }
 
     @Test
     public void testSearchByteArrayBackwards() throws Exception {
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
+        int numTimes = 0;
         for (SearchData searchData : data) {
             // test defined patterns:
             System.out.println("Running byte array backwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
-                testSearchersBackwards(pattern.getBytes(), searchData);
+                updateTimes(searcherTimings, testSearchersBackwards(pattern.getBytes(), searchData));
+                numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % 50 == 0) {
+                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
                     System.out.println("Running byte array backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
+                if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
+                    outputTimes(searcherTimings, numTimes);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
-                testSearchersBackwards(pattern, searchData);
+                updateTimes(searcherTimings, testSearchersBackwards(pattern, searchData));
+                numTimes++;
 
                 createCaseInsensitiveSearchers(pattern);
-                testSearchersBackwards(pattern, searchData);
+                updateTimes(searcherTimings, testSearchersBackwards(pattern, searchData));
+                numTimes++;
             }
         }
+        outputTimes(searcherTimings, numTimes);
     }
 
     @Test
     public void testSearchReaderForwards() throws Exception {
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
+        int numTimes = 0;
         for (SearchData searchData : data) {
             // test defined patterns:
             System.out.println("Running reader forwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
-                testReaderSearchers(pattern.getBytes(), searchData);
+                updateTimes(searcherTimings, testReaderSearchers(pattern.getBytes(), searchData));
+                numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % 50 == 0) {
+                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
                     System.out.println("Running reader forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
+                if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
+                    outputTimes(searcherTimings, numTimes);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
-                testReaderSearchers(pattern, searchData);
+                updateTimes(searcherTimings, testReaderSearchers(pattern, searchData));
+                numTimes++;
 
                 createCaseInsensitiveSearchers(pattern);
-                testReaderSearchers(pattern, searchData);
+                updateTimes(searcherTimings, testReaderSearchers(pattern, searchData));
+                numTimes++;
             }
         }
+        outputTimes(searcherTimings, numTimes);
     }
 
     @Test
     public void testSearchReaderBackwards() throws Exception {
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
+        int numTimes = 0;
         for (SearchData searchData : data) {
             System.out.println("Running reader backwards defined tests for " + searchData.dataFile);
 
             // test defined patterns:
             for (String pattern : searchData.patterns) {
                 createSearchers(pattern);
-                testReaderSearchersBackwards(pattern.getBytes(), searchData);
+                updateTimes(searcherTimings, testReaderSearchersBackwards(pattern.getBytes(), searchData));
+                numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % 50 == 0) {
+                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
                     System.out.println("Running reader backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
+                }
+                if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
+                    outputTimes(searcherTimings, numTimes);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
-                testReaderSearchersBackwards(pattern, searchData);
+                updateTimes(searcherTimings, testReaderSearchersBackwards(pattern, searchData));
+                numTimes++;
 
                 createCaseInsensitiveSearchers(pattern);
-                testReaderSearchersBackwards(pattern, searchData);
+                updateTimes(searcherTimings, testReaderSearchersBackwards(pattern, searchData));
+                numTimes++;
+            }
+        }
+        outputTimes(searcherTimings, numTimes);
+    }
+
+
+    private void updateTimes(Map<String, Long> oldTimes, Map<String, Long> newTimes) {
+        for (String searcher : newTimes.keySet()) {
+            final long newTime = newTimes.get(searcher);
+            final Long existingTime = oldTimes.get(searcher);
+            if (existingTime == null) {
+                oldTimes.put(searcher, newTime);
+            } else {
+                oldTimes.put(searcher, existingTime + newTime);
             }
         }
     }
 
+    private void outputTimes(Map<String, Long> timings, int numTimes) {
+        System.out.println("Av time\tNum time\tTotal time\tSearcher");
+        for (String searcher : timings.keySet()) {
+            final long time = timings.get(searcher);
+            System.out.println(time / numTimes + "\t" + numTimes + "\t" + time + "\t" + searcher);
+        }
+    }
 
-    private void testSearchers(byte[] pattern, SearchData dataToSearch) {
+    private Map<String, Long> testSearchers(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
         for (SequenceSearcher searcher : searchers) {
             usedSearchers.add(searcher);
+            long startTime = System.nanoTime();
             addAllSearchPositionsFor(searcher, dataToSearch.getData(), resultMap);
+            long endTime = System.nanoTime();
+            searcherTimings.put(searcher.getClass().getSimpleName(), endTime - startTime);
         }
         findMismatches("array forwards", usedSearchers, pattern, resultMap, dataToSearch);
+        return searcherTimings;
     }
 
-    private void testReaderSearchers(byte[] pattern, SearchData dataToSearch) {
+    private Map<String, Long> testReaderSearchers(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
         for (WindowReader reader: dataToSearch.getReaders()) {
             for (SequenceSearcher searcher : searchers) {
                 usedSearchers.add(searcher);
+                long startTime = System.nanoTime();
                 addAllSearchPositionsFor(searcher, reader, resultMap);
+                long endTime = System.nanoTime();
+                searcherTimings.put(searcher.getClass().getSimpleName(), endTime - startTime);
             }
             findMismatches("reader forwards", usedSearchers, pattern, resultMap, dataToSearch);
         }
+        return searcherTimings;
     }
 
-    private void testSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
+    private Map<String, Long> testSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
         for (SequenceSearcher searcher : searchers) {
             usedSearchers.add(searcher);
+            long startTime = System.nanoTime();
             addAllBackwardsSearchPositionsFor(searcher, dataToSearch.getData(), resultMap);
+            long endTime = System.nanoTime();
+            searcherTimings.put(searcher.getClass().getSimpleName(), endTime - startTime);
         }
         findMismatches("array backwards", usedSearchers, pattern, resultMap, dataToSearch);
+        return searcherTimings;
     }
 
-    private void testReaderSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
+    private Map<String, Long> testReaderSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
         final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
         for (WindowReader reader: dataToSearch.getReaders()) {
             for (SequenceSearcher searcher : searchers) {
                 usedSearchers.add(searcher);
+                long startTime = System.nanoTime();
                 addAllBackwardsSearchPositionsFor(searcher, reader, resultMap);
+                long endTime = System.nanoTime();
+                searcherTimings.put(searcher.getClass().getSimpleName(), endTime - startTime);
             }
             findMismatches("reader backwards", usedSearchers, pattern, resultMap, dataToSearch);
         }
+        return searcherTimings;
     }
 
     private void addAllSearchPositionsFor(SequenceSearcher searcher,
