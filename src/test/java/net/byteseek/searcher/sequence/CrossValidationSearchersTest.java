@@ -82,6 +82,8 @@ public class CrossValidationSearchersTest extends SearchersToTest {
 
     //TODO: backwards searches seem to take a lot more time than forwards searches... profile this.
 
+    //TODO: do backwards byte array searches ever terminate on 5000 tests?  Or was it just taking an amazing amount of time...?
+
     @Test
     public void testSearchByteArrayForwards() throws Exception {
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
@@ -100,7 +102,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                     System.out.println("Running byte array forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes);
+                    outputTimes(searcherTimings, numTimes, randomTest);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
@@ -112,7 +114,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes);
+        outputTimes(searcherTimings, numTimes, -1);
     }
 
     @Test
@@ -133,7 +135,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                     System.out.println("Running byte array backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes);
+                    outputTimes(searcherTimings, numTimes, randomTest);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
@@ -145,7 +147,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes);
+        outputTimes(searcherTimings, numTimes, -1);
     }
 
     @Test
@@ -166,7 +168,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                     System.out.println("Running reader forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes);
+                    outputTimes(searcherTimings, numTimes, randomTest);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
@@ -178,7 +180,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes);
+        outputTimes(searcherTimings, numTimes, -1);
     }
 
     @Test
@@ -200,7 +202,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                     System.out.println("Running reader backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
                 }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes);
+                    outputTimes(searcherTimings, numTimes, randomTest);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
                 createSearchers(pattern);
@@ -212,7 +214,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes);
+        outputTimes(searcherTimings, numTimes, -1);
     }
 
 
@@ -228,11 +230,41 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-    private void outputTimes(Map<String, Long> timings, int numTimes) {
-        System.out.println("Av time\tNum time\tTotal time\tSearcher");
-        for (String searcher : timings.keySet()) {
+
+
+    private void outputTimes(Map<String, Long> timings, int numTimes, int testNo) {
+        System.out.println("Av time\tNum time\tTotal time\tSearcher\tTest no: " + testNo);
+        Map<String, Long> sortedSearchers = MapUtil.sortByValue(timings);
+        for (String searcher : sortedSearchers.keySet()) {
             final long time = timings.get(searcher);
             System.out.println(time / numTimes + "\t" + numTimes + "\t" + time + "\t" + searcher);
+        }
+    }
+
+    /**
+     * Returns a map whose keys are sorted on its values.
+     * Taken from code published at StackOverflow, stating it can be used freely:
+     * https://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java#2581754
+     */
+    public static class MapUtil
+    {
+        public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map )
+        {
+            List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>( map.entrySet() );
+            Collections.sort( list, new Comparator<Map.Entry<K, V>>()
+            {
+                public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
+                {
+                    return (o1.getValue()).compareTo( o2.getValue() );
+                }
+            } );
+
+            Map<K, V> result = new LinkedHashMap<K, V>();
+            for (Map.Entry<K, V> entry : list)
+            {
+                result.put( entry.getKey(), entry.getValue() );
+            }
+            return result;
         }
     }
 
