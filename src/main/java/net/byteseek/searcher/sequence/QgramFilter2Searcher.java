@@ -77,6 +77,9 @@ import net.byteseek.utils.factory.ObjectFactory;
  * @author Matt Palmer
  */
 
+//TODO: basic profiling shows performance of this searcher is abysmal on low alphabets and long strings.
+    // orders of magnitude worse than just doing a naive search.  Investigate and mitigate if possible.
+
 public final class QgramFilter2Searcher extends AbstractQgramSearcher {
 
     /*************
@@ -353,7 +356,9 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
 
                     // Calculate the last position we can search in the current window array:
                     // This is MAX(QLEN, pos in array of second qgram start pos).
-                    final int LAST_ARRAY_SEARCH_POS = Math.max(QLEN, arrayPos - SECOND_QGRAM_START_OFFSET);
+                    final long DISTANCE_TO_SECOND_QGRAM_START_POS = pos - FIRST_QGRAM_END_POS - 1;
+                    final long SECOND_QGRAM_ARRAY_POS = arrayPos - DISTANCE_TO_SECOND_QGRAM_START_POS;
+                    final long LAST_ARRAY_SEARCH_POS = Math.max(QLEN, SECOND_QGRAM_ARRAY_POS);
 
                     // Search back in the current array for matching q-grams:
                     for (pos -= QLEN, arrayPos -= QLEN; arrayPos >= LAST_ARRAY_SEARCH_POS; pos -= QLEN, arrayPos -= QLEN) {
@@ -416,7 +421,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
         final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
-        final int SEARCH_LENGTH = info.finalQgramPos + 1;
+        final int SEARCH_LENGTH = info.finalQgramPos + 1; //TODO: is final q gram pos the start or end of the final qgram... not length if start.
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Determine safe shifts, starts and ends:
@@ -649,7 +654,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
             // Scan forwards along the pattern counting qgrams as we go.  If there are too many, we halt processing
             // giving a shorter pattern to search with and a shorter maximum shift.
             int totalQgrams = 0;
-            int finalQgramPos = 0;
+            int finalQgramPos = PATTERN_LENGTH - 1;
             for (int qGramEndPos = QLEN - 1; qGramEndPos < PATTERN_LENGTH; qGramEndPos++) {
                 // Calculate total qgrams as we scan along:
                 num0 = num1;                                             // shift byte counts along.
@@ -693,7 +698,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
 
             // Set up the key values for hashing as we go along the pattern:
             byte[] bytes0; // first step of processing shifts all the key values along one, so bytes0 = bytes1, ...
-            byte[] bytes1 = localSequence.getMatcherForPosition(qGramEndPos    ).getMatchingBytes();
+            byte[] bytes1 = localSequence.getMatcherForPosition(qGramEndPos).getMatchingBytes();
 
             // Process all the qgrams in the pattern from the qGram start pos to one before the end of the pattern.
             int hashValue = -1;

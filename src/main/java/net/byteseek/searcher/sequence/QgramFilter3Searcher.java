@@ -77,6 +77,9 @@ import net.byteseek.utils.factory.ObjectFactory;
  * @author Matt Palmer
  */
 
+//TODO: basic profiling shows performance of this searcher is abysmal on low alphabets and very long strings.
+// orders of magnitude worse than just doing a naive search.  Investigate and mitigate if possible.
+
 public final class QgramFilter3Searcher extends AbstractQgramSearcher {
 
     /*************
@@ -364,7 +367,9 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
                 while (pos > FIRST_QGRAM_END_POS) { // Process qgrams while it is safe to go back another qgram.
 
                     // Calculate the last position we can search in the current window array:
-                    final int LAST_ARRAY_SEARCH_POS = Math.max(QLEN, arrayPos - SECOND_QGRAM_START_OFFSET);
+                    final long DISTANCE_TO_SECOND_QGRAM_START_POS = pos - FIRST_QGRAM_END_POS - 1;
+                    final long SECOND_QGRAM_ARRAY_POS = arrayPos - DISTANCE_TO_SECOND_QGRAM_START_POS;
+                    final long LAST_ARRAY_SEARCH_POS = Math.max(QLEN, SECOND_QGRAM_ARRAY_POS);
 
                     // Search back in the current array for matching q-grams:
                     for (pos -= QLEN, arrayPos -= QLEN; arrayPos >= LAST_ARRAY_SEARCH_POS; pos -= QLEN, arrayPos -= QLEN) {
@@ -675,7 +680,7 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
             // Scan forwards along the pattern counting qgrams as we go.  If there are too many, we halt processing
             // giving a shorter pattern to search with and a shorter maximum shift.
             int totalQgrams = 0;
-            int finalQgramPos = 0;
+            int finalQgramPos = PATTERN_LENGTH - 1;
             for (int qGramEndPos = QLEN - 1; qGramEndPos < PATTERN_LENGTH; qGramEndPos++) {
                 // Calculate total qgrams as we scan along:
                 num0 = num1; num1 = num2           ;                     // shift byte counts along.
