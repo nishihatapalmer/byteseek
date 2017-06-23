@@ -421,7 +421,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
         final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
-        final int SEARCH_LENGTH = info.finalQgramPos + 1; //TODO: is final q gram pos the start or end of the final qgram... not length if start.
+        final int SEARCH_LENGTH = info.finalQgramPos + 1;
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Determine safe shifts, starts and ends:
