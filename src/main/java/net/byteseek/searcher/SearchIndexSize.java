@@ -30,6 +30,8 @@
  */
 package net.byteseek.searcher;
 
+import net.byteseek.utils.ArgUtils;
+
 /**
  * An enumeration of possible search index sizes as powers of two, along with
  * the method an algorithm should use to select the final size.
@@ -54,6 +56,10 @@ package net.byteseek.searcher;
  */
 public enum SearchIndexSize {
 
+    MAX_2(    1, Method.MAX), EXACTLY_2(    1, Method.EXACTLY),
+    MAX_4(    2, Method.MAX), EXACTLY_4(    2, Method.EXACTLY),
+    MAX_8(    3, Method.MAX), EXACTLY_8 (   3, Method.EXACTLY),
+    MAX_16(   4, Method.MAX), EXACTLY_16(   4, Method.EXACTLY),
     MAX_32(   5, Method.MAX), EXACTLY_32(   5, Method.EXACTLY),
     MAX_64(   6, Method.MAX), EXACTLY_64(   6, Method.EXACTLY),
     MAX_128(  7, Method.MAX), EXACTLY_128(  7, Method.EXACTLY),
@@ -69,7 +75,50 @@ public enum SearchIndexSize {
     MAX_128K(17, Method.MAX), EXACTLY_128K(17, Method.EXACTLY),
     MAX_256K(18, Method.MAX), EXACTLY_256K(18, Method.EXACTLY),
     MAX_512K(19, Method.MAX), EXACTLY_512K(19, Method.EXACTLY),
-    MAX_1M(  20, Method.MAX), EXACTLY_1M(  20, Method.EXACTLY);
+    MAX_1M(  20, Method.MAX), EXACTLY_1M(  20, Method.EXACTLY),
+    MAX_2M(  21, Method.MAX), EXACTLY_2M(  21, Method.EXACTLY),
+    MAX_4M(  22, Method.MAX), EXACTLY_4M(  22, Method.EXACTLY),
+    MAX_8M(  23, Method.MAX), EXACTLY_8M(  23, Method.EXACTLY),
+    MAX_16M( 24, Method.MAX), EXACTLY_16M( 24, Method.EXACTLY);
+
+    /**
+     * Returns a SearchIndexSize given a SearchIndex Method and a power of two size.
+     *
+     * @param method       The method to derive the search index size - up to a value, or exactly a value.
+     * @param powerTwoSize The size of the search index size expressed as a power of two between 1 and 24.
+     * @return A SearchIndexSize enum for the method and power two size specified.
+     * @throws IllegalArgumentException if the method is null, or the powerTwoSize is not between 1 and 24 inclusive.
+     */
+    public static SearchIndexSize getIndexSize(final Method method, final int powerTwoSize) {
+        ArgUtils.checkNullObject(method, "method");
+        switch (powerTwoSize) {
+            case 1:  return method == Method.MAX? MAX_2    : EXACTLY_2;
+            case 2:  return method == Method.MAX? MAX_4    : EXACTLY_4;
+            case 3:  return method == Method.MAX? MAX_8    : EXACTLY_8;
+            case 4:  return method == Method.MAX? MAX_16   : EXACTLY_16;
+            case 5:  return method == Method.MAX? MAX_32   : EXACTLY_32;
+            case 6:  return method == Method.MAX? MAX_64   : EXACTLY_64;
+            case 7:  return method == Method.MAX? MAX_128  : EXACTLY_128;
+            case 8:  return method == Method.MAX? MAX_256  : EXACTLY_256;
+            case 9:  return method == Method.MAX? MAX_512  : EXACTLY_512;
+            case 10: return method == Method.MAX? MAX_1K   : EXACTLY_1K;
+            case 11: return method == Method.MAX? MAX_2K   : EXACTLY_2K;
+            case 12: return method == Method.MAX? MAX_4K   : EXACTLY_4K;
+            case 13: return method == Method.MAX? MAX_8K   : EXACTLY_8K;
+            case 14: return method == Method.MAX? MAX_16K  : EXACTLY_16K;
+            case 15: return method == Method.MAX? MAX_32K  : EXACTLY_32K;
+            case 16: return method == Method.MAX? MAX_64K  : EXACTLY_64K;
+            case 17: return method == Method.MAX? MAX_128K : EXACTLY_128K;
+            case 18: return method == Method.MAX? MAX_256K : EXACTLY_256K;
+            case 19: return method == Method.MAX? MAX_512K : EXACTLY_512K;
+            case 20: return method == Method.MAX? MAX_1M   : EXACTLY_1M;
+            case 21: return method == Method.MAX? MAX_2M   : EXACTLY_2M;
+            case 22: return method == Method.MAX? MAX_4M   : EXACTLY_4M;
+            case 23: return method == Method.MAX? MAX_8M   : EXACTLY_8M;
+            case 24: return method == Method.MAX? MAX_16M  : EXACTLY_16M;
+            default: throw new IllegalArgumentException("Power of two size must be between 1 and 24, inclusive.");
+        }
+    }
 
     /**
      * A size expressed as a power of two.
