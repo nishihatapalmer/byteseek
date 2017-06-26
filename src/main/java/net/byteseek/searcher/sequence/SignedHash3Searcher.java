@@ -558,7 +558,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
             bytes2 = localSequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
             processQ3Hash(MAKE_NEGATIVE, 0, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1, bytes2);
 
-            return new SearchInfo(SHIFTS, HASH_SHIFT);
+            return new SearchInfo(SHIFTS, HASH_SHIFT, MAX_SEARCH_SHIFT);
         }
     }
 
@@ -652,7 +652,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
             // Calculate hash value and make the table entry for it negative:
             processQ3Hash(MAKE_NEGATIVE, 0, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1, bytes2);
 
-            return new SearchInfo(SHIFTS, HASH_SHIFT);
+            return new SearchInfo(SHIFTS, HASH_SHIFT, MAX_SEARCH_SHIFT);
         }
     }
 }

@@ -66,7 +66,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
      */
     protected final SearchIndexSize searchIndexSize;
 
-    public AbstractQgramSearcher(final SequenceMatcher sequence, SearchIndexSize searchIndexSize) {
+    public AbstractQgramSearcher(final SequenceMatcher sequence, final SearchIndexSize searchIndexSize) {
         super(sequence);
         this.searchIndexSize = searchIndexSize;
     }
@@ -87,7 +87,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
         if (searchIndexSize.getSizeMethod() == SearchIndexSize.Method.EXACTLY) {       // specified by user - must use this size exactly.
             HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
         } else {
-            //TODO: or should it be the power of two *one higher* than ceilLogBase2 of total qgrams? What effective margin do we want?
+            //TODO: Profile different values here. What effective margin do we want?  Plus one gives a good result - what does plus 2 do?
             final int qGramPowerTwoSize = 1 + ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
             HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize ?
                                   MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE ? // but not bigger than the maximum allowed,
@@ -125,20 +125,17 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
     protected final static class SearchInfo {
         public final int[] table;
         public final int shift;
-        public final int finalQgramPos;
-        public SearchInfo(final int[] table, final int shift) {
-            this(table, shift, 0);
-        }
-        public SearchInfo(final int[] table, final int shift, final int finalQgramStartPos) {
+        public final int searchLength;
+        public SearchInfo(final int[] table, final int shift, final int searchLength) {
             this.table = table;
             this.shift = shift;
-            this.finalQgramPos = finalQgramStartPos;
+            this.searchLength = searchLength;
         }
         @Override
         public String toString() {
             return getClass().getSimpleName() + "(table size:" + (table == null? 0 : table.length) +
                                                 " hash shift:" + shift +
-                                                " finalQgramPos:" + finalQgramPos + ")";
+                                                " searchLength:" + searchLength + ")";
         }
     }
 

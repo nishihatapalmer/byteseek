@@ -89,7 +89,7 @@ public enum SearchIndexSize {
      * @return A SearchIndexSize enum for the method and power two size specified.
      * @throws IllegalArgumentException if the method is null, or the powerTwoSize is not between 1 and 24 inclusive.
      */
-    public static SearchIndexSize getIndexSize(final Method method, final int powerTwoSize) {
+    public static SearchIndexSize valueOf(final Method method, final int powerTwoSize) {
         ArgUtils.checkNullObject(method, "method");
         switch (powerTwoSize) {
             case 1:  return method == Method.MAX? MAX_2    : EXACTLY_2;

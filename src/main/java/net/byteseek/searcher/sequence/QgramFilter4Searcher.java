@@ -238,7 +238,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SearchInfo info     = forwardSearchInfo.get();
         final int[] BITMASKS      = info.table;
         final int   SHIFT         = info.shift;
-        final int   SEARCH_LENGTH = info.finalQgramPos + 1; // length of pattern to search with is one greater than the final qgram position.
+        final int   SEARCH_LENGTH = info.searchLength;
         final int   MASK          = BITMASKS.length - 1;    // BITMASKS will always be a power of two size.
 
         // Determine safe shifts, starts and ends:
@@ -305,7 +305,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SearchInfo info     = forwardSearchInfo.get();
         final int[] BITMASKS      = info.table;
         final int   SHIFT         = info.shift;
-        final int   SEARCH_LENGTH = info.finalQgramPos + 1; // length  of pattern to search with is one greater than the final qgram pos we use.
+        final int   SEARCH_LENGTH = info.searchLength;
         final int   MASK          = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Initialise window search:
@@ -445,7 +445,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
-        final int SEARCH_LENGTH = info.finalQgramPos + 1;
+        final int   SEARCH_LENGTH = info.searchLength;
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Determine safe shifts, starts and ends:
@@ -514,7 +514,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final SearchInfo info   = backwardSearchInfo.get();
         final int[] BITMASKS    = info.table;
         final int   SHIFT       = info.shift;
-        final int SEARCH_LENGTH = info.finalQgramPos + 1;
+        final int   SEARCH_LENGTH = info.searchLength;
         final int   MASK        = BITMASKS.length - 1; // BITMASKS is always a power of two size.
 
         // Initialise window search:
@@ -766,7 +766,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                                           bytes0, bytes1, bytes2, bytes3);
             }
 
-            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramEndPos);
+            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramEndPos + 1); // length is one more than final pos.
         }
     }
 
@@ -864,7 +864,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                                           bytes0, bytes1, bytes2, bytes3);
             }
 
-            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramEndPos);
+            return new SearchInfo(BITMASKS, HASH_SHIFT, qGramEndPos + 1); // length is one more than final pos.
         }
     }
 }
