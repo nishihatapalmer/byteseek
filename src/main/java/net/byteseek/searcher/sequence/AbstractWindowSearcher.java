@@ -94,8 +94,7 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
         // Initialise:
         final int sequenceLength = getSequenceLength();
         final int lastSequencePosition = sequenceLength - 1;
-        long searchPosition = fromPosition > 0?
-                              fromPosition : 0;
+        long searchPosition = fromPosition > 0? fromPosition : 0;
 
         // While there is data to search in:
         Window window;
@@ -143,12 +142,11 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
             // Search up to the last position in the window, or the toPosition,
             // whichever comes first:
             final long lastWindowPosition = windowStartPosition + arrayLastPosition;
-            final long lastSearchPosition = toPosition < lastWindowPosition?
-                                            toPosition : lastWindowPosition;
+            final long lastSearchPosition = toPosition < lastWindowPosition? toPosition : lastWindowPosition;
             final long readerResult       = doSearchForwards(reader, searchPosition, lastSearchPosition);
 
             // Did we find a match?
-            if (readerResult != NO_MATCH) {
+            if (readerResult >= 0) {
                 return readerResult;
             }
 
@@ -184,8 +182,7 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
      * @return The position of a match, or a negative number if no match was found.
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
-    protected abstract long doSearchForwards(WindowReader reader,
-                                             long fromPosition, long toPosition) throws IOException;
+    protected abstract long doSearchForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
 
     /**
@@ -210,8 +207,8 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
 
         // Initialise:
         final int lastSequencePosition = getSequenceLength() - 1;
-        final long finalSearchPosition = toPosition > 0?
-                                         toPosition : 0;
+        final long finalSearchPosition = toPosition > 0? toPosition : 0;
+
         // Ensure we don't round *up* the from position to zero if it's already negative.
         // Otherwise, ensure that the from Position is within the length of the reader.
         long searchPosition = fromPosition < 0? fromPosition : withinLength(reader, fromPosition);
@@ -279,7 +276,7 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
             final long readerResult = doSearchBackwards(reader, searchPosition, searchToPosition);
 
             // Did we find a match?
-            if (readerResult != NO_MATCH) {
+            if (readerResult >= 0) {
                 return readerResult;
             }
 
@@ -308,8 +305,7 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
      * @return The position of a match, or a negative number if no match was found.
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
-    protected abstract long doSearchBackwards(WindowReader reader,
-                                              long fromPosition, long toPosition) throws IOException;
+    protected abstract long doSearchBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
 
 
     /**
