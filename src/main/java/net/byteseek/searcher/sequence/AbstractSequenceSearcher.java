@@ -53,6 +53,10 @@ import net.byteseek.utils.ArgUtils;
  */
 public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher implements SequenceSearcher {
 
+    /**
+     * A constant to indicate no match.  Note that *any* negative number means there was no match - you should
+     * *never* test for this specific value - you should test for a negative number.
+     */
     protected final int NO_MATCH = -1;
 
     /**
