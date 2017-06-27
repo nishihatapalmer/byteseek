@@ -160,7 +160,7 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         int arrayPosition = 0;
         int windowLength  = 0;
         byte[] array      = null;
-        Window window;
+        Window window     = null;
 
         // Search forwards:
         long searchPosition = fromPosition;
@@ -187,8 +187,8 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
             searchPosition += shift;
             arrayPosition += shift;
         }
-
-        return NO_MATCH;
+        return window == null? NO_MATCH                     // we have a null window so we just return a negative value.
+                             : toPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
     /**
@@ -233,14 +233,14 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
      * {@inheritDoc}
      */
     @Override
-    public long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition ) throws IOException {
+    public long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
 
         // Initialise
         final int[] safeShifts = backwardInfo.get();
         final SequenceMatcher theSequence = sequence;
         int arrayPosition = -1;
         byte[] array      = null;
-        Window window;
+        Window window     = null;
 
         // Search backwards:
         long searchPosition = fromPosition;
@@ -266,8 +266,8 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
             searchPosition -= shift;
             arrayPosition -= shift;
         }
-
-        return NO_MATCH;
+        return window == null? NO_MATCH                     // we have a null window, so just return a negative number.
+                             : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 
 

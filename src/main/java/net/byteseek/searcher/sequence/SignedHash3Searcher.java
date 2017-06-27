@@ -290,7 +290,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
         long searchPos             = (fromPosition > 0? fromPosition : 0) + LAST_PATTERN_POS;
 
         // Search forwards:
-        Window window;
+        Window window = null;
         while (searchPos <= SEARCH_END && (window = reader.getWindow(searchPos)) != null) {
 
             // Get window array info:
@@ -301,8 +301,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
             // Calculate array search end positions:
             final long DISTANCE_TO_END   = SEARCH_END - searchPos;
             final int REMAINING_IN_ARRAY = arrayEndPos - arrayPos;
-            final int LAST_ARRAY_POS     = DISTANCE_TO_END < REMAINING_IN_ARRAY?
-                                     (int) DISTANCE_TO_END + arrayPos : arrayEndPos;
+            final int LAST_ARRAY_POS     = DISTANCE_TO_END < REMAINING_IN_ARRAY? (int) DISTANCE_TO_END + arrayPos : arrayEndPos;
 
             // Search forwards if there is still anything to search in this array:
             while (arrayPos <= LAST_ARRAY_POS) {
@@ -334,7 +333,9 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
                 }
             }
         }
-        return NO_MATCH;
+        return window == null? NO_MATCH                // no window, return no match (-1)
+                             : SEARCH_END - searchPos; // return the (negative) safe shift which can be made.
+
     }
 
     @Override
@@ -389,11 +390,10 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
         final int MASK              = SHIFTS.length - 1; // SHIFTS is always a power of two in length.
 
         // Determine safe shifts, starts and ends:
-        final long SEARCH_END   = toPosition > 0?
-                                  toPosition : 0;
+        final long SEARCH_END   = toPosition > 0? toPosition : 0;
 
         // Search forwards:
-        Window window;
+        Window window = null;
         long searchPos = fromPosition;
         while (searchPos >= SEARCH_END && (window = reader.getWindow(searchPos)) != null) {
 
@@ -404,8 +404,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
             // Calculate safe starts and ends:
             final int    CROSSOVER_QGRAM_POS = WINDOW_LENGTH - QLEN + 1;
             final long DISTANCE_TO_END       = SEARCH_END - window.getWindowPosition();
-            final int  LAST_ARRAY_POS        = DISTANCE_TO_END > 0?
-                                         (int) DISTANCE_TO_END : 0;
+            final int  LAST_ARRAY_POS        = DISTANCE_TO_END > 0? (int) DISTANCE_TO_END : 0;
 
             // Search backwards if there is still anything to search in this array:
             int arrayPos = reader.getWindowOffset(searchPos);
@@ -437,7 +436,8 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
                 }
             }
         }
-        return NO_MATCH;
+        return window == null? NO_MATCH                // window is null, return no match (-1).
+                             : searchPos - SEARCH_END; // return the (negative) safe shift we can make.
     }
 
 

@@ -433,7 +433,8 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                 pos = FIRST_QGRAM_END_POS;
             }
         }
-        return NO_MATCH;
+        return window == null? NO_MATCH          // no window, return -1.
+                             : TO_END_POS - pos; // return (negative) safe shift we can make.
     }
 
     @Override
@@ -634,7 +635,8 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                 pos = LAST_MATCH_POS - 1 + SEARCH_SHIFT;
             }
         }
-        return NO_MATCH;
+        return window == null? NO_MATCH          // window is null, return -1.
+                             : pos - SEARCH_END; // return (negative) safe shift we can make.
     }
 
 

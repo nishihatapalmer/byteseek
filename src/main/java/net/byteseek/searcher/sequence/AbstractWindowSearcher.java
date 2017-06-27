@@ -150,8 +150,9 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
                 return readerResult;
             }
 
-            // Continue the search one on from where we last looked:
-            searchPosition = lastSearchPosition + 1;
+            // Continue the search past on, moving on by subtracting the reader result.
+            // The reader result should reflect how far it is safe to shift onwards (-1 is always safe).
+            searchPosition = lastSearchPosition - readerResult;
         }
 
         return NO_MATCH;
@@ -173,8 +174,8 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
      * It does not guarantee that the length of the WindowReader input source is long enough for a match
      * (e.g. the next window may not exist).
      * <p>
-     * If no match is found, the method returns a negative number which represents the amount to shift
-     * onwards by.  -1 means move on one, -2 move on two, etc.
+     * If a match is found, the method returns the position of the match.  If no match is found, the algorithm
+     * should return a safe shift to make as a *negative* number.  It is always safe to return -1.
      *
      * @param reader The reader providing bytes to search in.
      * @param fromPosition The search position to search from.
@@ -280,15 +281,13 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
                 return readerResult;
             }
 
-            // Continue the search one on from where we last looked:
-            searchPosition = searchToPosition - 1;
+            // Continue the search at the next safe position (reader result is negative, so add it to move backwards)
+            searchPosition = searchToPosition + readerResult;
         }
 
         return NO_MATCH;
     }
 
-
-    //TODO: update javadoc, negative numbers for better shifting.
     /**
      * This abstract method searches backwards crossing window boundaries.  It is
      * called by the {@link #searchBackwards(net.byteseek.io.reader.WindowReader, long, long)}
@@ -298,6 +297,9 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
      * matcher sequence.  This at least removes window boundaries from validating
      * that a match exists.  It may still be necessary to deal with window management
      * in the operation of the search algorithm itself.
+     * <p>
+     * If a match is found, the method returns the position of the match.  If no match is found, the algorithm
+     * should return a safe shift to make as a *negative* number.  It is always safe to return -1.
      *
      * @param reader The reader providing bytes to search in.
      * @param fromPosition The search position to search from.

@@ -311,7 +311,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
         final long TO_END_POS     = toPosition + SLEN_MINUS_QLEN;
 
         // Search forwards.
-        Window window;
+        Window window = null;
         long pos;
         for (pos = SEARCH_START;
              (window = reader.getWindow(pos)) != null && pos <= TO_END_POS;
@@ -406,7 +406,8 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
                 pos = FIRST_QGRAM_END_POS;
             }
         }
-        return NO_MATCH;
+        return window == null? NO_MATCH          // no window, return -1.
+                             : TO_END_POS - pos; // return (negative) safe shift which can be made.
     }
 
     @Override
@@ -582,7 +583,8 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
                 pos = LAST_MATCH_POS - 1 + SEARCH_SHIFT;
             }
         }
-        return NO_MATCH;
+        return window == null? NO_MATCH          // no window, return -1.
+                             : pos - SEARCH_END; // return (negative) safe shift which can be made.
     }
 
 

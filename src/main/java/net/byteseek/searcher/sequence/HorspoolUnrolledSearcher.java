@@ -194,8 +194,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
      * on the SequenceMatcher to verify whether a match exists.
      */
     @Override
-    protected long doSearchForwards(final WindowReader reader, final long fromPosition,
-        final long toPosition) throws IOException {
+    protected long doSearchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
             
         // Get the objects needed to search:
         final SearchInfo info = forwardInfo.get();
@@ -209,7 +208,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         long searchPosition = fromPosition + endSequencePosition;
             
         // While there is a window to search in:
-        Window window;            
+        Window window = null;
         while (searchPosition <= finalPosition &&
                (window = reader.getWindow(searchPosition)) != null) {
             
@@ -250,8 +249,8 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
-
-        return NO_MATCH;
+        return window == null? NO_MATCH                        // we have a null window so we just return a negative value.
+                             : finalPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
     
@@ -309,8 +308,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
      * {@inheritDoc}
      */
     @Override
-    protected long doSearchBackwards(final WindowReader reader,
-            final long fromPosition, final long toPosition ) throws IOException {
+    protected long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition ) throws IOException {
         
         // Initialise:
         final SearchInfo info = backwardInfo.get();
@@ -320,7 +318,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         long searchPosition = fromPosition;
         
         // Search backwards across the windows:
-        Window window;        
+        Window window = null;
         while (searchPosition >= toPosition && 
                (window = reader.getWindow(searchPosition))!= null) {
             
@@ -361,8 +359,8 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             // No match was found in this array - calculate the current search position:
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
-
-        return NO_MATCH;
+        return window == null? NO_MATCH                     // we have a null window, so just return a negative number.
+                             : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 
     /**

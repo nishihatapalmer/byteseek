@@ -218,7 +218,7 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
         long searchPosition = fromPosition + endSequencePosition;
 
         // While there is a window to search in:
-        Window window;
+        Window window = null;
         while (searchPosition <= finalPosition && (window = reader.getWindow(searchPosition)) != null) {
 
             // Initialise array search:
@@ -255,8 +255,8 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
-
-        return NO_MATCH;
+        return window == null? NO_MATCH                        // we have a null window so we just return a negative value.
+                             : finalPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
     /**
@@ -318,7 +318,7 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
         long searchPosition = fromPosition;
 
         // Search backwards across the windows:
-        Window window;
+        Window window = null;
         while (searchPosition >= toPosition && (window = reader.getWindow(searchPosition))!= null) {
 
             // Initialise the window search:
@@ -357,8 +357,8 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
             // No match was found in this array - calculate the current search position:
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
-
-        return NO_MATCH;
+        return window == null? NO_MATCH                     // we have a null window, so just return a negative number.
+                             : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 
     /**
