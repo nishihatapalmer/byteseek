@@ -77,9 +77,6 @@ import net.byteseek.utils.factory.ObjectFactory;
  * @author Matt Palmer
  */
 
-//TODO: basic profiling shows performance of this searcher is abysmal on low alphabets and long strings.
-    // orders of magnitude worse than just doing a naive search.  Investigate and mitigate if possible.
-
 public final class QgramFilter2Searcher extends AbstractQgramSearcher {
 
     /*************
