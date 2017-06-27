@@ -56,20 +56,30 @@ public class SearchersToTest {
      *
      * @param sequence The sequence matcher to search for.
      */
-    public void createSearchers(SequenceMatcher sequence) {
+    public void createSearchers(SequenceMatcher sequence, boolean lowAlphabet) {
         searchers = new ArrayList<SequenceSearcher>();
         searchers.add(new SequenceMatcherSearcher(sequence));
         searchers.add(new SundayQuickSearcher(sequence));
         searchers.add(new HorspoolSearcher(sequence));
         searchers.add(new HorspoolUnrolledSearcher(sequence));
         searchers.add(new SignedHorspoolSearcher(sequence));
-        searchers.add(new ShiftOrSearcher(sequence));
-        searchers.add(new QgramFilter2Searcher(sequence));
-        searchers.add(new QgramFilter3Searcher(sequence));
-        searchers.add(new QgramFilter4Searcher(sequence));
         searchers.add(new SignedHash2Searcher(sequence));
         searchers.add(new SignedHash3Searcher(sequence));
         searchers.add(new SignedHash4Searcher(sequence));
+        searchers.add(new ShiftOrSearcher(sequence));
+        //TODO: on low alphabets and long patterns (e.g. human dna, 500 long) these searchers perform *incredibly* poorly.
+        // I disable them from full testing when the sequence length gets too long, otherwise running a lot of tests takes hours
+        // to complete.  Should run more tests of these algorithms on shorter patterns to achieve the same test coverage,
+        // and occasionally run longer pattern tests on them to ensure longer patterns still work for them.
+        if (!lowAlphabet || sequence.length() < 200) {
+            searchers.add(new QgramFilter2Searcher(sequence));
+
+        }
+        if (!lowAlphabet || sequence.length() < 800) {
+            searchers.add(new QgramFilter3Searcher(sequence));
+        }
+        searchers.add(new QgramFilter4Searcher(sequence));
+
     }
 
 
@@ -85,15 +95,15 @@ public class SearchersToTest {
      * @param sequence The string to search for case insensitively.
      * @throws CompileException
      */
-    public void createCaseInsensitiveSearchers(String sequence) throws CompileException {
+    public void createCaseInsensitiveSearchers(String sequence, boolean lowAlphabet) throws CompileException {
         final String encodedString = RegexParser.encodeCaseInsensitiveString(sequence);
-        createSearchers(compiler.compile(encodedString));
+        createSearchers(compiler.compile(encodedString), lowAlphabet);
     }
 
 
-    public void createCaseInsensitiveSearchers(byte[] sequence) throws CompileException {
+    public void createCaseInsensitiveSearchers(byte[] sequence, boolean lowAlphabet) throws CompileException {
         final String newString = new String(sequence, Charset.forName("ISO-8859-1"));
-        createCaseInsensitiveSearchers(newString);
+        createCaseInsensitiveSearchers(newString, lowAlphabet);
     }
 
     /**
@@ -101,8 +111,8 @@ public class SearchersToTest {
      *
      * @param sequence the ASCII string to search for.
      */
-    public void createSearchers(String sequence) {
-        createSearchers(new ByteSequenceMatcher(sequence.getBytes()));
+    public void createSearchers(String sequence, boolean lowAlphabet) {
+        createSearchers(new ByteSequenceMatcher(sequence.getBytes()), lowAlphabet);
     }
 
 
@@ -111,8 +121,8 @@ public class SearchersToTest {
      *
      * @param sequence The byte sequence to search for.
      */
-    public void createSearchers(byte[] sequence) {
-        createSearchers(new ByteSequenceMatcher(sequence));
+    public void createSearchers(byte[] sequence, boolean lowAlphabet) {
+        createSearchers(new ByteSequenceMatcher(sequence), lowAlphabet);
     }
 
 

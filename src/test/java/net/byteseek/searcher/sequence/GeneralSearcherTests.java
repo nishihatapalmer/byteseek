@@ -54,7 +54,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchForwardsEmptyByteArray() {
-        createSearchers("x");
+        createSearchers("x", false);
         byte[] data = new byte[0];
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -69,7 +69,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchBackwardsEmptyByteArray() {
-        createSearchers("x");
+        createSearchers("x", false);
         byte[] data = new byte[0];
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -83,7 +83,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchForwardsEmptyReader() {
-        createSearchers("x");
+        createSearchers("x", false);
         WindowReader data = new ByteArrayReader(new byte[0]);
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -98,7 +98,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchBackwardsEmptyReader() {
-        createSearchers("x");
+        createSearchers("x", false);
         WindowReader data = new ByteArrayReader(new byte[0]);
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -114,7 +114,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchForwardsShortByteArray() {
-        createSearchers("xyz123abc");
+        createSearchers("xyz123abc", false);
         byte[] data = new byte[2];
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -129,7 +129,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchBackwardsShortByteArray() {
-        createSearchers("xyz123abc");
+        createSearchers("xyz123abc", false);
         byte[] data = new byte[2];
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -143,7 +143,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchForwardsShortReader() {
-        createSearchers("xyz123abc");
+        createSearchers("xyz123abc", false);
         WindowReader data = new ByteArrayReader(new byte[2]);
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -158,7 +158,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchBackwardsShortReader() {
-        createSearchers("xyz123abc");
+        createSearchers("xyz123abc", false);
         WindowReader data = new ByteArrayReader(new byte[2]);
         for (SequenceSearcher searcher : searchers) {
             try {
@@ -174,7 +174,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchBackwardsArrayAroundZero() {
-        createSearchers("xyz");
+        createSearchers("xyz", false);
         byte[] data = "xyz".getBytes();
         for (SequenceSearcher searcher : searchers) {
             int result = searcher.searchSequenceBackwards(data, -1);
@@ -186,7 +186,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchBackwardsReaderAroundZero() throws IOException {
-        createSearchers("xxx");
+        createSearchers("xxx", false);
         WindowReader data = new ByteArrayReader("xxx");
         for (SequenceSearcher searcher : searchers) {
             long result = searcher.searchSequenceBackwards(data, -1);
@@ -198,7 +198,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchFowardsArrayAroundZero() {
-        createSearchers("xyz");
+        createSearchers("xyz", false);
         byte[] data = "xyzzzzzz".getBytes();
         for (SequenceSearcher searcher : searchers) {
             int result = searcher.searchSequenceForwards(data, 1);
@@ -210,7 +210,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchForwardsReaderAroundZero() throws IOException {
-        createSearchers("xxx");
+        createSearchers("xxx", false);
         WindowReader data = new ByteArrayReader("xxxyyy");
         for (SequenceSearcher searcher : searchers) {
             long result = searcher.searchSequenceForwards(data, 1);
@@ -224,7 +224,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchFowardsArrayBeforeEnd() {
-        createSearchers("xyz");
+        createSearchers("xyz", false);
         byte[] data = "---xyz".getBytes();
         for (SequenceSearcher searcher : searchers) {
             int result = searcher.searchSequenceForwards(data, 0);
@@ -238,7 +238,7 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     @Test
     public void testSearchForwardsReaderBeforeEnd() throws IOException {
-        createSearchers("xyz");
+        createSearchers("xyz", false);
         WindowReader data = new ByteArrayReader("---xyz");
         for (SequenceSearcher searcher : searchers) {
             long result = searcher.searchSequenceForwards(data, 0);

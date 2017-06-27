@@ -34,6 +34,9 @@ import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 import net.byteseek.searcher.BackwardSearchIterator;
+import net.byteseek.searcher.SearchIndexSize;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,28 +73,35 @@ import java.io.InputStream;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by matt on 11/04/17.
  */
 public class DebugSearcherTest {
 
+    private Random random = new Random(0);
     private SequenceSearcher searcher;
-    private String resourceName = "/romeoandjuliet.txt";
-    //String private resourceName = "/hsapiensdna.txt";
+    private String resourceName = "/romeoandjuliet.txt"; //"/hsapiensdna.txt";
     private String pattern      = "some noyse Lady, come from that nest\r\nOf death, contagion, and v";
+    private byte[] patternbytes;
+    private byte[] data;
 
-    //@Before
+    @Before
     public void createSearcher() {
         //searcher = new SequenceMatcherSearcher(pattern);
-        searcher = new ShiftOrSearcher(pattern);
+
+        data = bytesFrom(resourceName);
+        patternbytes = getRandomPattern(data, 512);
+        pattern      = "iu'd and";
+        searcher = new QgramFilter4Searcher(pattern, SearchIndexSize.EXACTLY_4K);
     }
 
-    //@Test
+    @Test
     public void testSearcherBytesForwards() {
-        int result = searcher.searchSequenceForwards(bytesFrom(resourceName),
-                0 ,0 );
+        int result = searcher.searchSequenceForwards(data);
     }
 
     //@Test
@@ -130,6 +140,13 @@ public class DebugSearcherTest {
         } catch (IOException io) {
             throw new RuntimeException("IO Exception occured reading file", io);
         }
+    }
+
+    private byte[] getRandomPattern(byte[] dataToSearch, int length) {
+        length = length > 0? length : 1; // ensure we have at least a length of one.
+        int position = random.nextInt(dataToSearch.length - length - 1);
+        byte[] result = Arrays.copyOfRange(dataToSearch, position, position + length);
+        return result;
     }
 
     private byte[] getBytes(final String resourceName) {

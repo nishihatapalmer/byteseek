@@ -64,25 +64,20 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     //private static int[] windowSizes = {4096, 4095, 4097, 128, 127, 15, 16}; // more complex tests take ages to run, look for boundary conditions.
     private static int[] windowSizes = {4096}; // simple test with window of 4096 byte size (default).
 
-    public static final int NUM_RANDOM_TESTS = 2050; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
-    public static final int TEST_UPDATE_INTERVAL = 200; // refresh test message every number of tests...
-    public static final int TIMING_UPDATE_INTERVAL = 1000; // refresh timings every number of tests...
+    public static final int NUM_RANDOM_TESTS = 1000; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
+    public static final int TIMING_UPDATE_INTERVAL = 100; // refresh timings every number of tests...
 
     Random random = new Random(0);
 
     SearchData[] data = {
-            new SearchData("/romeoandjuliet.txt", "to", "art", "thou", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
-            new SearchData("/hsapiensdna.txt", "AA", "CAG", "GATACA", "TGATCGA", "CAGGAGAG", "ATCGCATGA", "TCCAGAATCT", "ACACTTGCTCTTTAGAAGAGTGCT", "ATGCCTGCAGCAGAGGAGGCACACAGAGTGTTAA", "GCAGCTTTGGCCTCCTGGGTGCAAGCCATCCTCCTGCCCCAGCCTC")
+            new SearchData("/romeoandjuliet.txt", "textAlphabet", "to", "art", "thou", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
+            new SearchData("/hsapiensdna.txt", "lowAlphabet", "AA", "CAG", "GATACA", "TGATCGA", "CAGGAGAG", "ATCGCATGA", "TCCAGAATCT", "ACACTTGCTCTTTAGAAGAGTGCT", "ATGCCTGCAGCAGAGGAGGCACACAGAGTGTTAA", "GCAGCTTTGGCCTCCTGGGTGCAAGCCATCCTCCTGCCCCAGCCTC")
     };
 
     //TODO: extend to compile patterns involving byte classes rather than just simple strings.
     //      have case insensitive tests now, but still need more involved tests with more complex classes.
 
     //TODO: cross validate reader results against array results (load entire file into a single array).
-
-    //TODO: backwards searches seem to take a lot more time than forwards searches... profile this.
-
-    //TODO: do backwards byte array searches ever terminate on 5000 tests?  Or was it just taking an amazing amount of time...?
 
     @Test
     public void testSearchByteArrayForwards() throws Exception {
@@ -92,29 +87,25 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             // test defined patterns:
             System.out.println("Running byte array forwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchers(pattern.getBytes(), searchData));
                 numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
-                    System.out.println("Running byte array forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
-                }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes, randomTest);
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchers(pattern, searchData));
                 numTimes++;
 
-                createCaseInsensitiveSearchers(pattern);
+                createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchers(pattern, searchData));
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes, -1);
     }
 
     @Test
@@ -125,29 +116,25 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             // test defined patterns:
             System.out.println("Running byte array backwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchersBackwards(pattern.getBytes(), searchData));
                 numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
-                    System.out.println("Running byte array backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
-                }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes, randomTest);
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchersBackwards(pattern, searchData));
                 numTimes++;
 
-                createCaseInsensitiveSearchers(pattern);
+                createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchersBackwards(pattern, searchData));
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes, -1);
     }
 
     @Test
@@ -158,29 +145,25 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             // test defined patterns:
             System.out.println("Running reader forwards defined tests for " + searchData.dataFile);
             for (String pattern : searchData.patterns) {
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchers(pattern.getBytes(), searchData));
                 numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
-                    System.out.println("Running reader forwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
-                }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes, randomTest);
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchers(pattern, searchData));
                 numTimes++;
 
-                createCaseInsensitiveSearchers(pattern);
+                createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchers(pattern, searchData));
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes, -1);
     }
 
     @Test
@@ -192,31 +175,26 @@ public class CrossValidationSearchersTest extends SearchersToTest {
 
             // test defined patterns:
             for (String pattern : searchData.patterns) {
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchersBackwards(pattern.getBytes(), searchData));
                 numTimes++;
             }
             // test randomly selected patterns:
             for (int randomTest = 1; randomTest < NUM_RANDOM_TESTS; randomTest++) {
-                if (randomTest % TEST_UPDATE_INTERVAL == 0) {
-                    System.out.println("Running reader backwards random test on " + searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS + "...");
-                }
                 if (randomTest % TIMING_UPDATE_INTERVAL == 0) {
-                    outputTimes(searcherTimings, numTimes, randomTest);
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
                 }
                 byte[] pattern = getRandomPattern(searchData.getData(), randomTest);
-                createSearchers(pattern);
+                createSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchersBackwards(pattern, searchData));
                 numTimes++;
 
-                createCaseInsensitiveSearchers(pattern);
+                createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchersBackwards(pattern, searchData));
                 numTimes++;
             }
         }
-        outputTimes(searcherTimings, numTimes, -1);
     }
-
 
     private void updateTimes(Map<String, Long> oldTimes, Map<String, Long> newTimes) {
         for (String searcher : newTimes.keySet()) {
@@ -232,13 +210,14 @@ public class CrossValidationSearchersTest extends SearchersToTest {
 
 
 
-    private void outputTimes(Map<String, Long> timings, int numTimes, int testNo) {
-        System.out.println("Av time\tNum time\tTotal time\tSearcher\tTest no: " + testNo);
+    private void outputTimes(Map<String, Long> timings, String searchData) {
+        System.out.println("Av time\tNum times\tTotal time\tSearcher\t\tData: " + searchData);
         Map<String, Long> sortedSearchers = MapUtil.sortByValue(timings);
         for (String searcher : sortedSearchers.keySet()) {
             final long time = timings.get(searcher);
-            System.out.println(time / numTimes + "\t" + numTimes + "\t" + time + "\t" + searcher);
+            System.out.println(time / TIMING_UPDATE_INTERVAL + "\t" + TIMING_UPDATE_INTERVAL + "\t" + time + "\t" + searcher);
         }
+        timings.clear(); // start afresh after outputting current timings.
     }
 
     /**
@@ -574,16 +553,22 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         private byte[] dataToSearch;
         private WindowReader reader;
         private List<WindowReader> readers;
+        private boolean lowAlphabet;
 
-        public SearchData(String resourceName, String... patterns) {
+        public SearchData(String resourceName, String lowAlphabet, String... patterns) {
             this.dataFile = resourceName;
             this.patterns = patterns;
+            this.lowAlphabet = lowAlphabet.equals("lowAlphabet");
         }
         public byte[] getData()  {
             if (dataToSearch == null) {
                 dataToSearch = loadDataToSearch(dataFile);
             }
             return dataToSearch;
+        }
+
+        public boolean lowAlphabet() {
+            return lowAlphabet;
         }
 
         public WindowReader getReader() {
