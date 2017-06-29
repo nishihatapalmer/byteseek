@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-16, All rights reserved.
+ * Copyright Matt Palmer 2015-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -41,8 +41,7 @@ import java.io.IOException;
 /**
  * A Searcher which just looks for a single byte value.
  * <p>
- * This is an incredibly simple search algorithm, just looking at every single byte until it finds
- * it, or not.
+ * This is an incredibly simple search algorithm, just looking at every single byte until it finds it, or not.
  */
 public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
@@ -80,11 +79,6 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
                     startWindowSearchPosition + distanceToWindowEnd :
                     startWindowSearchPosition + (int) distanceToSearchEnd;
 
-            //TODO: performance tests: is it better to inline an array search method here,
-            //      or just call the array search method itself?  Pros: the compiler may inline
-            //      the array search method anyway, plus the array search method does bounds
-            //      checking on the result, which may enable array bounds optimizations.
-
             // Search in the window array:
             for (int arraySearchPosition = startWindowSearchPosition;
                      arraySearchPosition <= endWindowSearchPosition; arraySearchPosition++) {
@@ -96,7 +90,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
             // Move the search position onwards to the next window:
             searchPosition += (distanceToWindowEnd + 1);
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     @Override
@@ -111,7 +105,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
             }
             searchPosition++;
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     @Override
@@ -127,12 +121,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
             final int  startWindowSearchPosition = reader.getWindowOffset(searchPosition);
             final long distanceToSearchEnd       = searchPosition - toPosition;
             final int  endWindowSearchPosition   = distanceToSearchEnd > startWindowSearchPosition?
-                    0 : startWindowSearchPosition - (int) distanceToSearchEnd;
-
-            //TODO: performance tests: is it better to inline an array search method here,
-            //      or just call the array search method itself?  Pros: the compiler may inline
-            //      the array search method anyway, plus the array search method does bounds
-            //      checking on the result, which may enable array bounds optimizations.
+                                                   0 : startWindowSearchPosition - (int) distanceToSearchEnd;
 
             // Search in the window array:
             for (int arraySearchPosition = startWindowSearchPosition;
@@ -145,7 +134,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
             // Move the search position onwards to the next window:
             searchPosition -= (startWindowSearchPosition + 1);
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     @Override
@@ -159,7 +148,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
             }
             searchPosition--;
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     @Override
@@ -182,7 +171,7 @@ public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
     @Override
     public String toString() {
         final int value = sequence & 0xFF;
-        return this.getClass().getSimpleName() + '[' + String.format("%02X", value) + ']';
+        return this.getClass().getSimpleName() + '(' + String.format("%02X", value) + ')';
     }
 
 }
