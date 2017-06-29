@@ -107,8 +107,7 @@ public final class MatcherSearcher extends AbstractSearcher {
         
         // Initialise search:
         final Matcher theMatcher = matcher;    
-        long searchPosition = fromPosition > 0? 
-                              fromPosition : 0;
+        long searchPosition = fromPosition > 0? fromPosition : 0;
         
         // As long as there is more data to search in:
         Window window;        
@@ -118,8 +117,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             // Calculate search bounds for searching in this window:
             final int searchLength = window.length() - reader.getWindowOffset(searchPosition);
             final long searchEndPosition = searchPosition + searchLength - 1;
-            final long finalPosition = toPosition < searchEndPosition?
-                                       toPosition : searchEndPosition;
+            final long finalPosition = toPosition < searchEndPosition? toPosition : searchEndPosition;
             
             // Search forwards in the window:
             while (searchPosition <= finalPosition) {
@@ -130,7 +128,7 @@ public final class MatcherSearcher extends AbstractSearcher {
                 searchPosition++;
             }
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
 
 
@@ -147,10 +145,8 @@ public final class MatcherSearcher extends AbstractSearcher {
         
         // Calculate safe bounds for searching in the byte array:
         final int arrayEndPosition = bytes.length - 1;
-        final int searchEndPosition = toPosition < arrayEndPosition? 
-                                      toPosition : arrayEndPosition;
-        int searchPosition = fromPosition > 0?
-                              fromPosition : 0;           
+        final int searchEndPosition = toPosition < arrayEndPosition? toPosition : arrayEndPosition;
+        int searchPosition = fromPosition > 0? fromPosition : 0;
         
         // Search forwards:
         while (searchPosition <= searchEndPosition) {
@@ -160,7 +156,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             }
             searchPosition++;
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
   
    
@@ -186,7 +182,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             }
             searchPosition--;
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
 
     
@@ -213,7 +209,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             }
             searchPosition--;
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
 
     /**

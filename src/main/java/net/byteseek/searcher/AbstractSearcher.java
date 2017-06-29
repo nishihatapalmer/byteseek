@@ -43,11 +43,17 @@ import net.byteseek.matcher.MatchResult;
  * many of the overloaded search methods, providing default values to the real
  * search methods, and wrapping search results in lists if the version which returns a new list is selected.
  * Implementations only have to implement the four main methods for forwards and backwards searching over byte arrays
- * and WindowReaders, which add results into a list of results passed in to the method.
+ * and WindowReaders.
  *
  * @author Matt Palmer
  */
 public abstract class AbstractSearcher implements Searcher {
+
+	/**
+	 * Constants to indicate how many results were found.
+	 */
+	protected final static int ONE_RESULT_FOUND = 1;
+	protected final static int NO_RESULTS_FOUND = 0;
 
 	 /*************************************
 	  * Wrap search results in a new list *
