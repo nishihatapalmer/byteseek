@@ -67,18 +67,20 @@ public class SearchersToTest {
         searchers.add(new SignedHash3Searcher(sequence));
         searchers.add(new SignedHash4Searcher(sequence));
         searchers.add(new ShiftOrSearcher(sequence));
-        //TODO: on low alphabets and long patterns (e.g. human dna, 500 long) these searchers perform *incredibly* poorly.
+
+        //TODO: on low alphabets and long patterns (e.g. human dna) these searchers perform *incredibly* poorly.
         // I disable them from full testing when the sequence length gets too long, otherwise running a lot of tests takes hours
         // to complete.  Should run more tests of these algorithms on shorter patterns to achieve the same test coverage,
         // and occasionally run longer pattern tests on them to ensure longer patterns still work for them.
         if (!lowAlphabet || sequence.length() < 200) {
             searchers.add(new QgramFilter2Searcher(sequence));
-
         }
         if (!lowAlphabet || sequence.length() < 800) {
             searchers.add(new QgramFilter3Searcher(sequence));
         }
-        searchers.add(new QgramFilter4Searcher(sequence));
+        if (!lowAlphabet || sequence.length() < 4000) {
+            searchers.add(new QgramFilter4Searcher(sequence));
+        }
 
     }
 
