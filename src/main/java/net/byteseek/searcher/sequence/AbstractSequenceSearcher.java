@@ -54,10 +54,11 @@ import net.byteseek.utils.ArgUtils;
 public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher implements SequenceSearcher {
 
     /**
-     * A constant to indicate no match.  Note that *any* negative number means there was no match - you should
-     * *never* test for this specific value - you should test for a negative number.
+     * A constant for subclasses to indicate no match and that the only known safe shift which can be made for further searching is one.
+     * Note that *any* negative number means there was no match - you should  *never* test for this specific value -
+     * you should test for a negative number (< 0) to indicate no match in the current search.
      */
-    protected final int NO_MATCH = -1;
+    protected static final int NO_MATCH_SAFE_SHIFT = -1;
 
     /**
      * The Object which the Searcher should search for.
@@ -98,24 +99,24 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     public long searchForwards(final byte[] bytes,
                                final int fromPosition, final int toPosition,
                                final List<MatchResult> results) {
-        final int result = searchSequenceForwards(bytes, fromPosition, toPosition);
-        if (result >= 0) {
-            results.add(new MatchResult(result, getSequenceLength()));
-            return 1;
+        final int matchPosition = searchSequenceForwards(bytes, fromPosition, toPosition);
+        if (matchPosition >= 0) {
+            results.add(new MatchResult(matchPosition, getSequenceLength()));
+            return ONE_RESULT_FOUND;
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
 
     @Override
     public long searchForwards(final WindowReader reader,
                                final long fromPosition, final long toPosition,
                                 final List<MatchResult> results) throws IOException {
-        final long result = searchSequenceForwards(reader, fromPosition, toPosition);
-        if (result >= 0) {
-            results.add(new MatchResult(result, getSequenceLength()));
-            return 1;
+        final long matchPosition = searchSequenceForwards(reader, fromPosition, toPosition);
+        if (matchPosition >= 0) {
+            results.add(new MatchResult(matchPosition, getSequenceLength()));
+            return ONE_RESULT_FOUND;
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
 
     /**
@@ -150,24 +151,24 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     public long searchBackwards(final byte[] bytes,
                                 final int fromPosition, final int toPosition,
                                 final List<MatchResult> results) {
-        final int result = searchSequenceBackwards(bytes, fromPosition, toPosition);
-        if (result >= 0) {
-            results.add(new MatchResult(result, getSequenceLength()));
-            return 1;
+        final int matchPosition = searchSequenceBackwards(bytes, fromPosition, toPosition);
+        if (matchPosition >= 0) {
+            results.add(new MatchResult(matchPosition, getSequenceLength()));
+            return ONE_RESULT_FOUND;
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
 
     @Override
     public long searchBackwards(final WindowReader reader,
                                 final long fromPosition, final long toPosition,
                                 final List<MatchResult> results) throws IOException {
-        final long result = searchSequenceBackwards(reader, fromPosition, toPosition);
-        if (result >= 0) {
-            results.add(new MatchResult(result, getSequenceLength()));
-            return 1;
+        final long matchPosition = searchSequenceBackwards(reader, fromPosition, toPosition);
+        if (matchPosition >= 0) {
+            results.add(new MatchResult(matchPosition, getSequenceLength()));
+            return ONE_RESULT_FOUND;
         }
-        return 0;
+        return NO_RESULTS_FOUND;
     }
 
     /**
