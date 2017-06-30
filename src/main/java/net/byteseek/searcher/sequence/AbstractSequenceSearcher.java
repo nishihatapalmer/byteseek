@@ -56,7 +56,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     /**
      * A constant for subclasses to indicate no match and that the only known safe shift which can be made for further searching is one.
      * Note that *any* negative number means there was no match - you should  *never* test for this specific value -
-     * you should test for a negative number (< 0) to indicate no match in the current search.
+     * you should test for a negative number to indicate no match in the current search.
      */
     protected static final int NO_MATCH_SAFE_SHIFT = -1;
 
