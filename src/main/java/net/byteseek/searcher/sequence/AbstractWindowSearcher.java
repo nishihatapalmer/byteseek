@@ -38,8 +38,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
 /**
- * This abstract base class for sequence searchers holds the sequence to be
- * searched for and provides generic implementations of:
+ * This abstract base class for sequence searchers provides generic implementations of:
  * <ul>
  * <li>{@link #searchForwards(net.byteseek.io.reader.WindowReader, long, long)}
  * <li>{@link #searchBackwards(net.byteseek.io.reader.WindowReader, long, long)}
@@ -59,7 +58,6 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  *
  * @author Matt Palmer
  */
-
 public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher<T> {
 
     /**
@@ -97,7 +95,7 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
         long searchPosition = fromPosition > 0? fromPosition : 0;
 
         // While there is data to search in:
-        Window window;
+        Window window = null;
         while (searchPosition <= toPosition && (window = reader.getWindow(searchPosition)) != null) {
 
             // Does the sequence fit into the searchable bytes of this window?
@@ -125,37 +123,38 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
                     return searchPosition - arrayStartPosition + arrayResult;
                 }
 
-                // Continue the search one on from where we last looked:
-                searchPosition += (arrayMaxPosition - arrayStartPosition + 1);
+                // Continue the search from the next available position (subtract negative arrayResult to get shift):
+                searchPosition += (arrayMaxPosition - arrayStartPosition - arrayResult);
 
                 // Did we pass the final toPosition?  In which case, we're finished.
                 if (searchPosition > toPosition) {
-                    return NO_MATCH;
+                    return toPosition - searchPosition; // return next possible shift as a negative number.
                 }
             }
 
-            // From the current search position, the sequence crosses over in to
-            // the next window, so we can't search directly in the window byte array.
-            // We must use the reader interface on the sequence to let it match
-            // over more bytes than this window has available.
+            // It is likely that the sequence now crosses over into another window.
+            // If so, we have to search across the window boundary, up to the end of the current window.
+            // It is also possible we have shifted entirely into another window.
 
-            // Search up to the last position in the window, or the toPosition,
-            // whichever comes first:
+            //Calculate the last possible search position.
             final long lastWindowPosition = windowStartPosition + arrayLastPosition;
             final long lastSearchPosition = toPosition < lastWindowPosition? toPosition : lastWindowPosition;
-            final long readerResult       = doSearchForwards(reader, searchPosition, lastSearchPosition);
 
-            // Did we find a match?
-            if (readerResult >= 0) {
-                return readerResult;
+            // If we are still within the current window, search up to the end of it using the reader searcher:
+            if (searchPosition <= lastSearchPosition) {
+                final long readerResult = doSearchForwards(reader, searchPosition, lastSearchPosition);
+
+                // Did we find a match?
+                if (readerResult >= 0) {
+                    return readerResult;
+                }
+
+                // Continue the search, moving on by subtracting the (negative) reader result.
+                searchPosition = lastSearchPosition - readerResult;
             }
-
-            // Continue the search past on, moving on by subtracting the reader result.
-            // The reader result should reflect how far it is safe to shift onwards (-1 is always safe).
-            searchPosition = lastSearchPosition - readerResult;
         }
 
-        return NO_MATCH;
+        return window == null? NO_MATCH_SAFE_SHIFT : toPosition - searchPosition;
     }
 
     /**
@@ -184,7 +183,6 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
      * @throws IOException If the reader encounters difficulties reading bytes.
      */
     protected abstract long doSearchForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
-
 
     /**
      * {@inheritDoc}
@@ -215,7 +213,7 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
         long searchPosition = fromPosition < 0? fromPosition : withinLength(reader, fromPosition);
 
         // While there is data to search in:
-        Window window;
+        Window window = null;
         while (searchPosition >= finalSearchPosition && (window = reader.getWindow(searchPosition)) != null) {
 
             // Get some info about the window:
@@ -235,57 +233,50 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
                                              (int) endOfSearchRelativeToWindow : 0;
 
                 // Search backwards in the byte array of the window:
-                final int arrayResults = searchSequenceBackwards(window.getArray(), arrayStartSearchPosition, arrayEndSearchPosition);
+                final int arrayResult = searchSequenceBackwards(window.getArray(), arrayStartSearchPosition, arrayEndSearchPosition);
 
                 // Did we find any matches?
-                if (arrayResults >= 0) {
-                    return searchPosition - arrayStartSearchPosition + arrayResults;
+                if (arrayResult >= 0) {
+                    return searchPosition - arrayStartSearchPosition + arrayResult;
                 }
 
-                // Calculate the search position for one behind where we've looked in the array:
-                final int arrayBytesSearched = arrayStartSearchPosition - arrayEndSearchPosition + 1;
-                searchPosition -= arrayBytesSearched;
+                // Calculate the search position for the next place to search.
+                searchPosition -= arrayStartSearchPosition - arrayEndSearchPosition - arrayResult;
 
                 // Did we pass the final search position already?
                 if (searchPosition < finalSearchPosition) {
-                    return NO_MATCH;
+                    return searchPosition - finalSearchPosition;
                 }
             }
 
-            // From the current search position, the sequence crosses over in to
-            // another window, so we can't search directly in the window byte array.
-            // We must use the reader interface on the sequence to let it match
-            // over more bytes than this window has available.
+            //TODO: since we are now potentially shifting by more than one, if we shift by search length, we might end up back in an array search.
 
             // The sequence is either just crossing back into the previous window,
-            // or it is crossing over into the next window (it can be both, but this doesn't matter,
+            // or it is crossing over into the next window (it can be both for a long sequence, but this doesn't matter,
             // what matters is whether the searchPosition is within the current window or the previous one,
             // so we can calculate the correct position to search to.
-            final long possibleToPosition;
-            // If the sequence is now before the start of *this* window, cross over back into previous window.
-            if (searchPosition < windowStartPosition) {
-                possibleToPosition = searchPosition - lastSequencePosition + 1; // Align end of sequence with start of this window.
-            } else { // the sequence starts within the current window, but crosses into the *next* window
-                     // (can only happen on first search if we start crossed).
-                possibleToPosition = windowStartPosition + arrayLastPosition - lastSequencePosition + 1;
+
+            final long possiblePos = windowStartPosition - lastSequencePosition +               // end of pattern aligned with current window start.
+                    (searchPosition < windowStartPosition? 0 : window.length()); // make it the next window if we're still in the current one.
+            final long searchToPosition = possiblePos > finalSearchPosition? possiblePos : finalSearchPosition;
+
+            // If there is still something to search by the reader (sequence not entirely out of current window)...
+            if (searchPosition >= searchToPosition) {
+
+                // Search backwards using the reader when crossing window boundaries.
+                final long readerResult = doSearchBackwards(reader, searchPosition, searchToPosition);
+
+                // Did we find a match?
+                if (readerResult >= 0) {
+                    return readerResult;
+                }
+
+                // Continue the search at the next safe position (reader result is negative, so add it to move backwards)
+                searchPosition = searchToPosition + readerResult;
             }
-
-            // Make sure the search position doesn't go back further than the final position.
-            final long searchToPosition = possibleToPosition > finalSearchPosition?
-                                          possibleToPosition : finalSearchPosition;
-
-            final long readerResult = doSearchBackwards(reader, searchPosition, searchToPosition);
-
-            // Did we find a match?
-            if (readerResult >= 0) {
-                return readerResult;
-            }
-
-            // Continue the search at the next safe position (reader result is negative, so add it to move backwards)
-            searchPosition = searchToPosition + readerResult;
         }
 
-        return NO_MATCH;
+        return window == null? NO_MATCH_SAFE_SHIFT : searchPosition - finalSearchPosition;
     }
 
     /**
