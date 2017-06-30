@@ -125,7 +125,7 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
             }
             searchPosition++;
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     /**
@@ -158,7 +158,7 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
                 searchPosition++;
             }
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
     
     @Override
@@ -180,7 +180,7 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
             }
             searchPosition--;
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
 
@@ -212,7 +212,7 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
                 searchPosition--;
             }
         }
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
    

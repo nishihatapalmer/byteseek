@@ -43,14 +43,21 @@ import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
 
-
 /**
  * An implementation of the Sunday Quick searcher algorithm described in
  * "A very fast substring search algorithm", by SUNDAY D.M., 1990.
  * <p>
  * It is a modification of the Horspool search algorithm.  Sunday realised that you can shift on the
  * position one past the end of the pattern, not just on the end of the pattern.  Although this leads to larger
- * shifts, in practice the algorithm does not obtain better performance than Horspool.
+ * shifts, in practice the algorithm does not obtain better performance than plain Horspool.
+ * <p>
+ * This well illustrates one of the core tensions in search algorithm design.
+ * Although there can be a theoretical boost to performance, it does not always translate into better performance in practice.
+ * This is often due to greater processing complexity, more memory accesses, worse memory cache hits,
+ * or code which cannot be optimised as well to run on the underlying hardware for some other reason.
+ * <p>
+ * It is faster than doing a naive search, but there is no reason to choose this search algorithm except
+ * curiosity about the performance and design of search algorithms.
  *
  * @author Matt Palmer
  */
@@ -123,10 +130,8 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         final int length = theSequence.length();
         final int finalPosition = bytes.length - length;
         final int lastLoopPosition = finalPosition - 1;
-        final int lastPosition = toPosition < lastLoopPosition ?
-                                 toPosition : lastLoopPosition;
-        int searchPosition = fromPosition > 0 ?
-                             fromPosition : 0;
+        final int lastPosition = toPosition < lastLoopPosition? toPosition : lastLoopPosition;
+        int searchPosition = fromPosition > 0? fromPosition : 0;
 
         // Search forwards.  The loop does not check for the final
         // position, as we shift on the byte after the sequence.
@@ -138,13 +143,11 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         }
 
         // Check the final position if necessary:
-        if (searchPosition == finalPosition &&
-                toPosition >= finalPosition &&
-                theSequence.matches(bytes, finalPosition)) {
+        if (searchPosition == finalPosition && toPosition >= finalPosition && theSequence.matches(bytes, finalPosition)) {
             return finalPosition;
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT; //TODO: figure out logic to get better shifts here... toPosition - searchPosition doesn't work.
     }
 
     /**
@@ -175,7 +178,7 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
             if (arrayPosition >= windowLength) {
                 window = reader.getWindow(searchPosition + length);
                 if (window == null) { // no further data, so no further match possible.
-                    return NO_MATCH;
+                    return NO_MATCH_SAFE_SHIFT;
                 }
                 array = window.getArray();
                 arrayPosition = reader.getWindowOffset(searchPosition + length);
@@ -187,7 +190,7 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
             searchPosition += shift;
             arrayPosition += shift;
         }
-        return window == null? NO_MATCH                     // we have a null window so we just return a negative value.
+        return window == null? NO_MATCH_SAFE_SHIFT                     // we have a null window so we just return a negative value.
                              : toPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
@@ -202,8 +205,7 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         final SequenceMatcher theSequence = sequence;
         
         // Calculate safe bounds for the search:
-        final int lastLoopPosition = toPosition > 1?
-                                     toPosition : 1;
+        final int lastLoopPosition = toPosition > 1? toPosition : 1;
         final int firstPossiblePosition = bytes.length - sequence.length();
         int searchPosition = fromPosition < firstPossiblePosition ?
                              fromPosition : firstPossiblePosition;
@@ -217,15 +219,13 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
             }
             searchPosition -= safeShifts[bytes[searchPosition - 1] & 0xFF];             
         }
-        
+
         // Check for first position if necessary:
-        if (searchPosition == 0 &&
-            toPosition < 1 &&
-                theSequence.matches(bytes, 0)) {
+        if (searchPosition == 0 && toPosition < 1 && theSequence.matches(bytes, 0)) {
             return 0;
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT; //TODO: figure out logic to get better shifts here... searchPosition - toPosition doesn't work.
     }
     
     
@@ -255,7 +255,7 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
             if (arrayPosition < 0) {
                 window = reader.getWindow(searchPosition - 1);
                 if (window == null) { // no further data, so no further match possible.
-                    return NO_MATCH;
+                    return NO_MATCH_SAFE_SHIFT;
                 }
                 array = window.getArray();
                 arrayPosition = reader.getWindowOffset(searchPosition - 1);
@@ -266,7 +266,7 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
             searchPosition -= shift;
             arrayPosition -= shift;
         }
-        return window == null? NO_MATCH                     // we have a null window, so just return a negative number.
+        return window == null? NO_MATCH_SAFE_SHIFT                     // we have a null window, so just return a negative number.
                              : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 

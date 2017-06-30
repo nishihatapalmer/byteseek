@@ -245,13 +245,12 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
         final int SLEN_MINUS_QLEN    = SEARCH_LENGTH - QLEN;
         final int SEARCH_SHIFT       = SLEN_MINUS_QLEN + 1;
         final int SEARCH_START       = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
-        final int TO_END_POS         = toPosition + SEARCH_LENGTH - 1;
-        final int LAST_MATCH_POS     = bytes.length - localSequence.length(); // length may not be same as pattern_length for searching.
-        final int LAST_TEXT_POSITION = LAST_MATCH_POS + SEARCH_LENGTH - 1;
-        final int SEARCH_END         = (TO_END_POS < LAST_TEXT_POSITION? TO_END_POS : LAST_TEXT_POSITION) - QLEN + 1;
+        final int LAST_MATCH_POS     = bytes.length - localSequence.length();
+        final int SEARCH_END         = (toPosition < LAST_MATCH_POS? toPosition : LAST_MATCH_POS) + SLEN_MINUS_QLEN;
 
         // Search forwards.
-        for (int pos = SEARCH_START; pos <= SEARCH_END; pos += SEARCH_SHIFT) {
+        int pos;
+        for (pos = SEARCH_START; pos <= SEARCH_END; pos += SEARCH_SHIFT) {
 
             // Get the hash for the q-gram in the text aligned with the end of the pattern:
             int qGramHash =                        (bytes[pos + 2] & 0xFF);
@@ -288,10 +287,10 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
                 }
 
                 // No match - shift one past the positions we have just verified (loop will add SEARCH_SHIFT)
-                pos = FIRST_QGRAM_END_POS;
+                pos = LAST_VERIFY_POS;
             }
         }
-        return NO_MATCH;
+        return SEARCH_END - pos;
     }
 
     @Override
@@ -331,14 +330,14 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
             switch (LAST_WINDOW_POS - arrayPos) {
                 case 0 : { // two hash bytes lie in the next window:
                     if ((qGramHash = reader.readByte(pos + 2)) < 0) {
-                        return NO_MATCH; // no window at this furthest position
+                        return NO_MATCH_SAFE_SHIFT; // no window at this furthest position
                     }
                     qGramHash = (qGramHash << SHIFT) + (reader.readByte(pos + 1));
                     break;
                 }
                 case 1 : { // one hash bytes lie in the next window:
                     if ((qGramHash = reader.readByte(pos + 2)) < 0) {
-                        return NO_MATCH; // no window at this furthest position
+                        return NO_MATCH_SAFE_SHIFT; // no window at this furthest position
                     }
                     qGramHash = (qGramHash << SHIFT) + (array[arrayPos + 1] & 0xFF);
                     break;
@@ -419,7 +418,7 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
                 pos = FIRST_QGRAM_END_POS;
             }
         }
-        return window == null? NO_MATCH          // no window, return -1.
+        return window == null? NO_MATCH_SAFE_SHIFT          // no window, return -1.
                              : TO_END_POS - pos; // return (negative) safe shift we can make.
     }
 
@@ -444,7 +443,8 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
         final int SEARCH_END          = toPosition > 0? toPosition : 0;
 
         // Search backwards.  pos = place aligned with very start of pattern in the text (beginning of first q-gram).
-        for (int pos = SEARCH_START; pos >= SEARCH_END; pos -= SEARCH_SHIFT) {
+        int pos;
+        for (pos = SEARCH_START; pos >= SEARCH_END; pos -= SEARCH_SHIFT) {
 
             // Get the hash for the q-gram in the text aligned with the end of the pattern:
             int qGramHash =                        (bytes[pos    ] & 0xFF);
@@ -487,7 +487,7 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
                 pos = LAST_MATCH_POS - 1 + SEARCH_SHIFT; // main loop then substracts SEARCH_SHIFT, so we have LAST_MATCH_POS - 1.
             }
         }
-        return NO_MATCH;
+        return pos - SEARCH_END;
     }
 
     @Override
@@ -608,7 +608,7 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
                 pos = LAST_MATCH_POS - 1 + SEARCH_SHIFT;
             }
         }
-        return window == null? NO_MATCH          // window is null, return -1.
+        return window == null? NO_MATCH_SAFE_SHIFT          // window is null, return -1.
                              : pos - SEARCH_END; // return (negative) safe shift we can make.
     }
 

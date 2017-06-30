@@ -39,6 +39,12 @@ import java.io.IOException;
  * Extends the searcher interface to add methods which return a single primitive value, rather
  * than a list of MatchResults.  Sequences can only match at a single position, so a list of matches isn't necessary.
  * Using these methods is more efficient and creates less garbage during searching.
+ * <p>
+ * All of the search methods return a positive integer (including zero) to indicate the matching position.
+ * If no match is found, a negative number must be returned.  It is always safe to return -1 if no match is found.
+ * For better performance, a method can return a negative number whose magnitude is a safe shift which can be made
+ * past the end of the search requested if further searching is done.
+ * If an implementation is not sure what safe shift can be made, it must return -1.
  *
  * Created by matt on 12/04/16.
  */
@@ -51,7 +57,7 @@ public interface SequenceSearcher extends Searcher {
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search up to.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      * @throws IOException if there is a problem reading data from the WindowReader.
      */
     long searchSequenceForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
@@ -62,7 +68,7 @@ public interface SequenceSearcher extends Searcher {
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      * @throws IOException if there is a problem reading data from the WindowReader.
      */
     long searchSequenceForwards(WindowReader reader, long fromPosition) throws IOException;
@@ -72,7 +78,7 @@ public interface SequenceSearcher extends Searcher {
      * start of the {@link WindowReader} to the end, if a match is not found.
      *
      * @param reader The byte reader giving access to the bytes being searched.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      * @throws IOException if there is a problem reading data from the WindowReader.
      */
     long searchSequenceForwards(WindowReader reader) throws IOException;
@@ -84,7 +90,7 @@ public interface SequenceSearcher extends Searcher {
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search up to.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      */
     int searchSequenceForwards(byte[] bytes, int fromPosition, int toPosition);
 
@@ -94,7 +100,7 @@ public interface SequenceSearcher extends Searcher {
      *
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      */
     int searchSequenceForwards(byte[] bytes, int fromPosition);
 
@@ -113,7 +119,7 @@ public interface SequenceSearcher extends Searcher {
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search back to.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      * @throws IOException if there is a problem reading data from the WindowReader.
      */
     long searchSequenceBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
@@ -124,7 +130,7 @@ public interface SequenceSearcher extends Searcher {
      *
      * @param reader       The byte reader giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      * @throws IOException if there is a problem reading data from the WindowReader.
      */
     long searchSequenceBackwards(WindowReader reader, long fromPosition) throws IOException;
@@ -134,7 +140,7 @@ public interface SequenceSearcher extends Searcher {
      * end to the start.
      *
      * @param reader The byte reader giving access to the bytes being searched.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      * @throws IOException if there is a problem reading data from the WindowReader.
      */
     long searchSequenceBackwards(WindowReader reader) throws IOException;
@@ -146,7 +152,7 @@ public interface SequenceSearcher extends Searcher {
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
      * @param toPosition   The position to search back to.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      */
     int searchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition);
 
@@ -156,7 +162,7 @@ public interface SequenceSearcher extends Searcher {
      *
      * @param bytes        The byte array giving access to the bytes being searched.
      * @param fromPosition The position to search from.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      */
     int searchSequenceBackwards(byte[] bytes, int fromPosition);
 
@@ -164,7 +170,7 @@ public interface SequenceSearcher extends Searcher {
      * Searches a byte array backwards, from the end to the start.
      *
      * @param bytes The byte array giving access to the bytes being searched.
-     * @return The position a match was found at, or a negative number if no match was found.
+     * @return The position a match was found at, or a negative number indicating how far it is safe to shift if no match was found.
      */
     int searchSequenceBackwards(byte[] bytes);
     

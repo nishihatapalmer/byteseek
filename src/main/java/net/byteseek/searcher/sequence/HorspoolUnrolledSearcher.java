@@ -169,7 +169,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             while (!endOfSequence.matches(currentByte)) {
                 searchPosition += safeShifts[currentByte & 0xff];
                 if (searchPosition > finalPosition) {
-                    return NO_MATCH;
+                    return finalPosition - searchPosition;
                 }
                 currentByte = bytes[searchPosition];                
             }
@@ -184,7 +184,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             searchPosition += safeShifts[currentByte & 0xff];
         }
         
-        return NO_MATCH;
+        return finalPosition - searchPosition;
     }    
         
     
@@ -249,7 +249,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
-        return window == null? NO_MATCH                        // we have a null window so we just return a negative value.
+        return window == null? NO_MATCH_SAFE_SHIFT                        // we have a null window so we just return a negative value.
                              : finalPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
@@ -284,7 +284,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             while (!startOfSequence.matches(currentByte)) {
                 searchPosition -= safeShifts[currentByte & 0xFF];
                 if (searchPosition < lastPosition) {
-                    return NO_MATCH;
+                    return searchPosition - lastPosition;
                 }
                 currentByte = bytes[searchPosition];
             }
@@ -300,7 +300,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             searchPosition -= safeShifts[currentByte & 0xff];            
         }
         
-        return NO_MATCH;
+        return searchPosition - lastPosition;
     }
 
 
@@ -359,7 +359,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             // No match was found in this array - calculate the current search position:
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
-        return window == null? NO_MATCH                     // we have a null window, so just return a negative number.
+        return window == null? NO_MATCH_SAFE_SHIFT                     // we have a null window, so just return a negative number.
                              : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 

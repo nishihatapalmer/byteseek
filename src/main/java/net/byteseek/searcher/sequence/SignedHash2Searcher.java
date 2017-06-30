@@ -267,7 +267,7 @@ public final class SignedHash2Searcher extends AbstractQgramSearcher {
                 searchPos -= shift; // shift forwards by subtracting the negative shift.
             }
         }
-        return NO_MATCH;
+        return SEARCH_END - searchPos;
     }
 
     @Override
@@ -330,7 +330,7 @@ public final class SignedHash2Searcher extends AbstractQgramSearcher {
                 }
             }
         }
-        return window == null? NO_MATCH                // no window, return no match (-1)
+        return window == null? NO_MATCH_SAFE_SHIFT                // no window, return no match (-1)
                              : SEARCH_END - searchPos; // return the (negative) safe shift which can be made.
     }
 
@@ -370,7 +370,7 @@ public final class SignedHash2Searcher extends AbstractQgramSearcher {
                 searchPos += shift; // shift backwards by adding the negative shift.
             }
         }
-        return NO_MATCH;
+        return searchPos - SEARCH_END;
     }
 
     @Override
@@ -429,7 +429,7 @@ public final class SignedHash2Searcher extends AbstractQgramSearcher {
                 }
             }
         }
-        return window == null? NO_MATCH                // window is null, return no match (-1).
+        return window == null? NO_MATCH_SAFE_SHIFT                // window is null, return no match (-1).
                              : searchPos - SEARCH_END; // return the (negative) safe shift we can make.
     }
 

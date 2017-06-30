@@ -146,8 +146,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
 
         // Determine a safe position to start searching at.
         final int lastMatcherPosition = toMatch.length() - 1;
-        int searchPosition = fromPosition > 0?
-                             fromPosition + lastMatcherPosition : lastMatcherPosition;
+        int searchPosition = fromPosition > 0? fromPosition + lastMatcherPosition : lastMatcherPosition;
 
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
@@ -168,7 +167,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
             searchPosition += safeShifts[bytes[searchPosition] & 0xff];
         }
 
-        return NO_MATCH;
+        return finalPosition - searchPosition; // return next safe shift as a negative number.
     }
 
 
@@ -221,7 +220,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
             // No match was found in this array - calculate the current search position:
             searchPosition += arraySearchPosition - arrayStartPosition;
         }
-        return window == null? NO_MATCH                        // we have a null window so we just return a negative value.
+        return window == null? NO_MATCH_SAFE_SHIFT             // we have a null window so we just return a negative safe shift.
                              : finalPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
@@ -238,12 +237,10 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
 
         // Calculate safe bounds for the start of the search:
         final int firstPossiblePosition = bytes.length - toMatch.length();
-        int searchPosition = fromPosition < firstPossiblePosition?
-                             fromPosition : firstPossiblePosition;
+        int searchPosition = fromPosition < firstPossiblePosition? fromPosition : firstPossiblePosition;
 
         // Calculate safe bounds for the end of the search:
-        final int lastPosition = toPosition > 0?
-                                 toPosition : 0;
+        final int lastPosition = toPosition > 0? toPosition : 0;
 
         // Search backwards:
         while (searchPosition >= lastPosition) {
@@ -259,7 +256,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
             searchPosition -= safeShifts[bytes[searchPosition] & 0xff];
         }
 
-        return NO_MATCH;
+        return searchPosition - lastPosition; // return next safe shift as a negative number.
     }
 
 
@@ -306,7 +303,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
             // No match was found in this array - calculate the current search position:
             searchPosition -= (arrayStartPosition - arraySearchPosition);
         }
-        return window == null? NO_MATCH                     // we have a null window, so just return a negative number.
+        return window == null? NO_MATCH_SAFE_SHIFT          // we have a null window, so just return a negative safe shift.
                              : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 

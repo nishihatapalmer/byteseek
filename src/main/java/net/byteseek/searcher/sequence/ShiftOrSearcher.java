@@ -96,8 +96,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
     }
 
     /**
-     * Constructs a searcher for the bytes contained in the sequence string,
-     * encoded using the charset provided.
+     * Constructs a searcher for the bytes contained in the sequence string, encoded using the charset provided.
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
@@ -161,7 +160,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             pos += (arrayEndPos - arrayStartPos + 1);
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     /**
@@ -201,7 +200,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             }
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     /**
@@ -238,7 +237,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             }
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     /**
@@ -269,7 +268,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             }
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
 
@@ -315,7 +314,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             pos -= (arrayStartPos + 1);
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     private long searchLongSequenceBackwards(final SearchInfo info, final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
@@ -354,7 +353,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             }
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     /**
@@ -390,7 +389,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             }
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     /**
@@ -421,7 +420,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             }
         }
 
-        return NO_MATCH;
+        return NO_MATCH_SAFE_SHIFT;
     }
 
     /**
