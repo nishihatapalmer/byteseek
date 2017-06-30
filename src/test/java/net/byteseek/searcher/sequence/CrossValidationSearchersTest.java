@@ -208,8 +208,6 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-
-
     private void outputTimes(Map<String, Long> timings, String searchData) {
         System.out.println("Av time\tNum times\tTotal time\tSearcher\t\tData: " + searchData);
         Map<String, Long> sortedSearchers = MapUtil.sortByValue(timings);
@@ -319,10 +317,11 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         List<MatchResult> resultList = searcher.searchForwards(dataToSearch);
         assertTrue(resultList.size() < 2); // no more than one result.
         long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-        assertEquals(result, result2);
-        if ( result < 0) {
+        if (result < 0) {
+            assertTrue(result2 < 0);
             return;
         }
+        assertEquals(result, result2);
         addResult(result, searcher, resultMap);
         int position = result + 1;
         while (position < LENGTH) {
@@ -330,7 +329,12 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             resultList = searcher.searchForwards(dataToSearch, position);
             assertTrue(resultList.size() < 2); // no more than one result.
             result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-            assertEquals(result, result2);
+            if (result < 0) {
+                assertTrue(result2 < 0);       // both are negative.
+            } else {
+                assertEquals(result, result2); // value is the same if positive.
+            }
+
             if (result < 0) {
                 return;
             }
@@ -391,10 +395,11 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         List<MatchResult> resultList = searcher.searchBackwards(dataToSearch);
         assertTrue(resultList.size() < 2); // no more than one result.
         long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-        assertEquals(result, result2);
         if (result < 0) {
+            assertTrue(result2 < 0);
             return;
         }
+        assertEquals(result, result2);
         addResult(result, searcher, resultMap);
         int position = result - 1;
         while (position >= 0) {
@@ -402,10 +407,11 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             resultList = searcher.searchBackwards(dataToSearch, position);
             assertTrue(resultList.size() < 2); // no more than one result.
             result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-            assertEquals(result, result2);
             if (result < 0) {
+                assertTrue(result2 < 0);
                 return;
             }
+            assertEquals(result, result2);
             addResult(result, searcher, resultMap);
             if (result > position) {
                 // do search again so we can debug if we want to at this point:
@@ -425,10 +431,11 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             List<MatchResult> resultList = searcher.searchBackwards(dataToSearch);
             assertTrue(resultList.size() < 2); // no more than one result.
             long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-            assertEquals(result, result2);
             if (result < 0) {
+                assertTrue(result2 < 0);
                 return;
             }
+            assertEquals(result, result2);
             addResult(result, searcher, resultMap);
 
             long position = result - 1;
@@ -437,10 +444,11 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 resultList = searcher.searchBackwards(dataToSearch, position);
                 assertTrue(resultList.size() < 2); // no more than one result.
                 result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-                assertEquals(result, result2);
                 if (result < 0) {
+                    assertTrue(result2 < 0);
                     return;
                 }
+                assertEquals(result, result2);
                 addResult(result, searcher, resultMap);
                 if (result > position) {
                     // do search again so we can debug if we want to at this point:
@@ -495,13 +503,13 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                         debugFailedSearcher(searcher, entry.getKey(), dataToSearch.dataFile);
                     }
                     //System.out.println(message);
-                    errors.add(message);
-                    fail("Mismatches occurred: " + errors);
+                    errors.add(message + "\n");
+                    //fail("Mismatches occurred:\n" + errors);
                 }
             }
         }
         if (errors.size() > 0) {
-            fail("Mismatches occurred: " + errors);
+            fail("Mismatches occurred:\n" + errors);
         }
     }
 
@@ -519,8 +527,8 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     private void debugFailedSearcherWindow(SequenceSearcher searcher, long failedAtPosition, String dataToSearch) {
         try {
             WindowReader reader = loadFileReader(dataToSearch);
-            //searcher.searchSequenceForwards(reader);
-            searcher.searchSequenceBackwards(reader, 102408);
+            searcher.searchSequenceForwards(reader, failedAtPosition - 11);
+            //searcher.searchSequenceBackwards(reader, failedAtPosition);
         } catch (IOException ex) {
             fail("IO Exception when reading");
         }
