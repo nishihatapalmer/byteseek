@@ -592,7 +592,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
             // Calculate the hash value and make the array value for it negative:
             processQ4Hash(MAKE_NEGATIVE, 0, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1, bytes2, bytes3);
 
-            return new SearchInfo(SHIFTS, HASH_SHIFT, MAX_SEARCH_SHIFT);
+            return new SearchInfo(SHIFTS, HASH_SHIFT, PATTERN_LENGTH - qGramStartPos);
         }
     }
 
@@ -690,7 +690,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
             // Calculate the hash value and make the array value for it negative:
             processQ4Hash(MAKE_NEGATIVE, 0, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1, bytes2, bytes3);
 
-            return new SearchInfo(SHIFTS, HASH_SHIFT, MAX_SEARCH_SHIFT);
+            return new SearchInfo(SHIFTS, HASH_SHIFT, qGramStartPos + 1);
         }
     }
 

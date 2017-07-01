@@ -544,7 +544,7 @@ public final class SignedHash2Searcher extends AbstractQgramSearcher {
             bytes1 = localSequence.getMatcherForPosition(LAST_PATTERN_POS).getMatchingBytes(); // get last byte array.
             processQ2Hash(MAKE_NEGATIVE, 0, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1);
 
-            return new SearchInfo(SHIFTS, HASH_SHIFT, MAX_SEARCH_SHIFT);
+            return new SearchInfo(SHIFTS, HASH_SHIFT, PATTERN_LENGTH - qGramStartPos);
         }
     }
 
@@ -625,7 +625,7 @@ public final class SignedHash2Searcher extends AbstractQgramSearcher {
             bytes0 = bytes1; bytes1 = localSequence.getMatcherForPosition(0).getMatchingBytes();
             processQ2Hash(MAKE_NEGATIVE, 0, SHIFTS, hashValue, HASH_SHIFT, bytes0, bytes1);
 
-            return new SearchInfo(SHIFTS, HASH_SHIFT, MAX_SEARCH_SHIFT);
+            return new SearchInfo(SHIFTS, HASH_SHIFT, qGramStartPos + 1);
         }
     }
 
