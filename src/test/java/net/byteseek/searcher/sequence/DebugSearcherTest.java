@@ -34,7 +34,7 @@ import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 import net.byteseek.searcher.BackwardSearchIterator;
-import net.byteseek.searcher.SearchIndexSize;
+import net.byteseek.utils.PowerTwoSize;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -96,7 +96,7 @@ public class DebugSearcherTest {
         data = bytesFrom(resourceName);
         patternbytes = getRandomPattern(data, 512);
         pattern      = "iu'd and";
-        searcher = new QgramFilter4Searcher(pattern, SearchIndexSize.EXACTLY_4K);
+        searcher = new QgramFilter4Searcher(pattern, PowerTwoSize.SIZE_4K, PowerTwoSize.SIZE_4K);
     }
 
     @Test

@@ -31,8 +31,8 @@
 package net.byteseek.searcher.sequence;
 
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchIndexSize;
 import net.byteseek.utils.ByteUtils;
+import net.byteseek.utils.PowerTwoSize;
 import net.byteseek.utils.collections.BytePermutationIterator;
 
 /**
@@ -47,28 +47,29 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
     //TODO: test MAX QGRAMS for each searcher implementing this, to see where the cut off should be.
 
     /**
-     * The maximum number of elements in a hash table.
+     * Constants for default minimum and maximum index table sizes, for use by subclasses if required.
      */
-    private final static int MAX_TABLE_SIZE = 1 << 20; // 2^20 = 1M elements.
+    protected final static PowerTwoSize DEFAULT_MIN_INDEX_SIZE = PowerTwoSize.SIZE_32;
+    protected final static PowerTwoSize DEFAULT_MAX_INDEX_SIZE = PowerTwoSize.SIZE_64K;
 
     /**
-     * The minimum hash table size expressed as a power of two.
+     * The actual minimum and maximum index table size.
      */
-    protected final static int MIN_POWER_TWO_SIZE = 5; // no table sizes less than 2^5 = 32.
+    protected final PowerTwoSize minIndexSize;
+    protected final PowerTwoSize maxIndexSize;
 
     /**
-     * The hash table size used by the hash function, along with the method to select it (up to a maximum of 64k).
+     * Constructor for the AbstractQgramSearcher, taking the sequence to search, and a minimum and maximum size
+     * for the search index table.
+     *
+     * @param sequence     The sequence to search for.
+     * @param minIndexSize The minimum number of elements in the search index table.
+     * @param maxIndexSize The maximum number of elements in the search index table.
      */
-    protected final static SearchIndexSize DEFAULT_SEARCH_INDEX_SIZE = SearchIndexSize.MAX_64K; // automatically select a hash table size no larger than 64k elements.
-
-    /**
-     * The maximum size of the search index and the method used to select it.
-     */
-    protected final SearchIndexSize searchIndexSize;
-
-    public AbstractQgramSearcher(final SequenceMatcher sequence, final SearchIndexSize searchIndexSize) {
+    public AbstractQgramSearcher(final SequenceMatcher sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         super(sequence);
-        this.searchIndexSize = searchIndexSize;
+        this.minIndexSize = minIndexSize;
+        this.maxIndexSize = maxIndexSize;
     }
 
     /**
@@ -82,16 +83,17 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
      */
     protected int getTableSize(final int totalQgrams) {
         // Determine final size of hash table:
-        final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
+        final int MAX_POWER_TWO_SIZE = maxIndexSize.getPowerTwo();
         final int HASH_POWER_TWO_SIZE;
-        if (searchIndexSize.getSizeMethod() == SearchIndexSize.Method.EXACTLY) {       // specified by user - must use this size exactly.
-            HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
+        if (minIndexSize == maxIndexSize) {                // specified by user - must use this size exactly.
+            HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
         } else {
             //TODO: Profile different values here. What effective margin do we want?  Plus one gives a good result - what does plus 2 do?
             final int qGramPowerTwoSize = 1 + ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
-            HASH_POWER_TWO_SIZE = MAX_HASH_POWER_TWO_SIZE < qGramPowerTwoSize ?
-                                  MAX_HASH_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE ? // but not bigger than the maximum allowed,
-                                                            qGramPowerTwoSize : MIN_POWER_TWO_SIZE; // and not smaller than the minimum allowed.
+            final int MIN_POWER_TWO_SIZE = minIndexSize.getPowerTwo();
+            HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE < qGramPowerTwoSize ?
+                                  MAX_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE ? // but not bigger than the maximum allowed,
+                                                       qGramPowerTwoSize : MIN_POWER_TWO_SIZE;  // and not smaller than the minimum allowed.
         }
         return 1 << HASH_POWER_TWO_SIZE;
     }
@@ -107,6 +109,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
      */
     protected int getHashShift(final int hashTableSize, final int qGramLength) {
         final int MAX_SHIFT = 10; // TODO: any point shifting more than 8 bits...?
+        final int MAX_TABLE_SIZE = maxIndexSize.getSize();
         for (int shift = 1; shift < MAX_SHIFT; shift++) {
             final int tableSize = 1 << (qGramLength * shift);
             if (tableSize >= hashTableSize) {

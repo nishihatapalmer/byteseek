@@ -38,7 +38,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.SearchIndexSize;
+import net.byteseek.utils.PowerTwoSize;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
 import net.byteseek.utils.factory.ObjectFactory;
@@ -114,7 +114,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      * @param sequence The SequenceMatcher to search for.
      */
     public QgramFilter4Searcher(final SequenceMatcher sequence) {
-        this(sequence, DEFAULT_SEARCH_INDEX_SIZE);
+        this(sequence, DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
     }
 
     /**
@@ -127,11 +127,12 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      * does not suffer at all from complexity in the patterns.
      *
      * @param sequence      The SequenceMatcher to search for.
-     * @param searchIndexSize  Determines the size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the searchIndexSize is null.
+     * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
+     * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
+     * @throws IllegalArgumentException if the sequence is null or empty, or the minIndexSize, maxIndexSize is null.
      */
-    public QgramFilter4Searcher(final SequenceMatcher sequence, final SearchIndexSize searchIndexSize) {
-        super(sequence, searchIndexSize);
+    public QgramFilter4Searcher(final SequenceMatcher sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
+        super(sequence, minIndexSize, maxIndexSize);
         forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
         backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
     }
@@ -144,7 +145,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public QgramFilter4Searcher(final String sequence) {
-        this(sequence, Charset.defaultCharset(), DEFAULT_SEARCH_INDEX_SIZE);
+        this(sequence, Charset.defaultCharset(), DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
     }
 
     /**
@@ -158,11 +159,12 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      * does not suffer at all from complexity in the patterns.
      *
      * @param sequence The string to search for.
-     * @param searchIndexSize  Determines the size of the hash table used by the search algorithm.
+     * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
+     * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @throws IllegalArgumentException if the sequence is null or empty or the powerTwoSize is less than -28 or greater than 28.
      */
-    public QgramFilter4Searcher(final String sequence, final SearchIndexSize searchIndexSize) {
-        this(sequence, Charset.defaultCharset(), searchIndexSize);
+    public QgramFilter4Searcher(final String sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
+        this(sequence, Charset.defaultCharset(), minIndexSize, maxIndexSize);
     }
 
     /**
@@ -189,11 +191,12 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @param searchIndexSize  Determines the size of the hash table used by the search algorithm.
+     * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
+     * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public QgramFilter4Searcher(final String sequence, final Charset charset, final SearchIndexSize searchIndexSize) {
-        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), searchIndexSize);
+    public QgramFilter4Searcher(final String sequence, final Charset charset, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
+        this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), minIndexSize, maxIndexSize);
     }
 
     /**
@@ -203,7 +206,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      * @throws IllegalArgumentException if the sequence is null or empty.
      */
     public QgramFilter4Searcher(final byte[] sequence) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_SEARCH_INDEX_SIZE);
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
     }
 
     /**
@@ -216,11 +219,11 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      * does not suffer at all from complexity in the patterns.
      *
      * @param sequence The byte sequence to search for.
-     * @param searchIndexSize Determines the size of the hash table used by the search algorithm.
+     * @param minIndexSize, maxIndexSize Determines the size of the hash table used by the search algorithm.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
-    public QgramFilter4Searcher(final byte[] sequence, final SearchIndexSize searchIndexSize) {
-        this(sequence == null? null : new ByteSequenceMatcher(sequence), searchIndexSize);
+    public QgramFilter4Searcher(final byte[] sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
+        this(sequence == null? null : new ByteSequenceMatcher(sequence), minIndexSize, maxIndexSize);
     }
 
 
@@ -647,7 +650,8 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
     @Override
     public String toString() {
         return getClass().getSimpleName() +
-                "(index size:"  + searchIndexSize +
+                "(min index size:" + minIndexSize +
+                " max index size:" + maxIndexSize +
                 " forward search info:" + getForwardSearchDescription(forwardSearchInfo) +
                 " backward search info:" + getForwardSearchDescription(backwardSearchInfo) +
                 " sequence:"    + sequence + ')';
@@ -696,7 +700,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
             }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
-            final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
+            final int MAX_HASH_POWER_TWO_SIZE = maxIndexSize.getPowerTwo();
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
 
             int num0;
@@ -795,7 +799,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
             }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
-            final int MAX_HASH_POWER_TWO_SIZE = searchIndexSize.getPowerTwoSize();
+            final int MAX_HASH_POWER_TWO_SIZE = maxIndexSize.getPowerTwo();
             final int MAX_QGRAMS = 4 << MAX_HASH_POWER_TWO_SIZE; // 4 times the max table size gives 98% of slots filled.
 
             int num0;
