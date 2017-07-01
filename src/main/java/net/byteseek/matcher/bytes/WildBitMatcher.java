@@ -50,16 +50,16 @@ import java.io.IOException;
  *
  * Created by matt on 01/07/17.
  */
-public final class WildByteMatcher extends InvertibleMatcher {
+public final class WildBitMatcher extends InvertibleMatcher {
 
     private final byte matchValue;
     private final byte wildcardMask;
 
-    public WildByteMatcher(final byte value, final byte wildMask) {
+    public WildBitMatcher(final byte value, final byte wildMask) {
         this(value, wildMask, false);
     }
 
-    public WildByteMatcher(final byte value, final byte wildMask, final boolean inverted) {
+    public WildBitMatcher(final byte value, final byte wildMask, final boolean inverted) {
         super(inverted);
         this.matchValue = (byte) (value & wildMask);
         this.wildcardMask = wildMask;
