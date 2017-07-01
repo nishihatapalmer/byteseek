@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,7 +30,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
@@ -39,17 +38,14 @@ import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 
-
 /**
- * A {@link ByteMatcher} which matches a byte which
- * shares any of its bits with a bitmask.
+ * A {@link ByteMatcher} which matches a byte which shares any of its bits with a bitmask.
  * 
  * @author Matt Palmer
  */
 public final class AnyBitmaskMatcher extends InvertibleMatcher {
 
-    final byte mBitMaskValue;
-
+    private final byte mBitMaskValue;
 
     /**
      * Constructs an immutable AnyBitmaskMatcher.
@@ -61,7 +57,6 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
         mBitMaskValue = bitMaskValue;
     }
 
-    
     /**
      * Constructs an immutable AnyBitmaskMatcher.
      *
@@ -73,10 +68,6 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
         mBitMaskValue = bitMaskValue;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         final Window window = reader.getWindow(matchPosition);
@@ -84,39 +75,23 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
                : ((window.getByte(reader.getWindowOffset(matchPosition)) & mBitMaskValue) != 0) ^ inverted;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return (matchPosition >= 0 && matchPosition < bytes.length) &&
                 (((bytes[matchPosition] & mBitMaskValue) != 0) ^ inverted);
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean matches(final byte theByte) {
         return ((theByte & mBitMaskValue) != 0) ^ inverted;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         final String wrapper = inverted? "^~%02x" : "~%02x";
         return String.format(wrapper, 0xFF & mBitMaskValue);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] getMatchingBytes() {
         return inverted? 
@@ -124,10 +99,6 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
                 ByteUtils.getBytesMatchingAnyBitMask(mBitMaskValue);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return inverted? 
@@ -135,10 +106,6 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
                 ByteUtils.countBytesMatchingAnyBit(mBitMaskValue);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return ((bytes[matchPosition] & mBitMaskValue) != 0) ^ inverted;
