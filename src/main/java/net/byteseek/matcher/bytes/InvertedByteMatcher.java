@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2016, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,8 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-
 package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
@@ -47,7 +45,6 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
 
     private final byte byteToMiss;
 
-
     /**
      * Constructs an immutable InvertedByteMatcher.
      *
@@ -56,8 +53,7 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
     public InvertedByteMatcher(final byte byteToMiss) {
         this.byteToMiss = byteToMiss;
     }
-    
-    
+
     /**
      * Constructs an immutable InvertedByteMatcher from a hex representation of a byte.
      * 
@@ -68,49 +64,29 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
         this.byteToMiss = ByteUtils.byteFromHex(hexByte);
     }    
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
         return window == null? false
                 : window.getByte(reader.getWindowOffset(matchPosition)) != byteToMiss;
     }
-    
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return matchPosition >= 0 && matchPosition < bytes.length &&
                 bytes[matchPosition] != byteToMiss;
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return bytes[matchPosition] != byteToMiss;
     }    
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte theByte) {
         return theByte != byteToMiss;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] getMatchingBytes() {
         byte[] matchingBytes = new byte[255];
@@ -124,19 +100,11 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
         return matchingBytes;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         return '^' + ByteUtils.byteToString(false, byteToMiss & 0xFF);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return 255;
@@ -146,6 +114,5 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
     public String toString() {
     	return getClass().getSimpleName() + "[byte:" + String.format("%02x", byteToMiss & 0xFF) + ']';
     }
-
 
 }

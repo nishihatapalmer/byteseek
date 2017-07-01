@@ -28,7 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
@@ -40,7 +39,6 @@ import net.byteseek.utils.ArgUtils;
 
 import java.util.BitSet;
 import java.util.Collection;
-
 
 /**
  * A SetBitsetMatcher is a {@link ByteMatcher} which
@@ -69,47 +67,28 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
         return window != null && (byteValues.get(window.getByte(reader.getWindowOffset(matchPosition)) & 0xFF) ^ inverted);
     }  
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return (matchPosition >= 0 && matchPosition < bytes.length) &&
                 (byteValues.get(bytes[matchPosition] & 0xFF) ^ inverted);
     }  
-    
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return byteValues.get(bytes[matchPosition] & 0xFF) ^ inverted;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte theByte) {
         return byteValues.get(theByte & 0xFF) ^ inverted;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();
@@ -131,10 +110,6 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
         return regularExpression.toString();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] getMatchingBytes() {
         final byte[] values = new byte[getNumberOfMatchingBytes()];
@@ -147,16 +122,11 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
         return values;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return inverted ? 256 - byteValues.cardinality() : byteValues.cardinality();
     }
-    
-    
+
     @Override
     public String toString() {
     	return getClass().getSimpleName() + "[bitset:" + byteValues + 

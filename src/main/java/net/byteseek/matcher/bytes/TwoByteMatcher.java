@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013-16, All rights reserved.
+ * Copyright Matt Palmer 2013-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,8 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-
 package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
@@ -43,7 +41,6 @@ import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
-
 
 /**
  * A TwoByteMatcher is a {@link ByteMatcher} which matches two possible byte values.
@@ -116,8 +113,7 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
         this.firstByteToMatch  = firstByteToMatch;
         this.secondByteToMatch = secondByteToMatch;
     }
-    
-    
+
     /**
      * Constructs an immutable TwoByteMatcher from hex representations of the bytes.
      * 
@@ -129,8 +125,7 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
         this.firstByteToMatch  = ByteUtils.byteFromHex(firstHexByte);
         this.secondByteToMatch = ByteUtils.byteFromHex(secondHexByte);
     }
-    
-    
+
     /**
      * Constructs an immutable TwoByteMatcher from a collection of bytes.
      * The collection must have two bytes in it.
@@ -145,7 +140,6 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
     	this.firstByteToMatch = byteIterator.next();
     	this.secondByteToMatch = byteIterator.next();
     }
-
 
     /**
      * {@inheritDoc}
@@ -162,7 +156,6 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
         return false;
     }
 
-
     /**
      * {@inheritDoc}
      * 
@@ -176,8 +169,7 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
         }
         return false; 
     }   
-    
-    
+
     /**
      * {@inheritDoc}
      * 
@@ -188,30 +180,18 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
     	final byte theByte = bytes[matchPosition];
     	return theByte == firstByteToMatch || theByte == secondByteToMatch;
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean matches(final byte theByte) {
         return theByte == firstByteToMatch || theByte == secondByteToMatch;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] getMatchingBytes() {
         return (firstByteToMatch != secondByteToMatch)? new byte[] {firstByteToMatch, secondByteToMatch}
     												  : new byte[] {firstByteToMatch};
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         if (getNumberOfMatchingBytes() == 1) {
@@ -222,19 +202,11 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
                                            secondByteToMatch & 0xFF) + ']';
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return (firstByteToMatch != secondByteToMatch)? 2 : 1;
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override    
     public SequenceMatcher repeat(int numberOfRepeats) {
         ArgUtils.checkPositiveInteger(numberOfRepeats);
@@ -246,13 +218,11 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
         }
         return new ByteMatcherSequenceMatcher(numberOfRepeats, this);
     }    
-    
 
     @Override
     public String toString() {
     	return getClass().getSimpleName() + "[" + String.format("%02x", firstByteToMatch & 0xFF) + ' ' +
     			                                  String.format("%02x", secondByteToMatch & 0xFF) + ']';
     }
-    
     
 }

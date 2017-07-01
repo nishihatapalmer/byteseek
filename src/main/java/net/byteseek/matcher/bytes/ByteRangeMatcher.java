@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2016, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -49,7 +49,6 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
 
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
-
     
     /**
      * Constructs an immutable {@link ByteMatcher} which matches a range of bytes.
@@ -75,10 +74,6 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         }
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) 
             throws IOException{
@@ -90,11 +85,7 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         }
         return false;
     }
-    
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         if (matchPosition >= 0 && matchPosition < bytes.length) {
@@ -104,22 +95,14 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         }
         return false;
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         final int byteValue = bytes[matchPosition] & 0xFF;
         final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
         return insideRange ^ inverted;
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean matches(final byte theByte) {
         final int byteValue = theByte & 0xFF;
@@ -127,10 +110,6 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         return insideRange ^ inverted;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         final StringBuilder regularExpression = new StringBuilder();
@@ -143,10 +122,6 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         return regularExpression.toString();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] getMatchingBytes() {
         byte[] values = new byte[getNumberOfMatchingBytes()];
@@ -167,10 +142,6 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         return values;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return inverted ? 255 - maxByteValue + minByteValue
@@ -184,5 +155,4 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     								        " inverted:" + inverted + ']';
     }
 
-  
 }

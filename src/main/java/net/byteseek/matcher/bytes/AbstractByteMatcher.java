@@ -60,7 +60,6 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
         return this;
     }
 
-
     @Override
     public final int getNumBytesAtPosition(final int position) {
         if (position != 0) {
@@ -69,7 +68,6 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
         return getNumberOfMatchingBytes();
     }
 
-    
     /**
      * {@inheritDoc}
      *
@@ -90,8 +88,7 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
     public final SequenceMatcher reverse() {
         return this;
     }    
-    
-    
+
     /**
      * Throws an IndexOutOfBoundsException if the begin index is not zero or
      * the endIndex is not one, otherwise it returns this.
@@ -111,8 +108,7 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
         }
         return this;
     }
-    
-    
+
     /**
      * Throws an IndexOutOfBoundsException if the begin index is not zero,
      * otherwise it returns this.
@@ -130,11 +126,7 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
         }
         return this;
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override    
     public SequenceMatcher repeat(int numberOfRepeats) {
         ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
@@ -143,8 +135,7 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
         }   
         return new ByteMatcherSequenceMatcher(numberOfRepeats, this);
     }     
-    
-    
+
     @Override
     public Iterator<ByteMatcher> iterator() {
     	return new ByteMatcherIterator();

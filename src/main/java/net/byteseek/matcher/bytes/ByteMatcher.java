@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -58,7 +58,6 @@ public interface ByteMatcher extends SequenceMatcher {
      */
     boolean matches(byte theByte);
 
-    
     /**
      * Returns an array of bytes containing all the byte values which this matcher
      * can match.  The length of the array will be the number returned by
@@ -71,7 +70,6 @@ public interface ByteMatcher extends SequenceMatcher {
      */
     byte[] getMatchingBytes();
 
-
     /**
      * Returns the number of different byte values which this matcher can match.
      * <p>
@@ -81,6 +79,5 @@ public interface ByteMatcher extends SequenceMatcher {
      * @return int The number of different bytes this byte matcher will match.
      */
     int getNumberOfMatchingBytes();
-    
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,8 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-
 package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
@@ -40,7 +38,6 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
-
 
 /**
  * A OneByteMatcher is a {@link ByteMatcher} which matches
@@ -63,12 +60,10 @@ public final class OneByteMatcher extends AbstractByteMatcher {
   	  }
   	  
     }
-    
-    
+
     public static OneByteMatcher valueOf(final byte value) {
   	  return NodeCache.values[value & 0xff];
     }
-
     
     /**
      * Constructs an immutable OneByteMatcher.
@@ -78,8 +73,7 @@ public final class OneByteMatcher extends AbstractByteMatcher {
     public OneByteMatcher(final byte byteToMatch) {
         this.byteToMatch = byteToMatch;
     }
-    
-    
+
     /**
      * Constructs an immutable OneByteMatcher from a hex representation of a byte.
      * 
@@ -90,10 +84,6 @@ public final class OneByteMatcher extends AbstractByteMatcher {
         this.byteToMatch = ByteUtils.byteFromHex(hexByte);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
@@ -101,65 +91,37 @@ public final class OneByteMatcher extends AbstractByteMatcher {
                : window.getByte(reader.getWindowOffset(matchPosition)) == byteToMatch;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return matchPosition >= 0 && matchPosition < bytes.length &&
                 bytes[matchPosition] == byteToMatch;
     }   
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return bytes[matchPosition] == byteToMatch;
     }    
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean matches(final byte theByte) {
         return theByte == byteToMatch;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] getMatchingBytes() {
         return new byte[] {byteToMatch};
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         return ByteUtils.byteToString(prettyPrint, byteToMatch & 0xFF);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return 1;
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override    
     public SequenceMatcher repeat(int numberOfRepeats) {
         ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
@@ -173,7 +135,6 @@ public final class OneByteMatcher extends AbstractByteMatcher {
     public String toString() {
     	return getClass().getSimpleName() + '[' +  String.format("%02x", byteToMatch & 0xFF) + ']';
     }
-
 
     public byte getByteValue() {
         return byteToMatch;

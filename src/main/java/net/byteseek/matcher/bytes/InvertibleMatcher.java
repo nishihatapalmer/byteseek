@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,7 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.matcher.bytes;
 
 /**
@@ -51,19 +50,16 @@ public abstract class InvertibleMatcher extends AbstractByteMatcher {
      * A public constant indicating that the results of a match should be inverted.
      */
     public static final boolean INVERTED = true;
-    
-    
+
     /**
      * A public constant indicating that the results of a match should not be inverted.
      */
     public static final boolean NOT_INVERTED = false;
-    
-    
+
     /**
      * Whether the results of a match should be inverted.
      */
     protected final boolean inverted;
-
     
     /**
      * Constructs an InvertibleMatcher.
@@ -73,7 +69,6 @@ public abstract class InvertibleMatcher extends AbstractByteMatcher {
     public InvertibleMatcher(final boolean inverted) {
         this.inverted = inverted;
     }
-
 
     /**
      * Returns true if the matcher inverts its results.

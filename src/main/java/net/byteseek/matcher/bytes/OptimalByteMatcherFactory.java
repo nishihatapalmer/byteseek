@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,7 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.matcher.bytes;
 
 import java.util.ArrayList;
@@ -67,7 +66,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
 
     private static final int BINARY_SEARCH_THRESHOLD = 16;
 
-    
     /**
      * Creates an efficient {@link ByteMatcher} from a set of bytes passed in.
      * 
@@ -78,8 +76,7 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
     public ByteMatcher create(final Collection<Byte> bytes) {
         return create(bytes, NOT_INVERTED);
     }
-    
-    
+
     /**
      * Creates an efficient {@link ByteMatcher} from a collection of bytes passed in (
      * and whether that the set of bytes in the collection should be inverted or not).
@@ -121,7 +118,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
         return result;
     }
 
-    
     private ByteMatcher getInvertibleCases(final Set<Byte> bytes, final boolean isInverted) {
         ByteMatcher result = getBitmaskMatchers(bytes, isInverted);
         if (result == null) {
@@ -132,7 +128,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
         }
         return result;
     }
-
 
     private ByteMatcher getSimpleCases(final Set<Byte> values) {
         ByteMatcher result = null;
@@ -176,7 +171,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
        return result;
     }
 
-
     private ByteMatcher getBitmaskMatchers(final Set<Byte> values, final boolean isInverted) {
         ByteMatcher result = null;
         // Determine if the bytes in the set can be matched by a bitmask:
@@ -192,7 +186,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
         return result;
     }
 
-
     private ByteMatcher getRangeMatchers(final Set<Byte> values, boolean isInverted) {
         ByteMatcher result = null;
         // Determine if all the values lie in a single range:
@@ -206,7 +199,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
         return result;
     }
 
-    
     private ByteMatcher getBinarySearchMatcher(final Set<Byte> values, final boolean isInverted) {
         ByteMatcher result = null;
         // if there aren't very many values, use a BinarySearchMatcher:
@@ -215,7 +207,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
         }
         return result;
     }
-
 
     private static List<Integer> getSortedByteValues(final Set<Byte> byteSet) {
         final List<Integer> sortedByteValues = new ArrayList<Integer>();

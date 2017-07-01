@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -51,18 +51,15 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
      * AnyByteMatcher.
      */
     public static final ByteMatcher ANY_BYTE_MATCHER = new AnyByteMatcher();
-    
-    
+
     // A static 256-element array containing all the bytes.
     private static final byte[] ALL_BYTES =  ByteUtils.getAllByteValues();
-
 
     /**
      * Constructs an immutable AnyByteMatcher.
      */
     public AnyByteMatcher() {
     }
-
 
     /**
      * Always returns true.
@@ -71,7 +68,6 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
     public boolean matches(final byte theByte) {
         return true;
     }
-    
 
     /**
      * Returns a 256-element array of all the possible byte values.
@@ -81,46 +77,26 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
         return ALL_BYTES.clone();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         return ".";
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         return reader.readByte(matchPosition) >= 0;
     }
     
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         return matchPosition >= 0 && matchPosition < bytes.length;
     }    
 
-
-    /**
-     * Always returns 256.
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return 256;
     }
 
-    
-    /**
-     * Always returns true
-     */ 
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return true;

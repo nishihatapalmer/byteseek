@@ -28,7 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
@@ -66,19 +65,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         Arrays.sort(this.bytesToMatch);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte theByte) {
         return (Arrays.binarySearch(bytesToMatch, theByte) >= 0) ^ inverted;
     }
-    
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
@@ -86,11 +77,6 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
                 window.getByte(reader.getWindowOffset(matchPosition))) >= 0) ^ inverted);
     }    
 
-    
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matches(final byte[] bytes, final int matchPosition) {
         if (matchPosition >= bytes.length || matchPosition < 0) {
@@ -99,19 +85,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         return (Arrays.binarySearch(bytesToMatch, bytes[matchPosition]) >= 0) ^ inverted;
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return (Arrays.binarySearch(bytesToMatch, bytes[matchPosition]) >= 0) ^ inverted;
     }
-    
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] getMatchingBytes() {
         if (inverted) {
@@ -127,19 +105,11 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         return bytesToMatch.clone();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfMatchingBytes() {
         return inverted ? 256 - bytesToMatch.length : bytesToMatch.length;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         StringBuilder regularExpression = new StringBuilder();

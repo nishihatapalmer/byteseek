@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2013, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -47,13 +47,11 @@ public interface ByteMatcherFactory {
      */
     public final static boolean INVERTED = true;
     
-    
     /**
      * A constant to say that a set of bytes passed in to the factory should not be inverted.
      */
     public final static boolean NOT_INVERTED = false;
-    
-    
+
     /**
      * Creates a {@link  ByteMatcher} from the collection of bytes passed in.
      * There may be duplicate values in the collection.
@@ -62,8 +60,7 @@ public interface ByteMatcherFactory {
      * @return A ByteMatcher which matches that set of bytes.
      */
     ByteMatcher create(Collection<Byte> bytes);
-    
-    
+
     /**
      * Creates a {@link  ByteMatcher} from the collection of bytes passed in.
      * There may be duplicate values in the collection.

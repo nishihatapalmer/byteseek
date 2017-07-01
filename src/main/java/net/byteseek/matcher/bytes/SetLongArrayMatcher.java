@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2016, All rights reserved.
+ * Copyright Matt Palmer 2016-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -37,6 +37,8 @@ import net.byteseek.utils.ByteUtils;
 
 import java.io.IOException;
 import java.util.Collection;
+
+//TODO: test whether this class provides any benefit over the SetBitSetMatcher - could remove. Profile performance.
 
 /**
  * A matcher for arbitrary sets of bytes, backed by an array of 8 longs
