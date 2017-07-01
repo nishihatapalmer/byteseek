@@ -394,7 +394,7 @@ public class RegexParser implements Parser<ParseTree> {
 
 	/**
 	 * Public static utility method to encode case insensitive strings in byteseek regex format.
-	 * Backticks within the string passed in will be encoded as 0x60, the ASCII byte value of the backtick,
+	 * Backticks within the string passed in will be encoded as 0x60, the ASCII hex byte value of the backtick,
 	 * with the remaining parts of the string encoded in backticks.
 	 *
 	 * @param string A string to encode as a byteseek regular expression case insensitive string.
@@ -754,7 +754,10 @@ public class RegexParser implements Parser<ParseTree> {
 			}
 											
 			case ANY: {
-				return BaseNode.ANY_NODE; //TODO: is an inverted ANY byte an error?  Throw exception or ignore?
+				if (inverted) {
+					throw new ParseException(addContext("Any bytes cannot be inverted - ^. would match nothing.", expression));
+				}
+				return BaseNode.ANY_NODE;
 			}
 			
 			case ALL_BITMASK: {
