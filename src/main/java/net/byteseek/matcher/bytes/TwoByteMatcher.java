@@ -46,17 +46,66 @@ import net.byteseek.utils.ArgUtils;
 
 
 /**
- * A TwoByteMatcher is a {@link ByteMatcher} which matches
- * two possible byte values.
+ * A TwoByteMatcher is a {@link ByteMatcher} which matches two possible byte values.
+ * <p>
+ * There is also a static array of TwoByteMatchers corresonding to case insensitive ASCII alphabetic values,
+ * since these are common types to match, and a static method to return an appropriate case insensitive matcher.
  *
  * @author Matt Palmer
  */
 public final class TwoByteMatcher extends AbstractByteMatcher {
 
+    //TODO: test case insensitive TwoByteMatchers.
+    private static TwoByteMatcher[] caseInsensitiveMatchers;
+
+    static {
+        caseInsensitiveMatchers = new TwoByteMatcher[26];
+        for (int i = 0; i < 26; i++) {
+            caseInsensitiveMatchers[i] = new TwoByteMatcher((byte) (i+97), (byte) (i+65));
+        }
+    }
+
+    /**
+     * Returns a case insensitive TwoByteMather given a byte value, or a OneByteMatcher if the byte isn't
+     * an alphabetic ASCII value.
+     *
+     * @param theByte The byte to get a case insensitive matcher for.
+     * @return A case insensitive matcher for that byte value.
+     */
+    public static ByteMatcher caseInsensitive(final byte theByte) {
+        if (theByte >= 'A' && (theByte <= 'Z')) {
+            return caseInsensitiveMatchers[theByte - 65];
+        }
+        if (theByte >= 'a' && (theByte <= 'z')) {
+            return caseInsensitiveMatchers[theByte - 97];
+        }
+        return OneByteMatcher.valueOf(theByte);
+    }
+
+    /**
+     * Returns a case insensitive TwoByteMatcher given a char value, or a OneByteMatcher if the char isn't an
+     * alphabetic ASCII value.
+     *
+     * @param theChar The char to get a case insensitive matcher for.
+     * @return A case insensitive matcher for that byte value.
+     * @throws IllegalArgumentException if the char has a value greater than 255.
+     */
+    public static ByteMatcher caseInsensitive(final char theChar) {
+        if (theChar >= 'A' && (theChar <= 'Z')) {
+            return caseInsensitiveMatchers[theChar - 65];
+        }
+        if (theChar >= 'a' && (theChar <= 'z')) {
+            return caseInsensitiveMatchers[theChar - 97];
+        }
+        if (theChar < 256) {
+            return OneByteMatcher.valueOf((byte) theChar);
+        }
+        throw new IllegalArgumentException("A character must be between 0 and 255 in value, actual char was:" + (int) theChar);
+    }
+
     private final byte firstByteToMatch;
     private final byte secondByteToMatch;
-    
-    
+
     /**
      * Constructs an immutable TwoByteMatcher.
      * 

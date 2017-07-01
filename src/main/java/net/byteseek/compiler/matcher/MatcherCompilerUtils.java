@@ -258,7 +258,6 @@ public final class MatcherCompilerUtils {
 		return matcherFactory.create(ParseTreeUtils.getSetValues(node), isInverted);
 	}
 
-
 	/**
 	 * Creates a case insensitive sequence of matchers given a string.
 	 *
@@ -266,37 +265,19 @@ public final class MatcherCompilerUtils {
 	 * @return A sequence of matchers matching the string case insensitively.
 	 */
 	public static SequenceMatcher createCaseInsensitiveMatcher(final String string) {
-		return new ByteMatcherSequenceMatcher(buildCaseInsensitiveMatcherList(string));
+		return ByteMatcherSequenceMatcher.caseInsensitive(string);
 	}
 
-	private static List<ByteMatcher> buildCaseInsensitiveMatcherList(final String string) {
-		final List<ByteMatcher> sequence = new ArrayList<ByteMatcher>(string.length());
-		for (int pos = 0; pos < string.length(); pos++) {
-			final ByteMatcher matcher = createCaseInsensitiveMatcher(string.charAt(pos)); 
-			sequence.add(matcher);
-		}
-		return sequence;
-	}
-	
+	//TODO: doesn't need to be here - only usage is now a test.  Move test to TwoByteMatcher and get rid of this code here.
 	/**
 	 * Returns an ASCII case insensitive byte matcher given a char.
-	 * <p>
-	 * Note that if the char value is greater than 255, it will not throw an exception
-	 * but will merely cast the char value into a byte value, discarding the higher bit values.
-	 * 
+	 *
 	 * @param caseChar The character to get a case insensitive byte matcher for.
 	 * @return A byte matcher which matchers the character case insensitively.
+	 * @throws IllegalArgumentException if the character has a value greater than 255.
 	 */
 	public static ByteMatcher createCaseInsensitiveMatcher(final char caseChar) {
-		final byte firstByte = (byte) (caseChar & 0xFF);
-		if (caseChar >= 'a' && caseChar <= 'z') {
-			final byte secondByte = (byte) (firstByte - 32); 
-			return new TwoByteMatcher(firstByte, secondByte);
-		} else if (caseChar >= 'A' && caseChar <= 'Z') {
-			final byte secondByte = (byte) (firstByte + 32);
-			return new TwoByteMatcher(firstByte, secondByte);
-		} 
-		return OneByteMatcher.valueOf(firstByte); 
+		return TwoByteMatcher.caseInsensitive(caseChar);
 	}
 	
 	

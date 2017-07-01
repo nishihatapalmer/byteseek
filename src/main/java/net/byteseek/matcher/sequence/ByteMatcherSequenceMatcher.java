@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import net.byteseek.matcher.bytes.TwoByteMatcher;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -75,8 +76,43 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
     private final int startArrayIndex; // the position to start at (an inclusive value)
     private final int endArrayIndex;   // one past the actual end position (an exclusive value)
 	private final ByteMatcher[] matchers;
-    
-	
+
+    //TODO: test create case insensitive matcher.
+    /**
+     * Creates a case-insensitive ByteMatcherSequenceMatcher given a byte array.
+     *
+     * @param bytes The byte array to create the case insensitive matcher from.
+     * @return A ByteMatcherSequenceMatcher which matches the bytes in a case-insensitive fashion.
+     * @throws IllegalArgumentException if the byte array passed in is null or empty.
+     */
+	public static SequenceMatcher caseInsensitive(final byte[] bytes) {
+        ArgUtils.checkNullOrEmptyByteArray(bytes, "bytes");
+        final List<ByteMatcher> matchers = new ArrayList<ByteMatcher>(bytes.length);
+        boolean haveCaseMatchers = false;
+        for (byte b : bytes) {
+            final ByteMatcher matcher = TwoByteMatcher.caseInsensitive(b);
+            haveCaseMatchers = haveCaseMatchers | (matcher.getNumberOfMatchingBytes() > 1);
+            matchers.add(TwoByteMatcher.caseInsensitive(b));
+        }
+        return haveCaseMatchers? new ByteMatcherSequenceMatcher(matchers) : new ByteSequenceMatcher(bytes);
+    }
+
+    /**
+     * Creates a case-insensitive ByteMatcherSequenceMatcher given a string.
+     *
+     * @param string The string to create a case insensitive matcher from.
+     * @return A ByteMatcherSequenceMatcher which matches the string in a case-insensitive fasion.
+     * @throws IllegalArgumentException if the string is null or empty, or contains characters which have a value greater than 255.
+     */
+    public static ByteMatcherSequenceMatcher caseInsensitive(final String string) {
+        ArgUtils.checkNullOrEmptyString(string, "string");
+        final List<ByteMatcher> matchers = new ArrayList<ByteMatcher>(string.length());
+        for (int pos = 0; pos < string.length(); pos++) {
+            matchers.add(TwoByteMatcher.caseInsensitive(string.charAt(pos)));
+        }
+        return new ByteMatcherSequenceMatcher(matchers);
+    }
+
     /****************
      * Constructors *
      ***************/
