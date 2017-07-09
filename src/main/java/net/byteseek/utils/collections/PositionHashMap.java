@@ -30,7 +30,7 @@
  */
 package net.byteseek.utils.collections;
 
-import net.byteseek.utils.ByteUtils;
+import net.byteseek.utils.MathUtils;
 
 import java.util.Arrays;
 
@@ -78,7 +78,7 @@ public final class PositionHashMap<T> {
     }
 
     public PositionHashMap(final int initialCapacity) {
-        tablebits = ByteUtils.ceilLogBaseTwo(initialCapacity * 2); // number of bits in a number rounded up to highest power of two size.
+        tablebits = MathUtils.ceilLogBaseTwo(initialCapacity * 2); // number of bits in a number rounded up to highest power of two size.
         final int initialSize = 1 << tablebits; // 50% load at initial capacity. //TODO: adjust once profiled.
         keys   = new long[initialSize];
         //noinspection unchecked
