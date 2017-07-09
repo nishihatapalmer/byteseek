@@ -40,8 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.byteseek.utils.ArgUtils;
-
 /**
  * A utility class containing useful methods to work with bytes, including:
  * <ul>
@@ -473,7 +471,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the array is null or the indexes are outside of the array.
      */
     public static byte[] reverseArraySubsequence(final byte[] array, final int startIndex, final int endIndex) {
-        checkBounds(array, startIndex, endIndex);
+        ArgUtils.checkBounds(array, startIndex, endIndex);
     	final int length = endIndex - startIndex;
         final int endPos = endIndex - 1;
         final byte[] reversed = new byte[length];
@@ -496,7 +494,7 @@ public final class ByteUtils {
      */
     public static byte[] repeat(final int numberOfRepeats, final byte[] array) {
     	ArgUtils.checkNullByteArray(array);
-    	checkNegativeRepeats(numberOfRepeats);
+    	ArgUtils.checkNegativeRepeats(numberOfRepeats);
     	final int repeatLength = array.length;
         final int size = repeatLength * numberOfRepeats;
         final byte[] repeated = new byte[size];
@@ -523,8 +521,8 @@ public final class ByteUtils {
      */
     public static byte[] repeat(final int numberOfRepeats, final byte[] array,
                                 final int startIndex, final int endIndex) {
-    	checkBounds(array, startIndex, endIndex);
-    	checkNegativeRepeats(numberOfRepeats);
+    	ArgUtils.checkBounds(array, startIndex, endIndex);
+    	ArgUtils.checkNegativeRepeats(numberOfRepeats);
     	final int repeatLength = endIndex - startIndex;
         final int size = repeatLength * numberOfRepeats;
         final byte[] repeated = new byte[size];
@@ -544,7 +542,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the number of repeats is negative.
      */
     public static byte[] repeat(final byte value, final int numberOfRepeats) {
-        checkNegativeRepeats(numberOfRepeats);
+        ArgUtils.checkNegativeRepeats(numberOfRepeats);
         final byte[] repeats = new byte[numberOfRepeats];
         Arrays.fill(repeats, value);
         return repeats;
@@ -592,7 +590,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the from or to values are not between 0 and 255 inclusive.
      */
     public static byte[] getBytesInRange(final int from, final int to) {
-    	checkIntToByteRange(from, to);
+    	ArgUtils.checkIntToByteRange(from, to);
     	final int start = from < to? from : to;
         final int end   = from < to? to : from;
     	final byte[] range = new byte[end-start+1];
@@ -616,7 +614,7 @@ public final class ByteUtils {
      */
     public static void addBytesInRange(final int from, final int to, final Collection<Byte> bytes) {
     	ArgUtils.checkNullCollection(bytes);
-    	checkIntToByteRange(from, to);
+    	ArgUtils.checkIntToByteRange(from, to);
     	final int start = from < to? from : to;
     	final int end =   from < to? to : from;
     	for (int value = start; value <= end; value++) {
@@ -656,7 +654,7 @@ public final class ByteUtils {
      */
     public static void addBytesNotInRange(final int from, final int to, final Collection<Byte> bytes) {
     	ArgUtils.checkNullCollection(bytes);
-    	checkIntToByteRange(from, to);
+    	ArgUtils.checkIntToByteRange(from, to);
     	final int start = from < to? from : to;
     	final int end =   from < to? to : from;
     	for (int value = 0; value < start; value++) {
@@ -797,74 +795,8 @@ public final class ByteUtils {
     }
 
     //TODO: move power of two functions into MathUtils...?
-    
-    /**
-     * Returns the log base 2 of an integer, rounded to the floor.
-     * 
-     * Note that the integer must be positive.
-     * 
-     * @param i The integer
-     * @return int the log base 2 of an integer, rounded to the floor. 
-     * @throws IllegalArgumentException if the integer passed in is zero or negative.
-     */
-    public static int floorLogBaseTwo(final int i) {
-    	checkPositiveInteger(i);
-        return 31 - Integer.numberOfLeadingZeros(i);
-    }
-    
-    
-    /**
-     * Returns the log base 2 of an integer, rounded to the ceiling.
-     * 
-     * Note that the integer must be positive.
-     * 
-     * @param i The integer.
-     * @return int the log base 2 of an integer, rounded to the ceiling.
-     * @throws IllegalArgumentException if the integer passed in is zero or negative.
-     */
-    public static int ceilLogBaseTwo(final int i) {
-    	checkPositiveInteger(i);
-        return 32 - Integer.numberOfLeadingZeros(i - 1);
-    }    
-    
-    
-    /**
-     * Returns true if an integer is a power of two.
-     * 
-     * @param i The integer
-     * @return boolean True if the integer was a power of two.
-     */
-    public static boolean isPowerOfTwo(final int i) {
-        return i > 0? (i & (i - 1)) == 0 : false;
-    }
 
 
-    /**
-     * Returns a number which is a power of two.  If the number
-     * passed in is a power of two, the same number is returned.
-     * If the number passed in is not a power of two, then the
-     * number returned will be the next highest power of two
-     * above it.
-     *
-     * @param i The number to get the ceiling power of two size.
-     * @return The ceiling power of two equal or higher than the number passed in.
-     */
-    public static int ceilPowerOfTwo(final int i) {
-        return 1 << ceilLogBaseTwo(i);
-    }
-
-
-    /**
-     * Returns the number which is the next highest power of two bigger than another integer.
-     * 
-     * @param i The integer
-     * @return int the closest number which is a power of two and greater than the original integer.
-     */
-    public static int nextHighestPowerOfTwo(final int i) {
-        return Integer.highestOneBit(i) << 1;
-    }
-    
-    
     /**
      * Calculates a bitmask for which the set of bytes provided would match all of
      * the bits in the bitmask, and for which there are no other bytes it would match.
@@ -1145,7 +1077,7 @@ public final class ByteUtils {
      */
     public static String bytesToString(final boolean prettyPrint, final byte[] bytes,
                                        final int startIndex, final int endIndex) {
-    	checkBounds(bytes, startIndex, endIndex);
+    	ArgUtils.checkBounds(bytes, startIndex, endIndex);
     	final int estimatedSize = prettyPrint? (endIndex - startIndex) * 4 : (endIndex - startIndex) * 2; 
     	final StringBuilder string = new StringBuilder(estimatedSize);
         boolean inString = false;
@@ -1187,33 +1119,5 @@ public final class ByteUtils {
      * Private utility methods
      */
     //TODO: should be in ArgUtils?
-    
-	private static void checkNegativeRepeats(final int numberOfRepeats) {
-		if (numberOfRepeats < 0) {
-        	throw new IllegalArgumentException("Number of repeats cannot be negative " + numberOfRepeats);
-        }
-	}
-	
-	private static void checkPositiveInteger(final int value) {
-		if (value <= 0) {
-			throw new IllegalArgumentException("The value must be positive " + value);
-		}
-	}
 
-	private static void checkBounds(final byte[] array, final int startIndex, final int endIndex) {
-		ArgUtils.checkNullByteArray(array);
-		if (startIndex < 0 || startIndex >= endIndex || endIndex > array.length) {
-        	throw new IllegalArgumentException("The start index must be between 0 inclusive and the array length exclusive" +
-        									   ",end index must be greater than the start index and not greater than the length. " +
-        									   "Array length is " + array.length + " start index is " + startIndex + " end index is " + endIndex);	
-        }
-	}
-
-	private static void checkIntToByteRange(final int from, final int to) {
-		if (from < 0 || from > 255 || to < 0 || to > 255) {
-    		final String message = "The from and to values must be in the range 0 to 255.  Values provided were %d and %d";
-    		throw new IllegalArgumentException(String.format(message, from, to));
-    	}
-	}
-	
 }

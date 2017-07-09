@@ -292,4 +292,31 @@ public final class ArgUtils {
 			throw new IllegalArgumentException(String.format(POSITIVE_INTEGER + ' ' + description, number));		}
 	}
 
+	static void checkNegativeRepeats(final int numberOfRepeats) {
+        if (numberOfRepeats < 0) {
+            throw new IllegalArgumentException("Number of repeats cannot be negative " + numberOfRepeats);
+}
+    }
+
+	static void checkPositive(final long value) {
+        if (value <= 0) {
+            throw new IllegalArgumentException("The value must be positive " + value);
+        }
+    }
+
+	static void checkBounds(final byte[] array, final int startIndex, final int endIndex) {
+        checkNullByteArray(array);
+        if (startIndex < 0 || startIndex >= endIndex || endIndex > array.length) {
+            throw new IllegalArgumentException("The start index must be between 0 inclusive and the array length exclusive" +
+                                               ",end index must be greater than the start index and not greater than the length. " +
+                                               "Array length is " + array.length + " start index is " + startIndex + " end index is " + endIndex);
+}
+    }
+
+	static void checkIntToByteRange(final int from, final int to) {
+        if (from < 0 || from > 255 || to < 0 || to > 255) {
+            final String message = "The from and to values must be in the range 0 to 255.  Values provided were %d and %d";
+            throw new IllegalArgumentException(String.format(message, from, to));
+        }
+    }
 }
