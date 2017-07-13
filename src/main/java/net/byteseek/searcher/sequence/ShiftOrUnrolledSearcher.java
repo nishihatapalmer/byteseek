@@ -74,7 +74,7 @@ import net.byteseek.utils.factory.ObjectFactory;
 public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
 
     // number of bits to use for the shift-or algorithm bitmasks.
-    private static final int WORD_LENGTH = 64;
+    private static final int WORD_LENGTH = 63;  // Can't use last bit of 64 bit word due to signed numbers.
     private static final int UNROLL      = 16;  // amount to unroll the main loop.
 
     // forward and backwards search info, with lazy initialisation.
@@ -148,7 +148,7 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         final int lastMatcherPosition = sequence.length() - 1;
         final long startPosition = fromPosition > 0 ? fromPosition : 0;
         final long toPositionEndPos = toPosition < Long.MAX_VALUE - lastMatcherPosition?
-                                      toPosition + lastMatcherPosition : Long.MAX_VALUE;
+                toPosition + lastMatcherPosition : Long.MAX_VALUE;
 
         //TODO: account for UNROLL in toPositionEndPos?  Or is it unnecessary, array search will take care of it...?
 
@@ -269,14 +269,13 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         final int startPosition = fromPosition > 0 ? fromPosition : 0;
         final int lastMatcherPosition = sequence.length() - 1;
         final int toPositionEndPos = toPosition < Integer.MAX_VALUE - lastMatcherPosition? // avoid integer overflows.
-                                     toPosition + lastMatcherPosition : Integer.MAX_VALUE;
+                toPosition + lastMatcherPosition : Integer.MAX_VALUE;
         final int lastPossiblePosition = bytes.length - 1;
         final int finalPosition = toPositionEndPos < lastPossiblePosition? toPositionEndPos : lastPossiblePosition;
         final int mainLoopFinalPosition = finalPosition - UNROLL + 1;
-        final long MATCH_BIT = 1L << (WORD_LENGTH - UNROLL);
 
         // Search forwards, unrolling loop to do UNROLL shifts within the main loop:
-        long state = localLimit;
+        long state = ~0L;
         int pos;
         for (pos = startPosition; pos <= mainLoopFinalPosition; pos += UNROLL) {
             // Unroll search by 16: this must correspond to the value defined in UNROLL:
@@ -297,8 +296,8 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
             state = (state << 1) | bitmasks[bytes[pos + 14] & 0xFF];
             state = (state << 1) | bitmasks[bytes[pos + 15] & 0xFF];
 
-            final long matchState = (~state) >>> (WORD_LENGTH - UNROLL);
-            if (matchState != 0) {
+            if (state < localLimit) {
+                final long matchState = (~state) >>> lastMatcherPosition;
                 final int posOffset = UNROLL - 1 - MathUtils.floorLogBaseTwo(matchState);
                 return pos - lastMatcherPosition + posOffset;
             }
@@ -307,7 +306,7 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         // Deal with any remainder from the unrolled loop:
         for (; pos <= finalPosition; pos++) {
             state = (state << 1) | bitmasks[bytes[pos] & 0xFF];
-            if ((state & MATCH_BIT) == 0) {
+            if (state < localLimit) {
                 return pos - lastMatcherPosition;
             }
         }
@@ -326,20 +325,17 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         final long[] bitmasks = info.getBitmasks();
 
         // Determine safe start and ends:
-        //TODO: check these - not correct?  take UNROLL into account.. LAST_WORD_POS?
-        final int LAST_WORD_POS = WORD_LENGTH - 1;
+        final int LAST_WORD_POS = WORD_LENGTH - UNROLL;
         final int startPosition = fromPosition > 0 ? fromPosition : 0;
-        //TODO: leave room for verifier in toPositionEndPos?
         final int toPositionEndPos = toPosition < Integer.MAX_VALUE - LAST_WORD_POS? // avoid integer overflows.
-                                     toPosition + LAST_WORD_POS : Integer.MAX_VALUE;
+                toPosition + LAST_WORD_POS : Integer.MAX_VALUE;
         final int lastPossiblePosition = bytes.length - verifier.length(); // leave room for verifying rest of pattern.
         final int finalPosition = toPositionEndPos < lastPossiblePosition ? toPositionEndPos : lastPossiblePosition;
         final int mainLoopFinalPosition = finalPosition - UNROLL + 1;
-        final int MATCH_OFFSET = WORD_LENGTH - UNROLL;
-        final long MATCH_BIT = 1L << MATCH_OFFSET;
+        // final int MATCH_OFFSET = WORD_LENGTH - UNROLL;
 
         // Search forwards, unrolling loop to do UNROLL shifts within the main loop:
-        long state = localLimit;
+        long state = ~0L;
         int pos;
         for (pos = startPosition; pos <= mainLoopFinalPosition; pos += UNROLL) {
 
@@ -362,13 +358,16 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
             state = (state << 1) | bitmasks[bytes[pos + 15] & 0xFF];
 
             // Check for a match in the last UNROLL bits (we invert the state, so looking for one's not zeros to indicate a match.
-            final long matchState = (~state) >>> (MATCH_OFFSET);
-            if (matchState != 0) {
+            if (state < localLimit) {
                 long matchBit = 1L << (UNROLL - 1);
+                final long matchState = (~state) >>> LAST_WORD_POS;
                 // Go through all the positions a match could have occurred at, and verify a match when necessary:
                 for (int posOffset = 0; posOffset < UNROLL; posOffset++, matchBit >>>= 1) {
-                    if ((matchState & matchBit) == matchBit && verifier.matchesNoBoundsCheck(bytes, pos + 1 + posOffset)) {
-                        return pos - MATCH_OFFSET + posOffset;
+                    if ((matchState & matchBit) == matchBit) {
+                        if (verifier.matchesNoBoundsCheck(bytes, pos + 1 + posOffset)) {
+                            return pos - LAST_WORD_POS + posOffset;
+                        }
+                        state |= (matchBit << LAST_WORD_POS); // reset the match bit back to one - it is no longer a match.
                     }
                 }
             }
@@ -377,7 +376,7 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         // Deal with any remainder from the unrolled loop:
         for (; pos <= finalPosition; pos++) {
             state = (state << 1) | bitmasks[bytes[pos] & 0xFF];
-            if ((state & MATCH_BIT) == 0 && verifier.matchesNoBoundsCheck(bytes, pos + 1)) {
+            if (state < localLimit && verifier.matchesNoBoundsCheck(bytes, pos + 1)) {
                 return pos - LAST_WORD_POS;
             }
         }
@@ -614,23 +613,21 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
             // Set the default bitmask to ~0L:
             final long[] bitmasks = new long[256];
             final long mask = (1L << SCAN_LIMIT) - 1;
-            final long distance = MAX_LENGTH - SCAN_LIMIT;
-            final long defaultValue = mask << distance;
-            Arrays.fill(bitmasks, defaultValue);
+            Arrays.fill(bitmasks, mask);
 
             for (int patternPos = 0; patternPos < SCAN_LIMIT; patternPos++) {
                 final ByteMatcher aMatcher = sequence.getMatcherForPosition(patternPos);
                 final byte[] matchingBytes = aMatcher.getMatchingBytes();
-                final long maskValue = ~(1L << (distance + patternPos));
+                final long maskValue = ~(1L << patternPos);
                 for (final byte b : matchingBytes) {
                     bitmasks[b & 0xFF] &= maskValue;
                 }
             }
 
-            // Initial state is pattern bits plus filling in the unroll bits at the end:
-            final long initialState = defaultValue | (((1L << UNROLL) - 1) << WORD_LENGTH - UNROLL);
+            // Local limit is the value below which we have a match (a zero bit has crossed over).
+            final long localLimit = ~(mask >> 1);
 
-            return new SearchInfo(bitmasks, initialState, VERIFIER);
+            return new SearchInfo(bitmasks, localLimit, VERIFIER);
         }
     }
 
