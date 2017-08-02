@@ -31,7 +31,7 @@
 package net.byteseek.searcher.sequence;
 
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.utils.ByteUtils;
+import net.byteseek.utils.MathUtils;
 import net.byteseek.utils.PowerTwoSize;
 import net.byteseek.utils.collections.BytePermutationIterator;
 
@@ -49,8 +49,8 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
     /**
      * Constants for default minimum and maximum index table sizes, for use by subclasses if required.
      */
-    protected final static PowerTwoSize DEFAULT_MIN_INDEX_SIZE = PowerTwoSize.SIZE_32;
-    protected final static PowerTwoSize DEFAULT_MAX_INDEX_SIZE = PowerTwoSize.SIZE_64K;
+    protected final static PowerTwoSize DEFAULT_MIN_INDEX_SIZE = PowerTwoSize.SIZE_32;  //TODO: too large/small?
+    protected final static PowerTwoSize DEFAULT_MAX_INDEX_SIZE = PowerTwoSize.SIZE_64K; //TODO: too large/small?
 
     /**
      * The actual minimum and maximum index table size.
@@ -89,7 +89,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
             HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
         } else {
             //TODO: Profile different values here. What effective margin do we want?  Plus one gives a good result - what does plus 2 do?
-            final int qGramPowerTwoSize = 1 + ByteUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
+            final int qGramPowerTwoSize = 1 + MathUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
             final int MIN_POWER_TWO_SIZE = minIndexSize.getPowerTwo();
             HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE < qGramPowerTwoSize ?
                                   MAX_POWER_TWO_SIZE : qGramPowerTwoSize > MIN_POWER_TWO_SIZE ? // but not bigger than the maximum allowed,
