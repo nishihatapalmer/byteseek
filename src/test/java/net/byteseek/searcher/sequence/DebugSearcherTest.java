@@ -33,8 +33,9 @@ package net.byteseek.searcher.sequence;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
+import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.incubator.matcher.bytes.WildBitMatcher;
 import net.byteseek.searcher.BackwardSearchIterator;
-import net.byteseek.utils.PowerTwoSize;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,10 +94,25 @@ public class DebugSearcherTest {
     public void createSearcher() {
         //searcher = new SequenceMatcherSearcher(pattern);
 
-        data = bytesFrom(resourceName);
-        patternbytes = getRandomPattern(data, 512);
-        pattern      = "iu'd and";
-        searcher = new QgramFilter4Searcher(pattern, PowerTwoSize.SIZE_4K, PowerTwoSize.SIZE_4K);
+        //data = bytesFrom(resourceName);
+        //patternbytes = getRandomPattern(data, 512);
+        pattern      = " ";
+        data = pattern.getBytes();
+        searcher     = new ShiftOrUnrolledSearcher(pattern);
+    }
+
+   // @Test
+    public void testStuff() {
+        ByteMatcher wild = new WildBitMatcher((byte) 0xD, (byte) 0xF);
+        System.out.println(wild);
+
+        wild = new WildBitMatcher((byte) 0x50, (byte) 0xF0);
+        System.out.println(wild);
+
+        wild = new WildBitMatcher((byte) 0x71, (byte) 0x8F, true);
+        System.out.println(wild);
+
+
     }
 
     @Test

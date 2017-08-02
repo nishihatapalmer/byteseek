@@ -70,7 +70,8 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     Random random = new Random(0);
 
     SearchData[] data = {
-            new SearchData("/romeoandjuliet.txt", "textAlphabet", "to", "art", "thou", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
+         //   new SearchData("/romeoandjuliet.txt", "textAlphabet", "to", "art", "thou", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
+            new SearchData("/romeoandjuliet.txt", "textAlphabet", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
             new SearchData("/hsapiensdna.txt", "lowAlphabet", "AA", "CAG", "GATACA", "TGATCGA", "CAGGAGAG", "ATCGCATGA", "TCCAGAATCT", "ACACTTGCTCTTTAGAAGAGTGCT", "ATGCCTGCAGCAGAGGAGGCACACAGAGTGTTAA", "GCAGCTTTGGCCTCCTGGGTGCAAGCCATCCTCCTGCCCCAGCCTC")
     };
 
@@ -108,7 +109,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-    @Test
+   // @Test
     public void testSearchByteArrayBackwards() throws Exception {
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         int numTimes = 0;
@@ -137,7 +138,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-    @Test
+//    @Test
     public void testSearchReaderForwards() throws Exception {
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         int numTimes = 0;
@@ -166,7 +167,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-    @Test
+//    @Test
     public void testSearchReaderBackwards() throws Exception {
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         int numTimes = 0;
@@ -341,7 +342,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             addResult(result, searcher, resultMap);
             if (result < position) {
                 // do search again so we can debug if we want to at this point:
-                //result = searcher.searchSequenceForwards(dataToSearch, position);
+                result = searcher.searchSequenceForwards(dataToSearch, position);
                 fail("Searcher " + searcher + " returned a match at " + result + " before current search position at " + position);
             }
             position = result + 1;
@@ -514,13 +515,13 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private void debugFailedSearcher(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
-        //debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
-        debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
+        debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
+        //debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
     }
 
     private void debugFailedSearcherBytes(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
-        //byte[] data = loadDataToSearch(dataToSearch);
-        //searcher.searchSequenceForwards(data);
+        byte[] data = loadDataToSearch(dataToSearch);
+        int result = searcher.searchSequenceForwards(data, 99780);
         //searcher.searchSequenceBackwards(data);
     }
 

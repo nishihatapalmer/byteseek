@@ -49,7 +49,7 @@ import net.byteseek.utils.ArgUtils;
  * The performance of this Searcher is generally poor (although it may compare
  * favorably for very short searches due to its essential simplicity).
  * Combining this search with a fast multi-sequence matcher, for example, 
- * a {@link net.byteseek.matcher.multisequence.TrieMultiSequenceMatcher} may perform reasonably well where there are a very large
+ * a {@link net.byteseek.incubator.matcher.multisequence.TrieMultiSequenceMatcher} may perform reasonably well where there are a very large
  * number of sequences to find, or if there are very short sequences to match 
  * (which can limit the advantage of more sophisticated shift-based searchers).
  * <p>
