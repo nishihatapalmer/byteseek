@@ -328,11 +328,10 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         final int LAST_WORD_POS = WORD_LENGTH - UNROLL;
         final int startPosition = fromPosition > 0 ? fromPosition : 0;
         final int toPositionEndPos = toPosition < Integer.MAX_VALUE - LAST_WORD_POS? // avoid integer overflows.
-                toPosition + LAST_WORD_POS : Integer.MAX_VALUE;
+                                     toPosition + LAST_WORD_POS : Integer.MAX_VALUE;
         final int lastPossiblePosition = bytes.length - verifier.length(); // leave room for verifying rest of pattern.
         final int finalPosition = toPositionEndPos < lastPossiblePosition ? toPositionEndPos : lastPossiblePosition;
         final int mainLoopFinalPosition = finalPosition - UNROLL + 1;
-        // final int MATCH_OFFSET = WORD_LENGTH - UNROLL;
 
         // Search forwards, unrolling loop to do UNROLL shifts within the main loop:
         long state = ~0L;
