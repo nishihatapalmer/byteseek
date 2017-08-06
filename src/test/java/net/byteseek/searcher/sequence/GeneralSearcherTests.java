@@ -256,5 +256,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     //TODO: Boundary tests for not matching a pattern whichi is one past or before the search starts/ends (in middle of data).
 
 
+    //TODO: tests for not matching at position zero when backwards start position is already negative.
+
 
 }

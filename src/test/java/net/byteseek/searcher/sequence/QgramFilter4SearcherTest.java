@@ -46,45 +46,45 @@ public class QgramFilter4SearcherTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullSequence() {
-        new ShiftOrSearcher((SequenceMatcher) null);
+        new QgramFilter4Searcher((SequenceMatcher) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
-        new ShiftOrSearcher((String) null);
+        new QgramFilter4Searcher((String) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
-        new ShiftOrSearcher("");
+        new QgramFilter4Searcher("");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullCharset() {
-        new ShiftOrSearcher("ABCDEFG", null);
+        new QgramFilter4Searcher("ABCDEFG", null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructNullByteArray() {
-        new ShiftOrSearcher((byte[]) null);
+        new QgramFilter4Searcher((byte[]) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyByteArray() {
-        new ShiftOrSearcher(new byte[0]);
+        new QgramFilter4Searcher(new byte[0]);
     }
 
     // Test length.
 
     @Test
     public void testGetSequenceLength() throws Exception {
-        AbstractSequenceSearcher s = new ShiftOrSearcher("A");
+        AbstractSequenceSearcher s = new QgramFilter4Searcher("A");
         assertEquals("Length correct", 1, s.getSequenceLength() );
 
-        s = new ShiftOrSearcher("AA");
+        s = new QgramFilter4Searcher("AA");
         assertEquals("Length correct", 2, s.getSequenceLength() );
 
-        s = new ShiftOrSearcher("1234567890");
+        s = new QgramFilter4Searcher("1234567890");
         assertEquals("Length correct", 10, s.getSequenceLength() );
     }
 }
