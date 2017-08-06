@@ -419,8 +419,6 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         return NO_MATCH_SAFE_SHIFT;
     }
 
-
-    //TODO: unroll
     @Override
     public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         // Get the objects needed to search:
@@ -438,10 +436,11 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         final long finalSearchPosition = toPosition > 0? toPosition : 0;
         final int lastSequencePos = sequence.length() - 1;
         final long fromPositionStart   = fromPosition < Long.MAX_VALUE - lastSequencePos?
-                fromPosition + lastSequencePos : Long.MAX_VALUE;
+                                         fromPosition + lastSequencePos : Long.MAX_VALUE;
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask.
+        //TODO: withinLength - if start position is negative gives a possible start position?  Write test for this scenario.
         long pos  = withinLength(reader, fromPositionStart); // ensures first position to search is not past end.
         Window window;
         while (pos >= finalSearchPosition && (window = reader.getWindow(pos)) != null) { // when window is null, there is no more data.
@@ -450,23 +449,53 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
             // Calculate array search start and end:
             final int arrayStartPos   = reader.getWindowOffset(pos); // the position within the window array for this position.
             final long distanceToEnd = pos - finalSearchPosition;
-            final int arrayEndPos = distanceToEnd < arrayStartPos?
-                    (int) (arrayStartPos - distanceToEnd) : 0;
+            final int arrayEndPos = distanceToEnd < arrayStartPos? (int) (arrayStartPos - distanceToEnd) : 0;
+            final int arrayMainLoopEndPos = arrayEndPos + UNROLL - 1;
 
             // Search backwards in the window array:
-            for (int arrayPos = arrayStartPos; arrayPos >= arrayEndPos; arrayPos--) {
+            int arrayPos;
+            for (arrayPos = arrayStartPos; arrayPos >= arrayMainLoopEndPos; arrayPos -= UNROLL) {
+
+                // Unroll search by 16: this must correspond to the value defined in UNROLL:
+                state = (state << 1) | bitmasks[array[arrayPos]      & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 1]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 2]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 3]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 4]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 5]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 6]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 7]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 8]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 9]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 10] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 11] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 12] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 13] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 14] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 15] & 0xFF];
+
+                // Check for a match:
+                if (state < localLimit) {
+                    final long matchState = (~state) >>> lastSequencePos;
+                    final int posOffset = UNROLL - 1 - MathUtils.floorLogBaseTwo(matchState);
+                    return pos - arrayStartPos + arrayPos - posOffset;
+                }
+            }
+
+            // Deal with any remainder from the unrolled loop:
+            for (; arrayPos >= arrayEndPos; arrayPos--) {
                 state = (state << 1) | bitmasks[array[arrayPos] & 0xFF];
                 if (state < localLimit) {
                     return pos - arrayStartPos + arrayPos;
                 }
             }
+
             pos -= (arrayStartPos + 1);
         }
 
         return NO_MATCH_SAFE_SHIFT;
     }
 
-    //TODO: unroll
     private long searchLongSequenceBackwards(final SearchInfo info, final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         // Get the objects needed to search:
         final SequenceMatcher verifier = info.getVerifier();
@@ -474,10 +503,10 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         final long[] bitmasks = info.getBitmasks();
 
         // Determine safe end.
-        final int LAST_WORD_POS = WORD_LENGTH - 1;
+        final int LAST_WORD_POS = WORD_LENGTH - UNROLL;
         final long finalSearchPosition = toPosition > 0? toPosition : 0;
         final long fromPositionStart   = fromPosition < Long.MAX_VALUE - LAST_WORD_POS?
-                fromPosition + LAST_WORD_POS : Long.MAX_VALUE - verifier.length();
+                                         fromPosition + LAST_WORD_POS : Long.MAX_VALUE - verifier.length();
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask.
@@ -489,18 +518,58 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
             // Calculate array search start and end:
             final int arrayStartPos   = reader.getWindowOffset(pos); // the position within the window array for this position.
             final long distanceToEnd = pos - finalSearchPosition;
-            final int arrayEndPos = distanceToEnd < arrayStartPos?
-                    (int) (arrayStartPos - distanceToEnd) : 0;
+            final int arrayEndPos = distanceToEnd < arrayStartPos? (int) (arrayStartPos - distanceToEnd) : 0;
+            final int mainLoopEndPos = arrayEndPos + UNROLL - 1;
 
             // Search backwards in the window array:
-            for (int arrayPos = arrayStartPos; arrayPos >= arrayEndPos; arrayPos--, pos--) {
-                state = (state << 1) | bitmasks[array[arrayPos] & 0xFF];
+            int arrayPos;
+            for (arrayPos = arrayStartPos; arrayPos >= mainLoopEndPos; arrayPos -= UNROLL) {
+
+                // Unroll search by 16: this must correspond to the value defined in UNROLL:
+                state = (state << 1) | bitmasks[array[arrayPos]      & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 1]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 2]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 3]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 4]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 5]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 6]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 7]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 8]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 9]  & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 10] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 11] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 12] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 13] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 14] & 0xFF];
+                state = (state << 1) | bitmasks[array[arrayPos - 15] & 0xFF];
+
+                // Check for a match:
                 if (state < localLimit) {
-                    if (verifier.matches(reader, pos + WORD_LENGTH)) {
-                        return pos;
+                    final long currentPos = pos - arrayStartPos + arrayPos;
+                    // Go through all the positions a match could have occurred at, and verify a match when necessary:
+                    long matchBit = 1L << (UNROLL - 1);
+                    final long matchState = (~state) >>> LAST_WORD_POS;
+                    for (int posOffset = 0; posOffset < UNROLL; posOffset++, matchBit >>>= 1) {
+                        if ((matchState & matchBit) == matchBit) {
+                            if (verifier.matches(reader, currentPos - posOffset + LAST_WORD_POS + 1)) {
+                                return currentPos - posOffset;
+                            }
+                            state |= (matchBit << LAST_WORD_POS); // reset the match bit back to one - it is no longer a match.
+                        }
                     }
                 }
             }
+
+            // Deal with any remainder from the unrolled loop:
+            for (; arrayPos >= arrayEndPos; arrayPos--) {
+                state = (state << 1) | bitmasks[array[arrayPos] & 0xFF];
+                if (state < localLimit && verifier.matches(reader, pos + arrayPos - arrayStartPos + LAST_WORD_POS + 1)) {
+                    return pos + arrayPos - arrayStartPos;
+                }
+            }
+
+            // Increment search position by the amount we've scanned in the array:
+            pos -= (arrayStartPos - arrayEndPos + 1);
         }
 
         return NO_MATCH_SAFE_SHIFT;
@@ -570,7 +639,6 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         return NO_MATCH_SAFE_SHIFT;
     }
 
-    //TODO: unroll
     /**
      * Long pattern variant:
      * Searches using SHIFT-OR, but verifies the part of the pattern longer than WORD_LENGTH using a SequenceMatcher.
