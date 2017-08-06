@@ -79,6 +79,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * A working scratch pad for debugging searchers.   No tests should normally run from here.
+ *
  * Created by matt on 11/04/17.
  */
 public class DebugSearcherTest {
@@ -101,21 +103,8 @@ public class DebugSearcherTest {
         searcher     = new ShiftOrUnrolledSearcher(pattern);
     }
 
-   // @Test
-    public void testStuff() {
-        ByteMatcher wild = new WildBitMatcher((byte) 0xD, (byte) 0xF);
-        System.out.println(wild);
 
-        wild = new WildBitMatcher((byte) 0x50, (byte) 0xF0);
-        System.out.println(wild);
-
-        wild = new WildBitMatcher((byte) 0x71, (byte) 0x8F, true);
-        System.out.println(wild);
-
-
-    }
-
-    @Test
+    //@Test
     public void testSearcherBytesForwards() {
         int result = searcher.searchSequenceForwards(data);
     }
