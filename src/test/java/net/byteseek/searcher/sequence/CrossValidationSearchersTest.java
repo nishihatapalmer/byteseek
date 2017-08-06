@@ -109,7 +109,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-   // @Test
+    @Test
     public void testSearchByteArrayBackwards() throws Exception {
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         int numTimes = 0;
@@ -138,7 +138,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-//    @Test
+    @Test
     public void testSearchReaderForwards() throws Exception {
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         int numTimes = 0;
@@ -167,7 +167,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-//    @Test
+    @Test
     public void testSearchReaderBackwards() throws Exception {
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
         int numTimes = 0;
@@ -416,7 +416,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
             addResult(result, searcher, resultMap);
             if (result > position) {
                 // do search again so we can debug if we want to at this point:
-                //result = searcher.searchSequenceBackwards(dataToSearch, position);
+                result = searcher.searchSequenceBackwards(dataToSearch, position);
                 fail("Searcher " + searcher + " returned a match at " + result + " after current search position at " + position);
             }
             position = result - 1;
@@ -515,20 +515,20 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private void debugFailedSearcher(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
-        debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
-        //debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
+        //debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
+        debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
     }
 
     private void debugFailedSearcherBytes(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
         byte[] data = loadDataToSearch(dataToSearch);
-        int result = searcher.searchSequenceForwards(data, 99780);
+        int result = searcher.searchSequenceBackwards(data, (int) (failedAtPosition + 20));
         //searcher.searchSequenceBackwards(data);
     }
 
     private void debugFailedSearcherWindow(SequenceSearcher searcher, long failedAtPosition, String dataToSearch) {
         try {
             WindowReader reader = loadFileReader(dataToSearch);
-            searcher.searchSequenceForwards(reader, failedAtPosition - 11);
+            searcher.searchSequenceBackwards(reader, failedAtPosition + 11);
             //searcher.searchSequenceBackwards(reader, failedAtPosition);
         } catch (IOException ex) {
             fail("IO Exception when reading");

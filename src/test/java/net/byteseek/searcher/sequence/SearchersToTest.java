@@ -58,32 +58,30 @@ public class SearchersToTest {
      */
     public void createSearchers(SequenceMatcher sequence, boolean lowAlphabet) {
         searchers = new ArrayList<SequenceSearcher>();
-        //searchers.add(new SequenceMatcherSearcher(sequence));
-        //searchers.add(new SundayQuickSearcher(sequence));
-        //searchers.add(new HorspoolSearcher(sequence));
-        //searchers.add(new HorspoolUnrolledSearcher(sequence));
-        //searchers.add(new SignedHorspoolSearcher(sequence));
-        //searchers.add(new SignedHash2Searcher(sequence));
-        //searchers.add(new SignedHash3Searcher(sequence));
-        //searchers.add(new SignedHash4Searcher(sequence));
+        searchers.add(new SequenceMatcherSearcher(sequence));
+        searchers.add(new SundayQuickSearcher(sequence));
+        searchers.add(new HorspoolSearcher(sequence));
+        searchers.add(new HorspoolUnrolledSearcher(sequence));
+        searchers.add(new SignedHorspoolSearcher(sequence));
+        searchers.add(new SignedHash2Searcher(sequence));
+        searchers.add(new SignedHash3Searcher(sequence));
+        searchers.add(new SignedHash4Searcher(sequence));
         searchers.add(new ShiftOrSearcher(sequence));
         searchers.add(new ShiftOrUnrolledSearcher(sequence));
-        searchers.add(new ShiftOrUnrolled2Searcher(sequence));
 
         //TODO: on low alphabets and long patterns (e.g. human dna) these searchers perform *incredibly* poorly.
         // I disable them from full testing when the sequence length gets too long, otherwise running a lot of tests takes hours
         // to complete.  Should run more tests of these algorithms on shorter patterns to achieve the same test coverage,
         // and occasionally run longer pattern tests on them to ensure longer patterns still work for them.
         if (!lowAlphabet || sequence.length() < 200) {
-        //    searchers.add(new QgramFilter2Searcher(sequence));
+            searchers.add(new QgramFilter2Searcher(sequence));
         }
         if (!lowAlphabet || sequence.length() < 800) {
-        //    searchers.add(new QgramFilter3Searcher(sequence));
+            searchers.add(new QgramFilter3Searcher(sequence));
         }
         if (!lowAlphabet || sequence.length() < 4000) {
-        //    searchers.add(new QgramFilter4Searcher(sequence));
+            searchers.add(new QgramFilter4Searcher(sequence));
         }
-
     }
 
 
