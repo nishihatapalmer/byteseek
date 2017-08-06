@@ -249,7 +249,9 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final int SEARCH_SHIFT       = SLEN_MINUS_QLEN + 1;
         final int SEARCH_START       = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
         final int LAST_MATCH_POS     = bytes.length - localSequence.length();
-        final int SEARCH_END         = (toPosition < LAST_MATCH_POS? toPosition : LAST_MATCH_POS) + SLEN_MINUS_QLEN;
+        final int SEARCH_END         = toPosition < LAST_MATCH_POS - SLEN_MINUS_QLEN?
+                                       toPosition + SLEN_MINUS_QLEN : LAST_MATCH_POS;
+        final int FINAL_TO_POS       = toPosition < LAST_MATCH_POS? toPosition : LAST_MATCH_POS;
 
         // Search forwards.
         int pos;
@@ -284,7 +286,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                 // All complete q-grams in the text matched one somewhere in the pattern.
                 // Verify whether we have an actual match in any of the qgram start positions,
                 // without going past the last position a match can occur at.
-                final int LAST_VERIFY_POS = FIRST_QGRAM_END_POS < LAST_MATCH_POS? FIRST_QGRAM_END_POS : LAST_MATCH_POS;
+                final int LAST_VERIFY_POS = FIRST_QGRAM_END_POS < FINAL_TO_POS? FIRST_QGRAM_END_POS : FINAL_TO_POS;
                 for (int matchPos = PATTERN_START_POS; matchPos <= LAST_VERIFY_POS; matchPos++) {
                     if (localSequence.matchesNoBoundsCheck(bytes, matchPos)) {
                         return matchPos;
@@ -425,7 +427,8 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
 
                 // All complete q-grams in the text matched one somewhere in the pattern.
                 // Verify whether we have an actual match in any of the qgram start positions,
-                for (long matchPos = PATTERN_START_POS; matchPos <= FIRST_QGRAM_END_POS; matchPos++) {
+                final long LAST_MATCH_POS = FIRST_QGRAM_END_POS < toPosition? FIRST_QGRAM_END_POS : toPosition;
+                for (long matchPos = PATTERN_START_POS; matchPos <= LAST_MATCH_POS; matchPos++) {
                     if (localSequence.matches(reader, matchPos)) {
                         return matchPos;
                     }
