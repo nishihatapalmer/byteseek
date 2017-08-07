@@ -33,6 +33,7 @@ package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
+import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
 
@@ -63,8 +64,11 @@ import java.io.IOException;
      * @param primaryCache The primary cache.
      * @param secondaryCache The secondary cache.
      * @return A TwoLevelCache using the primary and secondary caches.
+     * @throws IllegalArgumentException if either of the caches are null.
      */
     public static TwoLevelCache create(final WindowCache primaryCache, final WindowCache secondaryCache) {
+        ArgUtils.checkNullObject(primaryCache, "primaryCache");
+        ArgUtils.checkNullObject(secondaryCache, "secondaryCache");
         final TwoLevelCache twoLevels = new TwoLevelCache(primaryCache, secondaryCache);
         primaryCache.subscribe(twoLevels);
         secondaryCache.subscribe(twoLevels);
@@ -169,8 +173,8 @@ import java.io.IOException;
     
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[primary cache: " + primaryCache + 
-											" secondary cache: " + secondaryCache + ']';  
+		return getClass().getSimpleName() + "(primary cache: " + primaryCache +
+											", secondary cache: " + secondaryCache + ')';
 	}
     
 }
