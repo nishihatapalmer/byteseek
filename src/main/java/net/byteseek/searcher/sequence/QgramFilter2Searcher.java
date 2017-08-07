@@ -310,7 +310,6 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
 
         // Initialise window search:
         final int SLEN_MINUS_QLEN = SEARCH_LENGTH - QLEN;
-        final int SECOND_QGRAM_START_OFFSET = SLEN_MINUS_QLEN - QLEN;
         final int SEARCH_SHIFT    = SLEN_MINUS_QLEN + 1;
         final long SEARCH_START   = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
         final long TO_END_POS     = toPosition + SLEN_MINUS_QLEN;
