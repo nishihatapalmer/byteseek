@@ -2,7 +2,7 @@ package net.byteseek.io.reader.cache;
 
 import org.junit.Test;
 
-public class DoubleCacheTest {
+public class WriteThroughCacheTest {
 
     @Test
     public void testCreate() throws Exception {
