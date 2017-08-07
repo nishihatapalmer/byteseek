@@ -32,6 +32,7 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
 
@@ -44,9 +45,9 @@ import java.io.IOException;
  * The use case for this cache is to allow holding Windows in a fast
  * in-memory primary soft cache, which can evict data under low memory conditions.
  * The secondary cache should be a persistent cache which can always retrieve the
- * data.  If data has been evicted from the memory cache, it can be safely
+ * data.  If data has been evicted from the memory cache, it can always be safely
  * retrieved from the slower permanent cache.  This window is then re-added
- * to the fast memory cache.
+ * to the fast memory cache when accessed.
  * <p>
  * For example, when using an InputStreamReader where we want to be able to
  * always retrieve old data, but also want to support faster access to multiple
@@ -59,20 +60,21 @@ import java.io.IOException;
  *
  * @author Matt Palmer
  */
-//TODO: this is actually a write-through cache - rename.
-public final class DoubleCache extends AbstractFreeNotificationCache implements WindowCache.WindowObserver {
+public final class WriteThroughCache extends AbstractFreeNotificationCache {
 
     private final WindowCache memoryCache;
     private final WindowCache persistentCache;
 
-    //TODO: no need for subscription and leave notification - can use a normal constructor?
-    public static DoubleCache create(final WindowCache memoryCache, final WindowCache persistentCache) {
-        final DoubleCache doubleCache = new DoubleCache(memoryCache, persistentCache);
-        persistentCache.subscribe(doubleCache);
-        return doubleCache;
-    }
-
-    private DoubleCache(final WindowCache memoryCache, final WindowCache persistentCache) {
+    /**
+     * Constructs a WriteThroughCache given a memory cache and a persistent cache.
+     *
+     * @param memoryCache     A fast cache which may evict data.
+     * @param persistentCache A persistent cache which can always retrieve the data.
+     * @throws IllegalArgumentException if the memoryCache or persistentCache is null.
+     */
+    public WriteThroughCache(final WindowCache memoryCache, final WindowCache persistentCache) {
+        ArgUtils.checkNullObject(memoryCache);
+        ArgUtils.checkNullObject(persistentCache);
         this.memoryCache     = memoryCache;
         this.persistentCache = persistentCache;
     }
@@ -119,18 +121,6 @@ public final class DoubleCache extends AbstractFreeNotificationCache implements 
         }
     }
 
-   /**
-    * Implementation of the {@link WindowObserver} method to receive
-    * notification that a Window is freed from the persistent cache.
-    *
-    * @param window The Window which is leaving either the primary or secondary cache.
-    * @param fromCache The WindowCache from which the Window is leaving.
-    */
-    @Override
-    public void windowFree(final Window window, final WindowCache fromCache) throws IOException {
-        notifyWindowFree(window, this);
-    }
-
     /**
      * Returns the memory cache used by this DoubleCache.
      *
@@ -151,8 +141,9 @@ public final class DoubleCache extends AbstractFreeNotificationCache implements 
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[memory cache: " + memoryCache +
-                " persistent cache: " + persistentCache + ']';
+        return getClass().getSimpleName() +
+                "(memory cache: " + memoryCache +
+                ", persistent cache: " + persistentCache + ')';
     }
 
 }
