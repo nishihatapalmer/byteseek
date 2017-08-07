@@ -27,7 +27,7 @@ readers provide a consistent random-access interface over files, input streams, 
 This package may be generally useful, independent of byteseek matching and searching.
 
 * reader - readers for files, input streams, strings and byte arrays, and an adapter from any reader back to an InputStream.  Readers cache the byte arrays read from the input sources using flexible caching strategies.
-* reader/cache - pluggable caching strategies for readers, including least recently added, least recently used, temporary file caches, two level caches, double caches and others.
+* reader/cache - pluggable caching strategies for readers, including least recently added, least recently used, temporary file caches, two level caches, write through caches and others.
 
 #### Parser
 A byte-oriented [regular expression language](syntax.md) is given to allow the easy construction of byte matchers, sequence matchers, and (eventually) finite state automata.  An abstract syntax tree is defined, so other regular expression syntaxes could be used if required.
