@@ -52,7 +52,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      *                                   for a position outside of the sequence.
      * 
      */
-    public ByteMatcher getMatcherForPosition(int position);
+    ByteMatcher getMatcherForPosition(int position);
 
 
    /**
@@ -60,9 +60,9 @@ import net.byteseek.matcher.bytes.ByteMatcher;
     *
     * @param position The position in the sequence matcher to return the number of matching bytes for.
     * @return The number of bytes matching at the requested position.
-    * @throws IndexOutOfBoundsException if the position is less than 1 or equal to or greater than the length.
+    * @throws IndexOutOfBoundsException if the position is less than 0 or equal to or greater than the length.
     */
-    public int getNumBytesAtPosition(int position);
+    int getNumBytesAtPosition(int position);
 
     /**
      * Returns whether there is a match or not at the given position in a byte array.
@@ -85,7 +85,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      *                                   the array.
      * @throws NullPointerException if the byte array passed in is null.
      */
-    public boolean matchesNoBoundsCheck(byte[] bytes, int matchPosition);    
+    boolean matchesNoBoundsCheck(byte[] bytes, int matchPosition);
     
     
     /**
@@ -93,7 +93,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      *
      * @return Returns the length of a matching byte sequence.
      */
-    public int length();
+    int length();
 
     
     /**
@@ -102,7 +102,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      * 
      * @return A SequenceMatcher which matches the reverse sequence.
      */
-    public SequenceMatcher reverse();
+    SequenceMatcher reverse();
     
     
     /**
@@ -117,7 +117,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      *         or the endIndex is greater than the length of the sequence,
      *         or the beginIndex is greater than or equal to the endIndex.
      */
-    public SequenceMatcher subsequence(int beginIndex, int endIndex);
+    SequenceMatcher subsequence(int beginIndex, int endIndex);
     
     
     /**
@@ -131,7 +131,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      *         or the endIndex is greater than the length of the sequence,
      *         or the beginIndex is greater than or equal to the endIndex.
      */
-    public SequenceMatcher subsequence(int beginIndex);
+    SequenceMatcher subsequence(int beginIndex);
     
     
     /**
@@ -142,7 +142,7 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      * @return A SequenceMatcher which matches the same as this sequence repeated
      *         a number of times.
      */
-    public SequenceMatcher repeat(final int numberOfRepeats);
+    SequenceMatcher repeat(final int numberOfRepeats);
     
     
     /**
@@ -151,6 +151,6 @@ import net.byteseek.matcher.bytes.ByteMatcher;
      * @param prettyPrint whether to pretty print the regular expression with spacing.
      * @return A string containing a regular expression of the byte matcher.
      */
-    public String toRegularExpression(boolean prettyPrint);
+    String toRegularExpression(boolean prettyPrint);
 
 }
