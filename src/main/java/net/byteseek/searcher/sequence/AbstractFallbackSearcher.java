@@ -40,13 +40,12 @@ import java.io.IOException;
 
 /**
  * An abstract searcher which allows for a fallback searcher to be used in place of the selected searcher.
- * It also allows for the search index size of the algorithm and the method to select that size to be chosen.
  *
  * <p>
  * Some algorithms cannot process certain types of pattern (e.g. very short ones when q-grams are used), so
  * these algorithms must fallback to another algorithm in these cases.  Since these algorithms are (so far)
- * also tunable in their memory usage, the fallback algorithm may also be used if there is insufficient memory available
- * which would lead to unacceptable performance.
+ * also tunable in their memory usage, the fallback algorithm may also be used if there is insufficient memory
+ * available which would lead to unacceptable performance.
  *
  * Created by matt on 03/06/17.
  */
@@ -173,7 +172,7 @@ public abstract class AbstractFallbackSearcher extends AbstractWindowSearcher<Se
 
         @Override
         public SequenceSearcher create() {
-            return new ShiftOrSearcher(sequence);  // the fastest searcher for short patterns, and largley ignores pattern complexity.
+            return new ShiftOrUnrolledSearcher(sequence);  // the fastest searcher for short patterns, search is linear in all cases - no real pathological cases.
         }
     }
 
