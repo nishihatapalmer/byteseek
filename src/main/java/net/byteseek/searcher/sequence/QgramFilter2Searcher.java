@@ -407,7 +407,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
                 }
 
                 // No match - shift one past the positions we have just verified (main loop adds SEARCH_SHIFT)
-                pos = FIRST_QGRAM_END_POS;
+                pos = LAST_MATCH_POS;
             }
         }
         return window == null? NO_MATCH_SAFE_SHIFT          // no window, return -1.
