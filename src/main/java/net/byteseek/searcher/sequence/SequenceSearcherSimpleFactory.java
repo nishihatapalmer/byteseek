@@ -29,7 +29,10 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.compiler.CompileException;
+import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
@@ -37,11 +40,21 @@ import net.byteseek.utils.ArgUtils;
 
 public class SequenceSearcherSimpleFactory implements SequenceSearcherFactory {
 
-    public final static SequenceSearcherFactory DEFAULT_FACTORY = new SequenceSearcherSimpleFactory();
-
     @Override
     public SequenceSearcher create(final byte theByte) {
         return new ByteSearcher(theByte);
+    }
+
+    @Override
+    public SequenceSearcher create(byte[] theBytes) {
+        ArgUtils.checkNullOrEmptyByteArray(theBytes, "theBytes");
+        return create(new ByteSequenceMatcher(theBytes));
+    }
+
+    @Override
+    public SequenceSearcher create(final String regex) throws CompileException {
+        ArgUtils.checkNullOrEmptyString(regex, "regex");
+        return create(SequenceMatcherCompiler.compileFrom(regex));
     }
 
     @Override
@@ -60,7 +73,7 @@ public class SequenceSearcherSimpleFactory implements SequenceSearcherFactory {
         if (sequenceLength == 1) {
             create(theSequence.getMatcherForPosition(0));
         }
-        if (sequenceLength < 12) { //TODO: validate this position:
+        if (sequenceLength < 12) { //TODO: validate this position with profling.  It's *roughly* right, but should be checked.
             return new ShiftOrUnrolledSearcher(theSequence);
         }
         //TODO: validate that this is the best choice in general with profiling.  Qgram filtering is also fast.
