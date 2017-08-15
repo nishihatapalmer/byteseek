@@ -38,19 +38,18 @@ import net.byteseek.utils.collections.BytePermutationIterator;
 /**
  * An abstract class providing common constants, methods and classes for search algorithms
  * which operate on q-grams rather than individual bytes, and which use the shift-add
- * hash algorithm.
+ * hash algorithm.  It also allows for specifying the minimum and maximum size of the hash tables used
+ * by the q-gram hashing algorithm, as a power of two.
  *
  * Created by matt on 09/06/17.
  */
 public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
 
-    //TODO: test MAX QGRAMS for each searcher implementing this, to see where the cut off should be.
-
     /**
      * Constants for default minimum and maximum index table sizes, for use by subclasses if required.
      */
-    protected final static PowerTwoSize DEFAULT_MIN_INDEX_SIZE = PowerTwoSize.SIZE_32;  //TODO: too large/small?
-    protected final static PowerTwoSize DEFAULT_MAX_INDEX_SIZE = PowerTwoSize.SIZE_64K; //TODO: too large/small?
+    protected final static PowerTwoSize DEFAULT_MIN_INDEX_SIZE = PowerTwoSize.SIZE_32;  //TODO: profile defaults.
+    protected final static PowerTwoSize DEFAULT_MAX_INDEX_SIZE = PowerTwoSize.SIZE_64K; //TODO: profile defaults.
 
     /**
      * The actual minimum and maximum index table size.
@@ -88,7 +87,8 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
         if (minIndexSize == maxIndexSize) {                // specified by user - must use this size exactly.
             HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
         } else {
-            //TODO: Profile different values here. What effective margin do we want?  Plus one gives a good result - what does plus 2 do?
+            //TODO: Profile different values here. What effective margin do we want?  Plus one gives a good result - is plus 2 worth it?
+            //TODO: Possibly allow different space/time tradeoffs (-1 = low mem, 0 = small mem, +1 = good perf, +2 = ???
             final int qGramPowerTwoSize = 1 + MathUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
             final int MIN_POWER_TWO_SIZE = minIndexSize.getPowerTwo();
             HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE < qGramPowerTwoSize ?
