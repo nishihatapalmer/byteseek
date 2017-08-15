@@ -978,7 +978,6 @@ public final class ByteUtils {
             }
         }
     }
-
     
     /**
      * Returns the byte represented by a two-digit hex string.
@@ -998,7 +997,11 @@ public final class ByteUtils {
         throw new IllegalArgumentException("Not a valid hex byte [" + hexByte + ']');
     }
 
-    
+
+    //TODO: should we have a byte array from hex string method too?  Could be useful, avoid full parser overhead.
+    //      byte arrays from hex have to be a fairly common requirement...
+
+
     /**
      * Returns a byte value as either a 2-char hex string, or if
      * pretty printing, and the byte value is a printable ASCII
@@ -1114,10 +1117,5 @@ public final class ByteUtils {
         return string.toString();
     }    
 
-    
-    /*
-     * Private utility methods
-     */
-    //TODO: should be in ArgUtils?
 
 }
