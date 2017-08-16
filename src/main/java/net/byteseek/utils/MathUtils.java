@@ -56,7 +56,7 @@ public final class MathUtils {
      */
     public static int ceilLogBaseTwo(final long i) {
         ArgUtils.checkPositive(i);
-        return 32 - Long.numberOfLeadingZeros(i - 1);
+        return 64 - Long.numberOfLeadingZeros(i - 1);
     }
 
     /**
