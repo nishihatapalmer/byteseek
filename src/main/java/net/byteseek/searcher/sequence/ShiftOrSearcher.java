@@ -149,8 +149,8 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             final int arrayStartPos = reader.getWindowOffset(pos);
             final int arrayWindowEndPos   = window.length() - 1;
             final long distanceToEnd = toPositionEndPos - pos;
-            final int arrayEndPos = distanceToEnd < arrayWindowEndPos?
-                              (int) distanceToEnd : arrayWindowEndPos;
+            final int arrayEndPos = distanceToEnd < arrayWindowEndPos - arrayStartPos?
+                              (int) distanceToEnd + arrayStartPos : arrayWindowEndPos;
             for (int arrayPos = arrayStartPos; arrayPos <= arrayEndPos; arrayPos++) {
                 state = (state << 1) | bitmasks[array[arrayPos] & 0xFF];
                 if (state < localLimit) {
@@ -188,8 +188,8 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
             final int arrayStartPos = reader.getWindowOffset(pos);
             final int arrayWindowEndPos   = window.length() - 1;
             final long distanceToEnd = toPositionEndPos - pos;
-            final int arrayEndPos = distanceToEnd < arrayWindowEndPos?
-                    (int) distanceToEnd : arrayWindowEndPos;
+            final int arrayEndPos = distanceToEnd < arrayWindowEndPos - arrayStartPos?
+                                    (int) distanceToEnd + arrayStartPos : arrayWindowEndPos;
             for (int arrayPos = arrayStartPos; arrayPos <= arrayEndPos; arrayPos++, pos++) {
                 state = (state << 1) | bitmasks[array[arrayPos] & 0xFF];
                 if (state < localLimit) {

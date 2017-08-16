@@ -157,7 +157,8 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
             final int arrayStartPos       = reader.getWindowOffset(pos);
             final int arrayWindowEndPos   = window.length() - 1;
             final long distanceToEnd      = toPositionEndPos - pos;
-            final int arrayEndPos         = distanceToEnd < arrayWindowEndPos? (int) distanceToEnd : arrayWindowEndPos;
+            final int arrayEndPos         = distanceToEnd < arrayWindowEndPos - arrayStartPos?
+                                      (int) distanceToEnd + arrayStartPos : arrayWindowEndPos;
             final int arrayMainLoopEndPos = arrayEndPos - UNROLL + 1;
 
             int arrayPos;
@@ -230,7 +231,8 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
             final int arrayStartPos       = reader.getWindowOffset(pos);
             final int arrayWindowEndPos   = window.length() - 1;
             final long distanceToEnd      = toPositionEndPos - pos;
-            final int arrayEndPos         = distanceToEnd < arrayWindowEndPos? (int) distanceToEnd : arrayWindowEndPos;
+            final int arrayEndPos         = distanceToEnd < arrayWindowEndPos - arrayStartPos?
+                                      (int) distanceToEnd + arrayStartPos : arrayWindowEndPos;
             final int arrayMainLoopEndPos = arrayEndPos - UNROLL + 1;
 
             // Search forwards in the array:
