@@ -108,6 +108,6 @@ public interface WindowReader extends Closeable, Iterable<Window> {
 	 * @throws IOException
 	 *             If a problem occurred trying to determine the length.
 	 */
-	public long length() throws IOException;
+	long length() throws IOException;
 
 }
