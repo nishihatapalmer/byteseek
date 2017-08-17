@@ -57,7 +57,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author matt
  */
-public class FileReader extends AbstractReader implements SoftWindowRecovery {
+public class FileReader extends AbstractCacheReader implements SoftWindowRecovery {
 
 	private final static String READ_ONLY = "r";
 

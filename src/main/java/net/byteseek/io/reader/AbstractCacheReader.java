@@ -47,12 +47,11 @@ import net.byteseek.utils.ArgUtils;
  * Iterable&lt;WindowReader&gt; to allow iterating over the Windows of a WindowReader.
  * <p>
  * It provides common Window and cache management services using a fixed Window
- * size, and a standard Window iterator
- * {@link net.byteseek.io.reader.WindowIterator}.
+ * size, and a standard Window iterator {@link net.byteseek.io.reader.WindowIterator}.
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractReader implements WindowReader {
+public abstract class AbstractCacheReader implements WindowReader {
 
 	/**
 	 * A constant indicating that there is no byte at the position requested,
@@ -106,7 +105,7 @@ public abstract class AbstractReader implements WindowReader {
 	 * @throws IllegalArgumentException
 	 *             if the WindowCache is null.
 	 */
-	public AbstractReader(final WindowCache cache) {
+	public AbstractCacheReader(final WindowCache cache) {
 		this(DEFAULT_WINDOW_SIZE, cache);
 	}
 
@@ -121,7 +120,7 @@ public abstract class AbstractReader implements WindowReader {
 	 *             if the window size is less than one or the WindowCache is
 	 *             null.
 	 */
-	public AbstractReader(final int windowSize, final WindowCache cache) {
+	public AbstractCacheReader(final int windowSize, final WindowCache cache) {
 		ArgUtils.checkPositiveInteger(windowSize, "windowSize");
 		ArgUtils.checkNullObject(cache, "cache");
 		this.windowSize = windowSize;

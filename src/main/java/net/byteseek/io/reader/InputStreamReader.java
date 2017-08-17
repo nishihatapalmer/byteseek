@@ -75,7 +75,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public class InputStreamReader extends AbstractReader {
+public class InputStreamReader extends AbstractCacheReader {
 
 	private final InputStream stream;
 	private final boolean closeStreamOnClose;
