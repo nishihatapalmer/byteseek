@@ -47,7 +47,7 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
 
 /**
- * A WindowReader extending {@link AbstractReader} which reads a random access file
+ * A WindowReader extending {@link AbstractCacheReader} which reads a random access file
  * into cached byte arrays.  It also implements the SoftWindowRecovery interface,
  * which allows windows to reload their byte arrays when using SoftWindows (as the
  * garbage collector may have re-claimed their array under low memory conditions

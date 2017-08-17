@@ -43,7 +43,7 @@ import net.byteseek.io.reader.windows.*;
 import net.byteseek.utils.ArgUtils;
 
 /**
- * A WindowReader extending {@link AbstractReader} over an {@link java.io.InputStream}
+ * A WindowReader extending {@link AbstractCacheReader} over an {@link java.io.InputStream}
  * .
  * <p>
  * The implementation is stream-friendly, in that it does not need to know the
