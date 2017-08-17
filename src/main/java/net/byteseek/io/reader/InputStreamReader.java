@@ -383,6 +383,22 @@ public class InputStreamReader extends AbstractCacheReader {
 	}
 
 	/**
+	 * Calling this method reads the remaining data in the stream.
+	 * This can be useful to ensure that the stream has been fully cached.
+	 * It returns the length of the stream.
+	 * <p>
+	 * The same result can be achieved by just calling length().
+	 * However, that does not communicate the intention to read the stream,
+	 * and it is not obvious that this will happen by calling length().
+	 *
+	 * @return The length of the stream.
+	 * @throws IOException If there was a problem reading the stream.
+	 */
+	public long readEntireStream() throws IOException {
+		return length(); // calling length() forces a read of the remaining stream, if any.
+	}
+
+	/**
 	 * Closes the underlying InputStream and clears any cache associated with it
 	 * in this WindowReader.
 	 * 
