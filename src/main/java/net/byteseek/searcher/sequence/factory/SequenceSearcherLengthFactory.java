@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  */
-package net.byteseek.searcher.sequence;
+package net.byteseek.searcher.sequence.factory;
 
 import net.byteseek.compiler.CompileException;
 import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
@@ -36,9 +36,14 @@ import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
+import net.byteseek.searcher.sequence.SequenceSearcher;
+import net.byteseek.searcher.sequence.SignedHorspoolSearcher;
 import net.byteseek.utils.ArgUtils;
 
-public class SequenceSearcherSimpleFactory implements SequenceSearcherFactory {
+/**
+ * A SequenceSearcherFactory that selects the best searcher on the basis of the pattern length.
+ */
+public class SequenceSearcherLengthFactory implements SequenceSearcherFactory {
 
     @Override
     public SequenceSearcher create(final byte theByte) {
@@ -74,9 +79,11 @@ public class SequenceSearcherSimpleFactory implements SequenceSearcherFactory {
             create(theSequence.getMatcherForPosition(0));
         }
         if (sequenceLength < 12) { //TODO: validate this position with profling.  It's *roughly* right, but should be checked.
-            return new ShiftOrUnrolledSearcher(theSequence);
+            //return new ShiftOrUnrolledSearcher(theSequence);
+            return new SignedHorspoolSearcher(theSequence);
         }
-        //TODO: validate that this is the best choice in general with profiling.  Qgram filtering is also fast.
-        return new SignedHash2Searcher(theSequence);
+        //TODO: validate that this is the best choice in general with profiling.  Qgram filtering is also fast, and signed and unrolledHorspool.
+        //return new SignedHash2Searcher(theSequence);
+        return new SignedHorspoolSearcher(theSequence);
     }
 }

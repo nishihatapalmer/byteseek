@@ -27,22 +27,32 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  */
-package net.byteseek.searcher.sequence;
+package net.byteseek.searcher.sequence.factory;
 
 import net.byteseek.compiler.CompileException;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.searcher.sequence.SequenceSearcher;
 
 /**
  * An interface for factories which create an appropriate SequenceSearcher given a byte, a ByteMatcher,
  * a regular expression, or a SequenceMatcher.
- */
+ * <p>
+ * There is no single best search algorithm.  It varies depending on what is being searched for, how long that is,
+ * how long the thing you are looking in is, how big the alphabet is, can you match more than one thing (e.g. case
+ * insensitive matching), and quite a few more things too.
+ * <p>
+ * Some common factory strategies are provided as public static members.  These include:
+ *  SELECT_BY_LENGTH - choose the searcher depending on how long the pattern is.
+ **/
 public interface SequenceSearcherFactory {
 
    /**
-    * The default SequenceSearcherFactory, which should give reasonable performance in most cases.
+    * A SequenceSearcherFactory which selects the best searcher on the basis of the length of the pattern to match.
+    * In most cases this should give fairly good performance, but may perform poorly on low alphabet searches,
+    * e.g. on DNA, or where the pattern to match contains large byte sets, e.g. a run of 2 'any' bytes: ..
     */
-   public final static SequenceSearcherFactory DEFAULT_FACTORY = new SequenceSearcherSimpleFactory();
+   public final static SequenceSearcherFactory SELECT_BY_LENGTH = new SequenceSearcherLengthFactory();
 
    /**
     * Creates a SequenceSearcher for a single byte value.
