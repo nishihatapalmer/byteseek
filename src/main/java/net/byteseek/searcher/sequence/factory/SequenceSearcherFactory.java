@@ -52,7 +52,7 @@ public interface SequenceSearcherFactory {
     * In most cases this should give fairly good performance, but may perform poorly on low alphabet searches,
     * e.g. on DNA, or where the pattern to match contains large byte sets towards the end of the pattern.
     */
-   public final static SequenceSearcherFactory SELECT_BY_LENGTH = new SequenceSearcherLengthFactory();
+   public final static SequenceSearcherFactory SELECT_BY_LENGTH = new SelectByLengthFactory();
 
    /**
     * Creates a SequenceSearcher for a single byte value.

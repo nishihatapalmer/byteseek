@@ -43,7 +43,7 @@ import net.byteseek.utils.ArgUtils;
 /**
  * A SequenceSearcherFactory that selects the best searcher on the basis of the pattern length.
  */
-public class SequenceSearcherLengthFactory implements SequenceSearcherFactory {
+public class SelectByLengthFactory implements SequenceSearcherFactory {
 
     @Override
     public SequenceSearcher create(final byte theByte) {
