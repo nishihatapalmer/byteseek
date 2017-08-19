@@ -37,6 +37,8 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
 import net.byteseek.searcher.sequence.SequenceSearcher;
+import net.byteseek.searcher.sequence.ShiftOrUnrolledSearcher;
+import net.byteseek.searcher.sequence.SignedHash2Searcher;
 import net.byteseek.searcher.sequence.SignedHorspoolSearcher;
 import net.byteseek.utils.ArgUtils;
 
@@ -79,11 +81,9 @@ public class SelectByLengthFactory implements SequenceSearcherFactory {
             create(theSequence.getMatcherForPosition(0));
         }
         if (sequenceLength < 12) { //TODO: validate this position with profling.  It's *roughly* right, but should be checked.
-            //return new ShiftOrUnrolledSearcher(theSequence);
-            return new SignedHorspoolSearcher(theSequence);
+            return new ShiftOrUnrolledSearcher(theSequence);
         }
         //TODO: validate that this is the best choice in general with profiling.  Qgram filtering is also fast, and signed and unrolledHorspool.
-        //return new SignedHash2Searcher(theSequence);
-        return new SignedHorspoolSearcher(theSequence);
+        return new SignedHash2Searcher(theSequence);
     }
 }
