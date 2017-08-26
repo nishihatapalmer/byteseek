@@ -33,6 +33,9 @@ package net.byteseek.matcher;
 /**
  * A simple data carrying class to hold the results of matching something at a
  * given position, with a match length.
+ * <p>
+ * This class is suitable for extension by subclassing.
+ * It is immutable - subclasses can only add data and behaviour, not change existing data or behaviour.
  *
  * @author Matt Palmer
  */
@@ -57,7 +60,7 @@ public class MatchResult {
 	 * 
 	 * @return The position a match was found at.
 	 */
-	public long getMatchPosition() {
+	public final long getMatchPosition() {
 		return matchPosition;
 	}
 
@@ -66,7 +69,7 @@ public class MatchResult {
 	 * 
 	 * @return The length of the match.
 	 */
-	public long getMatchLength() {
+	public final long getMatchLength() {
 		return matchLength;
 	}
 	
