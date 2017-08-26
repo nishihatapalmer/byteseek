@@ -60,7 +60,7 @@ public interface Searcher {
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading data.
 	 */
-	long searchForwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException;
+	int searchForwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the fromPosition to the toPosition,
@@ -89,7 +89,7 @@ public interface Searcher {
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading data.
 	 */
-	long searchForwards(WindowReader reader, long fromPosition, final List<MatchResult> results) throws IOException;
+	int searchForwards(WindowReader reader, long fromPosition, final List<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -112,7 +112,7 @@ public interface Searcher {
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading data.
 	 */
-	long searchForwards(WindowReader reader, List<MatchResult> results) throws IOException;
+	int searchForwards(WindowReader reader, List<MatchResult> results) throws IOException;
 
 		/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -135,7 +135,7 @@ public interface Searcher {
 	 * @param results      A list of search results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	long searchForwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results);
+	int searchForwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results);
 
 	/**
 	 * Searches bytes forwards provided by a byte array from the position given
@@ -158,7 +158,7 @@ public interface Searcher {
 	 * @param results      A list of search results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	long searchForwards(byte[] bytes, int fromPosition, List<MatchResult> results);
+	int searchForwards(byte[] bytes, int fromPosition, List<MatchResult> results);
 
 	/**
 	 * Searches bytes forwards provided by a byte array from the position given
@@ -178,7 +178,7 @@ public interface Searcher {
 	 * @param results      A list of search results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	long searchForwards(byte[] bytes, List<MatchResult> results);
+	int searchForwards(byte[] bytes, List<MatchResult> results);
 
 	/**
 	 * Searches bytes forwards provided by a byte array
@@ -200,7 +200,7 @@ public interface Searcher {
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
-	long searchBackwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException;
+	int searchBackwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -225,7 +225,7 @@ public interface Searcher {
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
-	long searchBackwards(WindowReader reader, long fromPosition, List<MatchResult> results) throws IOException;
+	int searchBackwards(WindowReader reader, long fromPosition, List<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -248,7 +248,7 @@ public interface Searcher {
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
-	long searchBackwards(WindowReader reader, List<MatchResult> results) throws IOException;
+	int searchBackwards(WindowReader reader, List<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -271,7 +271,7 @@ public interface Searcher {
 	 * @param results      A list of search results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	long searchBackwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results);
+	int searchBackwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results);
 
 	/**
 	 * Searches bytes backwards provided by a byte array, from the position
@@ -294,7 +294,7 @@ public interface Searcher {
 	 * @param results      A list of search results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	long searchBackwards(byte[] bytes, int fromPosition, List<MatchResult> results);
+	int searchBackwards(byte[] bytes, int fromPosition, List<MatchResult> results);
 
 	/**
 	 * Searches bytes backwards provided by a byte array, from the position
@@ -314,7 +314,7 @@ public interface Searcher {
 	 * @param results      A list of search results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	long searchBackwards(byte[] bytes, List<MatchResult> results);
+	int searchBackwards(byte[] bytes, List<MatchResult> results);
 
 	/**
 	 * Searches a byte array backwards, from the end to the start.

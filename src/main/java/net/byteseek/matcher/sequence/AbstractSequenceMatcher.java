@@ -45,7 +45,7 @@ import java.util.List;
 public abstract class AbstractSequenceMatcher implements SequenceMatcher {
 
     @Override
-    public long matches(final WindowReader reader, final long matchPosition, final List<MatchResult> results) throws IOException {
+    public int matches(final WindowReader reader, final long matchPosition, final List<MatchResult> results) throws IOException {
         if (matches(reader, matchPosition)) {
             results.add(new MatchResult(matchPosition, length()));
             return 1;
@@ -54,7 +54,7 @@ public abstract class AbstractSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public long matches(final byte[] bytes, final int matchPosition, final List<MatchResult> results) {
+    public int matches(final byte[] bytes, final int matchPosition, final List<MatchResult> results) {
         if (matches(bytes, matchPosition)) {
             results.add(new MatchResult(matchPosition, length()));
             return 1;

@@ -41,6 +41,10 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 import net.byteseek.utils.ArgUtils;
 
+//TODO: support iteration which does not allow overlapping matches.
+//      i.e. after a match, the next search position is one beyond the end of the curent match.
+
+
 /**
  * An iterator which iterates over a {@link net.byteseek.io.reader.WindowReader} or a
  * byte array, using a provided {@link Searcher}. Each iteration returns the
@@ -48,8 +52,7 @@ import net.byteseek.utils.ArgUtils;
  *
  * @author Matt Palmer
  */
-public class ForwardSearchIterator implements
-		Iterator<List<MatchResult>> {
+public class ForwardSearchIterator implements Iterator<List<MatchResult>> {
 
 	// immutable fields:
 	private final byte[] bytes;

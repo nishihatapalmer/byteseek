@@ -250,6 +250,10 @@ public class GeneralSearcherTests extends SearchersToTest {
         }
     }
 
+    //TODO: tests that searches within particular ranges produce the same results (not entire file...?).
+
+    //TODO: search reader *within* a single array of that window, no crossing...?  flush out array end problems?
+
     //TODO: need backwards end tests...?
 
 
@@ -258,5 +262,13 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     //TODO: tests for not matching at position zero when backwards start position is already negative.
 
+
+    //TODO: fallback searcher tests to demonstrate fallback under wrong length / pathological conditions.
+
+    //TODO: tests for integer overflow - search at ends of very large arrays / Readers (may need test reader for this).
+
+    //TODO: tests for selection of appropriate search length / denial of service defences.
+
+    //TODO: performance tests for MAX_QGRAM limit in Qgram based searchers (currently 4 * TABLE_SIZE).
 
 }

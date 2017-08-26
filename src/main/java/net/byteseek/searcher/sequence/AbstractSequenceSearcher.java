@@ -96,7 +96,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
      */
 
     @Override
-    public long searchForwards(final byte[] bytes,
+    public int searchForwards(final byte[] bytes,
                                final int fromPosition, final int toPosition,
                                final List<MatchResult> results) {
         final int matchPosition = searchSequenceForwards(bytes, fromPosition, toPosition);
@@ -108,9 +108,9 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     }
 
     @Override
-    public long searchForwards(final WindowReader reader,
-                               final long fromPosition, final long toPosition,
-                                final List<MatchResult> results) throws IOException {
+    public int searchForwards(final WindowReader reader,
+                              final long fromPosition, final long toPosition,
+                              final List<MatchResult> results) throws IOException {
         final long matchPosition = searchSequenceForwards(reader, fromPosition, toPosition);
         if (matchPosition >= 0) {
             results.add(new MatchResult(matchPosition, getSequenceLength()));
@@ -148,7 +148,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
      */
 
     @Override
-    public long searchBackwards(final byte[] bytes,
+    public int searchBackwards(final byte[] bytes,
                                 final int fromPosition, final int toPosition,
                                 final List<MatchResult> results) {
         final int matchPosition = searchSequenceBackwards(bytes, fromPosition, toPosition);
@@ -160,7 +160,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     }
 
     @Override
-    public long searchBackwards(final WindowReader reader,
+    public int searchBackwards(final WindowReader reader,
                                 final long fromPosition, final long toPosition,
                                 final List<MatchResult> results) throws IOException {
         final long matchPosition = searchSequenceBackwards(reader, fromPosition, toPosition);

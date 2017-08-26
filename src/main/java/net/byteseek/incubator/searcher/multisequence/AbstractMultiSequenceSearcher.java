@@ -83,22 +83,22 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
 
 
     @Override
-    public long searchForwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
+    public int searchForwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
         return 0; //TODO: implement.
     }
 
     @Override
-    public long searchForwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
+    public int searchForwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
         return 0; //TODO: implement.
     }
 
     @Override
-    public long searchBackwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
+    public int searchBackwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
         return 0; //TODO: implement.
     }
 
     @Override
-    public long searchBackwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
+    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
         return 0; //TODO: implement.
     }
     

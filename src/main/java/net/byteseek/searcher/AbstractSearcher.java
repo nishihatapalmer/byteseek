@@ -96,7 +96,7 @@ public abstract class AbstractSearcher implements Searcher {
 	 **************************************************/
 
 	@Override
-	public long searchForwards(final WindowReader reader, final long fromPosition, final List<MatchResult> results) throws IOException {
+	public int searchForwards(final WindowReader reader, final long fromPosition, final List<MatchResult> results) throws IOException {
 		return searchForwards(reader, fromPosition, Long.MAX_VALUE, results);
 	}
 
@@ -106,7 +106,7 @@ public abstract class AbstractSearcher implements Searcher {
 	}
 
 	@Override
-	public long searchForwards(final WindowReader reader, final List<MatchResult> results) throws IOException {
+	public int searchForwards(final WindowReader reader, final List<MatchResult> results) throws IOException {
 		return searchForwards(reader, 0, Long.MAX_VALUE, results);
 	}
 
@@ -116,7 +116,7 @@ public abstract class AbstractSearcher implements Searcher {
 	}
 
 	@Override
-	public long searchForwards(final byte[] bytes, final int fromPosition,final  List<MatchResult> results) {
+	public int searchForwards(final byte[] bytes, final int fromPosition,final  List<MatchResult> results) {
 		return searchForwards(bytes, fromPosition, bytes.length - 1, results);
 	}
 
@@ -126,7 +126,7 @@ public abstract class AbstractSearcher implements Searcher {
 	}
 
 	@Override
-	public long searchForwards(final byte[] bytes, final List<MatchResult> results) {
+	public int searchForwards(final byte[] bytes, final List<MatchResult> results) {
 		return searchForwards(bytes, 0, bytes.length - 1, results);
 	}
 
@@ -136,7 +136,7 @@ public abstract class AbstractSearcher implements Searcher {
 	}
 
 	@Override
-	public long searchBackwards(final WindowReader reader, final long fromPosition, final List<MatchResult> results) throws IOException {
+	public int searchBackwards(final WindowReader reader, final long fromPosition, final List<MatchResult> results) throws IOException {
 		return searchBackwards(reader, fromPosition, 0, results);
 	}
 
@@ -146,7 +146,7 @@ public abstract class AbstractSearcher implements Searcher {
 	}
 
 	@Override
-	public long searchBackwards(final WindowReader reader, final List<MatchResult> results) throws IOException {
+	public int searchBackwards(final WindowReader reader, final List<MatchResult> results) throws IOException {
 		return searchBackwards(reader, reader.length() - 1, 0, results);
 	}
 
@@ -156,7 +156,7 @@ public abstract class AbstractSearcher implements Searcher {
 	}
 
 	@Override
-	public long searchBackwards(final byte[] bytes, final int fromPosition, final List<MatchResult> results) {
+	public int searchBackwards(final byte[] bytes, final int fromPosition, final List<MatchResult> results) {
 		return searchBackwards(bytes, fromPosition, 0, results);
 	}
 
@@ -166,7 +166,7 @@ public abstract class AbstractSearcher implements Searcher {
 	}
 
 	@Override
-	public long searchBackwards(final byte[] bytes, final List<MatchResult> results) {
+	public int searchBackwards(final byte[] bytes, final List<MatchResult> results) {
 		return searchBackwards(bytes, bytes.length - 1, 0, results);
 	}
 

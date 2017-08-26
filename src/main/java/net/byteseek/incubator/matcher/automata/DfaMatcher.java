@@ -62,7 +62,7 @@ public class DfaMatcher<T> implements AutomataMatcher {
 	}
 
 	@Override
-	public long matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+	public int matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
 		return 0; //TODO: implement.
 	}
 
@@ -101,7 +101,7 @@ public class DfaMatcher<T> implements AutomataMatcher {
 	}
 
 	@Override
-	public long matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+	public int matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
 		return 0; //TODO: implement.
 	}
 

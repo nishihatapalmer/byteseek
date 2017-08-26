@@ -521,18 +521,20 @@ public class CrossValidationSearchersTest extends SearchersToTest {
 
     private void debugFailedSearcherBytes(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
         byte[] data = loadDataToSearch(dataToSearch);
-        int result = searcher.searchSequenceBackwards(data, (int) (failedAtPosition + 20));
+        int result = searcher.searchSequenceForwards(data, (int) (failedAtPosition - 20));
         //searcher.searchSequenceBackwards(data);
     }
 
     private void debugFailedSearcherWindow(SequenceSearcher searcher, long failedAtPosition, String dataToSearch) {
+        long result = -123456789;
         try {
             WindowReader reader = loadFileReader(dataToSearch);
-            searcher.searchSequenceBackwards(reader, failedAtPosition + 11);
+            result = searcher.searchSequenceForwards(reader, failedAtPosition - 300);
             //searcher.searchSequenceBackwards(reader, failedAtPosition);
         } catch (IOException ex) {
             fail("IO Exception when reading");
         }
+        System.out.println(result);
     }
 
     private void findCountMismatches(byte[] pattern, Map<Integer, List<SequenceSearcher>> resultMap) {

@@ -144,6 +144,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         long state = ~0L; // 64 1's bitmask.
         long pos   = startPosition;
         Window window;
+        //TODO: pos < or <=?  write test.
         while (pos < toPositionEndPos && (window = reader.getWindow(pos)) != null) { // when window is null, there is no more data.
             final byte[] array = window.getArray();
             final int arrayStartPos = reader.getWindowOffset(pos);

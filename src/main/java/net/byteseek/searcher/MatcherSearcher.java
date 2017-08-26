@@ -101,7 +101,7 @@ public final class MatcherSearcher extends AbstractSearcher {
      * @throws IOException if a problem occurred reading bytes from the WindowReader.
      */
     @Override
-    public long searchForwards(final WindowReader reader,
+    public int searchForwards(final WindowReader reader,
                                final long fromPosition, final long toPosition,
                                final List<MatchResult> results) throws IOException {
         
@@ -121,7 +121,7 @@ public final class MatcherSearcher extends AbstractSearcher {
             
             // Search forwards in the window:
             while (searchPosition <= finalPosition) {
-                final long numMatches = theMatcher.matches(reader, searchPosition, results);
+                final int numMatches = theMatcher.matches(reader, searchPosition, results);
                 if (numMatches > 0) {
                     return numMatches;
                 }
@@ -136,7 +136,7 @@ public final class MatcherSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public long searchForwards(final byte[] bytes,
+    public int searchForwards(final byte[] bytes,
                                final int fromPosition, final int toPosition,
                                final List<MatchResult> results) {
         
@@ -150,7 +150,7 @@ public final class MatcherSearcher extends AbstractSearcher {
         
         // Search forwards:
         while (searchPosition <= searchEndPosition) {
-            final long numMatches = theMatcher.matches(bytes, searchPosition, results);
+            final int numMatches = theMatcher.matches(bytes, searchPosition, results);
             if (numMatches > 0) {
                 return numMatches;
             }
@@ -164,7 +164,7 @@ public final class MatcherSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public long searchBackwards(final WindowReader reader,
+    public int searchBackwards(final WindowReader reader,
                                 final long fromPosition, final long toPosition,
                                 List<MatchResult> results) throws IOException {
         
@@ -176,7 +176,7 @@ public final class MatcherSearcher extends AbstractSearcher {
         
         // Search backwards:
         while (searchPosition >= endSearchPosition) {
-            final long numMatches = theMatcher.matches(reader, searchPosition, results);
+            final int numMatches = theMatcher.matches(reader, searchPosition, results);
             if (numMatches > 0) {
                 return numMatches;
             }
@@ -190,7 +190,7 @@ public final class MatcherSearcher extends AbstractSearcher {
      * {@inheritDoc}
      */
     @Override
-    public long searchBackwards(final byte[] bytes,
+    public int searchBackwards(final byte[] bytes,
                                 final int fromPosition, final int toPosition,
                                 final List<MatchResult> results) {
         // Initialise search:
@@ -203,7 +203,7 @@ public final class MatcherSearcher extends AbstractSearcher {
         
         // Search backwards:
         while (searchPosition >= endSearchPosition) {
-            final long numMatches = theMatcher.matches(bytes, searchPosition, results);
+            final int numMatches = theMatcher.matches(bytes, searchPosition, results);
             if (numMatches > 0) {
                 return numMatches;
             }
