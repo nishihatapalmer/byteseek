@@ -32,6 +32,7 @@
 package net.byteseek.incubator.searcher.multisequence;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
@@ -83,22 +84,22 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
 
 
     @Override
-    public int searchForwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
+    public int searchForwards(WindowReader reader, long fromPosition, long toPosition, Collection<MatchResult> results) throws IOException {
         return 0; //TODO: implement.
     }
 
     @Override
-    public int searchForwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
+    public int searchForwards(byte[] bytes, int fromPosition, int toPosition, Collection<MatchResult> results) {
         return 0; //TODO: implement.
     }
 
     @Override
-    public int searchBackwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException {
+    public int searchBackwards(WindowReader reader, long fromPosition, long toPosition, Collection<MatchResult> results) throws IOException {
         return 0; //TODO: implement.
     }
 
     @Override
-    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results) {
+    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition, Collection<MatchResult> results) {
         return 0; //TODO: implement.
     }
     

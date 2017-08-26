@@ -318,7 +318,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	}
 
 	@Override
-	public int matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException {
+	public int matches(WindowReader reader, long matchPosition, Collection<MatchResult> results) throws IOException {
 		return 0; //TODO: implement.
 	}
 
@@ -331,7 +331,7 @@ public final class TrieMultiSequenceMatcher implements MultiSequenceMatcher {
 	}
 
 	@Override
-	public int matches(byte[] bytes, int matchPosition, List<MatchResult> results) {
+	public int matches(byte[] bytes, int matchPosition, Collection<MatchResult> results) {
 		return 0; //TODO: implement.
 	}
 

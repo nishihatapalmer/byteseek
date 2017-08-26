@@ -32,10 +32,16 @@
 package net.byteseek.searcher;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
+
+//TODO: idea - interface just has search methods, not searchForwards and searchBackwards.
+//             The direction of "from" and "to" determines what underlying search routines are called.
+//             Halves the size of the interface, makes forwards / backwards more of an implementation detail.
+//             Still want separate prepareForwards() and prepareBackwards() calls, usually only want to prepare in one direction.
 
 /**
  * An interface for classes that search bytes provided by a {@link WindowReader}, or
@@ -56,11 +62,11 @@ public interface Searcher {
 	 * @param reader       The byte reader giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search up to.
-	 * @param results      A list of search results which any new results will be added to.                       
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading data.
 	 */
-	int searchForwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException;
+	int searchForwards(WindowReader reader, long fromPosition, long toPosition, Collection<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the fromPosition to the toPosition,
@@ -85,11 +91,11 @@ public interface Searcher {
 	 *
 	 * @param reader       The window reader giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading data.
 	 */
-	int searchForwards(WindowReader reader, long fromPosition, final List<MatchResult> results) throws IOException;
+	int searchForwards(WindowReader reader, long fromPosition, Collection<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -108,11 +114,11 @@ public interface Searcher {
 	 * start of the {@link WindowReader} to the end, if a match is not found.
 	 *
 	 * @param reader  The byte reader giving access to the bytes being searched.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading data.
 	 */
-	int searchForwards(WindowReader reader, List<MatchResult> results) throws IOException;
+	int searchForwards(WindowReader reader, Collection<MatchResult> results) throws IOException;
 
 		/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
@@ -132,10 +138,10 @@ public interface Searcher {
 	 * @param bytes        The byte array giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search up to.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	int searchForwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results);
+	int searchForwards(byte[] bytes, int fromPosition, int toPosition, Collection<MatchResult> results);
 
 	/**
 	 * Searches bytes forwards provided by a byte array from the position given
@@ -155,10 +161,10 @@ public interface Searcher {
 	 *
 	 * @param bytes        The byte array giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	int searchForwards(byte[] bytes, int fromPosition, List<MatchResult> results);
+	int searchForwards(byte[] bytes, int fromPosition, Collection<MatchResult> results);
 
 	/**
 	 * Searches bytes forwards provided by a byte array from the position given
@@ -175,10 +181,10 @@ public interface Searcher {
 	 * Searches bytes forwards provided by a byte array
 	 *
 	 * @param bytes        The byte array giving access to the bytes being searched.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	int searchForwards(byte[] bytes, List<MatchResult> results);
+	int searchForwards(byte[] bytes, Collection<MatchResult> results);
 
 	/**
 	 * Searches bytes forwards provided by a byte array
@@ -196,11 +202,11 @@ public interface Searcher {
 	 * @param reader       The byte reader giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search back to.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
-	int searchBackwards(WindowReader reader, long fromPosition, long toPosition, List<MatchResult> results) throws IOException;
+	int searchBackwards(WindowReader reader, long fromPosition, long toPosition, Collection<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -221,11 +227,11 @@ public interface Searcher {
 	 *
 	 * @param reader       The byte reader giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
-	int searchBackwards(WindowReader reader, long fromPosition, List<MatchResult> results) throws IOException;
+	int searchBackwards(WindowReader reader, long fromPosition, Collection<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -244,11 +250,11 @@ public interface Searcher {
 	 * end to the start.
 	 *
 	 * @param reader The byte reader giving access to the bytes being searched.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
-	int searchBackwards(WindowReader reader, List<MatchResult> results) throws IOException;
+	int searchBackwards(WindowReader reader, Collection<MatchResult> results) throws IOException;
 
 	/**
 	 * Searches bytes backwards provided by a {@link WindowReader} object, from the
@@ -268,10 +274,10 @@ public interface Searcher {
 	 * @param bytes        The byte array giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search back to.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	int searchBackwards(byte[] bytes, int fromPosition, int toPosition, List<MatchResult> results);
+	int searchBackwards(byte[] bytes, int fromPosition, int toPosition, Collection<MatchResult> results);
 
 	/**
 	 * Searches bytes backwards provided by a byte array, from the position
@@ -291,10 +297,10 @@ public interface Searcher {
 	 *
 	 * @param bytes        The byte array giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	int searchBackwards(byte[] bytes, int fromPosition, List<MatchResult> results);
+	int searchBackwards(byte[] bytes, int fromPosition, Collection<MatchResult> results);
 
 	/**
 	 * Searches bytes backwards provided by a byte array, from the position
@@ -311,10 +317,10 @@ public interface Searcher {
 	 * Searches a byte array backwards, from the end to the start.
 	 *
 	 * @param bytes The byte array giving access to the bytes being searched.
-	 * @param results      A list of search results which any new results will be added to.
+	 * @param results      A collection of match results which any new results will be added to.
 	 * @return             The number of results found.
 	 */
-	int searchBackwards(byte[] bytes, List<MatchResult> results);
+	int searchBackwards(byte[] bytes, Collection<MatchResult> results);
 
 	/**
 	 * Searches a byte array backwards, from the end to the start.

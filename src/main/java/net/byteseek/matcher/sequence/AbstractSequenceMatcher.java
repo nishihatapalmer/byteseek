@@ -34,6 +34,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ import java.util.List;
 public abstract class AbstractSequenceMatcher implements SequenceMatcher {
 
     @Override
-    public int matches(final WindowReader reader, final long matchPosition, final List<MatchResult> results) throws IOException {
+    public int matches(final WindowReader reader, final long matchPosition, final Collection<MatchResult> results) throws IOException {
         if (matches(reader, matchPosition)) {
             results.add(new MatchResult(matchPosition, length()));
             return 1;
@@ -54,7 +55,7 @@ public abstract class AbstractSequenceMatcher implements SequenceMatcher {
     }
 
     @Override
-    public int matches(final byte[] bytes, final int matchPosition, final List<MatchResult> results) {
+    public int matches(final byte[] bytes, final int matchPosition, final Collection<MatchResult> results) {
         if (matches(bytes, matchPosition)) {
             results.add(new MatchResult(matchPosition, length()));
             return 1;

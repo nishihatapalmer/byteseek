@@ -32,6 +32,7 @@
 package net.byteseek.searcher.sequence;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
@@ -98,7 +99,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     @Override
     public int searchForwards(final byte[] bytes,
                                final int fromPosition, final int toPosition,
-                               final List<MatchResult> results) {
+                               final Collection<MatchResult> results) {
         final int matchPosition = searchSequenceForwards(bytes, fromPosition, toPosition);
         if (matchPosition >= 0) {
             results.add(new MatchResult(matchPosition, getSequenceLength()));
@@ -110,7 +111,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     @Override
     public int searchForwards(final WindowReader reader,
                               final long fromPosition, final long toPosition,
-                              final List<MatchResult> results) throws IOException {
+                              final Collection<MatchResult> results) throws IOException {
         final long matchPosition = searchSequenceForwards(reader, fromPosition, toPosition);
         if (matchPosition >= 0) {
             results.add(new MatchResult(matchPosition, getSequenceLength()));
@@ -150,7 +151,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     @Override
     public int searchBackwards(final byte[] bytes,
                                 final int fromPosition, final int toPosition,
-                                final List<MatchResult> results) {
+                                final Collection<MatchResult> results) {
         final int matchPosition = searchSequenceBackwards(bytes, fromPosition, toPosition);
         if (matchPosition >= 0) {
             results.add(new MatchResult(matchPosition, getSequenceLength()));
@@ -162,7 +163,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     @Override
     public int searchBackwards(final WindowReader reader,
                                 final long fromPosition, final long toPosition,
-                                final List<MatchResult> results) throws IOException {
+                                final Collection<MatchResult> results) throws IOException {
         final long matchPosition = searchSequenceBackwards(reader, fromPosition, toPosition);
         if (matchPosition >= 0) {
             results.add(new MatchResult(matchPosition, getSequenceLength()));

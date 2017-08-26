@@ -32,6 +32,7 @@
 package net.byteseek.matcher;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
@@ -52,12 +53,12 @@ public interface Matcher {
 	 *
 	 * @param reader        The {@link WindowReader} to read from.
 	 * @param matchPosition The position to try to match at.
-	 * @param results       The list of match results to append new matches to.
+	 * @param results       The Collection of match results to append new matches to.
 	 * @return              The number of match results for the position.
 	 * @throws IOException  if the WindowReader cannot read (but not for reads past the end of the WindowReader).
 	 * @throws NullPointerException if the WindowReader is null.
 	 */
-	int matches(WindowReader reader, long matchPosition, List<MatchResult> results) throws IOException;
+	int matches(WindowReader reader, long matchPosition, Collection<MatchResult> results) throws IOException;
 
 	/**
 	 * Returns whether there is a match or not at the given position in a
@@ -80,11 +81,11 @@ public interface Matcher {
 	 *
 	 * @param bytes         An array of bytes to read from.
 	 * @param matchPosition The position to try to match at.
-	 * @param results       A list of MatchResults to append any matches to.
+	 * @param results       A collection of MatchResults to append any matches to.
 	 * @return              The number of matches at that position.
 	 * @throws NullPointerException if the byte array passed in is null.
 	 */
-	int matches(byte[] bytes, int matchPosition, List<MatchResult> results);
+	int matches(byte[] bytes, int matchPosition, Collection<MatchResult> results);
 
 	/**
 	 * Returns whether there is a match or not at the given position in a byte

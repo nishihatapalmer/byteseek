@@ -32,6 +32,7 @@
 package net.byteseek.searcher;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
@@ -103,7 +104,7 @@ public final class MatcherSearcher extends AbstractSearcher {
     @Override
     public int searchForwards(final WindowReader reader,
                                final long fromPosition, final long toPosition,
-                               final List<MatchResult> results) throws IOException {
+                               final Collection<MatchResult> results) throws IOException {
         
         // Initialise search:
         final Matcher theMatcher = matcher;    
@@ -138,7 +139,7 @@ public final class MatcherSearcher extends AbstractSearcher {
     @Override
     public int searchForwards(final byte[] bytes,
                                final int fromPosition, final int toPosition,
-                               final List<MatchResult> results) {
+                               final Collection<MatchResult> results) {
         
         // Use a local reference to the matcher for performance reasons:
         final Matcher theMatcher = matcher;
@@ -166,7 +167,7 @@ public final class MatcherSearcher extends AbstractSearcher {
     @Override
     public int searchBackwards(final WindowReader reader,
                                 final long fromPosition, final long toPosition,
-                                List<MatchResult> results) throws IOException {
+                                Collection<MatchResult> results) throws IOException {
         
         // Initialise search:
         final Matcher theMatcher = matcher;        
@@ -192,7 +193,7 @@ public final class MatcherSearcher extends AbstractSearcher {
     @Override
     public int searchBackwards(final byte[] bytes,
                                 final int fromPosition, final int toPosition,
-                                final List<MatchResult> results) {
+                                final Collection<MatchResult> results) {
         // Initialise search:
         final Matcher theMatcher = matcher;
         final int lastPossiblePosition = bytes.length - 1;
