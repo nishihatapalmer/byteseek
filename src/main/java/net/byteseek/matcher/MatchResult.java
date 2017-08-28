@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013, All rights reserved.
+ * Copyright Matt Palmer 2013-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -71,6 +71,12 @@ public class MatchResult {
 	 */
 	public final long getMatchLength() {
 		return matchLength;
+	}
+
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "(position:" + matchPosition + " length:" + matchLength + ')';
 	}
 	
 }
