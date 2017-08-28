@@ -44,7 +44,8 @@
  * <li>ShiftOrSearcher          - usually faster than the above for small pattern lengths, e.g. 8 or less in length).</li>
  * <li>ShiftOrUnrolledSearcher  - usually fastest for small pattern lengths, e.g. 12 or less in length).</li>
  * <li>QgramFilterSearcher      - usually fastest for most patterns except shorter patterns, where ShiftOrUnrolled is fastest.
- *                                However, it is very sensitive to small alphabets where performance can be very poor.</li>
+ *                                However, it is very sensitive to small alphabets with long patterns (e.g. long DNA sequences)
+ *                                where performance can be very poor.</li>
  * <li>ShiftHashSearcher        - usually fastest for very long patterns (e.g. 2048 or higher).</li>
  * </ul>
  * <p>
