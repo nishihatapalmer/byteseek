@@ -58,6 +58,10 @@ import java.util.NoSuchElementException;
  */
 public final class SearchIterator {
 
+    /**************************
+     * Static utility methods *
+     **************************/
+
     /**
      * Finds all matches in the data using the searcher and returns a list of them.
      *
@@ -136,14 +140,30 @@ public final class SearchIterator {
     }
 
 
+    /***********
+     * Members *
+     ***********/
+
     /**
      * A private class which iterates over the search data.  We instantiate different subclasses depending on
      * whether we are searching forwards or backwards, and whether the data source is a byte array or a WindowReader.
      */
     private final BaseSearchIterator iterator;
 
+    /**
+     * Whether the iterator has yet looked to see if there are further results.
+     */
     private boolean searchedForNext = false;
+
+    /**
+     * Whether there are further results.
+     */
     private boolean hasNext;
+
+
+    /****************
+     * Constructors *
+     ****************/
 
     /**
      * Constructs a SearchIterator given a Searcher, a byte array to search in, and the positions to search between.
@@ -219,6 +239,11 @@ public final class SearchIterator {
         this(searcher, reader, 0, Long.MAX_VALUE);
     }
 
+
+    /******************
+     * Public methods *
+     ******************/
+
     /**
      * Returns true if there are more search results available.
      *
@@ -251,10 +276,24 @@ public final class SearchIterator {
         throw new NoSuchElementException("No more results for search iterator: " + iterator);
     }
 
-
+    /**
+     * Accumulates all the remaining next items into a single list and returns it.
+     *
+     * @return a list of all the remaining items.
+     * @throws IOException If a problem happens reading the data.
+     */
     public List<MatchResult> nextAll() throws IOException {
-        return iterator.nextAll();
+        final List<MatchResult> remainingResults = new ArrayList<MatchResult>();
+        while (hasNext()) {
+            remainingResults.addAll(next());
+        }
+        return remainingResults;
     }
+
+
+    /*******************
+     * Private classes *
+     *******************/
 
     /**
      * An abstract base class for all search iterators, implementing most of the logic.
@@ -291,20 +330,11 @@ public final class SearchIterator {
          * @return The current set of results.
          */
         private List<MatchResult> next() {
-            pos = nextSearchPosition();
+            pos = nextSearchPosition(); //TODO: do we need a defined stop signal (e.g. pos is negative...?)
             return results;
         }
 
-        private List<MatchResult> nextAll() throws IOException {
-            results.clear();
-            final List<MatchResult> remainingResults = new ArrayList<MatchResult>();
-            while (hasNext()) {
-                remainingResults.addAll(next());
-            }
-            return remainingResults;
-        }
-
-        /**
+         /**
          * Searches in the data for the next set of results, placing them in the results List,
          * and returning the number of results added.
          *
@@ -433,6 +463,10 @@ public final class SearchIterator {
         }
     }
 
+
+    /******************************
+     * Private convenience method *
+     ******************************/
 
     private static List<MatchResult> suppressIOException(final SearchIterator iterator) {
         try {
