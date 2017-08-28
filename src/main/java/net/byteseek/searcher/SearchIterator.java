@@ -290,6 +290,11 @@ public final class SearchIterator {
         return remainingResults;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + iterator + ')';
+    }
+
 
     /* *****************
      * Private classes *
