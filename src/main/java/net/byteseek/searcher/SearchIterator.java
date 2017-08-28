@@ -92,6 +92,48 @@ public final class SearchIterator {
     }
 
     /**
+     * Constructs a SearchIterator given a Searcher, a byte array to search in, and a position to search from.
+     * Searching will be forwards until the end of the byte array.
+     *
+     * @param searcher The Searcher to search with.
+     * @param data A byte array which is the data to search in.
+     * @param from The position to start searching from.  Searching will be forwards until the end of the array.
+     */
+    public SearchIterator(final Searcher searcher, final byte[] data, final int from) {
+        this(searcher, data, from, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Constructs a SearchIterator given a Searcher, a WindowReader to search in, and a position to search from.
+     * @param searcher The Searcher to search with.
+     * @param reader A WindowReader which is the data to search in.
+     * @param from The position to start searching from.  Searching will be forwards until the end of the Reader.
+     */
+    public SearchIterator(final Searcher searcher, final WindowReader reader, final long from) {
+        this(searcher, reader, from, Long.MAX_VALUE);
+    }
+
+    /**
+     * Constructs a SearchIterator given a Searcher and a byte array to search in.
+     * The entire byte array will be searched forwards.
+     * @param searcher The Searcher to search with.
+     * @param data The data to search in.
+     */
+    public SearchIterator(final Searcher searcher, final byte[] data) {
+        this(searcher, data, 0, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Constructs a SearchIterator given a Searcher and a WindowReader to search in.
+     * The entire WindowReader will be searched forwards.
+     * @param searcher The Searcher to search with.
+     * @param reader The reader to search in.
+     */
+    public SearchIterator(final Searcher searcher, final WindowReader reader) {
+        this(searcher, reader, 0, Long.MAX_VALUE);
+    }
+
+    /**
      * Returns true if there are more search results available.
      *
      * @return true if there are more search results available.
