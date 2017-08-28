@@ -71,8 +71,8 @@ public class CrossValidationSearchersTest extends SearchersToTest {
 
     SearchData[] data = {
          //   new SearchData("/romeoandjuliet.txt", "textAlphabet", "to", "art", "thou", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
-            new SearchData("/romeoandjuliet.txt", "textAlphabet", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
-            new SearchData("/hsapiensdna.txt", "lowAlphabet", "AA", "CAG", "GATACA", "TGATCGA", "CAGGAGAG", "ATCGCATGA", "TCCAGAATCT", "ACACTTGCTCTTTAGAAGAGTGCT", "ATGCCTGCAGCAGAGGAGGCACACAGAGTGTTAA", "GCAGCTTTGGCCTCCTGGGTGCAAGCCATCCTCCTGCCCCAGCCTC")
+            new SearchData("/romeoandjuliet.txt", "textAlphabet", " ", "Going", "search", "swifter", "wherefor", "wherefore", "I see thee", "I see thee now", "with speedy helpe", "as hastie powder fier'd", "Oh bid me leape", "I will stirre about", "See where she comes from shrift", "Searchers of the Towne", "Mens eyes were made to looke", "O Romeo, Romeo, wherefore art thou Romeo", "And there I am, where is my Romeo?", "O Noble Prince, I can discouer all", "Should without eyes, see path-wayes to his will", "Go then, for 'tis in vaine to seeke him here  That meanes not to be found."),
+            new SearchData("/hsapiensdna.txt", "lowAlphabet", "G", "AA", "CAG", "GATACA", "TGATCGA", "CAGGAGAG", "ATCGCATGA", "TCCAGAATCT", "ACACTTGCTCTTTAGAAGAGTGCT", "ATGCCTGCAGCAGAGGAGGCACACAGAGTGTTAA", "GCAGCTTTGGCCTCCTGGGTGCAAGCCATCCTCCTGCCCCAGCCTC")
     };
 
     //TODO: extend to compile patterns involving byte classes rather than just simple strings.
@@ -105,6 +105,10 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchers(pattern, searchData));
                 numTimes++;
+
+                if (randomTest == 1) {
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
+                }
             }
         }
     }
@@ -134,6 +138,10 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testSearchersBackwards(pattern, searchData));
                 numTimes++;
+
+                if (randomTest == 1) {
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
+                }
             }
         }
     }
@@ -163,6 +171,10 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchers(pattern, searchData));
                 numTimes++;
+
+                if (randomTest == 1) {
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
+                }
             }
         }
     }
@@ -193,6 +205,10 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 createCaseInsensitiveSearchers(pattern, searchData.lowAlphabet());
                 updateTimes(searcherTimings, testReaderSearchersBackwards(pattern, searchData));
                 numTimes++;
+
+                if (randomTest == 1) {
+                    outputTimes(searcherTimings, searchData.dataFile + ": " + randomTest + " of " + NUM_RANDOM_TESTS);
+                }
             }
         }
     }

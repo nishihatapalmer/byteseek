@@ -32,9 +32,12 @@ package net.byteseek.searcher.sequence;
 
 import net.byteseek.compiler.CompileException;
 import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
+import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.parser.regex.RegexParser;
+import net.byteseek.searcher.bytes.ByteMatcherSearcher;
+import net.byteseek.searcher.bytes.ByteSearcher;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -82,6 +85,15 @@ public class SearchersToTest {
         if (!lowAlphabet || sequence.length() < 4000) {
             searchers.add(new QgramFilter4Searcher(sequence));
         }
+
+        // Include byte searchers for low length searches.
+        if (sequence.length() == 1) {
+            ByteMatcher matcher = sequence.getMatcherForPosition(0);
+            searchers.add(new ByteMatcherSearcher(matcher));
+            if (matcher.getNumberOfMatchingBytes() == 1) {
+                searchers.add(new ByteSearcher(matcher.getMatchingBytes()[0]));
+            }
+        }
     }
 
 
@@ -95,7 +107,7 @@ public class SearchersToTest {
      * insensitive quote char (backtick).
      *
      * @param sequence The string to search for case insensitively.
-     * @throws CompileException
+     * @throws CompileException if a problem occurs compiling the sequence.
      */
     public void createCaseInsensitiveSearchers(String sequence, boolean lowAlphabet) throws CompileException {
         final String encodedString = RegexParser.encodeCaseInsensitiveString(sequence);
