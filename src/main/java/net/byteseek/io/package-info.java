@@ -30,14 +30,7 @@
  */
 
 /**
- * A package containing classes related to I/O.
- * <p>
- * The reader sub-package provides a random-access interface to a variety
- * of input sources.  This divides input sources into windows which can be
- * cached using a variety of caching strategies.
- * <p>
- * This makes it possible to efficiently match and search over the window
- * byte arrays directly, only adopting a less efficient approach when the match
- * or search crosses window boundaries.
+ * A package for consistent I/O over a variety of data sources.
+ * Input sources might be Strings, byte arrays, Files, or InputStreams.
  */
 package net.byteseek.io;
