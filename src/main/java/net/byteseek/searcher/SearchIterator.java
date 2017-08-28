@@ -35,6 +35,7 @@ import net.byteseek.matcher.MatchResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -42,6 +43,9 @@ import java.util.NoSuchElementException;
  * An iterator over search results, given a Searcher and byte array or WindowReader to search over.
  * Each iteration returns a list of MatchResults.  Some searchers can return more than one match for a single
  * position, e.g. if a multi-sequence searcher is used.
+ * <p>
+ * Static utility methods for finding all matches in data with a searcher are provided for convenience.
+ * When searching byte arrays, IOExceptions are removed from the method signature as they cannot happen.
   <p>
  * Note that the List<MatchResult> returned on each iteration is the same list object each time.
  * On each iteration the list is cleared and the new results appended.  This avoids creating a new
@@ -54,6 +58,88 @@ import java.util.NoSuchElementException;
  */
 public final class SearchIterator {
 
+    /**
+     * Finds all matches in the data using the searcher and returns a list of them.
+     *
+     * @param searcher The Searcher to search with.
+     * @param data The data to search in.
+     * @return a list of MatchResults containing all the matches in the data.
+     */
+    public static List<MatchResult> findAll(final Searcher searcher, final byte[] data) {
+        return suppressIOException(new SearchIterator(searcher, data));
+    }
+
+    /**
+     * Finds all matches in the data from the position specified and returns a list of them.
+     *
+     * @param searcher The Searcher to search with.
+     * @param data The data to search in.
+     * @param from The position to search from.
+     * @return a list of MatchResults containing all the matches in the data from the from position to the end.
+     */
+    public static List<MatchResult> findAll(final Searcher searcher, final byte[] data, final int from) {
+        return suppressIOException(new SearchIterator(searcher, data, from));
+    }
+
+    /**
+     * Finds all matches in the data from and to specified positions and returns a list of them.
+     * If the from position is larger than the to position, a backwards search will be used.
+     *
+     * @param searcher The Searcher to search with.
+     * @param data The data to search in.
+     * @param from The position to search from.
+     * @param to The position to search to.
+     * @return a List of MatchResults containing all the matches in the data between the from and to positions.
+     */
+    public static List<MatchResult> findAll(final Searcher searcher, final byte[] data, final int from, final int to) {
+        return suppressIOException(new SearchIterator(searcher, data, from, to));
+    }
+
+    /**
+     * Finds all matches in the data using the searcher and returns a list of them.
+     *
+     * @param searcher The Searcher to search with.
+     * @param reader The data to search in.
+     * @return a list of MatchResults containing all the matches in the data.
+     * @throws IOException if a problem occurs reading the WindowReader.
+     */
+    public static List<MatchResult> findAll(final Searcher searcher, final WindowReader reader) throws IOException {
+        return new SearchIterator(searcher, reader).nextAll();
+    }
+
+    /**
+     * Finds all matches in the data from the position specified and returns a list of them.
+     *
+     * @param searcher The Searcher to search with.
+     * @param reader The data to search in.
+     * @param from The position to search from.
+     * @return a list of MatchResults containing all the matches in the data from the from position to the end.
+     * @throws IOException if a problem occurs reading the WindowReader.
+     */
+    public static List<MatchResult> findAll(final Searcher searcher, final WindowReader reader, final long from) throws IOException {
+        return new SearchIterator(searcher, reader, from).nextAll();
+    }
+
+    /**
+     * Finds all matches in the data from and to specified positions and returns a list of them.
+     * If the from position is larger than the to position, a backwards search will be used.
+     *
+     * @param searcher The Searcher to search with.
+     * @param reader The data to search in.
+     * @param from The position to search from.
+     * @param to The position to search to.
+     * @return a List of MatchResults containing all the matches in the data between the from and to positions.
+     * @throws IOException if a problem occurs reading the WindowReader.
+     */
+    public static List<MatchResult> findAll(final Searcher searcher, final WindowReader reader, final long from, final long to) throws IOException {
+        return new SearchIterator(searcher, reader, from, to).nextAll();
+    }
+
+
+    /**
+     * A private class which iterates over the search data.  We instantiate different subclasses depending on
+     * whether we are searching forwards or backwards, and whether the data source is a byte array or a WindowReader.
+     */
     private final BaseSearchIterator iterator;
 
     private boolean searchedForNext = false;
@@ -165,6 +251,11 @@ public final class SearchIterator {
         throw new NoSuchElementException("No more results for search iterator: " + iterator);
     }
 
+
+    public List<MatchResult> nextAll() throws IOException {
+        return iterator.nextAll();
+    }
+
     /**
      * An abstract base class for all search iterators, implementing most of the logic.
      * Subclasses are the different search strategies - e.g. forwards in a byte array, backwards in a reader, etc.
@@ -202,6 +293,15 @@ public final class SearchIterator {
         private List<MatchResult> next() {
             pos = nextSearchPosition();
             return results;
+        }
+
+        private List<MatchResult> nextAll() throws IOException {
+            results.clear();
+            final List<MatchResult> remainingResults = new ArrayList<MatchResult>();
+            while (hasNext()) {
+                remainingResults.addAll(next());
+            }
+            return remainingResults;
         }
 
         /**
@@ -332,4 +432,14 @@ public final class SearchIterator {
             return getNextBackwardSearchPosition();
         }
     }
+
+
+    private static List<MatchResult> suppressIOException(final SearchIterator iterator) {
+        try {
+            return iterator.nextAll();
+        } catch (IOException cannotHappen) { // Suppress IOExceptions - only to be used where they cannot happen.
+        }
+        return Collections.emptyList();
+    }
+
 }
