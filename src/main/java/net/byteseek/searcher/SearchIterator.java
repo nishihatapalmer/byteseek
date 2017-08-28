@@ -58,7 +58,7 @@ import java.util.NoSuchElementException;
  */
 public final class SearchIterator {
 
-    /**************************
+    /* ************************
      * Static utility methods *
      **************************/
 
@@ -140,7 +140,7 @@ public final class SearchIterator {
     }
 
 
-    /***********
+    /* *********
      * Members *
      ***********/
 
@@ -161,7 +161,7 @@ public final class SearchIterator {
     private boolean hasNext;
 
 
-    /****************
+    /* **************
      * Constructors *
      ****************/
 
@@ -240,7 +240,7 @@ public final class SearchIterator {
     }
 
 
-    /******************
+    /* ****************
      * Public methods *
      ******************/
 
@@ -291,7 +291,7 @@ public final class SearchIterator {
     }
 
 
-    /*******************
+    /* *****************
      * Private classes *
      *******************/
 
@@ -464,7 +464,7 @@ public final class SearchIterator {
     }
 
 
-    /******************************
+    /* ****************************
      * Private convenience method *
      ******************************/
 
