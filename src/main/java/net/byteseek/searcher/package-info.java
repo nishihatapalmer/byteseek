@@ -35,5 +35,9 @@
  * of searching are in sub-packages, but a very generic searcher (MatcherSearcher)
  * is provided which can search for any Matcher (albeit not usually as efficiently as a
  * searcher specialised for the type of searching to be performed).
+ * <p>
+ * A SearchIterator class provides convenient ways to find all matches in a byte array
+ * or WindowReader using a Searcher and either accumulate them in a list of matches, or iterate
+ * over them programmatically.
  */
 package net.byteseek.searcher;
