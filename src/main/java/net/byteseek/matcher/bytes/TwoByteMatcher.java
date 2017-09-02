@@ -217,12 +217,28 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
         	return new ByteSequenceMatcher(firstByteToMatch, numberOfRepeats);
         }
         return new ByteMatcherSequenceMatcher(numberOfRepeats, this);
-    }    
+    }
+
+    @Override
+    public int hashCode() {
+        return firstByteToMatch * secondByteToMatch;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof TwoByteMatcher) {
+            final TwoByteMatcher other = (TwoByteMatcher) obj;
+            return (firstByteToMatch == other.firstByteToMatch && secondByteToMatch == other.secondByteToMatch);
+            // The order can matter - if you intend to match the most common first for performance reasons,
+            // So to be equal, the order of the two bytes as well as the values must be the same.
+        }
+        return false;
+    }
 
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[" + String.format("%02x", firstByteToMatch & 0xFF) + ' ' +
-    			                                  String.format("%02x", secondByteToMatch & 0xFF) + ']';
+    	return getClass().getSimpleName() + "(" + String.format("%02x", firstByteToMatch & 0xFF) + ' ' +
+    			                                  String.format("%02x", secondByteToMatch & 0xFF) + ')';
     }
     
 }

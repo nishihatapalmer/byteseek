@@ -147,12 +147,28 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
         return inverted ? 255 - maxByteValue + minByteValue
                         : maxByteValue - minByteValue + 1;
     }
+
+    @Override
+    public int hashCode() {
+        return minByteValue * maxByteValue * (inverted? 43 : 31);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof ByteRangeMatcher) {
+            final ByteRangeMatcher other = (ByteRangeMatcher) obj;
+            return minByteValue == other.minByteValue &&
+                   maxByteValue == other.maxByteValue &&
+                   inverted     == other.inverted;
+        }
+        return false;
+    }
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[start:" + minByteValue + 
+    	return getClass().getSimpleName() + "(start:" + minByteValue +
     								        " end: "  + maxByteValue +
-    								        " inverted:" + inverted + ']';
+    								        " inverted:" + inverted + ')';
     }
 
 }

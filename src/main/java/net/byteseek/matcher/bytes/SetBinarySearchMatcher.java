@@ -50,6 +50,7 @@ import java.util.Collection;
  */
 public final class SetBinarySearchMatcher extends InvertibleMatcher {
 
+    private final int hashCode;
     private final byte[] bytesToMatch;
 
     /**
@@ -63,6 +64,7 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         ArgUtils.checkNullOrEmptyCollection(bytes, "bytes");
         this.bytesToMatch = ByteUtils.toArray(bytes);
         Arrays.sort(this.bytesToMatch);
+        hashCode = calculateHash();
     }
 
     @Override
@@ -119,11 +121,34 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         regularExpression.append('[').append(ByteUtils.bytesToString(prettyPrint, bytesToMatch)).append(']');
         return regularExpression.toString();
     }
+
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof SetBinarySearchMatcher) {
+            final SetBinarySearchMatcher other = (SetBinarySearchMatcher) obj;
+            return (hashCode == other.hashCode && inverted == other.inverted && Arrays.equals(bytesToMatch, other.bytesToMatch));
+        }
+        return false;
+    }
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[bytes:" + ByteUtils.toList(bytesToMatch) + 
-    										" inverted: " + inverted + ']';
+    	return getClass().getSimpleName() + "(bytes:" + ByteUtils.toList(bytesToMatch) +
+    										" inverted: " + inverted + ')';
     }
+
+    private int calculateHash() {
+        long hash = inverted? 43 : 31;
+        for (byte b : bytesToMatch) {
+            hash = hash * b;
+        }
+        return (int) hash;
+    }
+
 
 }

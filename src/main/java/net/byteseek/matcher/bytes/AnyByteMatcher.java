@@ -115,6 +115,16 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
         }           
         return new FixedGapMatcher(numberOfRepeats);
     }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return obj instanceof AnyByteMatcher;
+    }
     
     @Override
     public String toString() {

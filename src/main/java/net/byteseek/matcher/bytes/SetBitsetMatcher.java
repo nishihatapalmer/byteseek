@@ -51,6 +51,7 @@ import java.util.Collection;
  */
 public final class SetBitsetMatcher extends InvertibleMatcher {
 
+    private final int hashCode;
     private final BitSet byteValues = new BitSet(256);
 
     /**
@@ -62,9 +63,15 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     public SetBitsetMatcher(final Collection<Byte> values, final boolean inverted) {
         super(inverted);
         ArgUtils.checkNullOrEmptyCollection(values, "values");
+        long hash = inverted? 43 : 31;
         for (final Byte b : values) {
-            byteValues.set(b & 0xFF);
+            final int intValue = b & 0xFF;
+            if (!byteValues.get(intValue))  {
+                hash = hash * intValue;
+            }
+            byteValues.set(intValue);
         }
+        hashCode = (int) hash;
     }
 
     @Override
@@ -128,9 +135,25 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
     }
 
     @Override
-    public String toString() {
-    	return getClass().getSimpleName() + "[bitset:" + byteValues + 
-    										" inverted: " + inverted + ']';
+    public int hashCode() {
+        return hashCode;
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof SetBitsetMatcher) {
+            final SetBitsetMatcher other = (SetBitsetMatcher) obj;
+            return hashCode == other.hashCode && inverted == other.inverted && byteValues.equals(other.byteValues);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "(bitset:" + byteValues +
+    										" inverted: " + inverted + ')';
+    }
+
+
 
 }

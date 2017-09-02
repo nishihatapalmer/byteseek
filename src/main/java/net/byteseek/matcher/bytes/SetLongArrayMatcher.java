@@ -36,6 +36,7 @@ import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.ByteUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 
 //TODO: test whether this class provides any benefit over the SetBitSetMatcher - could remove. Profile performance.
@@ -48,6 +49,7 @@ import java.util.Collection;
  */
 public class SetLongArrayMatcher extends InvertibleMatcher {
 
+    private final int hashCode;
     private final long[] bitmask = new long[8];
     private final int numberOfMatchingBytes;
 
@@ -63,24 +65,30 @@ public class SetLongArrayMatcher extends InvertibleMatcher {
         super(inverted);
         ArgUtils.checkNullOrEmptyCollection(bytes, "bytes");
         int countOfMatchingBytes = 0;
+        long hash = inverted? 43 : 31;
         for (Byte b : bytes) {
             if (setBitValue(b & 0xFF)) {
                 countOfMatchingBytes++;
+                hash = hash * b;
             }
         }
         numberOfMatchingBytes = inverted? 256 - countOfMatchingBytes : countOfMatchingBytes;
+        hashCode = (int) hash;
     }
 
     public SetLongArrayMatcher(final boolean inverted, final byte... bytes) {
         super(inverted);
         ArgUtils.checkNullOrEmptyByteArray(bytes, "bytes");
         int countOfMatchingBytes = 0;
+        long hash = inverted? 43 : 31;
         for (byte b : bytes) {
             if (setBitValue(b & 0xFF)) {
                 countOfMatchingBytes++;
+                hash = hash * b;
             }
         }
         numberOfMatchingBytes = inverted? 256 - countOfMatchingBytes : countOfMatchingBytes;
+        hashCode = (int) hash;
     }
 
     private boolean setBitValue(final int byteValue) {
@@ -160,6 +168,23 @@ public class SetLongArrayMatcher extends InvertibleMatcher {
             final int bitmaskIndex  = byteValue >>> 5;
             final long bitmaskValue = 1 << (byteValue & 0x1F);
             return ((bitmask[bitmaskIndex] & bitmaskValue) != 0) ^ inverted;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof SetLongArrayMatcher) {
+            final SetLongArrayMatcher other = (SetLongArrayMatcher) obj;
+            return hashCode == other.hashCode &&
+                    inverted == other.inverted &&
+                    numberOfMatchingBytes == other.numberOfMatchingBytes &&
+                    Arrays.equals(bitmask, other.bitmask);
         }
         return false;
     }

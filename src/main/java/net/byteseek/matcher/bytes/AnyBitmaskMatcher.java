@@ -110,12 +110,27 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return ((bytes[matchPosition] & mBitMaskValue) != 0) ^ inverted;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return mBitMaskValue * (inverted? 43 : 31);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof AnyBitmaskMatcher) {
+            final AnyBitmaskMatcher other = (AnyBitmaskMatcher) obj;
+            return mBitMaskValue == other.mBitMaskValue && inverted == other.inverted;
+        }
+        return false;
+    }
+
+
     @Override
     public String toString() {
     	return getClass().getSimpleName() +
-                "[bitmask:"  + String.format("%02x", mBitMaskValue & 0xFF) +
-                " inverted:" + inverted + ']';
+                "(bitmask:"  + String.format("%02x", mBitMaskValue & 0xFF) +
+                " inverted:" + inverted + ')';
     }
 
 

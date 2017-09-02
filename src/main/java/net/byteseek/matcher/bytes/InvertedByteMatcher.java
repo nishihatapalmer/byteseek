@@ -109,10 +109,24 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
     public int getNumberOfMatchingBytes() {
         return 255;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return byteToMiss;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof InvertedByteMatcher) {
+            final InvertedByteMatcher other = (InvertedByteMatcher) obj;
+            return byteToMiss == other.byteToMiss;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[byte:" + String.format("%02x", byteToMiss & 0xFF) + ']';
+    	return getClass().getSimpleName() + "(byte:" + String.format("%02x", byteToMiss & 0xFF) + ')';
     }
 
 }

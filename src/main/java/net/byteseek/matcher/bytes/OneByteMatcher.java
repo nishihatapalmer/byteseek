@@ -129,11 +129,25 @@ public final class OneByteMatcher extends AbstractByteMatcher {
             return this;
         }   
         return new ByteSequenceMatcher(byteToMatch, numberOfRepeats);
-    }    
+    }
+
+    @Override
+    public int hashCode() {
+        return byteToMatch;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof OneByteMatcher) {
+            final OneByteMatcher other = (OneByteMatcher) obj;
+            return byteToMatch == other.byteToMatch;
+        }
+        return false;
+    }
 
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + '[' +  String.format("%02x", byteToMatch & 0xFF) + ']';
+    	return getClass().getSimpleName() + '(' +  String.format("%02x", byteToMatch & 0xFF) + ')';
     }
 
     public byte getByteValue() {
