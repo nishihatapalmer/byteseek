@@ -73,6 +73,19 @@ public class MatchResult {
 		return matchLength;
 	}
 
+	@Override
+ 	public int hashCode() {
+		return (int) (matchPosition * matchLength);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj instanceof MatchResult) {
+			final MatchResult other = (MatchResult) obj;
+			return matchPosition == other.matchPosition && matchLength == other.matchLength;
+		}
+		return false;
+	}
 
 	@Override
 	public String toString() {
