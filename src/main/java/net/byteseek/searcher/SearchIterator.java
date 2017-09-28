@@ -45,7 +45,6 @@ import java.util.NoSuchElementException;
  * position, e.g. if a multi-sequence searcher is used.
  * <p>
  * Static utility methods for finding all matches in data with a searcher are provided for convenience.
- * When searching byte arrays, IOExceptions are removed from the method signature as they cannot happen.
   <p>
  * Note that the List<MatchResult> returned on each iteration is the same list object each time.
  * On each iteration the list is cleared and the new results appended.  This avoids creating a new
