@@ -8,7 +8,7 @@ A pleasant feature is that there is no need to escape characters or bytes in any
 Bytes and byte sequences are written as sequences of case insensitive hex digits:
 
 ```
-  006E015a7f 77 68 65 72 65 66 6f 72 65
+  00 6E 01 5a 7f 77 68 65 72 65 66 6f 72 65
 ```
 
 If you want to match the inverse of a byte - that is, any byte other than the one you specify - prepend a byte value with the not operator ^
