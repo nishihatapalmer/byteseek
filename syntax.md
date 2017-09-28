@@ -2,9 +2,7 @@
 
 The byteseek syntax is very similar to standard regular expression languages, but is oriented towards bytes rather than text.
 
-A pleasant feature is that there is no need to escape characters or bytes in any expression, which contributes to readability.  This is because specifying values to match is explicitly part of the syntax, rather than being implicit in the expression. 
-
-> **Note on compilers** Byteseek provides several diferent compilers for bytes, fixed length sequences and regular expressions, which all use the appropriate sub-set of this syntax.  The full RegexCompiler can use all of the syntax below.  The SequenceMatcherCompiler can use any syntax which results in a fixed length sequence, but not a variable length sequence or one with alternatives.  The ByteMatcherCompiler can use any syntax which results in matching at a single position (i.e. a sequence of length one).
+A pleasant feature is that there is no need to escape characters or bytes in any expression, which contributes to readability.  This is because specifying values to match is explicitly part of the syntax, rather than being implicit in the expression.
 
 ## Bytes and byte sequences
 Bytes and byte sequences are written as sequences of case insensitive hex digits:
@@ -290,4 +288,14 @@ Common shorthands are provided for bytes and sets of bytes.  They can appear any
  | \w	        | Word            | [\d \l \u '_']  | \w+                 # some alphanumerics or underscores 
  | \W	        | not Word       	| ^[\d \l \u '_']	| \W+                 # some bytes which aren't Words.
 
-   
+
+# Compilers
+**A note on byteseek compilers**
+
+Byteseek provides several diferent compilers for bytes, fixed length sequences and regular expressions, which all use the appropriate sub-set of this syntax.
+
+The ByteMatcherCompiler can use any syntax which results in matching at a single position (i.e. a sequence of length one). Searchers for these cannot do better than examine every position to be searched, so performance linearly depends on the efficiency of the ByteMatcher.
+
+The SequenceMatcherCompiler can use any syntax which results in a fixed length sequence, but not a variable length sequence or one with alternatives.  Searchers for these are fast if the right searcher is used.  There are searcher factories which will select the right searcher to use in most circumstances, given the pattern to be searched for.
+
+The RegexCompiler can use all of the syntax below, but only produces Non Deterministic Finite State Automata matchers which are currently slow to search with.  There are techniques to search for regular expressions faster than just trying every position, but they are someway off in byteseek planning.  One technique is to look for necessary factors of the expression - sequences which must appear for the expression to be present, and use a multi-pattern search for those factors.  When one is found, the rest of the regular expression has to be evaluated forwards and backwards from the sequence.
