@@ -1,8 +1,12 @@
 # Syntax
 
-The byteseek syntax is very similar to standard regular expression languages, but is oriented towards bytes rather than text.
+The byteseek syntax is very similar to standard regular expression languages, but is oriented towards bytes rather than text. A pleasant feature is that there is no need to escape characters or bytes in any expression, which contributes to readability.
 
-A pleasant feature is that there is no need to escape characters or bytes in any expression, which contributes to readability.  This is because specifying values to match is explicitly part of the syntax, rather than being implicit in the expression.
+## Whitespace and comments
+
+Unless they occur within quoted text, the following characters are ignored:
+ * Whitespace: space, tab, newline, carriage return.
+ * Comments: all characters after a *#*, up to and including the next new line character or the end of the text, whichever comes first.
 
 ## Bytes and byte sequences
 Bytes and byte sequences are written as sequences of case insensitive hex digits:
@@ -41,26 +45,6 @@ If back-ticks ` are used instead of single quotes, this specifies a case-insensi
 
 ```
    00 `sTaRt` 01 ^3c 5a 'version' 30 ff
-```
-
-## Whitespace and comments
-All whitespace (space, tab, newline, carriage return) is ignored, unless within quoted text.  Comments can be added using the # character.  All text after a #, until the next new line character, is ignored.
-
-This allows parts of an expression to be separated for clarity and comments to be placed on lines.  For example, the expression:
-
-```
-  'BEGIN:'20*[30-39]+20*3A20*[30-39]{1,6}20*7F'END'
-```
-
-can also be written:
-
-```
-  'BEGIN:'              # BEGIN:
-     20*  [30-39]+      # maybe spaces, some digits
-     20*  3A            # maybe spaces, a colon  
-     20*  [30-39]{1,6}  # maybe spaces, 1 to 6 digits
-     20*  7F            # maybe spaces, 0x7F
-  'END'                 # END
 ```
 
 ## Any byte
