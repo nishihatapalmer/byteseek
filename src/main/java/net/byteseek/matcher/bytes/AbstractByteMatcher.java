@@ -140,8 +140,13 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
     public Iterator<ByteMatcher> iterator() {
     	return new ByteMatcherIterator();
     }
-    
-    public class ByteMatcherIterator implements Iterator<ByteMatcher> {
+
+    /**
+     * A standard Iterator<ByteMatcher> for all ByteMatchers.
+     * Since a ByteMatcher only has a length of one, its iterator can only iterate once
+     * and should always return itself (or an equal() instance) on the first call to next().
+     */
+    public final class ByteMatcherIterator implements Iterator<ByteMatcher> {
 
     	private boolean iterated = false;
     	
