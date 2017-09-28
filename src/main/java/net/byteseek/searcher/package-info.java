@@ -38,6 +38,6 @@
  * <p>
  * A SearchIterator class provides convenient ways to find all matches in a byte array
  * or WindowReader using a Searcher and either accumulate them in a list of matches, or iterate
- * over them programmatically.
+ * over them.
  */
 package net.byteseek.searcher;
