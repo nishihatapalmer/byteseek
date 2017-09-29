@@ -208,7 +208,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
 		return getClass().getSimpleName() + "[temp file: " + tempFile + " window positions recorded:" + windowPositions.size() + ']';  
 	}
 
-    private class TempFileNotDeletedException extends IOException {
+    private static class TempFileNotDeletedException extends IOException {
 
         /**
          * Constructs a TempFileNotDeletedException from a descriptive message and a Throwable cause.
