@@ -87,8 +87,7 @@ public final class ByteUtils {
         final int bits = b & 0xFF;
         int result = bits - ((bits >>> 1) & 0x55);
         result = ((result >>> 2) & 0x33) + (result & 0x33);
-        result = ((result >>> 4) + result) & 0x0F;
-        return result;
+        return ((result >>> 4) + result) & 0x0F;
     }
 
 
