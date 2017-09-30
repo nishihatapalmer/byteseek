@@ -41,6 +41,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.windows.SoftWindow;
 
@@ -70,7 +71,6 @@ public class FileReaderTest {
 
 	/**
 	 *
-	 * @throws Exception
 	 */
 	@AfterClass
 	public static void tearDownClass() throws Exception {
@@ -78,7 +78,6 @@ public class FileReaderTest {
 
 	/**
 	 *
-	 * @throws Exception
 	 */
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -104,15 +103,16 @@ public class FileReaderTest {
 	public void testNoRemoveIterator() throws IOException {
 		FileReaderIterator ri = new FileReaderIterator("/TestASCII.txt");
 		try(WindowReader reader = ri.next()) {
-			Iterator<Window> iterator = reader.iterator();
+			IOIterator<Window> iterator = reader.iterator();
 			iterator.remove();
 		}
 	}
 
-	private void testIterateReader(WindowReader reader) {
+	private void testIterateReader(WindowReader reader) throws IOException {
 		long length = 0;
-		for (Window window : reader) {
-			length += window.length();
+		final IOIterator<Window> iterator = reader.iterator();
+		while (iterator.hasNext()) {
+			length += iterator.next().length();
 		}
 		assertEquals("Length is 112280 after iterating all windows", 112280, length);
 	}
@@ -120,7 +120,6 @@ public class FileReaderTest {
 	/**
 	 * Test of length method, of class FileReader.  Also tests that the total length
 	 * is correct when the file reader uses different window sizes and cache capacities.
-	 * @throws IOException
 	 */
 	@Test
 	public void testLength() throws IOException {
@@ -134,8 +133,9 @@ public class FileReaderTest {
 			while (iterator.hasNext()) {
 				FileReader aReader = iterator.next();
 				long totalLength = 0;
-				for (Window window : aReader) {
-					totalLength += window.length();
+				final IOIterator<Window> winIterator = aReader.iterator();
+				while (winIterator.hasNext()) {
+					totalLength += winIterator.next().length();
 				}
 				assertEquals("sum of window lengths ASCII", 112280, totalLength);
 			}
@@ -147,8 +147,9 @@ public class FileReaderTest {
 			while (iterator.hasNext()) {
 				FileReader aReader = iterator.next();
 				long totalLength = 0;
-				for (Window window : aReader) {
-					totalLength += window.length();
+				final IOIterator<Window> winIterator = aReader.iterator();
+				while (winIterator.hasNext()) {
+					totalLength += winIterator.next().length();
 				}
 				assertEquals("sum of window lengths ZIP", 45846, totalLength);
 			}
@@ -161,8 +162,9 @@ public class FileReaderTest {
 			while (iterator.hasNext()) {
 				FileReader aReader = iterator.next();
 				long totalLength = 0;
-				for (Window window : aReader) {
-					totalLength += window.length();
+				final IOIterator<Window> winIterator = aReader.iterator();
+				while (winIterator.hasNext()) {
+					totalLength += winIterator.next().length();
 				}
 				assertEquals("sum of window lengths empty file", 0, totalLength);
 			}
@@ -171,8 +173,6 @@ public class FileReaderTest {
 
 	/**
 	 * Test of readByte method, of class FileReader.
-	 * @throws FileNotFoundException
-	 * @throws IOException
 	 */
 	@Test
 	public void testReadByte() throws IOException {
@@ -260,7 +260,9 @@ public class FileReaderTest {
 		Iterator<FileReader> iterator = new FileReaderIterator("/TestASCII.zip");
 		while (iterator.hasNext()) {
 			try(FileReader reader = iterator.next()) {
-				for (Window window : reader) {
+				final IOIterator<Window> winIterator = reader.iterator();
+				while (winIterator.hasNext()) {
+					final Window window = winIterator.next();
 					byte[] original = window.getArray().clone();
 					byte[] recovered = reader.reloadWindowBytes(window);
 					assertTrue("Length is enough orig=" + original.length + " win length=" + window.length() + " recovered len=" + recovered.length, recovered.length >= window.length());
@@ -276,7 +278,9 @@ public class FileReaderTest {
 	}
 
 	private void testGetWindowData(WindowReader fileReader, RandomAccessFile raf) throws IOException {
-		for (Window window : fileReader) {
+		final IOIterator<Window> winIterator = fileReader.iterator();
+	    while (winIterator.hasNext()) {
+	        final Window window = winIterator.next();
 			byte[] fileBytes = new byte[window.length()];
 			long windowPosition = window.getWindowPosition();
 			raf.seek(windowPosition);

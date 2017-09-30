@@ -30,6 +30,7 @@
  */
 package net.byteseek.io.reader;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.cache.NoCache;
 import net.byteseek.io.reader.windows.SoftWindow;
@@ -80,22 +81,23 @@ public class InputStreamReaderTest {
     }
 
     @Test
-    public void testIterateWindows() {
+    public void testIterateWindows() throws IOException {
         for (int i = 0; i < readers.length;i++) {
             testIterateReader(readers[i]);
         }
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void testNoRemoveIterator() {
-        Iterator<Window> iterator = readers[0].iterator();
+    public void testNoRemoveIterator() throws IOException {
+        IOIterator<Window> iterator = readers[0].iterator();
         iterator.remove();
     }
 
-    private void testIterateReader(WindowReader reader) {
+    private void testIterateReader(WindowReader reader) throws IOException {
         long length = 0;
-        for (Window window : reader) {
-            length += window.length();
+        IOIterator<Window> winIterator = reader.iterator();
+        while (winIterator.hasNext()) {
+            length += winIterator.next().length();
         }
         assertEquals("Length is 1024 after iterating all windows", 1024, length);
     }
@@ -136,7 +138,9 @@ public class InputStreamReaderTest {
     }
 
     private void testGetWindowData(WindowReader fileReader) throws IOException {
-        for (Window window : fileReader) {
+        IOIterator<Window> winIterator = fileReader.iterator();
+        while (winIterator.hasNext()) {
+            final Window window = winIterator.next();
             byte[] fileBytes = new byte[window.length()];
             long windowPosition = window.getWindowPosition();
             raf.seek(windowPosition);

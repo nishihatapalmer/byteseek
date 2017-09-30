@@ -1,5 +1,6 @@
 package net.byteseek.io.reader;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.windows.Window;
 import org.junit.After;
@@ -298,7 +299,7 @@ public class ReaderInputStreamTest {
         public boolean closed;
 
         @Override
-        public Iterator<Window> iterator() {
+        public IOIterator<Window> iterator() {
             return null;
         }
 
