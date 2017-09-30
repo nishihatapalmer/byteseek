@@ -793,9 +793,6 @@ public final class ByteUtils {
         }
     }
 
-    //TODO: move power of two functions into MathUtils...?
-
-
     /**
      * Calculates a bitmask for which the set of bytes provided would match all of
      * the bits in the bitmask, and for which there are no other bytes it would match.
