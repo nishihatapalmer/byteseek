@@ -30,6 +30,7 @@
  */
 package net.byteseek.searcher;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 import sun.plugin.dom.exception.InvalidStateException;
@@ -56,7 +57,7 @@ import java.util.NoSuchElementException;
  * This is because IOExceptions can occur during searching, and the Iterator interface does not permit
  * checked exceptions to be thrown. Rather than go around this in some way, we prefer to be familiar but not deceptive.
  */
-public final class SearchIterator {
+public final class SearchIterator implements IOIterator<List<MatchResult>> {
 
     /* ************************
      * Static utility methods *
@@ -250,6 +251,7 @@ public final class SearchIterator {
      * @return true if there are more search results available.
      * @throws IOException If there was a problem reading the search data.
      */
+    @Override
     public boolean hasNext() throws IOException {
         if (!searchedForNext) {
             hasNext = iterator.hasNext();
@@ -268,6 +270,7 @@ public final class SearchIterator {
      * @throws IOException If there was a problem reading the search data.
      * @throws NoSuchElementException if next() is called but there are no further results.
      */
+    @Override
     public List<MatchResult> next() throws IOException {
         if (hasNext()) {
             searchedForNext = false;
@@ -289,6 +292,12 @@ public final class SearchIterator {
         }
         return remainingResults;
     }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("Remove is not supported for a SearchIterator.");
+    }
+
 
     @Override
     public String toString() {
