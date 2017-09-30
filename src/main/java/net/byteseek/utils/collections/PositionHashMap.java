@@ -52,12 +52,12 @@ public final class PositionHashMap<T> {
     //      specially.  This would make the class capable of processing all long key values, at a small cost of testing for those vals,
     //      but still avoiding the need for a separate state table for all positions.
 
-    //TODO: configure load factor.
+    //PROFILE: investigate load factor.
 
     // Constants:
 
     private final static long HASH_MULTIPLY   = 0x113f92b101a3cd91L; // must be odd number greater than 32 bits.
-    //TODO: large probe values give poor cache locality - investigate using smaller probe increments / different hash for probe.
+    //PROFILE: large probe values give poor cache locality - investigate using smaller probe increments / different hash for probe.
     private final static long PROBE_MULTIPLY  = 0x129b3a62c47ed203L; // must be odd number greater than 32 bits.
     private final static int DEFAULT_CAPACITY = 32;                // default capacity under a load of 50%.
     private final static int FREE_SLOT        = 0;                 // flags that a slot is free - which Java initialises arrays to.
