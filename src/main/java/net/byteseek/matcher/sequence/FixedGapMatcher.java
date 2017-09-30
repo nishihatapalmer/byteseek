@@ -187,7 +187,20 @@ public final class FixedGapMatcher extends AbstractSequenceMatcher {
         }        
         return new FixedGapMatcher(length * numberOfRepeats);
     }
-    
+
+    @Override
+    public int hashCode() {
+        return length * 31;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof FixedGapMatcher) {
+            final FixedGapMatcher other = (FixedGapMatcher) obj;
+            return length == other.length;
+        }
+        return false;
+    }
     
     /**
      * Returns a string representation of this matcher.  The format is subject
@@ -198,7 +211,7 @@ public final class FixedGapMatcher extends AbstractSequenceMatcher {
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
+        return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
     }
 
 

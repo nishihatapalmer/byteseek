@@ -72,6 +72,7 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 
+    private final int hashCode;
     private final int length;
     private final int startArrayIndex; // the position to start at (an inclusive value)
     private final int endArrayIndex;   // one past the actual end position (an exclusive value)
@@ -163,6 +164,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         this.endArrayIndex   = length;
         this.matchers        = new ByteMatcher[length];
         Arrays.fill(this.matchers, matcher);
+        this.hashCode = calculateHash();
     }
     
     
@@ -196,6 +198,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         this.endArrayIndex   = length;
         this.matchers        = new ByteMatcher[length];
         populateMatchers(1, bytes, 0, length);
+        this.hashCode = calculateHash();
     }
 
     
@@ -253,7 +256,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         this.endArrayIndex   = length;
         this.matchers        = new ByteMatcher[length];
         populateMatchers(repeats, array, startIndex, endIndex);
-	}
+        this.hashCode = calculateHash();
+    }
 
 	
     /**
@@ -319,6 +323,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         this.endArrayIndex   = length;
         this.matchers        = new ByteMatcher[length];
         populateMatchers(repeats, sequence, startIndex, endIndex);
+        this.hashCode = calculateHash();
     }
 
     
@@ -383,7 +388,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 			this.matchers = new ByteMatcher[length];
 			populateMatchers(repeats, source, startIndex, endIndex);
 		}
-	}
+        this.hashCode = calculateHash();
+    }
 
 
 	/**
@@ -410,6 +416,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 			this.matchers        = new ByteMatcher[length];
 			populateMatchers(matchers);
 		}
+        this.hashCode = calculateHash();
     }
 
 	
@@ -428,7 +435,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         this.startArrayIndex = 0;
         this.endArrayIndex   = length;
 		this.matchers        = new ByteMatcher[length];
-		populateMatchers(matchers); 
+		populateMatchers(matchers);
+        this.hashCode = calculateHash();
     }
     
     
@@ -447,7 +455,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         this.endArrayIndex   = length;
 		this.matchers        = new ByteMatcher[length];
 		populateMatchers(list);
-	}
+        this.hashCode = calculateHash();
+    }
 	
 	
 	/**
@@ -464,8 +473,9 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 		this.length          = matcher.length;
         this.startArrayIndex = matcher.startArrayIndex;
         this.endArrayIndex   = matcher.endArrayIndex;
-		this.matchers        = matcher.matchers; 
-	}
+		this.matchers        = matcher.matchers;
+        this.hashCode = calculateHash();
+    }
     
     
     /******************
@@ -664,7 +674,28 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         }
         return new ByteMatcherSequenceMatcher(repeatMatchers(numberOfRepeats));
     }
-    
+
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof ByteMatcherSequenceMatcher) {
+            final ByteMatcherSequenceMatcher other = (ByteMatcherSequenceMatcher) obj;
+            if (hashCode == other.hashCode && length == other.length) {
+                int otherIndex = other.startArrayIndex;
+                for (int i = startArrayIndex; i < endArrayIndex; i++) {
+                    if (!matchers[i].equals(other.matchers[otherIndex++])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
     
     /**
      * Returns a string representation of this matcher.  The format is subject
@@ -675,13 +706,21 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
+        return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
     }
     
     
     /*******************
      * Private methods *
      *******************/
+
+    private int calculateHash() {
+        long hash = 31;
+        for (int i = startArrayIndex; i < endArrayIndex; i++) {
+            hash = hash * matchers[i].hashCode();
+        }
+        return (int) hash;
+    }
 
 	private void populateMatchers(final int repeats, final byte[] bytes, 
 			                      final int startIndex, final int endIndex) {
@@ -808,6 +847,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 	 */
     public static final class ReverseByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 
+        private final int hashCode;
     	private final ByteMatcher[] matchers;
         private final int startArrayIndex; // the position to start at (an inclusive value)
         private final int endArrayIndex;   // one past the actual end position (an exclusive value)
@@ -831,6 +871,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 			this.endArrayIndex   = length;
 			this.matchers        = new ByteMatcher[length];
 			populateMatchers(array, 0, length);
+			this.hashCode = calculateHash();
 		}
 
         
@@ -853,7 +894,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 			this.startArrayIndex = original.startArrayIndex + original.length - endIndex;
 			this.endArrayIndex   = original.endArrayIndex - startIndex;
 			this.matchers        = original.matchers;
-		}
+            this.hashCode = calculateHash();
+        }
 
 		
 		/**
@@ -900,7 +942,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 				this.startArrayIndex = 0;
 				this.endArrayIndex   = length;
 			}
-		}
+            this.hashCode = calculateHash();
+        }
 
 		
 		/**
@@ -918,7 +961,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 			this.matchers        = forwardMatcher.matchers;
 			this.startArrayIndex = forwardMatcher.startArrayIndex;
 			this.endArrayIndex   = forwardMatcher.endArrayIndex;
-		}
+            this.hashCode        = forwardMatcher.hashCode();
+        }
 
 		
 		/**
@@ -944,6 +988,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 	        this.endArrayIndex   = length;
 	        this.matchers = new ByteMatcher[length];
 	        populateMatchers(repeated, 0, length);
+	        this.hashCode = calculateHash();
 		}
 
 		
@@ -957,7 +1002,8 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 			this.length          = 1;
 			this.startArrayIndex = 0;
 			this.endArrayIndex   = 1;
-		}
+            this.hashCode = calculateHash();
+        }
 
 		
 	    /******************
@@ -1113,6 +1159,27 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 	        return builder.toString();
 		}
 
+		@Override
+        public int hashCode() {
+		    return hashCode;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj instanceof ReverseByteMatcherSequenceMatcher) {
+                final ReverseByteMatcherSequenceMatcher other = (ReverseByteMatcherSequenceMatcher) obj;
+                if (hashCode == other.hashCode && length == other.length) {
+                    int otherIndex = other.startArrayIndex;
+                    for (int i = startArrayIndex; i < endArrayIndex; i++) {
+                        if (!matchers[i].equals(other.matchers[otherIndex++])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
 		
 		@Override
 		public String toString() {
@@ -1154,6 +1221,14 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 			}
 			
 		}
+
+        private int calculateHash() {
+            long hash = 31;
+            for (int i = startArrayIndex; i < endArrayIndex; i++) {
+                hash = hash * matchers[i].hashCode();
+            }
+            return (int) hash;
+        }
 		
 		private void populateMatchers(final byte[] bytes, final int startIndex, final int endIndex) {
 			int matcherPosition = 0;

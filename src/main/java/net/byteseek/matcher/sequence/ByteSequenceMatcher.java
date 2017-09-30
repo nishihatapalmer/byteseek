@@ -56,7 +56,8 @@ import net.byteseek.utils.ArgUtils;
  * @author Matt Palmer
  */
 public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
-    
+
+    private final int hashCode;
     private final byte[] byteArray;
     private final int startArrayIndex; // the position to start at (an inclusive value)
     private final int endArrayIndex;   // one past the actual end position (an exclusive value)
@@ -78,7 +79,8 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         ArgUtils.checkNullOrEmptyByteArray(bytes);
         this.byteArray = bytes.clone(); // avoid mutability issues - clone byte array.
         this.startArrayIndex = 0;
-        this.endArrayIndex = byteArray.length;       	
+        this.endArrayIndex = byteArray.length;
+        this.hashCode = calculateHash();
     }
 
     
@@ -124,6 +126,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         this.byteArray = ByteUtils.repeat(numberOfRepeats, source, startIndex, endIndex);
         this.startArrayIndex = 0;
         this.endArrayIndex = this.byteArray.length;
+        this.hashCode = calculateHash();
     }    
                     
 
@@ -148,6 +151,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         this.byteArray = source.byteArray;
         this.startArrayIndex = source.startArrayIndex + startIndex;
         this.endArrayIndex = source.startArrayIndex + endIndex;
+        this.hashCode = calculateHash();
     }
     
     
@@ -163,6 +167,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         this.byteArray= toReverse.byteArray;
         this.startArrayIndex = toReverse.startArrayIndex;
         this.endArrayIndex = toReverse.endArrayIndex;
+        this.hashCode = calculateHash();
     }
     
     
@@ -192,6 +197,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         }
         this.startArrayIndex = 0;
         this.endArrayIndex = totalLength;
+        this.hashCode = calculateHash();
     }
 
     /**
@@ -219,6 +225,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         }
         this.startArrayIndex = 0;
         this.endArrayIndex = finalLength;
+        this.hashCode = calculateHash();
     }
 
     /**
@@ -234,6 +241,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         Arrays.fill(this.byteArray, byteValue);
         this.startArrayIndex = 0;
         this.endArrayIndex = numberOfBytes;
+        this.hashCode = calculateHash();
     }
 
 
@@ -275,6 +283,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         this.byteArray = string.getBytes(charset);
         this.startArrayIndex = 0;
         this.endArrayIndex = byteArray.length;
+        this.hashCode = calculateHash();
     }
     
     
@@ -368,7 +377,29 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         return endArrayIndex - startArrayIndex;
     }
 
-    
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof ByteSequenceMatcher) {
+            final ByteSequenceMatcher other = (ByteSequenceMatcher) obj;
+            if (hashCode == other.hashCode && length() == other.length()) {
+                int otherIndex = other.startArrayIndex;
+                for (int thisIndex = startArrayIndex; thisIndex < endArrayIndex; thisIndex++) {
+                    if (byteArray[thisIndex] != other.byteArray[otherIndex++]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     /**
      * Returns a string representation of this matcher.  The format is subject
      * to change, but it will generally return the name of the matching class
@@ -378,7 +409,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
+        return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
     }
 
     
@@ -484,6 +515,14 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
 		}
 		
 	}
+
+    private int calculateHash() {
+        long hash = 31;
+        for (int i = startArrayIndex; i < endArrayIndex; i++) {
+            hash = hash * byteArray[i];
+        }
+        return (int) hash;
+    }
     
     ////////////////////////////////////////////////////////////////////////////
     //                                ReverseByteArrayMatcher                 //        
@@ -495,7 +534,8 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
      * 
      */
     public static final class ReverseByteArrayMatcher extends AbstractSequenceMatcher {
-         
+
+         private final int hashCode;
          private final byte[] byteArray;
          private final int startArrayIndex; // the position to start in the array (inclusive)
          private final int endArrayIndex;   // one past the last position in the array (exclusive)
@@ -511,9 +551,9 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
              ArgUtils.checkNullObject(toReverse);
              this.byteArray = toReverse.byteArray;
              this.startArrayIndex = toReverse.startArrayIndex;
-             this.endArrayIndex = toReverse.endArrayIndex;
+             this.endArrayIndex   = toReverse.endArrayIndex;
+             this.hashCode        = toReverse.hashCode();
          }
-         
          
          /**
           * Constructs a ReverseByteArrayMatcher directly from a byte array.  The byte array
@@ -527,9 +567,9 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
              this.byteArray = bytes.clone();
              this.startArrayIndex = 0;
              this.endArrayIndex = bytes.length;
+             this.hashCode = calculateHash();
          }
-         
-         
+
         /**
          * Copy constructor creating an immutable sub-sequence of another ReverseByteArrayMatcher, 
          * backed by the original byte array, but otherwise behaving as if the array
@@ -551,7 +591,8 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             this.byteArray       = source.byteArray;
             this.startArrayIndex = source.startArrayIndex + source.length() - endIndex;
             this.endArrayIndex   = source.endArrayIndex - startIndex;
-        }         
+            this.hashCode = calculateHash();
+        }
                
         
         /**
@@ -577,7 +618,8 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
             this.byteArray = ByteUtils.repeat(numberOfRepeats, source, startIndex, endIndex);
             this.startArrayIndex = 0;
-            this.endArrayIndex = this.byteArray.length;            
+            this.endArrayIndex = this.byteArray.length;
+            this.hashCode = calculateHash();
         }
         
         
@@ -662,6 +704,28 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         }
 
 
+        @Override
+        public int hashCode() {
+            return hashCode;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj instanceof ReverseByteArrayMatcher) {
+                final ReverseByteArrayMatcher other = (ReverseByteArrayMatcher) obj;
+                if (hashCode == other.hashCode && length() == other.length()) {
+                    int otherIndex = other.startArrayIndex;
+                    for (int thisIndex = startArrayIndex; thisIndex < endArrayIndex; thisIndex++) {
+                        if (byteArray[thisIndex] != other.byteArray[otherIndex++]) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /**
          * Returns a string representation of this matcher.  The format is subject
          * to change, but it will generally return the name of the matching class
@@ -671,7 +735,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
          */
         @Override
         public String toString() {
-            return "ByteSequenceMatcher." + getClass().getSimpleName() + '[' + toRegularExpression(true) + ']';
+            return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
         }
 
 
@@ -680,7 +744,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
          */
         @Override
         public String toRegularExpression(final boolean prettyPrint) {
-            //FIXME: can we have a reverseBytesToString method instead...?
+            //TODO: can we have a reverseBytesToString method instead...?
             //       current method creates a new byte array just to print the bytes out.
             return ByteUtils.bytesToString(prettyPrint, 
             							   ByteUtils.reverseArraySubsequence(byteArray, startArrayIndex, endArrayIndex));
@@ -755,7 +819,14 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
     	public Iterator<ByteMatcher> iterator() {
     		return new ReverseByteMatcherIterator();
     	}
-    	
+
+        private int calculateHash() {
+            long hash = 31;
+            for (int i = startArrayIndex; i < endArrayIndex; i++) {
+                hash = hash * byteArray[i];
+            }
+            return (int) hash;
+        }
     	
     	private final class ReverseByteMatcherIterator implements Iterator<ByteMatcher> {
 
