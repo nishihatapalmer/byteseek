@@ -48,8 +48,8 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
     /**
      * Constants for default minimum and maximum index table sizes, for use by subclasses if required.
      */
-    protected final static PowerTwoSize DEFAULT_MIN_INDEX_SIZE = PowerTwoSize.SIZE_32;  //TODO: profile defaults.
-    protected final static PowerTwoSize DEFAULT_MAX_INDEX_SIZE = PowerTwoSize.SIZE_64K; //TODO: profile defaults.
+    protected final static PowerTwoSize DEFAULT_MIN_INDEX_SIZE = PowerTwoSize.SIZE_32;  //PROFILE: profile defaults.
+    protected final static PowerTwoSize DEFAULT_MAX_INDEX_SIZE = PowerTwoSize.SIZE_64K; //PROFILE: profile defaults.
 
     /**
      * The actual minimum and maximum index table size.
@@ -87,7 +87,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
         if (minIndexSize == maxIndexSize) {                // specified by user - must use this size exactly.
             HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
         } else {
-            //TODO: Profile different values here. What effective margin do we want?  Plus one gives a good result - is plus 2 worth it?
+            //PROFILE: Profile different values here. What effective margin do we want?  Plus one gives a good result - is plus 2 worth it?
             //TODO: Possibly allow different space/time tradeoffs (-1 = low mem, 0 = small mem, +1 = good perf, +2 = ???
             final int qGramPowerTwoSize = 1 + MathUtils.ceilLogBaseTwo(totalQgrams); // the power of two size bigger or equal to total qgrams.
             final int MIN_POWER_TWO_SIZE = minIndexSize.getPowerTwo();
