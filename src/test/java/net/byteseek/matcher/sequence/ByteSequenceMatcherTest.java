@@ -1095,7 +1095,7 @@ public class ByteSequenceMatcherTest {
 	public void testReverseToString() {
 		SequenceMatcher matcher = new ByteSequenceMatcher("abc").reverse();
 		assertTrue("String contains class name",
-				matcher.toString().contains("ByteSequenceMatcher.ReverseByteArrayMatcher"));
+				matcher.toString().contains("ReverseByteArrayMatcher"));
 		assertTrue("String contains data", matcher.toString().contains("cba"));
 	}
 
