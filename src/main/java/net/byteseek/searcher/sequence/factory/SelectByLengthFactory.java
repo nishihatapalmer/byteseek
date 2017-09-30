@@ -80,10 +80,10 @@ public class SelectByLengthFactory implements SequenceSearcherFactory {
         if (sequenceLength == 1) {
             create(theSequence.getMatcherForPosition(0));
         }
-        if (sequenceLength < 12) { //TODO: validate this position with profling.  It's *roughly* right, but should be checked.
+        if (sequenceLength < 12) { //PROFILE: validate this position with profling.  It's *roughly* right, but should be checked.
             return new ShiftOrUnrolledSearcher(theSequence);
         }
-        //TODO: validate that this is the best choice in general with profiling.  Qgram filtering is also fast, and signed and unrolledHorspool.
+        //PROFILE: validate that this is the best choice in general with profiling.  Qgram filtering is also fast, and signed and unrolledHorspool.
         return new SignedHash2Searcher(theSequence);
     }
 }
