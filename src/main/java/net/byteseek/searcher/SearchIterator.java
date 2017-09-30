@@ -32,6 +32,7 @@ package net.byteseek.searcher;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
+import sun.plugin.dom.exception.InvalidStateException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -476,8 +477,8 @@ public final class SearchIterator {
         try {
             return iterator.nextAll();
         } catch (IOException cannotHappen) { // Suppress IOExceptions - only to be used where they cannot happen.
+            throw new IllegalArgumentException("Programming error: should not be possible to get an IO Exception here with the SearchIterator:" + iterator, cannotHappen);
         }
-        return Collections.emptyList();
     }
 
 }
