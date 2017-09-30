@@ -107,7 +107,7 @@ public final class DotSerializer<T> implements AutomataSerializer<T, String> {
             if (includeAssociatedObjects) {
 				final Collection<T> associatedObjects = state.getAssociations();
                 for (final T associated : associatedObjects) {
-					label.append(" [").append(associated.toString()).append(']');
+					label.append(" [").append(associated).append(']');
 				}
 			}
 			final String shape = state.isFinal() ? FINAL_STATE_SHAPE : NON_FINAL_STATE_SHAPE;
