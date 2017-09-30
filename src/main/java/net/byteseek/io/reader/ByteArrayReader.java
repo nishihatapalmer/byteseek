@@ -49,6 +49,10 @@ import net.byteseek.utils.ArgUtils;
 
 public class ByteArrayReader implements WindowReader {
 
+	//TODO: allow this reader to operate over an Iterator of byte arrays, rather than being limited to a single byte array.
+	//      max flexibility for users - if they happen to have the byte arrays, and can provide them in an order,
+	//      this lets the reader interface take care of matching across them.
+
 	private static final int NO_BYTE_AT_POSITION = -1;
 
 	private final Window windowBytes;
