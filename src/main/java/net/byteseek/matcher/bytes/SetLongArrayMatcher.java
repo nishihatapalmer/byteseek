@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
-//TODO: test whether this class provides any benefit over the SetBitSetMatcher - could remove. Profile performance.
+//PROFILE: test whether this class provides any benefit over the SetBitSetMatcher - could remove. Profile performance.
 
 /**
  * A matcher for arbitrary sets of bytes, backed by an array of 8 longs
@@ -47,7 +47,7 @@ import java.util.Collection;
  *
  * Created by matt on 28/02/16.
  */
-public class SetLongArrayMatcher extends InvertibleMatcher {
+public final class SetLongArrayMatcher extends InvertibleMatcher {
 
     private final int hashCode;
     private final long[] bitmask = new long[8];
