@@ -32,8 +32,8 @@ package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
@@ -161,7 +161,7 @@ public class ByteArrayReader implements WindowReader {
 	}
 
 	@Override
-	public Iterator<Window> iterator() {
+	public IOIterator<Window> iterator() {
 		return new WindowIterator(this);
 	}
 }

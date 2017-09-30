@@ -30,17 +30,17 @@
  */
 package net.byteseek.io.reader;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * An iterator of {@link net.byteseek.io.reader.windows.Window}s over a {@link WindowReader}.
+ * An IOIterator of {@link net.byteseek.io.reader.windows.Window}s over a {@link WindowReader}.
  */
-class WindowIterator implements Iterator<Window> {
+public final class WindowIterator implements IOIterator<Window> {
 
     private final WindowReader reader;
     private int position = 0;
@@ -54,27 +54,19 @@ class WindowIterator implements Iterator<Window> {
      * {@inheritDoc}
      */
     @Override
-    public boolean hasNext() {
-        try {
-            return reader.getWindow(position) != null;
-        } catch (final IOException ex) {
-            return false;
-        }
+    public boolean hasNext() throws IOException {
+        return reader.getWindow(position) != null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Window next() {
-        //noinspection EmptyCatchBlock
-        try {
-            final Window window = reader.getWindow(position);
-            if (window != null) {
-                position += (long) window.length();
-                return window;
-            }
-        } catch (final IOException throwNoSuchElementExceptionInstead) {
+    public Window next() throws IOException {
+        final Window window = reader.getWindow(position);
+        if (window != null) {
+            position += (long) window.length();
+            return window;
         }
         throw new NoSuchElementException();
     }
@@ -86,8 +78,7 @@ class WindowIterator implements Iterator<Window> {
      * @throws UnsupportedOperationException - always throws this exception.
      */
     @Override
-    public void remove() {
-        throw new UnsupportedOperationException(
-                "Cannot remove a window from a reader.");
+    public void remove() throws IOException {
+        throw new UnsupportedOperationException("Cannot remove a window from a reader.");
     }
 }

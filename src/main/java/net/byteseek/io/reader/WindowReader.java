@@ -31,6 +31,7 @@
 
 package net.byteseek.io.reader;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.windows.Window;
 
 import java.io.Closeable;
@@ -57,7 +58,7 @@ import java.io.IOException;
  * 
  * @author Matt Palmer
  */
-public interface WindowReader extends Closeable, Iterable<Window> {
+public interface WindowReader extends Closeable {
 
 	/**
 	 * Read a byte from a given position.
@@ -109,5 +110,13 @@ public interface WindowReader extends Closeable, Iterable<Window> {
 	 *             If a problem occurred trying to determine the length.
 	 */
 	long length() throws IOException;
+
+	/**
+	 * Returns an IO iterator over the Windows in the Reader.  This has the same semantics
+	 * as a normal Java Iterator, but any method call to it can throw an IOException.
+	 *
+	 * @return an iterator over the Windows in the Reader.
+	 */
+	IOIterator<Window> iterator();
 
 }

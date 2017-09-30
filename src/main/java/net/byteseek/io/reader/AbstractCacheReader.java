@@ -32,8 +32,8 @@
 package net.byteseek.io.reader;
 
 import java.io.IOException;
-import java.util.Iterator;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
@@ -197,7 +197,7 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Iterator<Window> iterator() {
+	public IOIterator<Window> iterator() {
 		return new WindowIterator(this);
 	}
 
