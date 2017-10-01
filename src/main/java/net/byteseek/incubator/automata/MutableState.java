@@ -187,15 +187,16 @@ public class MutableState<T> implements State<T> {
 	 */
 	@Override
 	public final boolean removeTransition(final Transition<T> transition) {
-		if (!transitions.isEmpty()) {
-			boolean wasRemoved = transitions.remove(transition);
-			if (transitions.isEmpty()) {
-				transitions = Collections.emptyList();
-			}
-			isDeterministic = null;
-			return wasRemoved;
+		if (transitions.isEmpty()) {
+			return false;
 		}
-		return false;
+
+		boolean wasRemoved = transitions.remove(transition);
+		if (transitions.isEmpty()) {
+			transitions = Collections.emptyList();
+		}
+		isDeterministic = null;
+		return wasRemoved;
 	}
 
 	/**
@@ -267,28 +268,29 @@ public class MutableState<T> implements State<T> {
 	@SuppressWarnings("ObjectEquality")
 	@Override
 	public boolean isDeterministic() {
-		if (transitions.size() > 1) {
-			if (isDeterministic == null) {
-				final Map<Byte, State<T>> bytesToStates = new HashMap<Byte, State<T>>(128);
-				for (Transition<T> transition : transitions) {
-					final byte[] matchingBytes = transition.getBytes();
-					final State<T> toState = transition.getToState();
-					for (byte b : matchingBytes) {
-						final State<T> existingState = bytesToStates.get(b);
-						if (existingState != toState) {
-							if (existingState != null) {
-								isDeterministic = Boolean.FALSE;
-								return false;
-							}
-							bytesToStates.put(b, toState);
+		if (transitions.size() < 2){ // Only a single transition or no transitions - must be deterministic.
+			return true;
+		}
+
+		if (isDeterministic == null) {
+			final Map<Byte, State<T>> bytesToStates = new HashMap<Byte, State<T>>(128);
+			for (Transition<T> transition : transitions) {
+				final byte[] matchingBytes = transition.getBytes();
+				final State<T> toState = transition.getToState();
+				for (byte b : matchingBytes) {
+					final State<T> existingState = bytesToStates.get(b);
+					if (existingState != toState) {
+						if (existingState != null) {
+							isDeterministic = Boolean.FALSE;
+							return false;
 						}
+						bytesToStates.put(b, toState);
 					}
 				}
-				isDeterministic = Boolean.TRUE;
 			}
-			return isDeterministic;
+			isDeterministic = Boolean.TRUE;
 		}
-		return true;
+		return isDeterministic;
 	}
 
 	/**

@@ -188,15 +188,17 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         }
     }
 
+
     private List<SequenceMatcher>[] createHashTableFor(final List<SequenceMatcher> matchers) {
         //TODO: determine appropriate table size.
         int tableSize = 32;
-        return new List[tableSize];
+        return null;
     }
+
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[num sequences:" + matchers.size() + ']'; 
+    	return getClass().getSimpleName() + "(num sequences:" + matchers.size() + ')';
     }
     
 }

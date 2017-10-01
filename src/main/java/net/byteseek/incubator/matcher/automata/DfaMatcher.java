@@ -354,28 +354,34 @@ public class DfaMatcher<T> implements AutomataMatcher {
 	 */
 	private static final class DfaMatchResult<T> extends MatchResult {
 
+		private final State<T> matchingState;
 
-		private State<T>			matchingState;
-		public DfaMatchResult(final long matchPosition, 
-				              final long matchLength,
-				              final State<T> matchingState) {
+		public DfaMatchResult(final long matchPosition, final long matchLength, final State<T> matchingState) {
 			super(matchPosition, matchLength);
 			this.matchingState = matchingState;
 		}
 
-		//public Collection<T> getMatchingObjects() {
-		//	return matchingState.getAssociations();
-		//}
-		
 		private State<T> getMatchingState() {
 			return matchingState;
 		}
 
+		@Override
+		public boolean equals(final Object obj) {
+			if (!(obj instanceof DfaMatchResult)) {
+			    return false;
+            }
+            return this.matchingState == ((DfaMatchResult) obj).matchingState && super.equals(obj);
+		}
+
+		@Override
+        public int hashCode() {
+		    return super.hashCode() * matchingState.hashCode();
+        }
 	}
 	
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[automata:" + automata + ']'; 
+    	return getClass().getSimpleName() + "(automata:" + automata + ')';
     }
 
 }

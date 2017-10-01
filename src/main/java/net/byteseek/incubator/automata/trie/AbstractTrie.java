@@ -295,19 +295,15 @@ public abstract class AbstractTrie<T> extends MutableAutomata<T> implements Trie
 				}
 
 				// If we have no further bytes to process, just break out.
-				final int numberOfBytesLeft = bytesToTransitionOn.size();
-				if (numberOfBytesLeft == 0) {
+				if (bytesToTransitionOn.isEmpty()) {
 					break;
 				}
 			}
 
-			// If there are any bytes left over, create a transition to a new
-			// state:
-			final int numberOfBytesLeft = bytesToTransitionOn.size();
-			if (numberOfBytesLeft > 0) {
+			// If there are any bytes left over, create a transition to a new state:
+			if (!bytesToTransitionOn.isEmpty()) {
 				final State<T> newState = stateFactory.create(isFinal);
-				final Transition<T> newTransition = 
-						transitionFactory.create(bytesToTransitionOn, false, newState);
+				final Transition<T> newTransition = transitionFactory.create(bytesToTransitionOn, false, newState);
 				currentState.addTransition(newTransition);
 				nextStates.add(newState);
 			}

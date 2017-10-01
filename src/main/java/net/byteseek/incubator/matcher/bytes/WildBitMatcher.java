@@ -114,7 +114,7 @@ public final class WildBitMatcher extends InvertibleMatcher {
                     if ((wildcardMask & bitposMask) == bitposMask) {
                         regex.append((matchValue & bitposMask) == bitposMask? '1' : '0');
                     } else {
-                        regex.append("_");
+                        regex.append('_');
                     }
                 }
                 return regex.toString();

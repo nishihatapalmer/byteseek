@@ -232,7 +232,7 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     }
 
     @Override
-    protected ParseTree joinExpressions(final List<ParseTree> expressions) throws CompileException {
+    protected ParseTree joinExpressions(final List<ParseTree> expressions) {
       return new ChildrenNode(ParseTreeType.ALTERNATIVES, expressions);
     }
 
@@ -269,10 +269,10 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
         if (lower == upper) {
           automataList.add(createTransitionAutomata(ByteNode.valueOf(lower)));
         } else {
-        	final List<ParseTree> caseLetterSet = new ArrayList<ParseTree>(2);
-        	caseLetterSet.add(ByteNode.valueOf(lower));
-        	caseLetterSet.add(ByteNode.valueOf(upper));
-            final ChildrenNode set = new ChildrenNode(ParseTreeType.SET, caseLetterSet);
+        	final List<ParseTree> caseLetterList = new ArrayList<ParseTree>(2);
+        	caseLetterList.add(ByteNode.valueOf(lower));
+        	caseLetterList.add(ByteNode.valueOf(upper));
+            final ChildrenNode set = new ChildrenNode(ParseTreeType.SET, caseLetterList);
         	automataList.add(createTransitionAutomata(set));
         }
       }      

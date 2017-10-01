@@ -116,14 +116,14 @@ public abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSear
 
         
         /**
-         * Constructs a SearchInfo objecxt with the shifts and matcher to use
+         * Constructs a SearchInfo object with the shifts and matcher to use
          * when searching.
          * 
          * @param shifts The hash-table containing the safe shifts.
          * @param matcher The matcher to use to verify whether a match exists.
          */
-        public SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
-            this.shifts = shifts;
+        protected SearchInfo(final int[] shifts, final MultiSequenceMatcher matcher) {
+            this.shifts = shifts; // SearchInfo wraps the shift array - no defensive copying should be done.
             this.matcher = matcher;
         }
     }
