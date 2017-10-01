@@ -97,12 +97,13 @@ public final class ReaderInputStream extends InputStream {
 
     @Override
     public synchronized int read() throws IOException {
-        if (pos > -1) {
-            final int readResult = currentArray[currentArrayPos] & 0xFF;
-            addStreamPosition(1);
-            return readResult;
+        if (pos < 0) {
+            return -1;
         }
-        return -1;
+
+        final int readResult = currentArray[currentArrayPos] & 0xFF;
+        addStreamPosition(1);
+        return readResult;
     }
 
     @Override
@@ -115,32 +116,33 @@ public final class ReaderInputStream extends InputStream {
             return 0;
         }
 
-        if (pos > -1) {
-            int available = currentWindowLength - currentArrayPos;
-            if (available >= len) { // buffer copy is completely inside current window.
-                System.arraycopy(currentArray, currentArrayPos, b, off, len);
-                addStreamPosition(len);
-                return len;
-            } else { // buffer copy may span more than one window (if there are more windows available...)
-                int copied = 0;
-                while (copied < len) {
-                    System.arraycopy(currentArray, currentArrayPos, b, off + copied, available);
-                    copied          += available;
-                    addStreamPosition(available);
-                    if (currentWindow == null) { // no more windows available...
-                        break;
-                    }
-                    final int remaining = len - copied;
-                    available = currentWindowLength > remaining ? remaining : currentWindowLength;
-                }
-                return copied;
-            }
+        if (pos < 0) {
+            return -1;
         }
-        return -1;
+
+        int available = currentWindowLength - currentArrayPos;
+        if (available >= len) { // buffer copy is completely inside current window.
+            System.arraycopy(currentArray, currentArrayPos, b, off, len);
+            addStreamPosition(len);
+            return len;
+        } else { // buffer copy may span more than one window (if there are more windows available...)
+            int copied = 0;
+            while (copied < len) {
+                System.arraycopy(currentArray, currentArrayPos, b, off + copied, available);
+                copied          += available;
+                addStreamPosition(available);
+                if (currentWindow == null) { // no more windows available...
+                    break;
+                }
+                final int remaining = len - copied;
+                available = currentWindowLength > remaining ? remaining : currentWindowLength;
+            }
+            return copied;
+        }
     }
 
     @Override
-    public synchronized int available() throws IOException {
+    public synchronized int available() {
         return pos > -1? currentWindowLength - currentArrayPos : 0;
     }
 
