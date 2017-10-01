@@ -50,26 +50,12 @@ import net.byteseek.parser.tree.ParseTreeType;
 import net.byteseek.parser.tree.node.ChildrenNode;
 
 /**
- * A compiler which produces a {@link ByteMatcher} from an
- * abstract syntax tree provided by the {@link AbstractCompiler} class,
- * which it extends.
+ * A compiler which produces a {@link ByteMatcher} from an abstract syntax tree provided by the
+ * {@link AbstractCompiler} class, which it extends.
  * <p>
- *     //TODO: don't think this is true anymore.  Doesn't process a sequence, or nested values, only syntax which produces a single byte.
- * It will interpret all regular expression syntax, calculating the union
- * of all byte values which the regular expression could match.
- * Hence, any regular expression can be fed to this compiler,
- * the resulting ByteMatcher matching any byte value which the full regular expression 
- * could match at any point in the expression.
- * <p>
- * For example, the following byteseek regex syntax all produces a ByteMatcher which matches the same
- * set of three bytes:
- * <p><blockquote><pre><code>
- *  01 02 03     # A sequence of three bytes: 01, 02 and 03.
- *  01|02|03     # Alternative bytes: 01, 02 and 03.
- * [01 02 03]    # A set of bytes: 01, 02 and 03.
- * [01 -  03]    # A range of bytes from 01 to 03. 
- * (01 02 03)+   # A sequence repeated from 1 to many times of three bytes: 01, 02 and 03.
- * </code></pre></blockquote><p><p> 
+ * It can process a hex byte, a byte range, an any or all bitmask, an any byte, or a set of byte values,
+ * and any inversions of those.
+ * </p>
  * @author Matt Palmer
  */
 public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree> {
@@ -81,8 +67,8 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 
 	// Protected static fields:
 
-	protected static ByteMatcherCompiler defaultCompiler;
-	protected static ByteMatcherFactory defaultFactory;
+	private static ByteMatcherCompiler defaultCompiler;
+	private static ByteMatcherFactory defaultFactory;
 
 	/**
 	 * Compiles a {@link ByteMatcher} from the expression (assuming the syntax
