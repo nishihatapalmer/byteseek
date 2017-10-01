@@ -698,21 +698,23 @@ public final class ByteUtils {
     public static boolean inverseOf(final Set<Byte> set, final Set<Byte> inverseSet) {
     	ArgUtils.checkNullCollection(set, "parameter:set");
     	ArgUtils.checkNullCollection(inverseSet, "parameter:inverseSet");
-    	// If the set sizes are compatible with being the inverse of each other:
-    	if (set.size() == 256 - inverseSet.size()) {
-    		// Go through  the bytes in the smaller set, to see if they appear in the
-    		// bigger set.  If any do, the sets are not inverses of each other.
-    		final boolean setIsSmaller = set.size() < inverseSet.size();
-    		final Set<Byte> needles  = setIsSmaller? set : inverseSet;
-    		final Set<Byte> haystack = setIsSmaller? inverseSet : set;
-    		for (final Byte needle : needles) {
-    			if (haystack.contains(needle)) {
-    				return false;
-    			}
-    		}
-    		return true;
-    	}
-    	return false;
+
+    	// If the set sizes are not compatible with being the inverse of each other, just return.
+    	if (set.size() != 256 - inverseSet.size()) {
+            return false;
+        }
+
+        // Go through  the bytes in the smaller set, to see if they appear in the
+        // bigger set.  If any do, the sets are not inverses of each other.
+        final boolean setIsSmaller = set.size() < inverseSet.size();
+        final Set<Byte> needles  = setIsSmaller? set : inverseSet;
+        final Set<Byte> haystack = setIsSmaller? inverseSet : set;
+        for (final Byte needle : needles) {
+            if (haystack.contains(needle)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     
@@ -834,20 +836,22 @@ public final class ByteUtils {
      */
     public static Byte getAnyBitMaskForBytes(final Set<Byte> bytes) {
     	ArgUtils.checkNullCollection(bytes);
-        final int setSize = bytes.size();
-        if (setSize == 0) {
+        if (bytes.isEmpty()) {
             return Byte.valueOf((byte)0);
-        } else if (Arrays.binarySearch(VALID_ANY_BITMASK_SET_SIZES, setSize) >= 0) {
-            // Find which bits in the set are matched by 128 bytes in the set.
-            // These bits might form a valid any bitmask.
-            final int possibleAnyMask = getBitsSetForAllPossibleBytes(bytes);
+        } else {
+            final int size = bytes.size();
+            if (Arrays.binarySearch(VALID_ANY_BITMASK_SET_SIZES, size) >= 0) {
+                // Find which bits in the set are matched by 128 bytes in the set.
+                // These bits might form a valid any bitmask.
+                final int possibleAnyMask = getBitsSetForAllPossibleBytes(bytes);
 
-            // Check that the any bitmask produced gives a set of bytes
-            // the same size as the set provided.
-            if (possibleAnyMask > 0) {
-                final byte mask = (byte) possibleAnyMask;
-                if (setSize == countBytesMatchingAnyBit(mask)) {
-                    return Byte.valueOf(mask);
+                // Check that the any bitmask produced gives a set of bytes
+                // the same size as the set provided.
+                if (possibleAnyMask > 0) {
+                    final byte mask = (byte) possibleAnyMask;
+                    if (size == countBytesMatchingAnyBit(mask)) {
+                        return Byte.valueOf(mask);
+                    }
                 }
             }
         }
