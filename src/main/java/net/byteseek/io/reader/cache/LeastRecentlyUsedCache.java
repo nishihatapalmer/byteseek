@@ -130,7 +130,7 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
     
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[size: " + cache.size() + " capacity: " + cache.capacity + ']';  
+		return getClass().getSimpleName() + "(size: " + cache.size() + " capacity: " + cache.capacity + ')';
 	}
     
 }
