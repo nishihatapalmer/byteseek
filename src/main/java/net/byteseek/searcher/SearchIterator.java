@@ -482,6 +482,15 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
      * Private convenience method *
      ******************************/
 
+    /**
+     * This method suppresses the IOException from the nextAll() method of a SearchIterator.
+     * When byte arrays are being iterated over, there can be no IOExceptions.
+     * This method lets us suppress the IOExceptions which can never occur from the static utility methods for
+     * finding all matches given a SearchIterator, when working over byte arrays.
+     *
+     * @param iterator The SearchIterator to get all results for.
+     * @return The results from running all iterations of the SearchIterator.
+     */
     private static List<MatchResult> suppressIOException(final SearchIterator iterator) {
         try {
             return iterator.nextAll();
