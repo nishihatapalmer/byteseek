@@ -53,7 +53,6 @@ public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
     final long tailCacheBytes;
     final PositionHashMap<Window> cache;
     final List<Window> tailEntries;
-    long lastSeenPosition;
 
     public TopAndTailStreamCache(final long topTailBytes) {
         this(topTailBytes, topTailBytes);
