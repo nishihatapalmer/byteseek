@@ -142,7 +142,7 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
     }
 
     /**
-     * A standard Iterator<ByteMatcher> for all ByteMatchers.
+     * A standard Iterator for ByteMatchers.
      * Since a ByteMatcher only has a length of one, its iterator can only iterate once
      * and should always return itself (or an equal() instance) on the first call to next().
      */

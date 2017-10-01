@@ -46,7 +46,7 @@ import java.util.NoSuchElementException;
  * <p>
  * Static utility methods for finding all matches in data with a searcher are provided for convenience.
   <p>
- * Note that the List<MatchResult> returned on each iteration is the same list object each time.
+ * Note that the List of MatchResults returned on each iteration is the same list object each time.
  * On each iteration the list is cleared and the new results appended.  This avoids creating a new
  * list for each search iteration.  If you want to retain the MatchResults across iterations,
  * you should add them to a master list which you seperately maintain.
