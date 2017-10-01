@@ -80,11 +80,13 @@ public class MatchResult {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj instanceof MatchResult) {
-			final MatchResult other = (MatchResult) obj;
-			return matchPosition == other.matchPosition && matchLength == other.matchLength;
+		if (!(obj instanceof MatchResult)) {
+			return false;
 		}
-		return false;
+
+		final MatchResult other = (MatchResult) obj;
+		return matchPosition == other.matchPosition &&
+			   matchLength   == other.matchLength;
 	}
 
 	@Override
