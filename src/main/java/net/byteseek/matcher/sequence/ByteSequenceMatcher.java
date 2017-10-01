@@ -587,9 +587,10 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         public ReverseByteArrayMatcher(final ReverseByteArrayMatcher source, 
                                        final int startIndex, final int endIndex) {
             ArgUtils.checkNullObject(source);
-            ArgUtils.checkIndexOutOfBounds(source.length(), startIndex, endIndex);
+            final int sourceLength = source.length();
+            ArgUtils.checkIndexOutOfBounds(sourceLength, startIndex, endIndex);
             this.byteArray       = source.byteArray;
-            this.startArrayIndex = source.startArrayIndex + source.length() - endIndex;
+            this.startArrayIndex = source.startArrayIndex + sourceLength - endIndex;
             this.endArrayIndex   = source.endArrayIndex - startIndex;
             this.hashCode = calculateHash();
         }
@@ -781,9 +782,10 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
          */    
         @Override
         public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
-            ArgUtils.checkIndexOutOfBounds(length(), beginIndex, endIndex);
+            final int length = length();
+            ArgUtils.checkIndexOutOfBounds(length, beginIndex, endIndex);
             final int subsequenceLength = endIndex - beginIndex;
-            if (subsequenceLength == length()) {
+            if (subsequenceLength == length) {
                 return this;
             }
             if (subsequenceLength == 1) {
