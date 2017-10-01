@@ -162,35 +162,34 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 */
 	@Override
 	public Window getWindow(final long position) throws IOException {
-		if (position >= 0) {
-			Window window;
-			final int offset = (int) (position % (long) windowSize);
-			final long windowStart = position - offset;
-			if (lastWindow != null
-					&& lastWindow.getWindowPosition() == windowStart) {
-				window = lastWindow;
+		if (position < 0) {
+			return null;
+		}
+		Window window;
+		final int offset = (int) (position % (long) windowSize);
+		final long windowStart = position - offset;
+		if (lastWindow != null
+				&& lastWindow.getWindowPosition() == windowStart) {
+			window = lastWindow;
+		} else {
+			window = cache.getWindow(windowStart);
+			if (window != null) {
+				lastWindow = window;
 			} else {
-				window = cache.getWindow(windowStart);
+				window = createWindow(windowStart);
 				if (window != null) {
 					lastWindow = window;
-				} else {
-					window = createWindow(windowStart);
-					if (window != null) {
-						lastWindow = window;
-						cache.addWindow(window);
-					}
+					cache.addWindow(window);
 				}
 			}
-			// Finally, if the position requested is outside the window limit,
-			// don't return a window. The position itself is invalid, even
-			// though
-			// that position is part of a window which has valid positions.
-			if (window != null && offset >= window.length()) {
-				window = null;
-			}
-			return window;
 		}
-		return null;
+		// Finally, if the position requested is outside the window limit,
+		// don't return a window. The position itself is invalid, even though
+		// that position is part of a window which has valid positions.
+		if (window != null && offset >= window.length()) {
+			window = null;
+		}
+		return window;
 	}
 
 	/**
