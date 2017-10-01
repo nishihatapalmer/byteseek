@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013-16. All rights reserved.
+ * Copyright Matt Palmer 2013-17. All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -35,13 +35,14 @@ package net.byteseek.utils.lazy;
 import net.byteseek.utils.factory.ObjectFactory;
 
 /**
- * This class creates objects using double-check lazy initialisation,
+ * This class creates objects using the dangerous double-check lazy initialisation pattern,
  * with synchronization on the second check, and no volatile references.
- * The object being created must be immutable.
  * <p>
- * This means that if two threads attempt to get the object at the same time
- * before it has been fully initialised, the object will only be created once.
- * 
+ * The object being created *must* be immutable, meaning it only has final fields.  In this case
+ * only will the Java Memory Model ensure that all the fields of the object are published safely
+ * to all threads that read it.
+ * @see <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">The "Double-Checked Locking is Broken" Declaration</a>
+ * <p>
  * @param <T> The type of object to instantiate lazily.
  * 
  * @author Matt Palmer
