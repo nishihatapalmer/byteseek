@@ -47,7 +47,7 @@ import net.byteseek.utils.ArgUtils;
  * @author Matt Palmer
  */
 
-public class ByteArrayReader implements WindowReader {
+public final class ByteArrayReader implements WindowReader {
 
 	//TODO: allow this reader to operate over an Iterator of byte arrays, rather than being limited to a single byte array.
 	//      max flexibility for users - if they happen to have the byte arrays, and can provide them in an order,
@@ -132,7 +132,7 @@ public class ByteArrayReader implements WindowReader {
 	}
 
 	@Override
-	public Window getWindow(final long position) throws IOException {
+	public Window getWindow(final long position) {
 		return (position >= 0 && position < windowBytes.length())? windowBytes : null;
 	}
 
@@ -145,7 +145,7 @@ public class ByteArrayReader implements WindowReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long length() throws IOException {
+	public long length() {
 		return windowBytes.length();
 	}
 
@@ -156,7 +156,7 @@ public class ByteArrayReader implements WindowReader {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		// nothing to close.
 	}
 
