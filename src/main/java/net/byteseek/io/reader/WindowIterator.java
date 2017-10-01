@@ -78,7 +78,7 @@ public final class WindowIterator implements IOIterator<Window> {
      * @throws UnsupportedOperationException - always throws this exception.
      */
     @Override
-    public void remove() throws IOException {
+    public void remove() {
         throw new UnsupportedOperationException("Cannot remove a window from a reader.");
     }
 }
