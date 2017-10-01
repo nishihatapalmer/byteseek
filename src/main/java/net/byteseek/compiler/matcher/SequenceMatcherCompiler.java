@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2015, All rights reserved.
+ * Copyright Matt Palmer 2009-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -71,7 +71,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 
 	protected static final boolean NOT_YET_INVERTED = false;
 	
-	protected static SequenceMatcherCompiler defaultCompiler;
+	private static SequenceMatcherCompiler defaultCompiler;
     
     /**
      * Compiles a SequenceMatcher from a byteSeek regular expression (limited to
