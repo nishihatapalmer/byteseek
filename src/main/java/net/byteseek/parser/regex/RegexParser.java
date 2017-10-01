@@ -490,18 +490,16 @@ public class RegexParser implements Parser<ParseTree> {
 	
 	
 	private ParseTree optimisedAlternatives(final List<ParseTree> alternatives, 
-			                                final StringParseReader expression)
-			throws ParseException {
-		final int numAlternatives = alternatives.size();
-		
+			                                final StringParseReader expression) throws ParseException {
+
 		// If there are no alternatives, throw an error (this is impossible in the code as currently written,
 		// but we keep the test in case of changes that invalidate this assumption).
-		if (numAlternatives == 0) {
+		if (alternatives.isEmpty()) {
 			throw new ParseException(addContext("No alternatives were found.", expression));
 		}
 		
 		// If there is only a single alternative, then just return the alternative directly.
-		if (numAlternatives == 1) {
+		if (alternatives.size() == 1) {
 			return alternatives.get(0);
 		}
 		
@@ -510,7 +508,7 @@ public class RegexParser implements Parser<ParseTree> {
 		final ParseTree optimisedSet = optimiseSingleByteAlternatives(alternatives);
 		
 		// If there are no remaining alternatives (all got put into the set), return the set directly:
-		if (alternatives.size() == 0) {
+		if (alternatives.isEmpty()) {
 			return optimisedSet;
 		}
 		
@@ -547,23 +545,23 @@ public class RegexParser implements Parser<ParseTree> {
 			}
 		}
 		
+		// If there aren't at least two alternatives, return null and don't modify original collections.
+		if (numOptimisableAlternatives < 2) {
+			return null;
+		}
+
 		// If there are, build a list of them, remove them from the original list of alternatives,
 		// and return a set node of the optimisable alternatives:
-		if (numOptimisableAlternatives > 1) {
-			final List<ParseTree> setChildren = new ArrayList<ParseTree>(numOptimisableAlternatives);
-			final Iterator<ParseTree> altIterator = alternatives.iterator();
-			while (altIterator.hasNext()) {
-				final ParseTree currentAlternative = altIterator.next();
-				if (matchesSingleByteLength(currentAlternative)) {
-					setChildren.add(currentAlternative);
-					altIterator.remove();
-				}
+		final List<ParseTree> setChildren = new ArrayList<ParseTree>(numOptimisableAlternatives);
+		final Iterator<ParseTree> altIterator = alternatives.iterator();
+		while (altIterator.hasNext()) {
+			final ParseTree currentAlternative = altIterator.next();
+			if (matchesSingleByteLength(currentAlternative)) {
+				setChildren.add(currentAlternative);
+				altIterator.remove();
 			}
-			return new ChildrenNode(ParseTreeType.SET, setChildren);
 		}
-		
-		// No optimisable alternatives: return null and don't modify the original list of alternatives:
-		return null;
+		return new ChildrenNode(ParseTreeType.SET, setChildren);
 	}
 	
 	
@@ -894,6 +892,9 @@ public class RegexParser implements Parser<ParseTree> {
 				case OPTIONAL: { 		
 					quantifier = new ChildrenNode(ParseTreeType.OPTIONAL, nodeToQuantify);
 					break;
+				}
+				default: {
+					// do nothing, fall through.  This switch statement only looks for quantifier types.
 				}
 			}
 			if (quantifier != null) {
