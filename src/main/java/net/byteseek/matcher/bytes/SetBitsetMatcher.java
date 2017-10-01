@@ -141,11 +141,13 @@ public final class SetBitsetMatcher extends InvertibleMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof SetBitsetMatcher) {
-            final SetBitsetMatcher other = (SetBitsetMatcher) obj;
-            return hashCode == other.hashCode && inverted == other.inverted && byteValues.equals(other.byteValues);
+        if (!(obj instanceof SetBitsetMatcher)) {
+            return false;
         }
-        return false;
+        final SetBitsetMatcher other = (SetBitsetMatcher) obj;
+        return hashCode == other.hashCode &&
+               inverted == other.inverted &&
+               byteValues.equals(other.byteValues);
     }
 
     @Override

@@ -75,15 +75,15 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     }
 
     @Override
-    public boolean matches(final WindowReader reader, final long matchPosition) 
-            throws IOException{
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
-        if (window != null) {
-            final int byteValue = window.getByte(reader.getWindowOffset(matchPosition)) & 0xFF;
-            final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
-            return insideRange ^ inverted;
+        if (window == null) {
+            return false;
         }
-        return false;
+
+        final int byteValue = window.getByte(reader.getWindowOffset(matchPosition)) & 0xFF;
+        final boolean insideRange = byteValue >= minByteValue && byteValue <= maxByteValue;
+        return insideRange ^ inverted;
     }
 
     @Override
@@ -155,13 +155,14 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof ByteRangeMatcher) {
-            final ByteRangeMatcher other = (ByteRangeMatcher) obj;
-            return minByteValue == other.minByteValue &&
-                   maxByteValue == other.maxByteValue &&
-                   inverted     == other.inverted;
+        if (!(obj instanceof ByteRangeMatcher)) {
+            return false;
         }
-        return false;
+
+        final ByteRangeMatcher other = (ByteRangeMatcher) obj;
+        return minByteValue == other.minByteValue &&
+               maxByteValue == other.maxByteValue &&
+               inverted     == other.inverted;
     }
     
     @Override

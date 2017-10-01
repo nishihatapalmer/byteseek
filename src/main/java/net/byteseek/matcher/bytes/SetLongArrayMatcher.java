@@ -179,14 +179,14 @@ public final class SetLongArrayMatcher extends InvertibleMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof SetLongArrayMatcher) {
-            final SetLongArrayMatcher other = (SetLongArrayMatcher) obj;
-            return hashCode == other.hashCode &&
-                    inverted == other.inverted &&
-                    numberOfMatchingBytes == other.numberOfMatchingBytes &&
-                    Arrays.equals(bitmask, other.bitmask);
+        if (!(obj instanceof SetLongArrayMatcher)) {
+            return false;
         }
-        return false;
+        final SetLongArrayMatcher other = (SetLongArrayMatcher) obj;
+        return hashCode == other.hashCode &&
+               inverted == other.inverted &&
+               numberOfMatchingBytes == other.numberOfMatchingBytes &&
+               Arrays.equals(bitmask, other.bitmask);
     }
 
     @Override

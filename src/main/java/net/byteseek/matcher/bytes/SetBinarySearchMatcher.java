@@ -129,11 +129,13 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof SetBinarySearchMatcher) {
-            final SetBinarySearchMatcher other = (SetBinarySearchMatcher) obj;
-            return (hashCode == other.hashCode && inverted == other.inverted && Arrays.equals(bytesToMatch, other.bytesToMatch));
+        if (!(obj instanceof SetBinarySearchMatcher)) {
+            return false;
         }
-        return false;
+        final SetBinarySearchMatcher other = (SetBinarySearchMatcher) obj;
+        return (hashCode == other.hashCode &&
+                inverted == other.inverted &&
+                Arrays.equals(bytesToMatch, other.bytesToMatch));
     }
     
     @Override

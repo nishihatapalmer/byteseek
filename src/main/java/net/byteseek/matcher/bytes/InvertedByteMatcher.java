@@ -117,11 +117,10 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof InvertedByteMatcher) {
-            final InvertedByteMatcher other = (InvertedByteMatcher) obj;
-            return byteToMiss == other.byteToMiss;
+        if (!(obj instanceof InvertedByteMatcher)) {
+            return false;
         }
-        return false;
+        return byteToMiss == ((InvertedByteMatcher) obj).byteToMiss;
     }
 
     @Override

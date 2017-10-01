@@ -138,11 +138,11 @@ public final class OneByteMatcher extends AbstractByteMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof OneByteMatcher) {
-            final OneByteMatcher other = (OneByteMatcher) obj;
-            return byteToMatch == other.byteToMatch;
+        if (!(obj instanceof OneByteMatcher)) {
+            return false;
         }
-        return false;
+        final OneByteMatcher other = (OneByteMatcher) obj;
+        return byteToMatch == other.byteToMatch;
     }
 
     @Override

@@ -120,11 +120,11 @@ public final class AllBitmaskMatcher extends InvertibleMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof AllBitmaskMatcher) {
-            final AllBitmaskMatcher other = (AllBitmaskMatcher) obj;
-            return mBitMaskValue == other.mBitMaskValue && inverted == other.inverted;
+        if (!(obj instanceof AllBitmaskMatcher)) {
+            return false;
         }
-        return false;
+        final AllBitmaskMatcher other = (AllBitmaskMatcher) obj;
+        return mBitMaskValue == other.mBitMaskValue && inverted == other.inverted;
     }
 
     @Override

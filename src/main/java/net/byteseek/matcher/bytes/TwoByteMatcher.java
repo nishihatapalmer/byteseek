@@ -149,11 +149,11 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException{
         final Window window = reader.getWindow(matchPosition);
-        if (window != null) {
-        	final byte windowByte = window.getByte(reader.getWindowOffset(matchPosition));
-        	return windowByte == firstByteToMatch || windowByte == secondByteToMatch;
+        if (window == null) {
+            return false;
         }
-        return false;
+        final byte windowByte = window.getByte(reader.getWindowOffset(matchPosition));
+        return windowByte == firstByteToMatch || windowByte == secondByteToMatch;
     }
 
     /**
@@ -226,13 +226,15 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof TwoByteMatcher) {
-            final TwoByteMatcher other = (TwoByteMatcher) obj;
-            return (firstByteToMatch == other.firstByteToMatch && secondByteToMatch == other.secondByteToMatch);
-            // The order can matter - if you intend to match the most common first for performance reasons,
-            // So to be equal, the order of the two bytes as well as the values must be the same.
+        if (!(obj instanceof TwoByteMatcher)) {
+            return false;
         }
-        return false;
+        final TwoByteMatcher other = (TwoByteMatcher) obj;
+        return (firstByteToMatch == other.firstByteToMatch && secondByteToMatch == other.secondByteToMatch);
+        //TODO: does order matter in whether two TwoByteMatchers are equal?
+        // The order can matter - if you intend to match the most common first for performance reasons,
+        // However - other matchers which match the same set of bytes have no concept of ordering - this is a two-byte set.
+        // so for consistency, it should behave like a small set.
     }
 
     @Override
