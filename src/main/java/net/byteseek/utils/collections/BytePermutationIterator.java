@@ -119,7 +119,7 @@ public class BytePermutationIterator implements Iterator<byte[]> {
         if (hasNext()) {
             buildCurrentPermutation();
             buildNextPermutationState();
-            return permutation;
+            return permutation; // return same permutation array each time, with contents updated.
         }
         throw new NoSuchElementException("No more permutations available for the byte arrays.");
     }
