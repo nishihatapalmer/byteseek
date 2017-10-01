@@ -33,11 +33,9 @@ package net.byteseek.searcher;
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
-import sun.plugin.dom.exception.InvalidStateException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
