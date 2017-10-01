@@ -39,7 +39,8 @@ import java.io.IOException;
 
 /**
  * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
- * objects which were most recently added. The number of Windows which will be cached
+ * objects which were most recently added. The least recently added objects will be
+ * removed once capacity is reached. The number of Windows which will be cached
  * is configurable by its capacity.
  * 
  * @author Matt Palmer
