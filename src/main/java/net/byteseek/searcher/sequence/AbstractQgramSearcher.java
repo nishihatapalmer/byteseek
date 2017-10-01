@@ -130,7 +130,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
         public final int shift;
         public final int searchLength;
         public SearchInfo(final int[] table, final int shift, final int searchLength) {
-            this.table = table;
+            this.table = table; // SearchInfo wraps the table created - do not defensively copy.
             this.shift = shift;
             this.searchLength = searchLength;
         }
@@ -147,7 +147,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
     /*
      * These should be lambdas, but our minimum java version is still at 7.
      */
-    protected static interface TableStrategy {
+    protected interface TableStrategy {
         void processTablePosition(final int[] shiftTable, final int position, final int value);
     }
 
