@@ -195,11 +195,10 @@ public final class FixedGapMatcher extends AbstractSequenceMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof FixedGapMatcher) {
-            final FixedGapMatcher other = (FixedGapMatcher) obj;
-            return length == other.length;
+        if (!(obj instanceof FixedGapMatcher)) {
+            return false;
         }
-        return false;
+        return length == ((FixedGapMatcher) obj).length;
     }
     
     /**
