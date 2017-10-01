@@ -57,7 +57,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author matt
  */
-public class FileReader extends AbstractCacheReader implements SoftWindowRecovery {
+public final class FileReader extends AbstractCacheReader implements SoftWindowRecovery {
 
 	private final static String READ_ONLY = "r";
 
@@ -158,8 +158,7 @@ public class FileReader extends AbstractCacheReader implements SoftWindowRecover
 	 * @throws FileNotFoundException If the file does not exist.
 	 * @throws IllegalArgumentException If the file passed in is null.
 	 */
-	public FileReader(final String path, final int windowSize)
-			throws FileNotFoundException {
+	public FileReader(final String path, final int windowSize) throws FileNotFoundException {
 		this(path == null? null : new File(path), windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
 	}
 
@@ -189,8 +188,7 @@ public class FileReader extends AbstractCacheReader implements SoftWindowRecover
 	 * @throws FileNotFoundException If the file does not exist.
 	 * @throws IllegalArgumentException If the file or cache passed in is null.
 	 */
-	public FileReader(final File file, final int windowSize,
-			final WindowCache cache) throws FileNotFoundException {
+	public FileReader(final File file, final int windowSize, final WindowCache cache) throws FileNotFoundException {
 		super(windowSize, cache);
 		ArgUtils.checkNullObject(file, "file");
 		this.file = file;
