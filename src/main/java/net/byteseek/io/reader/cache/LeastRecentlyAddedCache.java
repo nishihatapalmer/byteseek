@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2015, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -100,7 +100,7 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
         private final int capacity;
         private IOException exception = null;
 
-        private Cache(int capacity) {
+        private Cache(final int capacity) {
             super(capacity);
             this.capacity = capacity;
         }
@@ -131,7 +131,7 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
     
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[size: " + cache.size() + " capacity: " + cache.capacity + ']';  
+		return getClass().getSimpleName() + "(size: " + cache.size() + " capacity: " + cache.capacity + ')';
 	}
 
 
