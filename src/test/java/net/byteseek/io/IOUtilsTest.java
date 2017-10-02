@@ -99,21 +99,22 @@ public class IOUtilsTest {
     }
 
     private void assertFileBytesEqual(File file, byte[] array) throws IOException {
-        InputStream asciiStream = new FileInputStream(file);
-        long totalRead = 0;
-        byte[] buffer = new byte[4096];
-        final long length = file.length();
-        while (totalRead < length) {
-            final int read = asciiStream.read(buffer);
-            int filePos = (int) totalRead;
-            for (int bufferPos = 0; bufferPos < read; bufferPos++) {
-                final byte fileByte = array[filePos++];
-                final byte bufferByte = buffer[bufferPos];
-                if (fileByte != bufferByte) {
-                    fail("Bytes do not match at file position " + (totalRead + bufferPos));
+        try (InputStream asciiStream = new FileInputStream(file)) {;
+            long totalRead = 0;
+            byte[] buffer = new byte[4096];
+            final long length = file.length();
+            while (totalRead < length) {
+                final int read = asciiStream.read(buffer);
+                int filePos = (int) totalRead;
+                for (int bufferPos = 0; bufferPos < read; bufferPos++) {
+                    final byte fileByte = array[filePos++];
+                    final byte bufferByte = buffer[bufferPos];
+                    if (fileByte != bufferByte) {
+                        fail("Bytes do not match at file position " + (totalRead + bufferPos));
+                    }
                 }
+                totalRead += read;
             }
-            totalRead += read;
         }
     }
 
