@@ -47,7 +47,9 @@ public interface Matcher {
 
 	/**
 	 * Returns the number of matches at the given position in a WindowReader.
-	 * The actual match results are added to a list passed in to the method.
+	 * The actual match results are added to a collection passed in to the method.
+	 * This avoids having to create a new collection for each match.
+	 * <p>
 	 * If the position to match at does not exist in the WindowReader, then no
 	 * exception is thrown - there will simply be no matches.
 	 *
@@ -74,8 +76,11 @@ public interface Matcher {
 	boolean matches(WindowReader reader, long matchPosition) throws IOException;
 
 	/**
-	 * Returns whether the number of matches at the given position in a byte
-	 * array. If the position to match at does not exist in the byte array, then
+	 * Returns the number of matches at the given position in a byte array.
+     * The actual match results are added to a collection passed in to the method.
+     * This avoids having to create a new collection for each match.
+     * <p>
+	 * If the position to match at does not exist in the byte array, then
 	 * no exception is thrown - there will simply be no match.
 	 * The actual matches are added to a list of match results passed in to the mathod.
 	 *
