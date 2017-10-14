@@ -33,7 +33,6 @@ package net.byteseek.matcher;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
 
