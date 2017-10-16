@@ -39,8 +39,14 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
 
 /**
- * An interface for classes that search bytes provided by a {@link WindowReader}, or
- * on a byte array. Searching can be forwards or backwards.
+ * An interface for classes that search bytes provided by a {@link WindowReader}, or on a byte array.
+ * Searching can be forwards or backwards.
+ * <p>
+ * Two variants of the methods allow you to get a new list of search results on each search,
+ * or to pass in an existing collection to which any new results are added.
+ * In the latter case, the method returns the number of results added, if any.  This may
+ * be more efficient if multiple searches are being performed, as it avoids the overhead of creating a
+ * new list on each search.
  *
  * @author Matt Palmer
  */
@@ -73,7 +79,7 @@ public interface Searcher {
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search up to.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 * @throws IOException if a problem occurs reading data.
 	 */
 	List<MatchResult> searchForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
@@ -99,7 +105,7 @@ public interface Searcher {
 	 * @param reader       The window reader giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 * @throws IOException if a problem occurs reading data.
 	 */
 	List<MatchResult> searchForwards(WindowReader reader, long fromPosition) throws IOException;
@@ -121,7 +127,7 @@ public interface Searcher {
 	 *
 	 * @param reader  The byte reader giving access to the bytes being searched.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 * @throws IOException if a problem occurs reading data.
 	 */
 	List<MatchResult> searchForwards(WindowReader reader) throws IOException;
@@ -146,7 +152,7 @@ public interface Searcher {
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search up to.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 */
 	List<MatchResult> searchForwards(byte[] bytes, int fromPosition, int toPosition);
 
@@ -168,7 +174,7 @@ public interface Searcher {
 	 * @param bytes        The byte array giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 */
 	List<MatchResult> searchForwards(byte[] bytes, int fromPosition);
 
@@ -186,7 +192,7 @@ public interface Searcher {
 	 *
 	 * @param bytes The byte array giving access to the bytes being searched.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 */
 	List<MatchResult> searchForwards(byte[] bytes);
 
@@ -211,7 +217,7 @@ public interface Searcher {
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search back to.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
 	List<MatchResult> searchBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException;
@@ -235,7 +241,7 @@ public interface Searcher {
 	 * @param reader       The byte reader giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
 	List<MatchResult> searchBackwards(WindowReader reader, long fromPosition) throws IOException;
@@ -257,7 +263,7 @@ public interface Searcher {
 	 *
 	 * @param reader The byte reader giving access to the bytes being searched.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 * @throws IOException if a problem occurs reading the data.
 	 */
 	List<MatchResult> searchBackwards(WindowReader reader) throws IOException;
@@ -282,7 +288,7 @@ public interface Searcher {
 	 * @param fromPosition The position to search from.
 	 * @param toPosition   The position to search back to.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 */
 	List<MatchResult> searchBackwards(byte[] bytes, int fromPosition, int toPosition);
 
@@ -304,7 +310,7 @@ public interface Searcher {
 	 * @param bytes        The byte array giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 */
 	List<MatchResult> searchBackwards(byte[] bytes, int fromPosition);
 
@@ -322,41 +328,27 @@ public interface Searcher {
 	 *
 	 * @param bytes The byte array giving access to the bytes being searched.
 	 * @return             A list of search results, containing the position of a match and the matching object.
-	 *                     If no results are found, the list will be empty.
+	 *                     If no results are found, the list will be empty, but a new list will have been created.
 	 */
 	List<MatchResult> searchBackwards(byte[] bytes);
 
 	/**
-	 * Ensures that the searcher is fully prepared to search forwards. Some
-	 * searchers may defer calculating all the necessary parameters until the
-	 * first search is made. Calling this function ensures that all preparation
-	 * is complete before the first search forwards.
-	 * <p>
-	 * Note that this function is not itself guaranteed to be thread-safe,
-	 * in that calling it from multiple threads may result in multiple
-	 * initialisations (but must not produce an error).
-	 * <p>
-	 * Calling this function only changes when (and possibly how many) final
-	 * calculations of search parameters are made. If this function is called,
-	 * it should be made from a single thread before allowing multiple threads
-	 * to use the searcher.
+	 * Ensures that the searcher is fully prepared to search forwards by examining the pattern to search with.
+     * Many searchers defer calculating the various data structures they need to search with until a search is
+     * actually performed.  Calling this method performs those calculations, if they are not already calculated.
+     * <p>
+     * It is not necessary to call this before searching, a searcher will always ensure it is prepared. 
+     * This method is mostly useful to benchmark how long preparation takes versus searching. 
 	 */
 	void prepareForwards();
 
 	/**
-	 * Ensures that the searcher is fully prepared to search backwards. Some
-	 * searchers may defer calculating all the necessary parameters until the
-	 * first search is made. Calling this function ensures that all preparation
-	 * is complete before the first search backwards.
-	 * <p>
-	 * Note that this function is not itself guaranteed to be thread-safe,
-	 * in that calling it from multiple threads may result in multiple
-	 * initialisations (but must not produce an error).
-	 * <p>
-	 * Calling this function only changes when (and possibly how many) final
-	 * calculations of search parameters are made. If this function is called,
-	 * it should be made from a single thread before allowing multiple threads
-	 * to use the searcher.
+	 * Ensures that the searcher is fully prepared to search backwards by examining the pattern to search with.
+     * Many searchers defer calculating the various data structures they need to search with until a search is
+     * actually performed.  Calling this method performs those calculations, if they are not already calculated.
+     * <p>
+     * It is not necessary to call this before searching, a searcher will always ensure it is prepared. 
+     * This method is mostly useful to benchmark how long preparation takes versus searching. 
 	 */
 	void prepareBackwards();
 
