@@ -93,7 +93,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         for (byte b : bytes) {
             final ByteMatcher matcher = TwoByteMatcher.caseInsensitive(b);
             haveCaseMatchers = haveCaseMatchers | (matcher.getNumberOfMatchingBytes() > 1);
-            matchers.add(TwoByteMatcher.caseInsensitive(b));
+            matchers.add(matcher);
         }
         return haveCaseMatchers? new ByteMatcherSequenceMatcher(matchers) : new ByteSequenceMatcher(bytes);
     }
