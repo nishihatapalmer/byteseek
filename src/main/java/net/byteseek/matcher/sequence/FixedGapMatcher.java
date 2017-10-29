@@ -54,10 +54,9 @@ public final class FixedGapMatcher extends AbstractSequenceMatcher {
 	private static final String ONE_ANY_MATCHER    = ".";
 	private static final String TWO_ANY_MATCHERS   = "..";
 	private static final String THREE_ANY_MATCHERS = "...";
-	
+
 	private final int length;
 
-   
     /**
      * Constructs a FixedGapMatcher of a given length.
      *
@@ -80,7 +79,7 @@ public final class FixedGapMatcher extends AbstractSequenceMatcher {
     }
 
     @Override
-    public int getNumBytesAtPosition(int position) {
+    public int getNumBytesAtPosition(final int position) {
         ArgUtils.checkIndexOutOfBounds(length, position);
         return 256;
     }
