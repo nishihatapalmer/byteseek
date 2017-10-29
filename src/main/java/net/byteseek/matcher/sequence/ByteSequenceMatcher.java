@@ -762,7 +762,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
         }
 
         @Override
-        public int getNumBytesAtPosition(int position) {
+        public int getNumBytesAtPosition(final int position) {
             ArgUtils.checkIndexOutOfBounds(length(), position);
             return 1;
         }
