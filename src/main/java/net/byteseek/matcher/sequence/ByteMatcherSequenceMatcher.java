@@ -78,7 +78,6 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
     private final int endArrayIndex;   // one past the actual end position (an exclusive value)
 	private final ByteMatcher[] matchers;
 
-    //TODO: test create case insensitive matcher.
     /**
      * Creates a case-insensitive ByteMatcherSequenceMatcher given a byte array.
      *
