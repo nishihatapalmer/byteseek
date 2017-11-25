@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,7 +35,6 @@ import net.byteseek.io.reader.windows.Window;
 
 import java.io.IOException;
 
-
 /**
  * A interface for classes which cache {@link net.byteseek.io.reader.windows.Window} objects.
  * It also provides the ability to subscribe for notifications that a
@@ -44,8 +43,7 @@ import java.io.IOException;
  * @author Matt Palmer
  */
 public interface WindowCache {
-    
-    
+
     /**
      * Returns the {@link net.byteseek.io.reader.windows.Window} at the position specified.
      * The position must be one at which a Window object begins.  It will not return
@@ -56,34 +54,30 @@ public interface WindowCache {
      * @return A Window for the specified starting position, or null if the Window does not exist.
      * @throws IOException if there was an IOException when getting the cached window.
      */
-    public Window getWindow(final long position) throws IOException;
-    
-    
+    Window getWindow(final long position) throws IOException;
+
     /**
      * Adds a {@link net.byteseek.io.reader.windows.Window} to the cache.
      * 
      * @param window The Window to add to the cache.
      * @throws IOException if there was a problem adding a Window.
      */
-    public void addWindow(final Window window) throws IOException;
-    
+    void addWindow(final Window window) throws IOException;
     
     /**
      * Clears all {@link net.byteseek.io.reader.windows.Window}s from the cache.
      * @throws IOException if there was an IO problem clearing the cache.
      */
-    public void clear() throws IOException;
-    
-    
+    void clear() throws IOException;
+
     /**
      * Subscribes a {@link WindowObserver} to this cache for notification when a
      * {@link net.byteseek.io.reader.windows.Window} leaves it.
      * 
      * @param observer The observer who wants notification that a Window is leaving the cache.
      */
-    public void subscribe(final WindowObserver observer);
-    
-    
+    void subscribe(final WindowObserver observer);
+
     /**
      * Unsubscribes a {@link WindowObserver} from this cache.
      * 
@@ -92,14 +86,13 @@ public interface WindowCache {
      *                 is likely that the observer was never subscribed in the first place, or
      *                 has already been unsubscribed.
      */
-    public boolean unsubscribe(final WindowObserver observer);
-    
+    boolean unsubscribe(final WindowObserver observer);
     
     /**
      * An interface for objects which want notification when a {@link net.byteseek.io.reader.windows.Window}
      * is leaving a cache.
      */
-    public interface WindowObserver {
+    interface WindowObserver {
         
         /**
          * A method which is called on the WindowObserver when a {@link net.byteseek.io.reader.windows.Window}
@@ -109,9 +102,8 @@ public interface WindowCache {
          * @throws IOException if an IOException occurs while freeing a window (which may involve adding a window to another cache).
          * 
          */
-        public void windowFree(final Window window, WindowCache fromCache) throws IOException;
+        void windowFree(final Window window, WindowCache fromCache) throws IOException;
         
     }
-    
     
 }

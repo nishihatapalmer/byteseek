@@ -36,7 +36,6 @@ import net.byteseek.io.reader.windows.Window;
 
 import java.io.IOException;
 
-
 /**
  * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
  * objects which were most recently added. The least recently added objects will be
@@ -46,7 +45,6 @@ import java.io.IOException;
  * @author Matt Palmer
  */
 public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache {
-
 
     private final Cache cache;
     
@@ -58,20 +56,12 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
     public LeastRecentlyAddedCache(final int capacity) {
         cache = new Cache(capacity);
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public Window getWindow(final long position) throws IOException {
         return cache.get(position);
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addWindow(final Window window) throws IOException {
         final long windowPosition = window.getWindowPosition();
@@ -81,16 +71,11 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
         }
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {
         cache.clear();
     }
-    
-    
+
     /**
      * A simple least recently added cache, which extends {@link java.util.LinkedHashMap}
      * to provide caching services, and also provides notification to any
@@ -128,8 +113,7 @@ public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache
         }
 
     }    
-        
-    
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "(size: " + cache.size() + " capacity: " + cache.capacity + ')';

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -29,7 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package net.byteseek.io.reader.cache;
 
 import java.io.IOException;
@@ -38,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 
 import net.byteseek.io.reader.windows.Window;
-
 
 /**
  * An AbstractCache implements the {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
@@ -61,8 +59,7 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
     public AbstractFreeNotificationCache() {
         windowObservers = Collections.emptyList(); 
     }
-    
-    
+
     /**
      * Subscribes a {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} to this {@link WindowCache}.
      * 
@@ -75,7 +72,6 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
         }
         windowObservers.add(observer);
     }
-    
     
     /**
      * Unsubscribes a {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} from this {@link WindowCache}.
@@ -91,8 +87,7 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
         }
         return removed;
     }
-    
-    
+
     /**
      * Notifies a {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} that a {@link net.byteseek.io.reader.windows.Window} was removed from a
      * {@link WindowCache}.
@@ -113,6 +108,5 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
             throw cacheException;
         }
     }
-    
 
 }

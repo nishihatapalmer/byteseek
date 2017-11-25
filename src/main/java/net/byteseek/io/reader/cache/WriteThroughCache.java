@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -79,9 +79,6 @@ public final class WriteThroughCache extends AbstractFreeNotificationCache {
         this.persistentCache = persistentCache;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Window getWindow(final long position) throws IOException {
         Window window = memoryCache.getWindow(position);
@@ -94,9 +91,6 @@ public final class WriteThroughCache extends AbstractFreeNotificationCache {
         return window;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addWindow(final Window window) throws IOException {
         memoryCache.addWindow(window);

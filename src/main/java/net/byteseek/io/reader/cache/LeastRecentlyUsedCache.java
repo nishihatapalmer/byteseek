@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2015, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,7 +36,6 @@ import net.byteseek.io.reader.windows.Window;
 
 import java.io.IOException;
 
-
 /**
  * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
  * objects which were most recently used. The number of Windows which will be cached
@@ -47,8 +46,7 @@ import java.io.IOException;
 public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache {
 
     private final Cache cache;
-    
-    
+
     /**
      * Creates a LeastRecentlyUsedCache using the provided capacity.
      * 
@@ -57,20 +55,12 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
     public LeastRecentlyUsedCache(final int capacity) {
         cache = new Cache(capacity);
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public Window getWindow(final long position) {
         return cache.get(position);
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addWindow(final Window window) throws IOException {
         final long windowPosition = window.getWindowPosition();
@@ -79,17 +69,12 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
             cache.checkIOException();
         }
     }
-    
-   
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public void clear() {
         cache.clear();
     }
-    
-    
+
     /**
      * A simple least recently used cache, which extends {@link java.util.LinkedHashMap}
      * to provide caching services, and also provides notification to any
@@ -126,8 +111,7 @@ public final class LeastRecentlyUsedCache extends AbstractFreeNotificationCache 
             }
         }
     }    
-        
-    
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "(size: " + cache.size() + " capacity: " + cache.capacity + ')';

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -82,11 +82,7 @@ import java.io.IOException;
         this.primaryCache = primaryCache;
         this.secondaryCache = secondaryCache;
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public Window getWindow(final long position) throws IOException {
         Window window = primaryCache.getWindow(position);
@@ -99,16 +95,11 @@ import java.io.IOException;
         return window;
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addWindow(final Window window) throws IOException {
         primaryCache.addWindow(window);
     }
 
-    
     /**
      * Clears both the primary and secondary caches, using whatever 
      * mechanisms they use to clear themselves.
@@ -127,7 +118,6 @@ import java.io.IOException;
         }
     }
 
-    
     /**
      * Implementation of the {@link WindowObserver} method to receive 
      * notification that a Window is freed from a cache.
@@ -150,7 +140,6 @@ import java.io.IOException;
         }
     }
     
-    
     /**
      * Returns the primary cache used by this TwoLevelCache.
      * 
@@ -159,8 +148,7 @@ import java.io.IOException;
     public WindowCache getPrimaryCache() {
         return primaryCache;
     }
-    
-    
+
     /**
      * Returns the secondary cache used by this TwoLevelCache.
      * 
@@ -169,7 +157,6 @@ import java.io.IOException;
     public WindowCache getSecondaryCache() {
         return secondaryCache;
     }
-    
     
 	@Override
 	public String toString() {

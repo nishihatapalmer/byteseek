@@ -34,7 +34,6 @@ package net.byteseek.io.reader.cache;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.collections.PositionHashMap;
 
-
 /**
  * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.windows.Window} objects.
  * <p>
@@ -48,27 +47,16 @@ public final class AllWindowsCache extends AbstractFreeNotificationCache {
 
     private final PositionHashMap<Window> cache = new PositionHashMap<Window>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Window getWindow(final long position) {
         return cache.get(position);
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addWindow(final Window window) {
         cache.put(window.getWindowPosition(), window);
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {
         cache.clear();
