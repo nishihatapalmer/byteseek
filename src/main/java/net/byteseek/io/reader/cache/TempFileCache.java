@@ -65,7 +65,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         this(null);
     }
 
-
     /**
      * Constructs a TempFileCache which creates temporary files in the directory specified.
      * If the file is null, then temporary files will be created in the default temp directory.
@@ -80,11 +79,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             throw new IllegalArgumentException("The temp dir file supplied is not a directory: " + tempDir.getAbsolutePath());
         }
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public Window getWindow(final long position) throws IOException {
         Window window = null;
@@ -97,10 +92,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         return window;
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addWindow(final Window window) throws IOException {
         final long windowPosition = window.getWindowPosition();
@@ -114,7 +105,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             nextFilePos += window.length();
         }
     }
-
     
     /**
      * Clears the map of Window positions to their position and size in the file,
@@ -126,7 +116,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         deleteFileIfExists();
     }
     
-    
     /**
      * Returns the temporary file backing this cache object.
      * 
@@ -135,7 +124,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
     public File getTempFile() {
         return tempFile;
     }
-    
     
     private void createFileIfNotExists() throws IOException {
         if (tempFile == null) {
@@ -146,7 +134,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             file = new RandomAccessFile(tempFile, "rw");
         }
     }
-    
 
     private void deleteFileIfExists() throws IOException {
         if (tempFile != null) {
@@ -187,7 +174,6 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         throw new WindowMissingException("Can't reload bytes for window " + window + " : not found in the cache.");
     }
 
-
     /**
      * A utility class recording the length of a Window and the position in 
      * the temporary file it exists at.
@@ -205,7 +191,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
     
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[temp file: " + tempFile + " window positions recorded:" + windowPositions.size() + ']';  
+		return getClass().getSimpleName() + "(temp file: " + tempFile + " window positions recorded:" + windowPositions.size() + ')';
 	}
 
     private static class TempFileNotDeletedException extends IOException {
