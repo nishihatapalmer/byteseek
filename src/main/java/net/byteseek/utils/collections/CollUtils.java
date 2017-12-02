@@ -69,6 +69,14 @@ public final class CollUtils {
     	return false;
     }
 
+	/**
+	 * Returns true if the collection contains any of the values passed in.
+	 *
+	 * @param collection The collection to check
+	 * @param values The values to check to see if any are in the collection.
+	 * @return true if the collection contains any of the values.
+	 * @throws IllegalArgumentException if either of the collections passed in are null
+	 */
 	public static boolean containsAny(final Collection<? extends Byte> collection, final byte[] values) {
 		ArgUtils.checkNullCollection(collection,"collection");
 		ArgUtils.checkNullByteArray(values, "values");
