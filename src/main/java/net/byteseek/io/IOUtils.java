@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -137,13 +137,11 @@ public final class IOUtils {
 	 * @throws IOException
 	 *             If a problem occurs reading from the InputStream.
 	 */
-	public static int readBytes(final InputStream input, final byte[] bytes)
-			throws IOException {
+	public static int readBytes(final InputStream input, final byte[] bytes) throws IOException {
 		final int blockSize = bytes.length;
 		int totalRead = 0;
 		while (totalRead < blockSize) {
-			final int read = input
-					.read(bytes, totalRead, blockSize - totalRead);
+			final int read = input.read(bytes, totalRead, blockSize - totalRead);
 			if (read == -1) {
 				break;
 			}
@@ -168,13 +166,11 @@ public final class IOUtils {
 	 * @throws IOException
 	 *             If a problem occurs reading from the RandomAccessFile.
 	 */
-	public static int readBytes(final RandomAccessFile input, final byte[] bytes)
-			throws IOException {
+	public static int readBytes(final RandomAccessFile input, final byte[] bytes) throws IOException {
 		final int blockSize = bytes.length;
 		int totalRead = 0;
 		while (totalRead < blockSize) {
-			final int read = input
-					.read(bytes, totalRead, blockSize - totalRead);
+			final int read = input.read(bytes, totalRead, blockSize - totalRead);
 			if (read == -1) {
 				break;
 			}
@@ -190,24 +186,49 @@ public final class IOUtils {
 	 * <p>
 	 * Returns the total number of bytes read into the array.
 	 * 
-	 * @param input
-	 *            The RandomAccessFile to read from.
-	 * @param bytes
-	 *            The byte array to fill.
-	 * @param fromPosition
-	 *            The position to begin reading from in the RandomAccessFile.
+	 * @param input The RandomAccessFile to read from.
+	 * @param fromPosition The position to begin reading from in the RandomAccessFile.
+	 * @param bytes The byte array to fill.
 	 * @return int The total number of bytes read.
-	 * @throws IOException
-	 *             If a problem occurs reading from the RandomAccessFile.
+	 * @throws IOException If a problem occurs reading from the RandomAccessFile.
 	 */
-	public static int readBytes(final RandomAccessFile input,
-			final byte[] bytes, final long fromPosition) throws IOException {
+	public static int readBytes(final RandomAccessFile input, final long fromPosition, final byte[] bytes) throws IOException {
 		final int blockSize = bytes.length;
 		int totalRead = 0;
 		input.seek(fromPosition);
 		while (totalRead < blockSize) {
-			final int read = input
-					.read(bytes, totalRead, blockSize - totalRead);
+			final int read = input.read(bytes, totalRead, blockSize - totalRead);
+			if (read == -1) {
+				break;
+			}
+			totalRead += read;
+		}
+		return totalRead;
+	}
+
+	/**
+	 * Reads bytes from a {@link java.io.RandomAccessFile} into the byte array,
+	 * starting from the position provided in the RandomAccessFile, until the
+	 * byte array is filled or there are no more bytes in the RandomAccessFile.
+	 * <p>
+	 * Returns the total number of bytes read into the array.
+	 *
+	 * @param input The RandomAccessFile to read from.
+	 * @param fromPosition The position to begin reading from in the RandomAccessFile.
+	 * @param bytes The byte array to write to.
+	 * @param bytePos The position in the array to write to.
+	 * @param length  The number of bytes to read.
+	 * @return int The total number of bytes read.
+	 * @throws IOException If a problem occurs reading from the RandomAccessFile.
+	 */
+	public static int readBytes(final RandomAccessFile input, final long fromPosition,
+							    final byte[] bytes, final int bytePos, final int length) throws IOException {
+		final int availableArrayLength = bytes.length - bytePos;
+		final int blockSize = length < availableArrayLength? length : availableArrayLength;
+		int totalRead = 0;
+		input.seek(fromPosition);
+		while (totalRead < blockSize) {
+			final int read = input.read(bytes, bytePos + totalRead, blockSize - totalRead);
 			if (read == -1) {
 				break;
 			}
@@ -220,18 +241,12 @@ public final class IOUtils {
 	 * Writes the contents of an array of bytes into a
 	 * {@link java.io.RandomAccessFile}.
 	 * 
-	 * @param output
-	 *            The RandomAccessFile to write the bytes into.
-	 * @param bytes
-	 *            The array of bytes to be written.
-	 * @param atPosition
-	 *            The position to write the bytes into.
-	 * @throws IOException
-	 *             If a problem occurs writing the bytes into the
-	 *             RandomAccessFile.
+	 * @param output The RandomAccessFile to write the bytes into.
+	 * @param bytes The array of bytes to be written.
+	 * @param atPosition The position to write the bytes into.
+	 * @throws IOException If a problem occurs writing the bytes into the RandomAccessFile.
 	 */
-	public static void writeBytes(final RandomAccessFile output,
-			final byte[] bytes, final long atPosition) throws IOException {
+	public static void writeBytes(final RandomAccessFile output, final byte[] bytes, final long atPosition) throws IOException {
 		output.seek(atPosition);
 		output.write(bytes);
 	}
