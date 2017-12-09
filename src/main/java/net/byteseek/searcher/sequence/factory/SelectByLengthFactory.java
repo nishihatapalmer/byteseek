@@ -78,7 +78,7 @@ public class SelectByLengthFactory implements SequenceSearcherFactory {
         ArgUtils.checkNullObject(theSequence, "theSequence");
         final int sequenceLength = theSequence.length();
         if (sequenceLength == 1) {
-            create(theSequence.getMatcherForPosition(0));
+            return create(theSequence.getMatcherForPosition(0));
         }
         if (sequenceLength < 12) { //PROFILE: validate this position with profling.  It's *roughly* right, but should be checked.
             return new ShiftOrUnrolledSearcher(theSequence);
