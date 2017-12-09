@@ -45,7 +45,7 @@ import net.byteseek.utils.ArgUtils;
 /**
  * A SequenceSearcherFactory that selects the best searcher on the basis of the pattern length.
  */
-public class SelectByLengthFactory implements SequenceSearcherFactory {
+public final class SelectByLengthFactory implements SequenceSearcherFactory {
 
     @Override
     public SequenceSearcher create(final byte theByte) {
@@ -53,8 +53,11 @@ public class SelectByLengthFactory implements SequenceSearcherFactory {
     }
 
     @Override
-    public SequenceSearcher create(byte[] theBytes) {
+    public SequenceSearcher create(final byte[] theBytes) {
         ArgUtils.checkNullOrEmptyByteArray(theBytes, "theBytes");
+        if (theBytes.length == 1) {
+            return create(theBytes[0]);
+        }
         return create(new ByteSequenceMatcher(theBytes));
     }
 
