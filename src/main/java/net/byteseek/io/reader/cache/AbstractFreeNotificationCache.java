@@ -39,7 +39,7 @@ import java.util.List;
 import net.byteseek.io.reader.windows.Window;
 
 /**
- * An AbstractCache implements the {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
+ * An AbstractFreeNotificationCache implements the {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
  * providing subscription, unsubscription and notification services.
  * <p>
  * Observers can receive notifications that a Window is leaving a WindowCache.

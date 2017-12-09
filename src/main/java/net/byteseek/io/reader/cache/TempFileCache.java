@@ -86,7 +86,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         final WindowInfo info = windowPositions.get(position);
         if (info != null) {
             final byte[] array = new byte[info.length];
-            IOUtils.readBytes(file, array, info.filePosition);
+            IOUtils.readBytes(file, info.filePosition, array);
             window = new SoftWindow(array, position, info.length, this);
         }
         return window;
@@ -105,7 +105,38 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             nextFilePos += window.length();
         }
     }
-    
+
+    @Override
+    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
+        int bytesRead = 0;
+        if (file != null) {
+
+            // Get each contiguous cached window and write it into the array,
+            // until there are no more cached windows, or we have written enough bytes.
+            final int bytesRequired = readInto.length - readIntoPos;
+            final PositionHashMap<WindowInfo> localPositions = windowPositions;
+            long readPos = windowPos;
+            int readOffset = offset;
+            WindowInfo info;
+            while ((info = localPositions.get(readPos)) != null && bytesRead < bytesRequired) {
+
+                // Have a window at the curent readPos - fill as many bytes as we can from it:
+                final int remainingBytes = bytesRequired - bytesRead;
+                final int windowBytes    = info.length - readOffset;
+                final int bytesToCopy    = remainingBytes < windowBytes? remainingBytes : windowBytes;
+                final long filePos       = info.filePosition + readOffset;
+                int bytesCopied = IOUtils.readBytes(file, filePos, readInto, readIntoPos, bytesToCopy);
+                if (bytesCopied == 0) {
+                    break; // shouldn't happen if the cached positions are within the file, but better to be safe.
+                }
+                bytesRead += bytesCopied;
+                readPos += info.length;
+                readOffset= 0;
+            }
+        }
+        return bytesRead;
+    }
+
     /**
      * Clears the map of Window positions to their position and size in the file,
      * and deletes the temporary file if it exists.
@@ -168,7 +199,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         final WindowInfo info = windowPositions.get(window.getWindowPosition());
         if (info != null) {
             final byte[] array = new byte[info.length];
-            IOUtils.readBytes(file, array, info.filePosition);
+            IOUtils.readBytes(file, info.filePosition, array);
             return array;
         }
         throw new WindowMissingException("Can't reload bytes for window " + window + " : not found in the cache.");

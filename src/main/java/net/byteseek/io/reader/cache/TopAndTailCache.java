@@ -55,7 +55,7 @@ import java.util.*;
  * for example, with either random access or sequential access.  This approach means we do not have
  * to check all tail-cached windows each time we add a new window to the cache.
  */
-public final class TopAndTailCache extends AbstractFreeNotificationCache {
+public final class TopAndTailCache extends AbstractMemoryCache {
 
     private final PositionHashMap<Window> cache;
     private final List<Window> tailCacheEntries;

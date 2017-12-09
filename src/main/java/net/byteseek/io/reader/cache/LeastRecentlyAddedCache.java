@@ -44,7 +44,7 @@ import java.io.IOException;
  * 
  * @author Matt Palmer
  */
-public final class LeastRecentlyAddedCache extends AbstractFreeNotificationCache {
+public final class LeastRecentlyAddedCache extends AbstractMemoryCache {
 
     private final Cache cache;
     

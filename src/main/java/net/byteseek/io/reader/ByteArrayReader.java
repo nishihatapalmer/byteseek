@@ -32,6 +32,7 @@ package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.windows.HardWindow;
@@ -52,6 +53,8 @@ public final class ByteArrayReader implements WindowReader {
 	//TODO: allow this reader to operate over an Iterator of byte arrays, rather than being limited to a single byte array.
 	//      max flexibility for users - if they happen to have the byte arrays, and can provide them in an order,
 	//      this lets the reader interface take care of matching across them.
+
+	//TODO: allow a start / end index to be specified on the supplied byte array.
 
 	private static final int NO_BYTE_AT_POSITION = -1;
 
@@ -129,6 +132,28 @@ public final class ByteArrayReader implements WindowReader {
 	@Override
 	public int readByte(final long position) throws IOException {
 		return (position >= 0 && position < windowBytes.length())? windowBytes.getByte((int) position) & 0xFF : NO_BYTE_AT_POSITION;
+	}
+
+	@Override
+	public int read(final long position, final byte[] readInto) throws IOException {
+		return read(position, readInto, 0, readInto.length);
+	}
+
+	@Override
+	public int read(final long position, final byte[] readInto, final int offset, final int readLength) throws IOException {
+		final int windowLength = windowBytes.length();
+		if (position < 0 || position >= windowLength) {
+			return NO_BYTE_AT_POSITION;
+		}
+
+		// Calculate the amount it's safe to copy from the reader to the destination array:
+		final int safeReadIntoLength = Math.min(readLength, readInto.length - offset);
+        final int copyLength = Math.min(safeReadIntoLength, windowLength - (int) position);
+
+        // Copy that amount of data over from the window to the readInto array, and return the amount copied:
+        final byte[] array = windowBytes.getArray();
+		System.arraycopy(array, (int) position, readInto, offset, copyLength);
+		return copyLength;
 	}
 
 	@Override

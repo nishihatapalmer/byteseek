@@ -382,6 +382,56 @@ public final class InputStreamReader extends AbstractCacheReader {
 		return length;
 	}
 
+	//TODO: test read.
+	@Override
+	public int read(final long position, final byte[] readInto, final int offset, final int readLength) throws IOException {
+		// Strategy is to read from the cache - but to cache the stream first if it has not yet been read to that point.
+		if (position < 0) {
+			return NO_BYTE_AT_POSITION;
+		}
+
+		// Ensure we have read as much of the stream as we need, or can.  This ensures it is all available from the cache.
+		final int safeLength = Math.min(readLength, readInto.length - offset);
+		final long lastRequiredPosition = position + safeLength - 1;
+		if (length == UNKNOWN_LENGTH && nextReadPos <= lastRequiredPosition) {
+			// Create the window that covers last position we want to read (this will create any earlier windows if needed).
+			final int windowOffset = (int) (lastRequiredPosition % (long) windowSize);
+            final Window window = createWindow(lastRequiredPosition - windowOffset);
+            if (window != null) { //TODO: under what conditions is this null?  stream is shorter than requested position?
+                cache.addWindow(window);
+            }
+            //TODO: where does length get set...?
+		}
+
+		// If we still haven't read up to the position we asked for, there's no more data in the stream.
+        if (nextReadPos <= position) {
+		    return NO_BYTE_AT_POSITION;
+        }
+
+		// Read as many bytes as are available from the cache:
+		final long lastPossiblePosition = Math.min(lastRequiredPosition, nextReadPos - 1);
+		int arrayPos = offset;
+		long streamPos = position;
+		while (streamPos <= lastPossiblePosition) {
+
+			// Read from the cache window that covers the streampos:
+			final int windowOffset = (int) (streamPos % (long) windowSize);
+			final long windowPos = streamPos - windowOffset;
+			final int cacheBytesRead = cache.read(windowPos, windowOffset, readInto, arrayPos);
+
+			// If no more bytes are read, stop processing.
+			if (cacheBytesRead == 0) {
+				break;
+			}
+
+			// Move on by the bytes read.
+			streamPos += cacheBytesRead;
+			arrayPos += cacheBytesRead;
+		}
+
+		return arrayPos - offset;
+	}
+
 	/**
 	 * Calling this method reads the remaining data in the stream.
 	 * This can be useful to ensure that the stream has been fully cached.

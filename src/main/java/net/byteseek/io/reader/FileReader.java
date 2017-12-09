@@ -206,9 +206,64 @@ public final class FileReader extends AbstractCacheReader implements SoftWindowR
 		return length;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	//TODO: test read.
+	@Override
+	public int read(final long position, final byte[] readInto, final int offset, final int readLength) throws IOException {
+		// Check request is within bounds:
+	    final long fileLength = length;
+		if (position < 0 || position >= fileLength) {
+			return NO_BYTE_AT_POSITION;
+		}
+
+		// Get local copies of members used repeatedly:
+		final int localWindowSize       = windowSize;
+		final WindowCache localCache    = cache;
+        final RandomAccessFile localRaf = randomAccessFile;
+
+        // Calculate the amount it's safe to copy from the file to the array, given lengths and positions within them:
+		final int availableArrayBytes = Math.min(readLength, readInto.length - offset);
+        final long copyLength = Math.min(availableArrayBytes, fileLength - position);
+        final long finalFilePos = position + copyLength - 1;
+
+        // Read the bytes into the array from the cache where possible, otherwise read from the file.
+        long filePos = position;
+		int readIntoPos = offset;
+		READ:
+        while (filePos <= finalFilePos) {
+
+		    // Try to read from the cache in the window that holds this file position:
+		    final int windowOffset = (int) (filePos % (long) localWindowSize);
+			final long windowPos = filePos - windowOffset;
+			int bytesCopied = localCache.read(windowPos, windowOffset, readInto, readIntoPos);
+
+			// If the cache had nothing for this window, read from the file instead:
+			if (bytesCopied == 0) {
+
+				//TODO: BUG - does not take account of how much is already copied into the array,
+                //      i.e. how much remains in the array, and also how much remains in the file.
+			    // Read the current window from the file into the array:
+				final long nextWindowPos = windowPos + localWindowSize;
+				final int remainingWindowBytes = (int) (nextWindowPos - filePos);
+
+				final long remainingFileBytes = Math.min(finalFilePos - filePos + 1, remainingWindowBytes);
+				final int remainingArrayBytes = readInto.length - readIntoPos;
+				final int bytesToCopyFromFile = (int) Math.min(remainingFileBytes, (long) remainingArrayBytes);
+
+				bytesCopied = IOUtils.readBytes(localRaf, filePos, readInto, readIntoPos, bytesToCopyFromFile);
+
+				// If there was still nothing copied, something is wrong - but stop rather than go into an infinite loop.
+				if (bytesCopied == 0) {
+					break READ; //TODO: should throw exception?  Should still be bytes available in the file here.
+				}
+			}
+
+			// Move both the file and the array positions on by the amount of bytes copied in.
+			filePos += bytesCopied;
+			readIntoPos += bytesCopied;
+		}
+		return (int)(filePos - position);
+	}
+
 	@Override
 	protected Window createWindow(final long windowStart) throws IOException {
 		if (windowStart >= 0) {

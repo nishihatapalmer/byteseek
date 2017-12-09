@@ -100,6 +100,15 @@ import java.io.IOException;
         primaryCache.addWindow(window);
     }
 
+    @Override
+    public int read(long windowPos, int offset, byte[] readInto, int readIntoPos) throws IOException {
+        int bytesRead = primaryCache.read(windowPos, offset, readInto, readIntoPos);
+        if (bytesRead == 0) {
+            bytesRead = secondaryCache.read(windowPos, offset, readInto, readIntoPos);
+        }
+        return bytesRead;
+    }
+
     /**
      * Clears both the primary and secondary caches, using whatever 
      * mechanisms they use to clear themselves.

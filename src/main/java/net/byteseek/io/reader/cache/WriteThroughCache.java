@@ -97,6 +97,15 @@ public final class WriteThroughCache extends AbstractFreeNotificationCache {
         persistentCache.addWindow(window);
     }
 
+    @Override
+    public int read(long windowPos, int offset, byte[] readInto, int readIntoPos) throws IOException {
+        int bytesRead = memoryCache.read(windowPos, offset, readInto, readIntoPos);
+        if (bytesRead == 0) {
+            bytesRead = persistentCache.read(windowPos, offset, readInto, readIntoPos);
+        }
+        return bytesRead;
+    }
+
     /**
      * Clears both the memory and persistent caches, using whatever
      * mechanisms they use to clear themselves.

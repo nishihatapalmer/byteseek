@@ -60,10 +60,18 @@ public abstract class AbstractCacheReader implements WindowReader {
 	protected final static int NO_BYTE_AT_POSITION = -1;
 
 	/**
+	 * A constant indicating that there are no bytes at the position requested, returned by the
+	 * read() methods.
+	 */
+	protected final static int NO_BYTES_AT_POSITION = 0;
+
+	/**
 	 * A constant indicating that the length of the reader is currently unknown.
 	 */
 	protected static final long UNKNOWN_LENGTH = -1;
 
+	//TODO: profile with 8096 length windows.  would halve position maps and inter-window matching and searching.
+    //      May even be more efficient for I/O these days.
 	/**
 	 * The default size in bytes of a Window, unless a different value is
 	 * provided in the constructor.
@@ -130,21 +138,25 @@ public abstract class AbstractCacheReader implements WindowReader {
 	/**
 	 * Reads a byte at the given position.
 	 * 
-	 * @param position
-	 *            The position in the reader to read a byte from.
+	 * @param position The position in the reader to read a byte from.
 	 * @return The byte at the given position (0-255), or a negative number if
 	 *         there is no byte at the position specified.
-	 * @throws IOException
-	 *             if an error occurs reading the byte.
+	 * @throws IOException if an error occurs reading the byte.
 	 */
 	@Override
 	public int readByte(final long position) throws IOException {
+		//TODO: avoid using windows to read a byte - read from cache or file directly?
 		final Window window = getWindow(position);
 		final int offset = (int) (position % (long) windowSize);
 		if (window == null || offset >= window.length()) {
 			return NO_BYTE_AT_POSITION;
 		}
 		return window.getByte(offset) & 0xFF;
+	}
+
+	@Override
+	public int read(final long position, final byte[] readInto) throws IOException {
+		return read(position, readInto, 0, readInto.length);
 	}
 
 	/**
@@ -168,8 +180,7 @@ public abstract class AbstractCacheReader implements WindowReader {
 		Window window;
 		final int offset = (int) (position % (long) windowSize);
 		final long windowStart = position - offset;
-		if (lastWindow != null
-				&& lastWindow.getWindowPosition() == windowStart) {
+		if (lastWindow != null && lastWindow.getWindowPosition() == windowStart) {
 			window = lastWindow;
 		} else {
 			window = cache.getWindow(windowStart);
@@ -205,6 +216,7 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 */
 	@Override
 	public void close() throws IOException {
+		lastWindow = null;
 		cache.clear();
 	}
 

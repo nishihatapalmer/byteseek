@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-17, All rights reserved.
+ * Copyright Matt Palmer 2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,49 +31,44 @@
 
 package net.byteseek.io.reader.cache;
 
+import java.io.IOException;
+
 import net.byteseek.io.reader.windows.Window;
-import net.byteseek.utils.collections.PositionHashMap;
 
 /**
- * A cache which holds on to a number of bytes at the top and tail of a reader.
+ * An AbstractCache implements the {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
+ * providing subscription, unsubscription and notification services.
  * <p>
- * This cache needs to know the total length of the reader when initialised, thus it is
- * not suitable for use with InputStreamReaders, as the length is unknown, and
- * determining the length causes the entire stream to be read.
+ * Observers can receive notifications that a Window is leaving a WindowCache.
+ * <p>
+ * This is not thread-safe - there is no synchronisation in the list of observers
+ * or access to the list.
  *
- * Created by matt on 17/09/15.
+ * @author Matt Palmer
  */
-public final class TopAndTailFixedLengthCache extends AbstractMemoryCache {
-
-    final long topCacheEnd;
-    final long tailCacheStart;
-    final PositionHashMap<Window> cache;
-
-    public TopAndTailFixedLengthCache(final long length, final long topTailBytes) {
-        this(length, topTailBytes, topTailBytes);
-    }
-
-    public TopAndTailFixedLengthCache(final long length, final long topCacheBytes, final long tailCacheBytes) {
-        this.topCacheEnd    = topCacheBytes;
-        this.tailCacheStart = length - tailCacheBytes - 1;
-        this.cache          = new PositionHashMap<Window>();
-    }
+public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache  {
 
     @Override
-    public Window getWindow(final long position) {
-        return cache.get(position);
-    }
+    public int read(final long windowPos, final int offset, final byte[] readInto, int readIntoPos) throws IOException {
+        final int bytesToRead = readInto.length - readIntoPos;
+        int arrayPos = readIntoPos;
+        if (bytesToRead > 0) {
 
-    @Override
-    public void addWindow(final Window window) {
-        final long windowPos = window.getWindowPosition();
-        if (windowPos < topCacheEnd || windowPos > tailCacheStart) {
-            cache.put(windowPos, window);
+            final int arrayLength = readInto.length;
+            long winPos = windowPos;
+            int winOffset = offset;
+            Window window;
+            while((window = getWindow(winPos)) != null) {
+
+                final int bytesToCopy = Math.min(arrayLength - arrayPos, window.length() - winOffset);
+                System.arraycopy(window.getArray(), winOffset, readInto, arrayPos, bytesToCopy);
+
+                arrayPos += bytesToCopy;
+                winPos  += bytesToCopy;
+                winOffset = 0;
+            }
         }
+        return arrayPos - readIntoPos;
     }
 
-    @Override
-    public void clear() {
-        cache.clear();
-    }
 }

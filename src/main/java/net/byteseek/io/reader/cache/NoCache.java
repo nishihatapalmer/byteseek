@@ -50,7 +50,6 @@ public final class NoCache extends AbstractFreeNotificationCache {
      */
     public static final NoCache NO_CACHE = new NoCache();
     
-    
     /**
      * Always returns null, as no Windows are cached.
      * 
@@ -62,7 +61,6 @@ public final class NoCache extends AbstractFreeNotificationCache {
         return null;
     }
 
-    
     /**
      * Does not actually add the {@link net.byteseek.io.reader.windows.Window} to the
      * cache, as the NoCache object performs no caching.
@@ -74,7 +72,11 @@ public final class NoCache extends AbstractFreeNotificationCache {
         notifyWindowFree(window, this);
     }
 
-    
+    @Override
+    public int read(final long windowPos, final int offset, final byte[] readInto, int readIntoPos) throws IOException {
+        return 0; // nothing in cache, no bytes copied
+    }
+
     /**
      * Does nothing, as the NoCache object does not cache anything.
      */

@@ -38,7 +38,8 @@ import java.io.IOException;
 /**
  * A interface for classes which cache {@link net.byteseek.io.reader.windows.Window} objects.
  * It also provides the ability to subscribe for notifications that a
- * Window object is leaving the cache.
+ * Window object is leaving the cache, and to read bytes back from the cache into an external byte array,
+ * to facilitate integration with other systems that use an InputStream style interface.
  * 
  * @author Matt Palmer
  */
@@ -63,7 +64,19 @@ public interface WindowCache {
      * @throws IOException if there was a problem adding a Window.
      */
     void addWindow(final Window window) throws IOException;
-    
+
+    /**
+     * Reads data held in the cache and copies it into the readInto byte array.  Returns the number of bytes copied.
+     * <p>
+     * @param windowPos The position of the window in the cache.
+     * @param offset    The offset into the window to begin reading from.
+     * @param readInto  The byte array to copy into.
+     * @param readIntoPos The position in the byte array to start copying.
+     * @return The number of bytes copied from the cache.
+     * @throws IOException if there was a problem reading from the cache.
+     */
+    int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException;
+
     /**
      * Clears all {@link net.byteseek.io.reader.windows.Window}s from the cache.
      * @throws IOException if there was an IO problem clearing the cache.

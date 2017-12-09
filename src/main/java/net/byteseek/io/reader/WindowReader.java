@@ -40,10 +40,11 @@ import java.io.IOException;
 /**
  * An interface for random access to bytes from an underlying byte source.
  * <p>
- * The interface supports two usage models:
+ * The interface supports three usage models:
  * 
  * <ul>
  * <li>Read a single byte at a given position
+ * <li>Read bytes into a supplied array from a given position.
  * <li>Get a {@link net.byteseek.io.reader.windows.Window} onto the underlying byte source for a given
  * position.
  * </ul>
@@ -71,6 +72,34 @@ public interface WindowReader extends Closeable {
 	 *             if there was a problem reading the byte.
 	 */
 	int readByte(long position) throws IOException;
+
+	/**
+	 * Reads the bytes in the position given in the WindowReader directly into the supplied byte array,
+	 * reading up to the length of the array.  It returns the number of bytes read.
+	 * <p>
+	 * If there are no bytes at the position given, zero is returned and no bytes are written to the array.
+	 *
+	 * @param position The position in the reader to read from.
+	 * @param readInto A byte array into which the data will be written.
+	 * @return The number of bytes read.
+	 * @throws IOException If there was a problem reading the data.
+	 */
+	int read(long position, byte[] readInto) throws IOException;
+
+	/**
+	 * Reads the bytes in the position given in the WindowReader directly into the supplied byte array,
+	 * reading up to the length of the array.  It returns the number of bytes read.
+	 * <p>
+	 * If there are no bytes at the position given, -1 is returned.
+	 *
+	 * @param position The position in the reader to read from.
+	 * @param readInto A byte array into which the data will be written.
+	 * @param offset The offset into the byte array to start writing.
+	 * @param readLength The number of bytes to read into the array.
+	 * @return The number of bytes read.
+	 * @throws IOException If there was a problem reading the data.
+	 */
+	int read(long position, byte[] readInto, int offset, int readLength) throws IOException;
 
 	/**
 	 * Returns a {@link net.byteseek.io.reader.windows.Window} for the given position.

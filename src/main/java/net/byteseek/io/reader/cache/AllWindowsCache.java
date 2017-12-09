@@ -34,6 +34,8 @@ package net.byteseek.io.reader.cache;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.collections.PositionHashMap;
 
+import java.io.IOException;
+
 /**
  * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.windows.Window} objects.
  * <p>
@@ -43,7 +45,7 @@ import net.byteseek.utils.collections.PositionHashMap;
  * 
  * @author Matt Palmer
  */
-public final class AllWindowsCache extends AbstractFreeNotificationCache {
+public final class AllWindowsCache extends AbstractMemoryCache {
 
     private final PositionHashMap<Window> cache = new PositionHashMap<Window>();
 

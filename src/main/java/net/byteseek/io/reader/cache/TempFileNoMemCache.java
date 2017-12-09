@@ -95,7 +95,7 @@ public final class TempFileNoMemCache extends AbstractFreeNotificationCache impl
         checkFileExists();
         Window window = null;
         final byte[] array = new byte[windowSize];
-        final int length = IOUtils.readBytes(file, array, position);
+        final int length = IOUtils.readBytes(file, position, array);
         return new SoftWindow(array, position, length, this);
     }
 
@@ -104,6 +104,25 @@ public final class TempFileNoMemCache extends AbstractFreeNotificationCache impl
         createFileIfNotExists();
         file.seek(window.getWindowPosition());
         file.write(window.getArray(), 0, window.length());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>
+     * <b>Warning</b> This cache has no memory of what has been cached.  It will simply read from the temp file
+     * at the windowPos + offset location in to the byte array at readIntoPos.  It will try to fill up the remaining
+     * array, up to the end of the file.  If a Window was never previously written at those locations, the array contents
+     * are undefined.  They may be blank, random, or contain previous file data, depending on the file system.
+     */
+    @Override
+    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
+        int bytesRead = 0;
+        if (file != null) {
+            final int bytesToRead = readInto.length - readIntoPos;
+            bytesRead = IOUtils.readBytes(file, windowPos + offset, readInto, readIntoPos, bytesToRead);
+        }
+        return bytesRead;
     }
 
     /**
@@ -168,7 +187,7 @@ public final class TempFileNoMemCache extends AbstractFreeNotificationCache impl
     public byte[] reloadWindowBytes(final Window window) throws IOException {
         checkFileExists();
         final byte[] array = new byte[windowSize];
-        IOUtils.readBytes(file, array, window.getWindowPosition());
+        IOUtils.readBytes(file, window.getWindowPosition(), array);
         return array;
     }
     

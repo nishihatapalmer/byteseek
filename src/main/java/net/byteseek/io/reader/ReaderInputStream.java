@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2014-15, All rights reserved.
+ * Copyright Matt Palmer 2014-17, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,16 +30,18 @@
  */
 package net.byteseek.io.reader;
 
-import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * An InputStream backed by a WindowReader.
+ * An InputStream backed by a WindowReader.  It supports mark / reset behaviour (assuming the underlying
+ * WindowReader is caching data for the earlier positions).
  */
 public final class ReaderInputStream extends InputStream {
+
+    private final static int END_OF_STREAM = -1;
 
     private final WindowReader reader;
     private final boolean closeReaderOnClose;
@@ -47,11 +49,6 @@ public final class ReaderInputStream extends InputStream {
 
     private long   pos;
     private long   mark;
-    private Window currentWindow;
-    private int currentWindowLength;
-    private byte[] currentArray;
-    private int currentArrayPos;
-
 
     /**
      * Constructs a ReaderInputStream from a WindowReader.  By default, the
@@ -91,19 +88,19 @@ public final class ReaderInputStream extends InputStream {
         this.reader = reader;
         this.closeReaderOnClose = closeReaderOnClose;
         this.markSupported      = markSupported;
-        setWindowForPosition(0L);
+        pos = 0L;
     }
-
 
     @Override
     public synchronized int read() throws IOException {
         if (pos < 0) {
-            return -1;
+            return END_OF_STREAM;
         }
-
-        final int readResult = currentArray[currentArrayPos] & 0xFF;
-        addStreamPosition(1);
-        return readResult;
+        int byteValue = reader.readByte(pos++);
+        if (byteValue < 0) {
+            pos = END_OF_STREAM;
+        }
+        return byteValue;
     }
 
     @Override
@@ -115,35 +112,34 @@ public final class ReaderInputStream extends InputStream {
         } else if (len == 0) {
             return 0;
         }
-
         if (pos < 0) {
-            return -1;
+            return END_OF_STREAM;
         }
-
-        int available = currentWindowLength - currentArrayPos;
-        if (available >= len) { // buffer copy is completely inside current window.
-            System.arraycopy(currentArray, currentArrayPos, b, off, len);
-            addStreamPosition(len);
-            return len;
-        } else { // buffer copy may span more than one window (if there are more windows available...)
-            int copied = 0;
-            while (copied < len) {
-                System.arraycopy(currentArray, currentArrayPos, b, off + copied, available);
-                copied          += available;
-                addStreamPosition(available);
-                if (currentWindow == null) { // no more windows available...
-                    break;
-                }
-                final int remaining = len - copied;
-                available = currentWindowLength > remaining ? remaining : currentWindowLength;
-            }
+        final int copied = reader.read(pos, b, off, len);
+        if (copied > 0) {
+            pos += copied;
             return copied;
+        } else {
+            pos = END_OF_STREAM;
+            return END_OF_STREAM;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>Implementation note</b>
+     * This implementation will return 4096 if there is data available, and zero otherwise.
+     * Programs should not rely on the available estimate.  There may not be 4096 bytes
+     * available - but this is supposed to be an estimate not a precise quantity.  We pick
+     * this value in case implementations use it as a hint for how large a buffer they may
+     * need.
+     *
+     * @return 4096 if there is more data, zero if there is not.
+     */
     @Override
     public synchronized int available() {
-        return pos > -1? currentWindowLength - currentArrayPos : 0;
+        return pos > END_OF_STREAM? 4096 : 0;
     }
 
     /**
@@ -171,28 +167,35 @@ public final class ReaderInputStream extends InputStream {
     @Override
     public synchronized void reset() throws IOException {
        if (markSupported) {
-           setWindowForPosition(mark);
+           pos = mark;
        } else {
            super.reset(); // use default InputStream behaviour - throws an IO Exception.
        }
     }
 
     @Override
-    public synchronized long skip(long n) throws IOException {
+    public synchronized long skip(final long n) throws IOException {
         if (n <= 0 || pos < 0) {
             return 0;
         }
-        final long oldPos = pos;
-        setWindowForPosition(pos + n);
-        return currentWindow == null ? reader.length() - oldPos : n;
+        final int hasByte = reader.readByte(pos + n); // check if there's a byte at this position.
+        final long actualSkip;
+        if (hasByte < 0) { // no byte at this position - we must have gone past the end, so the length will already be known.
+            actualSkip = reader.length() - pos - 1;
+            pos = END_OF_STREAM;
+        } else {
+            actualSkip = n;
+            pos += n;
+        }
+        return actualSkip;
     }
 
     @Override
     public synchronized void close() throws IOException {
         if (closeReaderOnClose) {
             reader.close();
-            setNoMoreData();
         }
+        pos = END_OF_STREAM; // no more data.
     }
 
     /**
@@ -203,33 +206,6 @@ public final class ReaderInputStream extends InputStream {
      */
     synchronized long getNextReadPos() {
         return pos;
-    }
-
-    private void setWindowForPosition(final long newPos) throws IOException {
-        currentWindow = reader.getWindow(newPos);
-        if (currentWindow == null) {
-            setNoMoreData();
-        } else {
-            pos                 = newPos;
-            currentWindowLength = currentWindow.length();
-            currentArray        = currentWindow.getArray();
-            currentArrayPos     = reader.getWindowOffset(newPos);
-        }
-    }
-
-    private void addStreamPosition(int moveBy) throws IOException {
-        currentArrayPos += moveBy;
-        pos             += moveBy;
-        if (currentArrayPos >= currentWindowLength) {
-            setWindowForPosition(pos);
-        }
-    }
-
-    private void setNoMoreData() {
-        pos                 = -1;
-        currentWindowLength = 0;
-        currentArray        = null;
-        currentArrayPos     = 0;
     }
 
 }

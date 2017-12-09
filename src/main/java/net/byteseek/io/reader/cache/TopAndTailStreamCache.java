@@ -46,8 +46,7 @@ import java.util.*;
  *
  * Created by matt on 17/09/15.
  */
-public final class TopAndTailStreamCache extends AbstractFreeNotificationCache {
-
+public final class TopAndTailStreamCache extends AbstractMemoryCache {
 
     final long topCacheBytes;
     final long tailCacheBytes;
