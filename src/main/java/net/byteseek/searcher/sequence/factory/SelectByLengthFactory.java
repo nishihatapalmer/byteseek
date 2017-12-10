@@ -29,61 +29,20 @@
  */
 package net.byteseek.searcher.sequence.factory;
 
-import net.byteseek.compiler.CompileException;
-import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
-import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.bytes.ByteMatcherSearcher;
-import net.byteseek.searcher.bytes.ByteSearcher;
 import net.byteseek.searcher.sequence.SequenceSearcher;
 import net.byteseek.searcher.sequence.ShiftOrUnrolledSearcher;
 import net.byteseek.searcher.sequence.SignedHash2Searcher;
-import net.byteseek.searcher.sequence.SignedHorspoolSearcher;
 import net.byteseek.utils.ArgUtils;
 
 /**
  * A SequenceSearcherFactory that selects the best searcher on the basis of the pattern length.
  */
-public final class SelectByLengthFactory implements SequenceSearcherFactory {
+public final class SelectByLengthFactory extends AbstractSequenceFactory {
 
     @Override
-    public SequenceSearcher create(final byte theByte) {
-        return new ByteSearcher(theByte);
-    }
-
-    @Override
-    public SequenceSearcher create(final byte[] theBytes) {
-        ArgUtils.checkNullOrEmptyByteArray(theBytes, "theBytes");
-        if (theBytes.length == 1) {
-            return create(theBytes[0]);
-        }
-        return create(new ByteSequenceMatcher(theBytes));
-    }
-
-    @Override
-    public SequenceSearcher create(final String regex) throws CompileException {
-        ArgUtils.checkNullOrEmptyString(regex, "regex");
-        return create(SequenceMatcherCompiler.compileFrom(regex));
-    }
-
-    @Override
-    public SequenceSearcher create(final ByteMatcher theMatcher) {
-        ArgUtils.checkNullObject(theMatcher, "theMatcher");
-        if (theMatcher.getNumberOfMatchingBytes() == 1) {
-            return new ByteSearcher(theMatcher.getMatchingBytes()[0]);
-        }
-        return new ByteMatcherSearcher(theMatcher);
-    }
-
-    @Override
-    public SequenceSearcher create(final SequenceMatcher theSequence) {
-        ArgUtils.checkNullObject(theSequence, "theSequence");
-        final int sequenceLength = theSequence.length();
-        if (sequenceLength == 1) {
-            return create(theSequence.getMatcherForPosition(0));
-        }
-        if (sequenceLength < 12) { //PROFILE: validate this position with profling.  It's *roughly* right, but should be checked.
+    protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        if (theSequence.length() < 12) { //PROFILE: validate this position with profling.  It's *roughly* right, but should be checked.
             return new ShiftOrUnrolledSearcher(theSequence);
         }
         //PROFILE: validate that this is the best choice in general with profiling.  Qgram filtering is also fast, and signed and unrolledHorspool.
