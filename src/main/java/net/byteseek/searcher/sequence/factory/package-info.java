@@ -39,7 +39,7 @@
  * <p>
  * For short sequences it is hard to beat the ShiftOr searchers.  Even though these examine every byte
  * and do not attempt to skip, they use bit-parallelism to verify a match (essentially for free), they
- * are simple, and they have good cache locality.
+ * are simple, they have good cache locality, and pattern complexity has no effect on them.
  * <p>
  * Longer sequences benefit from approaches which allow them to skip ahead in the search data, based on
  * various ways of indexing the patterns they are searching for.  This skip is always limited by the maximum
