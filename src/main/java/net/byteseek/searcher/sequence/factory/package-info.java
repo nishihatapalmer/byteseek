@@ -51,5 +51,13 @@
  * either the index table fills up, or the pattern and data have a very low alphabet (e.g. DNA), this algorithm
  * performs extremely poorly - far worse than just doing a naive search - but is very fast otherwise.
  * Some generally perform well, but may not be the fastest for all searches (e.g. SignedHash, SignedHorpsool, UnrolledHorspool)
+ * <p>
+ * When patterns can match more than one byte in some positions - a gap in the pattern, or
+ * because a wildcard, set, bitmask or other kind of multiple-matcher is involved, these
+ * can also degrade searcher performance, depending on where in the pattern the complexity
+ * is situated and how complex it is.  All the searchers in byteseek have defences against
+ * too much complexity in the patterns they encounter - and will try to select the parameters
+ * that they can without incurring unnecessary processing or storage, but another algorithm
+ * could still easily outperform it.
  */
 package net.byteseek.searcher.sequence.factory;
