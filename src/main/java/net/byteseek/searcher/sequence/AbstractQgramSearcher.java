@@ -126,10 +126,10 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
      * A simple data class containing the shifts for searching and the bitshift needed for the hash-multiply hash function.
      */
     protected final static class SearchInfo {
-        public final int[] table;
-        public final int shift;
-        public final int searchLength;
-        public SearchInfo(final int[] table, final int shift, final int searchLength) {
+        protected final int[] table;
+        protected final int shift;
+        protected final int searchLength;
+        protected SearchInfo(final int[] table, final int shift, final int searchLength) {
             this.table = table; // SearchInfo wraps the table created - do not defensively copy.
             this.shift = shift;
             this.searchLength = searchLength;
