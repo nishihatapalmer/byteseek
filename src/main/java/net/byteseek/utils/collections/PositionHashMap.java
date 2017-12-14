@@ -33,20 +33,27 @@ package net.byteseek.utils.collections;
 import net.byteseek.utils.MathUtils;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
+//TODO:  profile speed, memory allocation.
+
+
+//TODO: rename LongHashMap?
 /**
  * A hash map using primitive longs as keys against objects.
  * The goal is to efficiently map objects against a long value while
  * minimising the amount of garbage produced.
  * <p>
  * It uses open addressing to avoid creating additional objects.  It avoids needing
- * a separate state table by using the two smallest long values as special flags -
+ * a separate state table by using the two smallest negative long values as special flags -
  * so these two numbers are not valid keys.
- * This clearly won't work for general use-cases, but it fits byteseek very well.
+ * This clearly won't work for general use-cases, but it fits byteseek very well,
+ * as positions are never negative.
  *
  * Created by matt on 24/04/17.
  */
-public final class PositionHashMap<T> {
+public final class PositionHashMap<T> implements Iterable<T> {
 
     //TODO: could allocate special storage for REMOVED and ZERO_REPLACE keys (two longs/ objects) and deal with them
     //      specially.  This would make the class capable of processing all long key values, at a small cost of testing for those vals,
@@ -78,7 +85,7 @@ public final class PositionHashMap<T> {
     }
 
     public PositionHashMap(final int initialCapacity) {
-        tablebits = MathUtils.ceilLogBaseTwo(initialCapacity * 2); // number of bits in a number rounded up to highest power of two size.
+        tablebits = MathUtils.ceilLogBaseTwo(initialCapacity * 2); // number of bits to get at least a 50% load in the table to start with.
         final int initialSize = 1 << tablebits; // 50% load at initial capacity. //TODO: adjust once profiled.
         keys   = new long[initialSize];
         //noinspection unchecked
@@ -279,14 +286,20 @@ public final class PositionHashMap<T> {
         size = 0;
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new MapValueIterator();
+    }
+
     /*
      * Private methods.
      */
 
 
+
     private void resizeIfNeeded() {
         final int length = keys.length;
-        if (size * 2 > length) { // if we go over 50% load, resize - 70% better...?
+        if (size * 2 > length) { //TODO: if we go over 50% load, resize - 70% better...?
             tablebits++; // one more bit.
             final int HASH_SHIFT   = 64 - tablebits;
             final int    newSize   = length * 2; // double size each time...?  Wasteful of memory.
@@ -332,6 +345,42 @@ public final class PositionHashMap<T> {
             // Set the new keys and values.
             keys   = newKeys;
             values = newValues;
+        }
+    }
+
+    //TODO: test iteration.
+    //TODO: can we just look for non null values in the values[] array?
+    private class MapValueIterator implements Iterator<T> {
+
+        private int nextSearchPos = 0;
+        private int valuePos = -1;
+
+        @Override
+        public boolean hasNext() {
+            if (valuePos > -1) {
+                return true; // already a value queued up to take.
+            }
+            final long[] localKeys = keys;
+            final int length = localKeys.length;
+            for (int searchPos = nextSearchPos; searchPos < length; searchPos++) {
+                final long value = localKeys[searchPos];
+                if (value != FREE_SLOT && value != REMOVED_SLOT) {
+                    valuePos = searchPos;
+                    return true;
+                }
+            }
+            valuePos = -1; //MPL don't need this line don't think - will always be -1 if we get here.  maybe leave for safety.
+            return false;
+        }
+
+        @Override
+        public T next() {
+            if (hasNext()) {
+                nextSearchPos = valuePos + 1;
+                valuePos = -1;
+                return values[nextSearchPos - 1];
+            }
+            throw new NoSuchElementException();
         }
     }
 
