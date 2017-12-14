@@ -33,31 +33,47 @@
  * A package containing factories for SequenceSearchers.  There is rarely a single searcher that
  * works well for all sequences.
  * <p>
+ * The SelectByLengthFactory gives reasonable performance for most
+ * sorts of data and pattern, but it does not take account of patterns with high complexity (multiple
+ * bytes matching at the same location), or low alphabets.  It only selects on the basis of pattern length.
+ * <p>
  * When the sequence length is just one, there are searchers that will always outperform any other.
  * The AbstractSequenceFactory implements all of those possibilities, leaving subclasses to use other
  * strategies for sequences with a length greater than one.
  * <p>
  * For short sequences it is hard to beat the ShiftOr searchers.  Even though these examine every byte
  * and do not attempt to skip, they use bit-parallelism to verify a match (essentially for free), they
- * are simple, they have good cache locality, and pattern complexity has no effect on them.
+ * are simple, they have excellent cache locality, and pattern complexity has almost no effect on them.
  * <p>
  * Longer sequences benefit from approaches which allow them to skip ahead in the search data, based on
- * various ways of indexing the patterns they are searching for.  This skip is always limited by the maximum
- * length of the pattern to be searched for.  They can never skip more than this ahead, or they risk missing
+ * various ways of indexing the patterns they are searching for.  This skip is always limited by the length
+ * of the pattern to be searched for.  They can never skip more than this ahead, or they risk missing
  * a match.  Therefore, longer sequences allow for longer skips ahead.
  * <p>
- * However, there is not any single searcher for longer sequences which is better than all others in all
- * circumstances.  Some perform very well but have expensive worst cases.  For example, in QGramFiltering where
- * either the index table fills up, or the pattern and data have a very low alphabet (e.g. DNA), this algorithm
- * performs extremely poorly - far worse than just doing a naive search - but is very fast otherwise.
- * Some generally perform well, but may not be the fastest for all searches (e.g. SignedHash, SignedHorpsool, UnrolledHorspool)
+ * Complex patterns which match more than one byte in various positions can negatively index-based searchers,
+ * even if the pattern is long,  This depends on where the complexity is and the algorithm being used. For Horspool
+ * searchers and variants, and SignedHash searchers, if lots of bytes are being matched at the end of a pattern
+ * (if searching forwards), or at the start of it (if searching backwards), then this seriously reduces the shifts
+ * it can make.
+ * If lots of multiple byte matches are next to each other in a pattern, it can create too many permutations of
+ * possible matching byte sequences, which either limits the size of the shifts a searcher can make,
+ * or in the worst cases can overwhelm the algorithm and cause it to perform extremely poorly (e.g. QGramFiltering).
  * <p>
- * When patterns can match more than one byte in some positions - a gap in the pattern, or
- * because a wildcard, set, bitmask or other kind of multiple-matcher is involved, these
- * can also degrade searcher performance, depending on where in the pattern the complexity
- * is situated and how complex it is.  All the searchers in byteseek have defences against
- * too much complexity in the patterns they encounter - and will try to select the parameters
- * that they can without incurring unnecessary processing or storage, but another algorithm
- * could still easily outperform it.
+ * There is a cut-over between simple searchers that look at everything and more complex searchers that
+ * attempt to skip over data.  From theory you would expect the cleverer searchers to outpeform the simpler
+ * ones much sooner - but the reality of caching, pipelining, branch-prediction and other optimisations in
+ * modern hardware means that simpler can often work much better than you might expect.
+ * <p>
+ * So, there is not any single searcher which is better than all others in all circumstances.
+ * Some generally perform very well but have expensive worst cases (e.g. QGramFiltering)
+ * Some generally perform well, but are not the fastest for all searches (e.g. SignedHash and Horspool variants)
+ * Some are good when the data has high entropy (e.g. QGramFiltering),
+ * and some are good when the entropy is lower (e.g. DNA using SignedHash).
+ * <p>
+ * All the Searchers in byteseek have defences against too much complexity in the patterns they encounter
+ * and will select parameters that give reasonable performance without incurring too much processing or
+ * storage costs.  Even so, another search algorithm could still outperform it given what we know about
+ * the data and the pattern, if it had been selected in the first place - which is what SearcherFactories
+ * are for.
  */
 package net.byteseek.searcher.sequence.factory;

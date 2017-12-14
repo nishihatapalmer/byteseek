@@ -31,21 +31,45 @@ package net.byteseek.searcher.sequence.factory;
 
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.sequence.SequenceSearcher;
-import net.byteseek.searcher.sequence.ShiftOrUnrolledSearcher;
-import net.byteseek.searcher.sequence.SignedHash2Searcher;
 import net.byteseek.utils.ArgUtils;
 
 /**
- * A SequenceSearcherFactory that selects the best searcher on the basis of the pattern length.
+ * A SequenceSearcherFactory that selects the best searcher on the basis of the pattern length only.
+ * It does not attempt to analyse the patterns in any way to see if other searchers may be better,
+ * e.g. in a low alphabet situation or where the pattern is complex.
  */
 public final class SelectByLengthFactory extends AbstractSequenceFactory {
 
+    /**
+     * A SequenceSearcherFactory which selects the best searcher on the basis of the length of the pattern to match.
+     * In most cases this should give fairly good performance, but may perform poorly on low alphabet searches,
+     * e.g. on DNA, or where the pattern to match contains large byte sets towards the end of the pattern.
+     */
+    //TODO: profile or validate this as a good choice - length of 12 and the two options.
+    //        where does it not perform well?  what tweaks should we make for a default using this strategy?
+    public final static SequenceSearcherFactory SHIFTOR_THEN_SIGNEDHASH =
+            new SelectByLengthFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+                    SearcherFactories.SIGNED_HASH2_FACTORY, 12);
+
+    private final int longSize;
+    private final SequenceSearcherFactory shortFactory;
+    private final SequenceSearcherFactory longFactory;
+
+    public SelectByLengthFactory(final SequenceSearcherFactory shortFactory,
+                                 final SequenceSearcherFactory longFactory,
+                                 final int longSize) {
+        ArgUtils.checkNullObject(shortFactory, "shortFactory");
+        ArgUtils.checkNullObject(longFactory,"longFactory");
+        this.shortFactory = shortFactory;
+        this.longFactory = longFactory;
+        this.longSize = longSize;
+    }
+
     @Override
     protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
-        if (theSequence.length() < 12) { //PROFILE: validate this position with profling.  It's *roughly* right, but should be checked.
-            return new ShiftOrUnrolledSearcher(theSequence);
+        if (theSequence.length() < longSize) {
+            return shortFactory.create(theSequence);
         }
-        //PROFILE: validate that this is the best choice in general with profiling.  Qgram filtering is also fast, and signed and unrolledHorspool.
-        return new SignedHash2Searcher(theSequence);
+        return longFactory.create(theSequence);
     }
 }
