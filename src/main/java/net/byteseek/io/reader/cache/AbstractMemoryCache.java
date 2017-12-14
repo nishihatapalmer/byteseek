@@ -58,9 +58,9 @@ public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache 
             long winPos = windowPos;
             int winOffset = offset;
             Window window;
-            while((window = getWindow(winPos)) != null) {
-
-                final int bytesToCopy = Math.min(arrayLength - arrayPos, window.length() - winOffset);
+            int bytesToCopy;
+            while((window = getWindow(winPos)) != null &&
+                  (bytesToCopy = Math.min(arrayLength - arrayPos, window.length() - winOffset)) > 0) {
                 System.arraycopy(window.getArray(), winOffset, readInto, arrayPos, bytesToCopy);
 
                 arrayPos += bytesToCopy;
