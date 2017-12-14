@@ -173,11 +173,13 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         return new MapEntryIterator();
     }
 
+    /*
     @Override
     public boolean equals(Object o) {
         return o instanceof LongLinkedHashMap &&
                list.equals(((LongLinkedHashMap)o).list);
     }
+    */
 
     /**
      * Determines whether the eldest entry should be removed.
@@ -261,6 +263,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             head = tail;
         }
 
+        /*
         public boolean equals(Object o) {
             if (o instanceof DoubleLinkedList) {
                 final DoubleLinkedList other = (DoubleLinkedList) o;
@@ -277,6 +280,8 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             }
             return false;
         }
+
+        */
 
         public int size() {
             return size;
@@ -307,20 +312,21 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
 
         @SuppressWarnings("ObjectEquality")
         public T remove(Node<T> node) {
-            if (node != null) {
-                node.previous.next = node.next;
-                if (node.next != null) {
-                    node.next.previous = node.previous;
-                }
-                if (node == head) {
-                    head = node.previous;
-                }
-                node.previous = null;
-                node.next = null;
-                size--;
-                return node.item;
+            if (node == null) {
+                return null;
             }
-            return null;
+
+            node.previous.next = node.next;
+            if (node.next != null) {
+                node.next.previous = node.previous;
+            }
+            if (node == head) {
+                head = node.previous;
+            }
+            node.previous = null;
+            node.next = null;
+            size--;
+            return node.item;
         }
 
         @SuppressWarnings("ObjectEquality")
@@ -365,6 +371,8 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             this.key  = key;
         }
 
+        /*
+        @Override
         public boolean equals(final Object otherNode) {
             if (otherNode instanceof Node) {
                 final Node other = (Node) otherNode;
@@ -372,6 +380,12 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             }
             return false;
         }
+
+        @Override
+        public int hashCode() {
+            return (int) (key * item.hashCode());
+        }
+        */
 
         @Override
         public long getKey() {
