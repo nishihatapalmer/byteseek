@@ -46,7 +46,8 @@ import net.byteseek.matcher.MatchResult;
  * or to pass in an existing collection to which any new results are added.
  * In the latter case, the method returns the number of results added, if any.  This may
  * be more efficient if multiple searches are being performed, as it avoids the overhead of creating a
- * new list on each search.
+g * new list on each search.  In the former case, it's convenient to obtain a list of results immediately,
+ * although it will create a new list even if there are no search results to add to it.
  *
  * @author Matt Palmer
  */
@@ -86,7 +87,7 @@ public interface Searcher {
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
-	 * position given by fromPosition up to the end of the byte reader.
+	 * position given by fromPosition up to the end of the window reader.
 	 * No error will result if either of these positions lie before or after the available data,
 	 * but all valid data within those positions will be searched.
 	 *
@@ -100,7 +101,7 @@ public interface Searcher {
 
 	/**
 	 * Searches bytes forwards provided by a {@link WindowReader} object, from the
-	 * position given by fromPosition up to the end of the byte reader.
+	 * position given by fromPosition up to the end of the window reader.
 	 *
 	 * @param reader       The window reader giving access to the bytes being searched.
 	 * @param fromPosition The position to search from.
