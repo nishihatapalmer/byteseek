@@ -49,21 +49,24 @@ import net.byteseek.utils.ArgUtils;
  * Its heuristics are as follows:
  * <ul>
  * <li>Find the simple cases that only match 1, 2, 255 and 256 different values.
- *     Use either a {@link net.byteseek.matcher.bytes.OneByteMatcher}, a
+ *     Use either a {@link net.byteseek.matcher.bytes.OneByteMatcher}, a {@link net.byteseek.matcher.bytes.TwoByteMatcher}
  *     {@link net.byteseek.matcher.bytes.InvertedByteMatcher} or an {@link net.byteseek.matcher.bytes.AnyByteMatcher}.
  * <li>Do the set of bytes match a bitmask (all or any of the bits?)  Use either an 
  *     {@link net.byteseek.matcher.bytes.AnyBitmaskMatcher} or a {@link net.byteseek.matcher.bytes.AllBitmaskMatcher}.
  * <li>Do the set of bytes match a contiguous range of bytes?  Use a {@link net.byteseek.matcher.bytes.ByteRangeMatcher}
- * <li>For less than 16 byte values, use a {@link net.byteseek.matcher.bytes.SetBinarySearchMatcher}.
- * <li>Otherwise, fall back on a {@link net.byteseek.matcher.bytes.SetBitsetMatcher}.
+ * <li>For less than 16 byte values, use a {@link net.byteseek.matcher.bytes.SetBinarySearchMatcher} (time and memory efficient)
+ * <li>Fall back on a {@link net.byteseek.matcher.bytes.SetBitsetMatcher} (time efficient, but not memory efficient).
  * </ul>
  * 
  * @author Matt Palmer
  */
+//TODO: logic is confusing the way this is structured... Flatten nested ifs and have multiple returns?
+    //
 public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
 
     public static final ByteMatcherFactory FACTORY = new OptimalByteMatcherFactory();
 
+    //PROFILE: validate with performance tests.
     private static final int BINARY_SEARCH_THRESHOLD = 16;
 
     /**
@@ -104,6 +107,7 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
             result = getInvertibleCases(values, false);
             if (result == null) {
 
+                //TODO: is there a way to do these tests without creating an inverted set?  Invert the test logic instead.
                 // They didn't match the set of bytes, but since we have invertible
                 // matchers, does the inverse set match any of them?
                 final Set<Byte> invertedValues = matchInverse? uniqueValues : ByteUtils.invertedSet(uniqueValues);
@@ -166,6 +170,10 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
             case 256: { // all the bytes match:
                 result = new AnyByteMatcher();
                 break;
+            }
+
+            default: {
+                // do nothing - fall through.  This switch statement just caters for these particular values.
             }
         }
        return result;
