@@ -85,7 +85,7 @@ public final class StringNode extends BaseNode {
    * @return String the String of this StringNode.
    */
   @Override
-  public String getTextValue() throws ParseException {
+  public String getTextValue() {
     return value;
   }
   

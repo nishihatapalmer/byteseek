@@ -121,7 +121,7 @@ public final class ByteNode extends BaseNode {
    * {@inheritDoc}
    */
   @Override
-  public byte getByteValue() throws ParseException {
+  public byte getByteValue() {
     return value;
   }
   
@@ -130,7 +130,7 @@ public final class ByteNode extends BaseNode {
    * {@inheritDoc}
    */
   @Override
-  public int getIntValue() throws ParseException {
+  public int getIntValue() {
     return value & 0xFF;
   }
   

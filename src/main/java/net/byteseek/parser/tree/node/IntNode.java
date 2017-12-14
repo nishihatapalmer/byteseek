@@ -60,7 +60,7 @@ public final class IntNode extends BaseNode {
    * @return int The integer value of this IntNode.
    */
   @Override
-  public int getIntValue() throws ParseException {
+  public int getIntValue() {
     return value;
   }
   
