@@ -46,7 +46,7 @@ import net.byteseek.matcher.MatchResult;
  * or to pass in an existing collection to which any new results are added.
  * In the latter case, the method returns the number of results added, if any.  This may
  * be more efficient if multiple searches are being performed, as it avoids the overhead of creating a
-g * new list on each search.  In the former case, it's convenient to obtain a list of results immediately,
+ * new list on each search.  In the former case, it's convenient to obtain a list of results immediately,
  * although it will create a new list even if there are no search results to add to it.
  *
  * @author Matt Palmer
