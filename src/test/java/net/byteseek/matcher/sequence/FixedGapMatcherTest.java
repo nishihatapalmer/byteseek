@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import net.byteseek.io.reader.FileReader;
+import net.byteseek.matcher.bytes.AnyByteMatcher;
 import net.byteseek.matcher.bytes.ByteMatcher;
 
 import org.junit.After;
@@ -55,7 +56,7 @@ public class FixedGapMatcherTest {
 	/**
 	 * Creates a file reader and a byte array from an ASCII test file.
 	 * 
-	 * @throws Exception
+	 * @throws Exception if there was a problme reading the file.
 	 */
 	@Before
 	public void setUp() throws Exception {
@@ -76,6 +77,17 @@ public class FixedGapMatcherTest {
 			for (ByteMatcher bm : matcher) {
 				assertEquals("Matches 256 bytes", 256, bm.getNumberOfMatchingBytes());
 			}
+			for (int j = 0; j < matcher.length(); j++) {
+				assertEquals("matchers 256 bytes at pos:" + j, 256, matcher.getNumBytesAtPosition(j));
+			}
+			FixedGapMatcher matcher2 = new FixedGapMatcher(i);
+			assertEquals(matcher + "=" + matcher2, matcher, matcher2);
+			assertEquals("hashcode:" + matcher + "," + matcher2, matcher.hashCode(), matcher2.hashCode());
+			FixedGapMatcher matcher3 = new FixedGapMatcher(i+1);
+			assertNotEquals("not equals:" + matcher + "," + matcher3, matcher, matcher3);
+
+			ByteMatcherSequenceMatcher othergap = new ByteMatcherSequenceMatcher(i, AnyByteMatcher.ANY_BYTE_MATCHER);
+			assertNotEquals("fixed gap matcher does not match equivalent sequencematcher", matcher, othergap);
 		}
 	}
 	
@@ -179,8 +191,8 @@ public class FixedGapMatcherTest {
 	 * default window size of 4096, so the last position in the first window is
 	 * 4095.
 	 * 
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @throws FileNotFoundException If the resource file was not found.
+	 * @throws IOException If there was a problem reading the file.
 	 */
 	@Test
 	public void testMatchesOverBoundary_ByteReader_long() throws FileNotFoundException, IOException {
@@ -319,8 +331,8 @@ public class FixedGapMatcherTest {
 	 * check match. - it does not match one position behind that position. - it
 	 * does not match one position ahead of that position.
 	 * 
-	 * @param matcher
-	 * @param pos
+	 * @param matcher matcher to test
+	 * @param pos pos to test at
 	 */
 	private void testMatchesAroundArrayNoCheck(SequenceMatcher matcher, int pos) {
 		String matchDesc = matcher.toRegularExpression(true);
@@ -467,9 +479,9 @@ public class FixedGapMatcherTest {
 	 * Also tests that the reverse of the reverse of the matcher has identical
 	 * behaviour.
 	 * 
-	 * @param matcher
-	 * @param positions
-	 * @throws IOException
+	 * @param matcher matcher to test
+	 * @param positions positions to test
+	 * @throws IOException if a problem reading data.
 	 */
 	private void runTestMatchesAround(SequenceMatcher matcher, long... positions) throws IOException {
 		runTestMatchesAroundOriginal(matcher, positions);
@@ -480,9 +492,9 @@ public class FixedGapMatcherTest {
 	 * Tests that a sequence matcher matches at a series of positions, but not
 	 * immediately surrounding them, using a WindowReader interface.
 	 * 
-	 * @param matcher
-	 * @param positions
-	 * @throws IOException
+	 * @param matcher matcher to test
+	 * @param positions positions to test at.
+	 * @throws IOException if a problem reading a file.
 	 */
 	private void runTestMatchesAroundOriginal(SequenceMatcher matcher, long... positions) throws IOException {
 		for (long position : positions) {
@@ -494,10 +506,10 @@ public class FixedGapMatcherTest {
 	 * Tests that the reverse of the reverse of a sequence matcher matches at a
 	 * series of positions, but not immediately surrounding them, using a
 	 * WindowReader interface.
-	 * 
-	 * @param matcher
-	 * @param positions
-	 * @throws IOException
+	 *
+     * @param matcher matcher to test
+     * @param positions positions to test at.
+     * @throws IOException if a problem reading a file.
 	 */
 	private void runTestMatchesAroundDoubleReversed(SequenceMatcher matcher, long... positions) throws IOException {
 		SequenceMatcher doubleReversed = matcher.reverse().reverse();
@@ -512,10 +524,10 @@ public class FixedGapMatcherTest {
 	 * - a matcher matches at a given position in a FileReader. - it does not
 	 * match one position behind that position. - it does not match one position
 	 * ahead of that position.
-	 * 
-	 * @param matcher
-	 * @param pos
-	 * @throws IOException
+	 *
+     * @param matcher matcher to test
+     * @param pos position to test at.
+     * @throws IOException if a problem reading a file.
 	 */
 	private void testMatchesAroundReader(SequenceMatcher matcher, long pos) throws IOException {
 		String matchDesc = matcher.toRegularExpression(true);
@@ -530,10 +542,9 @@ public class FixedGapMatcherTest {
 	 * 
 	 * Also tests that the reverse of the reverse of the matcher has identical
 	 * behaviour.
-	 * 
-	 * @param matcher
-	 * @param positions
-	 * @throws IOException
+	 *
+     * @param matcher matcher to test
+     * @param positions positions to test at.
 	 */
 	private void runTestMatchesAroundArray(SequenceMatcher matcher, int... positions) {
 		runTestMatchesAroundOriginalArray(matcher, positions);
@@ -544,9 +555,8 @@ public class FixedGapMatcherTest {
 	 * Tests that a sequence matcher matches at a series of positions, but not
 	 * immediately surrounding them, using a byte array.
 	 * 
-	 * @param matcher
-	 * @param positions
-	 * @throws IOException
+	 * @param matcher matcher to test
+	 * @param positions positions to test at
 	 */
 	private void runTestMatchesAroundOriginalArray(SequenceMatcher matcher, int... positions) {
 		for (int position : positions) {
@@ -558,10 +568,9 @@ public class FixedGapMatcherTest {
 	 * Tests that the reverse of the reverse of a sequence matcher matches at a
 	 * series of positions, but not immediately surrounding them, using a byte
 	 * array.
-	 * 
-	 * @param matcher
-	 * @param positions
-	 * @throws IOException
+	 *
+     * @param matcher matcher to test
+     * @param positions positions to test at
 	 */
 	private void runTestMatchesAroundDoubleReversedArray(SequenceMatcher matcher, int... positions) {
 		SequenceMatcher doubleReversed = matcher.reverse().reverse();
@@ -577,8 +586,8 @@ public class FixedGapMatcherTest {
 	 * match one position behind that position. - it does not match one position
 	 * ahead of that position.
 	 * 
-	 * @param matcher
-	 * @param pos
+	 * @param matcher matcher to test
+	 * @param pos position to test at
 	 */
 	private void testMatchesAroundArray(SequenceMatcher matcher, int pos) {
 		String matchDesc = matcher.toRegularExpression(true);
@@ -590,8 +599,8 @@ public class FixedGapMatcherTest {
 	/**
 	 * Returns a file given a resource name of a file in the test packages.
 	 * 
-	 * @param resourceName
-	 * @return
+	 * @param resourceName resource to load
+	 * @return file of the named resource.
 	 */
 	private File getFile(final String resourceName) {
 		URL url = this.getClass().getResource(resourceName);
