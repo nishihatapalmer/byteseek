@@ -36,13 +36,11 @@ import java.io.IOException;
 import net.byteseek.io.reader.windows.Window;
 
 /**
- * An AbstractCache implements the {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
- * providing subscription, unsubscription and notification services.
- * <p>
- * Observers can receive notifications that a Window is leaving a WindowCache.
- * <p>
- * This is not thread-safe - there is no synchronisation in the list of observers
- * or access to the list.
+ * This AbstractMemoryCache provides a standard read() implementation for all caches which keep their data in memory.
+ * There is no great penalty for fetching a window already held in memory, so it just uses getWindow() to get all the
+ * windows which are available.  Caches which do not already hold the Window in memory should not use this method,
+ * as it will create a new Window object before copying it into the readInto array.  These caches should attempt to
+ * copy their cached bytes directly into the readInto array rather than creating Windows unnecessarily.
  *
  * @author Matt Palmer
  */
