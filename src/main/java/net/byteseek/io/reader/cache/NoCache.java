@@ -63,7 +63,8 @@ public final class NoCache extends AbstractFreeNotificationCache {
 
     /**
      * Does not actually add the {@link net.byteseek.io.reader.windows.Window} to the
-     * cache, as the NoCache object performs no caching.
+     * cache, as the NoCache object performs no caching.  It immediately notifies any subscribers
+     * that a Window has left it.
      *
      * @param window A Window to add (which it will not be).
      */
