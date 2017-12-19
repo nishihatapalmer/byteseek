@@ -118,13 +118,7 @@ public class StringNodeTest {
 		ParseTreeType expectedType = isCaseSensitive? ParseTreeType.STRING : ParseTreeType.CASE_INSENSITIVE_STRING;
 		assertEquals(description + "Node is case sensitive?: " + isCaseSensitive, expectedType, node.getParseTreeType());
 		assertEquals(description + "Node agrees its case sensitive status:" + isCaseSensitive, isCaseSensitive, node.isCaseSensitive());
-		
-		try {
-			assertEquals(description + "Node has correct string value: [" + value + ']', value, node.getTextValue());
-		} catch (ParseException e) {
-			fail(description + "Should not throw ParseException requesting text value.");
-		}
-		
+		assertEquals(description + "Node has correct string value: [" + value + ']', value, node.getTextValue());
 		assertFalse(description + "Node is not inverted.", node.isValueInverted());
 	
 		try { 
