@@ -49,7 +49,7 @@ public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache 
     //TODO: what is behaviour if things are null or negative?
 
     @Override
-    public int read(final long windowPos, final int offset, final byte[] readInto, int readIntoPos) throws IOException {
+    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
         final int arrayLength = readInto.length;
         int arrayPos = readIntoPos;
         if (arrayLength - readIntoPos > 0) {                     // If there's any room to copy into:
