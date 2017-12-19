@@ -48,24 +48,24 @@ import net.byteseek.io.reader.windows.Window;
  */
 public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache  {
 
+    //TODO: what is behaviour if things are null or negative?
+
     @Override
     public int read(final long windowPos, final int offset, final byte[] readInto, int readIntoPos) throws IOException {
-        final int bytesToRead = readInto.length - readIntoPos;
+        final int arrayLength = readInto.length;
         int arrayPos = readIntoPos;
-        if (bytesToRead > 0) {
-
-            final int arrayLength = readInto.length;
-            long winPos = windowPos;
-            int winOffset = offset;
-            Window window;
-            int bytesToCopy;
-            while((window = getWindow(winPos)) != null &&
-                  (bytesToCopy = Math.min(arrayLength - arrayPos, window.length() - winOffset)) > 0) {
-                System.arraycopy(window.getArray(), winOffset, readInto, arrayPos, bytesToCopy);
-
+        if (arrayLength - readIntoPos > 0) {                     // If there's any room to copy into:
+            Window window = getWindow(windowPos);
+            if (window != null) {                                // If there's a window at this position, copy it:
+                int bytesToCopy = Math.min(arrayLength - arrayPos, window.length() - offset);
+                System.arraycopy(window.getArray(), offset, readInto, arrayPos, bytesToCopy);
                 arrayPos += bytesToCopy;
-                winPos  += bytesToCopy;
-                winOffset = 0;
+                while (arrayPos < arrayLength &&                                      // While there's still space remaining
+                      (window = getWindow(window.getNextWindowPosition())) != null) { // and another window to copy from:
+                    bytesToCopy = Math.min(arrayLength - arrayPos, window.length());
+                    System.arraycopy(window.getArray(), 0, readInto, arrayPos, bytesToCopy);
+                    arrayPos += bytesToCopy;
+                }
             }
         }
         return arrayPos - readIntoPos;
