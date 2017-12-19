@@ -42,7 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.Iterator;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -144,7 +143,7 @@ public class InputStreamReaderTest {
             byte[] fileBytes = new byte[window.length()];
             long windowPosition = window.getWindowPosition();
             raf.seek(windowPosition);
-            IOUtils.readBytes(raf, fileBytes, windowPosition);
+            IOUtils.readBytes(raf, windowPosition, fileBytes);
             assertAllBytesSame(window, fileBytes);
         }
     }

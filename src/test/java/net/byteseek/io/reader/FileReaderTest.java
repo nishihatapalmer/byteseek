@@ -284,7 +284,7 @@ public class FileReaderTest {
 			byte[] fileBytes = new byte[window.length()];
 			long windowPosition = window.getWindowPosition();
 			raf.seek(windowPosition);
-			IOUtils.readBytes(raf, fileBytes, windowPosition);
+			IOUtils.readBytes(raf, windowPosition, fileBytes);
 			assertAllBytesSame(window, fileBytes);
 		}
 	}

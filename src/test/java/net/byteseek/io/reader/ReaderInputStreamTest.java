@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.Iterator;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -70,7 +69,7 @@ public class ReaderInputStreamTest {
         long count = 0;
         long readBytes;
         while ((readBytes = is.read(buf, 0, 193)) > 0) {
-            int read = IOUtils.readBytes(raf, buf2, count);
+            int read = IOUtils.readBytes(raf, count, buf2);
             for (int i = 0; i < readBytes; i++) {
                 if (buf[i] != buf2[i]) {
                     fail("Mismatch in bytes detected at position " + count + i + " stream byte value  " + buf[i] + " raf byte value " + buf2[i]);
@@ -178,8 +177,8 @@ public class ReaderInputStreamTest {
         assertEquals("Not skipped with zero skip", 0, is.skip(0));
         assertEquals("Position is still at zero", 0, is.getNextReadPos());
 
-        assertEquals("Skipped correct number of bytes", (fileLength - 1), fileLength - 1, is.skip(fileLength - 1));
-        assertEquals("At correct position " + (fileLength - 1), fileLength - 1, is.getNextReadPos());
+        assertEquals("Skipped correct number of bytes", (fileLength - 2), fileLength - 2, is.skip(fileLength - 2));
+        assertEquals("At correct position " + (fileLength - 2), fileLength - 2, is.getNextReadPos());
 
         assertEquals("Not skipped past end.", 1, is.skip(1));
         assertEquals("Now skipped past end.", 0, is.skip(1));
@@ -310,6 +309,16 @@ public class ReaderInputStreamTest {
 
         @Override
         public int readByte(long position) throws IOException {
+            return 0;
+        }
+
+        @Override
+        public int read(long position, byte[] readInto) throws IOException {
+            return 0;
+        }
+
+        @Override
+        public int read(long position, byte[] readInto, int readIntoPos, int readLength) throws IOException {
             return 0;
         }
 
