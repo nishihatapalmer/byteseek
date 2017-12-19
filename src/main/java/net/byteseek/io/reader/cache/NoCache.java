@@ -45,8 +45,8 @@ import java.io.IOException;
 public final class NoCache extends AbstractFreeNotificationCache {
 
     /**
-     * A static NoCache object, as this object has no state, so can be
-     * safely re-used by any class which requires a NoCache.
+     * A static NoCache object, as this object has no state so can be
+     * safely re-used by any class which requires a simple NoCache (as long as there are no subscribers).
      */
     public static final NoCache NO_CACHE = new NoCache();
     
