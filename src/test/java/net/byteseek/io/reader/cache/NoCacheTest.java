@@ -49,8 +49,8 @@ public class NoCacheTest {
         final Window[] result = new Window[1];
         WindowCache.WindowObserver observer = new WindowCache.WindowObserver() {
             @Override
-            public void windowFree(Window window, WindowCache fromCache) throws IOException {
-                 result[0] = window;
+            public void windowFree(Window win, WindowCache fromCache) throws IOException {
+                 result[0] = win;
             }
         };
         noCache.subscribe(observer);
@@ -66,7 +66,7 @@ public class NoCacheTest {
 
     @Test
     public void testClear() throws Exception {
-        noCache.addWindow(window);
+        noCache.addWindow(window); // If it's behaving properly, adding a window won't actually add it.
         try {
             // not much to test here since it doesn't hold on to anything - but if it throws anything there's a problem.
             noCache.clear();
