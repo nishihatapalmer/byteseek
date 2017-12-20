@@ -50,6 +50,10 @@ import java.util.NoSuchElementException;
  * so these two numbers are not valid keys.
  * This clearly won't work for general use-cases, but it fits byteseek very well,
  * as positions are never negative.
+ * <p>
+ * <b>Warning:</b> The two most negative long values are not valid keys in this map, as they
+ * are used for special purposes.  If all your keys are zero or positive as in byteseek
+ * (or avoid the two smallest negative values) then there isn't a problem.
  *
  * Created by matt on 24/04/17.
  */
