@@ -26,13 +26,15 @@ public class NoCacheTest {
 
     @Test
     public void testGetWindow() throws Exception {
-       assertNull(noCache.getWindow(0));
-       noCache.addWindow(window);
-       assertNull(noCache.getWindow(0));
+        assertNull(noCache.getWindow(4));
+        assertNull(noCache.getWindow(0));
+        assertNull(noCache.getWindow(-123123123));
+        assertNull(noCache.getWindow(16));
     }
 
     @Test
     public void testAddThenGetNullWindow() throws Exception {
+        assertNull(noCache.getWindow(0));
         noCache.addWindow(window);
         assertNull(noCache.getWindow(0));
     }
