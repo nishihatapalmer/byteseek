@@ -10,6 +10,7 @@ import java.io.IOException;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class NoCacheTest {
 
@@ -61,5 +62,17 @@ public class NoCacheTest {
     @Test
     public void testToString() throws Exception {
         assertTrue(NoCache.NO_CACHE.toString().contains(NoCache.NO_CACHE.getClass().getSimpleName()));
+    }
+
+    @Test
+    public void testClear() throws Exception {
+        noCache.addWindow(window);
+        try {
+            // not much to test here since it doesn't hold on to anything - but if it throws anything there's a problem.
+            noCache.clear();
+        } catch (Exception e) {
+            fail("Clearing the cache threw the exception: " + e);
+        }
+        assertNull(noCache.getWindow(0)); // If it returns anything but null here there's a problem.
     }
 }
