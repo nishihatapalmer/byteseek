@@ -261,7 +261,7 @@ public final class PositionHashMap<T> implements Iterable<T> {
                 localKeys[probeIndex] = REMOVED_SLOT;
                 final T[] localValues = values;
                 final T retval = localValues[probeIndex];
-                localValues[probeIndex]    = null;
+                localValues[probeIndex] = null;
                 size--;
                 return retval;
             }
@@ -291,11 +291,14 @@ public final class PositionHashMap<T> implements Iterable<T> {
         return new MapValueIterator();
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(size:" + size + " capacity:" + keys.length + ')';
+    }
+
     /*
      * Private methods.
      */
-
-
 
     private void resizeIfNeeded() {
         final int length = keys.length;
@@ -382,6 +385,18 @@ public final class PositionHashMap<T> implements Iterable<T> {
             }
             throw new NoSuchElementException();
         }
+
+        //TODO: implement and test
+        @Override
+        public void remove() {
+            /*
+            if (//TODO: what is test - did we have a next already? {
+                PositionHashMap.this.remove(keys[nextSearchPos - 1]);
+            }
+            */
+            throw new UnsupportedOperationException();
+        }
+
     }
 
 }
