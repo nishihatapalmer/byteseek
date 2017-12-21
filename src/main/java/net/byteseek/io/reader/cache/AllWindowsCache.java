@@ -28,16 +28,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.collections.PositionHashMap;
 
 import java.io.IOException;
 
 /**
  * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.windows.Window} objects.
+ * <p>
+ * Because it never lets go of windows, there will never be a window free notification.  So while it is
+ * possible for observers to subscribe for free notifications, they will never receive any.
  * <p>
  * Note that if SoftWindows are used rather than HardWindows, then the JRE can reclaim memory under
  * low memory conditions, while the cache will retain the window metadata (and the SoftWindow can reload
@@ -47,7 +50,27 @@ import java.io.IOException;
  */
 public final class AllWindowsCache extends AbstractMemoryCache {
 
-    private final PositionHashMap<Window> cache = new PositionHashMap<Window>();
+    private static final int DEFAULT_CAPACITY = 32;
+    private final PositionHashMap<Window> cache;
+
+    /**
+     * Constructs an AllWindowsCache with an initial capacity of 32.
+     *  It can thus store 32 windows before the underlying cache needs to resize itself.
+     */
+    public AllWindowsCache() {
+        this(DEFAULT_CAPACITY);
+    }
+
+    /**
+     * Constructs an AllWindowsCache with an initial capacity provided.
+     *
+     * @param initialCapacity The initial capacity of the cache.
+     * @throws IllegalArgumentException if the initial capacity is zero or less.
+     */
+    public AllWindowsCache(final int initialCapacity) {
+        ArgUtils.checkPositive(initialCapacity, "initialCapacity");
+        cache = new PositionHashMap<Window>(initialCapacity);
+    }
 
     @Override
     public Window getWindow(final long position) {
@@ -66,7 +89,7 @@ public final class AllWindowsCache extends AbstractMemoryCache {
     
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[cache size: " + cache.size() + ']';  
+		return getClass().getSimpleName() + "(cache:" + cache + ')';
 	}
     
 }
