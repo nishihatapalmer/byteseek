@@ -294,15 +294,21 @@ public final class ArgUtils {
 			throw new IllegalArgumentException(String.format(POSITIVE_INTEGER + ' ' + description, number));		}
 	}
 
-	static void checkNegativeRepeats(final int numberOfRepeats) {
+	public static void checkNegativeRepeats(final int numberOfRepeats) {
         if (numberOfRepeats < 0) {
             throw new IllegalArgumentException("Number of repeats cannot be negative " + numberOfRepeats);
-}
+		}
     }
 
-	static void checkPositive(final long value) {
+	public static void checkPositive(final long value) {
         if (value <= 0) {
             throw new IllegalArgumentException("The value must be positive " + value);
+        }
+    }
+
+    public static void checkPositive(final long value, final String description) {
+        if (value <= 0) {
+            throw new IllegalArgumentException("The value must be positive " + value + ' ' + description);
         }
     }
 
