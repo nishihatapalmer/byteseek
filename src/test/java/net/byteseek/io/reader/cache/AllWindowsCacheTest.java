@@ -60,6 +60,23 @@ public class AllWindowsCacheTest {
     }
 
     @Test
+    public void constructWithPositiveCapacitiesNoException() {
+        for (int i = 1; i < 100; i++) {
+            AllWindowsCache cache = new AllWindowsCache(i);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeCapacity() {
+        AllWindowsCache cache = new AllWindowsCache(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testZeroCapacity() {
+        AllWindowsCache cache = new AllWindowsCache(0);
+    }
+
+    @Test
     public void testGetAddWindow() throws Exception {
         assertNull(allWindowsCache.getWindow(0));
         assertNull(allWindowsCache.getWindow(1024));
@@ -130,5 +147,7 @@ public class AllWindowsCacheTest {
         assertTrue(allWindowsCache.toString().contains("size"));
         assertTrue(allWindowsCache.toString().contains("capacity"));
     }
+
+    //TODO: test subscribe unsubscribe.
 
 }
