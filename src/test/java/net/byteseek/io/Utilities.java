@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2015, All rights reserved.
+ * Copyright Matt Palmer 2011-2017, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -39,18 +39,18 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
 
 /**
+ * Simple utilities to faciliate testing IO.
  *
  * @author matt
  */
 public class Utilities {
-    
 
-    
     /**
-     * 
-     * @param path
-     * @return
-     * @throws IOException
+     * Gets a file as a byte array given a path string.
+     *
+     * @param path The path and filename of the file
+     * @return A byte array containing the file contents.
+     * @throws IOException If something goes wrong
      */
     public static byte[] getByteArray(final String path) throws IOException {
         return getByteArray(new File(path));
@@ -58,10 +58,11 @@ public class Utilities {
                 
     
     /**
-     * 
-     * @param file
-     * @return
-     * @throws IOException
+     * Returns a file as a byte array given a file object.
+     *
+     * @param file A file object which we want to get as a byte array.
+     * @return A byte array containing the file contents.
+     * @throws IOException If something goes wrong.
      */
     public static byte[] getByteArray(final File file) throws IOException {
         final WindowReader reader = new FileReader(file);
