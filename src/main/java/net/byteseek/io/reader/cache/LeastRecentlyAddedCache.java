@@ -84,7 +84,7 @@ public final class LeastRecentlyAddedCache extends AbstractMemoryCache {
     }
 
     /**
-     * A simple least recently added cache, which extends {@link java.util.LinkedHashMap}
+     * A simple least recently added cache, which extends {@link net.byteseek.utils.collections.LongLinkedHashMap}
      * to provide caching services, and also provides notification to any
      * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.windows.Window} leaves it.
      */
