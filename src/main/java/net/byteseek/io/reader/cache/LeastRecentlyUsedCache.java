@@ -40,6 +40,10 @@ import java.io.IOException;
  * A {@link WindowCache} which holds on to the {@link net.byteseek.io.reader.windows.Window}
  * objects which were most recently used. The number of Windows which will be cached
  * is configurable by its capacity.
+ * <p><b>Warning</b>
+ * This cache caches on the basis of the number of windows cached, not how much memory it holds.
+ * Clearly, if small Windows are used less memory will be cached than if large Windows are used.
+ * Other caches are configured on the basis of the amount of memory held at any time.
  * 
  * @author Matt Palmer
  */

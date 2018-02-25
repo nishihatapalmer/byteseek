@@ -41,6 +41,10 @@ import java.io.IOException;
  * objects which were most recently added. The least recently added objects will be
  * removed once capacity is reached. The number of Windows which will be cached
  * is configurable by its capacity.
+ * <p><b>Warning</b>
+ * This cache caches on the basis of the number of windows cached, not how much memory it holds.
+ * Clearly, if small Windows are used less memory will be cached than if large Windows are used.
+ * Other caches are configured on the basis of the amount of memory held at any time.
  * 
  * @author Matt Palmer
  */
