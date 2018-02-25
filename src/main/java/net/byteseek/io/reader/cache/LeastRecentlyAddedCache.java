@@ -31,6 +31,7 @@
 
 package net.byteseek.io.reader.cache;
 
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.collections.LongLinkedHashMap;
 import net.byteseek.io.reader.windows.Window;
 
@@ -56,8 +57,10 @@ public final class LeastRecentlyAddedCache extends AbstractMemoryCache {
      * Creates a LeastRecentlyAddedCache using the provided capacity.
      * 
      * @param capacity The number of Window objects to cache.
+     * @throws IllegalArgumentException if the capacity is less than 1.
      */
     public LeastRecentlyAddedCache(final int capacity) {
+        ArgUtils.checkPositiveInteger(capacity, "capacity");
         cache = new Cache(capacity);
     }
 
