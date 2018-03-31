@@ -73,6 +73,9 @@ public final class LeastRecentlyUsedCache extends AbstractMemoryCache {
         final long windowPosition = window.getWindowPosition();
         if (!cache.containsKey(windowPosition)) {
             cache.put(windowPosition, window);
+            // Horrible Hack: check whether we got an IOException during the put() operation,
+            // which might have triggered removeEldestEntry(), which in turn can get an IOException
+            // during its call to notifyWindowFree().  If we got one, retrhow it:
             cache.checkIOException();
         }
     }
@@ -86,11 +89,21 @@ public final class LeastRecentlyUsedCache extends AbstractMemoryCache {
      * A simple least recently used cache, which extends {@link net.byteseek.utils.collections.LongLinkedHashMap}
      * to provide caching services, and also provides notification to any
      * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.windows.Window} leaves it.
+     * <p><b>Warning - horrible hack:</b>
+     * There is a horrible hack to catch and rethrow any IOExceptions which may occur during removeEldestEntry,
+     * which notifies observers when a Window is leaving this Cache.
+     * Any code which calls put() on this Cache should call checkIOException() immediately afterwards to
+     * rethrow any IOexception which occurred.  This is because the collection interface doesn't support
+     * IOExceptions, but we can get them during IO caching operations, such as when a Window leaves this
+     * cache and is added to another.  Throwing a RuntimeException is also not acceptable, as this would
+     * prevent the Cache from removing its eldest entries.
+     * This code is private to the LeastRecentlyUsedCache, so it's only necessary for byteseek maintainers
+     * to be aware of this.
      */    
     private class Cache extends LongLinkedHashMap<Window> {
 
         private final int capacity;
-        private IOException exception = null;
+        private IOException exception = null; // hack to allow throwing an IOException later from removeEldestEntry.
         
         private Cache(int capacity) {
             super(capacity, true);
@@ -104,12 +117,32 @@ public final class LeastRecentlyUsedCache extends AbstractMemoryCache {
                 try {
                     notifyWindowFree(eldest.getValue(), LeastRecentlyUsedCache.this);
                 } catch (IOException ex) {
+                    // Horrible Hack:
+                    // If we get an IOException during notifyWindowFree above, we can't throw it here in
+                    // removeEldestEntry, as that collection interface doesn't support IOExceptions.
+                    // Hold on to the exception.  Code that calls *put()* on this Cache (which can
+                    // trigger removeEldestEntry), must call checkIOException() afterwards which will
+                    // rethrow it if one was triggered.  In any case, if we threw a RuntimeException instead
+                    // here, it would prevent the entry from being removed from this cache, in the
+                    // private checkEldestEntry() method of LongLinkedHashMap, as the code to
+                    // remove the eldest item from the cache is necessarily
+                    // *after* the call to this method - and only executes if we return *true* from here.
+                    // It is much more important that the Cache manages its entries correctly, and that
+                    // IOExceptions are not swallowed, than the exception is thrown from the exact
+                    // place and time it occurred, or that the code is elegant.
+                    // Less ugly solutions would be welcome however...
                     exception = ex;
                 }
             }
             return remove;
         }
 
+        /**
+         * Horrible Hack:
+         *
+         * Checks whether an IOException was thrown (and caught) during removeEldestEntry.
+         * @throws IOException If one was thrown previously during removeEldestEntry.
+         */
         public void checkIOException() throws IOException {
             if (exception != null) {
                 final IOException ex = exception;
