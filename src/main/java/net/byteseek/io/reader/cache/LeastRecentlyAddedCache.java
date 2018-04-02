@@ -127,5 +127,4 @@ public final class LeastRecentlyAddedCache extends AbstractMemoryCache {
 		return getClass().getSimpleName() + "(size: " + cache.size() + " capacity: " + cache.capacity + ')';
 	}
 
-
 }
