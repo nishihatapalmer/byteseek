@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2017, All rights reserved.
+ * Copyright Matt Palmer 2011-2018, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -52,6 +52,7 @@ import net.byteseek.utils.collections.PositionHashMap;
  */
 public final class TempFileCache extends AbstractFreeNotificationCache implements SoftWindowRecovery {
 
+    private final static int DEFAULT_CAPACITY = 1024; // number of positions to cache initially = 4Mb file if 4096 byte windows are cached.
     private final PositionHashMap<WindowInfo> windowPositions;
     private final File tempDir;
     private File tempFile;
@@ -59,21 +60,40 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
     private long nextFilePos;
 
     /**
-     * Constructs a TempFileCache.
+     * Constructs a TempFileCache using the default temporary directory and an initial cache capacity
+     * of 1024 Window records in memory.  The cache capaccapacityity is the number of Window records
+     * the cache will hold in memory, not the size of the temporary file.  Both can expand as required.
      */
     public TempFileCache() {
-        this(null);
+        this(null, DEFAULT_CAPACITY);
     }
 
     /**
-     * Constructs a TempFileCache which creates temporary files in the directory specified.
+     * Constructs a TempFileCache which creates temporary files in the directory specified,
+     * with an initial cache capacity of 1024.  The cache capacity is the number of Window records
+     * the cache will hold in memory, not the size of the temporary file.  Both can expand as required.
      * If the file is null, then temporary files will be created in the default temp directory.
      *
      * @param tempDir The directory to create temporary files in.
-     * @throws java.lang.IllegalArgumentException if the tempdir supplied is not a directory.
+     * @throws java.lang.IllegalArgumentException if the tempdir supplied is not null and not a directory.
      */
     public TempFileCache(final File tempDir) {
-        windowPositions = new PositionHashMap<WindowInfo>();
+        this(tempDir, DEFAULT_CAPACITY);
+    }
+
+    /**
+     * Constructs a TempFileCache which creates temporary files in the directory specified,
+     * with a specified initial cache capacity.  The cache capacity is the number of Window records
+     * the cache will hold in memory, not the size of the temporary file.  Both can expand as required.
+     * If the file is null, then temporary files will be created in the default temp directory.
+     * If the defaultCapacity is zero or negative, the standard default capacity of 1024 will be used.
+     *
+     * @param tempDir The directory to create temporary files in.
+     * @param defaultCapacity The number of Windows the cache is initalised to hold (will resize upwards as required).
+     * @throws java.lang.IllegalArgumentException if the tempdir supplied is not null and not a directory.
+     */
+    public TempFileCache(final File tempDir, final int defaultCapacity) {
+        windowPositions = new PositionHashMap<WindowInfo>(defaultCapacity > 0? defaultCapacity : DEFAULT_CAPACITY);
         this.tempDir = tempDir;
         if (tempDir != null && !tempDir.isDirectory()) {
             throw new IllegalArgumentException("The temp dir file supplied is not a directory: " + tempDir.getAbsolutePath());
