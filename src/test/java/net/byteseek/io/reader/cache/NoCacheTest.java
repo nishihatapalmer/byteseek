@@ -54,7 +54,7 @@ public class NoCacheTest {
     }
 
     @Test
-    public void testGetWindow() throws Exception {
+    public void testGetNullWindows() throws Exception {
         assertNull(noCache.getWindow(4));
         assertNull(noCache.getWindow(0));
         assertNull(noCache.getWindow(-123123123));

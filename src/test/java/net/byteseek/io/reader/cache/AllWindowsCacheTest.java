@@ -77,6 +77,14 @@ public class AllWindowsCacheTest {
     }
 
     @Test
+    public void testGetNullWindows() throws Exception {
+        assertNull(allWindowsCache.getWindow(0));
+        assertNull(allWindowsCache.getWindow(4096));
+        assertNull(allWindowsCache.getWindow(-1));
+        assertNull(allWindowsCache.getWindow(1000000000));
+    }
+
+    @Test
     public void testGetAddWindow() throws Exception {
         assertNull(allWindowsCache.getWindow(0));
         assertNull(allWindowsCache.getWindow(1024));

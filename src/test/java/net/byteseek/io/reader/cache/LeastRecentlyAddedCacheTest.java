@@ -75,9 +75,11 @@ public class LeastRecentlyAddedCacheTest {
     }
 
     @Test
-    public void testGetNullWindow() throws Exception {
-       Window window = cache.getWindow(0);
-       assertNull("Window does not exist and is null ", window);
+    public void testGetNullWindows() throws Exception {
+        assertNull(cache.getWindow(0));
+        assertNull(cache.getWindow(4096));
+        assertNull(cache.getWindow(-1));
+        assertNull(cache.getWindow(1000000000));
     }
 
     @Test
