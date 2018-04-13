@@ -6,29 +6,54 @@ import net.byteseek.io.reader.windows.WindowMissingException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
+@RunWith(Parameterized.class)
 public class TempFileCacheTest {
+
+    private final static byte VALUE1 = 1;
+    private final static byte VALUE2 = 2;
 
     private byte[] data1, data2;
     private Window testWindow1, testWindow2;
+    private int testWindow1Length, testWindow2Length;
+    private int testData1Length, testData2Length;
     private TempFileCache tempFileCache;
+
+    public TempFileCacheTest(Integer data1Length, Integer window1Length, Integer data2Length, Integer window2Length) {
+        testData1Length = data1Length;
+        testWindow1Length = window1Length;
+        testData2Length = data2Length;
+        testWindow2Length = window2Length;
+    }
+
+    @Parameterized.Parameters
+    public static Collection cacheSizes() {
+        return Arrays.asList(new Object[][]{
+                {4096, 4096, 4096, 4096},
+                {4096, 4096, 4096, 543},
+                {1024, 367, 789, 523},
+                {4096, 4095, 4096, 1},
+                {1024, 1023, 1023, 1022}
+        });
+    }
 
     @Before
     public void setup() {
-        data1 = new byte[4096];
-        data2 = new byte[4096];
-        byte value1 = 1;
-        byte value2 = 2;
-        testWindow1 = new HardWindow(data1,0, data1.length);
-        Arrays.fill(data1, value1);
-        Arrays.fill(data2, value2);
-        testWindow2 = new HardWindow(data2, 4096, data2.length);
+        data1 = new byte[testData1Length];
+        data2 = new byte[testData2Length];
+        testWindow1 = new HardWindow(data1,0, testWindow1Length);
+        Arrays.fill(data1, VALUE1);
+        Arrays.fill(data2, VALUE2);
+        testWindow2 = new HardWindow(data2, testWindow1Length, testWindow2Length);
         tempFileCache = new TempFileCache();
     }
 
@@ -68,19 +93,26 @@ public class TempFileCacheTest {
         tempFileCache.addWindow(testWindow1);
         Window window = tempFileCache.getWindow(0);
         assertEquals("Window is at position 0", 0L, window.getWindowPosition());
-        assertEquals("Window has length " + data1.length, data1.length, window.length());
-        assertArrayEquals(data1, window.getArray());
+        assertEquals("Window has length " + testWindow1Length, testWindow1Length, window.length());
+        assertArrayValue(window.getArray(), VALUE1);
 
-        assertNull("No window yet added at 4096", tempFileCache.getWindow(4096));
+        assertNull("No window yet added at " + testWindow1Length, tempFileCache.getWindow(testWindow1Length));
         tempFileCache.addWindow(testWindow2);
-        window = tempFileCache.getWindow(4096);
-        assertEquals("Window is at position 4096", 4096L, window.getWindowPosition());
-        assertEquals("Window has length " + data2.length, data2.length, window.length());
-        assertArrayEquals(data2, window.getArray());
+        window = tempFileCache.getWindow(testWindow1Length);
+        assertEquals("Window is at position " + testWindow1Length, testWindow1Length, window.getWindowPosition());
+        assertEquals("Window has length " + testWindow2Length, testWindow2Length, window.length());
+        assertArrayValue(window.getArray(), VALUE2);
 
         assertNotNull("Window still exists at position 0", tempFileCache.getWindow(0));
     }
 
+    @Test
+    public void testGetNullWindows() throws Exception {
+        assertNull(tempFileCache.getWindow(0));
+        assertNull(tempFileCache.getWindow(4096));
+        assertNull(tempFileCache.getWindow(-1));
+        assertNull(tempFileCache.getWindow(1000000000));
+    }
 
     @Test
     public void testClear() throws Exception {
@@ -88,7 +120,7 @@ public class TempFileCacheTest {
         tempFileCache.addWindow(testWindow1);
         tempFileCache.addWindow(testWindow2);
         assertNotNull(tempFileCache.getWindow(0));
-        assertNotNull(tempFileCache.getWindow(4096));
+        assertNotNull(tempFileCache.getWindow(testWindow1Length));
         File file = tempFileCache.getTempFile();
         assertNotNull("File is not null", file);
 
@@ -96,13 +128,13 @@ public class TempFileCacheTest {
         tempFileCache.clear();
         assertNull("File is null after clearing", tempFileCache.getTempFile());
         assertNull(tempFileCache.getWindow(0));
-        assertNull(tempFileCache.getWindow(4096));
+        assertNull(tempFileCache.getWindow(testWindow1Length));
 
         // Add windows again
         tempFileCache.addWindow(testWindow1);
         tempFileCache.addWindow(testWindow2);
         assertNotNull(tempFileCache.getWindow(0));
-        assertNotNull(tempFileCache.getWindow(4096));
+        assertNotNull(tempFileCache.getWindow(testWindow1Length));
         file = tempFileCache.getTempFile();
         assertNotNull("File is not null", file);
     }
@@ -122,26 +154,28 @@ public class TempFileCacheTest {
     public void testReloadWindowBytes() throws Exception {
         tempFileCache.addWindow(testWindow1);
         byte[] bytes = tempFileCache.reloadWindowBytes(testWindow1);
-        assertArrayEquals(testWindow1.getArray(), bytes);
+        assertArrayValue(testWindow1.getArray(), VALUE1);
 
         tempFileCache.addWindow(testWindow2);
         bytes = tempFileCache.reloadWindowBytes(testWindow2);
-        assertArrayEquals(testWindow2.getArray(), bytes);
+        assertArrayValue(testWindow2.getArray(), VALUE2);
     }
 
     @Test
     public void testRead() throws Exception {
-        byte[] bytes = new byte[4096];
+        byte[] bytes1 = new byte[testData1Length];
 
-        assertEquals("no bytes read when nothing cached", 0, tempFileCache.read(0, 0, bytes, 0));
+        assertEquals("no bytes read when nothing cached", 0, tempFileCache.read(0, 0, bytes1, 0));
         tempFileCache.addWindow(testWindow1);
-        assertEquals("4096 bytes read from pos 0 after caching it", 4096, tempFileCache.read(0, 0, bytes, 0));
-        assertArrayEquals("byte arrays are the same", testWindow1.getArray(), bytes);
+        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length, tempFileCache.read(0, 0, bytes1, 0));
+        assertArrayValue(testWindow1.getArray(), VALUE1);
 
-        assertEquals("no bytes read at 4096 when nothing cached", 0, tempFileCache.read(4096, 0, bytes, 0));
+
+        byte[] bytes2 = new byte[testData2Length];
+        assertEquals("no bytes read when nothing cached", 0, tempFileCache.read(testWindow1Length, 0, bytes2, 0));
         tempFileCache.addWindow(testWindow2);
-        assertEquals("4096 bytes read from pos 0 after caching it", 4096, tempFileCache.read(4096, 0, bytes, 0));
-        assertArrayEquals("byte arrays are the same", testWindow2.getArray(), bytes);
+        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length, tempFileCache.read(testWindow1Length, 0, bytes2, 0));
+        assertArrayValue(testWindow2.getArray(), VALUE2);
     }
 
     @Test
@@ -153,6 +187,12 @@ public class TempFileCacheTest {
         cache.addWindow(testWindow1);
         cache.addWindow(testWindow2);
         cache.clear();
+    }
+
+    private void assertArrayValue(final byte[] array, final byte value) {
+        for (int i = 0; i < array.length; i++) {
+            assertTrue(array[i] == value);
+        }
     }
 
     private File getFile(final String resourceName) {
