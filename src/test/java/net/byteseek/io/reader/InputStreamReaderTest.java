@@ -335,7 +335,7 @@ public class InputStreamReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullStreamWindowCache() throws Exception {
-        new InputStreamReader(null, NoCache.NO_CACHE);
+        new InputStreamReader(null, new NoCache());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -385,29 +385,29 @@ public class InputStreamReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullStreamWindowCacheFalse() throws Exception {
-        new InputStreamReader(null, NoCache.NO_CACHE, false);
+        new InputStreamReader(null, new NoCache(), false);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullStreamWindowCacheTrue() throws Exception {
-        new InputStreamReader(null, NoCache.NO_CACHE, true);
+        new InputStreamReader(null, new NoCache(), true);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullStreamSizeCache() throws Exception {
-        new InputStreamReader(null, 1024, NoCache.NO_CACHE);
+        new InputStreamReader(null, 1024, new NoCache());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullStreamSizeCacheFalse() throws Exception {
-        new InputStreamReader(null, 1024, NoCache.NO_CACHE, false);
+        new InputStreamReader(null, 1024, new NoCache(), false);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullStreamSizeCacheTrue() throws Exception {
-        new InputStreamReader(null, 1024, NoCache.NO_CACHE, true);
+        new InputStreamReader(null, 1024, new NoCache(), true);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -457,9 +457,9 @@ public class InputStreamReaderTest {
     @Test
     public void testCreateStreamCache() {
         try {
-            new InputStreamReader(new ByteArrayInputStream(new byte[1]), NoCache.NO_CACHE);
-            new InputStreamReader(new ByteArrayInputStream(new byte[1]), NoCache.NO_CACHE, false);
-            new InputStreamReader(new ByteArrayInputStream(new byte[1]), NoCache.NO_CACHE, true);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), new NoCache());
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), new NoCache(), false);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), new NoCache(), true);
         } catch (Exception e) {
             fail("Creation failed.");
         }
@@ -490,9 +490,9 @@ public class InputStreamReaderTest {
     @Test
     public void testCreateStreamSizeCache() {
         try {
-            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, NoCache.NO_CACHE);
-            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, NoCache.NO_CACHE, false);
-            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, NoCache.NO_CACHE, true);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, new NoCache());
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, new NoCache(), false);
+            new InputStreamReader(new ByteArrayInputStream(new byte[1]), 1024, new NoCache(), true);
         } catch (Exception e) {
             fail("Creation failed.");
         }

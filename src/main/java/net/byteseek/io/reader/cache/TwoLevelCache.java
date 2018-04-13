@@ -101,7 +101,8 @@ import java.io.IOException;
     }
 
     @Override
-    public int read(long windowPos, int offset, byte[] readInto, int readIntoPos) throws IOException {
+    public int read(final long windowPos, final int offset,
+                    final byte[] readInto, final int readIntoPos) throws IOException {
         int bytesRead = primaryCache.read(windowPos, offset, readInto, readIntoPos);
         if (bytesRead == 0) {
             bytesRead = secondaryCache.read(windowPos, offset, readInto, readIntoPos);
@@ -115,15 +116,10 @@ import java.io.IOException;
      */
     @Override
     public void clear() throws IOException {
-        IOException primaryException = null;
         try {
             primaryCache.clear();
-        } catch (IOException primaryCacheException) {
-            primaryException = primaryCacheException;
-        }
-        secondaryCache.clear();
-        if (primaryException != null) {
-            throw primaryException;
+        } finally {
+            secondaryCache.clear();
         }
     }
 

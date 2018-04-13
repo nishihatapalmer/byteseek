@@ -81,9 +81,10 @@ public class TopAndTailCacheTest {
         assertNull(cache.getWindow(1000000000));
     }
 
+    //TODO: test read()
 
     @Test
-    public void testWindowCachedCorrectly() throws Exception {
+    public void testWindowCachedCorrectlyInOrder() throws Exception {
         final long[] testCases = new long[] {0, 4096, 8192, 32768};
         for (int count = 0; count < testCases.length; count++) {
             long position = testCases[count];
@@ -104,7 +105,7 @@ public class TopAndTailCacheTest {
 
     @Test
     public void testSimulatedStreamReading() throws Exception {
-
+        //TODO: test reading in order and random access.h
     }
 
     @Test

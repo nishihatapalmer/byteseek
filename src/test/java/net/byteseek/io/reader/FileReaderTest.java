@@ -428,7 +428,7 @@ public class FileReaderTest {
 	@Test
 	public void testCreateValidFileAndCache() {
 		File testFile = getFile("/TestASCII.txt");
-		try( FileReader reader = new FileReader(testFile, NoCache.NO_CACHE)) {
+		try( FileReader reader = new FileReader(testFile, new NoCache())) {
 		}
 		catch (Exception anything) {
 			fail("Should be no exception creating a valid file reader.");

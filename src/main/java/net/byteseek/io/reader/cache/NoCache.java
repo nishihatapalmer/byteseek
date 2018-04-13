@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2017, All rights reserved.
+ * Copyright Matt Palmer 2011-2018, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -44,12 +44,6 @@ import java.io.IOException;
  */
 public final class NoCache extends AbstractFreeNotificationCache {
 
-    /**
-     * A static NoCache object, as this object has no state so can be
-     * safely re-used by any class which requires a simple NoCache (as long as there are no subscribers).
-     */
-    public static final NoCache NO_CACHE = new NoCache();
-    
     /**
      * Always returns null, as no Windows are cached.
      * 

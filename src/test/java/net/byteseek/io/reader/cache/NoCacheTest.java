@@ -92,7 +92,7 @@ public class NoCacheTest {
 
     @Test
     public void testToString() throws Exception {
-        assertTrue(NoCache.NO_CACHE.toString().contains(NoCache.NO_CACHE.getClass().getSimpleName()));
+        assertTrue(noCache.toString().contains(noCache.getClass().getSimpleName()));
     }
 
     @Test

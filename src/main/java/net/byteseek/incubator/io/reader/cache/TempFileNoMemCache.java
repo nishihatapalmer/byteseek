@@ -29,9 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-package net.byteseek.io.reader.cache;
+package net.byteseek.incubator.io.reader.cache;
 
 import net.byteseek.io.IOUtils;
+import net.byteseek.io.reader.cache.AbstractFreeNotificationCache;
+import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.SoftWindow;
 import net.byteseek.io.reader.windows.SoftWindowRecovery;
 import net.byteseek.io.reader.windows.Window;
