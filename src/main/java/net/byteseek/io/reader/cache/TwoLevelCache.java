@@ -141,7 +141,7 @@ import java.io.IOException;
         if (fromCache == primaryCache) {
             secondaryCache.addWindow(window);
         } else if (fromCache == secondaryCache) {
-            notifyWindowFree(window, fromCache);
+            notifyWindowFree(window, this);
         }
     }
     
