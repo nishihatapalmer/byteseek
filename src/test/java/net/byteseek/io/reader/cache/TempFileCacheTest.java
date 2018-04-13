@@ -36,7 +36,7 @@ public class TempFileCacheTest {
     }
 
     @Parameterized.Parameters
-    public static Collection cacheSizes() {
+    public static Collection lengths() {
         return Arrays.asList(new Object[][]{
                 {4096, 4096, 4096, 4096},
                 {4096, 4096, 4096, 543},
@@ -49,11 +49,13 @@ public class TempFileCacheTest {
     @Before
     public void setup() {
         data1 = new byte[testData1Length];
-        data2 = new byte[testData2Length];
-        testWindow1 = new HardWindow(data1,0, testWindow1Length);
         Arrays.fill(data1, VALUE1);
+        testWindow1 = new HardWindow(data1,0, testWindow1Length);
+
+        data2 = new byte[testData2Length];
         Arrays.fill(data2, VALUE2);
         testWindow2 = new HardWindow(data2, testWindow1Length, testWindow2Length);
+
         tempFileCache = new TempFileCache();
     }
 
