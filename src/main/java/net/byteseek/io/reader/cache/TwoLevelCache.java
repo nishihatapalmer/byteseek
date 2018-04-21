@@ -54,33 +54,26 @@ import java.io.IOException;
  * 
  * @author Matt Palmer
  */
- public final class TwoLevelCache extends AbstractFreeNotificationCache implements WindowObserver {
+ public final class TwoLevelCache extends AbstractFreeNotificationCache {
 
-    /**
-     * A static constructor for TwoLevelCache, which avoids passing "this" in the
-     * cache constructor so it can subscribe to window free notifications from the
-     * primary cache.
-     *
-     * @param primaryCache The primary cache.
-     * @param secondaryCache The secondary cache.
-     * @return A TwoLevelCache using the primary and secondary caches.
-     * @throws IllegalArgumentException if either of the caches are null.
-     */
-    public static TwoLevelCache create(final WindowCache primaryCache, final WindowCache secondaryCache) {
-        ArgUtils.checkNullObject(primaryCache, "primaryCache");
-        ArgUtils.checkNullObject(secondaryCache, "secondaryCache");
-        final TwoLevelCache twoLevels = new TwoLevelCache(primaryCache, secondaryCache);
-        primaryCache.subscribe(twoLevels);
-        secondaryCache.subscribe(twoLevels);
-        return twoLevels;
-    }
-    
     private final WindowCache primaryCache;
     private final WindowCache secondaryCache;
+    private final WindowCache.WindowObserver twoLevelPolicy;
 
-    private TwoLevelCache(final WindowCache primaryCache, final WindowCache secondaryCache) {
+    /**
+     * Constructs a TwoLevelCache from a primary and secondary cache.
+     *
+     * @param primaryCache The primary cache to get from, otherwise the secondary is tried.
+     * @param secondaryCache The secondary cache which takes Windows evicted from the primary cache.
+     */
+    public TwoLevelCache(final WindowCache primaryCache, final WindowCache secondaryCache) {
+        ArgUtils.checkNullObject(primaryCache, "primaryCache");
+        ArgUtils.checkNullObject(secondaryCache, "secondaryCache");
         this.primaryCache = primaryCache;
         this.secondaryCache = secondaryCache;
+        this.twoLevelPolicy = new TwoLevelEvictionPolicy();
+        this.primaryCache.subscribe(twoLevelPolicy);
+        this.secondaryCache.subscribe(twoLevelPolicy);
     }
 
     @Override
@@ -97,12 +90,15 @@ import java.io.IOException;
 
     @Override
     public void addWindow(final Window window) throws IOException {
-        primaryCache.addWindow(window);
+        primaryCache.addWindow(window);  // Only need to add to primary cache here.
+        // If the primary cache evicts a window then the TwoLevelPolicy observer will add it to the secondary cache.
     }
 
     @Override
     public int read(final long windowPos, final int offset,
                     final byte[] readInto, final int readIntoPos) throws IOException {
+
+        //TODO: should read attempt to read from more windows if available?  TempFileCache does.
         int bytesRead = primaryCache.read(windowPos, offset, readInto, readIntoPos);
         if (bytesRead == 0) {
             bytesRead = secondaryCache.read(windowPos, offset, readInto, readIntoPos);
@@ -123,28 +119,6 @@ import java.io.IOException;
         }
     }
 
-    /**
-     * Implementation of the {@link WindowObserver} method to receive 
-     * notification that a Window is freed from a cache.
-     * <p>
-     * If a {@link net.byteseek.io.reader.windows.Window} leaves the primary
-     * cache, then it is automatically added to the secondary cache.
-     * If it leaves the secondary cache, then any observer of this cache
-     * is notified that the Window is no longer cached at all by this cache.
-     * 
-     * @param window The Window which is leaving either the primary or secondary cache.
-     * @param fromCache The WindowCache from which the Window is leaving.
-     */
-    @SuppressWarnings("ObjectEquality")
-    @Override
-    public void windowFree(final Window window, final WindowCache fromCache) throws IOException {
-        if (fromCache == primaryCache) {
-            secondaryCache.addWindow(window);
-        } else if (fromCache == secondaryCache) {
-            notifyWindowFree(window, this);
-        }
-    }
-    
     /**
      * Returns the primary cache used by this TwoLevelCache.
      * 
@@ -168,5 +142,24 @@ import java.io.IOException;
 		return getClass().getSimpleName() + "(primary cache: " + primaryCache +
 											", secondary cache: " + secondaryCache + ')';
 	}
+
+    /**
+     * An implemention of WindowObserver, which is subscribed to both the primary and
+     * secondary caches.  It implements the Two Level Policy - if something is evicted
+     * from the primary cache, it adds it to the secondary cache.  If something is
+     * evicted from the secondary cache, it notifies any subscribers to the TwoLevelCache
+     * that something has left it entirely.
+     */
+	private class TwoLevelEvictionPolicy implements WindowCache.WindowObserver {
+
+        @Override
+        public void windowFree(Window window, WindowCache fromCache) throws IOException {
+            if (fromCache == primaryCache) {
+                secondaryCache.addWindow(window);
+            } else if (fromCache == secondaryCache) {
+                notifyWindowFree(window, TwoLevelCache.this);
+            }
+        }
+    }
     
 }
