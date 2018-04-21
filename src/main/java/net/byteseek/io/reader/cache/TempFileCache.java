@@ -120,8 +120,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             createFileIfNotExists();
             file.seek(nextFilePos);
             file.write(window.getArray(), 0, window.length());
-            windowPositions.put(windowPosition,
-                                new WindowInfo(window.length(), nextFilePos));
+            windowPositions.put(windowPosition, new WindowInfo(window.length(), nextFilePos));
             nextFilePos += window.length();
         }
     }
