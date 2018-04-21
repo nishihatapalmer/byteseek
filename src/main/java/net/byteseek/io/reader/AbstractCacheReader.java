@@ -60,10 +60,9 @@ public abstract class AbstractCacheReader implements WindowReader {
 	protected final static int NO_BYTE_AT_POSITION = -1;
 
 	/**
-	 * A constant indicating that there are no bytes at the position requested, returned by the
-	 * read() methods.
+	 * A constant indicating that no bytes were read.
 	 */
-	protected final static int NO_BYTES_AT_POSITION = 0;
+	protected final static int NO_BYTES_READ = 0;
 
 	/**
 	 * A constant indicating that the length of the reader is currently unknown.
