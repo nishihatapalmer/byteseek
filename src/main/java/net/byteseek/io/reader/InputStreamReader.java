@@ -211,7 +211,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 	 */
 	public InputStreamReader(final InputStream stream, final int windowSize,
 			final int capacity) {
-		this(stream, windowSize, TwoLevelCache.create(
+		this(stream, windowSize, new TwoLevelCache(
 				new LeastRecentlyUsedCache(capacity), new TempFileCache()), true);
 	}
 
@@ -235,7 +235,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 	 */
 	public InputStreamReader(final InputStream stream, final int windowSize,
 							 final int capacity, final boolean closeStreamOnClose) {
-		this(stream, windowSize, TwoLevelCache.create(
+		this(stream, windowSize, new TwoLevelCache(
 				new LeastRecentlyUsedCache(capacity), new TempFileCache()),
 		        closeStreamOnClose);
 	}
@@ -387,7 +387,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 	public int read(final long position, final byte[] readInto, final int offset, final int readLength) throws IOException {
 		// Strategy is to read from the cache - but to cache the stream first if it has not yet been read to that point.
 		if (position < 0) {
-			return NO_BYTE_AT_POSITION;
+			return NO_BYTES_READ;
 		}
 
 		// Ensure we have read as much of the stream as we need, or can.  This ensures it is all available from the cache.
@@ -405,7 +405,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 
 		// If we still haven't read up to the position we asked for, there's no more data in the stream.
         if (nextReadPos <= position) {
-		    return NO_BYTE_AT_POSITION;
+		    return NO_BYTES_READ;
         }
 
 		// Read as many bytes as are available from the cache:
@@ -484,7 +484,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 	
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[stream:" + stream + " cache:" + cache + ']'; 
+		return getClass().getSimpleName() + "(stream:" + stream + " cache:" + cache + ')';
 	}
 
 }
