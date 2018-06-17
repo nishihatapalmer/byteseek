@@ -77,7 +77,7 @@ public class TopAndTailCacheTest {
     public void testSingleValueConstructor() {
         TopAndTailCache c2 = new TopAndTailCache(topCacheSize);
         assertEquals("top cache size", topCacheSize, c2.getTopCacheSize());
-        assertEquals("tail cache size", tailCacheSize, c2.getTailCacheSize());
+        assertEquals("tail cache size", topCacheSize, c2.getTailCacheSize());
     }
 
     @Test
