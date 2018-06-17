@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2014-17, All rights reserved.
+ * Copyright Matt Palmer 2014-18, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -59,8 +59,8 @@ public final class TopAndTailCache extends AbstractMemoryCache {
 
     private final PositionHashMap<Window> cache;
     private final List<Window> tailCacheEntries;
-    private final int firstCacheSize;
-    private final int secondCacheSize;
+    private final int topCacheSize;
+    private final int tailCacheSize;
     private long lastPositionSeen;
     private int nextTailCacheToCheck;
 
@@ -68,11 +68,11 @@ public final class TopAndTailCache extends AbstractMemoryCache {
         this(cacheSize, cacheSize);
     }
 
-    public TopAndTailCache(final int firstCacheSize, final int secondCacheSize) {
+    public TopAndTailCache(final int topCacheSize, final int tailCacheSize) {
         this.cache = new PositionHashMap<Window>();
         this.tailCacheEntries = new ArrayList<Window>();
-        this.firstCacheSize  = firstCacheSize;
-        this.secondCacheSize = secondCacheSize;
+        this.topCacheSize = topCacheSize;
+        this.tailCacheSize = tailCacheSize;
     }
 
     @Override
@@ -87,8 +87,8 @@ public final class TopAndTailCache extends AbstractMemoryCache {
         if (windowEnd > lastPositionSeen) {
             lastPositionSeen = windowEnd;
         }
-        final long tailCacheStart = lastPositionSeen - secondCacheSize + 1;
-        if (windowPosition < firstCacheSize) {
+        final long tailCacheStart = lastPositionSeen - tailCacheSize + 1;
+        if (windowPosition < topCacheSize) {
             cache.put(windowPosition, window);
         } else if (windowEnd >= tailCacheStart) {
             cache.put(windowPosition, window);
@@ -102,6 +102,10 @@ public final class TopAndTailCache extends AbstractMemoryCache {
         cache.clear();
         tailCacheEntries.clear();
     }
+
+    public int getTopCacheSize() { return topCacheSize; }
+
+    public int getTailCacheSize() { return tailCacheSize; }
 
     /**
      * Every time we add a window which is further on than the last position we saw,
