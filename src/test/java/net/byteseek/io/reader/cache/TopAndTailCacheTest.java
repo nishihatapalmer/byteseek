@@ -59,7 +59,7 @@ public class TopAndTailCacheTest {
 
     @Parameterized.Parameters
     public static Collection cacheSizes() {
-        return Arrays.asList(new Object[][]{
+        return Arrays.asList(new Object[][]{ // Parameters are top cache size and tail cache size.
                 {4096, 4096},
                 {4096, 0},
                 {0, 4096},
@@ -71,6 +71,19 @@ public class TopAndTailCacheTest {
     @Before
     public void setUp() {
         cache = new TopAndTailCache(topCacheSize, tailCacheSize);
+    }
+
+    @Test
+    public void testSingleValueConstructor() {
+        TopAndTailCache c2 = new TopAndTailCache(topCacheSize);
+        assertEquals("top cache size", topCacheSize, c2.getTopCacheSize());
+        assertEquals("tail cache size", tailCacheSize, c2.getTailCacheSize());
+    }
+
+    @Test
+    public void testCacheSizeCorrect() {
+        assertEquals("top cache size", topCacheSize, cache.getTopCacheSize());
+        assertEquals("tail cache size", tailCacheSize, cache.getTailCacheSize());
     }
 
     @Test
