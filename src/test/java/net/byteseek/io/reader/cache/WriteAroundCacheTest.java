@@ -41,13 +41,13 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-public class WriteThroughCacheTest {
+public class WriteAroundCacheTest {
 
     private static long WINDOW1POS = 0;
     private static long WINDOW2POS = 4096;
 
     private AllWindowsCache cache1, cache2;
-    private WriteThroughCache cache;
+    private WriteAroundCache cache;
     private byte[] testData;
     private Window testWindow1, testWindow2;
 
@@ -55,7 +55,7 @@ public class WriteThroughCacheTest {
     public void setupTest() {
         cache1 = new AllWindowsCache();
         cache2 = new AllWindowsCache();
-        cache = new WriteThroughCache(cache1, cache2);
+        cache = new WriteAroundCache(cache1, cache2);
         testData = new byte[4096];
         testWindow1 = new HardWindow(testData, WINDOW1POS, 4096);
         testWindow2 = new HardWindow(testData, WINDOW2POS, 4096);
@@ -74,17 +74,17 @@ public class WriteThroughCacheTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullPrimaryCache() {
-        new WriteThroughCache(null, new NoCache());
+        new WriteAroundCache(null, new NoCache());
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullSecondaryCache() {
-        new WriteThroughCache(new NoCache(), null);
+        new WriteAroundCache(new NoCache(), null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testNullCache() {
-        new WriteThroughCache(null, null);
+        new WriteAroundCache(null, null);
     }
 
     // Test cache methods
@@ -97,20 +97,28 @@ public class WriteThroughCacheTest {
         assertNull(cache.getWindow(WINDOW2POS));
 
         cache.addWindow(testWindow1);
-        assertNotNull(cache1.getWindow(WINDOW1POS));
+        assertNull(cache1.getWindow(WINDOW1POS));
         assertNull(cache1.getWindow(WINDOW2POS));
+
         assertNotNull(cache2.getWindow(WINDOW1POS));
         assertNull(cache2.getWindow(WINDOW2POS));
+
         assertNotNull(cache.getWindow(WINDOW1POS));
         assertNull(cache.getWindow(WINDOW2POS));
+        // After getting from the write through cache, cache1 now has the window:
+        assertNotNull(cache1.getWindow(WINDOW1POS));
+
 
         cache.addWindow(testWindow2);
-        assertNotNull(cache1.getWindow(WINDOW1POS));
-        assertNotNull(cache1.getWindow(WINDOW2POS));
+        assertNull(cache1.getWindow(WINDOW2POS));
+
         assertNotNull(cache2.getWindow(WINDOW1POS));
         assertNotNull(cache2.getWindow(WINDOW2POS));
+
         assertNotNull(cache.getWindow(WINDOW1POS));
         assertNotNull(cache.getWindow(WINDOW2POS));
+
+        assertNotNull(cache2.getWindow(WINDOW2POS));
     }
 
     @Test
@@ -121,10 +129,12 @@ public class WriteThroughCacheTest {
 
         cache.addWindow(testWindow2);
         cache.addWindow(testWindow1);
-        assertNotNull(cache1.getWindow(WINDOW1POS));
-        assertNotNull(cache1.getWindow(WINDOW2POS));
+        assertNull(cache1.getWindow(WINDOW1POS));
+        assertNull(cache1.getWindow(WINDOW2POS));
+
         assertNotNull(cache2.getWindow(WINDOW1POS));
         assertNotNull(cache2.getWindow(WINDOW2POS));
+
         assertNotNull(cache.getWindow(WINDOW1POS));
         assertNotNull(cache.getWindow(WINDOW2POS));
 
@@ -225,7 +235,7 @@ public class WriteThroughCacheTest {
 
     @Test
     public void testToString() throws Exception {
-        WriteThroughCache cache = new WriteThroughCache(new NoCache(), new NoCache());
+        WriteAroundCache cache = new WriteAroundCache(new NoCache(), new NoCache());
         assertTrue(cache.toString().contains(cache.getClass().getSimpleName()));
         assertTrue(cache.toString().contains("memory"));
         assertTrue(cache.toString().contains("persistent"));
@@ -235,7 +245,7 @@ public class WriteThroughCacheTest {
     @Test
     public void testClearMemWithException() throws Exception {
         WindowCache d = new AllWindowsCache();
-        WriteThroughCache c = new WriteThroughCache(new ClearExceptionCache(), d);
+        WriteAroundCache c = new WriteAroundCache(new ClearExceptionCache(), d);
         c.addWindow(testWindow1);
         assertNotNull(d.getWindow(WINDOW1POS));
 
