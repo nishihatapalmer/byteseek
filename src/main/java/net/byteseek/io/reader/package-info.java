@@ -33,9 +33,14 @@
  * A package which provides a consistent random-access interface over a variety of
  * input sources including files, input streams, strings and byte arrays.
  * <p>
- * All of these classes read into Windows, which encapsulate byte arrays read from the source.
- * This allows the search and matching algorithms to access the arrays directly, and for the windows
+ * The input source is chunked on demand into windows over the data, which each encapsulate a byte array.
+ * This allows clients to access the arrays directly, and for the windows
  * to be cached using a variety of caching strategies defined in the cache sub-package.
+ * <p>
+ * Input sources which are already support random access just fetch the appropriate window on demand.
+ * Input sources which are not random access will directly return a Window which has already been read, or will
+ * read forward (caching as they go) to obtain a new Window which has not yet been read.  Care must be taken to
+ * select cache strategies that will be able to return any Window the application requests again.
  * <p>
  * There are two types of Window currently defined.  HardWindows store a hard reference
  * to the underlying byte array.  SoftWindows use a SoftReference to the array, which allows
@@ -44,6 +49,6 @@
  * OutOfMemoryErrors.
  * <p>
  * In addition, the ReaderInputStream adapts any WindowReader into an InputStream, to allow the
- * cached windows to be used with other classes which expect input streams.
+ * cached windows to be used with other classes which require input streams.
  */
 package net.byteseek.io.reader;
