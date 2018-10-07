@@ -30,7 +30,8 @@
  */
 
 /**
- * A package for consistent I/O over a variety of data sources.
- * Input sources might be Strings, byte arrays, Files, or InputStreams.
+ * A package for random access I/O over a variety of data sources.
+ * Input sources can be Strings (as a character encoding), byte arrays, files, or inputstreams.
+ * Any reader can be converted to an InputStream with an adaptor.
  */
 package net.byteseek.io;
