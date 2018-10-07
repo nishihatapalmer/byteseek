@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-16, All rights reserved.
+ * Copyright Matt Palmer 2015-18, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,9 +33,9 @@
  * A set of caching strategies for net.byteseek.io.reader.Window.windows.
  * <p>
  * Most caches are in-memory caches, holding the Windows within memory.
- * There is also a temporary file disk cache.  Finally, there are two
+ * There is also a temporary file disk cache.  Finally, there are three
  * caches which use more than one cache to achieve their strategy:
- * DoubleCache and TwoLevelCache.
+ * WriteThroughCache, WriteAroundCache and the TwoLevelCache.
  * <p>
  * Note that various readers (and the TempFileCache) can use SoftWindows,
  * which allow the garbage collector to reclaim memory in low-memory conditions.
