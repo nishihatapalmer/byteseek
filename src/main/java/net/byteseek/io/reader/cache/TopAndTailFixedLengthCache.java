@@ -67,7 +67,7 @@ public final class TopAndTailFixedLengthCache extends AbstractMemoryCache {
     @Override
     public void addWindow(final Window window) {
         final long windowPos = window.getWindowPosition();
-        if (windowPos < topCacheEnd || windowPos >= tailCacheStart) {
+        if (windowPos < topCacheEnd || window.getWindowEndPosition() >= tailCacheStart) {
             cache.put(windowPos, window);
         }
     }
