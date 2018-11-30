@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2012, All rights reserved.
+ * Copyright Matt Palmer 2009-2018, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -38,8 +38,7 @@ import java.io.IOException;
  * should be able to return.  WindowReaders assume they can access any legitimate position
  * in the underlying source.  Merely trying to access out of bounds of the source will not
  * cause this exception to be thrown - in this case a WindowReader will simply return a null
- * Window.  This exception is reserved for a failure to access a Window in a legitimate 
- * position.  
+ * Window.  This exception is reserved for a failure to access a Window in a legitimate position.
  * <p>
  * It extends {@link java.io.IOException}, which means
  * it is a checked exception. However, it will be thrown from methods which can
@@ -50,7 +49,7 @@ import java.io.IOException;
  * This may be because an inappropriate
  * {@link net.byteseek.io.reader.cache.WindowCache} object was used for the
  * input source of the WindowReader and the access pattern used with it.  For example,
- * if a MostRecentlyAdded cache is used with a stream based reader, the early Windows in
+ * if a LeastRecentlyAdded cache is used with a stream based reader, the early Windows in
  * the stream will eventually be lost, assuming sufficient later Windows are read.
  * Any attempt to access a Window in that part of the stream will then fail,
  * and a WindowMissingException would be thrown.
