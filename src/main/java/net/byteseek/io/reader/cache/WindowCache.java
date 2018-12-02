@@ -34,6 +34,7 @@ package net.byteseek.io.reader.cache;
 import net.byteseek.io.reader.windows.Window;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * A interface for classes which cache {@link net.byteseek.io.reader.windows.Window} objects.
@@ -67,6 +68,9 @@ public interface WindowCache {
 
     /**
      * Reads data held in the cache and copies it into the readInto byte array.  Returns the number of bytes copied.
+     * A cache should read as much as it can into the byte array, even if this involves reading from several cached windows.
+     * If the position requested is not in the cache (regardless of whether it is past the end or a negative position),
+     * then the cache should not throw an exception, it should just return 0 bytes read.
      * <p>
      * @param windowPos The position of the window in the cache.
      * @param offset    The offset into the window to begin reading from.
@@ -76,6 +80,21 @@ public interface WindowCache {
      * @throws IOException if there was a problem reading from the cache.
      */
     int read(long windowPos, int offset, byte[] readInto, int readIntoPos) throws IOException;
+
+    /**
+     * Reads data held in the cache and copies it into the readInto ByteBuffer.
+     * A cache should read as much as it can into the ByteBuffer, even if this involves reading from several cached windows.
+     * If the position requested is not in the cache (regardless of whether it is past the end or a negative position),
+     * then the cache should not throw an exception, it should just return 0 bytes read.
+     * Returns the number of bytes read into the buffer.
+     *
+     * @param windowPos The position of the window in the cache.
+     * @param offset    The offset into the window to begin reading from.
+     * @param readInto  The ByteBuffer to copy into.
+     * @return          The number of bytes copied from the cache.
+     * @throws IOException If there was a problem reading from the cache.
+     */
+    int read(long windowPos, int offset, ByteBuffer readInto) throws IOException;
 
     /**
      * Clears all {@link net.byteseek.io.reader.windows.Window}s from the cache.
