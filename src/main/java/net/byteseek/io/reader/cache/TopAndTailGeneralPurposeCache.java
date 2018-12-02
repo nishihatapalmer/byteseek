@@ -38,9 +38,22 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * A general purpose top and tail cache which holds on to the first X bytes and the last Y bytes.
+ * A general purpose top and tail cache, but also a fairly inefficient one.
+ * It holds on to at least the first X bytes and the last Y bytes, but may hold on to substantially
+ * more depending on the size of the windows added and the pattern they're added in.
+ *
  * <p>
- * It makes no assumption about the final length, so it will work with streaming readers.
+ * It makes no assumption about the final length, so it will work with streaming readers,
+ * such as the InputStreamReader.  It also supports random access readers like FileReader.
+ * If you know the reader will be a fixed length reader, it will be more efficient to use
+ * the TopAndtailKnownLengthCache.  If you know the reader will be a stream reader, and windows are
+ * placed in fixed intervals, then you should use the TopAndTailStreamCache instead.
+ * These will be more efficient than this general purpose top and tail reader cache.
+ * In general you will know the reader to which the cache is being added, since caching strategies
+ * usually reflect the type of underlying reader being used.
+ * In circumstances where this is not true and you want a top tail cache, but don't know what kind
+ * of reader is using it, or whether the windows exist at fixed intervals, this is the cache to use.
+ * <p>
  * It holds on to (at least) the last Y bytes given the highest length it has seen so far.
  * As windows are no longer within the tail cache they are gradually evicted from the cache
  * as new windows further along are added.
@@ -55,7 +68,7 @@ import java.util.*;
  * for example, with either random access or sequential access.  This approach means we do not have
  * to check all tail-cached windows each time we add a new window to the cache.
  */
-public final class TopAndTailCache extends AbstractMemoryCache {
+public final class TopAndTailGeneralPurposeCache extends AbstractMemoryCache {
 
     private final PositionHashMap<Window> cache;
     private final List<Window> tailCacheEntries;
@@ -64,11 +77,11 @@ public final class TopAndTailCache extends AbstractMemoryCache {
     private long lastPositionSeen;
     private int nextTailCacheToCheck;
 
-    public TopAndTailCache(final int cacheSize) {
+    public TopAndTailGeneralPurposeCache(final int cacheSize) {
         this(cacheSize, cacheSize);
     }
 
-    public TopAndTailCache(final int topCacheSize, final int tailCacheSize) {
+    public TopAndTailGeneralPurposeCache(final int topCacheSize, final int tailCacheSize) {
         this.cache = new PositionHashMap<Window>();
         this.tailCacheEntries = new ArrayList<Window>();
         this.topCacheSize = topCacheSize;
