@@ -35,6 +35,7 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * A specialised cache which stores data in two caches.  The memory cache is checked
@@ -98,10 +99,19 @@ public final class WriteThroughCache extends AbstractFreeNotificationCache {
     }
 
     @Override
-    public int read(long windowPos, int offset, byte[] readInto, int readIntoPos) throws IOException {
+    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
         int bytesRead = memoryCache.read(windowPos, offset, readInto, readIntoPos);
         if (bytesRead == 0) {
             bytesRead = persistentCache.read(windowPos, offset, readInto, readIntoPos);
+        }
+        return bytesRead;
+    }
+
+    @Override
+    public int read(final long windowPos, final int offset, final ByteBuffer readInto) throws IOException {
+        int bytesRead = memoryCache.read(windowPos, offset, readInto);
+        if (bytesRead == 0) {
+            bytesRead = persistentCache.read(windowPos, offset, readInto);
         }
         return bytesRead;
     }
