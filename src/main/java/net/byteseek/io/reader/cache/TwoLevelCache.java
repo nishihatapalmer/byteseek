@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2017, All rights reserved.
+ * Copyright Matt Palmer 2011-2018, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -36,6 +36,7 @@ import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * A {@link WindowCache} which wraps two further WindowCaches.  When a {@link net.byteseek.io.reader.windows.Window}
@@ -97,11 +98,19 @@ import java.io.IOException;
     @Override
     public int read(final long windowPos, final int offset,
                     final byte[] readInto, final int readIntoPos) throws IOException {
-
-        //TODO: should read attempt to read from more windows if available?  TempFileCache does.
         int bytesRead = primaryCache.read(windowPos, offset, readInto, readIntoPos);
         if (bytesRead == 0) {
             bytesRead = secondaryCache.read(windowPos, offset, readInto, readIntoPos);
+        }
+        return bytesRead;
+    }
+
+    @Override
+    public int read(final long windowPos, final int offset,
+                    final ByteBuffer readInto) throws IOException {
+        int bytesRead = primaryCache.read(windowPos, offset, readInto);
+        if (bytesRead == 0) {
+            bytesRead = secondaryCache.read(windowPos, offset, readInto);
         }
         return bytesRead;
     }
