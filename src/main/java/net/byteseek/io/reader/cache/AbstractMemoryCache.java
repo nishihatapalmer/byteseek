@@ -32,6 +32,7 @@
 package net.byteseek.io.reader.cache;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import net.byteseek.io.reader.windows.Window;
 
@@ -45,8 +46,6 @@ import net.byteseek.io.reader.windows.Window;
  * @author Matt Palmer
  */
 public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache  {
-
-    //TODO: what is behaviour if things are null or negative?
 
     @Override
     public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
@@ -67,6 +66,27 @@ public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache 
             }
         }
         return arrayPos - readIntoPos;
+    }
+
+    @Override
+    public int read(final long windowPos, final int offset, final ByteBuffer readInto) throws IOException {
+        final int startRemaining = readInto.remaining();
+        int bufferRemaining = startRemaining;
+        if (bufferRemaining > 0) {
+            Window window = getWindow(windowPos);
+            if (window != null) {
+                int bytesToCopy = Math.min(bufferRemaining, window.length() - offset);
+                readInto.put(window.getArray(), offset, bytesToCopy);
+                bufferRemaining = readInto.remaining();
+                while (bufferRemaining > 0 &&
+                        (window = getWindow(window.getNextWindowPosition())) != null) {
+                    bytesToCopy = Math.min(bufferRemaining, window.length());
+                    readInto.put(window.getArray(), 0, bytesToCopy);
+                    bufferRemaining = readInto.remaining();
+                }
+            }
+        }
+        return startRemaining - readInto.remaining();
     }
 
 }
