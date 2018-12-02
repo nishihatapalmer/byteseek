@@ -34,8 +34,10 @@ package net.byteseek.io.reader.cache;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 import net.byteseek.io.IOUtils;
+import net.byteseek.io.TempFileNotDeletedException;
 import net.byteseek.io.reader.windows.*;
 import net.byteseek.utils.collections.PositionHashMap;
 
@@ -156,6 +158,34 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         return bytesRead;
     }
 
+    @Override
+    public int read(final long windowPos, final int offset, final ByteBuffer readInto) throws IOException {
+        int bytesRead = 0;
+        if (file != null) {
+
+            // Get each contiguous cached window and write it into the array,
+            // until there are no more cached windows, or we have written enough bytes.
+            final int bytesRequired = readInto.remaining();
+            final PositionHashMap<WindowInfo> localPositions = windowPositions;
+            long readPos = windowPos;
+            int readOffset = offset;
+            WindowInfo info;
+            while ((info = localPositions.get(readPos)) != null && bytesRead < bytesRequired) {
+
+                // Have a window at the curent readPos - fill as many bytes as we can from it:
+                final long filePos = info.filePosition + readOffset;
+                int bytesCopied = IOUtils.readBytes(file.getChannel(), filePos, readInto);
+                if (bytesCopied < 1) {
+                    break; // shouldn't happen if the cached positions are within the file, but better to be safe.
+                }
+                bytesRead += bytesCopied;
+                readPos += info.length;
+                readOffset= 0;
+            }
+        }
+        return bytesRead;
+    }
+
     /**
      * Clears the map of Window positions to their position and size in the file,
      * and deletes the temporary file if it exists.
@@ -244,17 +274,4 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
 		return getClass().getSimpleName() + "(temp file: " + tempFile + " window positions recorded:" + windowPositions.size() + ')';
 	}
 
-    private static class TempFileNotDeletedException extends IOException {
-
-        /**
-         * Constructs a TempFileNotDeletedException from a descriptive message and a Throwable cause.
-         *
-         * @param message The message to include with the exception.
-         * @param cause   The Throwable which caused this exception to be thrown.
-         */
-        public TempFileNotDeletedException(final String message, final Throwable cause) {
-            super(message, cause);
-        }
-
-    }
 }
