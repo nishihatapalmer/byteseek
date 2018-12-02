@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-17, All rights reserved.
+ * Copyright Matt Palmer 2015-18, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,25 +35,25 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.collections.PositionHashMap;
 
 /**
- * A cache which holds on to a number of bytes at the top and tail of a reader.
+ * A cache which holds on to a number of bytes at the top and tail of a data source whose length is known up front.
  * <p>
- * This cache needs to know the total length of the reader when initialised, thus it is
- * not suitable for use with InputStreamReaders, as the length is unknown, and
- * determining the length causes the entire stream to be read.
+ * If the length of the data to be cached is known in advance without penalty, then this is the most
+ * efficient top and tail cache to use.  It is not suitable for use with InputStreamReaders,
+ * as the length is unknown, and determining the length causes the entire stream to be read.
  *
  * Created by matt on 17/09/15.
  */
-public final class TopAndTailFixedLengthCache extends AbstractMemoryCache {
+public final class TopAndTailKnownLengthCache extends AbstractMemoryCache {
 
     final long topCacheEnd;
     final long tailCacheStart;
     final PositionHashMap<Window> cache;
 
-    public TopAndTailFixedLengthCache(final long length, final long topTailBytes) {
+    public TopAndTailKnownLengthCache(final long length, final long topTailBytes) {
         this(length, topTailBytes, topTailBytes);
     }
 
-    public TopAndTailFixedLengthCache(final long length, final long topCacheBytes, final long tailCacheBytes) {
+    public TopAndTailKnownLengthCache(final long length, final long topCacheBytes, final long tailCacheBytes) {
         this.topCacheEnd    = topCacheBytes;
         this.tailCacheStart = length - tailCacheBytes;
         this.cache          = new PositionHashMap<Window>();
