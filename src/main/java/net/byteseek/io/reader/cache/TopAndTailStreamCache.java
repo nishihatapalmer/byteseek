@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-17, All rights reserved.
+ * Copyright Matt Palmer 2018, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,10 +35,15 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.collections.PositionHashMap;
 
 import java.io.IOException;
-import java.util.*;
 
 /**
  * A cache which holds on to the first X and last Y bytes of a stream as it is read.
+ * It is not necessary to know how long the stream is up-front.
+ * <p>
+ * There is an assumption that windows are placed in a fixed interval,
+ * i.e. the windows are always a fixed size (and hence exist at fixed intervals from each other).
+ * The last window in a stream may of course be shorter than the others,
+ * but this will not affect the cache strategy.
  * <p>
  * There is an assumption that windows can only be added in sequential order (as
  * they are being read from a stream). If windows are added in random access order,
@@ -50,19 +55,33 @@ public final class TopAndTailStreamCache extends AbstractMemoryCache {
 
     final long topCacheBytes;
     final long tailCacheBytes;
+    final int posOffsetToRemove;
     final PositionHashMap<Window> cache;
-    final List<Window> tailEntries;
 
-    public TopAndTailStreamCache(final long topTailBytes) {
-        this(topTailBytes, topTailBytes);
+    /**
+     * Constructs a Top and Tail Stream Cache given a single size (for both top and tail caches),
+     * and the interval at which windows are added.
+     *
+     * @param topTailBytes   The cache size for both the top and tail caches.
+     * @param windowInterval The position interval at which new windows are added.
+     */
+    public TopAndTailStreamCache(final long topTailBytes, final int windowInterval) {
+        this(topTailBytes, topTailBytes, windowInterval);
     }
 
-    public TopAndTailStreamCache(final long topBytes, final long tailBytes) {
+    /**
+     * Constructs a Top and Tail Stream Cache given a single size (for both top and tail caches),
+     * and the interval at which windows are added.
+     *
+     * @param topBytes       The size of the top cache.
+     * @param tailBytes      The size of the tail cache.
+     * @param windowInterval The position interval at which new windows are added.
+     */
+    public TopAndTailStreamCache(final long topBytes, final long tailBytes, final int windowInterval) {
         this.topCacheBytes  = topBytes;
         this.tailCacheBytes = tailBytes;
+        posOffsetToRemove   = (int) Math.ceil(tailBytes / windowInterval) * windowInterval;
         cache               = new PositionHashMap<Window>();
-        tailEntries         = new ArrayList<Window>();
-
     }
 
     @Override
@@ -73,39 +92,31 @@ public final class TopAndTailStreamCache extends AbstractMemoryCache {
     @Override
     public void addWindow(final Window window) throws IOException {
         final long windowPos = window.getWindowPosition();
-        cache.put(windowPos, window);
-        // past top bytes, into tail bytes.
-        if (windowPos >= topCacheBytes) {
+        final long localTopCacheSize = topCacheBytes; // grab a local reference to the member to avoid getting it repeatedly.
 
-            // Check for tail cached windows which shouldn't be cached any more.
-            final long tailCacheStart = window.getNextWindowPosition() - tailCacheBytes;
-            final int numTailEntries = tailEntries.size();
-            int removeEntry = 0;
-            for (int i = 0; i < numTailEntries; i++) {
-                final Window tailEntry = tailEntries.get(i);
-                if (tailEntry.getNextWindowPosition() <= tailCacheStart) {
-                    removeEntry = i + 1;
-                } else {
-                    break;
+        // If we're still in the top cache, just add it:
+        if (windowPos < localTopCacheSize) {
+            cache.put(windowPos, window);
+        } else {
+
+            // Is there any tail cache to worry about?
+            if (tailCacheBytes > 0) {
+
+                // The last window added will always be in the tail - windows are added sequentially in a stream.
+                final PositionHashMap localCache = cache; // grab a local reference to the member to avoid getting it repeatedly.
+                localCache.put(windowPos, window);
+
+                // If there's a previous window to remove as we stream along past the top cache, get rid of it:
+                final long windowPosToRemove = windowPos - posOffsetToRemove;
+                if (windowPosToRemove >= localTopCacheSize) {
+                    localCache.remove(windowPosToRemove);
                 }
             }
-            // If we found any to remove, remove them.
-            if (removeEntry > 0) {
-                for (int i = 0; i < removeEntry; i++) {
-                    final Window toRemove = tailEntries.get(i);
-                    cache.remove(toRemove.getWindowPosition());
-                    notifyWindowFree(toRemove, this);
-                }
-                tailEntries.subList(0, removeEntry).clear();
-            }
-            // add this window to our tail entries.
-            tailEntries.add(window);
         }
     }
 
     @Override
     public void clear() {
         cache.clear();
-        tailEntries.clear();
     }
 }
