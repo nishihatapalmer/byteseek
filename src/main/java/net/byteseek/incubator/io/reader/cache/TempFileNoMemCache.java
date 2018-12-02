@@ -43,6 +43,7 @@ import net.byteseek.utils.ArgUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 /**
  * A {@link WindowCache} which stores {@link Window} objects
@@ -124,6 +125,13 @@ public final class TempFileNoMemCache extends AbstractFreeNotificationCache impl
             final int bytesToRead = readInto.length - readIntoPos;
             bytesRead = IOUtils.readBytes(file, windowPos + offset, readInto, readIntoPos, bytesToRead);
         }
+        return bytesRead;
+    }
+
+    @Override
+    public int read(final long windowPos, final int offset, final ByteBuffer readInto) throws IOException {
+        int bytesRead = 0;
+        //TODO: finish this read.
         return bytesRead;
     }
 
