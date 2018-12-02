@@ -32,6 +32,8 @@
 package net.byteseek.io;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,6 +130,20 @@ public final class IOUtils {
 				break;
 			}
 			totalRead += read;
+		}
+		return totalRead;
+	}
+
+	public static int readBytes(final FileChannel input, final long fromPosition, final ByteBuffer bytes) throws IOException {
+		final int bytesToRead = bytes.remaining();
+		int totalRead = 0;
+		input.position(fromPosition);
+		while (totalRead < bytesToRead) {
+			int bytesRead = input.read(bytes);
+			if (bytesRead < 1) {
+				break;
+			}
+			totalRead += bytesRead;
 		}
 		return totalRead;
 	}
