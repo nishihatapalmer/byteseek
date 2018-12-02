@@ -34,6 +34,7 @@ package net.byteseek.io.reader.cache;
 import net.byteseek.io.reader.windows.Window;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 
 /**
@@ -69,6 +70,11 @@ public final class NoCache extends AbstractFreeNotificationCache {
 
     @Override
     public int read(final long windowPos, final int offset, final byte[] readInto, int readIntoPos) throws IOException {
+        return 0; // nothing in cache, no bytes copied
+    }
+
+    @Override
+    public int read(final long windowPos, final int offset, final ByteBuffer readInto) throws IOException {
         return 0; // nothing in cache, no bytes copied
     }
 
