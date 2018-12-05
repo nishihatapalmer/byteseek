@@ -48,7 +48,7 @@ public class TopAndTailCacheTest {
 
     private static byte[] array = new byte[4096];
 
-    private TopAndTailCache cache;
+    private TopAndTailGeneralPurposeCache cache;
     private int topCacheSize;
     private int tailCacheSize;
 
@@ -70,12 +70,12 @@ public class TopAndTailCacheTest {
 
     @Before
     public void setUp() {
-        cache = new TopAndTailCache(topCacheSize, tailCacheSize);
+        cache = new TopAndTailGeneralPurposeCache(topCacheSize, tailCacheSize);
     }
 
     @Test
     public void testSingleValueConstructor() {
-        TopAndTailCache c2 = new TopAndTailCache(topCacheSize);
+        TopAndTailGeneralPurposeCache c2 = new TopAndTailGeneralPurposeCache(topCacheSize);
         assertEquals("top cache size", topCacheSize, c2.getTopCacheSize());
         assertEquals("tail cache size", topCacheSize, c2.getTailCacheSize());
     }
@@ -93,8 +93,6 @@ public class TopAndTailCacheTest {
         assertNull(cache.getWindow(-1));
         assertNull(cache.getWindow(1000000000));
     }
-
-    //TODO: test read()
 
     @Test
     public void testWindowCachedCorrectlyInOrder() throws Exception {
@@ -116,10 +114,10 @@ public class TopAndTailCacheTest {
         }
     }
 
-    @Test
-    public void testSimulatedStreamReading() throws Exception {
-        //TODO: test reading in order and random access.h
-    }
+    //TODO: test reading windows added out of order.
+
+    //TODO: test read array and buffer
+
 
     @Test
     public void testClear() throws Exception {
