@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-18, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,10 +32,14 @@ package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.Window;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -76,6 +80,49 @@ public class NoCacheTest {
     }
 
     @Test
+    public void testReadBytBuffer() throws Exception {
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[1024]);
+        assertEquals(0, noCache.read(0, 0, buffer));
+        noCache.addWindow(window);
+        assertEquals(0, noCache.read(0, 0, buffer));
+    }
+
+    @Test
+    public void testSubscription() throws Exception {
+
+        final List<Window> evictedWindows = new ArrayList<Window>();
+        WindowCache.WindowObserver observer = new WindowCache.WindowObserver() {
+            @Override
+            public void windowFree(Window window, WindowCache fromCache) throws IOException {
+                evictedWindows.add(window);
+            }
+        };
+
+        noCache.subscribe(observer);
+        Window toEvict = addWindow(noCache, 0, 4096);
+        Assert.assertEquals(1, evictedWindows.size());
+
+        addWindow(noCache, 4096, 4096);
+        Assert.assertEquals(2, evictedWindows.size());
+
+        addWindow(noCache, 8192, 4096);
+        Assert.assertEquals(3, evictedWindows.size());
+
+        noCache.unsubscribe(observer);
+        addWindow(noCache, 20632, 4096);
+        Assert.assertEquals(3, evictedWindows.size());
+    }
+
+
+    private Window addWindow(final WindowCache cache, final long windowPosition, int length) throws IOException {
+        Window window = new HardWindow(new byte[length], windowPosition, length);
+        cache.addWindow(window);
+        return window;
+    }
+
+
+
+    @Test
     public void testAddImmediateFreeWindow() throws Exception {
         final Window[] result = new Window[1];
         WindowCache.WindowObserver observer = new WindowCache.WindowObserver() {
@@ -106,7 +153,5 @@ public class NoCacheTest {
         }
         assertNull(noCache.getWindow(0)); // If it returns anything but null here there's a problem.
     }
-
-    //TODO: test subscribe unsubscribe.
 
 }
