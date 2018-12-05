@@ -41,6 +41,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -199,15 +200,39 @@ public class TempFileCacheTest {
 
         assertEquals("no bytes read when nothing cached", 0, tempFileCache.read(0, 0, bytes1, 0));
         tempFileCache.addWindow(testWindow1);
-        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length, tempFileCache.read(0, 0, bytes1, 0));
-        assertArrayValue(testWindow1.getArray(), VALUE1);
+        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
+                      tempFileCache.read(0, 0, bytes1, 0));
+        assertArrayValue(bytes1, VALUE1, testWindow1Length);
 
 
         byte[] bytes2 = new byte[testData2Length];
-        assertEquals("no bytes read when nothing cached", 0, tempFileCache.read(testWindow1Length, 0, bytes2, 0));
+        assertEquals("no bytes read when nothing cached", 0,
+                      tempFileCache.read(testWindow1Length, 0, bytes2, 0));
         tempFileCache.addWindow(testWindow2);
-        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length, tempFileCache.read(testWindow1Length, 0, bytes2, 0));
-        assertArrayValue(testWindow2.getArray(), VALUE2);
+        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
+                tempFileCache.read(testWindow1Length, 0, bytes2, 0));
+        assertArrayValue(bytes2, VALUE2, testWindow2Length);
+    }
+
+    @Test
+    public void testReadByteBuffer() throws Exception {
+        ByteBuffer buffer1 = ByteBuffer.wrap(new byte[testData1Length]);
+
+        assertEquals("no bytes read when nothing cached", 0,
+                tempFileCache.read(0, 0, buffer1));
+        tempFileCache.addWindow(testWindow1);
+        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
+                      tempFileCache.read(0, 0, buffer1));
+        assertArrayValue(buffer1.array(), VALUE1, testWindow1Length);
+
+
+        ByteBuffer buffer2 = ByteBuffer.wrap(new byte[testData2Length]);
+        assertEquals("no bytes read when nothing cached", 0,
+                     tempFileCache.read(testWindow1Length, 0, buffer2));
+        tempFileCache.addWindow(testWindow2);
+        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
+                      tempFileCache.read(testWindow1Length, 0, buffer2));
+        assertArrayValue(buffer2.array(), VALUE2, testWindow2Length);
     }
 
     @Test
@@ -222,7 +247,11 @@ public class TempFileCacheTest {
     }
 
     private void assertArrayValue(final byte[] array, final byte value) {
-        for (int i = 0; i < array.length; i++) {
+        assertArrayValue(array, value, array.length);
+    }
+
+    private void assertArrayValue(final byte[] array, final byte value, final int length) {
+        for (int i = 0; i < length; i++) {
             assertTrue(array[i] == value);
         }
     }
