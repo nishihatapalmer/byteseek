@@ -187,11 +187,11 @@ public class TempFileCacheTest {
     public void testReloadWindowBytes() throws Exception {
         tempFileCache.addWindow(testWindow1);
         byte[] bytes = tempFileCache.reloadWindowBytes(testWindow1);
-        assertArrayValue(testWindow1.getArray(), VALUE1);
+        assertArrayValue(bytes, VALUE1);
 
         tempFileCache.addWindow(testWindow2);
         bytes = tempFileCache.reloadWindowBytes(testWindow2);
-        assertArrayValue(testWindow2.getArray(), VALUE2);
+        assertArrayValue(bytes, VALUE2);
     }
 
     @Test
