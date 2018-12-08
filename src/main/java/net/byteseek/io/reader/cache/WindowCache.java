@@ -70,7 +70,8 @@ public interface WindowCache {
      * Reads data held in the cache and copies it into the readInto byte array.  Returns the number of bytes copied.
      * <p>
      * A cache should read as much as it can into the byte array, even if this involves reading from several cached windows.
-     *  However, a cache does not have to do so if it is not possible to determine the next available window.
+     * However, a cache does not have to do so if it is not possible to determine the next available window.
+     * It is up to users of a cache to read from the next window if the available space has not been filled.
      * <p>
      * If the position requested is not in the cache (regardless of whether it is past the end or a negative position),
      * then the cache should not throw an exception, it should just return 0 bytes read.
@@ -89,6 +90,7 @@ public interface WindowCache {
      * <p>>
      * A cache should read as much as it can into the ByteBuffer, even if this involves reading from several cached windows.
      * However, a cache does not have to do so if it is not possible to determine the next available window.
+     * It is up to users of a cache to read from the next window if the availlable space has not been filled.
      * <p>
      * If the position requested is not in the cache (regardless of whether it is past the end or a negative position),
      * then the cache should not throw an exception, it should just return 0 bytes read.
