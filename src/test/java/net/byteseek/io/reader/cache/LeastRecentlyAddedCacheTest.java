@@ -37,7 +37,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -46,17 +48,26 @@ public class LeastRecentlyAddedCacheTest {
 
     private static long WINDOW1POS = 0;
     private static long WINDOW2POS = 4096;
+    private final static byte VALUE1 = 1;
+    private final static byte VALUE2 = 2;
 
     private LeastRecentlyAddedCache cache;
-    private byte[] testData;
+    private byte[] data1, data2;
     private Window testWindow1, testWindow2;
+    private int testWindow1Length = 4096;
+    private int testWindow2Length = 4096;
+    private int testData1Length   = 4096;
+    private int testData2Length   = 4096;
 
     @Before
     public void setupTest() {
         cache = new LeastRecentlyAddedCache(3);
-        testData = new byte[4096];
-        testWindow1 = new HardWindow(testData, WINDOW1POS, 4096);
-        testWindow2 = new HardWindow(testData, WINDOW2POS, 4096);
+        data1 = new byte[testData1Length];
+        Arrays.fill(data1, VALUE1);
+        data2 = new byte[testData2Length];
+        Arrays.fill(data2, VALUE2);
+        testWindow1 = new HardWindow(data1, WINDOW1POS, testWindow1Length);
+        testWindow2 = new HardWindow(data2, WINDOW2POS, testWindow2Length);
     }
 
     @After
@@ -103,6 +114,87 @@ public class LeastRecentlyAddedCacheTest {
         assertNull("Window no longer present in cache.", cache.getWindow(WINDOW2POS));
     }
 
+    @Test
+    public void testRead() throws Exception {
+        cache         = new LeastRecentlyAddedCache(5);
+
+        byte[] bytes1 = new byte[testData1Length];
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(0, 0, bytes1, 0));
+        cache.addWindow(testWindow1);
+        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
+                cache.read(0, 0, bytes1, 0));
+        assertArrayValue(bytes1, VALUE1, testWindow1Length);
+
+
+        byte[] bytes2 = new byte[testData2Length];
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(testWindow1Length, 0, bytes2, 0));
+        cache.addWindow(testWindow2);
+        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
+                cache.read(testWindow1Length, 0, bytes2, 0));
+        assertArrayValue(bytes2, VALUE2, testWindow2Length);
+    }
+
+    @Test
+    public void testReadByteBuffer() throws Exception {
+        ByteBuffer buffer1 = ByteBuffer.wrap(new byte[testData1Length]);
+        cache         = new LeastRecentlyAddedCache(5);
+
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(0, 0, buffer1));
+        cache.addWindow(testWindow1);
+        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
+                cache.read(0, 0, buffer1));
+        assertArrayValue(buffer1.array(), VALUE1, testWindow1Length);
+
+
+        ByteBuffer buffer2 = ByteBuffer.wrap(new byte[testData2Length]);
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(testWindow1Length, 0, buffer2));
+        cache.addWindow(testWindow2);
+        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
+                cache.read(testWindow1Length, 0, buffer2));
+        assertArrayValue(buffer2.array(), VALUE2, testWindow2Length);
+    }
+
+    @Test
+    public void testSubscription() throws Exception {
+
+        final List<Window> evictedWindows = new ArrayList<Window>();
+        WindowCache.WindowObserver observer = new WindowCache.WindowObserver() {
+            @Override
+            public void windowFree(Window window, WindowCache fromCache) throws IOException {
+                evictedWindows.add(window);
+            }
+        };
+
+        cache.subscribe(observer);
+        Window toEvict = addWindow(cache, 0, 4096);
+        assertEquals(0, evictedWindows.size());
+
+        addWindow(cache, 4096, 4096);
+        assertEquals(0, evictedWindows.size());
+
+        addWindow(cache, 8192, 4096);
+        assertEquals(0, evictedWindows.size());
+
+        addWindow(cache, 12288, 4096);
+        assertEquals(toEvict, evictedWindows.get(0));
+
+        addWindow(cache, 16536, 4096);
+        assertEquals(2, evictedWindows.size());
+
+        cache.unsubscribe(observer);
+        addWindow(cache, 20632, 4096);
+        assertEquals(2, evictedWindows.size());
+    }
+
+    private Window addWindow(final WindowCache cache, final long windowPosition, int length) throws IOException {
+        Window window = new HardWindow(data1, windowPosition, length);
+        cache.addWindow(window);
+        return window;
+    }
 
     @Test
     public void testEvictLeastRecentlyAdded() throws Exception {
@@ -129,7 +221,7 @@ public class LeastRecentlyAddedCacheTest {
         // Add windows up to the capacity (no windows should yet be evicted):
         for (int addNum = 1; addNum <= capacity; addNum++) {
             final long winPos = (addNum - 1) * 4096;
-            Window win = new HardWindow(testData, winPos, 4096);
+            Window win = new HardWindow(data1, winPos, 4096);
             cache.addWindow(win);
         }
         assertEquals("No windows yet evicted", 0, evictedWindows.size());
@@ -137,13 +229,13 @@ public class LeastRecentlyAddedCacheTest {
         // Access the windows added in reverse order - this should make no difference to least recently added cache:
         for (int addNum = capacity; addNum > 0; addNum--) {
             final long winPos = (addNum - 1) * 4096;
-            Window win = cache.getWindow(winPos);
+            assertNotNull(cache.getWindow(winPos));
         }
 
         // Add windows going over the capacity:
         for (int moreNum = capacity + 1; moreNum < capacity * 2; moreNum++) {
             final long winPos = (moreNum - 1) * 4096;
-            Window win = new HardWindow(testData, winPos, 4096);
+            Window win = new HardWindow(data1, winPos, 4096);
             cache.addWindow(win);
 
             assertEquals("Num windows evicted correct:", moreNum - capacity, evictedWindows.size());
@@ -154,8 +246,6 @@ public class LeastRecentlyAddedCacheTest {
 
     }
 
-    //TODO: test subscribe unsubscribe.
-
     @Test
     public void testToString() throws Exception {
         String description = cache.toString();
@@ -163,6 +253,9 @@ public class LeastRecentlyAddedCacheTest {
         assertTrue(description.contains("capacity"));
     }
 
-    private class WindowObserver {
+    private void assertArrayValue(final byte[] array, final byte value, final int length) {
+        for (int i = 0; i < length; i++) {
+            assertTrue(array[i] == value);
+        }
     }
 }
