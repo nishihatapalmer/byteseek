@@ -44,7 +44,7 @@ import java.util.Collection;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class TopAndTailCacheTest {
+public class TopAndTailGeneralPurposeCacheTest {
 
     private static byte[] array = new byte[4096];
 
@@ -52,7 +52,7 @@ public class TopAndTailCacheTest {
     private int topCacheSize;
     private int tailCacheSize;
 
-    public TopAndTailCacheTest(Integer topCacheSize, Integer tailCacheSize) {
+    public TopAndTailGeneralPurposeCacheTest(Integer topCacheSize, Integer tailCacheSize) {
         this.topCacheSize = topCacheSize;
         this.tailCacheSize = tailCacheSize;
     }
