@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-18, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -38,25 +38,40 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
 public class AllWindowsCacheTest {
 
-    private final byte[] array = new byte[1024];
-    private final Window window1 = new HardWindow(array, 0, array.length);
-    private final Window window2 = new HardWindow(array, 1024, array.length);
+    private static long WINDOW1POS = 0;
+    private static long WINDOW2POS = 4096;
+    private final static byte VALUE1 = 1;
+    private final static byte VALUE2 = 2;
 
-    private AllWindowsCache allWindowsCache;
+    private AllWindowsCache cache;
+    private byte[] data1, data2;
+    private Window testWindow1, testWindow2;
+    private int testWindow1Length = 4096;
+    private int testWindow2Length = 4096;
+    private int testData1Length   = 4096;
+    private int testData2Length   = 4096;
 
     @Before
-    public void setup() {
-        allWindowsCache = new AllWindowsCache();
+    public void setupTest() {
+        cache = new AllWindowsCache();
+        data1 = new byte[testData1Length];
+        Arrays.fill(data1, VALUE1);
+        data2 = new byte[testData2Length];
+        Arrays.fill(data2, VALUE2);
+        testWindow1 = new HardWindow(data1, WINDOW1POS, testWindow1Length);
+        testWindow2 = new HardWindow(data2, WINDOW2POS, testWindow2Length);
     }
 
     @After
     public void close() {
-        allWindowsCache.clear();
+        cache.clear();
     }
 
     @Test
@@ -78,40 +93,40 @@ public class AllWindowsCacheTest {
 
     @Test
     public void testGetNullWindows() throws Exception {
-        assertNull(allWindowsCache.getWindow(0));
-        assertNull(allWindowsCache.getWindow(4096));
-        assertNull(allWindowsCache.getWindow(-1));
-        assertNull(allWindowsCache.getWindow(1000000000));
+        assertNull(cache.getWindow(0));
+        assertNull(cache.getWindow(4096));
+        assertNull(cache.getWindow(-1));
+        assertNull(cache.getWindow(1000000000));
     }
 
     @Test
     public void testGetAddWindow() throws Exception {
-        assertNull(allWindowsCache.getWindow(0));
-        assertNull(allWindowsCache.getWindow(1024));
-        assertNull(allWindowsCache.getWindow(-1));
-        assertNull(allWindowsCache.getWindow(1));
-        assertNull(allWindowsCache.getWindow(1023));
-        assertNull(allWindowsCache.getWindow(1025));
+        assertNull(cache.getWindow(0));
+        assertNull(cache.getWindow(1024));
+        assertNull(cache.getWindow(-1));
+        assertNull(cache.getWindow(1));
+        assertNull(cache.getWindow(1023));
+        assertNull(cache.getWindow(1025));
 
-        allWindowsCache.addWindow(window2);
-        assertNull(allWindowsCache.getWindow(0));
-        assertNotNull(allWindowsCache.getWindow(1024));
-        assertNull(allWindowsCache.getWindow(-1));
-        assertNull(allWindowsCache.getWindow(1));
-        assertNull(allWindowsCache.getWindow(1023));
-        assertNull(allWindowsCache.getWindow(1025));
+        cache.addWindow(testWindow1);
+        assertNotNull(cache.getWindow(WINDOW1POS));
+        assertNull(cache.getWindow(WINDOW2POS));
+        assertNull(cache.getWindow(-1));
+        assertNull(cache.getWindow(1));
+        assertNull(cache.getWindow(1023));
+        assertNull(cache.getWindow(1025));
 
-        allWindowsCache.addWindow(window1);
-        assertNotNull(allWindowsCache.getWindow(0));
-        assertNotNull(allWindowsCache.getWindow(1024));
-        assertNull(allWindowsCache.getWindow(-1));
-        assertNull(allWindowsCache.getWindow(1));
-        assertNull(allWindowsCache.getWindow(1023));
-        assertNull(allWindowsCache.getWindow(1025));
+        cache.addWindow(testWindow2);
+        assertNotNull(cache.getWindow(WINDOW1POS));
+        assertNotNull(cache.getWindow(WINDOW2POS));
+        assertNull(cache.getWindow(-1));
+        assertNull(cache.getWindow(1));
+        assertNull(cache.getWindow(1023));
+        assertNull(cache.getWindow(1025));
     }
 
     @Test
-    public void testCachesAllWindows() {
+    public void testCachesAllWindows() throws Exception {
         final int[] freeCount = new int[1];
         WindowCache.WindowObserver observer = new WindowCache.WindowObserver() {
             @Override
@@ -119,43 +134,91 @@ public class AllWindowsCacheTest {
                 freeCount[0] = freeCount[0] + 1;
             }
         };
-        allWindowsCache.subscribe(observer);
+        cache.subscribe(observer);
         for (int i = 0; i < 10000; i++) {
-            Window window = new HardWindow(array, i, 1);
-            allWindowsCache.addWindow(window);
+            Window window = new HardWindow(data1, i, 1);
+            cache.addWindow(window);
         }
         assertEquals(0, freeCount[0]);
         for (int i = 0; i < 10000; i++) {
-            assertNotNull(allWindowsCache.getWindow(i));
+            assertNotNull(cache.getWindow(i));
         }
     }
 
     @Test
     public void testClear() throws Exception {
-        allWindowsCache.addWindow(window1);
-        allWindowsCache.addWindow(window2);
-        assertNotNull(allWindowsCache.getWindow(0));
-        assertNotNull(allWindowsCache.getWindow(1024));
-        assertNull(allWindowsCache.getWindow(-1));
-        assertNull(allWindowsCache.getWindow(1));
-        assertNull(allWindowsCache.getWindow(1023));
-        assertNull(allWindowsCache.getWindow(1025));
-        allWindowsCache.clear();
-        assertNull(allWindowsCache.getWindow(0));
-        assertNull(allWindowsCache.getWindow(1024));
-        assertNull(allWindowsCache.getWindow(-1));
-        assertNull(allWindowsCache.getWindow(1));
-        assertNull(allWindowsCache.getWindow(1023));
-        assertNull(allWindowsCache.getWindow(1025));
+        cache.addWindow(testWindow1);
+        cache.addWindow(testWindow2);
+        assertNotNull(cache.getWindow(WINDOW1POS));
+        assertNotNull(cache.getWindow(WINDOW2POS));
+        assertNull(cache.getWindow(-1));
+        assertNull(cache.getWindow(1));
+        assertNull(cache.getWindow(1023));
+        assertNull(cache.getWindow(1025));
+        cache.clear();
+        assertNull(cache.getWindow(0));
+        assertNull(cache.getWindow(1024));
+        assertNull(cache.getWindow(-1));
+        assertNull(cache.getWindow(1));
+        assertNull(cache.getWindow(1023));
+        assertNull(cache.getWindow(1025));
     }
 
     @Test
     public void testToString() throws Exception {
-        assertTrue(allWindowsCache.toString().contains(allWindowsCache.getClass().getSimpleName()));
-        assertTrue(allWindowsCache.toString().contains("size"));
-        assertTrue(allWindowsCache.toString().contains("capacity"));
+        assertTrue(cache.toString().contains(cache.getClass().getSimpleName()));
+        assertTrue(cache.toString().contains("size"));
+        assertTrue(cache.toString().contains("capacity"));
     }
 
-    //TODO: test subscribe unsubscribe.
+    @Test
+    public void testRead() throws Exception {
+        cache         = new AllWindowsCache(5);
 
+        byte[] bytes1 = new byte[testData1Length];
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(0, 0, bytes1, 0));
+        cache.addWindow(testWindow1);
+        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
+                cache.read(0, 0, bytes1, 0));
+        assertArrayValue(bytes1, VALUE1, testWindow1Length);
+
+
+        byte[] bytes2 = new byte[testData2Length];
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(testWindow1Length, 0, bytes2, 0));
+        cache.addWindow(testWindow2);
+        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
+                cache.read(testWindow1Length, 0, bytes2, 0));
+        assertArrayValue(bytes2, VALUE2, testWindow2Length);
+    }
+
+    @Test
+    public void testReadByteBuffer() throws Exception {
+        ByteBuffer buffer1 = ByteBuffer.wrap(new byte[testData1Length]);
+        cache         = new AllWindowsCache(5);
+
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(0, 0, buffer1));
+        cache.addWindow(testWindow1);
+        assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
+                cache.read(0, 0, buffer1));
+        assertArrayValue(buffer1.array(), VALUE1, testWindow1Length);
+
+
+        ByteBuffer buffer2 = ByteBuffer.wrap(new byte[testData2Length]);
+        assertEquals("no bytes read when nothing cached", 0,
+                cache.read(testWindow1Length, 0, buffer2));
+        cache.addWindow(testWindow2);
+        assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
+                cache.read(testWindow1Length, 0, buffer2));
+        assertArrayValue(buffer2.array(), VALUE2, testWindow2Length);
+    }
+
+
+    private void assertArrayValue(final byte[] array, final byte value, final int length) {
+        for (int i = 0; i < length; i++) {
+            assertTrue(array[i] == value);
+        }
+    }
 }
