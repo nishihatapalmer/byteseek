@@ -218,10 +218,14 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
     @Override
     public byte[] reloadWindowBytes(final Window window) throws IOException {
         if (file == null) {
-            throw new WindowMissingException("Cache temp file does not exist.");
+            throw new WindowMissingException("Cache temp file does not exist in cache: " + this);
+        }
+        final long filePosition = window.getWindowPosition() - startOffset;
+        if (filePosition >= length || filePosition < 0) {
+            throw new WindowMissingException("Window position " + window.getWindowPosition() + " not in cache " + this);
         }
         final byte[] array = new byte[windowSize];
-        IOUtils.readBytes(file, window.getWindowPosition(), array);
+        IOUtils.readBytes(file, filePosition, array);
         return array;
     }
 
