@@ -35,6 +35,7 @@ import net.byteseek.io.reader.windows.Window;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -144,6 +145,36 @@ public class TwoLevelCacheTest {
         assertEquals(4096, cache.read(0, 0, array, 0));
     }
 
+    @Test
+    public void testReadBuffer() throws Exception {
+        WindowCache cache1 = new LeastRecentlyAddedCache(1);
+        WindowCache cache2 = new AllWindowsCache();
+        WindowCache cache = new TwoLevelCache(cache1, cache2);
+
+        Window window1 = createWindow(0, 4096, (byte) 81);
+        cache.addWindow(window1);
+
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[4096]);
+        assertEquals(4096, cache1.read(0, 0, buffer));
+
+        buffer = ByteBuffer.wrap(new byte[4096]);
+        assertEquals(0, cache2.read(0, 0, buffer));
+        assertEquals(4096, cache.read(0, 0, buffer));
+
+        Window window2 = createWindow( 4096, 4096, (byte) 22);
+        cache.addWindow(window2);
+
+        buffer = ByteBuffer.wrap(new byte[4096]);
+        assertEquals(0, cache1.read(0, 0, buffer));
+        assertEquals(4096, cache1.read(4096, 0, buffer));
+
+        buffer = ByteBuffer.wrap(new byte[4096]);
+        assertEquals(4096, cache2.read(0, 0, buffer));
+        buffer = ByteBuffer.wrap(new byte[4096]);
+        assertEquals(0, cache2.read(4096, 0, buffer));
+
+        assertEquals(4096, cache.read(0, 0, buffer));
+    }
 
     @Test
     public void testClearPrimary() throws Exception {
