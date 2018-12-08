@@ -181,7 +181,7 @@ public class AllWindowsCacheTest {
         cache.addWindow(testWindow1);
         assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
                 cache.read(0, 0, bytes1, 0));
-        assertArrayValue(bytes1, VALUE1, testWindow1Length);
+        assertArrayValue(bytes1, VALUE1, 0, testWindow1Length);
 
 
         byte[] bytes2 = new byte[testData2Length];
@@ -190,7 +190,12 @@ public class AllWindowsCacheTest {
         cache.addWindow(testWindow2);
         assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
                 cache.read(testWindow1Length, 0, bytes2, 0));
-        assertArrayValue(bytes2, VALUE2, testWindow2Length);
+        assertArrayValue(bytes2, VALUE2, 0, testWindow2Length);
+
+        // Read halfway through the first window
+        assertEquals(testData1Length, cache.read(0, testWindow1Length / 2, bytes1, 0));
+        assertArrayValue(bytes1, VALUE1, 0, testWindow1Length / 2);
+        assertArrayValue(bytes1, VALUE2, testWindow1Length / 2, testWindow1Length / 2);
     }
 
     @Test
@@ -203,7 +208,7 @@ public class AllWindowsCacheTest {
         cache.addWindow(testWindow1);
         assertEquals(testWindow1Length + "bytes read after caching it", testWindow1Length,
                 cache.read(0, 0, buffer1));
-        assertArrayValue(buffer1.array(), VALUE1, testWindow1Length);
+        assertArrayValue(buffer1.array(), VALUE1, 0, testWindow1Length);
 
 
         ByteBuffer buffer2 = ByteBuffer.wrap(new byte[testData2Length]);
@@ -212,12 +217,18 @@ public class AllWindowsCacheTest {
         cache.addWindow(testWindow2);
         assertEquals(testWindow2Length + " bytes read after caching it", testWindow2Length,
                 cache.read(testWindow1Length, 0, buffer2));
-        assertArrayValue(buffer2.array(), VALUE2, testWindow2Length);
+        assertArrayValue(buffer2.array(), VALUE2, 0, testWindow2Length);
+
+        // Read halfway through the first window
+        ByteBuffer buffer3 = ByteBuffer.wrap(new byte[testData1Length]);
+        assertEquals(testData1Length, cache.read(0, testWindow1Length / 2, buffer3));
+        assertArrayValue(buffer3.array(), VALUE1, 0, testWindow1Length / 2);
+        assertArrayValue(buffer3.array(), VALUE2, testWindow1Length / 2, testWindow1Length / 2);
     }
 
 
-    private void assertArrayValue(final byte[] array, final byte value, final int length) {
-        for (int i = 0; i < length; i++) {
+    private void assertArrayValue(final byte[] array, final byte value, final int offset, final int length) {
+        for (int i = offset; i < length; i++) {
             assertTrue(array[i] == value);
         }
     }
