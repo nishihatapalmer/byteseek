@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -57,6 +58,7 @@ public class WriteAroundCacheTest {
         cache2 = new AllWindowsCache();
         cache = new WriteAroundCache(cache1, cache2);
         testData = new byte[4096];
+        Arrays.fill(testData, (byte) 0x81);
         testWindow1 = new HardWindow(testData, WINDOW1POS, 4096);
         testWindow2 = new HardWindow(testData, WINDOW2POS, 4096);
     }
@@ -177,7 +179,7 @@ public class WriteAroundCacheTest {
         cache.addWindow(testWindow1);
         assertEquals( 0, cache.read(1, 0, array, 0));
         assertEquals( 4096, cache.read(0, 0, array, 0));
-        assertArrayEquals(array, testData);
+        assertArrayEquals(array, testData); //TODO: does nothing - testwindow doesn't contain testData.
 
         // Read offset into 100
         assertEquals(4000, cache.read(0, 0, array, 96));
@@ -186,6 +188,28 @@ public class WriteAroundCacheTest {
         // Nothing is read:
         assertEquals( 0, cache.read(1, 0, array, 0));
         assertEquals( 0, cache.read(0, 0, array, 0));
+    }
+
+    @Test
+    public void testReadBufferFromCache() throws Exception {
+        byte[] array = new byte[4096];
+        Arrays.fill(testData, (byte) 0x81);
+        ByteBuffer buffer = ByteBuffer.wrap(array);
+
+        // Nothing is read:
+        assertEquals( 0, cache.read(1, 0, buffer));
+        assertEquals( 0, cache.read(0, 0, buffer));
+
+        // Add a window:
+        cache.addWindow(testWindow1);
+        assertEquals( 0, cache.read(1, 0, buffer));
+        assertEquals( 4096, cache.read(0, 0, buffer));
+        assertArrayEquals(buffer.array(), testData);
+
+        cache.clear();
+        // Nothing is read:
+        assertEquals( 0, cache.read(1, 0, buffer));
+        assertEquals( 0, cache.read(0, 0, buffer));
     }
 
     @Test
@@ -218,6 +242,34 @@ public class WriteAroundCacheTest {
         assertEquals( 0, cache.read(1, 0, array, 0));
         assertEquals( 0, cache.read(0, 0, array, 0));
     }
+
+
+    @Test
+    public void testReadBufferNotInMemoryCache() throws Exception {
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[4096]);
+        // Nothing is read:
+        assertEquals( 0, cache.read(1, 0, buffer));
+        assertEquals( 0, cache.read(0, 0, buffer));
+
+        // Add a window:
+        cache.addWindow(testWindow1);
+
+        // Remove window from first cache (leaving it in persistent cache):
+        cache1.clear();
+        assertEquals( 0, cache1.read(1, 0, buffer));
+        assertEquals( 0, cache1.read(0, 0, buffer));
+
+        // Reading from cache still gets it from persistent cache:
+        assertEquals( 0, cache.read(1, 0, buffer));
+        assertEquals( 4096, cache.read(0, 0, buffer));
+        assertArrayEquals(buffer.array(), testData);
+
+        cache.clear();
+        // Nothing is read:
+        assertEquals( 0, cache.read(1, 0, buffer));
+        assertEquals( 0, cache.read(0, 0, buffer));
+    }
+
 
     @Test
     public void testGetMemoryCache() throws Exception {
