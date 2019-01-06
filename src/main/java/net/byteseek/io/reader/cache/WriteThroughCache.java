@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2018, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,6 +32,7 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowFactory;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ import java.nio.ByteBuffer;
  *
  * @author Matt Palmer
  */
-public final class WriteThroughCache extends AbstractFreeNotificationCache {
+public final class WriteThroughCache extends AbstractCache {
 
     private final WindowCache memoryCache;
     private final WindowCache persistentCache;
@@ -99,10 +100,11 @@ public final class WriteThroughCache extends AbstractFreeNotificationCache {
     }
 
     @Override
-    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
-        int bytesRead = memoryCache.read(windowPos, offset, readInto, readIntoPos);
+    public int read(final long windowPos, final int offset, final byte[] readInto,
+                    final int readIntoPos, final int maxLength) throws IOException {
+        int bytesRead = memoryCache.read(windowPos, offset, readInto, readIntoPos, maxLength);
         if (bytesRead == 0) {
-            bytesRead = persistentCache.read(windowPos, offset, readInto, readIntoPos);
+            bytesRead = persistentCache.read(windowPos, offset, readInto, readIntoPos, maxLength);
         }
         return bytesRead;
     }
@@ -132,6 +134,12 @@ public final class WriteThroughCache extends AbstractFreeNotificationCache {
         if (memCacheException != null) {
             throw memCacheException;
         }
+    }
+
+    @Override
+    public void setWindowFactory(final WindowFactory factory) {
+        // A WriteThroughCache does not need to create new windows,
+        // even if some of the caches it wraps do.
     }
 
     /**

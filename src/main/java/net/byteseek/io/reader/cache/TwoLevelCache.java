@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2018, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,7 +32,7 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.cache.WindowCache.WindowObserver;
+import net.byteseek.io.reader.windows.WindowFactory;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
@@ -55,11 +55,10 @@ import java.nio.ByteBuffer;
  * 
  * @author Matt Palmer
  */
- public final class TwoLevelCache extends AbstractFreeNotificationCache {
+ public final class TwoLevelCache extends AbstractCache {
 
     private final WindowCache primaryCache;
     private final WindowCache secondaryCache;
-    private final WindowCache.WindowObserver twoLevelPolicy;
 
     /**
      * Constructs a TwoLevelCache from a primary and secondary cache.
@@ -72,7 +71,7 @@ import java.nio.ByteBuffer;
         ArgUtils.checkNullObject(secondaryCache, "secondaryCache");
         this.primaryCache = primaryCache;
         this.secondaryCache = secondaryCache;
-        this.twoLevelPolicy = new TwoLevelEvictionPolicy();
+        final WindowObserver twoLevelPolicy = new TwoLevelEvictionPolicy();
         this.primaryCache.subscribe(twoLevelPolicy);
         this.secondaryCache.subscribe(twoLevelPolicy);
     }
@@ -97,10 +96,10 @@ import java.nio.ByteBuffer;
 
     @Override
     public int read(final long windowPos, final int offset,
-                    final byte[] readInto, final int readIntoPos) throws IOException {
-        int bytesRead = primaryCache.read(windowPos, offset, readInto, readIntoPos);
+                    final byte[] readInto, final int readIntoPos, final int maxLength) throws IOException {
+        int bytesRead = primaryCache.read(windowPos, offset, readInto, readIntoPos, maxLength);
         if (bytesRead == 0) {
-            bytesRead = secondaryCache.read(windowPos, offset, readInto, readIntoPos);
+            bytesRead = secondaryCache.read(windowPos, offset, readInto, readIntoPos, maxLength);
         }
         return bytesRead;
     }
@@ -145,7 +144,13 @@ import java.nio.ByteBuffer;
     public WindowCache getSecondaryCache() {
         return secondaryCache;
     }
-    
+
+    @Override
+    public void setWindowFactory(final WindowFactory factory) {
+        // The TwoLevelCache does not need to create new windows
+        // (even if some of the caches it wraps do).
+    }
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "(primary cache: " + primaryCache +
@@ -159,7 +164,7 @@ import java.nio.ByteBuffer;
      * evicted from the secondary cache, it notifies any subscribers to the TwoLevelCache
      * that something has left it entirely.
      */
-	private class TwoLevelEvictionPolicy implements WindowCache.WindowObserver {
+	private class TwoLevelEvictionPolicy implements WindowObserver {
 
         @Override
         public void windowFree(Window window, WindowCache fromCache) throws IOException {
