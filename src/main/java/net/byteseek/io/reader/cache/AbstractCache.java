@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2017, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -39,8 +39,9 @@ import java.util.List;
 import net.byteseek.io.reader.windows.Window;
 
 /**
- * An AbstractFreeNotificationCache implements the {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
- * providing subscription, unsubscription and notification services.
+ * An AbstractCache implements the {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} part of a {@link WindowCache},
+ * providing subscription, unsubscription and notification services, as well as any other methods which are
+ * universally implementable (e.g. convenience methods).
  * <p>
  * Observers can receive notifications that a Window is leaving a WindowCache.
  * <p>
@@ -49,14 +50,14 @@ import net.byteseek.io.reader.windows.Window;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractFreeNotificationCache implements WindowCache {
+public abstract class AbstractCache implements WindowCache {
     
     private List<WindowObserver> windowObservers; 
     
     /**
      * Constructs a WindowCache with an empty list of cache observers.
      */
-    public AbstractFreeNotificationCache() {
+    public AbstractCache() {
         windowObservers = Collections.emptyList(); 
     }
 
@@ -88,6 +89,11 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
         return removed;
     }
 
+    @Override
+    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
+        return read(windowPos, offset, readInto, readIntoPos, readInto.length);
+    }
+
     /**
      * Notifies a {@link net.byteseek.io.reader.cache.WindowCache.WindowObserver} that a {@link net.byteseek.io.reader.windows.Window} was removed from a
      * {@link WindowCache}.
@@ -97,9 +103,11 @@ public abstract class AbstractFreeNotificationCache implements WindowCache {
      */
     protected final void notifyWindowFree(final Window window, final WindowCache fromCache) throws IOException {
         IOException cacheException = null;
-        for (int i = 0; i < windowObservers.size(); i++) {
+        // Avoid garbage: use indexed access to the observers to avoid creating an Iterator.
+        final List<WindowObserver> observers = windowObservers;
+        for (int i = 0; i < observers.size(); i++) {
             try {
-                windowObservers.get(i).windowFree(window, fromCache);
+                observers.get(i).windowFree(window, fromCache);
             } catch (IOException ex) {
                 cacheException = ex;
             }
