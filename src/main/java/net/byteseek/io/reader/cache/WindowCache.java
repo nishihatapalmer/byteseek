@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2018, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,6 +32,7 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -67,11 +68,8 @@ public interface WindowCache {
     void addWindow(Window window) throws IOException;
 
     /**
-     * Reads data held in the cache and copies it into the readInto byte array.  Returns the number of bytes copied.
-     * <p>
-     * A cache should read as much as it can into the byte array, even if this involves reading from several cached windows.
-     * However, a cache does not have to do so if it is not possible to determine the next available window.
-     * It is up to users of a cache to read from the next window if the available space has not been filled.
+     * Reads data held in the cache and copies it into the readInto byte array, up to the available bytes in the array.
+     * Returns the number of bytes copied.
      * <p>
      * If the position requested is not in the cache (regardless of whether it is past the end or a negative position),
      * then the cache should not throw an exception, it should just return 0 bytes read.
@@ -84,6 +82,23 @@ public interface WindowCache {
      * @throws IOException if there was a problem reading from the cache.
      */
     int read(long windowPos, int offset, byte[] readInto, int readIntoPos) throws IOException;
+
+    /**
+     * Reads data held in the cache and copies it into the readInto byte array, up to the maximum length or the available
+     * bytes in the array. Returns the number of bytes copied.
+     * <p>
+     * If the position requested is not in the cache (regardless of whether it is past the end or a negative position),
+     * then the cache should not throw an exception, it should just return 0 bytes read.
+     * <p>
+     * @param windowPos The position of the window in the cache.
+     * @param offset    The offset into the window to begin reading from.
+     * @param readInto  The byte array to copy into.
+     * @param readIntoPos The position in the byte array to start copying.
+     * @param maxLength      The maximum number of bytes to read.
+     * @return The number of bytes copied from the cache.
+     * @throws IOException if there was a problem reading from the cache.
+     */
+    int read(long windowPos, int offset, byte[] readInto, int readIntoPos, int maxLength) throws IOException;
 
     /**
      * Reads data held in the cache and copies it into the readInto ByteBuffer.
@@ -127,7 +142,17 @@ public interface WindowCache {
      *                 has already been unsubscribed.
      */
     boolean unsubscribe(WindowObserver observer);
-    
+
+    /**
+     * Sets the window factory the cache uses to create new windows.
+     * <p>
+     * Memory based caches do not typically create new windows,
+     * but persistent storage caches usually need to create a new window in memory.
+     *
+     * @param factory The WindowFactory to use to create new Windows.
+     */
+    void setWindowFactory(WindowFactory factory);
+
     /**
      * An interface for objects which want notification when a {@link net.byteseek.io.reader.windows.Window}
      * is leaving a cache.
