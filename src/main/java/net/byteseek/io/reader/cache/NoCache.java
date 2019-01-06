@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2018, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,6 +32,7 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -43,7 +44,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Matt Palmer
  */
-public final class NoCache extends AbstractFreeNotificationCache {
+public final class NoCache extends AbstractCache {
 
     /**
      * Always returns null, as no Windows are cached.
@@ -69,12 +70,13 @@ public final class NoCache extends AbstractFreeNotificationCache {
     }
 
     @Override
-    public int read(final long windowPos, final int offset, final byte[] readInto, int readIntoPos) throws IOException {
+    public int read(final long windowPos, final int offset, final byte[] readInto,
+                    final int readIntoPos, final int maxLength)  {
         return 0; // nothing in cache, no bytes copied
     }
 
     @Override
-    public int read(final long windowPos, final int offset, final ByteBuffer readInto) throws IOException {
+    public int read(final long windowPos, final int offset, final ByteBuffer readInto) {
         return 0; // nothing in cache, no bytes copied
     }
 
@@ -84,6 +86,11 @@ public final class NoCache extends AbstractFreeNotificationCache {
     @Override
     public void clear() {
         // nothing to do
+    }
+
+    @Override
+    public void setWindowFactory(final WindowFactory factory) {
+        // A NoCache does not need to create new windows.
     }
     
 	@Override
