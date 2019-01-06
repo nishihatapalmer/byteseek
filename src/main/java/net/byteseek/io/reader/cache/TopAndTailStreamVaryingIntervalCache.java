@@ -70,7 +70,6 @@ public final class TopAndTailStreamVaryingIntervalCache extends AbstractMemoryCa
         this.tailCacheBytes = tailBytes;
         cache               = new PositionHashMap<Window>();
         tailEntries         = new ArrayList<Window>();
-
     }
 
     @Override
@@ -80,7 +79,7 @@ public final class TopAndTailStreamVaryingIntervalCache extends AbstractMemoryCa
 
     @Override
     public void addWindow(final Window window) throws IOException {
-        final PositionHashMap localCache = cache;
+        final PositionHashMap<Window> localCache = cache;
         final long windowPos = window.getWindowPosition();
 
         // If we're still in the top cache, just add it:
