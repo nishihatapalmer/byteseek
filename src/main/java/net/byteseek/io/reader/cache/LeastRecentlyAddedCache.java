@@ -87,7 +87,7 @@ public final class LeastRecentlyAddedCache extends AbstractMemoryCache {
      * to provide caching services, and also provides notification to any
      * {@link WindowObserver}s who are subscribed when a {@link net.byteseek.io.reader.windows.Window} leaves it.
      */
-    private class Cache extends LongLinkedHashMap<Window> {
+    private static class Cache extends LongLinkedHashMap<Window> {
 
         private final int capacity;
         private Window removeWindow = null;
