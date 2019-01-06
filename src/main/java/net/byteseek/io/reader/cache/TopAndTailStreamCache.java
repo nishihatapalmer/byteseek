@@ -103,7 +103,7 @@ public final class TopAndTailStreamCache extends AbstractMemoryCache {
             if (tailCacheBytes > 0) {
 
                 // The last window added will always be in the tail - windows are added sequentially in a stream.
-                final PositionHashMap localCache = cache; // grab a local reference to the member to avoid getting it repeatedly.
+                final PositionHashMap<Window> localCache = cache; // grab a local reference to the member to avoid getting it repeatedly.
                 localCache.put(windowPos, window);
 
                 // If there's a previous window to remove as we stream along past the top cache, get rid of it:
