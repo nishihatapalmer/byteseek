@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-18, All rights reserved.
+ * Copyright Matt Palmer 2015-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -49,10 +49,24 @@ public final class TopAndTailKnownLengthCache extends AbstractMemoryCache {
     final long tailCacheStart;
     final PositionHashMap<Window> cache;
 
+    /**
+     * Constructs a TopAndTailKnownLengthCache, given the length of the data source,
+     * and at least how many bytes at the top and tail of the source should be cached.
+     *
+     * @param length       The length of the data source to be cached.
+     * @param topTailBytes The minimum number of bytes at both the top and tail of the source to be cached.
+     */
     public TopAndTailKnownLengthCache(final long length, final long topTailBytes) {
         this(length, topTailBytes, topTailBytes);
     }
 
+    /**
+     * Constructs a TopAndTailKnownLengthCache, given the length of the data source,
+     * and at least the number of bytes at the top, and the number of bytes at the tail to cache.
+     * @param length         The length of the data source to be cached.
+     * @param topCacheBytes  The minimum number of bytes to cache at the top of the data source.
+     * @param tailCacheBytes The minimum number of bytes to cache at the tail of the data source.
+     */
     public TopAndTailKnownLengthCache(final long length, final long topCacheBytes, final long tailCacheBytes) {
         this.topCacheEnd    = topCacheBytes;
         this.tailCacheStart = length - tailCacheBytes;
