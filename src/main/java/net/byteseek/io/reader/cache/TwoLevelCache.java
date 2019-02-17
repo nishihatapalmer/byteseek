@@ -167,7 +167,7 @@ import java.nio.ByteBuffer;
 	private class TwoLevelEvictionPolicy implements WindowObserver {
 
         @Override
-        public void windowFree(Window window, WindowCache fromCache) throws IOException {
+        public void windowFree(final Window window, final WindowCache fromCache) throws IOException {
             if (fromCache == primaryCache) {
                 secondaryCache.addWindow(window);
             } else if (fromCache == secondaryCache) {
