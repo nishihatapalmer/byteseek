@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2014-18, All rights reserved.
+ * Copyright Matt Palmer 2014-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -77,10 +77,22 @@ public final class TopAndTailGeneralPurposeCache extends AbstractMemoryCache {
     private long lastPositionSeen;
     private int nextTailCacheToCheck;
 
+    /**
+     * Constructs a TopAndTailGeneralPurposeCache given the size of the cache to hold at the top and tail.
+     *
+     * @param cacheSize The minimum number of bytes to cache at the top and tail of the data source.
+     */
     public TopAndTailGeneralPurposeCache(final int cacheSize) {
         this(cacheSize, cacheSize);
     }
 
+    /**
+     * Constructs a TopAndTailGeneralPurposeCache given the size of the cache to hold at the top, and the
+     * size of the cache to hold at the tail of the data source.
+     *
+     * @param topCacheSize The minimum number of bytes to cache at the top of the data source.
+     * @param tailCacheSize The minimum number of bytes to cache at the tail of the data source.
+     */
     public TopAndTailGeneralPurposeCache(final int topCacheSize, final int tailCacheSize) {
         this.cache = new PositionHashMap<Window>();
         this.tailCacheEntries = new ArrayList<Window>();
