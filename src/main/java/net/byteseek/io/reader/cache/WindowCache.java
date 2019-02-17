@@ -101,11 +101,8 @@ public interface WindowCache {
     int read(long windowPos, int offset, byte[] readInto, int readIntoPos, int maxLength) throws IOException;
 
     /**
-     * Reads data held in the cache and copies it into the readInto ByteBuffer.
-     * <p>>
-     * A cache should read as much as it can into the ByteBuffer, even if this involves reading from several cached windows.
-     * However, a cache does not have to do so if it is not possible to determine the next available window.
-     * It is up to users of a cache to read from the next window if the availlable space has not been filled.
+     * Reads data held in the cache at a window position and offset, and copies it into the readInto ByteBuffer,
+     * returning the number of bytes copied.
      * <p>
      * If the position requested is not in the cache (regardless of whether it is past the end or a negative position),
      * then the cache should not throw an exception, it should just return 0 bytes read.
