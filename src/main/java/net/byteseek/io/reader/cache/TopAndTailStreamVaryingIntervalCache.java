@@ -61,10 +61,24 @@ public final class TopAndTailStreamVaryingIntervalCache extends AbstractMemoryCa
     final PositionHashMap<Window> cache;
     final List<Window> tailEntries;
 
+    /**
+     * Constructs a TopAndTailStreamVaryingIntervalCache, given the minimum bytes to cache at the
+     * top and tail of a stream, where windows are added sequentially, but may have varying lengths.
+     *
+     * @param topTailBytes The minimum number of bytes to cache at the top and tail of the data source.
+     */
     public TopAndTailStreamVaryingIntervalCache(final long topTailBytes) {
         this(topTailBytes, topTailBytes);
     }
 
+    /**
+     * Constructs a TopAndTailStreamVaryingIntervalCache, given the minimum bytes to cache at the
+     * top and the minimum number of bytes to cache at the tail of a stream,
+     * where windows are added sequentially, but may have varying lengths.
+     *
+     * @param topBytes The minimum number of bytes to cache at the top of the stream.
+     * @param tailBytes The minimum number of bytes to cache at the tail of the stream.
+     */
     public TopAndTailStreamVaryingIntervalCache(final long topBytes, final long tailBytes) {
         this.topCacheBytes  = topBytes;
         this.tailCacheBytes = tailBytes;
