@@ -29,4 +29,24 @@ public class IOUtilsTest {
     private String getFilePath(final String resourceName) {
         return this.getClass().getResource(resourceName).getPath();
     }
+
+    @Test
+    public void testReadInputStreamIntoByteArray() {
+        fail("TODO");
+    }
+
+    @Test
+    public void testReadRandomAccessFileIntoByteArray() {
+        fail("TODO");
+    }
+
+    @Test
+    public void testReadRandomAccessFileIntoByteArrayFromPosition() {
+        fail("TODO");
+    }
+
+    @Test
+    public void testReadNumberofBytesFromRandomAccessFileIntoByteArrayFromPosition() {
+        fail("TODO");
+    }
 }

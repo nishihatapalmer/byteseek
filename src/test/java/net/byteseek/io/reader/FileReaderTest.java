@@ -399,18 +399,6 @@ public class FileReaderTest {
 		}
 	}
 
-	@Test
-	public void testSetSoftWindowRecoveryGetWindow() throws Exception {
-		FileReaderIterator it = new FileReaderIterator("/TestASCII.txt");
-		while (it.hasNext()) {
-			try(FileReader reader = it.next()) {
-				reader.useSoftWindows(true);
-				assertEquals("Soft windows are returned", SoftWindow.class, reader.getWindow(0).getClass());
-			}
-		}
-	}
-
-
 	/**
 	 * Test of getFile method, of class FileReader.
 	 */

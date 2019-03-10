@@ -38,7 +38,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.fail;
 
-public class TopAndTailFixedLengthCacheTest {
+public class TopAndTailKnownLengthCacheTest {
 
     @Test
     public void testWindowCrossesTailStart() throws Exception {
@@ -82,7 +82,7 @@ public class TopAndTailFixedLengthCacheTest {
 
     @Test
     public void testClear() throws Exception {
-        TopAndTailFixedLengthCache cache = new TopAndTailFixedLengthCache(100, 20);
+        TopAndTailKnownLengthCache cache = new TopAndTailKnownLengthCache(100, 20);
         addWindow(cache, 10, 0);
         addWindow(cache, 10, 90);
         assertNotNull(cache.getWindow(0));
@@ -95,13 +95,13 @@ public class TopAndTailFixedLengthCacheTest {
     }
 
     private void testShouldCache(long readerLength, int bytesToCacheOnEnds, int windowLength, long windowPos) throws Exception {
-        TopAndTailFixedLengthCache cache = new TopAndTailFixedLengthCache(readerLength, bytesToCacheOnEnds);
+        TopAndTailKnownLengthCache cache = new TopAndTailKnownLengthCache(readerLength, bytesToCacheOnEnds);
         addWindow(cache, windowLength, windowPos);
         assertNotNull("Window should be cached.", cache.getWindow(windowPos));
     }
 
     private void testShouldNotCache(long readerLength, int bytesToCacheOnEnds, int windowLength, long windowPos) throws Exception {
-        TopAndTailFixedLengthCache cache = new TopAndTailFixedLengthCache(readerLength, bytesToCacheOnEnds);
+        TopAndTailKnownLengthCache cache = new TopAndTailKnownLengthCache(readerLength, bytesToCacheOnEnds);
         addWindow(cache, windowLength, windowPos);
         assertNull("Window should not be cached", cache.getWindow(windowPos));
     }
@@ -112,6 +112,7 @@ public class TopAndTailFixedLengthCacheTest {
     }
 
 
+    //TODO: test read array and buffer
 
 
 }

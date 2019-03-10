@@ -284,35 +284,6 @@ public class InputStreamReaderTest {
     }
     */
 
-    @Test
-    public void testSetSoftWindowRecoveryGetWindow() throws Exception {
-        for (int i = 0; i < readers.length; i++) {
-            readers[i].setSoftWindowRecovery(
-                    new SoftWindowRecovery() {
-                        @Override
-                        public byte[] reloadWindowBytes(Window window) throws IOException {
-                            return new byte[1024];
-                        }
-                    });
-            assertEquals("Soft windows are returned", SoftWindow.class, readers[i].getWindow(0).getClass());
-        }
-    }
-
-    @Test
-    public void testSetSoftWindowRecovery() throws Exception {
-        for (int i = 0; i < readers.length; i++) {
-            readers[i].setSoftWindowRecovery(
-                    new SoftWindowRecovery() {
-                        @Override
-                        public byte[] reloadWindowBytes(Window window) throws IOException {
-                            return new byte[1024];
-                        }
-                    });
-            readers[i].length(); // read entire stream so everything is in cache.
-            assertEquals("Soft windows are returned", SoftWindow.class, readers[i].getWindow(0).getClass());
-        }
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullStream() throws Exception {
         new InputStreamReader(null);

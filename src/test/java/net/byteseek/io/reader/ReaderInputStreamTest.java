@@ -3,11 +3,13 @@ package net.byteseek.io.reader;
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -303,6 +305,10 @@ public class ReaderInputStreamTest {
         }
 
         @Override
+        public void setWindowFactory(WindowFactory factory) {
+        }
+
+        @Override
         public void close() throws IOException {
             closed = true;
         }
@@ -319,6 +325,11 @@ public class ReaderInputStreamTest {
 
         @Override
         public int read(long position, byte[] readInto, int readIntoPos, int readLength) throws IOException {
+            return 0;
+        }
+
+        @Override
+        public int read(long position, ByteBuffer buffer) throws IOException {
             return 0;
         }
 
