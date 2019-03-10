@@ -95,13 +95,10 @@ public abstract class AbstractCacheReader implements WindowReader {
 	protected final WindowCache cache;
 
 	/**
-	 * Construct the WindowReader using a default window size, using the WindowCache
-	 * provided.
+	 * Construct the WindowReader using a default window size, using the WindowCache provided.
 	 * 
-	 * @param cache
-	 *            The WindowCache to use.
-	 * @throws IllegalArgumentException
-	 *             if the WindowCache is null.
+	 * @param cache  The WindowCache to use.
+	 * @throws IllegalArgumentException if the WindowCache is null.
 	 */
 	public AbstractCacheReader(final WindowCache cache) {
 		this(DEFAULT_WINDOW_SIZE, cache);
@@ -110,13 +107,9 @@ public abstract class AbstractCacheReader implements WindowReader {
 	/**
 	 * Constructs the WindowReader using the window size and window cache provided.
 	 * 
-	 * @param windowSize
-	 *            The size of Window to use.
-	 * @param cache
-	 *            The WindowCache to use.
-	 * @throws IllegalArgumentException
-	 *             if the window size is less than one or the WindowCache is
-	 *             null.
+	 * @param windowSize The size of Window to use.
+	 * @param cache      The WindowCache to use.
+	 * @throws IllegalArgumentException if the window size is less than one or the WindowCache is null.
 	 */
 	public AbstractCacheReader(final int windowSize, final WindowCache cache) {
 		ArgUtils.checkPositiveInteger(windowSize, "windowSize");
@@ -152,7 +145,7 @@ public abstract class AbstractCacheReader implements WindowReader {
     public int read(final long position, final byte[] readInto, final int offset, final int maxLength) throws IOException {
 	    // Basic sanity tests:
 	    if (position < 0) {
-	        return NO_BYTE_AT_POSITION;
+            return NO_BYTES_READ;
         }
 	    ArgUtils.checkIndexOutOfBounds(readInto.length, offset);
 
@@ -183,30 +176,17 @@ public abstract class AbstractCacheReader implements WindowReader {
             // If the cache doesn't have the bytes for this window, read it from the reader instead:
             if (cacheBytesRead == 0) {
                 final int readerBytesRead = readWindowBytes(windowStart, windowOffset, readInto,
-                                                            offset + bytesCopied, maxBytesToCopy); //TODO: max bytes to copy not correct.
-
-                // If we get negative bytes from the reader, we're at the end of the data source.
-                if (readerBytesRead < 0) {
-                    // If we copied no bytes and we're at the end, return -1, otherwise return how many bytes were copied.
-                    return bytesCopied == 0? NO_BYTE_AT_POSITION : bytesCopied;
+                                                            offset + bytesCopied, bytesRemaining);
+                // If no bytes were copied or we get negative bytes from the reader, there's no more data.
+                // Just return the number of bytes read in total so far.
+                if (readerBytesRead <= 0) {
+                    return bytesCopied;
                 }
 
-                // Defensive programming - avoid potential infinite loop.
-                // If the cache or the reader doesn't have any bytes, and it's not the end of the data source,
-                // something terrible must have happened.  Raise an IOException:
-                if (readerBytesRead == 0) {
-                    //TODO: think about this some more - how could this happen, could an InputStreamReader read no
-                    //      bytes while putting them in the cache, and assume you could just ask for the bytes from
-                    //      the cache on the next round the loop?  If so, have to avoid infinite loop situation...
-                }
                 bytesCopied += readerBytesRead;
             } else {
                 bytesCopied += cacheBytesRead;
             }
-
-
-
-            //TODO: what if both return zero bytes read?  infinite loop.
         }
         return bytesCopied;
     }
