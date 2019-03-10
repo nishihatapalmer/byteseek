@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2018, All rights reserved.
+ * Copyright Matt Palmer 2018-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,19 +32,14 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.IOUtils;
-import net.byteseek.io.TempFileNotDeletedException;
-import net.byteseek.io.reader.cache.AbstractFreeNotificationCache;
-import net.byteseek.io.reader.cache.WindowCache;
-import net.byteseek.io.reader.windows.SoftWindow;
-import net.byteseek.io.reader.windows.SoftWindowRecovery;
-import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowMissingException;
+import net.byteseek.io.reader.windows.*;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * A {@link WindowCache} which stores {@link Window} objects into a temporary file for later retrieval.
@@ -64,14 +59,16 @@ import java.nio.ByteBuffer;
  *
  * @author Matt Palmer
  */
-public final class TempFileStreamCache extends AbstractFreeNotificationCache implements SoftWindowRecovery {
+public final class TempFileStreamCache extends AbstractCache implements SoftWindowRecovery {
 
     private final int windowSize;
     private final File tempDir;
     private File tempFile;
     private RandomAccessFile file;
+    private FileChannel fileChannel;
     private long startOffset;
     private long length;
+    private WindowFactory factory = HardWindow.FACTORY;
 
     /**
      * Constructs a TempFileCache given a windowSize
@@ -85,9 +82,9 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
      * Constructs a TempFileCache which creates temporary files in the directory specified.
      * If the file is null, then temporary files will be created in the default temp directory.
      *
-     * @param tempDir The directory to create temporary files in.
+     * @param tempDir The directory to create temporary files in, or null if you want the default temp directory.
      * @param windowSize The size of the windows the cache will use.
-     * @throws IllegalArgumentException if the tempdir supplied is not a directory, or the windowSize is not a postive integer.
+     * @throws IllegalArgumentException if a supplied tempdir is not a directory, or the windowSize is not a postive integer.
      */
     public TempFileStreamCache(final File tempDir, final int windowSize) {
         ArgUtils.checkPositiveInteger(windowSize, "windowSize");
@@ -107,39 +104,42 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
             // Read and return a window for that position:
             final byte[] array = new byte[windowSize];
             final int readLength = IOUtils.readBytes(file, filePos, array);
-            //TODO: always softwindows?
-            return new SoftWindow(array, position, readLength, this);
+            return factory.createWindow(array, position, readLength);
         }
         return null;
     }
 
     @Override
     public void addWindow(final Window window) throws IOException {
-        // a newly added window must always be at the end of the previous ones.
+        // If we don't yet have a temp file, create one and set the start offset.
         final long winPos = window.getWindowPosition();
+        if (createFileIfNotExists()) {
+            startOffset = winPos;
+        }
+
+        // a newly added window must always be at the end of the previous ones.
         final long filePos = winPos - startOffset;
         if (filePos != length) {
             throw new IOException("Window not sequentially added to the stream cache " + this +
                     ". The valid position for the next window is " + (startOffset + length) +
                     ", but the window " + window + " to be added had position " + winPos + '.');
         }
-        // If we don't yet have a temp file, create one and set the start offset.
-        if (createFileIfNotExists()) {
-            startOffset = winPos;
-        }
+
         // Add the window.
-        file.seek(filePos);
         final int windowLength = window.length();
+        file.seek(filePos);
         file.write(window.getArray(), 0, windowLength);
         length += windowLength;
     }
 
+
     @Override
-    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
+    public int read(final long windowPos, final int offset, final byte[] readInto,
+                    final int readIntoPos, final int maxLength) throws IOException {
         int bytesRead = 0;
         final long filePos = windowPos + offset - startOffset;
         if (file != null && filePos < length) {
-            final int bytesToRead = readInto.length - readIntoPos;
+            final int bytesToRead = Math.min(readInto.length - readIntoPos, maxLength);
             bytesRead = IOUtils.readBytes(file, filePos, readInto, readIntoPos, bytesToRead);
         }
         return bytesRead;
@@ -150,7 +150,10 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
         int bytesRead = 0;
         final long filePos = windowPos + offset - startOffset;
         if (file != null && filePos < length) {
-            bytesRead = IOUtils.readBytes(file.getChannel(), filePos, readInto);
+            if (fileChannel == null) {
+                fileChannel = file.getChannel();
+            }
+            bytesRead = IOUtils.readBytes(fileChannel, filePos, readInto);
         }
         return bytesRead;
     }
@@ -167,6 +170,17 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if the factory is null.
+     */
+    @Override
+    public void setWindowFactory(final WindowFactory factory) {
+        ArgUtils.checkNullObject(factory, "factory");
+        this.factory = factory;
+    }
+
+    /**
      * Returns the temporary file backing this cache object.
      *
      * @return File The temporary file backing this cache object, or null if it doesn't exist.
@@ -175,6 +189,17 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
         return tempFile;
     }
 
+    /**
+     * Returns the position offset of the first window in the cache.  For example, if the first Window
+     * added to the cache had a window position of 8192, then the start offset will be 8192.  The file
+     * position of this window will be 0.  So the start offset can be used to determine where in the
+     * temporary file a Window is located.  File pos of a Window = window position - start offset.
+     *
+     * @return the position offset of the first window in the cache.
+     */
+    public long getStartOffset() {
+        return startOffset;
+    }
 
     /**
      * Creates a temporary file if it doesn't already exist.
@@ -183,8 +208,7 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
      */
     private boolean createFileIfNotExists() throws IOException {
         if (tempFile == null) {
-            tempFile = tempDir == null? IOUtils.createTempFile()
-                    : IOUtils.createTempFile(tempDir);
+            tempFile = IOUtils.createTempFile(tempDir);
             file = new RandomAccessFile(tempFile, "rw");
             return true;
         }
@@ -197,10 +221,18 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
             String      fileDetails = "";
             boolean tempFileDeleted;
             try {
+                if (fileChannel != null) {
+                    fileChannel.close();
+                }
+            } catch (IOException ex) {
+                fileCloseException = ex;
+            }
+            try {
                 file.close();
             } catch (IOException ex) {
                 fileCloseException = ex;
             } finally {
+                fileChannel = null;
                 file = null;
                 tempFileDeleted = tempFile.delete();
                 if (!tempFileDeleted) {
@@ -224,7 +256,7 @@ public final class TempFileStreamCache extends AbstractFreeNotificationCache imp
         if (filePosition >= length || filePosition < 0) {
             throw new WindowMissingException("Window position " + window.getWindowPosition() + " not in cache " + this);
         }
-        final byte[] array = new byte[windowSize];
+        final byte[] array = new byte[window.length()];
         IOUtils.readBytes(file, filePosition, array);
         return array;
     }
