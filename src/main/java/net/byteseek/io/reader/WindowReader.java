@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2018, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -78,8 +78,6 @@ public interface WindowReader extends Closeable {
 	/**
 	 * Reads the bytes in the position given in the WindowReader directly into the supplied byte array,
 	 * reading up to the length of the array.  It returns the number of bytes read.
-	 * <p>
-	 * If there are no bytes at the position given, -1 is returned.
 	 *
 	 * @param position The position in the reader to read from.
 	 * @param readInto A byte array into which the data will be written.
@@ -92,8 +90,6 @@ public interface WindowReader extends Closeable {
 	 * Reads the bytes in the position given in the WindowReader directly into the supplied byte array,
 	 * at the offset given, reading at most the readLength, but potentially up to the length of the array.
      * It returns the number of bytes read.
-	 * <p>
-	 * If there are no bytes at the position given, -1 is returned.
 	 *
 	 * @param position The position in the reader to read from.
 	 * @param readInto A byte array into which the data will be written.
@@ -107,8 +103,6 @@ public interface WindowReader extends Closeable {
     /**
      * Reads the bytes in the position given in the WindowReader directly into the supplied ByteBuffer,
      * up to the remaining bytes in the ByteBuffer.  It returns the number of bytes read.
-     * <p>
-     * If there are no bytes at the position given, -1 is returned.
      *
      * @param position The position in the reader to read from.
      * @param buffer   A ByteBuffer into which the data will be written.
