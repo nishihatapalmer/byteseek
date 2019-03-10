@@ -39,6 +39,9 @@ import java.io.IOException;
 
 /**
  * A simple cache that holds on to the last Window returned by the wrapped Cache.
+ * <p>
+ * There are probably few access patterns that need this cacne, as window processing
+ * code tends to get a different window from the last one requested.
  */
 public class LastWindowCache extends AbstractMemoryCache {
 
