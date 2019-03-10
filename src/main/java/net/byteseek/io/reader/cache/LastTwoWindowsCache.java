@@ -50,6 +50,11 @@ public class LastTwoWindowsCache extends AbstractMemoryCache {
     private Window currentWindow;
     private Window previousWindow;
 
+    /**
+     * Constructs a LastTwoWindowsCache given a WindowCache to wrap.
+     *
+     * @param cache The WindowCache wrapped by this LastTwoWindowsCache.
+     */
     public LastTwoWindowsCache(final WindowCache cache) {
         ArgUtils.checkNullObject(cache, "cache");
         wrappedCache = cache;
