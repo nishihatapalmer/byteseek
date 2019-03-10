@@ -64,16 +64,14 @@ public class LastWindowCache extends AbstractMemoryCache {
             return lastWindow;
         }
         final Window nextWindow = wrappedCache.getWindow(position);
-        if (nextWindow != null) {
-            lastWindow = nextWindow;
-        }
+        cacheWindow(nextWindow);
         return nextWindow;
     }
 
     @Override
     public void addWindow(final Window window) throws IOException {
-        lastWindow = window;
         wrappedCache.addWindow(window);
+        cacheWindow(window);
     }
 
     @Override
@@ -85,5 +83,14 @@ public class LastWindowCache extends AbstractMemoryCache {
     @Override
     public void setWindowFactory(WindowFactory factory) {
         // Does not itself create windows, just wraps another cache.
+    }
+
+    private void cacheWindow(final Window nextWindow) throws IOException {
+        if (nextWindow != null) {
+            if (lastWindow != null) {
+                notifyWindowFree(lastWindow, this);
+            }
+            lastWindow = nextWindow;
+        }
     }
 }
