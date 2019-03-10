@@ -145,10 +145,17 @@ import java.nio.ByteBuffer;
         return secondaryCache;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A TwoLevelCache does not create new windows, even if the caches it wraps do.
+     * Therefore nothing will be set on this call.  If you wish to change the WindowFactories of the
+     * caches wrapped by this TwoLevelCache, you should retain references to them.
+     * @param factory The WindowFactory to use to create new Windows.
+     */
     @Override
     public void setWindowFactory(final WindowFactory factory) {
-        // The TwoLevelCache does not need to create new windows
-        // (even if some of the caches it wraps do).
+        // The TwoLevelCache does not need to create new windows, (even if some of the caches it wraps do).
     }
 
 	@Override
