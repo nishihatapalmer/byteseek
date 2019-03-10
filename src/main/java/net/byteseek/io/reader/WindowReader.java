@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2018, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -33,9 +33,11 @@ package net.byteseek.io.reader;
 
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * An interface for random access to bytes from an underlying byte source.
@@ -77,7 +79,7 @@ public interface WindowReader extends Closeable {
 	 * Reads the bytes in the position given in the WindowReader directly into the supplied byte array,
 	 * reading up to the length of the array.  It returns the number of bytes read.
 	 * <p>
-	 * If there are no bytes at the position given, zero is returned and no bytes are written to the array.
+	 * If there are no bytes at the position given, -1 is returned.
 	 *
 	 * @param position The position in the reader to read from.
 	 * @param readInto A byte array into which the data will be written.
@@ -88,7 +90,8 @@ public interface WindowReader extends Closeable {
 
 	/**
 	 * Reads the bytes in the position given in the WindowReader directly into the supplied byte array,
-	 * reading up to the length of the array.  It returns the number of bytes read.
+	 * at the offset given, reading at most the readLength, but potentially up to the length of the array.
+     * It returns the number of bytes read.
 	 * <p>
 	 * If there are no bytes at the position given, -1 is returned.
 	 *
@@ -100,6 +103,19 @@ public interface WindowReader extends Closeable {
 	 * @throws IOException If there was a problem reading the data.
 	 */
 	int read(long position, byte[] readInto, int offset, int readLength) throws IOException;
+
+    /**
+     * Reads the bytes in the position given in the WindowReader directly into the supplied ByteBuffer,
+     * up to the remaining bytes in the ByteBuffer.  It returns the number of bytes read.
+     * <p>
+     * If there are no bytes at the position given, -1 is returned.
+     *
+     * @param position The position in the reader to read from.
+     * @param buffer   A ByteBuffer into which the data will be written.
+     * @return The number of bytes read.
+     * @throws IOException If there was a problem reading or writing the data.
+     */
+	int read(long position, ByteBuffer buffer) throws IOException;
 
 	/**
 	 * Returns a {@link net.byteseek.io.reader.windows.Window} for the given position.
@@ -147,5 +163,12 @@ public interface WindowReader extends Closeable {
 	 * @return an iterator over the Windows in the Reader.
 	 */
 	IOIterator<Window> iterator();
+
+	/**
+	 * Sets the window factory the WindowReader uses to create new windows.
+	 *
+	 * @param factory The WindowFactory to use to create new Windows.
+	 */
+	void setWindowFactory(WindowFactory factory);
 
 }
