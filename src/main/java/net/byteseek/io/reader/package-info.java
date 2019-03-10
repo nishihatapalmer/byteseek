@@ -31,7 +31,7 @@
 
 /**
  * A package which provides a consistent random-access interface over a variety of
- * input sources including files, input streams, strings and byte arrays.
+ * input sources including Files, InputStreams, SeekableByteChannels, Strings and byte arrays.
  * <p>
  * The input source is chunked on demand into windows over the data, which each encapsulate a byte array.
  * This allows clients to access the arrays directly, and for the windows
@@ -45,8 +45,8 @@
  * There are two types of Window currently defined.  HardWindows store a hard reference
  * to the underlying byte array.  SoftWindows use a SoftReference to the array, which allows
  * the garbage collector to re-use the array memory if it is not currently in use.  For
- * applications which are processing byte sources quickly, SoftWindows will help to prevent
- * OutOfMemoryErrors.
+ * applications which are processing byte sources quickly, SoftWindows may help to prevent
+ * OutOfMemoryErrors.  Otherwise, they simply add IO overhead as windows may need to be re-read.
  * <p>
  * In addition, the ReaderInputStream adapts any WindowReader into an InputStream, to allow the
  * cached windows to be used with other classes which require input streams.
