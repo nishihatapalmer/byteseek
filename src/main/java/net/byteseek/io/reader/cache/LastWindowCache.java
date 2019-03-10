@@ -38,7 +38,7 @@ import net.byteseek.utils.ArgUtils;
 import java.io.IOException;
 
 /**
- * A simple cache that holds on to the last Window returned by the wrapped Cache.
+ * A simple cache that holds on to the last Window returned by or added to the wrapped Cache.
  * <p>
  * There are probably few access patterns that need this cacne, as window processing
  * code tends to get a different window from the last one requested.
@@ -72,6 +72,7 @@ public class LastWindowCache extends AbstractMemoryCache {
 
     @Override
     public void addWindow(final Window window) throws IOException {
+        lastWindow = window;
         wrappedCache.addWindow(window);
     }
 
