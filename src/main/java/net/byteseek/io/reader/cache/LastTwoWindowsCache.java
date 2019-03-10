@@ -78,6 +78,8 @@ public class LastTwoWindowsCache extends AbstractMemoryCache {
 
     @Override
     public void addWindow(final Window window) throws IOException {
+        previousWindow = currentWindow;
+        currentWindow = window;
         wrappedCache.addWindow(window);
     }
 
