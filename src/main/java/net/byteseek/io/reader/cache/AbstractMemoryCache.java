@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowFactory;
+import net.byteseek.utils.ArgUtils;
 
 /**
  * This AbstractMemoryCache provides a standard read() implementation for all caches which keep their data in memory.
@@ -45,27 +47,33 @@ import net.byteseek.io.reader.windows.Window;
  *
  * @author Matt Palmer
  */
-public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache  {
+public abstract class AbstractMemoryCache extends AbstractCache {
 
     @Override
-    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
-        final int arrayLength = readInto.length;
-        int arrayPos = readIntoPos;
-        if (arrayLength - readIntoPos > 0) {                     // If there's any room to copy into:
+    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos,
+                    final int maxLength) throws IOException {
+        ArgUtils.checkIndexOutOfBounds(readInto.length, readIntoPos);
+        final int bytesRequested = Math.min(readInto.length - readIntoPos, maxLength);
+        if (bytesRequested > 0) {
             Window window = getWindow(windowPos);
-            if (window != null) {                                // If there's a window at this position, copy it:
-                int bytesToCopy = Math.min(arrayLength - arrayPos, window.length() - offset);
-                System.arraycopy(window.getArray(), offset, readInto, arrayPos, bytesToCopy);
-                arrayPos += bytesToCopy;
-                while (arrayPos < arrayLength &&                                      // While there's still space remaining
+            final int windowLength = window.length();
+            if (window != null && offset < windowLength) { // If there's data at this position, copy it:
+                int bytesToCopy = Math.min(bytesRequested, windowLength - offset);
+                System.arraycopy(window.getArray(), offset, readInto, readIntoPos, bytesToCopy);
+
+                // Now obtain more data if required from subsequent cached windows (all at offset 0 now)
+                int writePosition = readIntoPos + bytesToCopy;
+                final int writeLength = readIntoPos + bytesRequested;
+                while (writePosition < writeLength &&
                       (window = getWindow(window.getNextWindowPosition())) != null) { // and another window to copy from:
-                    bytesToCopy = Math.min(arrayLength - arrayPos, window.length());
-                    System.arraycopy(window.getArray(), 0, readInto, arrayPos, bytesToCopy);
-                    arrayPos += bytesToCopy;
+                    bytesToCopy = Math.min(writeLength - writePosition, window.length());
+                    System.arraycopy(window.getArray(), 0, readInto, writePosition, bytesToCopy);
+                    writePosition += bytesToCopy;
                 }
+                return writePosition - readIntoPos;
             }
         }
-        return arrayPos - readIntoPos;
+        return 0;
     }
 
     @Override
@@ -74,19 +82,22 @@ public abstract class AbstractMemoryCache extends AbstractFreeNotificationCache 
         int bufferRemaining = startRemaining;
         if (bufferRemaining > 0) {
             Window window = getWindow(windowPos);
-            if (window != null) {
+            if (window != null && offset < window.length()) {
                 int bytesToCopy = Math.min(bufferRemaining, window.length() - offset);
                 readInto.put(window.getArray(), offset, bytesToCopy);
-                bufferRemaining = readInto.remaining();
-                while (bufferRemaining > 0 &&
+                while ((bufferRemaining -= bytesToCopy) > 0 &&
                         (window = getWindow(window.getNextWindowPosition())) != null) {
                     bytesToCopy = Math.min(bufferRemaining, window.length());
                     readInto.put(window.getArray(), 0, bytesToCopy);
-                    bufferRemaining = readInto.remaining();
                 }
             }
         }
-        return startRemaining - readInto.remaining();
+        return startRemaining - bufferRemaining;
+    }
+
+    @Override
+    public void setWindowFactory(final WindowFactory factory) {
+        // memory based caches do not need to create new windows in memory.
     }
 
 }
