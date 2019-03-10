@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -43,37 +43,39 @@ import java.util.NoSuchElementException;
 public final class WindowIterator implements IOIterator<Window> {
 
     private final WindowReader reader;
-    private int position = 0;
+    private Window nextWindow;
+    private long position;
 
     public WindowIterator(final WindowReader reader) {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasNext() throws IOException {
-        return reader.getWindow(position) != null;
+        if (nextWindow == null) {
+            nextWindow = reader.getWindow(position);
+        }
+        return nextWindow != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Window next() throws IOException {
-        final Window window = reader.getWindow(position);
-        if (window != null) {
-            position += (long) window.length();
-            return window;
+        if (hasNext()) {
+            final Window theWindow = nextWindow;
+            nextWindow = null;
+            position += theWindow.length();
+            return theWindow;
         }
         throw new NoSuchElementException();
     }
 
     /**
-     * Always throws UnsupportedOperationException. It is not possible to
-     * remove a Window from a WindowReader.
+     * {@inheritDoc}
+     * <p>
+     * <b>Note</b>
+     * This implementation always throws UnsupportedOperationException.
+     * It is not possible to remove a Window from a WindowReader.
      *
      * @throws UnsupportedOperationException - always throws this exception.
      */
