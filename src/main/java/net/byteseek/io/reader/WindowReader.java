@@ -46,7 +46,7 @@ import java.nio.ByteBuffer;
  * 
  * <ul>
  * <li>Read a single byte at a given position
- * <li>Read bytes into a supplied array from a given position.
+ * <li>Read bytes into a supplied array or ByteBuffer from a given position.
  * <li>Get a {@link net.byteseek.io.reader.windows.Window} onto the underlying byte source for a given
  * position.
  * </ul>
