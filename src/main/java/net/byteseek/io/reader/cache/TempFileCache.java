@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2018, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,10 +35,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 import net.byteseek.io.IOUtils;
-import net.byteseek.io.TempFileNotDeletedException;
 import net.byteseek.io.reader.windows.*;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.collections.PositionHashMap;
 
 
@@ -47,19 +48,26 @@ import net.byteseek.utils.collections.PositionHashMap;
  * into a temporary file for later retrieval.  It maintains a map of the start positions
  * of each window against the position in the file where the Window was stored.
  * <p>
+ * This makes it suitable to cache random access to Windows in a temp file, which only grows
+ * linearly with the number of windows cached in it.  If the access pattern to windows
+ * is strictly linear (e.g. cached as a stream is read), then the TempFileStreamCache is a
+ * better choice, as it doesn't need to maintain a position map - windows are always added sequentially.
+ * <p>
  * A temporary file is only created if a Window is added to the cache, and it is
  * deleted when the cache is cleared.
  * 
  * @author Matt Palmer
  */
-public final class TempFileCache extends AbstractFreeNotificationCache implements SoftWindowRecovery {
+public final class TempFileCache extends AbstractCache implements SoftWindowRecovery {
 
     private final static int DEFAULT_CAPACITY = 1024; // number of positions to cache initially = 4Mb file if 4096 byte windows are cached.
     private final PositionHashMap<WindowInfo> windowPositions;
     private final File tempDir;
     private File tempFile;
     private RandomAccessFile file;
+    private FileChannel fileChannel;
     private long nextFilePos;
+    private WindowFactory factory = HardWindow.FACTORY;
 
     /**
      * Constructs a TempFileCache using the default temporary directory and an initial cache capacity
@@ -104,31 +112,35 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
 
     @Override
     public Window getWindow(final long position) throws IOException {
-        Window window = null;
         final WindowInfo info = windowPositions.get(position);
         if (info != null) {
             final byte[] array = new byte[info.length];
             IOUtils.readBytes(file, info.filePosition, array);
-            window = new SoftWindow(array, position, info.length, this);
+            return factory.createWindow(array, position, info.length);
         }
-        return window;
+        return null;
     }
 
     @Override
     public void addWindow(final Window window) throws IOException {
         final long windowPosition = window.getWindowPosition();
-        final WindowInfo info = windowPositions.get(windowPosition);
+        final PositionHashMap<WindowInfo> localPositions = windowPositions;
+        final WindowInfo info = localPositions.get(windowPosition);
         if (info == null) {
             createFileIfNotExists();
-            file.seek(nextFilePos);
-            file.write(window.getArray(), 0, window.length());
-            windowPositions.put(windowPosition, new WindowInfo(window.length(), nextFilePos));
-            nextFilePos += window.length();
+            final RandomAccessFile localFile = file;
+            final long pos = nextFilePos;
+            final int length = window.length();
+            localFile.seek(pos);
+            localFile.write(window.getArray(), 0, length);
+            localPositions.put(windowPosition, new WindowInfo(length, pos));
+            nextFilePos += length;
         }
     }
 
+    //TODO: use maxlength parameter.
     @Override
-    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos) throws IOException {
+    public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos, final int maxLength) throws IOException {
         int bytesRead = 0;
         if (file != null) {
 
@@ -174,7 +186,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
 
                 // Have a window at the curent readPos - fill as many bytes as we can from it:
                 final long filePos = info.filePosition + readOffset;
-                int bytesCopied = IOUtils.readBytes(file.getChannel(), filePos, readInto);
+                int bytesCopied = IOUtils.readBytes(fileChannel, filePos, readInto);
                 if (bytesCopied < 1) {
                     break; // shouldn't happen if the cached positions are within the file, but better to be safe.
                 }
@@ -195,6 +207,17 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
         windowPositions.clear();
         deleteFileIfExists();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if the factory is null.
+     */
+    @Override
+    public void setWindowFactory(final WindowFactory factory) {
+        ArgUtils.checkNullObject(factory, "factory");
+        this.factory = factory;
+    }
     
     /**
      * Returns the temporary file backing this cache object.
@@ -212,6 +235,7 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             tempFile = tempDir == null? IOUtils.createTempFile()
                                       : IOUtils.createTempFile(tempDir);
             file = new RandomAccessFile(tempFile, "rw");
+            fileChannel = file.getChannel();
         }
     }
 
@@ -221,10 +245,16 @@ public final class TempFileCache extends AbstractFreeNotificationCache implement
             String      fileDetails = "";
             boolean tempFileDeleted;
             try {
+                fileChannel.close();
+            } catch (IOException ex) {
+                fileCloseException = ex;
+            }
+            try {
                 file.close();
             } catch (IOException ex) {
                 fileCloseException = ex;
             } finally {
+                fileChannel = null;
                 file = null;
                 tempFileDeleted = tempFile.delete();
                 if (!tempFileDeleted) {
