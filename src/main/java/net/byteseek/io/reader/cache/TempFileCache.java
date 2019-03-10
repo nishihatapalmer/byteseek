@@ -138,7 +138,6 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
         }
     }
 
-    //TODO: use maxlength parameter.
     @Override
     public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos, final int maxLength) throws IOException {
         int bytesRead = 0;
@@ -146,7 +145,7 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
 
             // Get each contiguous cached window and write it into the array,
             // until there are no more cached windows, or we have written enough bytes.
-            final int bytesRequired = readInto.length - readIntoPos;
+            final int bytesRequired = Math.min(readInto.length - readIntoPos, maxLength);
             final PositionHashMap<WindowInfo> localPositions = windowPositions;
             long readPos = windowPos;
             int readOffset = offset;
