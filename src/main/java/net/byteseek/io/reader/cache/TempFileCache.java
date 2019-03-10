@@ -173,7 +173,7 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
     @Override
     public int read(final long windowPos, final int offset, final ByteBuffer readInto) throws IOException {
         int bytesRead = 0;
-        if (file != null) {
+        if (fileChannelExists()) {
 
             // Get each contiguous cached window and write it into the array,
             // until there are no more cached windows, or we have written enough bytes.
@@ -239,13 +239,29 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
         }
     }
 
+    private boolean fileChannelExists() {
+        // First test is for most likely outcome - only the first call to this method won't have a file channel.
+        if (fileChannel != null) {
+            return true;
+        }
+        // We don't have a file channel, but if we have a file create one.
+        if (file != null) {
+            fileChannel = file.getChannel();
+            return true;
+        }
+        // No file channel or file to create it from.
+        return false;
+    }
+
     private void deleteFileIfExists() throws IOException {
         if (tempFile != null) {
             IOException fileCloseException = null;
             String      fileDetails = "";
             boolean tempFileDeleted;
             try {
-                fileChannel.close();
+                if (fileChannel != null) {
+                    fileChannel.close();
+                }
             } catch (IOException ex) {
                 fileCloseException = ex;
             }
