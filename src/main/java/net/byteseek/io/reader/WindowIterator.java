@@ -46,6 +46,11 @@ public final class WindowIterator implements IOIterator<Window> {
     private Window nextWindow;
     private long position;
 
+    /**
+     * Constructs a WindowIterator given a WindowReader to iterate over.
+     *
+     * @param reader The WIndowReader to iterate over.
+     */
     public WindowIterator(final WindowReader reader) {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
