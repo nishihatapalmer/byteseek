@@ -32,6 +32,7 @@
 package net.byteseek.io.reader;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.cache.WindowCache;
@@ -191,8 +192,77 @@ public abstract class AbstractCacheReader implements WindowReader {
         return bytesCopied;
     }
 
-    protected abstract int readWindowBytes(long windowStart, int windowOffset, byte[] readInto, int toArrayPos, int length);
+	@Override
+    public int read(final long position, final ByteBuffer buffer) throws IOException {
+        // Basic sanity tests:
+        if (position < 0) {
+            return NO_BYTES_READ;
+        }
 
+        // Calculate safe bounds:
+        final int arrayBytesAvailable = buffer.remaining();
+        final long readerBytesPossible = Long.MAX_VALUE - position;
+        final int maxBytesToCopy = (int) Math.min(readerBytesPossible, arrayBytesAvailable);
+
+        // Copy data into the ByteBuffer from the cache first, then the reader.
+        // A cache may copy more than one Window if it can (although it doesn't have to).
+        // The reader will only read a single Window at a time, on the grounds that the next
+        // Window may be held in the cache instead, which will either be faster, or will be
+        // the only method available to return the data (e.g. a temp file cache over a stream).
+        int bytesCopied = 0;
+        final int localWindowSize = windowSize;
+        while (bytesCopied < maxBytesToCopy) {
+
+            // Find the window our position falls in:
+            final long currentPos = position + bytesCopied;
+            final long windowStart = currentPos % localWindowSize;
+            final int windowOffset = (int) (currentPos - windowStart);
+
+            // Read bytes from the cache at that window position:
+            final int bytesRemaining = maxBytesToCopy - bytesCopied;
+            int bytesRead = cache.read(windowStart, windowOffset, buffer);
+
+            // If the cache doesn't have the bytes for this window, read it from the reader instead:
+            if (bytesRead <= 0) {
+                bytesRead = readWindowBytes(windowStart, windowOffset, buffer);
+
+                // If no bytes were copied or we get negative bytes from the reader, there's no more data.
+                // Just return the number of bytes read in total so far.
+                if (bytesRead <= 0) {
+                    return bytesCopied;
+                }
+            }
+            bytesCopied += bytesRead;
+        }
+        return bytesCopied;
+    }
+
+    /**
+     * Reads up to maxLength bytes into a byte array, starting from the offset.
+     * The window position is given by windowStart, and the offset from the start of the window is in windowOffset.
+     *
+     * @param windowStart  The start of a window to be read.
+     * @param windowOffset The offset into the window to begin reading from.
+     * @param readInto     The byte array to copy the bytes into.
+     * @param offset       The offset into the byte array to begin copying at.
+     * @param maxLength    The maximum number of bytes to read.
+     * @return             The number of bytes copied.
+     * @throws IOException If there was a problem reading the bytes from the reader.
+     */
+    protected abstract int readWindowBytes(long windowStart, int windowOffset,
+                                           byte[] readInto, int offset, int maxLength) throws IOException;
+
+    /**
+     * Reads bytes from the window starting at windowStart, beginning at the bytes in windowOffset,
+     * copying the bytes into the ByteBuffer.
+     *
+     * @param windowStart  The start of the window to be read.
+     * @param windowOffset The offset into the window to begin reading from.
+     * @param buffer       The ByteBuffer to copy the bytes into.
+     * @return             The number of bytes copied.
+     * @throws IOException If there was a problem reading the bytes from the reader.
+     */
+    protected abstract int readWindowBytes(long windowStart, int windowOffset, ByteBuffer buffer) throws IOException;
 
 	/**
 	 * Returns a window onto the data for a given position. The position does

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,6 +33,7 @@ package net.byteseek.io.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.cache.LeastRecentlyUsedCache;
@@ -81,7 +82,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 	private final boolean closeStreamOnClose;
 	private long nextReadPos = 0;
 	private long length = UNKNOWN_LENGTH;
-	private SoftWindowRecovery recovery;
+	private WindowFactory factory = HardWindow.FACTORY;
 
 	/**
 	 * Constructs an InputStreamReader from an InputStream, using the default
@@ -288,7 +289,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 		this.closeStreamOnClose = closeStreamOnClose;
 	}
 
-	/**
+    /**
 	 * Returns a window onto the data for a given position. The position does
 	 * not have to be the beginning of a {@link net.byteseek.io.reader.windows.HardWindow} - but the Window
 	 * returned must include that position (if such a position exists in the
@@ -330,11 +331,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
-				if (recovery == null) {
-					window = new HardWindow(bytes, nextReadPos, totalRead);
-				} else {
-					window = new SoftWindow(bytes, nextReadPos, totalRead, recovery);
-				}
+			    window = factory.createWindow(bytes, nextReadPos, totalRead);
 				nextReadPos += totalRead;
 				if (windowPos >= nextReadPos) {   // If we still haven't reached the window
 					cache.addWindow(window); // for the requested position, cache it, as we'll go around again.
@@ -366,11 +363,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 			final int totalRead = IOUtils.readBytes(stream, bytes);
 			if (totalRead > 0) {
 				final Window lastWindow;
-				if (recovery == null) {
-					lastWindow = new HardWindow(bytes, nextReadPos, totalRead);
-				} else {
-					lastWindow = new SoftWindow(bytes, nextReadPos, totalRead, recovery);
-				}
+				lastWindow = factory.createWindow(bytes, nextReadPos, totalRead);
 				nextReadPos += totalRead;
 				cache.addWindow(lastWindow);
 			}
@@ -382,54 +375,33 @@ public final class InputStreamReader extends AbstractCacheReader {
 		return length;
 	}
 
-	//TODO: test read.
 	@Override
-	public int read(final long position, final byte[] readInto, final int offset, final int readLength) throws IOException {
-		// Strategy is to read from the cache - but to cache the stream first if it has not yet been read to that point.
-		if (position < 0) {
-			return NO_BYTES_READ;
-		}
+	public void setWindowFactory(final WindowFactory factory) {
+        ArgUtils.checkNullObject(factory, "factory");
+	    this.factory = factory;
+	}
 
-		// Ensure we have read as much of the stream as we need, or can.  This ensures it is all available from the cache.
-		final int safeLength = Math.min(readLength, readInto.length - offset);
-		final long lastRequiredPosition = position + safeLength - 1;
-		if (length == UNKNOWN_LENGTH && nextReadPos <= lastRequiredPosition) {
-			// Create the window that covers last position we want to read (this will create any earlier windows if needed).
-			final int windowOffset = (int) (lastRequiredPosition % (long) windowSize);
-            final Window window = createWindow(lastRequiredPosition - windowOffset);
-            if (window != null) { //TODO: under what conditions is this null?  stream is shorter than requested position?
-                cache.addWindow(window);
-            }
-            //TODO: where does length get set...?
-		}
-
-		// If we still haven't read up to the position we asked for, there's no more data in the stream.
-        if (nextReadPos <= position) {
-		    return NO_BYTES_READ;
+    @Override
+    protected int readWindowBytes(final long windowStart, final int windowOffset,
+                                  final byte[] readInto, final int offset, final int maxLength) throws IOException {
+	    final Window window = getWindow(windowStart); // this will force read of stream to this window and cache the results.
+        if (window != null) {
+            final int bytesToCopy = Math.min(maxLength, window.length() - windowOffset);
+            System.arraycopy(window.getArray(), windowOffset, readInto, offset, bytesToCopy);
+            return bytesToCopy;
         }
+	    return NO_BYTES_READ;
+    }
 
-		// Read as many bytes as are available from the cache:
-		final long lastPossiblePosition = Math.min(lastRequiredPosition, nextReadPos - 1);
-		int arrayPos = offset;
-		long streamPos = position;
-		while (streamPos <= lastPossiblePosition) {
-
-			// Read from the cache window that covers the streampos:
-			final int windowOffset = (int) (streamPos % (long) windowSize);
-			final long windowPos = streamPos - windowOffset;
-			final int cacheBytesRead = cache.read(windowPos, windowOffset, readInto, arrayPos);
-
-			// If no more bytes are read, stop processing.
-			if (cacheBytesRead == 0) {
-				break;
-			}
-
-			// Move on by the bytes read.
-			streamPos += cacheBytesRead;
-			arrayPos += cacheBytesRead;
-		}
-
-		return arrayPos - offset;
+    @Override
+    protected int readWindowBytes(final long windowStart, final int windowOffset, final ByteBuffer buffer) throws IOException {
+        final Window window = getWindow(windowStart); // this will force read of stream to this window and cache the results.
+        if (window != null) {
+            final int bytesToCopy = Math.min(buffer.remaining(), window.length() - windowOffset);
+            buffer.put(window.getArray(), windowOffset, bytesToCopy);
+            return bytesToCopy;
+        }
+        return NO_BYTES_READ;
 	}
 
 	/**
@@ -466,21 +438,6 @@ public final class InputStreamReader extends AbstractCacheReader {
 		}
 	}
 
-	/**
-	 * Sets a SoftWindowRecovery object to use.  If this is null (the default),
-	 * then HardWindows will be used, which while in memory cannot be reclaimed
-	 * by the garbage collector.  If a SoftWindowRecovery object is provided,
-	 * then the InputStreamReader will use SoftWindows, which can be reclaimed
-	 * by the garbage collector in low memory conditions.  The recovery object
-	 * is used by the window to reload a window whose memory has been reclaimed.
-	 *
-	 * @param recovery An object which can reload the memory needed by a Window
-	 *                 in the case that its byte array has been reclaimed by the
-	 *                 garbage collector.
-	 */
-	public void setSoftWindowRecovery(final SoftWindowRecovery recovery) {
-		this.recovery = recovery;
-	}
 	
 	@Override
 	public String toString() {

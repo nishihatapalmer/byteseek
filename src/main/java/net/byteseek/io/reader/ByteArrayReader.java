@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-17, All rights reserved.
+ * Copyright Matt Palmer 2012-18, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -31,12 +31,14 @@
 package net.byteseek.io.reader;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.windows.HardWindow;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.io.reader.windows.WindowFactory;
 import net.byteseek.utils.ArgUtils;
 
 /**
@@ -59,6 +61,7 @@ public final class ByteArrayReader implements WindowReader {
 	private static final int NO_BYTE_AT_POSITION = -1;
 
 	private final Window windowBytes;
+	private WindowFactory factory = HardWindow.FACTORY;
 
 	/**
 	 * Constructs a ByteArrayReader from an array of bytes.
@@ -125,9 +128,8 @@ public final class ByteArrayReader implements WindowReader {
 		ArgUtils.checkNullString(string, "string");
 		ArgUtils.checkNullObject(charset, "charset");
 		final byte[] bytes = string.getBytes(charset);
-		this.windowBytes = new HardWindow(bytes, 0, bytes.length);
+		this.windowBytes = factory.createWindow(bytes, 0, bytes.length);
 	}
-
 
 	@Override
 	public int readByte(final long position) throws IOException {
@@ -154,6 +156,12 @@ public final class ByteArrayReader implements WindowReader {
         final byte[] array = windowBytes.getArray();
 		System.arraycopy(array, (int) position, readInto, offset, copyLength);
 		return copyLength;
+	}
+
+	@Override
+	public int read(final long position, final ByteBuffer buffer) throws IOException {
+		//TODO: implement read.
+		return 0;
 	}
 
 	@Override
@@ -188,5 +196,11 @@ public final class ByteArrayReader implements WindowReader {
 	@Override
 	public IOIterator<Window> iterator() {
 		return new WindowIterator(this);
+	}
+
+	@Override
+	public void setWindowFactory(final WindowFactory factory) {
+	    ArgUtils.checkNullObject(factory, "factory");
+		this.factory = factory;
 	}
 }
