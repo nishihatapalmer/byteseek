@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2012, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -95,15 +95,6 @@ public abstract class AbstractCacheReader implements WindowReader {
 	protected final WindowCache cache;
 
 	/**
-	 * The last window acquired in this WindowReader using the
-	 * {@link #getWindow(long)} method. Positions to read from are quite likely
-	 * to be consecutive or close to the previous byte read from. Recording the
-	 * last window therefore avoids the need to look it up in the cache if the
-	 * required position is still inside the last Window.
-	 */
-	private Window lastWindow;
-
-	/**
 	 * Construct the WindowReader using a default window size, using the WindowCache
 	 * provided.
 	 * 
@@ -144,7 +135,6 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 */
 	@Override
 	public int readByte(final long position) throws IOException {
-		//TODO: avoid using windows to read a byte - read from cache or file directly?
 		final Window window = getWindow(position);
 		final int offset = (int) (position % (long) windowSize);
 		if (window == null || offset >= window.length()) {
@@ -157,6 +147,72 @@ public abstract class AbstractCacheReader implements WindowReader {
 	public int read(final long position, final byte[] readInto) throws IOException {
 		return read(position, readInto, 0, readInto.length);
 	}
+
+	@Override
+    public int read(final long position, final byte[] readInto, final int offset, final int maxLength) throws IOException {
+	    // Basic sanity tests:
+	    if (position < 0) {
+	        return NO_BYTE_AT_POSITION;
+        }
+	    ArgUtils.checkIndexOutOfBounds(readInto.length, offset);
+
+        // Calculate safe bounds:
+        final int arrayBytesAvailable = readInto.length - offset;
+        final long readerBytesPossible = Long.MAX_VALUE - position;
+        final int bytesPossible = (int) Math.min(readerBytesPossible, arrayBytesAvailable);
+        final int maxBytesToCopy = Math.min(bytesPossible, maxLength);
+
+        // Copy data into the byte array from the cache first, then the reader.
+        // A cache may copy more than one Window if it can (although it doesn't have to).
+        // The reader will only read a single Window at a time, on the grounds that the next
+        // Window may be held in the cache instead, which will either be faster, or will be
+        // the only method available to return the data (e.g. a temp file cache over a stream).
+        int bytesCopied = 0;
+        final int localWindowSize = windowSize;
+	    while (bytesCopied < maxBytesToCopy) {
+
+	        // Find the window our position falls in:
+            final long currentPos = position + bytesCopied;
+	        final long windowStart = currentPos % localWindowSize;
+	        final int windowOffset = (int) (currentPos - windowStart);
+
+	        // Read bytes from the cache at that window position:
+	        final int bytesRemaining = maxBytesToCopy - bytesCopied;
+            final int cacheBytesRead = cache.read(windowStart, windowOffset, readInto, offset + bytesCopied, bytesRemaining);
+
+            // If the cache doesn't have the bytes for this window, read it from the reader instead:
+            if (cacheBytesRead == 0) {
+                final int readerBytesRead = readWindowBytes(windowStart, windowOffset, readInto,
+                                                            offset + bytesCopied, maxBytesToCopy); //TODO: max bytes to copy not correct.
+
+                // If we get negative bytes from the reader, we're at the end of the data source.
+                if (readerBytesRead < 0) {
+                    // If we copied no bytes and we're at the end, return -1, otherwise return how many bytes were copied.
+                    return bytesCopied == 0? NO_BYTE_AT_POSITION : bytesCopied;
+                }
+
+                // Defensive programming - avoid potential infinite loop.
+                // If the cache or the reader doesn't have any bytes, and it's not the end of the data source,
+                // something terrible must have happened.  Raise an IOException:
+                if (readerBytesRead == 0) {
+                    //TODO: think about this some more - how could this happen, could an InputStreamReader read no
+                    //      bytes while putting them in the cache, and assume you could just ask for the bytes from
+                    //      the cache on the next round the loop?  If so, have to avoid infinite loop situation...
+                }
+                bytesCopied += readerBytesRead;
+            } else {
+                bytesCopied += cacheBytesRead;
+            }
+
+
+
+            //TODO: what if both return zero bytes read?  infinite loop.
+        }
+        return bytesCopied;
+    }
+
+    protected abstract int readWindowBytes(long windowStart, int windowOffset, byte[] readInto, int toArrayPos, int length);
+
 
 	/**
 	 * Returns a window onto the data for a given position. The position does
@@ -176,23 +232,17 @@ public abstract class AbstractCacheReader implements WindowReader {
 		if (position < 0) {
 			return null;
 		}
-		Window window;
+
 		final int offset = (int) (position % (long) windowSize);
 		final long windowStart = position - offset;
-		if (lastWindow != null && lastWindow.getWindowPosition() == windowStart) {
-			window = lastWindow;
-		} else {
-			window = cache.getWindow(windowStart);
-			if (window != null) {
-				lastWindow = window;
-			} else {
-				window = createWindow(windowStart);
-				if (window != null) {
-					lastWindow = window;
-					cache.addWindow(window);
-				}
-			}
+        Window window = cache.getWindow(windowStart);
+        if (window == null) {
+            window = createWindow(windowStart);
+            if (window != null) {
+                cache.addWindow(window);
+            }
 		}
+
 		// Finally, if the position requested is outside the window limit,
 		// don't return a window. The position itself is invalid, even though
 		// that position is part of a window which has valid positions.
@@ -215,7 +265,6 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 */
 	@Override
 	public void close() throws IOException {
-		lastWindow = null;
 		cache.clear();
 	}
 
