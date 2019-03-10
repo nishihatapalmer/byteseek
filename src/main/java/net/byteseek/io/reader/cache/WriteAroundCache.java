@@ -141,10 +141,17 @@ public final class WriteAroundCache extends AbstractCache {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A WriteAroundCache does not create new windows, even if the caches it wraps do.
+     * Therefore nothing will be set on this call.  If you wish to change the WindowFactories of the
+     * caches wrapped by this WriteAroundCache, you should retain references to them.
+     * @param factory The WindowFactory to use to create new Windows.
+     */
     @Override
     public void setWindowFactory(final WindowFactory factory) {
-        // A WriteArounCache does not need to create new windows,
-        // even if some of the caches it wraps do.
+        // A WriteArounCache does not need to create new windows, even if some of the caches it wraps do.
     }
 
     /**
