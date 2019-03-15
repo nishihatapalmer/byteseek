@@ -53,7 +53,7 @@ public final class NoCache extends AbstractCache {
      * @return Window null in all cases.
      */
     @Override
-    public Window getWindow(long position) {
+    public Window getWindow(final long position) {
         return null;
     }
 
@@ -65,7 +65,7 @@ public final class NoCache extends AbstractCache {
      * @param window A Window to add (which it will not be).
      */
     @Override
-    public void addWindow(Window window) throws IOException {
+    public void addWindow(final Window window) throws IOException {
         notifyWindowFree(window, this);
     }
 
