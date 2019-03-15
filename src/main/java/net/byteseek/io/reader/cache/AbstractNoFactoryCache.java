@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2018, All rights reserved.
+ * Copyright Matt Palmer 2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,21 +30,20 @@
  */
 package net.byteseek.io.reader.cache;
 
-import java.io.IOException;
+import net.byteseek.io.reader.windows.WindowFactory;
 
 /**
- * An IOException that indicates a temporary file was not deleted.
+ * An AbstractCache that doesn't need to create windows.
  */
-public class TempFileNotDeletedException extends IOException {
+public abstract class AbstractNoFactoryCache extends AbstractCache {
 
     /**
-     * Constructs a TempFileNotDeletedException from a descriptive message and a Throwable cause.
-     *
-     * @param message The message to include with the exception.
-     * @param cause   The Throwable which caused this exception to be thrown.
+     * {@inheritDoc}
+     * <p>
+     * <b>Note:</b>This cache does not need to create windows, so setting a window factory will do nothing.
      */
-    public TempFileNotDeletedException(final String message, final Throwable cause) {
-        super(message, cause);
+    @Override
+    public void setWindowFactory(final WindowFactory factory) {
+        // This cache does not need to create new windows.
     }
-
 }

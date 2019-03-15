@@ -280,7 +280,7 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
             }
             if (fileCloseException != null || !tempFileDeleted) {
                 throw tempFileDeleted? fileCloseException
-                                     : new TempFileNotDeletedException(fileDetails, fileCloseException);
+                                     : new IOException("Temporary file not deleted: " + fileDetails, fileCloseException);
             }
         }
     }

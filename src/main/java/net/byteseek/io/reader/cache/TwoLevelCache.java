@@ -32,7 +32,6 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowFactory;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
@@ -55,7 +54,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Matt Palmer
  */
- public final class TwoLevelCache extends AbstractCache {
+ public final class TwoLevelCache extends AbstractNoFactoryCache {
 
     private final WindowCache primaryCache;
     private final WindowCache secondaryCache;
@@ -143,19 +142,6 @@ import java.nio.ByteBuffer;
      */
     public WindowCache getSecondaryCache() {
         return secondaryCache;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * A TwoLevelCache does not create new windows, even if the caches it wraps do.
-     * Therefore nothing will be set on this call.  If you wish to change the WindowFactories of the
-     * caches wrapped by this TwoLevelCache, you should retain references to them.
-     * @param factory The WindowFactory to use to create new Windows.
-     */
-    @Override
-    public void setWindowFactory(final WindowFactory factory) {
-        // The TwoLevelCache does not need to create new windows, (even if some of the caches it wraps do).
     }
 
 	@Override

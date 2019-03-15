@@ -44,7 +44,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Matt Palmer
  */
-public final class NoCache extends AbstractCache {
+public final class NoCache extends AbstractNoFactoryCache {
 
     /**
      * Always returns null, as no Windows are cached.
@@ -86,11 +86,6 @@ public final class NoCache extends AbstractCache {
     @Override
     public void clear() {
         // nothing to do
-    }
-
-    @Override
-    public void setWindowFactory(final WindowFactory factory) {
-        // A NoCache does not need to create new windows.
     }
     
 	@Override

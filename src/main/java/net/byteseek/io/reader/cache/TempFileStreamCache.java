@@ -242,7 +242,7 @@ public final class TempFileStreamCache extends AbstractCache implements SoftWind
             }
             if (fileCloseException != null || !tempFileDeleted) {
                 throw tempFileDeleted? fileCloseException
-                        : new TempFileNotDeletedException(fileDetails, fileCloseException);
+                        : new IOException("Temporary file not deleted: " + fileDetails, fileCloseException);
             }
         }
     }

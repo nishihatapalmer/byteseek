@@ -47,7 +47,7 @@ import net.byteseek.utils.ArgUtils;
  *
  * @author Matt Palmer
  */
-public abstract class AbstractMemoryCache extends AbstractCache {
+public abstract class AbstractMemoryCache extends AbstractNoFactoryCache {
 
     @Override
     public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos,
@@ -92,11 +92,6 @@ public abstract class AbstractMemoryCache extends AbstractCache {
             }
         }
         return startRemaining - bufferRemaining;
-    }
-
-    @Override
-    public void setWindowFactory(final WindowFactory factory) {
-        // memory based caches do not need to create new windows in memory.
     }
 
 }

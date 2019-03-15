@@ -32,7 +32,6 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowFactory;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
@@ -62,7 +61,7 @@ import java.nio.ByteBuffer;
  *
  * @author Matt Palmer
  */
-public final class WriteThroughCache extends AbstractCache {
+public final class WriteThroughCache extends AbstractNoFactoryCache {
 
     private final WindowCache memoryCache;
     private final WindowCache persistentCache;
@@ -134,19 +133,6 @@ public final class WriteThroughCache extends AbstractCache {
         if (memCacheException != null) {
             throw memCacheException;
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * A WriteThroughCache does not create new windows, even if the caches it wraps do.
-     * Therefore nothing will be set on this call.  If you wish to change the WindowFactories of the
-     * caches wrapped by this WriteThroughCache, you should retain references to them.
-     * @param factory The WindowFactory to use to create new Windows.
-     */
-    @Override
-    public void setWindowFactory(final WindowFactory factory) {
-        // A WriteThroughCache does not need to create new windows, even if some of the caches it wraps do.
     }
 
     /**
