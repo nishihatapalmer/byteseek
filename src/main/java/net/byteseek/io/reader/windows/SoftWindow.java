@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2015, All rights reserved.
+ * Copyright Matt Palmer 2011-2018, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -58,10 +58,26 @@ import java.lang.ref.SoftReference;
  */
 public final class SoftWindow implements Window {
 
-    private SoftReference<byte[]> bytes;
+    /**
+     * Creates a factory for SoftWindows given a SoftWindowRecovery.
+     *
+     * @param recovery The SoftWindowRecovery to use.
+     * @return A factory for Softwindows.
+     */
+    public static WindowFactory createFactory(final SoftWindowRecovery recovery) {
+        return new WindowFactory() {
+            private final SoftWindowRecovery recoveryToUse = recovery;
+            @Override
+            public Window createWindow(final byte[] arrayToWrap, final long position, final int length) {
+                return new SoftWindow(arrayToWrap, position, length, recoveryToUse);
+            }
+        };
+    }
+
     private final long windowPosition;
     private final int length;
     private final SoftWindowRecovery recovery;
+    private SoftReference<byte[]> bytes;
 
     /**
      * Constructs a Window using the byte array provided, recording the position
@@ -79,6 +95,7 @@ public final class SoftWindow implements Window {
      * @param windowPosition The position at which the Window starts.
      * @param length An ending position of a slice of the array.
      * @param recovery A class which can reload the window array when required.
+     * @throws IllegalArgumentException if the byte array passed in is null.
      */
     public SoftWindow(final byte[] bytes, final long windowPosition,
                       final int length, final SoftWindowRecovery recovery) {
@@ -160,7 +177,6 @@ public final class SoftWindow implements Window {
     public long getNextWindowPosition() {
         return windowPosition + length;
     }
-
 
     /**
      * Returns the length of the Window. Note that this may be shorter than the

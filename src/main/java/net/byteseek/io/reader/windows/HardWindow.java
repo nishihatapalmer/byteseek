@@ -55,6 +55,17 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class HardWindow implements Window {
 
+    /**
+     * A factory for creating HardWindows.
+     */
+    public final static WindowFactory FACTORY = new WindowFactory() {
+
+        @Override
+        public Window createWindow(final byte[] arrayToWrap, final long position, final int length) {
+            return new HardWindow(arrayToWrap, position, length);
+        }
+    };
+
 	private final byte[] bytes;
 	private final long windowPosition;
 	private final int length;
