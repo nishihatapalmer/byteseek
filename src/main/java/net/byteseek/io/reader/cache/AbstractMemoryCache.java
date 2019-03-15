@@ -56,9 +56,8 @@ public abstract class AbstractMemoryCache extends AbstractCache {
         final int bytesRequested = Math.min(readInto.length - readIntoPos, maxLength);
         if (bytesRequested > 0) {
             Window window = getWindow(windowPos);
-            final int windowLength = window.length();
-            if (window != null && offset < windowLength) { // If there's data at this position, copy it:
-                int bytesToCopy = Math.min(bytesRequested, windowLength - offset);
+            if (window != null && offset < window.length()) { // If there's data at this position, copy it:
+                int bytesToCopy = Math.min(bytesRequested, window.length() - offset);
                 System.arraycopy(window.getArray(), offset, readInto, readIntoPos, bytesToCopy);
 
                 // Now obtain more data if required from subsequent cached windows (all at offset 0 now)
