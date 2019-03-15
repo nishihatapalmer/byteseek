@@ -32,7 +32,6 @@
 package net.byteseek.io.reader.cache;
 
 import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -44,7 +43,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Matt Palmer
  */
-public final class NoCache extends AbstractNoFactoryCache {
+public final class NoCache extends AbstractUncreativeCache {
 
     /**
      * Always returns null, as no Windows are cached.

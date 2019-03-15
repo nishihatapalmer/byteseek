@@ -62,7 +62,7 @@ import java.nio.ByteBuffer;
  *
  * @author Matt Palmer
  */
-public final class WriteAroundCache extends AbstractNoFactoryCache {
+public final class WriteAroundCache extends AbstractUncreativeCache {
 
     private final WindowCache memoryCache;
     private final WindowCache persistentCache;

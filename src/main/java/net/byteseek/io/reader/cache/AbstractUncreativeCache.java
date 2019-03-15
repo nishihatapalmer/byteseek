@@ -35,7 +35,7 @@ import net.byteseek.io.reader.windows.WindowFactory;
 /**
  * An AbstractCache that doesn't need to create windows.
  */
-public abstract class AbstractNoFactoryCache extends AbstractCache {
+public abstract class AbstractUncreativeCache extends AbstractCache {
 
     /**
      * {@inheritDoc}

@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowFactory;
 import net.byteseek.utils.ArgUtils;
 
 /**
@@ -47,7 +46,7 @@ import net.byteseek.utils.ArgUtils;
  *
  * @author Matt Palmer
  */
-public abstract class AbstractMemoryCache extends AbstractNoFactoryCache {
+public abstract class AbstractMemoryCache extends AbstractUncreativeCache {
 
     @Override
     public int read(final long windowPos, final int offset, final byte[] readInto, final int readIntoPos,

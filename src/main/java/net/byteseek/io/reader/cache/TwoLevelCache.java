@@ -54,7 +54,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Matt Palmer
  */
- public final class TwoLevelCache extends AbstractNoFactoryCache {
+ public final class TwoLevelCache extends AbstractUncreativeCache {
 
     private final WindowCache primaryCache;
     private final WindowCache secondaryCache;
