@@ -59,8 +59,10 @@ public class TempFileStreamCacheTest {
     private int testData1Length, testData2Length;
     private TempFileStreamCache tempFileCache;
     private int windowInterval;
+    private int testNumber;
 
-    public TempFileStreamCacheTest(Integer windowInterval, Integer data1Length, Integer window1Length, Integer data2Length, Integer window2Length) {
+    public TempFileStreamCacheTest(Integer testNo, Integer windowInterval, Integer data1Length, Integer window1Length, Integer data2Length, Integer window2Length) {
+        testNumber = testNo;
         this.windowInterval = windowInterval;
         testData1Length = data1Length;
         testWindow1Length = window1Length;
@@ -71,10 +73,10 @@ public class TempFileStreamCacheTest {
     @Parameterized.Parameters
     public static Collection lengths() {
         return Arrays.asList(new Object[][]{
-                {4096, 4096, 4096, 4096, 4096},
-                {4096, 4096, 4096, 4096, 543},
-                {4096, 4096, 4096, 4096, 1},
-                {1024, 1024, 1024, 1024, 1022}
+                {1, 4096, 4096, 4096, 4096, 4096},
+                {2, 4096, 4096, 4096, 4096, 543},
+                {3, 4096, 4096, 4096, 4096, 1},
+                {4, 1024, 1024, 1024, 1024, 1022}
         });
     }
 
@@ -88,7 +90,12 @@ public class TempFileStreamCacheTest {
         Arrays.fill(data2, VALUE2);
         testWindow2 = new HardWindow(data2, testWindow1Length, testWindow2Length);
 
-        tempFileCache = new TempFileStreamCache(windowInterval);
+        switch (testNumber % 3) {
+            case 0: tempFileCache = new TempFileStreamCache(windowInterval);
+            case 1: tempFileCache = new TempFileStreamCache(null, windowInterval);
+            case 2: tempFileCache = new TempFileStreamCache(getFile("/"), windowInterval);
+        }
+
     }
 
     @After
@@ -98,27 +105,40 @@ public class TempFileStreamCacheTest {
 
     @Test
     public void testDirectoryNoException() {
-        new TempFileCache(getFile("/")); // OK to instantiate with a directory
+        new TempFileStreamCache(getFile("/"), 1024); // OK to instantiate with a directory
     }
 
     @Test
     public void testNullDirectoryOK() throws IOException {
-        doSomeCacheOperations(new TempFileCache(null)); // should default to system temp file area and work OK.
+        doSomeCacheOperations(new TempFileStreamCache(null, 2014)); // should default to system temp file area and work OK.
     }
 
-    @Test
-    public void testNegativeCapacityOK() throws IOException {
-        doSomeCacheOperations(new TempFileCache(null, -1024)); // should still work and pick a sensible capacity itself.
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testFileException() {
+        new TempFileStreamCache(getFile("/romeoandjuliet.txt"), 1024); // Not OK to instantiate with a file.
     }
 
-    @Test
-    public void testZeroCapacityOK() throws IOException {
-        doSomeCacheOperations(new TempFileCache(null, 0)); // should still work and pick a sensible capacity itself.
+    @Test(expected=IllegalArgumentException.class)
+    public void testSetNullFactory() {
+        tempFileCache.setWindowFactory(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDirectoryNotAFileException() {
-        new TempFileCache(getFile("/romeoandjuliet.txt")); // throw exception if it isn't a directory.
+        new TempFileStreamCache(getFile("/romeoandjuliet.txt"), 1024); // throw exception if it isn't a directory.
+    }
+
+    @Test
+    public void testSetWindowFactory() throws IOException {
+        tempFileCache.addWindow(testWindow1);
+        Window window = tempFileCache.getWindow(testWindow1.getWindowPosition());
+        assertEquals(HardWindow.class, window.getClass());
+
+        tempFileCache.setWindowFactory(TestWindow.FACTORY);
+        tempFileCache.addWindow(testWindow2);
+        window = tempFileCache.getWindow(testWindow2.getWindowPosition());
+        assertEquals(TestWindow.class, window.getClass());
     }
 
     @Test
@@ -271,7 +291,7 @@ public class TempFileStreamCacheTest {
         assertTrue(tempFileCache.toString().contains(tempFileCache.getClass().getSimpleName()));
     }
 
-    private void doSomeCacheOperations(TempFileCache cache) throws IOException {
+    private void doSomeCacheOperations(TempFileStreamCache cache) throws IOException {
         cache.addWindow(testWindow1);
         cache.addWindow(testWindow2);
         cache.clear();
