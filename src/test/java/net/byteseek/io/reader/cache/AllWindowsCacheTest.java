@@ -226,6 +226,10 @@ public class AllWindowsCacheTest {
         assertArrayValue(buffer3.array(), VALUE2, testWindow1Length / 2, testWindow1Length / 2);
     }
 
+    @Test
+    public void testSetWindowFactoryNoNullException() {
+        cache.setWindowFactory(null);
+    }
 
     private void assertArrayValue(final byte[] array, final byte value, final int offset, final int length) {
         for (int i = offset; i < length; i++) {
