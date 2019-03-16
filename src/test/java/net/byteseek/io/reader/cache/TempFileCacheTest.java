@@ -58,8 +58,10 @@ public class TempFileCacheTest {
     private int testWindow1Length, testWindow2Length;
     private int testData1Length, testData2Length;
     private TempFileCache tempFileCache;
+    private int testNumber;
 
-    public TempFileCacheTest(Integer data1Length, Integer window1Length, Integer data2Length, Integer window2Length) {
+    public TempFileCacheTest(Integer testNo, Integer data1Length, Integer window1Length, Integer data2Length, Integer window2Length) {
+        testNumber = testNo;
         testData1Length = data1Length;
         testWindow1Length = window1Length;
         testData2Length = data2Length;
@@ -69,11 +71,11 @@ public class TempFileCacheTest {
     @Parameterized.Parameters
     public static Collection lengths() {
         return Arrays.asList(new Object[][]{
-                {4096, 4096, 4096, 4096},
-                {4096, 4096, 4096, 543},
-                {1024, 367, 789, 523},
-                {4096, 4095, 4096, 1},
-                {1024, 1023, 1023, 1022}
+                {1, 4096, 4096, 4096, 4096},
+                {2, 4096, 4096, 4096, 543},
+                {3, 1024, 367, 789, 523},
+                {4, 4096, 4095, 4096, 1},
+                {5, 1024, 1023, 1023, 1022}
         });
     }
 
@@ -87,7 +89,11 @@ public class TempFileCacheTest {
         Arrays.fill(data2, VALUE2);
         testWindow2 = new HardWindow(data2, testWindow1Length, testWindow2Length);
 
-        tempFileCache = new TempFileCache();
+        switch (testNumber % 3) {
+            case 0: tempFileCache = new TempFileCache();
+            case 1: tempFileCache = new TempFileCache(null);
+            case 2: tempFileCache = new TempFileCache(getFile("/"));
+        }
     }
 
     @After
@@ -99,6 +105,33 @@ public class TempFileCacheTest {
     public void testDirectoryNoException() {
         new TempFileCache(getFile("/")); // OK to instantiate with a directory
     }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testFileException() {
+        new TempFileCache(getFile("/romeoandjuliet.txt")); // Not OK to instantiate with a file.
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSetNullFactory() {
+        tempFileCache.setWindowFactory(null);
+    }
+
+    @Test
+    public void testSetWindowFactory() throws IOException {
+        tempFileCache.addWindow(testWindow1);
+        Window window = tempFileCache.getWindow(testWindow1.getWindowPosition());
+        assertEquals(HardWindow.class, window.getClass());
+
+        tempFileCache.setWindowFactory(TestWindow.FACTORY);
+        tempFileCache.addWindow(testWindow2);
+        window = tempFileCache.getWindow(testWindow2.getWindowPosition());
+        assertEquals(TestWindow.class, window.getClass());
+    }
+
+
+
+
+
 
     @Test
     public void testNullDirectoryOK() throws IOException {
