@@ -59,7 +59,7 @@ import java.nio.channels.FileChannel;
  *
  * @author Matt Palmer
  */
-public final class TempFileStreamCache extends AbstractCache implements SoftWindowRecovery {
+public final class TempFileStreamCache extends AbstractCreativeCache implements SoftWindowRecovery {
 
     private final int windowSize;
     private final File tempDir;
@@ -68,7 +68,6 @@ public final class TempFileStreamCache extends AbstractCache implements SoftWind
     private FileChannel fileChannel;
     private long startOffset;
     private long length;
-    private WindowFactory factory = HardWindow.FACTORY;
 
     /**
      * Constructs a TempFileCache given a windowSize
@@ -167,17 +166,6 @@ public final class TempFileStreamCache extends AbstractCache implements SoftWind
         startOffset = 0;
         length      = 0;
         deleteFileIfExists();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IllegalArgumentException if the factory is null.
-     */
-    @Override
-    public void setWindowFactory(final WindowFactory factory) {
-        ArgUtils.checkNullObject(factory, "factory");
-        this.factory = factory;
     }
 
     /**

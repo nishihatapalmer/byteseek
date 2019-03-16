@@ -58,7 +58,7 @@ import net.byteseek.utils.collections.PositionHashMap;
  * 
  * @author Matt Palmer
  */
-public final class TempFileCache extends AbstractCache implements SoftWindowRecovery {
+public final class TempFileCache extends AbstractCreativeCache implements SoftWindowRecovery {
 
     private final static int DEFAULT_CAPACITY = 1024; // number of positions to cache initially = 4Mb file if 4096 byte windows are cached.
     private final PositionHashMap<WindowInfo> windowPositions;
@@ -67,7 +67,6 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
     private RandomAccessFile file;
     private FileChannel fileChannel;
     private long nextFilePos;
-    private WindowFactory factory = HardWindow.FACTORY;
 
     /**
      * Constructs a TempFileCache using the default temporary directory and an initial cache capacity
@@ -205,17 +204,6 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
     public void clear() throws IOException {
         windowPositions.clear();
         deleteFileIfExists();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IllegalArgumentException if the factory is null.
-     */
-    @Override
-    public void setWindowFactory(final WindowFactory factory) {
-        ArgUtils.checkNullObject(factory, "factory");
-        this.factory = factory;
     }
     
     /**
