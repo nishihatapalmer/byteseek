@@ -158,7 +158,7 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
                 final int bytesToCopy    = remainingBytes < windowBytes? remainingBytes : windowBytes;
                 final long filePos       = info.filePosition + readOffset;
                 int bytesCopied = IOUtils.readBytes(file, filePos, readInto, readIntoPos, bytesToCopy);
-                if (bytesCopied == 0) {
+                if (bytesCopied < 1) {
                     break; // shouldn't happen if the cached positions are within the file, but better to be safe.
                 }
                 bytesRead += bytesCopied;
