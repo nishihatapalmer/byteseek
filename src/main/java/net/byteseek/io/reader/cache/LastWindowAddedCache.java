@@ -38,66 +38,48 @@ import net.byteseek.utils.ArgUtils;
 import java.io.IOException;
 
 /**
- * A simple cache that holds on to the last two windows requested, and assumes that the previous window
- * will most often be the next one requested.  It would not be a typical pattern to repeatedly ask for
- * the same window as last requested (as most code obtains a window and processes everything in it before
- * asking for the next window. This cache checks for the previous window first, before the current one,
- * on the grounds that is is sometimes necessary to go back to a previous window to process the current one.
+ * A simple cache that holds on to the last Window added to it.
+ * <p>
+ * There are probably few access patterns that need this cache, as window processing
+ * code tends to get a different window from the last one requested.
+ * <p>
+ * The only general circumstance where this cache is helpful is if repeated calls to
+ * {@link net.byteseek.io.reader.WindowReader#readByte(long)} on a WindowReader are made.
+ * Individual bytes accessed sequentially will generally require the last
+ * window most of the time.  Given the purpose of a Window is to provide access to the underlying
+ * array, using a method call to access individual bytes is probably an anti-pattern itself.
  */
-public class LastTwoWindowsCache extends AbstractMemoryCache {
+public class LastWindowAddedCache extends AbstractMemoryCache {
 
-    private final WindowCache wrappedCache;
-    private Window currentWindow;
-    private Window previousWindow;
+    private Window lastWindow;
 
     /**
-     * Constructs a LastTwoWindowsCache given a WindowCache to wrap.
-     *
-     * @param cache The WindowCache wrapped by this LastTwoWindowsCache.
+     * Constructs a LastWindowAddedCache.
      */
-    public LastTwoWindowsCache(final WindowCache cache) {
-        ArgUtils.checkNullObject(cache, "cache");
-        wrappedCache = cache;
+    public LastWindowAddedCache() {
     }
 
     @Override
     public Window getWindow(final long position) throws IOException {
-        if (previousWindow != null && previousWindow.getWindowPosition() == position) {
-            return previousWindow;
+        if (lastWindow != null && lastWindow.getWindowPosition() == position) {
+            return lastWindow;
         }
-        if (currentWindow != null && currentWindow.getWindowPosition() == position) {
-            return currentWindow;
-        }
-        final Window nextWindow = wrappedCache.getWindow(position);
-        cacheWindows(nextWindow);
-        return nextWindow;
+        return null;
     }
 
     @Override
     public void addWindow(final Window window) throws IOException {
-        wrappedCache.addWindow(window);
-        cacheWindows(window);
+        if (window != null) {
+            if (lastWindow != null && lastWindow.getWindowPosition() != window.getWindowPosition()) {
+                notifyWindowFree(lastWindow, this);
+            }
+            lastWindow = window;
+        }
     }
 
     @Override
     public void clear() throws IOException {
-        currentWindow = null;
-        previousWindow = null;
-        wrappedCache.clear();
+        lastWindow = null;
     }
 
-    @Override
-    public void setWindowFactory(WindowFactory factory) {
-        // Does not itself create windows, just wraps another cache.
-    }
-
-    private void cacheWindows(final Window nextWindow) throws IOException {
-        if (nextWindow != null) {
-            if (previousWindow != null) {
-                notifyWindowFree(previousWindow, this);
-            }
-            previousWindow = currentWindow;
-            currentWindow = nextWindow;
-        }
-    }
 }
