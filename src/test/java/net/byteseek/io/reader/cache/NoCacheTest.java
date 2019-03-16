@@ -113,6 +113,38 @@ public class NoCacheTest {
         Assert.assertEquals(3, evictedWindows.size());
     }
 
+    @Test
+    public void testNotifyAllObservers() {
+        final List<WindowCache.WindowObserver> notified = new ArrayList<WindowCache.WindowObserver>();
+        WindowCache.WindowObserver exceptionObserver1 = new WindowCache.WindowObserver() {
+            @Override
+            public void windowFree(Window window, WindowCache fromCache) throws IOException {
+                notified.add(this);
+                throw new IOException();
+            }
+        };
+        WindowCache.WindowObserver exceptionObserver2 = new WindowCache.WindowObserver() {
+            @Override
+            public void windowFree(Window window, WindowCache fromCache) throws IOException {
+                notified.add(this);
+                throw new IOException();
+            }
+        };
+        noCache.subscribe(exceptionObserver1);
+        noCache.subscribe(exceptionObserver2);
+
+        try {
+            addWindow(noCache, 0, 4096);
+            fail("Should have thrown IOException");
+        } catch (IOException ex) {
+            assertEquals(2, notified.size());
+        }
+
+    }
+
+
+
+
 
     private Window addWindow(final WindowCache cache, final long windowPosition, int length) throws IOException {
         Window window = new HardWindow(new byte[length], windowPosition, length);
