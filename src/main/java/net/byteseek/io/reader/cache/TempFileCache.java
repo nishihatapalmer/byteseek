@@ -234,7 +234,6 @@ public final class TempFileCache extends AbstractCache implements SoftWindowReco
             tempFile = tempDir == null? IOUtils.createTempFile()
                                       : IOUtils.createTempFile(tempDir);
             file = new RandomAccessFile(tempFile, "rw");
-            fileChannel = file.getChannel();
         }
     }
 
