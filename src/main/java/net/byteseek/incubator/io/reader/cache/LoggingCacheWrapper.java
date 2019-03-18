@@ -28,8 +28,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.io.reader.cache;
+package net.byteseek.incubator.io.reader.cache;
 
+import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.windows.WindowFactory;
 import net.byteseek.utils.ArgUtils;
