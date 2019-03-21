@@ -47,8 +47,7 @@ import java.io.IOException;
  */
 public class LastTwoWindowsAddedCache extends AbstractMemoryCache {
 
-    private Window currentWindow;
-    private Window previousWindow;
+    private Window currentWindow, previousWindow;
 
     /**
      * Constructs a LastTwoWindowsAddedCache.
@@ -59,11 +58,13 @@ public class LastTwoWindowsAddedCache extends AbstractMemoryCache {
 
     @Override
     public Window getWindow(final long position) throws IOException {
-        if (previousWindow != null && previousWindow.getWindowPosition() == position) {
-            return previousWindow;
+        Window localWindow = previousWindow;
+        if (localWindow != null && localWindow.getWindowPosition() == position) {
+            return localWindow;
         }
-        if (currentWindow != null && currentWindow.getWindowPosition() == position) {
-            return currentWindow;
+        localWindow = currentWindow;
+        if (localWindow != null && localWindow.getWindowPosition() == position) {
+            return localWindow;
         }
         return null;
     }
