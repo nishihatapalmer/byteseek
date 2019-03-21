@@ -41,13 +41,10 @@ import java.io.IOException;
  * A simple cache that holds on to the last Window added to it.
  * <p>
  * There are probably few access patterns that need this cache, as window processing
- * code tends to get a different window from the last one requested.
+ * code tends to get a different window from the last one added.
  * <p>
- * The only general circumstance where this cache is helpful is if repeated calls to
- * {@link net.byteseek.io.reader.WindowReader#readByte(long)} on a WindowReader are made.
- * Individual bytes accessed sequentially will generally require the last
- * window most of the time.  Given the purpose of a Window is to provide access to the underlying
- * array, using a method call to access individual bytes is probably an anti-pattern itself.
+ * Where repeated calls to {@link net.byteseek.io.reader.WindowReader#readByte(long)} on a
+ * WindowReader are made, it may be useful to use this cache.
  */
 public class LastWindowAddedCache extends AbstractMemoryCache {
 
@@ -61,8 +58,9 @@ public class LastWindowAddedCache extends AbstractMemoryCache {
 
     @Override
     public Window getWindow(final long position) throws IOException {
-        if (lastWindow != null && lastWindow.getWindowPosition() == position) {
-            return lastWindow;
+        final Window localWindow = lastWindow;
+        if (localWindow != null && localWindow.getWindowPosition() == position) {
+            return localWindow;
         }
         return null;
     }
@@ -70,8 +68,9 @@ public class LastWindowAddedCache extends AbstractMemoryCache {
     @Override
     public void addWindow(final Window window) throws IOException {
         if (window != null) {
-            if (lastWindow != null && lastWindow.getWindowPosition() != window.getWindowPosition()) {
-                notifyWindowFree(lastWindow, this);
+            final Window localWindow = lastWindow;
+            if (localWindow != null && localWindow.getWindowPosition() != window.getWindowPosition()) {
+                notifyWindowFree(localWindow, this);
             }
             lastWindow = window;
         }
