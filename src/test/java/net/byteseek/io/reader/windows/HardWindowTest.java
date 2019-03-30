@@ -96,6 +96,7 @@ public class HardWindowTest {
     @Test
     public void testGetArray() throws Exception {
         Assert.assertArrayEquals(data, window.getArray());
+        Assert.assertEquals(data, window.getArray());
     }
 
     @Test
