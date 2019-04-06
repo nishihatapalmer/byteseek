@@ -167,8 +167,8 @@ public abstract class AbstractCacheReader implements WindowReader {
 
 	        // Find the window our position falls in:
             final long currentPos = position + bytesCopied;
-	        final long windowStart = currentPos % localWindowSize;
-	        final int windowOffset = (int) (currentPos - windowStart);
+	        final int windowOffset = (int) (currentPos % (long) localWindowSize);
+	        final long windowStart  = currentPos - windowOffset;
 
 	        // Read bytes from the cache at that window position:
 	        final int bytesRemaining = maxBytesToCopy - bytesCopied;
@@ -215,8 +215,8 @@ public abstract class AbstractCacheReader implements WindowReader {
 
             // Find the window our position falls in:
             final long currentPos = position + bytesCopied;
-            final long windowStart = currentPos % localWindowSize;
-            final int windowOffset = (int) (currentPos - windowStart);
+            final int windowOffset = (int) (currentPos % (long) localWindowSize);
+            final long windowStart  = currentPos - windowOffset;
 
             // Read bytes from the cache at that window position:
             final int bytesRemaining = maxBytesToCopy - bytesCopied;
