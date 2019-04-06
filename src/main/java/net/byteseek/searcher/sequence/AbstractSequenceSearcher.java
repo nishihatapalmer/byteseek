@@ -55,9 +55,8 @@ import net.byteseek.utils.ArgUtils;
 public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher implements SequenceSearcher {
 
     /**
-     * A constant for subclasses to indicate no match and that the only known safe shift which can be made for further searching is one.
-     * Note that *any* negative number means there was no match - you should  *never* test for this specific value -
-     * you should test for a negative number to indicate no match in the current search.
+     * A convenient named constant for subclasses to use to indicate no match.
+     * Any negative number means no match, don't rely on all implementations using this constant.
      */
     protected static final int NO_MATCH_SAFE_SHIFT = -1;
 
