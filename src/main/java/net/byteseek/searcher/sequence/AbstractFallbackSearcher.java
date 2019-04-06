@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,6 +32,7 @@ package net.byteseek.searcher.sequence;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.searcher.sequence.factory.SearcherFactories;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
 import net.byteseek.utils.lazy.LazyObject;
@@ -164,15 +165,15 @@ public abstract class AbstractFallbackSearcher extends AbstractWindowSearcher<Se
      * level decisions on behalf of the programmer, it seems the lesser of two evils to make it safe to use any search
      * algorithm with any valid pattern, even if occasionally you don't quite get the algorithm you thought you specified.
      * <p>
-     * Given this, we choose to supply the fastest known algorithm for short patterns (ShiftOr),
-     * rather than one which is more spiritually similar to this algorithm (e.g. the SignedHorspoolSearcher), or the
-     * simplest possible algorithm (e.g. the SequenceMatcherSearcher).
+     * Given this, we choose to supply the fastest known algorithm for short patterns (ShiftOrUnrolled), unless the
+     * sequence is length one, in which case we either get a ByteSearcher or a ByteMatcherSearcher, which are always
+     * fastest in those cases.
      */
     private final class FallbackSearcherFactory implements ObjectFactory<SequenceSearcher> {
 
         @Override
         public SequenceSearcher create() {
-            return new ShiftOrUnrolledSearcher(sequence);  // the fastest searcher for short patterns, search is linear in all cases - no real pathological cases.
+            return SearcherFactories.SHIFTOR_UNROLLED_FACTORY.create(sequence);
         }
     }
 
