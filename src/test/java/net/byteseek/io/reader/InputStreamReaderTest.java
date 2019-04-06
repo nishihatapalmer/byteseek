@@ -33,15 +33,14 @@ package net.byteseek.io.reader;
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.cache.NoCache;
-import net.byteseek.io.reader.windows.SoftWindow;
-import net.byteseek.io.reader.windows.SoftWindowRecovery;
-import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowMissingException;
+import net.byteseek.io.reader.cache.TestWindow;
+import net.byteseek.io.reader.windows.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -79,6 +78,58 @@ public class InputStreamReaderTest {
         raf.close();
     }
 
+
+    @Test
+    public void testRead() throws Exception {
+        for (int i = 0; i < fileReaders.length; i++) {
+            testRead(fileReaders[i]);
+        }
+    }
+
+    private void testRead(InputStreamReader fileReader) throws IOException {
+        byte[] buf = new byte[193];
+        byte[] buf2 = new byte[193];
+        long count = 0;
+        long readBytes;
+        while ((readBytes = fileReader.read(count, buf)) > 0) {
+            int read = IOUtils.readBytes(raf, count, buf2);
+            for (int i = 0; i < readBytes; i++) {
+                if (buf[i] != buf2[i]) {
+                    fail("Mismatch in bytes detected at position " + count + i + " stream byte value  " + buf[i] + " raf byte value " + buf2[i]);
+                }
+            }
+            count += readBytes;
+        }
+        assertEquals("Bytes read from stream is file length", fileLength, count);
+    }
+
+    @Test
+    public void testReadByteBuffer() throws Exception {
+        for (int i = 0; i < fileReaders.length; i++) {
+            testReadBuffer(fileReaders[i]);
+        }
+    }
+
+    private void testReadBuffer(InputStreamReader fileReader) throws IOException {
+        byte[] buf = new byte[193];
+        byte[] buf2 = new byte[193];
+        ByteBuffer buffer = ByteBuffer.wrap(buf);
+        long count = 0;
+        long readBytes;
+        while ((readBytes = fileReader.read(count, buffer)) > 0) {
+            int read = IOUtils.readBytes(raf, count, buf2);
+            for (int i = 0; i < readBytes; i++) {
+                if (buf[i] != buf2[i]) {
+                    fail("Mismatch in bytes detected at position " + count + i + " stream byte value  " + buf[i] + " raf byte value " + buf2[i]);
+                }
+            }
+            count += readBytes;
+            buffer.clear();
+        }
+        assertEquals("Bytes read from stream is file length", fileLength, count);
+    }
+
+
     @Test
     public void testIterateWindows() throws IOException {
         for (int i = 0; i < readers.length;i++) {
@@ -112,6 +163,30 @@ public class InputStreamReaderTest {
             testRandomPositions("ascii file:", raf, reader, fileLength);
         }
     }
+
+    @Test
+    public void testSetNullFactory() {
+        for (int i = 0; i < fileReaders.length; i++) {
+            try {
+                fileReaders[i].setWindowFactory(null);
+                fail("Setting null window factory should give an IllegalArgumentException " + fileReaders[i]);
+            } catch (IllegalArgumentException expected) {}
+        }
+    }
+
+    @Test
+    public void testSetWindowFactory() throws IOException {
+        for (int i = 0; i < fileReaders.length; i++) {
+
+            Window window = fileReaders[i].getWindow(0);
+            assertEquals(HardWindow.class, window.getClass());
+
+            fileReaders[i].setWindowFactory(TestWindow.FACTORY);
+            window = fileReaders[i].getWindow(windowSizes[i]);
+            assertEquals(TestWindow.class, window.getClass());
+        }
+    }
+
 
     @Test
     public void testReadByteNegative() throws IOException {
@@ -255,6 +330,14 @@ public class InputStreamReaderTest {
     public void testLength() throws Exception {
         for (int i = 0; i < readers.length; i++) {
             assertEquals("reader length is 1024", 1024, readers[i].length());
+        }
+    }
+
+    @Test
+    public void testReadEntireStream() throws Exception {
+        for (int i = 0; i < fileReaders.length; i++) {
+            final long length = fileReaders[i].readEntireStream();
+            assertEquals("reader length is " + fileLength, fileLength, length);
         }
     }
 
