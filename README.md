@@ -15,9 +15,16 @@ A package which contains various types of matcher for individual bytes or sequen
 
 A package which contains implementations of various search algorithms.  Most of them are sub-linear, which means they don't have to examine every position in an input source to find all possible matches.  All the search algorithms have been extended to work with sequences which can match more than one byte at a given position.  Any sequence search algorithm can work with any sequence matcher, no matter how it is composed.  All the search implementations are stream-friendly - the length of an input source is not required unless you explicitly want to work at the end of an input source.  
 
-* bytes - a naive searcher for byte matchers.
-* matcher - a naive searcher for any matcher.
-* sequence - various implementations of the naive search, Boyer-Moore-Horspool, Signed Horspool and Sunday QuickSearch algorithms.
+* bytes - a naive searcher for byte matchers (which is also the fastest for single bytes).
+* matcher - a naive searcher for any matcher (which is probably among the slowest, as it is entirely generic).
+* sequence - implementations of these algorithms:
+  * the naive search (quite slow)
+  * Sunday QuickSearch (only a bit better than the naive search)
+  * ShiftOR, and UnrolledShiftOR (very fast for short < 12 sequences).
+  * Horspool and Unrolled Horspool (reasonably fast for slightly bigger patterns > 12)
+  * Signed Horspool (usually better than other Horspool variants)
+  * Signed Hash (often the fastest search, except for short patterns)
+  * Qgram Filtering (often faster than SignedHash for longer patterns, but has very bad worst cases).
 
 #### IO
 
