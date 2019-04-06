@@ -96,16 +96,6 @@ public abstract class AbstractCacheReader implements WindowReader {
 	protected final WindowCache cache;
 
 	/**
-	 * Construct the WindowReader using a default window size, using the WindowCache provided.
-	 * 
-	 * @param cache  The WindowCache to use.
-	 * @throws IllegalArgumentException if the WindowCache is null.
-	 */
-	public AbstractCacheReader(final WindowCache cache) {
-		this(DEFAULT_WINDOW_SIZE, cache);
-	}
-
-	/**
 	 * Constructs the WindowReader using the window size and window cache provided.
 	 * 
 	 * @param windowSize The size of Window to use.
