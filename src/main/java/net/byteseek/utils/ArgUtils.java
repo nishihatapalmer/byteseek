@@ -288,7 +288,22 @@ public final class ArgUtils {
 			throw new IllegalArgumentException("The number " + number + " should be a positive integer.");
 		}
 	}
-	
+
+	public static void checkNotNegative(final long number)  {
+		if (number < 0) {
+			throw new IllegalArgumentException("the number " + number + " should not be negative.");
+		}
+	}
+
+	//TODO: add javadoc for all public methods in this class.
+
+	/**
+	 * Throws an IllegalArgumentException if the number passed in is less than 1.
+	 *
+	 * @param number The number to check.
+	 * @param description A description of the number parameter which will appear in the exception.
+     * @throws IllegalArgumentException if the number passed in is less than 1.
+	 */
 	public static void checkPositiveInteger(final int number, final String description) {
 		if (number < 1) {
 			throw new IllegalArgumentException(String.format(POSITIVE_INTEGER + ' ' + description, number));		}
