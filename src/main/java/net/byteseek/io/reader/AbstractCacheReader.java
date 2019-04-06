@@ -136,7 +136,7 @@ public abstract class AbstractCacheReader implements WindowReader {
     public int read(final long position, final byte[] readInto, final int offset, final int maxLength) throws IOException {
 	    // Basic sanity tests:
 	    if (position < 0) {
-            return NO_BYTES_READ;
+            return INVALID_POSITION;
         }
 	    ArgUtils.checkIndexOutOfBounds(readInto.length, offset);
 
@@ -169,8 +169,12 @@ public abstract class AbstractCacheReader implements WindowReader {
                 final int readerBytesRead = readWindowBytes(windowStart, windowOffset, readInto,
                                                             offset + bytesCopied, bytesRemaining);
                 // If no bytes were copied or we get negative bytes from the reader, there's no more data.
-                // Just return the number of bytes read in total so far.
-                if (readerBytesRead <= 0) {
+                // Just return the number of bytes read in total so far, or invalid position if that's what
+                // the reader is saying.
+                if (readerBytesRead < 0) {
+                    return INVALID_POSITION;
+                }
+                if (readerBytesRead == 0) {
                     return bytesCopied;
                 }
 
@@ -186,7 +190,7 @@ public abstract class AbstractCacheReader implements WindowReader {
     public int read(final long position, final ByteBuffer buffer) throws IOException {
         // Basic sanity tests:
         if (position < 0) {
-            return NO_BYTES_READ;
+            return INVALID_POSITION;
         }
 
         // Calculate safe bounds:
@@ -217,8 +221,11 @@ public abstract class AbstractCacheReader implements WindowReader {
                 bytesRead = readWindowBytes(windowStart, windowOffset, buffer);
 
                 // If no bytes were copied or we get negative bytes from the reader, there's no more data.
-                // Just return the number of bytes read in total so far.
-                if (bytesRead <= 0) {
+                // Just return the number of bytes read in total so far, or invalid position if that's what the reader is saying.
+                if (bytesRead < 0) {
+                    return INVALID_POSITION;
+                }
+                if (bytesRead == 0) {
                     return bytesCopied;
                 }
             }
