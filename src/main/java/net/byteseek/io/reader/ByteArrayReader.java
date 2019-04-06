@@ -33,7 +33,6 @@ package net.byteseek.io.reader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.windows.HardWindow;
@@ -58,7 +57,7 @@ public final class ByteArrayReader implements WindowReader {
 
 	//TODO: allow a start / end index to be specified on the supplied byte array.
 
-	private static final int NO_BYTE_AT_POSITION = -1;
+	private static final int INVALID_POSITION = -1;
 
 	private final Window windowBytes;
 	private WindowFactory factory = HardWindow.FACTORY;
@@ -133,7 +132,7 @@ public final class ByteArrayReader implements WindowReader {
 
 	@Override
 	public int readByte(final long position) throws IOException {
-		return (position >= 0 && position < windowBytes.length())? windowBytes.getByte((int) position) & 0xFF : NO_BYTE_AT_POSITION;
+		return (position >= 0 && position < windowBytes.length())? windowBytes.getByte((int) position) & 0xFF : INVALID_POSITION;
 	}
 
 	@Override
@@ -145,7 +144,7 @@ public final class ByteArrayReader implements WindowReader {
 	public int read(final long position, final byte[] readInto, final int offset, final int readLength) throws IOException {
 		final int windowLength = windowBytes.length();
 		if (position < 0 || position >= windowLength) {
-			return NO_BYTE_AT_POSITION;
+			return INVALID_POSITION;
 		}
 
 		// Calculate the amount it's safe to copy from the reader to the destination array:
@@ -160,8 +159,17 @@ public final class ByteArrayReader implements WindowReader {
 
 	@Override
 	public int read(final long position, final ByteBuffer buffer) throws IOException {
-		//TODO: implement read.
-		return 0;
+		final int windowLength = windowBytes.length();
+		if (position < 0 || position >= windowLength) {
+			return INVALID_POSITION;
+		}
+
+		// Calculate the amount it's safe to copy from the reader to the destination buffer:
+		final int copyLength = Math.min(buffer.remaining(), windowLength - (int) position);
+
+		// Copy that amount of data over from the window to the buffer, and return the amount copied:
+		buffer.put(windowBytes.getArray(), (int) position,copyLength);
+		return copyLength;
 	}
 
 	@Override

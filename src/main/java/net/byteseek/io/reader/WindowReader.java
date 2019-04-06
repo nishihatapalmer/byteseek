@@ -89,24 +89,25 @@ public interface WindowReader extends Closeable {
 	/**
 	 * Reads the bytes in the position given in the WindowReader directly into the supplied byte array,
 	 * at the offset given, reading at most the readLength, but potentially up to the length of the array.
-     * It returns the number of bytes read.
+     * It returns the number of bytes read, or -1 if trying to read past the end of the data source.
 	 *
 	 * @param position The position in the reader to read from.
 	 * @param readInto A byte array into which the data will be written.
 	 * @param offset The offset into the byte array to start writing.
 	 * @param readLength The number of bytes to read into the array.
-	 * @return The number of bytes read.
+	 * @return The number of bytes read, or -1 if trying to read past the end of the data source.
 	 * @throws IOException If there was a problem reading the data.
 	 */
 	int read(long position, byte[] readInto, int offset, int readLength) throws IOException;
 
     /**
      * Reads the bytes in the position given in the WindowReader directly into the supplied ByteBuffer,
-     * up to the remaining bytes in the ByteBuffer.  It returns the number of bytes read.
+     * up to the remaining bytes in the ByteBuffer.
+	 * It returns the number of bytes read, or -1 if trying to read past the end of the data source.
      *
      * @param position The position in the reader to read from.
      * @param buffer   A ByteBuffer into which the data will be written.
-     * @return The number of bytes read.
+     * @return The number of bytes read, or -1 if trying to read past the end of the data source.
      * @throws IOException If there was a problem reading or writing the data.
      */
 	int read(long position, ByteBuffer buffer) throws IOException;

@@ -390,7 +390,7 @@ public final class InputStreamReader extends AbstractCacheReader {
             System.arraycopy(window.getArray(), windowOffset, readInto, offset, bytesToCopy);
             return bytesToCopy;
         }
-	    return NO_BYTES_READ;
+	    return INVALID_POSITION;
     }
 
     @Override
@@ -401,7 +401,7 @@ public final class InputStreamReader extends AbstractCacheReader {
             buffer.put(window.getArray(), windowOffset, bytesToCopy);
             return bytesToCopy;
         }
-        return NO_BYTES_READ;
+        return INVALID_POSITION;
 	}
 
 	/**

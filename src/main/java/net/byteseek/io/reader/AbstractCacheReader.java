@@ -58,7 +58,7 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 * A constant indicating that there is no byte at the position requested,
 	 * returned by the {@link #readByte(long)} method.
 	 */
-	protected final static int NO_BYTE_AT_POSITION = -1;
+	protected final static int INVALID_POSITION = -1;
 
 	/**
 	 * A constant indicating that no bytes were read.
@@ -122,7 +122,7 @@ public abstract class AbstractCacheReader implements WindowReader {
 		final Window window = getWindow(position);
 		final int offset = (int) (position % (long) windowSize);
 		if (window == null || offset >= window.length()) {
-			return NO_BYTE_AT_POSITION;
+			return INVALID_POSITION;
 		}
 		return window.getByte(offset) & 0xFF;
 	}

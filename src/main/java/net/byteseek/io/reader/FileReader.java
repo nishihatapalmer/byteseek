@@ -218,7 +218,7 @@ public final class FileReader extends AbstractCacheReader implements SoftWindowR
 	    // Basic sanity checks:
 	    final long filePos = windowStart + windowOffset;
 	    if (filePos >= length || filePos < 0) {
-	        return NO_BYTES_READ;
+	        return INVALID_POSITION;
         }
 
         // Determine how many bytes to read:
@@ -238,7 +238,7 @@ public final class FileReader extends AbstractCacheReader implements SoftWindowR
         // Basic sanity checks:
         final long filePos = windowStart + windowOffset;
         if (filePos >= length || filePos < 0) {
-            return NO_BYTES_READ;
+            return INVALID_POSITION;
         }
 
         // Read the bytes:

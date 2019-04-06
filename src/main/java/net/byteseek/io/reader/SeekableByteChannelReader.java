@@ -175,6 +175,9 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
     @Override
     protected int readWindowBytes(long windowStart, int windowOffset, byte[] readInto, int offset, int maxLength) throws IOException {
         final long channelPos = windowStart + windowOffset;
+        if (channelPos < 0 || channelPos >= channel.size()) {
+            return INVALID_POSITION;
+        }
         channel.position(channelPos);
         final ByteBuffer arrayBuffer = ByteBuffer.wrap(readInto);
         arrayBuffer.position(offset);
@@ -187,6 +190,9 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
     @Override
     protected int readWindowBytes(long windowStart, int windowOffset, ByteBuffer buffer) throws IOException {
         final long channelPos = windowStart + windowOffset;
+        if (channelPos < 0 || channelPos >= channel.size()) {
+            return INVALID_POSITION;
+        }
         channel.position(channelPos);
         return channel.read(buffer);
     }
