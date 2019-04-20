@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2017, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -134,6 +134,15 @@ public final class IOUtils {
 		return totalRead;
 	}
 
+	/**
+	 * Read bytes from a file channel at a position into a ByteBuffer.
+     *
+	 * @param input The FileChannel to read from.
+	 * @param fromPosition The position in the file channel to read from.
+	 * @param bytes  The ByteBuffer to read into.
+	 * @return The number of bytes read.
+	 * @throws IOException If there was a problem reading from the FileChannel or into the ByteBuffer.
+	 */
 	public static int readBytes(final FileChannel input, final long fromPosition, final ByteBuffer bytes) throws IOException {
 		final int bytesToRead = bytes.remaining();
 		int totalRead = 0;
@@ -195,9 +204,9 @@ public final class IOUtils {
 	 * Creates a temporary file in the directory specified with the
 	 * filename prefix "byteseek" and a filename extension of ".tmp".
 	 *
-	 * @param tempDir The directory to create the temporary file in.
+	 * @param tempDir The directory to create the temporary file in, or null if you want the default temp dir location.
 	 * @return The temporary file created.
-	 * @throws IOException If an error occurs creating the temporary file.
+	 * @throws IOException If an error occurs creating the temporary file, or the tempDir provided is not a directory.
 	 */
 	public static File createTempFile(final File tempDir) throws IOException {
 		return File.createTempFile("byteseek", ".tmp", tempDir);
