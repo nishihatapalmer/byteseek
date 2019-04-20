@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2018, All rights reserved.
+ * Copyright Matt Palmer 2018-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -118,22 +118,58 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
         this(channel, windowSize, new LeastRecentlyUsedCache(capacity));
     }
 
+    /**
+     * Constructs a SeekableByteChannelReader from a Path.
+     *
+     * @param path The Path of the file to obtain a FileChannel from.
+     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
+     */
     public SeekableByteChannelReader(final Path path) throws IOException {
         this(path, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
     }
 
+    /**
+     * Constructs a SeekableByteChannelReader from a Path and a window size.
+     *
+     * @param path The Path of the file to obtain a FileChannel from.
+     * @param windowSize The size of the Windows to create.
+     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
+     */
     public SeekableByteChannelReader(final Path path, final int windowSize) throws IOException {
         this(path, windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
     }
 
+    /**
+     * Constructs a SeekableByteChannelReader from a Path and a window size and a capacity
+     * for a LeastRecentlyUsed cache.
+     *
+     * @param path The Path of the file to obtain a FileChannel from.
+     * @param windowSize The size of the Windows to create.
+     * @param capacity The number of windows to hold in a LeastRecentlyUsedCache.
+     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
+     */
     public SeekableByteChannelReader(final Path path, final int windowSize, final int capacity) throws IOException {
         this(path, windowSize, new LeastRecentlyUsedCache(capacity));
     }
 
+    /**
+     * Constructs a SeekableByteChannelReader from a Path and a WindowCache.
+     *
+     * @param path The Path of the file to obtain a FileChannel from.
+     * @param cache The WindowCache to use.
+     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
+     */
     public SeekableByteChannelReader(final Path path, final WindowCache cache) throws IOException {
         this(path, DEFAULT_WINDOW_SIZE, cache);
     }
 
+    /**
+     * Constructs a SeekableByteChannelReader from a Path, a window size, and a WindowCache.
+     * @param path The Path of the file to obtain a FileChannel from.
+     * @param windowSize The size of the Windows to create.
+     * @param cache The WindowCache to use.
+     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
+     */
     public SeekableByteChannelReader(final Path path, final int windowSize, final WindowCache cache) throws IOException {
         this(path == null? null : Files.newByteChannel(path), windowSize, cache);
     }
