@@ -172,7 +172,7 @@ public abstract class AbstractCacheReader implements WindowReader {
                 // Just return the number of bytes read in total so far, or invalid position if that's what
                 // the reader is saying.
                 if (readerBytesRead < 0) {
-                    return INVALID_POSITION;
+                    return bytesCopied > 0? bytesCopied : INVALID_POSITION;
                 }
                 if (readerBytesRead == 0) {
                     return bytesCopied;
@@ -223,7 +223,7 @@ public abstract class AbstractCacheReader implements WindowReader {
                 // If no bytes were copied or we get negative bytes from the reader, there's no more data.
                 // Just return the number of bytes read in total so far, or invalid position if that's what the reader is saying.
                 if (bytesRead < 0) {
-                    return INVALID_POSITION;
+                    return bytesCopied > 0? bytesCopied : INVALID_POSITION;
                 }
                 if (bytesRead == 0) {
                     return bytesCopied;
