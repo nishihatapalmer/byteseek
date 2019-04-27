@@ -61,6 +61,7 @@ public class ReaderInputStreamTest {
     public void testRead() throws Exception {
         for (int i = 0; i < fileReaders.length; i++) {
             testRead(fileReaders[i]);
+            raf.seek(0);
         }
     }
 
