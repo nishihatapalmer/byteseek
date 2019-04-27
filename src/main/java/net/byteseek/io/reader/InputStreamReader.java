@@ -321,16 +321,13 @@ public final class InputStreamReader extends AbstractCacheReader {
 		return window;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected Window createWindow(final long windowPos) throws IOException {
 		Window window = null;
 		while (nextReadPos <= windowPos && length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
-			if (totalRead > 0) {
+            if (totalRead > 0) {
 			    window = factory.createWindow(bytes, nextReadPos, totalRead);
 				nextReadPos += totalRead;
 				if (windowPos >= nextReadPos) {   // If we still haven't reached the window
@@ -361,12 +358,11 @@ public final class InputStreamReader extends AbstractCacheReader {
 		while (length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
-			if (totalRead > 0) {
-				final Window lastWindow;
-				lastWindow = factory.createWindow(bytes, nextReadPos, totalRead);
-				nextReadPos += totalRead;
-				cache.addWindow(lastWindow);
-			}
+            if (totalRead > 0) {
+                final long currentReadPos = nextReadPos;
+                nextReadPos += totalRead; // update next readpos before adding to cache, which can throw.
+                cache.addWindow(factory.createWindow(bytes, currentReadPos, totalRead));
+            }
 			// If we read less than the available array, we know the length.
 			if (totalRead < windowSize) {
 				length = nextReadPos;
