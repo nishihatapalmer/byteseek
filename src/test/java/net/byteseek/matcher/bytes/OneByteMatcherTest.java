@@ -31,14 +31,15 @@
 
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.WindowReader;
 
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -70,7 +71,7 @@ public class OneByteMatcherTest {
 
     @Before
     public void setup() {
-        reader = new ByteArrayReader(BYTE_VALUES);
+        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
     }
 
 

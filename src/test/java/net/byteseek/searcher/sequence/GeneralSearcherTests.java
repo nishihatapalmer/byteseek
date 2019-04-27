@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,10 +30,11 @@
  */
 package net.byteseek.searcher.sequence;
 
-import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.io.reader.WindowReader;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +85,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     @Test
     public void testSearchForwardsEmptyReader() {
         createSearchers("x", false);
-        WindowReader data = new ByteArrayReader(new byte[0]);
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[0]));
         for (SequenceSearcher searcher : searchers) {
             try {
                 long result = searcher.searchSequenceForwards(data);
@@ -99,7 +100,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     @Test
     public void testSearchBackwardsEmptyReader() {
         createSearchers("x", false);
-        WindowReader data = new ByteArrayReader(new byte[0]);
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[0]));
         for (SequenceSearcher searcher : searchers) {
             try {
                 long result = searcher.searchSequenceBackwards(data);
@@ -144,7 +145,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     @Test
     public void testSearchForwardsShortReader() {
         createSearchers("xyz123abc", false);
-        WindowReader data = new ByteArrayReader(new byte[2]);
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[2]));
         for (SequenceSearcher searcher : searchers) {
             try {
                 long result = searcher.searchSequenceForwards(data);
@@ -159,7 +160,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     @Test
     public void testSearchBackwardsShortReader() {
         createSearchers("xyz123abc", false);
-        WindowReader data = new ByteArrayReader(new byte[2]);
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[2]));
         for (SequenceSearcher searcher : searchers) {
             try {
                 long result = searcher.searchSequenceBackwards(data);
@@ -187,7 +188,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     @Test
     public void testSearchBackwardsReaderAroundZero() throws IOException {
         createSearchers("xxx", false);
-        WindowReader data = new ByteArrayReader("xxx");
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream("xxx".getBytes()));
         for (SequenceSearcher searcher : searchers) {
             long result = searcher.searchSequenceBackwards(data, -1);
             assertTrue("searcher " + searcher, result < 0);
@@ -211,7 +212,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     @Test
     public void testSearchForwardsReaderAroundZero() throws IOException {
         createSearchers("xxx", false);
-        WindowReader data = new ByteArrayReader("xxxyyy");
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream("xxxyyy".getBytes()));
         for (SequenceSearcher searcher : searchers) {
             long result = searcher.searchSequenceForwards(data, 1);
             assertTrue("searcher " + searcher, result < 0);
@@ -239,7 +240,7 @@ public class GeneralSearcherTests extends SearchersToTest {
     @Test
     public void testSearchForwardsReaderBeforeEnd() throws IOException {
         createSearchers("xyz", false);
-        WindowReader data = new ByteArrayReader("---xyz");
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream("---xyz".getBytes()));
         for (SequenceSearcher searcher : searchers) {
             long result = searcher.searchSequenceForwards(data, 0);
             assertEquals("searcher " + searcher, 3, result);

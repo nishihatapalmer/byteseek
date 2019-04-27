@@ -31,7 +31,7 @@
 
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
@@ -39,6 +39,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -62,7 +63,7 @@ public class TwoByteMatcherTest {
 
     @Before
     public void setup() {
-        reader = new ByteArrayReader(BYTE_VALUES);
+        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
     }
 
     @Test

@@ -31,12 +31,13 @@
 
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
-import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.WindowReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -165,7 +166,7 @@ public class SetBitsetMatcherTest {
         }
 
         // test of matches(WindowReader) method:
-        WindowReader reader = new ByteArrayReader(BYTE_VALUES);
+        WindowReader reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
         assertFalse(matcher.matches(reader, -1L));
         assertFalse(matcher.matches(reader, 256L));
         for (Byte byteShouldMatch : bytesMatched) {

@@ -30,8 +30,8 @@
  */
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.WindowReader;
 
 import net.byteseek.matcher.sequence.FixedGapMatcher;
@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
@@ -65,7 +66,7 @@ public class AnyMatcherTest {
 
     @Before
     public void setup() {
-        reader = new ByteArrayReader(BYTE_VALUES);
+        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
     }
 
     /**

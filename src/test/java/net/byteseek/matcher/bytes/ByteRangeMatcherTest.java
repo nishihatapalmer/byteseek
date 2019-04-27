@@ -31,16 +31,14 @@
 
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.io.reader.ByteArrayReader;
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.io.reader.WindowReader;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
-
-import net.byteseek.matcher.bytes.ByteRangeMatcher;
-import net.byteseek.matcher.bytes.InvertibleMatcher;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -66,7 +64,7 @@ public class ByteRangeMatcherTest {
 
     @Before
     public void setup() {
-        reader = new ByteArrayReader(BYTE_VALUES);
+        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
     }
 
     /**

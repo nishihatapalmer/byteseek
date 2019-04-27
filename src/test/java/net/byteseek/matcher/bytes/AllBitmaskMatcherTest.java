@@ -30,8 +30,8 @@
  */
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.WindowReader;
 
 import org.junit.AfterClass;
@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -64,7 +65,7 @@ public class AllBitmaskMatcherTest {
 
     @Before
     public void setup() {
-        reader = new ByteArrayReader(BYTE_VALUES);
+        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
     }
 
     /**
