@@ -50,7 +50,7 @@ import java.nio.channels.SeekableByteChannel;
  * This class is not thread safe - do not create multiple instances over the
  * same WindowReader and run them in different threads.
  */
-public class ReaderSeekableByteChannel implements SeekableByteChannel {
+public final class ReaderSeekableByteChannel implements SeekableByteChannel {
 
     private final WindowReader reader;
     private boolean isClosed;
