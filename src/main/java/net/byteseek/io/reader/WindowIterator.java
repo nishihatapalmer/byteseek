@@ -50,6 +50,7 @@ public final class WindowIterator implements IOIterator<Window> {
      * Constructs a WindowIterator given a WindowReader to iterate over.
      *
      * @param reader The WIndowReader to iterate over.
+     * @throws IllegalArgumentException if the reader supplied is null.
      */
     public WindowIterator(final WindowReader reader) {
         ArgUtils.checkNullObject(reader, "reader");
