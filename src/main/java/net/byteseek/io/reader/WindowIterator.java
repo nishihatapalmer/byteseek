@@ -88,4 +88,9 @@ public final class WindowIterator implements IOIterator<Window> {
     public void remove() {
         throw new UnsupportedOperationException("Cannot remove a window from a reader.");
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(reader: " + reader + " position: " + position + ')';
+    }
 }
