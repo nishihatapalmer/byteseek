@@ -36,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
@@ -588,10 +589,109 @@ public class SeekableByteChannelReaderTest {
         }
     }
 
+    @Test
+    public void testCreateWithChannelIsClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void testCreateWithChannelIsNotClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, false);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertTrue(channel.isOpen());
+        channel.close();
+    }
+
+    @Test
+    public void testCreateWithChannelWindowSizeIsClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, 1024);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void testCreateWithChannelWindowSizeIsNotClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, 1024, false);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertTrue(channel.isOpen());
+        channel.close();
+    }
+
+    @Test
+    public void testCreateWithChannelWindowSizeCapacityIsClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, 1024, 32);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void testCreateWithChannelWindowSizeCapacityIsNotClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, 1024, 32,false);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertTrue(channel.isOpen());
+        channel.close();
+    }
+
+    @Test
+    public void testCreateWithChannelWindowSizeCacheIsClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, 1024, new NoCache());
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void testCreateWithChannelWindowSizeCacheIsNotClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, 1024, new NoCache(),false);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertTrue(channel.isOpen());
+        channel.close();
+    }
+
+    @Test
+    public void testCreateWithChannelCacheIsClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, new NoCache());
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void testCreateWithChannelCacheIsNotClosedWhenReaderCloses() throws IOException {
+        SeekableByteChannel channel = getFileChannel("/TestASCII.txt");
+        SeekableByteChannelReader reader = new SeekableByteChannelReader(channel, new NoCache(), false);
+        assertTrue(channel.isOpen());
+        reader.close();
+        assertTrue(channel.isOpen());
+        channel.close();
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullChannel() throws IOException {
         SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullChannelNotCloseable() throws IOException {
+        SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, false);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -600,14 +700,8 @@ public class SeekableByteChannelReaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateNullPathCache() throws IOException {
-        SeekableByteChannelReader fr = new SeekableByteChannelReader((Path) null, null);
-    }
-
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateNullPathCapacity() throws IOException {
-        SeekableByteChannelReader fr = new SeekableByteChannelReader((Path) null, 1024, 10);
+    public void testCreateNullCacheFileNotCloseable() throws IOException {
+        SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, null, false);
     }
 
     @Test
@@ -616,11 +710,6 @@ public class SeekableByteChannelReaderTest {
         } catch (Exception e) {
             fail("Should be no Exception from creating a valid SeekableByteChannelReader.");
         }
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateNullPathWindowSize() throws IOException {
-        SeekableByteChannelReader fr = new SeekableByteChannelReader((Path) null, 1024);
     }
 
     @Test
@@ -635,6 +724,11 @@ public class SeekableByteChannelReaderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullFileWindowSizeCapacity() throws IOException {
         SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, 1024, 32);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullFileWindowSizeCapacityNotCloseable() throws IOException {
+        SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, 1024, 32, false);
     }
 
     @Test
@@ -652,8 +746,22 @@ public class SeekableByteChannelReaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullChannelCacheNotCloseable() throws IOException {
+        try(SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, null, false)) {}
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateChannelNullCache() throws IOException {
-        try(SeekableByteChannelReader fr = new SeekableByteChannelReader(getFileChannel("/TestASCII.txt"), null)) {}
+        try (SeekableByteChannel channel = getFileChannel("/TestASCII.txt")) {
+            new SeekableByteChannelReader(channel, null);
+        };
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateChannelNullCacheNotCloseable() throws IOException {
+        try (SeekableByteChannel channel = getFileChannel("/TestASCII.txt")) {
+            new SeekableByteChannelReader(channel, null, false);
+        };
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -662,13 +770,8 @@ public class SeekableByteChannelReaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateNullPathWindowSizeCapacity() throws IOException {
-        try(SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, 1024, 32)) {}
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateNullPath() throws IOException {
-        try(SeekableByteChannelReader fr = new SeekableByteChannelReader((Path) null)) {}
+    public void testCreateNullChannelNotCloseableWindowSize() throws IOException {
+        try(SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, 1024, false)) {}
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -678,8 +781,24 @@ public class SeekableByteChannelReaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testCreateNullFileWindowSizeCacheNotCloseable() throws IOException {
+        try (SeekableByteChannelReader fr = new SeekableByteChannelReader((SeekableByteChannel) null, 1024, null, false)) {
+        }
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateFileWindowSizeNullCache() throws IOException {
-        try(SeekableByteChannelReader fr = new SeekableByteChannelReader(getFileChannel("/TestASCII.txt"), 1024, null)) {}
+        try (SeekableByteChannel channel = getFileChannel("/TestASCII.txt")) {
+            new SeekableByteChannelReader(channel, 1024, null);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateFileWindowSizeNullCacheNotCloseable() throws IOException {
+        try (SeekableByteChannel channel = getFileChannel("/TestASCII.txt")) {
+            new SeekableByteChannelReader(channel, 1024, null, false);
+        }
     }
 
 	/*

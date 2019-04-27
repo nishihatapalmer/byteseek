@@ -32,13 +32,9 @@
 package net.byteseek.io.reader;
 
 import java.io.EOFException;
-import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import net.byteseek.io.reader.cache.LeastRecentlyUsedCache;
 import net.byteseek.io.reader.cache.WindowCache;
@@ -58,8 +54,11 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class SeekableByteChannelReader extends AbstractCacheReader implements SoftWindowRecovery {
 
+    private final static boolean CLOSE_CHANNEL_ON_READER_CLOSE = true;
+
     private final SeekableByteChannel channel;
     private final long length;
+    private final boolean closeChannelOnReaderClose;
     private WindowFactory factory = HardWindow.FACTORY;
 
     /**
@@ -71,8 +70,22 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
      * @throws IllegalArgumentException if the channel passed in is null.
      */
     public SeekableByteChannelReader(final SeekableByteChannel channel) throws IOException {
-        this(channel, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
+        this(channel, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY), CLOSE_CHANNEL_ON_READER_CLOSE);
     }
+
+    /**
+     * Constructs a SeekableByteChannelReader which defaults to an array size of 4096, caching
+     * the last 32 most recently used Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}
+     *
+     * @param channel The channel to read from.
+     * @param closeChannelOnReaderClose if true, closes the channel when the reader is closed.
+     * @throws IOException If there is a problem getting the channel size.
+     * @throws IllegalArgumentException if the channel passed in is null.
+     */
+    public SeekableByteChannelReader(final SeekableByteChannel channel, final boolean closeChannelOnReaderClose) throws IOException {
+        this(channel, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY), closeChannelOnReaderClose);
+    }
+
 
     /**
      * Constructs a SeekableByteChannelReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096
@@ -83,9 +96,23 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
      * @throws IOException If there is a problem getting the channel size.
      * @throws IllegalArgumentException if the channel passed in is null.
      */
-    public SeekableByteChannelReader(final SeekableByteChannel channel, final WindowCache cache)
-       throws IOException {
-        this(channel, DEFAULT_WINDOW_SIZE, cache);
+    public SeekableByteChannelReader(final SeekableByteChannel channel, final WindowCache cache) throws IOException {
+        this(channel, DEFAULT_WINDOW_SIZE, cache, CLOSE_CHANNEL_ON_READER_CLOSE);
+    }
+
+    /**
+     * Constructs a SeekableByteChannelReader which defaults to a {@link net.byteseek.io.reader.windows.Window} size of 4096
+     * using the WindowCache passed in to cache ArrayWindows.
+     *
+     * @param channel The channel to read from.
+     * @param cache The cache of Windows to use.
+     * @param closeChannelOnReaderClose if true, closes the channel when the reader is closed.
+     * @throws IOException If there is a problem getting the channel size.
+     * @throws IllegalArgumentException if the channel passed in is null.
+     */
+    public SeekableByteChannelReader(final SeekableByteChannel channel, final WindowCache cache,
+                                     final boolean closeChannelOnReaderClose) throws IOException {
+        this(channel, DEFAULT_WINDOW_SIZE, cache, closeChannelOnReaderClose);
     }
 
     /**
@@ -97,9 +124,39 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
      * @throws IOException If there is a problem getting the channel size.
      * @throws IllegalArgumentException if the channel passed in is null.
      */
-    public SeekableByteChannelReader(final SeekableByteChannel channel, final int windowSize)
-         throws IOException {
-        this(channel, windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
+    public SeekableByteChannelReader(final SeekableByteChannel channel, final int windowSize) throws IOException {
+        this(channel, windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY), CLOSE_CHANNEL_ON_READER_CLOSE);
+    }
+
+    /**
+     * Constructs a SeekableByteChannelReader using the {@link net.byteseek.io.reader.windows.Window} size passed in, and
+     * caches the last 32 Windows in a {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
+     *
+     * @param channel The channel to read from.
+     * @param windowSize The size of the byte array to read from the channel.
+     * @param closeChannelOnReaderClose if true, closes the channel when the reader is closed.
+     * @throws IOException If there is a problem getting the channel size.
+     * @throws IllegalArgumentException if the channel passed in is null.
+     */
+    public SeekableByteChannelReader(final SeekableByteChannel channel, final int windowSize,
+                                     final boolean closeChannelOnReaderClose) throws IOException {
+        this(channel, windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY), closeChannelOnReaderClose);
+    }
+
+    /**
+     * Constructs a SeekableByteChannelReader using the array size passed in, and caches the
+     * last most recently used Windows up to the capacity specified in a
+     * {@link net.byteseek.io.reader.cache.LeastRecentlyUsedCache}.
+     *
+     * @param channel The channel to read from.
+     * @param windowSize the size of the byte array to read from the channel.
+     * @param capacity the number of byte arrays to cache (using a least recently used strategy).
+     * @throws IOException If there is a problem getting the channel size.
+     * @throws IllegalArgumentException if the channel passed in is null.
+     */
+    public SeekableByteChannelReader(final SeekableByteChannel channel, final int windowSize, final int capacity)
+        throws IOException {
+        this(channel, windowSize, new LeastRecentlyUsedCache(capacity), CLOSE_CHANNEL_ON_READER_CLOSE);
     }
 
     /**
@@ -113,65 +170,9 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
      * @throws IOException If there is a problem getting the channel size.
      * @throws IllegalArgumentException if the channel passed in is null.
      */
-    public SeekableByteChannelReader(final SeekableByteChannel channel, final int windowSize, final int capacity)
-        throws IOException {
-        this(channel, windowSize, new LeastRecentlyUsedCache(capacity));
-    }
-
-    /**
-     * Constructs a SeekableByteChannelReader from a Path.
-     *
-     * @param path The Path of the file to obtain a FileChannel from.
-     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
-     */
-    public SeekableByteChannelReader(final Path path) throws IOException {
-        this(path, DEFAULT_WINDOW_SIZE, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
-    }
-
-    /**
-     * Constructs a SeekableByteChannelReader from a Path and a window size.
-     *
-     * @param path The Path of the file to obtain a FileChannel from.
-     * @param windowSize The size of the Windows to create.
-     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
-     */
-    public SeekableByteChannelReader(final Path path, final int windowSize) throws IOException {
-        this(path, windowSize, new LeastRecentlyUsedCache(DEFAULT_CAPACITY));
-    }
-
-    /**
-     * Constructs a SeekableByteChannelReader from a Path and a window size and a capacity
-     * for a LeastRecentlyUsed cache.
-     *
-     * @param path The Path of the file to obtain a FileChannel from.
-     * @param windowSize The size of the Windows to create.
-     * @param capacity The number of windows to hold in a LeastRecentlyUsedCache.
-     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
-     */
-    public SeekableByteChannelReader(final Path path, final int windowSize, final int capacity) throws IOException {
-        this(path, windowSize, new LeastRecentlyUsedCache(capacity));
-    }
-
-    /**
-     * Constructs a SeekableByteChannelReader from a Path and a WindowCache.
-     *
-     * @param path The Path of the file to obtain a FileChannel from.
-     * @param cache The WindowCache to use.
-     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
-     */
-    public SeekableByteChannelReader(final Path path, final WindowCache cache) throws IOException {
-        this(path, DEFAULT_WINDOW_SIZE, cache);
-    }
-
-    /**
-     * Constructs a SeekableByteChannelReader from a Path, a window size, and a WindowCache.
-     * @param path The Path of the file to obtain a FileChannel from.
-     * @param windowSize The size of the Windows to create.
-     * @param cache The WindowCache to use.
-     * @throws IOException If there was a problem obtaining the FileChannel from the Path.
-     */
-    public SeekableByteChannelReader(final Path path, final int windowSize, final WindowCache cache) throws IOException {
-        this(path == null? null : Files.newByteChannel(path), windowSize, cache);
+    public SeekableByteChannelReader(final SeekableByteChannel channel, final int windowSize, final int capacity,
+                                     final boolean closeChannelOnReaderClose) throws IOException {
+        this(channel, windowSize, new LeastRecentlyUsedCache(capacity), closeChannelOnReaderClose);
     }
 
     /**
@@ -184,12 +185,30 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
      * @throws IOException If the size of the channel cannot be determined.
      * @throws IllegalArgumentException If the channel or cache passed in is null.
      */
-    public SeekableByteChannelReader(final SeekableByteChannel channel, final int windowSize, final WindowCache cache)
-        throws IOException {
+    public SeekableByteChannelReader(final SeekableByteChannel channel,
+                                     final int windowSize, final WindowCache cache) throws IOException {
+        this(channel, windowSize, cache, CLOSE_CHANNEL_ON_READER_CLOSE);
+    }
+
+    /**
+     * Constructs a SeekableByteChannelReader which reads the channel into {@link net.byteseek.io.reader.windows.Window}s of the
+     * specified size, using the {@link WindowCache} supplied to cache them.
+     *
+     * @param channel The channel to read from.
+     * @param windowSize The size of the byte array to read from the channel.
+     * @param cache The cache of Windows to use.
+     * @param closeChannelOnReaderClose if true, closes the channel when the reader is closed.
+     * @throws IOException If the size of the channel cannot be determined.
+     * @throws IllegalArgumentException If the channel or cache passed in is null.
+     */
+    public SeekableByteChannelReader(final SeekableByteChannel channel,
+                                     final int windowSize, final WindowCache cache,
+                                     final boolean closeChannelOnReaderClose) throws IOException {
         super(windowSize, cache);
         ArgUtils.checkNullObject(channel, "channel");
         this.channel = channel;
         length = channel.size();
+        this.closeChannelOnReaderClose = closeChannelOnReaderClose;
     }
 
     /**
@@ -250,18 +269,19 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
     }
 
     /**
-     * Closes the underlying {@link SeekableByteChannel}, then clears any
-     * cache associated with this WindowReader.
+     * Closes the underlying {@link SeekableByteChannel} if the reader is set to close the channel when it closes,
+     * then clears any cache the reader has.
      */
     @Override
     public void close() throws IOException {
         try {
-            channel.close();
+            if (closeChannelOnReaderClose) {
+                channel.close();
+            }
         } finally {
             super.close();
         }
     }
-
 
     @Override
     public String toString() {
