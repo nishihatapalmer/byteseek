@@ -52,10 +52,6 @@ public final class MatcherCompilerUtils {
 
   private final static boolean NOT_YET_INVERTED = false;
   
-	private MatcherCompilerUtils() {
-		// Private constructor to prevent the construction of a static utility class.
-	}
-
 	/**
 	 * Returns true if the combination of a ParseTree node and an inversion status
 	 * is still inverted.  If the node is not inverted, then the result should be the
