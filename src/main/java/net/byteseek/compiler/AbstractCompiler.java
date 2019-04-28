@@ -78,15 +78,6 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 			return compile(parser.parse(expression));
 		} catch (final ParseException pex) {
 			throw new CompileException("A problem occurred parsing the expression: " + expression, pex);
-		} catch (final IllegalArgumentException compex) {
-			throw new CompileException("An illegal argument occurred when compiling the expression: " + expression,
-					compex);
-		} catch (final NullPointerException npe) {
-			throw new CompileException("A null object occurred when compiling the expression: " + expression, npe);
-		} catch (final ArrayIndexOutOfBoundsException aie) {
-			throw new CompileException(
-					"An attempt was made to access an array out of its bounds when compiling the expression: "
-							+ expression, aie);
 		}
 	}
 
