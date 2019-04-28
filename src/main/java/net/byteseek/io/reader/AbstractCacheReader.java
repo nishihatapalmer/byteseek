@@ -95,6 +95,11 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 */
 	protected final WindowCache cache;
 
+    /**
+     * Whether the reader is closed or not.
+     */
+	protected boolean closed = false;
+
 	/**
 	 * Constructs the WindowReader using the window size and window cache provided.
 	 * 
@@ -119,6 +124,7 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 */
 	@Override
 	public int readByte(final long position) throws IOException {
+	    ensureOpen();
 		final Window window = getWindow(position);
 		final int offset = (int) (position % (long) windowSize);
 		if (window == null || offset >= window.length()) {
@@ -135,7 +141,8 @@ public abstract class AbstractCacheReader implements WindowReader {
 	@Override
     public int read(final long position, final byte[] readInto, final int offset, final int maxLength) throws IOException {
 	    // Basic sanity tests:
-	    if (position < 0) {
+	    ensureOpen();
+        if (position < 0) {
             return INVALID_POSITION;
         }
 	    ArgUtils.checkIndexOutOfBounds(readInto.length, offset);
@@ -189,6 +196,7 @@ public abstract class AbstractCacheReader implements WindowReader {
 	@Override
     public int read(final long position, final ByteBuffer buffer) throws IOException {
         // Basic sanity tests:
+        ensureOpen();
         if (position < 0) {
             return INVALID_POSITION;
         }
@@ -276,7 +284,8 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 */
 	@Override
 	public Window getWindow(final long position) throws IOException {
-		if (position < 0) {
+		ensureOpen();
+	    if (position < 0) {
 			return null;
 		}
 
@@ -299,21 +308,23 @@ public abstract class AbstractCacheReader implements WindowReader {
 		return window;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public IOIterator<Window> iterator() {
 		return new WindowIterator(this);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void close() throws IOException {
-		cache.clear();
+		if (!closed) {
+            cache.clear();
+            closed = true;
+        }
 	}
+
+	@Override
+    public boolean isClosed() {
+	    return closed;
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -339,5 +350,16 @@ public abstract class AbstractCacheReader implements WindowReader {
 	 *             valid Window.
 	 */
 	protected abstract Window createWindow(final long windowStart) throws IOException;
+
+    /**
+     * Checks whether the reader is closed.  If it is, it throws an IOException.
+     *
+     * @throws IOException if the reader is closed.
+     */
+	protected void ensureOpen() throws IOException {
+	    if (closed) {
+	        throw new IOException("The reader " + this + " is closed.");
+        }
+    }
 
 }
