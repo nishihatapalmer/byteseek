@@ -46,12 +46,6 @@ import java.util.List;
 public final class IOUtils {
 
 	/**
-	 * Private constructor to prevent instantiating a utility class.
-	 */
-	private IOUtils() {
-	}
-
-	/**
 	 * Reads bytes from an {@link java.io.InputStream} into the byte array,
 	 * until the byte array is filled or there are no more bytes in the stream.
 	 * <p>
