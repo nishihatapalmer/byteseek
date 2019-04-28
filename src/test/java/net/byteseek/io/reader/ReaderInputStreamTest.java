@@ -273,81 +273,26 @@ public class ReaderInputStreamTest {
 
         @Test
     public void testClose() throws Exception {
-        CloseReader reader = new CloseReader();
-        assertFalse("Reader is not closed", reader.closed);
+        WindowReader reader = new InputStreamReader(new ByteArrayInputStream(new byte[1024]));
+        assertFalse("Reader is not closed", reader.isClosed());
         ReaderInputStream is = new ReaderInputStream(reader);
         is.close();
         assertTrue("InputStream now closed", is.getNextReadPos() < 0);
-        assertTrue("Reader is now closed.", reader.closed);
+        assertTrue("Reader is now closed.", reader.isClosed());
 
-        reader = new CloseReader();
+        reader = new InputStreamReader(new ByteArrayInputStream(new byte[1024]));
         is = new ReaderInputStream(reader, false);
-        assertFalse("Reader is not closed", reader.closed);
+        assertFalse("Reader is not closed", reader.isClosed());
         is.close();
         assertTrue("InputStream now closed", is.getNextReadPos() < 0);
-        assertFalse("Reader is not closed", reader.closed);
+        assertFalse("Reader is not closed", reader.isClosed());
 
-        reader = new CloseReader();
+        reader = new InputStreamReader(new ByteArrayInputStream(new byte[1024]));
         is = new ReaderInputStream(reader, true);
-        assertFalse("Reader is not closed", reader.closed);
+        assertFalse("Reader is not closed", reader.isClosed());
         is.close();
         assertTrue("InputStream now closed", is.getNextReadPos() < 0);
-        assertTrue("Reader is now closed.", reader.closed);
-    }
-
-
-    private static class CloseReader implements WindowReader {
-
-        public boolean closed;
-
-        @Override
-        public IOIterator<Window> iterator() {
-            return null;
-        }
-
-        @Override
-        public void setWindowFactory(WindowFactory factory) {
-        }
-
-        @Override
-        public void close() throws IOException {
-            closed = true;
-        }
-
-        @Override
-        public int readByte(long position) throws IOException {
-            return 0;
-        }
-
-        @Override
-        public int read(long position, byte[] readInto) throws IOException {
-            return 0;
-        }
-
-        @Override
-        public int read(long position, byte[] readInto, int readIntoPos, int readLength) throws IOException {
-            return 0;
-        }
-
-        @Override
-        public int read(long position, ByteBuffer buffer) throws IOException {
-            return 0;
-        }
-
-        @Override
-        public Window getWindow(long position) throws IOException {
-            return null;
-        }
-
-        @Override
-        public int getWindowOffset(long position) {
-            return 0;
-        }
-
-        @Override
-        public long length() throws IOException {
-            return 0;
-        }
+        assertTrue("Reader is now closed.", reader.isClosed());
     }
 
     private FileInputStream getFileInputStream(final String resourceName) throws IOException {

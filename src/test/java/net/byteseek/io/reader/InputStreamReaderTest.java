@@ -348,8 +348,8 @@ public class InputStreamReaderTest {
             readers[i].close();  // close reader.
             try {
                 readers[i].getWindow(0);
-                fail("Expected WindowMissingException");
-            } catch (WindowMissingException expected) {}
+                fail("Expected IOException");
+            } catch (IOException expected) {}
         }
     }
 

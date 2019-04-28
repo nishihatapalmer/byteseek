@@ -563,21 +563,6 @@ public class SeekableByteChannelReaderTest {
         }
     }
 
-    /**
-     * Test of getFile method, of class SeekableByteChannelReader.
-     */
-    @Test
-    public void testGetFile() throws IOException {
-        SeekableByteChannelReaderIterator it = new SeekableByteChannelReaderIterator("/TestASCII.txt");
-        String filePath = getFilePath("/TestASCII.txt");
-        File f = getFile("/TestASCII.txt");
-        while (it.hasNext()) {
-            try(SeekableByteChannelReader reader = it.next()) {
-               //TODO: fix.  assertEquals("Files are correct.", testFile, reader.getFile());
-            }
-        }
-    }
-
     @Test
     public void testCreateValidFileAndCache() {
         File testFile = getFile("/TestASCII.txt");

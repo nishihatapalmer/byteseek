@@ -179,7 +179,7 @@ public class WriteAroundCacheTest {
         cache.addWindow(testWindow1);
         assertEquals( 0, cache.read(1, 0, array, 0));
         assertEquals( 4096, cache.read(0, 0, array, 0));
-        assertArrayEquals(array, testData); //TODO: does nothing - testwindow doesn't contain testData.
+        assertArrayEquals(array, testData);
 
         // Read offset into 100
         assertEquals(4000, cache.read(0, 0, array, 96));
