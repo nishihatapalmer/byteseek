@@ -152,6 +152,14 @@ public interface WindowReader extends Closeable {
 	long length() throws IOException;
 
 	/**
+	 * Returns true if the reader is closed.
+	 * A reader should throw an IOException if an attempt is made to access data when closed.
+	 *
+	 * @return true if the reader is closed.
+	 */
+	boolean isClosed();
+
+	/**
 	 * Returns an IO iterator over the Windows in the Reader.  This has the same semantics
 	 * as a normal Java Iterator, but any method call to it can throw an IOException.
 	 *

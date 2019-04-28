@@ -308,7 +308,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 	 */
 	@Override
 	public final Window getWindow(final long position) throws IOException {
-		final Window window = super.getWindow(position);
+		final Window window = super.getWindow(position); // this checks if the reader is open or not.
 		if (window == null && position < nextReadPos && position >= 0) {
 			// No window was returned, but the position requested has already
 			// been read. This means the cache algorithm selected to use with
@@ -355,6 +355,7 @@ public final class InputStreamReader extends AbstractCacheReader {
 	 */
 	@Override
 	public long length() throws IOException {
+	    ensureOpen();
 		while (length == UNKNOWN_LENGTH) {
 			final byte[] bytes = new byte[windowSize];
 			final int totalRead = IOUtils.readBytes(stream, bytes);
@@ -425,12 +426,14 @@ public final class InputStreamReader extends AbstractCacheReader {
 	 */
 	@Override
 	public void close() throws IOException {
-		try {
-			if (closeStreamOnClose) {
-				stream.close();
+		if (!closed) {
+			try {
+				if (closeStreamOnClose) {
+					stream.close();
+				}
+			} finally {
+				super.close();
 			}
-		} finally {
-			super.close();
 		}
 	}
 

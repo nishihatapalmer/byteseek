@@ -275,11 +275,13 @@ public final class FileReader extends AbstractCacheReader implements SoftWindowR
 	 */
 	@Override
 	public void close() throws IOException {
-		try {
-			randomAccessFile.close();
-		} finally {
-			super.close();
-		}
+		if (!closed) {
+            try {
+                randomAccessFile.close();
+            } finally {
+                super.close();
+            }
+        }
 	}
 
 	/**
@@ -293,12 +295,13 @@ public final class FileReader extends AbstractCacheReader implements SoftWindowR
 	
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[file:" + file + " length: " + file.length() + " cache:" + cache + ']'; 
+		return getClass().getSimpleName() + "(file:" + file + " length: " + file.length() + " cache:" + cache + " closed: " + closed + ')';
 	}
 
 	@Override
 	public byte[] reloadWindowBytes(final Window window) throws IOException {
-		randomAccessFile.seek(window.getWindowPosition());
+		ensureOpen();
+	    randomAccessFile.seek(window.getWindowPosition());
 		final byte[] bytes = new byte[windowSize];
 		IOUtils.readBytes(randomAccessFile, bytes);
 		return bytes;

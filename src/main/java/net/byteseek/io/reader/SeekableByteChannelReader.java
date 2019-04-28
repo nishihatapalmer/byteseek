@@ -237,7 +237,6 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
         final ByteBuffer arrayBuffer = ByteBuffer.wrap(readInto);
         arrayBuffer.position(offset);
         final int maxBytes = Math.min(readInto.length - offset, maxLength);
-        //TODO: not sure about ByteBuffer logic here with limit()
         arrayBuffer.limit(offset + maxBytes);
         return channel.read(arrayBuffer);
     }
@@ -274,12 +273,14 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
      */
     @Override
     public void close() throws IOException {
-        try {
-            if (closeChannelOnReaderClose) {
-                channel.close();
+        if (!closed) {
+            try {
+                if (closeChannelOnReaderClose) {
+                    channel.close();
+                }
+            } finally {
+                super.close();
             }
-        } finally {
-            super.close();
         }
     }
 

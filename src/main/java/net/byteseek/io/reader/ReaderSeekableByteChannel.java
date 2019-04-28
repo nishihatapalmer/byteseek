@@ -52,7 +52,9 @@ import java.nio.channels.SeekableByteChannel;
  */
 public final class ReaderSeekableByteChannel implements SeekableByteChannel {
 
+    private final static boolean CLOSE_READER_ON_CLOSE = true;
     private final WindowReader reader;
+    private final boolean closeReaderOnClose;
     private boolean isClosed;
     private long position;
 
@@ -62,8 +64,20 @@ public final class ReaderSeekableByteChannel implements SeekableByteChannel {
      * @param reader The WindowReader to be adapted to the SeekableByteChannel interface.
      */
     public ReaderSeekableByteChannel(final WindowReader reader) {
+        this(reader, CLOSE_READER_ON_CLOSE);
+    }
+
+    /**
+     * Constructs a ReaderSeekableByteChannel given a WindowReader, and whether to
+     * close the underlying reader when this SeekableByteChannel is closed.
+     *
+     * @param reader The WindowReader to be adapted to the SeekableByteChannel interface.
+     * @param closeReaderOnClose if true, the underlying reader is closed when the ReaderSeekableByteChannel is closed.
+     */
+    public ReaderSeekableByteChannel(final WindowReader reader, final boolean closeReaderOnClose) {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
+        this.closeReaderOnClose = closeReaderOnClose;
     }
 
     @Override
@@ -77,6 +91,12 @@ public final class ReaderSeekableByteChannel implements SeekableByteChannel {
         return bytesRead;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>Note</b>This always throws NonWritableChannelException - you cannot write to a WindowReader.
+     * </p>
+     */
     @Override
     public int write(ByteBuffer src) throws IOException {
         throw new NonWritableChannelException();
@@ -102,6 +122,12 @@ public final class ReaderSeekableByteChannel implements SeekableByteChannel {
         return reader.length();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>Note</b>This always throws NonWritableChannelException - you cannot truncate a WindowReader.
+     * </p>
+     */
     @Override
     public ReaderSeekableByteChannel truncate(long size) throws IOException {
         throw new NonWritableChannelException();
@@ -122,6 +148,14 @@ public final class ReaderSeekableByteChannel implements SeekableByteChannel {
     @Override
     public void close() throws IOException {
         isClosed = true;
+        if (closeReaderOnClose) {
+            reader.close();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(reader: " + reader + " position: " + position + " isClosed: " + isClosed + ')';
     }
 
     private void ensureOpen() throws ClosedChannelException {
