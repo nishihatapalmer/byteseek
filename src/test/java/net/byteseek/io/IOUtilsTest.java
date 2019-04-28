@@ -32,6 +32,7 @@ package net.byteseek.io;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
@@ -43,13 +44,26 @@ import static org.junit.Assert.*;
 
 public class IOUtilsTest {
 
-    Random rand = new Random(); //TODO: log seed
+    private final static Random rand = new Random();
     File asciiFile;
     InputStream stream;
     RandomAccessFile raf;
     FileChannel fileChannel;
     byte[] fileBytes;
     int fileLength;
+
+    /**
+     *
+     * @throws Exception
+     */
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        final long seed = System.currentTimeMillis();
+        // final long seed = ?
+        rand.setSeed(seed);
+        System.out.println("Seeding random number generator with: " + Long.toString(seed));
+        System.out.println("To repeat these exact tests, set the seed to the value above.");
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -225,10 +239,6 @@ public class IOUtilsTest {
 
 
     //---------------------------------------------------------------------------
-
-    //TODO: need tests for the positioning of the contents of the byte array, not just the
-    // existing ones.
-
 
     @Test
     public void readBytesRandomAccessFilePosToEmptyByteArrayPos() throws Exception {
