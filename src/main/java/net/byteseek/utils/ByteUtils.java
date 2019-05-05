@@ -68,13 +68,6 @@ public final class ByteUtils {
     private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
     /**
-     * Private constructor for static utility class.
-     */
-    private ByteUtils() {
-    }
-
-
-    /**
      * Returns the number of bits set in a given byte.
      * 
      * Algorithm taken from:
@@ -289,28 +282,6 @@ public final class ByteUtils {
         final Set<Byte> setOfBytes = new HashSet<Byte>((int) (bytes.length / 0.75));
         addAll(bytes, setOfBytes);
         return setOfBytes;
-    }
-
-
-    /**
-     * Converts a collection of bytes into a byte array:
-     * @param collection The collection of bytes to convert.
-     * @return A byte array containing the bytes in the collection, in the order in which the collection iterates.
-     */
-    public static byte[] toByteArray(Collection<? extends Byte> collection) {
-        final byte[] result = new byte[collection.size()];
-        int byteIndex = 0;
-        for (Byte b : collection) {
-            result[byteIndex++] = b;
-        }
-        return result;
-    }
-
-
-    public static byte[] intersection(final Set<Byte> first, final byte[] second) {
-        final Set<Byte> s = toSet(second);
-        s.retainAll(first);
-        return toByteArray(s);
     }
 
     /**
@@ -1055,10 +1026,10 @@ public final class ByteUtils {
      * @param prettyPrint Whether to pretty print the byte string.
      * @param bytes the list of Bytes to convert.
      * @return A string containing the byte values as a string.
-     * @throws IllegalArgumentException if the collection of bytes is null.
+     * @throws IllegalArgumentException if the collection of bytes is null, or any of the elements are null.
      */
     public static String bytesToString(final boolean prettyPrint, final List<Byte> bytes) {
-    	ArgUtils.checkNullCollection(bytes);
+    	ArgUtils.checkNullCollectionElements(bytes);
     	return bytesToString(prettyPrint, toArray(bytes), 0, bytes.size());
     }
 
