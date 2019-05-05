@@ -1437,8 +1437,16 @@ public class ByteUtilsTest {
     }
     
     private void testBytesToString(String description, String byteString, String prettyString, byte... array) {
-       	assertEquals(description, byteString, 				ByteUtils.bytesToString(false, array));
+       	assertEquals(description, byteString, ByteUtils.bytesToString(false, array));
        	assertEquals(description + " pretty", prettyString, ByteUtils.bytesToString(true, array));
+
+       	List<Byte> byteList = new ArrayList<Byte>(array.length);
+       	for (byte b : array) {
+       	    byteList.add(b);
+        }
+
+        assertEquals(description, byteString, ByteUtils.bytesToString(false, byteList));
+        assertEquals(description + " pretty", prettyString, ByteUtils.bytesToString(true, byteList));
     }
     
     @Test
@@ -1605,5 +1613,7 @@ public class ByteUtilsTest {
     	}
     	return list;    	
     }
+
+
     
 }
