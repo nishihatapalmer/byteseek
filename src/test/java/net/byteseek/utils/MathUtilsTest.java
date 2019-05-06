@@ -107,6 +107,31 @@ public class MathUtilsTest {
     }
 
     @Test
+    public void testCeilPowerTwo() {
+        // Test powers of two are correct - same number should be returned.
+        for (int i = 0; i < 31; i++) {
+            int powerTwo = 1 << i;
+            assertEquals(powerTwo, MathUtils.ceilPowerOfTwo(powerTwo));
+        }
+
+        // Test one less than power of two gives ceil power of two:
+        // can't test values lower than 4 with this test, as 2-1 = 1, which is also a power of two.
+        for (int i = 2; i < 31; i++) {
+            int powerTwo = 1 << i;
+            int oneLess = powerTwo - 1;
+            assertEquals(powerTwo, MathUtils.ceilPowerOfTwo(oneLess));
+        }
+
+        // Test one more than power of two gives next power of Two:
+        for (int i = 0; i < 30; i++) {
+            int powerTwo = 1 << i;
+            int oneMore = powerTwo + 1;
+            int nextPowerTwo = 2 << i;
+            assertEquals(nextPowerTwo, MathUtils.ceilPowerOfTwo(oneMore));
+        }
+    }
+
+    @Test
     public void testCeilLogBase2() {
         // Number must be positive.
         try {
