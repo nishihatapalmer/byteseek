@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013-17. All rights reserved.
+ * Copyright Matt Palmer 2013-19. All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -43,7 +43,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  * to all threads that read it.
  * @see <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">The "Double-Checked Locking is Broken" Declaration</a>
  * <p>
- * @param <T> The type of object to instantiate lazily.
+ * @param <T> The type of immutable object to instantiate lazily.
  * 
  * @author Matt Palmer
  */
@@ -54,7 +54,7 @@ public final class DoubleCheckImmutableLazyObject<T> implements LazyObject<T> {
 
     /**
      * Constructs a DoubleCheckLazyObject with an object factory to create the 
-     * object lazily.
+     * immutable object lazily.
      * 
      * @param factory A factory which can create an instance of type T.
      */
@@ -65,7 +65,7 @@ public final class DoubleCheckImmutableLazyObject<T> implements LazyObject<T> {
    
     /**
      * Uses Double-Check lazy initialisation.  Only one instance will be created, no matter
-     * how many threads call this method.
+     * how many threads call this method.  The object created must be immutable.
      * 
      * @return An object of type T.
      */
