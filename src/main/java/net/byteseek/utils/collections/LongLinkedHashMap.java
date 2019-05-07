@@ -30,6 +30,8 @@
  */
 package net.byteseek.utils.collections;
 
+import net.byteseek.utils.ArgUtils;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -97,8 +99,10 @@ public class LongLinkedHashMap<T> implements Iterable<LongMapEntry<T>> {
      * @param key The key to use in the map.
      * @param value The value to associate with the key.
      * @return The last value associated with that key, or null if there was none.
+     * @throws IllegalArgumentException if the key is negative.
      */
     public final T put(final long key, final T value) {
+        ArgUtils.checkNotNegative(key);
         final T lastValue;
         final Node<T> node = map.get(key);
         if (node == null) { // no previous key
@@ -118,7 +122,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongMapEntry<T>> {
      * @param key The key to remove the value for.
      * @return The value associated with that key, or null if there was no value for the key.
      */
-    public final T remove(long key) {
+    public final T remove(final long key) {
         return list.remove(map.remove(key));
     }
 
