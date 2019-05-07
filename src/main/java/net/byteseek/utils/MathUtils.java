@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009, All rights reserved.
+ * Copyright Matt Palmer 2009-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -34,7 +34,6 @@ package net.byteseek.utils;
  * Created by matt on 09/07/17.
  */
 public final class MathUtils {
-
 
     /**
      * Returns the log base 2 of an integer, rounded to the floor.
