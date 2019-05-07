@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-17, All rights reserved.
+ * Copyright Matt Palmer 2015-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -38,7 +38,7 @@ import java.util.NoSuchElementException;
  * A LinkedHashMap using primitive longs for keys.  This avoids boxing and unboxing
  * long and Long keys when accessing the linked hash map.
  * <p>
- * The implementation is essentially the same as Map from Java collections, but doesn't
+ * The implementation is essentially the same as Map from Java collections, but doesn't directly
  * implement it, as that interface assumes object keys, and we use primitives.
  *
  * Created by Matt Palmer on 11/11/15.
@@ -173,14 +173,6 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         return new MapEntryIterator();
     }
 
-    /*
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof LongLinkedHashMap &&
-               list.equals(((LongLinkedHashMap)o).list);
-    }
-    */
-
     /**
      * Determines whether the eldest entry should be removed.
      * By default, it returns false.  Override this method to
@@ -248,7 +240,6 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         }
     }
 
-
     /**
      * Simple double linked list to use in the linked hash map.
      *
@@ -262,26 +253,6 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         public DoubleLinkedList() {
             head = tail;
         }
-
-        /*
-        public boolean equals(Object o) {
-            if (o instanceof DoubleLinkedList) {
-                final DoubleLinkedList other = (DoubleLinkedList) o;
-                if (size == other.size) {
-                    Node otherNode = other.tail.next;
-                    for (Node<T> node = tail.next; node != null; node = node.next) {
-                        if (!node.equals(otherNode)) {
-                            return false;
-                        }
-                        otherNode = otherNode.next;
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        */
 
         public int size() {
             return size;
@@ -348,9 +319,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             size++;
             return node;
         }
-
     }
-
 
     /**
      * Simple node to use in the double linked list and associated hash map.
@@ -370,22 +339,6 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
             this.item = item;
             this.key  = key;
         }
-
-        /*
-        @Override
-        public boolean equals(final Object otherNode) {
-            if (otherNode instanceof Node) {
-                final Node other = (Node) otherNode;
-                return key == other.key && item.equals(other.item);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return (int) (key * item.hashCode());
-        }
-        */
 
         @Override
         public long getKey() {
