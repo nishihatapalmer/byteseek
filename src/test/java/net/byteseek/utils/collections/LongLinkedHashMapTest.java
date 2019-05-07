@@ -33,18 +33,21 @@ package net.byteseek.utils.collections;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 public class LongLinkedHashMapTest {
 
-    private LongLinkedHashMap test;
-    private Object testObject1 = new Object();
-    private Object testObject2 = new Object();
-    private Object testObject3 = new Object();
+    private LongLinkedHashMap<Integer> test;
+    private Integer testObject1 = new Integer(1);
+    private Integer testObject2 = new Integer(2);
+    private Integer testObject3 = new Integer(3);
 
     @Before
     public void setup() {
-        test = new LongLinkedHashMap<Object>();
+        test = new LongLinkedHashMap<Integer>();
     }
 
     @Test
@@ -218,18 +221,13 @@ public class LongLinkedHashMapTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
-        //TODO: write test.
-    }
-
-    @Test
     public void testRemoveEldestEntry() throws Exception {
 
         assertFalse("By default remove is false", test.removeEldestEntry(null));
 
-        test = new LongLinkedHashMap<Object>() {
+        test = new LongLinkedHashMap<Integer>() {
             @Override
-            public boolean removeEldestEntry(LongLinkedHashMap.MapEntry<Object> entry) {
+            public boolean removeEldestEntry(LongLinkedHashMap.MapEntry<Integer> entry) {
                 return size() > 2;
             }
         };
@@ -242,9 +240,9 @@ public class LongLinkedHashMapTest {
         assertFalse("Insert order: First object has been removed", test.containsKey(1));
         assertEquals("Size is now two after adding 3", 2, test.size());
 
-        test = new LongLinkedHashMap<Object>(10, true) {
+        test = new LongLinkedHashMap<Integer>(10, true) {
             @Override
-            public boolean removeEldestEntry(LongLinkedHashMap.MapEntry<Object> entry) {
+            public boolean removeEldestEntry(LongLinkedHashMap.MapEntry<Integer> entry) {
                 return size() > 2;
             }
         };
@@ -262,8 +260,133 @@ public class LongLinkedHashMapTest {
     }
 
     @Test
-    public void testIterator() throws Exception {
-        //TODO: write test.
+    public void testIteratorInsertionOrder() throws Exception {
+        test = new LongLinkedHashMap<Integer>();
+        testInsertionOrder();
+        test = new LongLinkedHashMap<Integer>(5);
+        testInsertionOrder();
+    }
+
+    private void testInsertionOrder() {
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        // Now get them again in the opposite order to adding them.
+        for (int i = 0; i <=10; i++) {
+            test.get(i);
+        }
+
+        // Should still be in the order inserted:
+        int value = 10;
+        for(LongLinkedHashMap.MapEntry<Integer> entry : test) {
+            assertEquals(value, (int) entry.getValue());
+            assertEquals(value, (int) entry.getKey());
+            value--;
+        }
+        assertEquals(-1, value);
+    }
+
+    @Test
+    public void testIteratorAccessOrder() throws Exception {
+        test = new LongLinkedHashMap<Integer>(true);
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        // Now get them again in the opposite order to adding them.
+        for (int i = 0; i <=10; i++) {
+            test.get(i);
+        }
+
+        int value = 0;
+        for (LongLinkedHashMap.MapEntry<Integer> entry : test) {
+            assertEquals(value, (int) entry.getValue());
+            assertEquals(value, (int) entry.getKey());
+            value++;
+        }
+        assertEquals(11, value);
+    }
+
+    @Test
+    public void testSetValueInsertionOrder() {
+        test = new LongLinkedHashMap<Integer>(false);
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        for (LongLinkedHashMap.MapEntry<Integer> entry : test) {
+            entry.setValue(entry.getValue() + 100);
+        }
+
+        for (int i = 0; i <=10; i++) {
+            assertEquals(100 + i, (int) test.get(i));
+        }
+    }
+
+    @Test
+    public void testSetValueAccessOrder() {
+        test = new LongLinkedHashMap<Integer>(true);
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        for (LongLinkedHashMap.MapEntry<Integer> entry : test) {
+            entry.setValue(entry.getValue() + 100);
+        }
+
+        for (int i = 0; i <=10; i++) {
+            assertEquals(100 + i, (int) test.get(i));
+        }
+    }
+
+    @Test
+    public void testIteratorEmpty() throws Exception {
+        test = new LongLinkedHashMap<Integer>();
+        Iterator<LongLinkedHashMap.MapEntry<Integer>> it = test.iterator();
+        assertFalse(it.hasNext());
+    }
+
+    @Test(expected=NoSuchElementException.class)
+    public void testIteratorNoSuchElement() throws Exception {
+        test = new LongLinkedHashMap<Integer>();
+        Iterator<LongLinkedHashMap.MapEntry<Integer>> it = test.iterator();
+        it.next();
+    }
+
+    @Test
+    public void testIterateAndRemove() {
+        test = new LongLinkedHashMap<Integer>(true);
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        Iterator<LongLinkedHashMap.MapEntry<Integer>> it = test.iterator();
+        int size = 11;
+        while(it.hasNext()) {
+            assertEquals(size, test.size());
+            it.next();
+            assertEquals(size, test.size());
+
+            it.remove();
+            size--;
+            assertEquals(size, test.size());
+        }
+
     }
 
 }
