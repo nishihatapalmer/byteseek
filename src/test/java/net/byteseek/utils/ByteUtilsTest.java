@@ -32,14 +32,7 @@
 package net.byteseek.utils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
-import net.byteseek.utils.collections.CollUtils;
+import java.util.*;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -1183,14 +1176,23 @@ public class ByteUtilsTest {
     }
 	
     private void testRemoveIntersection1IntersectionSets(Set<Byte> set1, Set<Byte> set2, List<Byte> expectedIntersection) {
-		assertTrue("Set 1 does contain intersection values", CollUtils.containsAny(set1, expectedIntersection));
-		assertTrue("Set 2 does contain intersection values", CollUtils.containsAny(set2, expectedIntersection));
+		assertTrue("Set 1 does contain intersection values", containsAny(set1, expectedIntersection));
+		assertTrue("Set 2 does contain intersection values", containsAny(set2, expectedIntersection));
     	List<Byte> intersection = ByteUtils.removeIntersection(set1,  set2);
     	assertEquals("Intersection is correct size", expectedIntersection.size(), intersection.size());
 		assertTrue("Intersection has correct values", intersection.containsAll(expectedIntersection));
-		assertFalse("Set 1 does not contain any intersection values", CollUtils.containsAny(set1, intersection));
-		assertFalse("Set 2 does not contain any intersection values", CollUtils.containsAny(set2, intersection));
+		assertFalse("Set 1 does not contain any intersection values", containsAny(set1, intersection));
+		assertFalse("Set 2 does not contain any intersection values", containsAny(set2, intersection));
 	}
+
+    private static <T> boolean containsAny(final Collection<T> collection, final Iterable<T> values) {
+        for (final T value : values) {
+            if (collection.contains(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     @Test
     public void testRemoveIntersection2NullSets() {
@@ -1274,14 +1276,14 @@ public class ByteUtilsTest {
     }
 	
     private void testRemoveIntersection2IntersectionSets(Set<Byte> set1, Set<Byte> set2, List<Byte> expectedIntersection) {
-		assertTrue("Set 1 does contain intersection values", CollUtils.containsAny(set1, expectedIntersection));
-		assertTrue("Set 2 does contain intersection values", CollUtils.containsAny(set2, expectedIntersection));
+		assertTrue("Set 1 does contain intersection values", containsAny(set1, expectedIntersection));
+		assertTrue("Set 2 does contain intersection values", containsAny(set2, expectedIntersection));
     	List<Byte> intersection = new ArrayList<Byte>();
     	ByteUtils.removeIntersection(set1,  set2, intersection);
     	assertEquals("Intersection is correct size", expectedIntersection.size(), intersection.size());
 		assertTrue("Intersection has correct values", intersection.containsAll(expectedIntersection));
-		assertFalse("Set 1 does not contain any intersection values", CollUtils.containsAny(set1, intersection));
-		assertFalse("Set 2 does not contain any intersection values", CollUtils.containsAny(set2, intersection));
+		assertFalse("Set 1 does not contain any intersection values", containsAny(set1, intersection));
+		assertFalse("Set 2 does not contain any intersection values", containsAny(set2, intersection));
 	}
     
 
