@@ -40,8 +40,8 @@ import java.util.NoSuchElementException;
  * <p>
  * The implementation is essentially the same as Map from Java collections, but doesn't directly
  * implement it, as that interface assumes object keys, and we use primitives.
- * <p><b>Warning</b>> This implementation does not allow negative values for keys.
- *
+ * <p><b>Warning</b> This implementation does not allow negative values for keys.
+ * <p>
  * Created by Matt Palmer on 11/11/15.
  */
 public class LongLinkedHashMap<T> implements Iterable<LongMapEntry<T>> {
