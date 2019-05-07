@@ -50,6 +50,16 @@ public class LongLinkedHashMapTest {
         test = new LongLinkedHashMap<Integer>();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeKey() {
+        test.put(-1, testObject1);
+    }
+
+    @Test
+    public void testRemoveNegativeKey() {
+        assertNull(test.remove(-1));
+    }
+
     @Test
     public void testGet() throws Exception {
         assertNull("No object in map.", test.get(0));
