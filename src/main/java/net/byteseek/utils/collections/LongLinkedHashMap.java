@@ -43,7 +43,7 @@ import java.util.NoSuchElementException;
  *
  * Created by Matt Palmer on 11/11/15.
  */
-public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry<T>> {
+public class LongLinkedHashMap<T> implements Iterable<LongMapEntry<T>> {
 
     private final PositionHashMap<Node<T>> map;
     private final boolean orderByAccess;
@@ -172,7 +172,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      * @param entry The entry which could be removed..
      * @return Whether it should be removed or not - always false in this implementation.
      */
-    protected boolean removeEldestEntry(final MapEntry<T> entry) {
+    protected boolean removeEldestEntry(final LongMapEntry<T> entry) {
         return false;
     }
 
@@ -185,29 +185,18 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
     }
 
     @Override
-    public Iterator<MapEntry<T>> iterator() {
-        return new MapEntryIterator();
-    }
-
-    /**
-     * An interface for objects which are map entries in the LongLinkedHashMap.
-     *
-     * @param <T> The type of value contained in the map.
-     */
-    public interface MapEntry<T> {
-        long getKey();
-        T getValue();
-        T setValue(T value);
+    public Iterator<LongMapEntry<T>> iterator() {
+        return new LongMapEntryIterator();
     }
 
     /**
      * An iterator over the map entries in the LongLinkedHashMap.
      */
-    private class MapEntryIterator implements Iterator<MapEntry<T>> {
+    private class LongMapEntryIterator implements Iterator<LongMapEntry<T>> {
 
         private Node<T> current;
 
-        public MapEntryIterator() {
+        public LongMapEntryIterator() {
             current = LongLinkedHashMap.this.list.tail;
         }
 
@@ -217,7 +206,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         }
 
         @Override
-        public MapEntry<T> next() {
+        public LongMapEntry<T> next() {
             if (current.next != null) {
                 current = current.next;
                 return current;
@@ -312,11 +301,11 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
 
     /**
      * Simple node to use in the double linked list and associated hash map.
-     * It implements MapEntry, so we can use it directly to iterate over the LongLinkedHashMap.
+     * It implements LongMapEntry, so we can use it directly to iterate over the LongLinkedHashMap.
      *
      * @param <T> The type of item stored in the LongLinkedHashMap.
      */
-    private static final class Node<T> implements MapEntry<T> {
+    private static final class Node<T> implements LongMapEntry<T> {
         private T       item;
         private long    key;
         private Node<T> previous;

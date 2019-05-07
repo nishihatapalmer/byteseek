@@ -227,7 +227,7 @@ public class LongLinkedHashMapTest {
 
         test = new LongLinkedHashMap<Integer>() {
             @Override
-            public boolean removeEldestEntry(LongLinkedHashMap.MapEntry<Integer> entry) {
+            public boolean removeEldestEntry(LongMapEntry<Integer> entry) {
                 return size() > 2;
             }
         };
@@ -242,7 +242,7 @@ public class LongLinkedHashMapTest {
 
         test = new LongLinkedHashMap<Integer>(10, true) {
             @Override
-            public boolean removeEldestEntry(LongLinkedHashMap.MapEntry<Integer> entry) {
+            public boolean removeEldestEntry(LongMapEntry<Integer> entry) {
                 return size() > 2;
             }
         };
@@ -281,7 +281,7 @@ public class LongLinkedHashMapTest {
 
         // Should still be in the order inserted:
         int value = 10;
-        for(LongLinkedHashMap.MapEntry<Integer> entry : test) {
+        for(LongMapEntry<Integer> entry : test) {
             assertEquals(value, (int) entry.getValue());
             assertEquals(value, (int) entry.getKey());
             value--;
@@ -305,7 +305,7 @@ public class LongLinkedHashMapTest {
         }
 
         int value = 0;
-        for (LongLinkedHashMap.MapEntry<Integer> entry : test) {
+        for (LongMapEntry<Integer> entry : test) {
             assertEquals(value, (int) entry.getValue());
             assertEquals(value, (int) entry.getKey());
             value++;
@@ -323,7 +323,7 @@ public class LongLinkedHashMapTest {
         }
         assertEquals(11, test.size());
 
-        for (LongLinkedHashMap.MapEntry<Integer> entry : test) {
+        for (LongMapEntry<Integer> entry : test) {
             entry.setValue(entry.getValue() + 100);
         }
 
@@ -342,7 +342,7 @@ public class LongLinkedHashMapTest {
         }
         assertEquals(11, test.size());
 
-        for (LongLinkedHashMap.MapEntry<Integer> entry : test) {
+        for (LongMapEntry<Integer> entry : test) {
             entry.setValue(entry.getValue() + 100);
         }
 
@@ -354,14 +354,14 @@ public class LongLinkedHashMapTest {
     @Test
     public void testIteratorEmpty() throws Exception {
         test = new LongLinkedHashMap<Integer>();
-        Iterator<LongLinkedHashMap.MapEntry<Integer>> it = test.iterator();
+        Iterator<LongMapEntry<Integer>> it = test.iterator();
         assertFalse(it.hasNext());
     }
 
     @Test(expected=NoSuchElementException.class)
     public void testIteratorNoSuchElement() throws Exception {
         test = new LongLinkedHashMap<Integer>();
-        Iterator<LongLinkedHashMap.MapEntry<Integer>> it = test.iterator();
+        Iterator<LongMapEntry<Integer>> it = test.iterator();
         it.next();
     }
 
@@ -375,7 +375,7 @@ public class LongLinkedHashMapTest {
         }
         assertEquals(11, test.size());
 
-        Iterator<LongLinkedHashMap.MapEntry<Integer>> it = test.iterator();
+        Iterator<LongMapEntry<Integer>> it = test.iterator();
         int size = 11;
         while(it.hasNext()) {
             assertEquals(size, test.size());
