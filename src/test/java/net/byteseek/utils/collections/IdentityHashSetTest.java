@@ -34,6 +34,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -76,32 +77,74 @@ public class IdentityHashSetTest {
 	}
 
 	@Test
-	public void testAdd() {
-		//fail("Not implemented");
+	public void testAddSizeContains() {
+		Set<Integer> test = new IdentityHashSet<Integer>();
+		assertTrue(test.isEmpty());
+		Integer one = new Integer(1);
+
+		test.add(one);
+		assertEquals(1, test.size());
+		assertTrue(test.contains(one));
+
+		test.add(one); // add same object.
+		assertEquals(1, test.size());
+        assertTrue(test.contains(one));
+
+		Integer oneMore = new Integer(1);
+		test.add(oneMore);
+		assertEquals(2, test.size());
+        assertTrue(test.contains(one));
+        assertTrue(test.contains(oneMore));
 	}
 	
 	@Test
-	public void testRemove() {
-		//fail("Not implemented");
+	public void testRemoveSizeContains() {
+        Set<Integer> test = new IdentityHashSet<Integer>();
+        assertTrue(test.isEmpty());
+
+        Integer one = new Integer(1);
+        Integer oneMore = new Integer(1);
+
+        test.add(one);
+        test.add(oneMore);
+        assertEquals(2, test.size());
+        assertTrue(test.contains(one));
+        assertTrue(test.contains(oneMore));
+
+        test.remove(oneMore);
+        assertEquals(1, test.size());
+        assertTrue(test.contains(one));
+        assertFalse(test.contains(oneMore));
+
+        test.remove(one);
+        assertEquals(0, test.size());
+        assertTrue(test.isEmpty());
+        assertFalse(test.contains(one));
+        assertFalse(test.contains(oneMore));
 	}
-	
+
 	@Test
-	public void testSize() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testContains() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testIterator() {
-		//fail("Not implemented");
-	}
-	
-	@Test
-	public void testClone() {
-		//fail("Not implemented");
+	public void testCloneAndIterator() {
+        Set<Integer> test = new IdentityHashSet<Integer>();
+        assertTrue(test.isEmpty());
+
+        Integer one = new Integer(1);
+        Integer oneMore = new Integer(1);
+
+        test.add(one);
+        test.add(oneMore);
+        assertEquals(2, test.size());
+        assertTrue(test.contains(one));
+        assertTrue(test.contains(oneMore));
+
+        Set<Integer> clone = ((IdentityHashSet) test).clone();
+        assertEquals(test.size(), clone.size());
+        for (Integer i : test) {
+            assertTrue(clone.contains(i));
+        }
+        for (Integer i : clone) {
+            assertTrue(test.contains(i));
+        }
+
 	}
 }
