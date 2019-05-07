@@ -54,11 +54,16 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         this.orderByAccess = false;
     }
 
-    public LongLinkedHashMap(int capacity) {
+    public LongLinkedHashMap(final boolean orderByAccess) {
+        map = new PositionHashMap<Node<T>>();
+        this.orderByAccess = orderByAccess;
+    }
+
+    public LongLinkedHashMap(final int capacity) {
        this(capacity, false);
     }
 
-    public LongLinkedHashMap(int capacity, boolean orderByAccess) {
+    public LongLinkedHashMap(final int capacity, final boolean orderByAccess) {
         map  = new PositionHashMap<Node<T>>(capacity);
         this.orderByAccess = orderByAccess;
     }
@@ -72,7 +77,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      * @param key The key to get the item for.
      * @return The item associated with that key, or null if not present.
      */
-    public final T get(long key) {
+    public final T get(final long key) {
         final Node<T> node = map.get(key);
         if (node != null) {
             if (orderByAccess) {
@@ -92,7 +97,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      * @param value The value to associate with the key.
      * @return The last value associated with that key, or null if there was none.
      */
-    public final T put(long key, T value) {
+    public final T put(final long key, final T value) {
         final T lastValue;
         final Node<T> node = map.get(key);
         if (node == null) { // no previous key
@@ -145,7 +150,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      * @param key The key to check in the map.
      * @return true if the key is in the map.
      */
-    public final boolean containsKey(long key) {
+    public final boolean containsKey(final long key) {
         return map.containsKey(key);
     }
 
@@ -155,22 +160,8 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      * @param value The value to check in the map.
      * @return true if the value is in the map.
      */
-    public final boolean containsValue(T value) {
+    public final boolean containsValue(final T value) {
         return list.contains(value);
-    }
-
-    /**is
-     * Returns an iterator over the HashMap, returning the entries in their
-     * current order (whether insertion order, or access order).
-     * <p>
-     * The iterator supports object removal, and the LongObject entry allows
-     * you to see the key, the value, and to change the current value.
-     *
-     * @return An iterator over the HashMap in the appropriate order.
-     */
-    @Override
-    public Iterator<MapEntry<T>> iterator() {
-        return new MapEntryIterator();
     }
 
     /**
@@ -181,7 +172,7 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      * @param entry The entry which could be removed..
      * @return Whether it should be removed or not - always false in this implementation.
      */
-    protected boolean removeEldestEntry(MapEntry<T> entry) {
+    protected boolean removeEldestEntry(final MapEntry<T> entry) {
         return false;
     }
 
@@ -193,6 +184,11 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         }
     }
 
+    @Override
+    public Iterator<MapEntry<T>> iterator() {
+        return new MapEntryIterator();
+    }
+
     /**
      * An interface for objects which are map entries in the LongLinkedHashMap.
      *
@@ -200,12 +196,9 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
      */
     public interface MapEntry<T> {
         long getKey();
-
         T getValue();
-
-        T setValue(T newValue);
+        T setValue(T value);
     }
-
 
     /**
      * An iterator over the map entries in the LongLinkedHashMap.
@@ -252,10 +245,6 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
 
         public DoubleLinkedList() {
             head = tail;
-        }
-
-        public int size() {
-            return size;
         }
 
         public boolean isEmpty() {
@@ -351,10 +340,10 @@ public class LongLinkedHashMap<T> implements Iterable<LongLinkedHashMap.MapEntry
         }
 
         @Override
-        public T setValue(T newValue) {
-            final T lastValue = item;
-            item = newValue;
-            return lastValue;
+        public T setValue(T value) {
+            T oldValue = item;
+            item = value;
+            return oldValue;
         }
     }
 
