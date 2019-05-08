@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,6 +30,7 @@
  */
 package net.byteseek.utils.collections;
 
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.MathUtils;
 
 import java.util.Arrays;
@@ -38,8 +39,6 @@ import java.util.NoSuchElementException;
 
 //TODO:  profile speed, memory allocation.
 
-
-//TODO: rename LongHashMap?
 /**
  * A hash map using primitive longs as keys against objects.
  * The goal is to efficiently map objects against a long value while
@@ -57,20 +56,14 @@ import java.util.NoSuchElementException;
  *
  * Created by matt on 24/04/17.
  */
-public final class PositionHashMap<T> implements Iterable<T> {
-
-    //TODO: could allocate special storage for REMOVED and ZERO_REPLACE keys (two longs/ objects) and deal with them
-    //      specially.  This would make the class capable of processing all long key values, at a small cost of testing for those vals,
-    //      but still avoiding the need for a separate state table for all positions.
-
-    //PROFILE: investigate load factor.
+public final class PositionHashMap<T> implements Iterable<LongMapEntry<T>> {
 
     // Constants:
 
     private final static long HASH_MULTIPLY   = 0x113f92b101a3cd91L; // must be odd number greater than 32 bits.
     //PROFILE: large probe values give poor cache locality - investigate using smaller probe increments / different hash for probe.
     private final static long PROBE_MULTIPLY  = 0x129b3a62c47ed203L; // must be odd number greater than 32 bits.
-    private final static int DEFAULT_CAPACITY = 32;                // default capacity under a load of 50%.
+    private final static int DEFAULT_CAPACITY = 32;                // default capacity under a load of 50%. //TODO: is our load 50% anymore?
     private final static int FREE_SLOT        = 0;                 // flags that a slot is free - which Java initialises arrays to.
     private final static long ZERO_REPLACE    = Long.MIN_VALUE;    // A value to replace zero with - lets us use zero to indicate a free slot.
     private final static long REMOVED_SLOT    = ZERO_REPLACE + 1;  // flags that a slot used to contain a value, so keep looking.
@@ -133,6 +126,9 @@ public final class PositionHashMap<T> implements Iterable<T> {
      * @return the value for a given key, or null if the key isn't in the map.
      */
     public T get(final long key) {
+        if (key < 0) {
+            return null;
+        }
         final long[] localKeys = keys;
         final int HASH_SHIFT   = 64 - tablebits;
         final long KEY_VALUE = key == FREE_SLOT? ZERO_REPLACE : key; // we use zero to indicate a free slot, so key zero is replaced.
@@ -175,8 +171,10 @@ public final class PositionHashMap<T> implements Iterable<T> {
      *
      * @param key   The key to map the value against.
      * @param value The value to map to the key.
+     * @throws IllegalArgumentException if the key is negative.
      */
     public void put(final long key, final T value) {
+        ArgUtils.checkNotNegative(key);
         resizeIfNeeded();
 
         final long[] localKeys = keys;
@@ -223,6 +221,8 @@ public final class PositionHashMap<T> implements Iterable<T> {
         }
 
         // Went right around the map and couldn't place it - this should never happen if we resize appropriately.
+        throw new RuntimeException("BUG: the PositionHashMap could not find a slot to put the new element in. " +
+                                   "This should not be possible as there should always be free slots to locate." );
     }
 
     /**
@@ -232,6 +232,9 @@ public final class PositionHashMap<T> implements Iterable<T> {
      * @return The object removed from the map, or null if the key wasn't there.
      */
     public T remove(final long key) {
+        if (key < 0) {
+            return null; // negative keys not allowed - just return null rather than throw an exception.
+        }
         final long[] localKeys = keys;
         final int HASH_SHIFT   = 64 - tablebits;
         final long KEY_VALUE   = key == FREE_SLOT? ZERO_REPLACE : key; // we use zero to indicate a free slot, so key zero is replaced.
@@ -291,7 +294,7 @@ public final class PositionHashMap<T> implements Iterable<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<LongMapEntry<T>> iterator() {
         return new MapValueIterator();
     }
 
@@ -305,8 +308,12 @@ public final class PositionHashMap<T> implements Iterable<T> {
      */
 
     private void resizeIfNeeded() {
+        final int currentSize = size;
         final int length = keys.length;
-        if (size * 2 > length) { //TODO: if we go over 50% load, resize - 70% better...?
+        //TODO: performance of load factors: if we go over 50% load, resize - 75% better...?
+        final int halflength = length >>> 1;
+        if (currentSize > (halflength + (halflength >>> 1))) { // more than 75%
+        //if (size * 2 > length) {                             // more than 50%
             tablebits++; // one more bit.
             final int HASH_SHIFT   = 64 - tablebits;
             final int    newSize   = length * 2; // double size each time...?  Wasteful of memory.
@@ -355,52 +362,117 @@ public final class PositionHashMap<T> implements Iterable<T> {
         }
     }
 
-    //TODO: test iteration.
-    //TODO: can we just look for non null values in the values[] array?
-    private class MapValueIterator implements Iterator<T> {
+    /**
+     * An iterator over the PositionHashMap that creates MapEntries on the fly as it iterates
+     * over it.  It won't keep looking once it has already found as many entries as exist in the map.
+     */
+    private class MapValueIterator implements Iterator<LongMapEntry<T>> {
 
-        private int nextSearchPos = 0;
-        private int valuePos = -1;
+        private boolean haveLookedForNext;
+        private boolean hasNext;
+        private int numFound;
+        private int nextSearchPos;
 
         @Override
         public boolean hasNext() {
-            if (valuePos > -1) {
-                return true; // already a value queued up to take.
+
+            // If we already looked for the next value, return whether it exists or not.
+            if (haveLookedForNext) {
+                return hasNext;
             }
+
+            // If we've already found as many as exist in the map, there are no more to find.
+            if (numFound >= size) {
+                return false;
+            }
+
+            // Look for the next value:
+            haveLookedForNext = true;
             final long[] localKeys = keys;
             final int length = localKeys.length;
             for (int searchPos = nextSearchPos; searchPos < length; searchPos++) {
                 final long value = localKeys[searchPos];
                 if (value != FREE_SLOT && value != REMOVED_SLOT) {
-                    valuePos = searchPos;
+                    hasNext = true;
+                    nextSearchPos = searchPos + 1;
+                    numFound++;
                     return true;
                 }
             }
-            valuePos = -1; //MPL don't need this line don't think - will always be -1 if we get here.  maybe leave for safety.
+
+            // didn't find any more - should have found all of them at this point.
+            hasNext = false;
             return false;
         }
 
         @Override
-        public T next() {
+        public LongMapEntry<T> next() {
             if (hasNext()) {
-                nextSearchPos = valuePos + 1;
-                valuePos = -1;
-                return values[nextSearchPos - 1];
+                haveLookedForNext = false;
+                final int index = nextSearchPos - 1;
+                final long recordedValue = keys[index];
+                final long realKeyValue = recordedValue == ZERO_REPLACE? 0 : recordedValue;
+                return new PositionMapEntry(realKeyValue, values[index]);
             }
             throw new NoSuchElementException();
         }
 
-        //TODO: implement and test
         @Override
         public void remove() {
-            /*
-            if (//TODO: what is test - did we have a next already? {
-                PositionHashMap.this.remove(keys[nextSearchPos - 1]);
+            if (nextSearchPos > 0) { // nextSearchPos > 0 if next() called and a value was found.
+                final int index = nextSearchPos - 1;
+                if (keys[index] != REMOVED_SLOT) {
+                    keys[index] = REMOVED_SLOT;
+                    values[index] = null;
+                    size--;
+                    numFound--;
+                }
+            } else {
+                throw new IllegalStateException("There is no value to remove - next() not called or a value did not exist.");
             }
-            */
-            throw new UnsupportedOperationException();
         }
 
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(map:" + PositionHashMap.this + " next pos to search:" + nextSearchPos + ")";
+        }
+    }
+
+    /**
+     * An implementation of LongMapEntry for the map.
+     */
+    private class PositionMapEntry implements LongMapEntry<T> {
+
+        private final long key;
+        private T value;
+
+        public PositionMapEntry(final long key, final T value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public long getKey() {
+            return key;
+        }
+
+        @Override
+        public T getValue() {
+            return value;
+        }
+
+        @Override
+        public T setValue(final T value) {
+            final T oldValue = this.value;
+            put(key, value);
+            this.value = value;
+            return oldValue;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(key:" + key + " value:" + value + ")";
+        }
     }
 
 }
