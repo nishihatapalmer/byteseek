@@ -32,9 +32,7 @@ package net.byteseek.utils.collections;
 
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -60,6 +58,8 @@ public class PositionHashMapTest {
             pmap.put(keyNum, DUMMY_OBJECT);
             assertEquals(TOTAL_KEYS, pmap.size());
         }
+
+        Map<Integer, Integer> x = new HashMap<Integer, Integer>();
     }
 
     @Test
@@ -85,10 +85,7 @@ public class PositionHashMapTest {
 
         // Put different objects into random keys in both compareMap and positionMap:
         for (int num = 0; num < TOTAL_VALS; num++) {
-            long randKey;
-            do {
-                randKey = rand.nextLong();
-            } while (randKey <= Long.MIN_VALUE + 1); // two smallest keys not allowed.
+            long randKey = rand.nextLong() & Long.MAX_VALUE;
             Object newObject = new Object();
             pmap.put(randKey, newObject);
             compareMap.put(randKey, newObject);
@@ -125,6 +122,71 @@ public class PositionHashMapTest {
 
     }
 
+    @Test
+    public void testIterator() throws Exception {
+        PositionHashMap<Integer> test = new PositionHashMap<Integer>();
+        Set<Integer> expected = new HashSet<Integer>();
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+            expected.add(i);
+        }
+        assertEquals(11, test.size());
+
+        for (LongMapEntry<Integer> entry : test) {
+            assertEquals(entry.getKey(), (int) entry.getValue());
+            expected.remove(entry.getValue());
+        }
+        assertEquals(0, expected.size());
+    }
+
+    @Test
+    public void testIterateAndRemove() {
+        PositionHashMap<Integer> test = new PositionHashMap<Integer>();
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        Iterator<LongMapEntry<Integer>> it = test.iterator();
+        int size = 11;
+        while(it.hasNext()) {
+            assertEquals(size, test.size());
+            LongMapEntry entry = it.next();
+            assertEquals(size, test.size());
+
+            assertTrue(test.containsKey(entry.getKey()));
+            it.remove();
+            assertFalse(test.containsKey(entry.getKey()));
+            size--;
+            assertEquals(size, test.size());
+        }
+
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testIteratorRemoveWithoutNext() {
+        PositionHashMap<Integer> pmap = new PositionHashMap<Integer>();
+        pmap.put(0L, Integer.valueOf(0));
+        Iterator<LongMapEntry<Integer>> it = pmap.iterator();
+        it.remove();
+    }
+
+    @Test(expected=NoSuchElementException.class)
+    public void testNextAfterFinishedIterating() {
+        PositionHashMap<Integer> pmap = new PositionHashMap<Integer>();
+        pmap.put(0L, Integer.valueOf(0));
+        pmap.put(1L, Integer.valueOf(0));
+        pmap.put(2L, Integer.valueOf(0));
+        pmap.put(3L, Integer.valueOf(0));
+
+        Iterator<LongMapEntry<Integer>> it = pmap.iterator();
+        while (it.hasNext()) {it.next();}
+        it.next();
+    }
 
     @Test
     public void testRemove() throws Exception {
@@ -136,10 +198,7 @@ public class PositionHashMapTest {
 
         // Put different objects into random keys in both compareMap and positionMap:
         for (int num = 0; num < TOTAL_VALS; num++) {
-            long randKey;
-            do {
-                randKey = rand.nextLong();
-            } while (randKey <= Long.MIN_VALUE + 1); // two smallest keys not allowed.
+            long randKey = rand.nextLong() & Long.MAX_VALUE; // ensure not negative.
             Object newObject = new Object();
             pmap.put(randKey, newObject);
             compareMap.put(randKey, newObject);
@@ -160,6 +219,39 @@ public class PositionHashMapTest {
     }
 
     @Test
+    public void testIteratorToString() {
+        PositionHashMap<Integer> test = new PositionHashMap<Integer>();
+        Iterator<LongMapEntry<Integer>> it = test.iterator();
+        assertTrue(it.toString().contains(it.getClass().getSimpleName()));
+        assertTrue(it.toString().contains(test.getClass().getSimpleName()));
+    }
+
+    @Test
+    public void testMapEntryToString() {
+        PositionHashMap<Integer> test = new PositionHashMap<Integer>();
+        test.put(0, Integer.valueOf(0));
+        Iterator<LongMapEntry<Integer>> it = test.iterator();
+        LongMapEntry<Integer> entry = it.next();
+        assertTrue(entry.toString().contains(entry.getClass().getSimpleName()));
+        assertTrue(entry.toString().contains("key"));
+        assertTrue(entry.toString().contains("value"));
+    }
+
+    @Test
+    public void testRemoveNonExistentObject() {
+        PositionHashMap<Integer> test = new PositionHashMap<Integer>();
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        assertNull(test.remove(11));
+        assertEquals(11, test.size());
+    }
+
+    @Test
     public void testClear() throws Exception {
         PositionHashMap<Object> pmap = new PositionHashMap<Object>();
         pmap.put(0, new Object());
@@ -175,6 +267,25 @@ public class PositionHashMapTest {
         pmap.clear();
         assertTrue(pmap.isEmpty());
         assertEquals(0, pmap.size());
+    }
+
+    @Test
+    public void testMapEntrySetValue() {
+        PositionHashMap<Integer> test = new PositionHashMap<Integer>();
+
+        // add integers in reverse order:
+        for (int i = 10; i >= 0; i--) {
+            test.put(i, Integer.valueOf(i));
+        }
+        assertEquals(11, test.size());
+
+        for (LongMapEntry<Integer> entry : test) {
+            entry.setValue(entry.getValue() + 100);
+        }
+
+        for (int i = 0; i <=10; i++) {
+            assertEquals(100 + i, (int) test.get(i));
+        }
     }
 
 }
