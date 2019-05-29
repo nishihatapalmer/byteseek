@@ -28,10 +28,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.matcher.bytes;
+package net.byteseek.incubator.matcher.bytes;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.matcher.bytes.InvertibleMatcher;
 import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.ByteUtils;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.incubator.matcher.bytes;
+package net.byteseek.matcher.bytes;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
@@ -39,13 +39,13 @@ import java.io.IOException;
 
 //TODO: Add 0x syntax for hex and 0b syntax for binary and _ for wildcard bits/nibbles to the parser.
 
-//TODO: Can we also combine this with AnyBitmask and AllBitmask matchers..?  &9_ ...?  ~_A
-
 //TODO: write tests for this class.
 
 /**
  * A byte matcher which matches all the ones and zeros in a byte exactly, except for "don't care" bits.
- * A value to match is given, and also a wild mask.  We only care about matching bits which have a 1 set in the wild mask.
+ * A value to match is given, and also a wild mask.
+ * Bits which are zero in the wild mask indicate those bits in the value we don't care about - the wild bits.
+ * Bits which are one in the wild mask indicate those bits which must be the same as the value provided.
  * <p>
  * It is an invertible matcher, so you can also specify that it doesn't match the value (aside from the don't care bits).
  *
@@ -56,14 +56,54 @@ public final class WildBitMatcher extends InvertibleMatcher {
     private final byte matchValue;
     private final byte wildcardMask;
 
+    /**
+     * Constructs a WildBitMatcher from a value to match and a wildMask.
+     * The wildMask specifies which bits we care about in the value, and which we don't.
+     * Bits set to 1 in the wildMask we care about, and must match the corresponding bit in the value.
+     * Bits set to 0 in the wildMask we don't care about, and they can take either 0 or 1 in the value.
+     *
+     * @param value    The bits we want to match, whether zero or one.
+     * @param wildMask The mask that specifies which bits we care about and which we don't.
+     */
     public WildBitMatcher(final byte value, final byte wildMask) {
         this(value, wildMask, false);
     }
 
+    /**
+     * Constructs a WildBitMatcher from a value to match and a wildMask, and whether the results should be inverted.
+     * The wildMask specifies which bits we care about in the value, and which we don't.
+     * Bits set to 1 in the wildMask we care about, and must match the corresponding bit in the value.
+     * Bits set to 0 in the wildMask we don't care about, and they can take either 0 or 1 in the value.
+     *
+     * @param value    The bits we want to match.
+     * @param wildMask The mask that specifies which bits we care about and which we don't.
+     * @param inverted Whether the matcher results are inverted or not.
+     */
     public WildBitMatcher(final byte value, final byte wildMask, final boolean inverted) {
         super(inverted);
         this.matchValue = (byte) (value & wildMask);
         this.wildcardMask = wildMask;
+    }
+
+    /**
+     * Constructs a WildBitMatcher from a single bitmask, in which each bit set to one must match.
+     * The bits which are zero don't have to match.
+     *
+     * @param bitmask A bitmask in which all bits set to one must also be set in a byte to match.
+     */
+    public WildBitMatcher(final byte bitmask) {
+        this(bitmask, bitmask); // mask a byte with a bitmask, then test to see if it equals the bitmask.
+    }
+
+    /**
+     * Constructs a WildBitMatcher from a single bitmask, in which each bit set to one must match.
+     * The bits which are zero don't have to match.
+     *
+     * @param bitmask A bitmask in which all bits set to one must also be set in a byte to match.
+     * @param inverted Whether the matcher results are inverted or not.
+     */
+    public WildBitMatcher(final byte bitmask, final boolean inverted) {
+        this(bitmask, bitmask, inverted); // mask a byte with a bitmask, then test to see if it equals the bitmask.
     }
 
     @Override
@@ -72,10 +112,29 @@ public final class WildBitMatcher extends InvertibleMatcher {
     }
 
     @Override
+    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
+        return ((bytes[matchPosition] & wildcardMask) == matchValue) ^ inverted;
+    }
+
+
+    @Override
+    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
+        final Window window = reader.getWindow(matchPosition);
+        return window == null? false
+                : ((window.getByte(reader.getWindowOffset(matchPosition)) & wildcardMask) == matchValue) ^ inverted;
+    }
+
+    @Override
+    public boolean matches(final byte[] bytes, final int matchPosition) {
+        return (matchPosition >= 0 && matchPosition < bytes.length) &&
+                (((bytes[matchPosition] & wildcardMask) == matchValue) ^ inverted);
+    }
+
+    @Override
     public byte[] getMatchingBytes() {
-        final byte[] matchingBytes = new byte[getNumberOfMatchingBytes()];
-        int matchPos = 0;
-        for (int i = 0; i < 256; i++) {
+        final int numBytes = getNumberOfMatchingBytes();
+        final byte[] matchingBytes = new byte[numBytes];
+        for (int i = 0, matchPos = 0; matchPos < numBytes && i < 256; i++) {
             final byte possibleByte = (byte) i;
             if (matches(possibleByte)) {
                 matchingBytes[matchPos++] = possibleByte;
@@ -87,14 +146,10 @@ public final class WildBitMatcher extends InvertibleMatcher {
     @Override
     public int getNumberOfMatchingBytes() {
         // Each bit which isn't set in the mask gives us an additional two possibilities we can match.
-        return inverted? 256 - (1 << ByteUtils.countUnsetBits(wildcardMask))
-                       : 1 << ByteUtils.countUnsetBits(wildcardMask);
+        final int numBytesMatchingMask = 1 << ByteUtils.countUnsetBits(wildcardMask);
+        return inverted? 256 - numBytesMatchingMask : numBytesMatchingMask;
     }
 
-    @Override
-    public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
-        return ((bytes[matchPosition] & wildcardMask) == matchValue) ^ inverted;
-    }
 
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
@@ -120,19 +175,6 @@ public final class WildBitMatcher extends InvertibleMatcher {
                 return regex.toString();
             }
         }
-    }
-
-    @Override
-    public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
-        final Window window = reader.getWindow(matchPosition);
-        return window == null? false
-                : ((window.getByte(reader.getWindowOffset(matchPosition)) & wildcardMask) == matchValue) ^ inverted;
-    }
-
-    @Override
-    public boolean matches(final byte[] bytes, final int matchPosition) {
-        return (matchPosition >= 0 && matchPosition < bytes.length) &&
-                (((bytes[matchPosition] & wildcardMask) == matchValue) ^ inverted);
     }
 
     @Override
