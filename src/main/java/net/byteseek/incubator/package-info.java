@@ -32,7 +32,7 @@
 /**
  * This package contains experimental byteseek features.
  * It does not follow the semantic versioning of the main package.
- * Features in this package can break on any release.
+ * Features in this package can break on any release, or may contain serious bugs.
  * <p>
  * The package currently contains a regular expression compiler into non deterministic
  * finite state automata, deterministic automata, trie structures based on those automata,
