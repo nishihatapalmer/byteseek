@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,6 +40,10 @@ import net.byteseek.io.reader.WindowReader;
 /**
  * A {@link ByteMatcher} which matches a byte which shares all of its set bits with a bitmask
  * (or shares none of them if the results should be inverted).
+ *
+ * @deprecated The {@link WildBitMatcher} class is a more general solution, as it allows you
+ *             to specify which bits are "don't care" bits - the others can match either zero or one.
+ *             This class only allows you specify "1" bits which must match.
  *
  * @author Matt Palmer
  */
