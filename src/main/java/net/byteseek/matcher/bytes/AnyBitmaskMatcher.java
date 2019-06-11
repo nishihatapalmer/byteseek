@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,6 +40,10 @@ import net.byteseek.io.reader.WindowReader;
 
 /**
  * A {@link ByteMatcher} which matches a byte which shares any of its bits with a bitmask.
+ *
+ * @deprecated The {@link WildBitAnyMatcher} class is a more general solution, as it allows you
+ *             to specify which bits are "don't care" bits - the others can match either zero or one.
+ *             This class only allows you specify "1" bits of which any must match.
  * 
  * @author Matt Palmer
  */
@@ -125,13 +129,11 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
         return mBitMaskValue == other.mBitMaskValue && inverted == other.inverted;
     }
 
-
     @Override
     public String toString() {
     	return getClass().getSimpleName() +
                 "(bitmask:"  + String.format("%02x", mBitMaskValue & 0xFF) +
                 " inverted:" + inverted + ')';
     }
-
 
 }
