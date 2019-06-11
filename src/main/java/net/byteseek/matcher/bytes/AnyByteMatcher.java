@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -62,6 +62,8 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Always returns true.
      */
     @Override
@@ -70,6 +72,8 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns a 256-element array of all the possible byte values.
      */
     @Override
@@ -101,15 +105,16 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return true;
     }
-
     
     /**
+     * {@inheritDoc}
+     *
      * Returns a FixedGapMatcher as long as the number of repeats.
      * @throws IllegalArgumentException if the number of repeats is less than one.
      */     
     @Override
     public SequenceMatcher repeat(int numberOfRepeats) {
-        ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeatss");
+        ArgUtils.checkPositiveInteger(numberOfRepeats, "numberOfRepeats");
         if (numberOfRepeats == 1) {
             return this;
         }           
