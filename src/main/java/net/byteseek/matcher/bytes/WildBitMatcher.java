@@ -37,10 +37,6 @@ import net.byteseek.utils.ByteUtils;
 
 import java.io.IOException;
 
-//TODO: Add 0x syntax for hex and 0b syntax for binary and _ for wildcard bits/nibbles to the parser.
-
-//TODO: write tests for this class.
-
 /**
  * A byte matcher which matches all the ones and zeros in a byte exactly, except for "don't care" bits.
  * A value to match is given, and also a wild mask.
@@ -85,27 +81,6 @@ public final class WildBitMatcher extends InvertibleMatcher {
         this.wildcardMask = wildMask;
     }
 
-    /**
-     * Constructs a WildBitMatcher from a single bitmask, in which each bit set to one must match.
-     * The bits which are zero don't have to match.
-     *
-     * @param bitmask A bitmask in which all bits set to one must also be set in a byte to match.
-     */
-    public WildBitMatcher(final byte bitmask) {
-        this(bitmask, bitmask); // mask a byte with a bitmask, then test to see if it equals the bitmask.
-    }
-
-    /**
-     * Constructs a WildBitMatcher from a single bitmask, in which each bit set to one must match.
-     * The bits which are zero don't have to match.
-     *
-     * @param bitmask A bitmask in which all bits set to one must also be set in a byte to match.
-     * @param inverted Whether the matcher results are inverted or not.
-     */
-    public WildBitMatcher(final byte bitmask, final boolean inverted) {
-        this(bitmask, bitmask, inverted); // mask a byte with a bitmask, then test to see if it equals the bitmask.
-    }
-
     @Override
     public boolean matches(final byte theByte) {
         return ((theByte & wildcardMask) == matchValue) ^ inverted;
@@ -115,7 +90,6 @@ public final class WildBitMatcher extends InvertibleMatcher {
     public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
         return ((bytes[matchPosition] & wildcardMask) == matchValue) ^ inverted;
     }
-
 
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
@@ -154,6 +128,9 @@ public final class WildBitMatcher extends InvertibleMatcher {
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         switch (wildcardMask) {
+            case 0: {
+                return inverted? "^." : ".";
+            }
             case -16: { // 0xF0 - first nibble of a hex byte:
                 return inverted? String.format("^%x_", matchValue >>> 4) : String.format("%x_", matchValue >>> 4);
             }
@@ -163,7 +140,7 @@ public final class WildBitMatcher extends InvertibleMatcher {
             default: { // some other bitmask - build a binary string from the value, putting _ where the bitmask is zero.
                 final StringBuilder regex = new StringBuilder(11);
                 if (inverted) regex.append('^');
-                regex.append('0').append('b');
+                regex.append('0').append('i');
                 for (int bitpos = 7; bitpos >= 0; bitpos--) {
                     final int bitposMask = 1 << bitpos;
                     if ((wildcardMask & bitposMask) == bitposMask) {
@@ -180,5 +157,23 @@ public final class WildBitMatcher extends InvertibleMatcher {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + toRegularExpression(true) + ")";
+    }
+
+    @Override
+    public int hashCode() {
+        return ((wildcardMask & 0xFF) + 7) * // Avoid zeros in calculation (and negative numbers):
+                ((matchValue & 0xFF) + 13) * // Avoid zeros in calculation (and negative numbers)
+                (inverted? 43 : 31);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof WildBitMatcher)) {
+            return false;
+        }
+        final WildBitMatcher other = (WildBitMatcher) obj;
+        return wildcardMask == other.wildcardMask &&
+                matchValue == other.matchValue &&
+                inverted == other.inverted;
     }
 }
