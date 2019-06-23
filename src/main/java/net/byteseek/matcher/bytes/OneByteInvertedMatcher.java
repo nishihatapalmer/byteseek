@@ -41,26 +41,42 @@ import net.byteseek.io.reader.WindowReader;
  *
  * @author Matt Palmer
  */
-public final class InvertedByteMatcher extends AbstractByteMatcher {
+public final class OneByteInvertedMatcher extends AbstractByteMatcher {
 
     private final byte byteToMiss;
 
+    private static final class NodeCache {
+
+        static final OneByteInvertedMatcher[] values = new OneByteInvertedMatcher[256];
+
+        static {
+            for (int i = 0; i < 256; i++) {
+                values[i] = new OneByteInvertedMatcher((byte) (i & 0xFF));
+            }
+        }
+
+    }
+
+    public static OneByteInvertedMatcher valueOf(final byte value) {
+        return NodeCache.values[value & 0xff];
+    }
+
     /**
-     * Constructs an immutable InvertedByteMatcher.
+     * Constructs an immutable OneByteInvertedMatcher.
      *
      * @param byteToMiss The only byte not to match.
      */
-    public InvertedByteMatcher(final byte byteToMiss) {
+    public OneByteInvertedMatcher(final byte byteToMiss) {
         this.byteToMiss = byteToMiss;
     }
 
     /**
-     * Constructs an immutable InvertedByteMatcher from a hex representation of a byte.
+     * Constructs an immutable OneByteInvertedMatcher from a hex representation of a byte.
      * 
      * @param hexByte A string containing a 2-digit hex string giving the value of the byte not to match.
      * @throws IllegalArgumentException if the string is not a valid 2-digit hex byte.
      */
-    public InvertedByteMatcher(final String hexByte) {
+    public OneByteInvertedMatcher(final String hexByte) {
         this.byteToMiss = ByteUtils.byteFromHex(hexByte);
     }    
 
@@ -117,10 +133,10 @@ public final class InvertedByteMatcher extends AbstractByteMatcher {
 
     @Override
     public boolean equals(final Object obj) {
-        if (!(obj instanceof InvertedByteMatcher)) {
+        if (!(obj instanceof OneByteInvertedMatcher)) {
             return false;
         }
-        return byteToMiss == ((InvertedByteMatcher) obj).byteToMiss;
+        return byteToMiss == ((OneByteInvertedMatcher) obj).byteToMiss;
     }
 
     @Override
