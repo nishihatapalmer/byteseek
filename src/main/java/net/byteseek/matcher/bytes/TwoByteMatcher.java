@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013-17, All rights reserved.
+ * Copyright Matt Palmer 2013-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -52,14 +52,34 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class TwoByteMatcher extends AbstractByteMatcher {
 
-    //TODO: test case insensitive TwoByteMatchers.
+    private static final byte LINE_FEED = 0x0A;
+    private static final byte CARRIAGE_RETURN = 0x0D;
+
     private static TwoByteMatcher[] caseInsensitiveMatchers;
+    public static TwoByteMatcher LINE_BREAK;
 
     static {
         caseInsensitiveMatchers = new TwoByteMatcher[26];
         for (int i = 0; i < 26; i++) {
-            caseInsensitiveMatchers[i] = new TwoByteMatcher((byte) (i+97), (byte) (i+65));
+            caseInsensitiveMatchers[i] = new TwoByteMatcher((byte) (i + 'a'), (byte) (i + 'A'));
         }
+        LINE_BREAK = new TwoByteMatcher(LINE_FEED, CARRIAGE_RETURN);
+    }
+
+    public static ByteMatcher valueOf(final byte byte1, final byte byte2) {
+        if (byte1 == byte2) {
+            return OneByteMatcher.valueOf(byte1);
+        }
+        if (isUpperCase(byte1) && isLowerCase(byte2)) {
+            return caseInsensitiveMatchers[((int) byte1 & 0xFF) - 'A'];
+        }
+        if (isLowerCase(byte1) && isUpperCase(byte2)) {
+            return caseInsensitiveMatchers[((int) byte2 & 0xFF) - 'A'];
+        }
+        if (isLineBreak(byte1, byte2)) {
+            return LINE_BREAK;
+        }
+        return new TwoByteMatcher(byte1, byte2);
     }
 
     /**
@@ -71,10 +91,10 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
      */
     public static ByteMatcher caseInsensitive(final byte theByte) {
         if (theByte >= 'A' && (theByte <= 'Z')) {
-            return caseInsensitiveMatchers[theByte - 65];
+            return caseInsensitiveMatchers[((int) theByte & 0xFF) - 'A'];
         }
         if (theByte >= 'a' && (theByte <= 'z')) {
-            return caseInsensitiveMatchers[theByte - 97];
+            return caseInsensitiveMatchers[((int) theByte & 0xFF) - 'a'];
         }
         return OneByteMatcher.valueOf(theByte);
     }
@@ -89,16 +109,20 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
      */
     public static ByteMatcher caseInsensitive(final char theChar) {
         if (theChar >= 'A' && (theChar <= 'Z')) {
-            return caseInsensitiveMatchers[theChar - 65];
+            return caseInsensitiveMatchers[theChar - 'A'];
         }
         if (theChar >= 'a' && (theChar <= 'z')) {
-            return caseInsensitiveMatchers[theChar - 97];
+            return caseInsensitiveMatchers[theChar - 'a'];
         }
         if (theChar < 256) {
             return OneByteMatcher.valueOf((byte) theChar);
         }
         throw new IllegalArgumentException("A character must be between 0 and 255 in value, actual char was:" + (int) theChar);
     }
+
+    /*
+     * Class definition.
+     */
 
     private final byte firstByteToMatch;
     private final byte secondByteToMatch;
@@ -192,6 +216,7 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
     												  : new byte[] {firstByteToMatch};
     }
 
+    //TODO: case insensitive matches pretty printed differently?
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         if (getNumberOfMatchingBytes() == 1) {
@@ -230,17 +255,27 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
             return false;
         }
         final TwoByteMatcher other = (TwoByteMatcher) obj;
-        return (firstByteToMatch == other.firstByteToMatch && secondByteToMatch == other.secondByteToMatch);
-        //TODO: does order matter in whether two TwoByteMatchers are equal?
-        // The order can matter - if you intend to match the most common first for performance reasons,
-        // However - other matchers which match the same set of bytes have no concept of ordering - this is a two-byte set.
-        // so for consistency, it should behave like a small set.
+        return (firstByteToMatch == other.firstByteToMatch && secondByteToMatch == other.secondByteToMatch) ||
+                (firstByteToMatch == other.secondByteToMatch && secondByteToMatch == other.firstByteToMatch);
     }
 
     @Override
     public String toString() {
     	return getClass().getSimpleName() + "(" + String.format("%02x", firstByteToMatch & 0xFF) + ' ' +
     			                                  String.format("%02x", secondByteToMatch & 0xFF) + ')';
+    }
+
+    private static boolean isUpperCase(final byte theByte) {
+        return ((theByte & 0xFF) >= 'A' && (theByte & 0xFF) <= 'Z');
+    }
+
+    private static boolean isLowerCase(final byte theByte) {
+        return ((theByte & 0xFF) >= 'a' && (theByte & 0xFF) <= 'z');
+    }
+
+    private static boolean isLineBreak(final byte byte1, final byte byte2) {
+        return ((byte1 == LINE_FEED && byte2 == CARRIAGE_RETURN) ||
+                (byte1 == CARRIAGE_RETURN && byte2 == LINE_FEED));
     }
     
 }
