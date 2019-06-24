@@ -124,7 +124,6 @@ public final class WildBitMatcher extends InvertibleMatcher {
         return inverted? 256 - numBytesMatchingMask : numBytesMatchingMask;
     }
 
-
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         switch (wildcardMask) {
