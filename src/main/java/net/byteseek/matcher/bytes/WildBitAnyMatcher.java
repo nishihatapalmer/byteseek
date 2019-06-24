@@ -51,23 +51,34 @@ public final class WildBitAnyMatcher extends InvertibleMatcher {
     private final byte noMatchValue;
     private final byte wildcardMask;
 
+    /**
+     * Constructs a WildBitAnyMatcher from a byte to match, along with a wildMask that specifies which bits
+     * we don't care about in the byte to match, and which we do.  A zero bit in the wildMask means we don't
+     * care about the value of that bit in the value, a one means we need at least one of the corresponding
+     * value bits to match.
+     *
+     * @param value    The bits to match.
+     * @param wildMask The bits we don't care about matching, zero meaning we don't care about that bit in the value.
+     */
     public WildBitAnyMatcher(final byte value, final byte wildMask) {
         this(value, wildMask, false);
     }
 
+    /**
+     * Constructs a WildBitAnyMatcher from a byte to match, along with a wildMask that specifies which bits
+     * we don't care about in the byte to match, and which we do.  A zero bit in the wildMask means we don't
+     * care about the value of that bit in the value, a one means we need at least one of the corresponding
+     * value bits to match.
+     *
+     * @param value    The bits to match.
+     * @param wildMask The bits we don't care about matching, zero meaning we don't care about that bit in the value.
+     * @param inverted Whether the matcher results are inverted or not.
+     */
     public WildBitAnyMatcher(final byte value, final byte wildMask, final boolean inverted) {
         super(inverted);
         // The bitwise inverse of the value we specified is the only value we can't match (doesn't have any of the bits of the value).
         this.noMatchValue = (byte) ((~value) & wildMask);
         this.wildcardMask = wildMask;
-    }
-
-    public WildBitAnyMatcher(final byte bitmask) {
-        this(bitmask, bitmask);
-    }
-
-    public WildBitAnyMatcher(final byte bitmask, final boolean inverted) {
-        this(bitmask, bitmask, inverted);
     }
 
     @Override
@@ -147,5 +158,23 @@ public final class WildBitAnyMatcher extends InvertibleMatcher {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + toRegularExpression(true) + ")";
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof WildBitAnyMatcher)) {
+            return false;
+        }
+        final WildBitAnyMatcher other = (WildBitAnyMatcher) obj;
+        return wildcardMask == other.wildcardMask &&
+                noMatchValue == other.noMatchValue &&
+                inverted == other.inverted;
+    }
+
+    @Override
+    public int hashCode() {
+        return ((wildcardMask & 0xFF) + 7) * // Avoid zeros in calculation (and negative numbers):
+               ((noMatchValue & 0xFF) + 13) * // Avoid zeros in calculation (and negative numbers)
+                (inverted? 43 : 31);
     }
 }
