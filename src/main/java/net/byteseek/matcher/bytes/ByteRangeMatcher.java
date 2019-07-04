@@ -167,9 +167,7 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "(start:" + minByteValue +
-    								        " end: "  + maxByteValue +
-    								        " inverted:" + inverted + ')';
+    	return getClass().getSimpleName() + '(' + toRegularExpression(false) + ')';
     }
 
 }
