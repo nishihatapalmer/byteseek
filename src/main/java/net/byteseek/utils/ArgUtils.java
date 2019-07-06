@@ -442,11 +442,11 @@ public final class ArgUtils {
 
     /**
      * Checks whether a range is within something with a length, zero indexed, and that the range
-     * start is less than the range end.  The end index is inclusive (so can be equal to the length).
+     * start is less than the range end.  The end index is exclusive (so can be equal to the length).
      *
      * @param length  The length of something zero-indexed.
-     * @param startIndex The start position of a range within the zero indexed thing.
-     * @param endIndex   The position of a range within the zero indexed thing.
+     * @param startIndex The start position of a range within the zero indexed thing, inclusive.
+     * @param endIndex   The end position of a range within the zero indexed thing, exclusive.
      * @throws IndexOutOfBoundsException if the range of positions do not lie within the length of a zero-
      *         indexed thing, or that the range start is greater than the range end.
      */

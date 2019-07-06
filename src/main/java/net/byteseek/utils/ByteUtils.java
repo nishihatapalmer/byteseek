@@ -83,7 +83,6 @@ public final class ByteUtils {
         return ((result >>> 4) + result) & 0x0F;
     }
 
-
     /**
      * Returns the number of unset bits in a given byte.
      *
@@ -93,7 +92,6 @@ public final class ByteUtils {
     public static int countUnsetBits(final byte b) {
         return 8 - countSetBits(b);
     }
-
 
     /**
      * Returns the number of bytes which would match all the bits
@@ -110,21 +108,30 @@ public final class ByteUtils {
     	return 1 << countUnsetBits(bitmask);
     }
 
+    //TODO: add count methods for wildbit and wildbit any
 
     /**
      * Returns the number of bytes which would match any of the bits
      * in a given bitmask.
-     * <p>
-     * Note that if the bitmask is zero, then this will never match any byte, since
-     * the matching algorithm is byte &amp; bitmask != 0.
-     * A bitmask of zero will always produce zero bits when ANDed with any byte, and
-     * this can never be anything other than zero - which means no match.
-     * 
+     *
      * @param bitmask The bitmask.
      * @return The number of bytes matching any of the bits in the bitmask.
      */
     public static int countBytesMatchingAnyBit(final byte bitmask) {
         return 256 - countBytesMatchingAllBits(bitmask);
+    }
+
+    /**
+     * Returns the number of bytes which would many any of the set bits in a mask, also taking into account
+     * whether matching should be inverted or not.
+     *
+     * @param bitmask The bitmask
+     * @param isInverted Whether to invert the results or not.
+     * @return the number of bytes which would match any of the set bits in a mask, also taking into account inversion.
+     */
+    public static int countBytesMatchingAnyBits(final byte bitmask, final boolean isInverted) {
+        final int numBytesMatchingMask = bitmask == 0? 256 : 256 - (1 << countUnsetBits(bitmask));
+        return isInverted? 256 - numBytesMatchingMask : numBytesMatchingMask;
     }
 
     /**
@@ -144,8 +151,7 @@ public final class ByteUtils {
     	}
     	return bytes;
     }
-    
-    
+
     /**
      * Returns a byte array containing the byte values which do not match an all bitmask.
      * 
@@ -164,7 +170,6 @@ public final class ByteUtils {
     	return bytes;
     }
     
-    
     /**
      * Returns a byte array containing the byte values which match an any bitmask.
      * 
@@ -182,8 +187,7 @@ public final class ByteUtils {
     	}
     	return bytes;
     }
-    
-    
+
     /**
      * Returns a byte array containing the byte values which do not match an any bitmask.
      * 
@@ -201,8 +205,7 @@ public final class ByteUtils {
     	}
     	return bytes;
     }
-    
-    
+
     /**
      * Adds the bytes which would match all the bits in a given bitmask to a 
      * Collection of Byte.
@@ -214,10 +217,12 @@ public final class ByteUtils {
     public static void addBytesMatchingAllBitMask(final byte bitMask, 
     											  final Collection<Byte> bytes) {
     	ArgUtils.checkNullCollection(bytes);
-    	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+    	final int numToAdd = countBytesMatchingAllBits(bitMask);
+    	for (int byteIndex = 0, numAdded = 0; numAdded < numToAdd && byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((((byte) byteIndex) & bitMask) == bitMask) {
                 bytes.add(Byte.valueOf(byteValue));
+                numAdded++;
             }
         }
     }
@@ -235,7 +240,6 @@ public final class ByteUtils {
 		}
 	}
 
-    
     /**
      * Adds the bytes not matching an all-bit bitmask to a collection of Byte.
      *
@@ -246,14 +250,15 @@ public final class ByteUtils {
     public static void addBytesNotMatchingAllBitMask(final byte bitMask,
     												 final Collection<Byte> bytes) {
     	ArgUtils.checkNullCollection(bytes);
-    	for (int byteIndex = 0; byteIndex < 256; byteIndex++) {
+        final int numToAdd = 256 - countBytesMatchingAllBits(bitMask);
+        for (int byteIndex = 0, numAdded = 0; numAdded < numToAdd && byteIndex < 256; byteIndex++) {
             final byte byteValue = (byte) byteIndex;
             if ((((byte) byteIndex) & bitMask) != bitMask) {
                 bytes.add(Byte.valueOf(byteValue));
+                numAdded++;
             }
         }
     }
-
 
     /**
      * Returns a bitmask which would match the set of bytes in the array
@@ -268,7 +273,6 @@ public final class ByteUtils {
     public static Byte getAllBitMaskForBytes(final byte[] bytes) {
         return getAllBitMaskForBytes(toSet(bytes));
     }
-    
 
     /**
      * Returns a set of bytes from an array of bytes.
@@ -300,7 +304,6 @@ public final class ByteUtils {
         return listOfBytes;
     }
 
-
     /**
      * Adds all the bytes in an array to a collection of Bytes.
      * 
@@ -316,8 +319,7 @@ public final class ByteUtils {
             toCollection.add(Byte.valueOf(bytes[count]));
         }
     }
-    
-    
+
     /**
      * Adds all the bytes specified as byte parameters to the collection.
      * @param toCollection The collection to add the bytes to.
@@ -331,7 +333,6 @@ public final class ByteUtils {
     	}
     }
     
-    
     /**
      * Adds the bytes in a string encoded as ISO-8859-1 bytes to a collection of bytes.
      * 
@@ -342,8 +343,7 @@ public final class ByteUtils {
     public static void addStringBytes(final String string, final Collection<Byte> toCollection) {
     	addAll(getBytes(string), toCollection);
     }
-    
-    
+
     /**
      * Returns a byte array of the string passed in, encoded as ISO-8859-1.
      * <p>
@@ -358,8 +358,7 @@ public final class ByteUtils {
     	ArgUtils.checkNullString(string);
    		return string.getBytes(ISO_8859_1);
     }
-    
-    
+
     /**
      * Adds the bytes in a string encoded as ISO-8859-1 to a collection of bytes.
      * Upper and lower case bytes are also added if their counterpart is encountered.
@@ -382,7 +381,6 @@ public final class ByteUtils {
 		}
     }
     
-    
     /**
      * Returns an array of bytes from a collection of Bytes.
      * 
@@ -399,8 +397,7 @@ public final class ByteUtils {
         }
         return result;
     }
-    
-    	
+
     /**
      * Returns an array of bytes from a list of byte parameters.
      * 
@@ -410,8 +407,7 @@ public final class ByteUtils {
     public static byte[] toArray(byte... values) {
     	return values;
     }
-    
-    
+
     /**
      * Reverses an array of bytes.
      * 
@@ -428,7 +424,6 @@ public final class ByteUtils {
         }
         return reversed;
     }
-    
     
     /**
      * Reverses a subsequence of an array.
@@ -450,7 +445,6 @@ public final class ByteUtils {
         }
         return reversed;        
     }
-
     
     /**
      * Returns a byte array containing the original array passed in repeated a 
@@ -474,7 +468,6 @@ public final class ByteUtils {
         return repeated;
     }
 
-    
     /**
      * Returns a byte array containing the original array passed in, 
      * with a subsequence of it repeated a number of times.  
@@ -501,8 +494,7 @@ public final class ByteUtils {
         }    
         return repeated;
     }    
-    
-    
+
     /**
      * Returns a byte array filled with the value for the number of repeats.
      * 
@@ -517,8 +509,7 @@ public final class ByteUtils {
         Arrays.fill(repeats, value);
         return repeats;
     }
-    
-    
+
     /**
      * Converts an array of bytes to an array of ints in the range 0 to 255.
      * 
@@ -536,7 +527,6 @@ public final class ByteUtils {
         return integers;
     }
 
-
     /**
      * Returns an array of bytes containing all possible byte values.
      * 
@@ -545,7 +535,6 @@ public final class ByteUtils {
     public static byte[] getAllByteValues() {
         return getBytesInRange(0, 255);
     }
-
 
     /**
      * Returns an array of bytes in the range of values inclusive.  The from and to
@@ -571,7 +560,6 @@ public final class ByteUtils {
         return range;
     }
 
-
     /**
      * Adds all the bytes in a range to a collection of Byte.  The range can be specified
      * either forwards or backwards.
@@ -591,8 +579,52 @@ public final class ByteUtils {
     		bytes.add(Byte.valueOf((byte) value));
     	}
     }
-    
-    
+
+    /**
+     * Adds all the bytes matched by a wildmask and a value to a collection of Byte.
+     * Each bit in the wildmask which is zero specifies a bit we don't care about (can be zero or one in the value).
+     * Each bit in the wildmask which is 1 means that the corresponding bit in the value must be matched.
+     * @param wildmask A byte containing a binary bitmask where a zero means we don't care about that bit in the value.
+     * @param value    A byte containing a binary value to match.  Only bits whose corresponding bit in the wildmask is 1 make any difference.
+     * @param bytes    A collection of bytes to add the bytes to.
+     * @param isInverted Whether the results of matching should be inverted (i.e. match all the bytes NOT matched by the wildmask).
+     */
+    public static void addBytesMatchedByWildBit(final byte wildmask, final byte value,
+                                                final Collection<Byte> bytes, final boolean isInverted) {
+        final byte valueToMatch = (byte) (value & wildmask);
+        final int numToAdd = isInverted? 256 - countBytesMatchingAllBits(wildmask) : countBytesMatchingAllBits(wildmask);
+        for (int byteValue = 0, numAdded = 0; numAdded < numToAdd && byteValue < 256; byteValue++) {
+            final byte theByte = (byte) byteValue;
+            if (((theByte & wildmask) == valueToMatch) ^ isInverted) {
+                bytes.add(theByte);
+                numAdded++;
+            }
+        }
+    }
+
+    /**
+     * Adds all the bytes matched by an ANY wildmask, and a value, to a collection of Byte.
+     * Each bit in the wildmask which is zero specifies a bit we don't care about (can be zero or one in the value).
+     * Each bit in the wildmask which is one means that at least one corresponding bit in the value must be matched.
+     * @param wildmask A byte containing a binary bitmask where a zero means we don't care about that bit in the value.
+     * @param value    A byte containing a binary value to match.  Only bits whose corresponding bit in the wildmask is 1 make any difference.
+     * @param bytes    A collection of bytes to add the bytes to.
+     * @param isInverted Whether the results of matching should be inverted (i.e. match all the bytes NOT matched by the wildmask).
+
+     */
+    public static void addBytesMatchedByWildBitAny(final byte wildmask, final byte value,
+                                                final Collection<Byte> bytes, final boolean isInverted) {
+        final byte valueNotToMatch = (byte) ((~value) & wildmask);
+        final int numToAdd = countBytesMatchingAnyBits(wildmask, isInverted);
+        for (int byteValue = 0, numAdded = 0; numAdded < numToAdd && byteValue < 256; byteValue++) {
+            final byte theByte = (byte) byteValue;
+            if (((theByte & wildmask) != valueNotToMatch) ^ isInverted) {
+                bytes.add(theByte);
+                numAdded++;
+            }
+        }
+    }
+
    /**
     * Adds all the bytes other than the byte provided to a collection of Byte.  
     * 
@@ -609,8 +641,7 @@ public final class ByteUtils {
     		addBytesInRange(intValue + 1, 255, bytes);
     	}
     }
-    
-    
+
     /**
      * Adds all the bytes in an inverted range to a collection.  The inverted range can be specified
      * either forwards or backwards. An inverted range contains all bytes except for the ones
@@ -788,7 +819,7 @@ public final class ByteUtils {
                 // by that bitmask.
                 final byte mask = (byte) bitsInCommon;
                 if (setSize == countBytesMatchingAllBits(mask)) {
-                	return Byte.valueOf(mask);
+                	return mask;
                 }
             }
         }
@@ -821,7 +852,7 @@ public final class ByteUtils {
                 if (possibleAnyMask > 0) {
                     final byte mask = (byte) possibleAnyMask;
                     if (size == countBytesMatchingAnyBit(mask)) {
-                        return Byte.valueOf(mask);
+                        return mask;
                     }
                 }
             }

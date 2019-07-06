@@ -44,6 +44,7 @@ public enum PowerTwoSize {
     SIZE_2M(21),  SIZE_4M(22),   SIZE_8M(23),   SIZE_16M(24),  SIZE_32M(25),
     SIZE_64M(26), SIZE_128M(27), SIZE_256M(28), SIZE_512M(29), SIZE_1G(30);
 
+    //TODO: what about power two of zero? i.e. 1?
     /**
      * A static utility method to return the enum value for a given power of two size.
      *
