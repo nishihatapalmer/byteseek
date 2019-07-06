@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -40,8 +40,7 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.utils.ArgUtils;
 
 /**
- * A OneByteMatcher is a {@link ByteMatcher} which matches
- * one byte value only.
+ * A OneByteMatcher is a {@link ByteMatcher} which matches one byte value only.
  *
  * @author Matt Palmer
  */
@@ -49,20 +48,20 @@ public final class OneByteMatcher extends AbstractByteMatcher {
 
     private final byte byteToMatch;
 
-    private static final class NodeCache {
+    private static final class MatcherCache {
   	  
   	  static final OneByteMatcher[] values = new OneByteMatcher[256];
   	  
   	  static {
   		  for (int i = 0; i < 256; i++) {
-  			  values[i] = new OneByteMatcher((byte) (i & 0xFF));
+  			  values[i] = new OneByteMatcher((byte) i);
   		  }
   	  }
   	  
     }
 
     public static OneByteMatcher valueOf(final byte value) {
-  	  return NodeCache.values[value & 0xff];
+  	  return MatcherCache.values[value & 0xff];
     }
     
     /**

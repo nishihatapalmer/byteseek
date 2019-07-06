@@ -53,28 +53,6 @@ import net.byteseek.matcher.bytes.InvertibleMatcher;
 public class InvertibleMatcherTest {
 
 	/**
-	 * 
-	 */
-	public InvertibleMatcherTest() {
-	}
-
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-	}
-
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-	}
-
-	/**
 	 * Test of isInverted method, of abstract class InvertibleMatcher.
 	 */
 	@Test

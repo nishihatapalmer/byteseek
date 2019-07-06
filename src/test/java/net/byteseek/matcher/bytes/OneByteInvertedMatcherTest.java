@@ -51,61 +51,63 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class InvertedByteMatcherTest {
-
-    private WindowReader reader;
-
-    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
-
-    static {
-        BYTE_VALUES = new byte[256];
-        for (int i = 0; i < 256; i++) {
-            BYTE_VALUES[i] = (byte) i;
-        }
-    }
-
-    /**
-     *
-     */
-    public InvertedByteMatcherTest() {
-    }
-
-    @Before
-    public void setup() {
-        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
-    }
+public class OneByteInvertedMatcherTest extends BaseMatcherTest {
 
     /**
      * Tests every possible byte value against every other non-matching
      * byte value.
      */
     @Test
-    public void testMatcher() throws IOException {
+    public void testMatcher() throws Exception {
  
         for (int i = 0; i < 256; i++) {
             final byte theByte = (byte) i;
-            InvertedByteMatcher matcher = new InvertedByteMatcher(theByte);
+            OneByteInvertedMatcher matcher = new OneByteInvertedMatcher(theByte);
             testMatcher(matcher, theByte, i);
 
             String hexByte = ByteUtils.byteToString(false, i);
             hexByte = hexByte.toLowerCase();
-            matcher = new InvertedByteMatcher(hexByte);
+            matcher = new OneByteInvertedMatcher(hexByte);
             testMatcher(matcher, theByte, i);
 
             hexByte = hexByte.toUpperCase();
-            matcher = new InvertedByteMatcher(hexByte);
+            matcher = new OneByteInvertedMatcher(hexByte);
             testMatcher(matcher, theByte, i);
-        }
 
+            testEquals(matcher, theByte);
+        }
     }
 
-    private void testMatcher(ByteMatcher matcher, byte theByte, int index) throws IOException {
+    private void testEquals(OneByteInvertedMatcher matcher, byte theByte) {
+        // Doesn't match null
+        assertFalse(matcher.equals(null));
+
+        // Does match an equivalent matcher of the same type
+        OneByteInvertedMatcher same = new OneByteInvertedMatcher(theByte);
+        assertTrue(matcher.equals(same));
+        assertTrue(same.equals(matcher));
+        assertEquals(matcher.hashCode(), same.hashCode());
+
+        // Doesn't match a different matcher of the same type
+        final byte differentByte = (byte) (((theByte & 0xFF) + 1) % 256);
+        OneByteInvertedMatcher different = new OneByteInvertedMatcher(differentByte);
+        assertFalse(matcher.equals(different));
+        assertFalse(different.equals(matcher));
+
+        // different object that matches the same bytes
+        TwoByteInvertedMatcher differentObject = new TwoByteInvertedMatcher(theByte, theByte);
+        assertFalse(matcher.equals(differentObject));
+    }
+
+    private void testMatcher(OneByteInvertedMatcher matcher, byte theByte, int index) throws Exception {
         // test methods from abstract superclass
         testAbstractMethods(matcher);
 
+        assertEquals(theByte, matcher.getNonMatchingByteValue());
+
         // test methods implemented here.
-        assertFalse("no matche byte value",      matcher.matches(theByte));
-        assertFalse("no matche window reader",   matcher.matches(reader, index));
+        assertFalse("no matches byte value",      matcher.matches(theByte));
+        assertFalse("no matches window reader",   matcher.matches(reader, index));
         assertFalse("no matches array",           matcher.matches(BYTE_VALUES, index));
         assertFalse("no match array -1",      matcher.matches(BYTE_VALUES, -1));
         assertFalse("no match array 256",     matcher.matches(BYTE_VALUES, 256));
@@ -146,11 +148,11 @@ public class InvertedByteMatcherTest {
             SimpleTimer.timeMatcher(message, matcher);
         }
         String toString = matcher.toString();
-        assertTrue(toString.contains(InvertedByteMatcher.class.getSimpleName()));
+        assertTrue(toString.contains(OneByteInvertedMatcher.class.getSimpleName()));
         assertTrue(toString.contains(String.format("%02x", theByte & 0xFF)));
 
         SequenceMatcher repeated = matcher.repeat(1);
-        assertEquals("repeat once is the same class", InvertedByteMatcher.class, repeated.getClass());
+        assertEquals("repeat once is the same class", OneByteInvertedMatcher.class, repeated.getClass());
         final int REPEAT_NUM = 10;
         repeated = matcher.repeat(REPEAT_NUM);
         assertEquals("Repeated ten times length is correct", REPEAT_NUM, repeated.length());
@@ -160,70 +162,5 @@ public class InvertedByteMatcherTest {
         }
 
     }
-
-
-    private void testAbstractMethods(ByteMatcher matcher) {
-        // test methods from abstract superclass
-        assertEquals("length is one", 1, matcher.length());
-
-        assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
-
-        try {
-            matcher.getMatcherForPosition(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.getMatcherForPosition(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        assertEquals("reversed is identical", matcher, matcher.reverse());
-        assertEquals("subsequence of 0 is identical", matcher, matcher.subsequence(0));
-        try {
-            matcher.subsequence(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-        assertEquals("subsequence of 0,1 is identical", matcher, matcher.subsequence(0,1));
-        try {
-            matcher.subsequence(-1, 1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(0, 2);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        int count = 0;
-        for (ByteMatcher itself : matcher) {
-            count++;
-            assertEquals("Iterating returns same matcher", matcher, itself);
-        }
-        assertEquals("Count of iterated matchers is one", 1, count);
-
-        Iterator<ByteMatcher> it = matcher.iterator();
-        try {
-            it.remove();
-            fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException expectedIgnore) {}
-
-
-        it = matcher.iterator();
-        try {
-            assertTrue(it.hasNext());
-            it.next();
-            assertFalse(it.hasNext());
-            it.next();
-            fail("Expected NoSuchElementException");
-        } catch (NoSuchElementException expectedIgnore) {}
-    }
-
-
 
 }

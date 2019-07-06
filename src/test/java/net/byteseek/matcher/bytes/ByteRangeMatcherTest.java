@@ -47,30 +47,10 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class ByteRangeMatcherTest {
+public class ByteRangeMatcherTest extends BaseMatcherTest {
 
     private final static Random rand = new Random();
 
-    private WindowReader reader;
-
-    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
-
-    static {
-        BYTE_VALUES = new byte[256];
-        for (int i = 0; i < 256; i++) {
-            BYTE_VALUES[i] = (byte) i;
-        }
-    }
-
-    @Before
-    public void setup() {
-        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
     @BeforeClass
     public static void setUpClass() throws Exception {
         final long seed = System.currentTimeMillis();
@@ -78,20 +58,13 @@ public class ByteRangeMatcherTest {
         rand.setSeed(seed);
         System.out.println("Seeding random number generator with: " + Long.toString(seed));
         System.out.println("To repeat these exact tests, set the seed to the value above.");
-    }     
-    
-    /**
-     * 
-     */
-    public ByteRangeMatcherTest() {
     }
-
 
     /**
      * Test of matches method, of class ByteRangeMatcher.
      */
     @Test
-    public void testByteRange() throws IOException {
+    public void testByteRange() throws Exception {
         
         for (int testRun = 1; testRun <= 5; testRun++) {
             int start = rand.nextInt(256);
@@ -105,7 +78,46 @@ public class ByteRangeMatcherTest {
         }
     }
 
-    private void validateMatcher(ByteRangeMatcher matcher, int start, int end) throws IOException {
+    @Test
+    public void testEqualsAndHashCode() {
+        for (int count = 0; count < 256; count++) {
+            int range = rand.nextInt(256);
+            ByteRangeMatcher matcher = new ByteRangeMatcher(count, range);
+            assertFalse(matcher.equals(null));
+
+            // Check same objects are equal with same hashcode.
+            ByteRangeMatcher same    = new ByteRangeMatcher(count, range);
+            assertTrue(matcher.equals(same));
+            assertTrue(same.equals(matcher));
+            assertEquals(matcher.hashCode(), same.hashCode());
+
+            // Check same objects are equal with same hashcode, when range is supplied differently.
+            same    = new ByteRangeMatcher(range, count);
+            assertTrue(matcher.equals(same));
+            assertTrue(same.equals(matcher));
+            assertEquals(matcher.hashCode(), same.hashCode());
+
+            // Check not the same as an inverted version
+            ByteRangeMatcher inverted = new ByteRangeMatcher(count, range, true);
+            assertFalse(matcher.equals(inverted));
+            assertFalse(inverted.equals(matcher));
+
+            // Check two inverted matchers are the same:
+            ByteRangeMatcher inverted2 = new ByteRangeMatcher(count, range, true);
+            assertTrue(inverted.equals(inverted2));
+            assertTrue(inverted2.equals(inverted));
+
+            // Check different objects are not equal.
+            ByteRangeMatcher different = new ByteRangeMatcher((count + 1) % 256, (range + 1) % 256);
+            assertFalse(matcher.equals(different));
+            assertFalse(different.equals(matcher));
+
+            OneByteMatcher other = new OneByteMatcher((byte) (count));
+            assertFalse(matcher.equals(other));
+        }
+    }
+
+    private void validateMatcher(ByteRangeMatcher matcher, int start, int end) throws Exception {
         // test methods from abstract superclass
        testAbstractMethods(matcher);
 
@@ -123,9 +135,6 @@ public class ByteRangeMatcherTest {
         }
         String toString = matcher.toString();
         assertTrue(toString.contains(ByteRangeMatcher.class.getSimpleName()));
-        assertTrue(toString.contains("inverted"));
-        assertTrue(toString.contains("start"));
-        assertTrue(toString.contains("end"));
 
         String regex = String.format("%s%02x-%02x", matcher.isInverted()? "^" : "", startValue, endValue);
         assertEquals(regex, regex, matcher.toRegularExpression(false));
@@ -172,69 +181,6 @@ public class ByteRangeMatcherTest {
         }
         message = String.format("Testing byte array on range %d-%d, matcher %s inverted", start, end, matcher.isInverted()? "" : " not");
         assertArrayEquals(message, bytes, matcher.getMatchingBytes() );
-    }
-
-
-    private void testAbstractMethods(ByteMatcher matcher) {
-        // test methods from abstract superclass
-        assertEquals("length is one", 1, matcher.length());
-
-        assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
-
-        try {
-            matcher.getMatcherForPosition(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.getMatcherForPosition(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        assertEquals("reversed is identical", matcher, matcher.reverse());
-        assertEquals("subsequence of 0 is identical", matcher, matcher.subsequence(0));
-        try {
-            matcher.subsequence(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-        assertEquals("subsequence of 0,1 is identical", matcher, matcher.subsequence(0,1));
-        try {
-            matcher.subsequence(-1, 1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(0, 2);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        int count = 0;
-        for (ByteMatcher itself : matcher) {
-            count++;
-            assertEquals("Iterating returns same matcher", matcher, itself);
-        }
-        assertEquals("Count of iterated matchers is one", 1, count);
-
-        Iterator<ByteMatcher> it = matcher.iterator();
-        try {
-            it.remove();
-            fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException expectedIgnore) {}
-
-
-        it = matcher.iterator();
-        try {
-            assertTrue(it.hasNext());
-            it.next();
-            assertFalse(it.hasNext());
-            it.next();
-            fail("Expected NoSuchElementException");
-        } catch (NoSuchElementException expectedIgnore) {}
     }
 
 

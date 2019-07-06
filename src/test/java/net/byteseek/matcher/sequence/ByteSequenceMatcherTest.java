@@ -31,6 +31,7 @@
 
 package net.byteseek.matcher.sequence;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,8 +43,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+import net.byteseek.io.reader.InputStreamReader;
+import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
+import net.byteseek.matcher.bytes.OneByteMatcher;
+import net.byteseek.matcher.bytes.TwoByteMatcher;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.io.reader.ByteArrayReader;
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.matcher.bytes.ByteMatcher;
 
@@ -143,7 +148,7 @@ public class ByteSequenceMatcherTest {
 			byte[] testArray = new byte[] { (byte) byteValue };
 			assertTrue("matches that byte value in an array", matcher.matches(testArray, 0));
 
-			ByteArrayReader wrapped = new ByteArrayReader(testArray);
+			WindowReader wrapped = new InputStreamReader(new ByteArrayInputStream(testArray));
 			assertTrue("matches that byte value in a reader", matcher.matches(wrapped, 0));
 
 			int differentValue = rand.nextInt(256);
@@ -153,7 +158,7 @@ public class ByteSequenceMatcherTest {
 			byte[] different = new byte[] { (byte) differentValue };
 			assertFalse("does not match a different byte value in an array", matcher.matches(different, 0));
 
-			wrapped = new ByteArrayReader(different);
+			wrapped = new InputStreamReader(new ByteArrayInputStream(different));
 			assertFalse("does not match a different byte value in a reader", matcher.matches(wrapped, 0));
 		}
 	}
@@ -375,6 +380,7 @@ public class ByteSequenceMatcherTest {
 				final byte[] matchingBytes = sbm.getMatchingBytes();
 				final byte matchingValue = array[array.length - pos - 1];
 				assertEquals("number of bytes matched=1", 1, matchingBytes.length);
+				assertEquals("Number of byts matcher  = 1", 1, matcher.getNumBytesAtPosition(pos));
 				assertEquals("byte value:" + Integer.toString(matchingValue), matchingValue, matchingBytes[0]);
 			}
 
@@ -447,12 +453,41 @@ public class ByteSequenceMatcherTest {
 		new ByteSequenceMatcher((byte[]) null);
 	}
 
+	@Test
+    public void testConstructSequenceMatcher() {
+        List<ByteMatcher> matchers = new ArrayList<ByteMatcher>();
+        addRandomMatchers(matchers);
+        SequenceMatcher allMatchers  = new ByteMatcherSequenceMatcher(matchers);
+        SequenceMatcher matcher = new ByteSequenceMatcher(allMatchers);
+        assertEquals(matchers.size(), matcher.length());
+        for (int i = 0; i < matcher.length(); i++) {
+            assertEquals(matchers.get(i), matcher.getMatcherForPosition(i));
+        }
+    }
+
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
-	public void testEmptyByteArray() {
-		new ByteSequenceMatcher(new byte[0]);
+	public void testByteMatcherMoreThanOneByte() {
+	    List<ByteMatcher> matchers = new ArrayList<ByteMatcher>();
+	    addRandomMatchers(matchers);
+	    matchers.add(TwoByteMatcher.caseInsensitive('A'));  // add a matcher which matches more than one byte value.
+	    addRandomMatchers(matchers);
+	    SequenceMatcher allMatchers  = new ByteMatcherSequenceMatcher(matchers);
+        new ByteSequenceMatcher(allMatchers); // should throw IllegalArgumentException.
 	}
 
+	private void addRandomMatchers(List<ByteMatcher> matchers) {
+        int length = rand.nextInt(30);
+        for (int i = 0; i < length; i++) {
+            byte value = (byte) rand.nextInt(256);
+            matchers.add(OneByteMatcher.valueOf(value));
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEmptyByteArray() {
+        new ByteSequenceMatcher(new byte[0]);
+    }
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullByteArrayMatcher() {
@@ -1390,6 +1425,15 @@ public class ByteSequenceMatcherTest {
 			assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(reader, pos));
 			assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(reader, pos - 1));
 			assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(reader, pos + 1));
+
+            List<MatchResult> results = new ArrayList<MatchResult>();
+            matcher.matches(reader, pos - 1, results);
+            assertEquals(0, results.size());
+            matcher.matches(reader, pos + 1, results);
+            assertEquals(0, results.size());
+			matcher.matches(reader, pos, results);
+			assertEquals(1, results.size());
+			assertEquals(pos, results.get(0).getMatchPosition());
 		}
 	}
 
@@ -1408,7 +1452,16 @@ public class ByteSequenceMatcherTest {
 		assertTrue(matchDesc + " at pos " + Long.toString(pos), matcher.matches(bytes, pos));
 		assertFalse(matchDesc + " at pos " + Long.toString(pos - 1), matcher.matches(bytes, pos - 1));
 		assertFalse(matchDesc + " at pos " + Long.toString(pos + 1), matcher.matches(bytes, pos + 1));
-	}
+
+        List<MatchResult> results = new ArrayList<MatchResult>();
+        matcher.matches(bytes, pos - 1, results);
+        assertEquals(0, results.size());
+        matcher.matches(bytes, pos + 1, results);
+        assertEquals(0, results.size());
+        matcher.matches(bytes, pos, results);
+        assertEquals(1, results.size());
+        assertEquals(pos, results.get(0).getMatchPosition());
+    }
 
 	/**
 	 * Tests that:

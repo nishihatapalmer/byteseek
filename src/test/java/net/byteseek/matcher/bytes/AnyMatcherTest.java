@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2016, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,18 +30,11 @@
  */
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.io.reader.WindowReader;
 
 import net.byteseek.matcher.sequence.FixedGapMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
@@ -50,46 +43,7 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class AnyMatcherTest {
-
-
-    private WindowReader reader;
-
-    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
-
-    static {
-        BYTE_VALUES = new byte[256];
-        for (int i = 0; i < 256; i++) {
-            BYTE_VALUES[i] = (byte) i;
-        }
-    }
-
-    @Before
-    public void setup() {
-        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
-    }
-
-    /**
-     * 
-     */
-    public AnyMatcherTest() {
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+public class AnyMatcherTest extends BaseMatcherTest {
 
     /**
      * Test of matches method, of class AnyByteMatcher.

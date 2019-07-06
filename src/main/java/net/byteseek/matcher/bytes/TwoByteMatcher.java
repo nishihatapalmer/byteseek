@@ -52,11 +52,26 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class TwoByteMatcher extends AbstractByteMatcher {
 
+    private static final int ASCII_CASE_GAP = 'a' - 'A'; // The distance between upper and lower case in ASCII chars.
     private static final byte LINE_FEED = 0x0A;
     private static final byte CARRIAGE_RETURN = 0x0D;
 
     private static TwoByteMatcher[] caseInsensitiveMatchers;
     public static TwoByteMatcher LINE_BREAK;
+
+    /**
+     * Returns true if a byte is between ASCII A and Z inclusive.
+     * @param theByte The byte to test for ASCII uppercase.
+     * @return true if a byte is between ASCII A and Z inclusive.
+     */
+    public static boolean isUpperCase(final byte theByte) {
+        return ((theByte & 0xFF) >= 'A' && (theByte & 0xFF) <= 'Z');
+    }
+
+    public static boolean isLineBreak(final byte byte1, final byte byte2) {
+        return ((byte1 == LINE_FEED && byte2 == CARRIAGE_RETURN) ||
+                (byte1 == CARRIAGE_RETURN && byte2 == LINE_FEED));
+    }
 
     static {
         caseInsensitiveMatchers = new TwoByteMatcher[26];
@@ -70,10 +85,10 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
         if (byte1 == byte2) {
             return OneByteMatcher.valueOf(byte1);
         }
-        if (isUpperCase(byte1) && isLowerCase(byte2)) {
+        if (isUpperCase(byte1) && byte1 + ASCII_CASE_GAP == byte2) {
             return caseInsensitiveMatchers[((int) byte1 & 0xFF) - 'A'];
         }
-        if (isLowerCase(byte1) && isUpperCase(byte2)) {
+        if (isUpperCase(byte2) && byte2 + ASCII_CASE_GAP == byte1) {
             return caseInsensitiveMatchers[((int) byte2 & 0xFF) - 'A'];
         }
         if (isLineBreak(byte1, byte2)) {
@@ -265,17 +280,6 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
     			                                  String.format("%02x", secondByteToMatch & 0xFF) + ')';
     }
 
-    private static boolean isUpperCase(final byte theByte) {
-        return ((theByte & 0xFF) >= 'A' && (theByte & 0xFF) <= 'Z');
-    }
 
-    private static boolean isLowerCase(final byte theByte) {
-        return ((theByte & 0xFF) >= 'a' && (theByte & 0xFF) <= 'z');
-    }
-
-    private static boolean isLineBreak(final byte byte1, final byte byte2) {
-        return ((byte1 == LINE_FEED && byte2 == CARRIAGE_RETURN) ||
-                (byte1 == CARRIAGE_RETURN && byte2 == LINE_FEED));
-    }
     
 }

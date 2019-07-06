@@ -622,11 +622,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             this.endArrayIndex = this.byteArray.length;
             this.hashCode = calculateHash();
         }
-        
-        
-        /**
-         * {@inheritDoc}
-         */
+
         @Override
         public boolean matches(final WindowReader reader, final long matchPosition)
                 throws IOException {
@@ -658,10 +654,6 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             return false;
         }
 
-
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean matches(final byte[] bytes, final int matchPosition) {
             if (matchPosition + length() <= bytes.length && matchPosition >= 0) {
@@ -678,10 +670,6 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             return false;
         }    
 
-
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean matchesNoBoundsCheck(final byte[] bytes, final int matchPosition) {
             int position = matchPosition;
@@ -695,15 +683,10 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             return true;
         }
 
-
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public int length() {
             return endArrayIndex - startArrayIndex;
         }
-
 
         @Override
         public int hashCode() {
@@ -739,10 +722,6 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
         }
 
-
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String toRegularExpression(final boolean prettyPrint) {
             //TODO: can we have a reverseBytesToString method instead...?
@@ -751,10 +730,6 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             							   ByteUtils.reverseArraySubsequence(byteArray, startArrayIndex, endArrayIndex));
         }
 
-
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public ByteMatcher getMatcherForPosition(final int position) {
             ArgUtils.checkIndexOutOfBounds(length(), position);
@@ -767,19 +742,11 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             return 1;
         }
 
-
-        /**
-         * {@inheritDoc}
-         */
         @Override    
         public SequenceMatcher reverse() {
             return new ByteSequenceMatcher(this);
         }
 
-        
-        /**
-         * {@inheritDoc}
-         */    
         @Override
         public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
             final int length = length();
@@ -793,20 +760,12 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             }
             return new ReverseByteArrayMatcher(this, beginIndex, endIndex);
         }
-        
-        
-        /**
-         * {@inheritDoc}
-         */  
+
         @Override
         public SequenceMatcher subsequence(final int beginIndex) {
             return subsequence(beginIndex, length());
         }
 
-
-        /**
-         * {@inheritDoc}
-         */ 
         @Override
         public SequenceMatcher repeat(final int numberOfRepeats) {
             ArgUtils.checkPositiveInteger(numberOfRepeats);
@@ -815,8 +774,7 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             }
             return new ReverseByteArrayMatcher(numberOfRepeats, byteArray, startArrayIndex, endArrayIndex);
         }
-        
-        
+
     	@Override
     	public Iterator<ByteMatcher> iterator() {
     		return new ReverseByteMatcherIterator();

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,7 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.matcher.sequence;
 
 import java.io.IOException;
@@ -45,18 +44,18 @@ import net.byteseek.utils.ArgUtils;
  * nested, and of different lengths.
  * For example, we could have a sequence of bytes, followed by a case insensitive
  * sequence, followed by a fixed gap, followed by a byte set sequence.
- * 
+ *
  * @author Matt Palmer
  */
 public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
 
     private final int hashCode;
-    private final int[] positions;
+    private final int[] startPositions;
     private final SequenceMatcher[] matchers;
-    
+
     private final int totalLength;
 
-    
+
     /**
      * Constructs a SequenceSequenceMatcher from a list of {@link SequenceMatcher} objects.
      *
@@ -70,9 +69,9 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
 
     /**
      * Constructs a SequenceSequenceMatcher from a repeated list of {@link SequenceMatcher} objects.
-     * @param numberOfRepeats The number of times to repeat the list of SequenceMatchers.
-     * @param matcherCollection  A collection of (repeated) SequenceMatchers from which to construct this SequenceSequenceMatcher.
-     * 
+     *
+     * @param numberOfRepeats   The number of times to repeat the list of SequenceMatchers.
+     * @param matcherCollection A collection of (repeated) SequenceMatchers from which to construct this SequenceSequenceMatcher.
      * @throws IllegalArgumentException if the collection is null or empty or contains null elements,
      *                                  or the number to repeat is less than one.
      */
@@ -81,7 +80,7 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
         ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             matchers = matcherCollection.toArray(new SequenceMatcher[matcherCollection.size() * numberOfRepeats]);
-            positions = new int[matchers.length + 1];
+            startPositions = new int[matchers.length];
             totalLength = calculateTotalLength(matchers);
         } else {
             int length = matcherCollection.size() * numberOfRepeats;
@@ -90,45 +89,45 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
                 allMatchers.addAll(matcherCollection);
             }
             matchers = allMatchers.toArray(new SequenceMatcher[length]);
-            positions = new int[matchers.length + 1];
+            startPositions = new int[matchers.length];
             totalLength = calculateTotalLength(matchers);
         }
         this.hashCode = calculateHash();
     }
-    
-    
-	/**
+
+
+    /**
      * Constructs a SequenceSequenceMatcher from an array of SequenceMatchers.
-     * 
+     *
      * @param matchers The array of SequenceMatchers to construct from.
      * @throws IllegalArgumentException if the array is null or empty.
      */
-    public SequenceSequenceMatcher(final SequenceMatcher...matchers) {
+    public SequenceSequenceMatcher(final SequenceMatcher... matchers) {
         this(1, matchers);
     }
-    
-    
+
+
     /**
      * Constructs a SequenceSequenceMatcher from an array of SequenceMatcher,
      * repeated a number of times.
+     *
      * @param numberOfRepeats The number of times to repeat the array.
-     * @param matchArray The array of SequenceMatchers to construct from.
-     * 
+     * @param matchArray      The array of SequenceMatchers to construct from.
      * @throws IllegalArgumentException if the array is null or empty, or the
-     *         number of repeats is less than one.
+     *                                  number of repeats is less than one.
      */
     public SequenceSequenceMatcher(final int numberOfRepeats, final SequenceMatcher... matchArray) {
         ArgUtils.checkNullOrEmptyArrayNoNullElements(matchArray);
         ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             matchers = matchArray.clone();
-            positions = new int[matchers.length + 1];
+            startPositions = new int[matchers.length];
             totalLength = calculateTotalLength(matchers);
         } else {
             final int numberOfMatchers = matchArray.length;
             int length = numberOfMatchers * numberOfRepeats;
             matchers = new SequenceMatcher[length];
-            positions = new int[matchers.length + 1];
+            startPositions = new int[matchers.length];
             for (int repeat = 0; repeat < numberOfRepeats; repeat++) {
                 System.arraycopy(matchArray, 0, matchers, repeat * numberOfMatchers, numberOfMatchers);
             }
@@ -138,23 +137,22 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
     }
 
 
-    
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws NullPointerException if the WindowReader is null.
      */
     @Override
     public boolean matches(final WindowReader reader, final long matchPosition) throws IOException {
         final int localTotalLength = totalLength;
-        final SequenceMatcher[] localArray = matchers;        
+        final SequenceMatcher[] localArray = matchers;
         Window window = reader.getWindow(matchPosition);
         int matchPos = 0;
         int matcherIndex = 0;
         // While we have data to read from:
         while (window != null) {
             final int windowStartMatchPos = matchPos;
-        	final int offset = reader.getWindowOffset(matchPosition + matchPos);
+            final int offset = reader.getWindowOffset(matchPosition + matchPos);
             final int endArrayPos = Math.min(window.length(), offset + localTotalLength - matchPos);
             //final long lastMatchingPosition = window.getWindowPosition() + endArrayPos - 1;
             final byte[] array = window.getArray();
@@ -183,12 +181,12 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
             window = reader.getWindow(matchPosition + matchPos);
         }
         return false;
-    }   
-    
-    
+    }
+
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws NullPointerException if the byte array is null.
      */
     @Override
@@ -206,12 +204,12 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
             return true;
         }
         return false;
-    }    
+    }
 
-    
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws NullPointerException if the byte array is null.
      */
     @Override
@@ -235,70 +233,44 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
 
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-    	final StringBuilder regularExpression = new StringBuilder();
+        final StringBuilder regularExpression = new StringBuilder();
         boolean firstMatcher = true;
         for (final SequenceMatcher matcher : matchers) {
-        	if (!firstMatcher && prettyPrint) {
-        		regularExpression.append(' ');
-        	}
-           regularExpression.append(matcher.toRegularExpression(prettyPrint));
-           firstMatcher = false;
+            if (!firstMatcher && prettyPrint) {
+                regularExpression.append(' ');
+            }
+            regularExpression.append(matcher.toRegularExpression(prettyPrint));
+            firstMatcher = false;
         }
         return regularExpression.toString();
     }
 
     @Override
     public ByteMatcher getMatcherForPosition(final int position) {
-    	ArgUtils.checkIndexOutOfBounds(totalLength,  position);
-        int currentEndPosition = 0;
-        ByteMatcher result = null;
-        for (final SequenceMatcher matcher : matchers) {
-            final int matcherLength = matcher.length();
-            currentEndPosition += matcherLength;
-            if (position < currentEndPosition) {
-            	final int matcherOffset = position - (currentEndPosition - matcherLength); 
-                result = matcher.getMatcherForPosition(matcherOffset);
-                break;
-            }
+        ArgUtils.checkIndexOutOfBounds(totalLength, position);
+        int matcherIndex = Arrays.binarySearch(startPositions, position);
+        final int offset;
+        if (matcherIndex >= 0) {
+            offset = 0;
+        } else {
+            matcherIndex = -(matcherIndex + 2);
+            offset = position - startPositions[matcherIndex];
         }
-        return result;
-   }
+        return matchers[matcherIndex].getMatcherForPosition(offset);
+    }
 
-   //TODO: more efficient getMatcherForPosition - use an array of matcher positions and a binary search to get
-    //     the right matcher quickly.
-   public ByteMatcher getMatcherForPosition2(final int position) {
-       ArgUtils.checkIndexOutOfBounds(totalLength,  position);
-        int positionIndex = Arrays.binarySearch(positions, position);
-        if (positionIndex >= 0) { // an exact position match for the start of a matcher:
-            return matchers[positionIndex].getMatcherForPosition(0);
-        } else { // we have a matcher and an offset into it:
-            positionIndex = -(positionIndex+1);  //TODO: check this process...
-            final int offset = position - positions[positionIndex];
-            return matchers[positionIndex].getMatcherForPosition(offset);
-        }
-   }
-
-   //TODO: make more efficient by using getMatcherForPosition.getNumMatchingBytes.
-    //TODO: make more efficient by getting the matcher directly using position index and asking for num bytes at offset?
-    //      yes - the above.  Not necessary to create a ByteMatcher for ByteSequenceMatchers or FixedGapMatchers.
     @Override
     public int getNumBytesAtPosition(final int position) {
-        return getMatcherForPosition(position).getNumberOfMatchingBytes();
-        /*
-        ArgUtils.checkIndexOutOfBounds(totalLength,  position);
-        int currentEndPosition = 0;
-        int result = 0;
-        for (final SequenceMatcher matcher : matchers) {
-            final int matcherLength = matcher.length();
-            currentEndPosition += matcherLength;
-            if (position < currentEndPosition) {
-                final int matcherOffset = position - (currentEndPosition - matcherLength);
-                result = matcher.getNumBytesAtPosition(matcherOffset);
-                break;
-            }
+        ArgUtils.checkIndexOutOfBounds(totalLength, position);
+        int matcherIndex = Arrays.binarySearch(startPositions, position);
+        final int offset;
+        if (matcherIndex >= 0) {
+            offset = 0;
+        } else {
+            matcherIndex = -(matcherIndex + 2);
+            offset = position - startPositions[matcherIndex];
         }
-        return result;
-        */
+        return matchers[matcherIndex].getNumBytesAtPosition(offset);
     }
 
     @Override
@@ -311,55 +283,50 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
         return new SequenceSequenceMatcher(reversed);
     }
 
-	@Override
+    @Override
     public SequenceMatcher subsequence(final int beginIndex, final int endIndex) {
         ArgUtils.checkIndexOutOfBounds(totalLength, beginIndex, endIndex);
-        
-        // Locate info about the start and ending matchers for these index positions:
-        SequenceMatcher startMatcher = null, endMatcher = null;
-        int startOffset = 0, endLimit = 0;
-        int startIndex = 0, lastIndex = 0;
-        int currentEndPosition = 0;
-        int startPosition = beginIndex;
-        int endPosition = endIndex - 1;
-        for (int matcherIndex = 0; matcherIndex < matchers.length; matcherIndex++) {
-            final SequenceMatcher matcher = matchers[matcherIndex];
-            final int matcherLength = matcher.length();
-            currentEndPosition += matcherLength;
-            if (startPosition < currentEndPosition) {
-                startMatcher = matcher;
-                startOffset = beginIndex - (currentEndPosition - matcherLength);
-                startIndex = matcherIndex;
-                startPosition = Integer.MAX_VALUE;
-            }
-            if (endPosition < currentEndPosition) {
-                endMatcher = matcher;
-                endLimit = endIndex - (currentEndPosition - matcherLength);
-                lastIndex = matcherIndex;
-                break;
-            }
-        }
 
-        assert startMatcher != null;
-        assert endMatcher != null;
+        // Find the starting matcher and offset into it:
+        int beginMatcherIndex, beginOffset = 0;
+        beginMatcherIndex = Arrays.binarySearch(startPositions, beginIndex);
+        if (beginMatcherIndex < 0) {
+            beginMatcherIndex = -(beginMatcherIndex + 2);
+            beginOffset       = beginIndex - startPositions[beginMatcherIndex];
+        }
+        SequenceMatcher startMatcher = matchers[beginMatcherIndex];
+
+        // Find the ending matcher and offset into it.
+        // The position of the matcher we want is one less than the endIndex, as it uses an exclusive index.
+        // The final end offset must be 1 greater than the last matcher, as it is an exclusive index.
+        int endMatcherIndex, endOffset = 1, endPosition = endIndex - 1;
+        endMatcherIndex = Arrays.binarySearch(startPositions, endPosition);
+        if (endMatcherIndex < 0) {
+            endMatcherIndex = -(endMatcherIndex + 2);
+            endOffset       = endPosition - startPositions[endMatcherIndex] + 1;
+        }
+        SequenceMatcher endMatcher = matchers[endMatcherIndex];
 
         // If there's only one matcher involved, then return a subsequence of it:
-        //if (startMatcher == endMatcher) {
-        if (startIndex == lastIndex) {
-            return startMatcher.subsequence(startOffset, endLimit);
+        final int numberOfSequenceMatchers = endMatcherIndex - beginMatcherIndex + 1;
+        if (numberOfSequenceMatchers == 1) {
+            return startMatcher.subsequence(beginOffset, endOffset);
         }
-        
-        // Otherwise, get the possibly truncated start and ending matchers:
-        final int newSize = lastIndex - startIndex + 1;
-        final SequenceMatcher[] newSequence = new SequenceMatcher[newSize];
-        newSequence[0] = startMatcher.subsequence(startOffset, startMatcher.length());
-        newSequence[newSize - 1] = endMatcher.subsequence(0, endLimit);
-        
+
+        // Otherwise, build a new SequenceMatcher from the components:
+        final SequenceMatcher[] newSequence = new SequenceMatcher[numberOfSequenceMatchers];
+
+        // Add the first matcher:
+        newSequence[0] = startMatcher.subsequence(beginOffset, startMatcher.length());
+
+        // Add the last matcher:
+        newSequence[numberOfSequenceMatchers - 1] = endMatcher.subsequence(0, endOffset);
+
         // Any other matchers in the middle are copied across:
-        if (newSize > 2) {
-            System.arraycopy(matchers, startIndex + 1, newSequence, 1, newSize - 2);
+        if (numberOfSequenceMatchers > 2) {
+            System.arraycopy(matchers, beginMatcherIndex + 1, newSequence, 1, numberOfSequenceMatchers - 2);
         }
-        
+
         // Forming the new sequence array matcher:
         return new SequenceSequenceMatcher(newSequence);
     }
@@ -367,14 +334,14 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
     @Override
     public SequenceMatcher subsequence(final int beginIndex) {
         return subsequence(beginIndex, length());
-    }    
+    }
 
-    @Override    
+    @Override
     public SequenceMatcher repeat(final int numberOfRepeats) {
-    	ArgUtils.checkPositiveInteger(numberOfRepeats);
+        ArgUtils.checkPositiveInteger(numberOfRepeats);
         if (numberOfRepeats == 1) {
             return this;
-        }        
+        }
         return new SequenceSequenceMatcher(numberOfRepeats, matchers);
     }
 
@@ -383,12 +350,20 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
         return hashCode;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note: The fundamental sequence of ByteMatchers must be identical for two SequenceSequenceMatchers
+     * to be considered equal.  However, we don't care if those ByteMatchers are split up internally in
+     * a different way inside each SequenceSequenceMatcher, as this makes no difference to
+     * their behaviour.
+     */
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof SequenceSequenceMatcher) {
             final SequenceSequenceMatcher other = (SequenceSequenceMatcher) obj;
             if (hashCode == other.hashCode && totalLength == other.totalLength) {
-                final Iterator<ByteMatcher> thisIterator  = iterator();
+                final Iterator<ByteMatcher> thisIterator = iterator();
                 final Iterator<ByteMatcher> otherIterator = other.iterator();
                 while (thisIterator.hasNext()) {
                     if (!thisIterator.next().equals(otherIterator.next())) {
@@ -405,7 +380,7 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
      * Returns a string representation of this matcher.  The format is subject
      * to change, but it will generally return the name of the matching class
      * and a regular expression defining the bytes matched by the matcher.
-     * 
+     *
      * @return A string representing this matcher.
      */
     @Override
@@ -413,10 +388,10 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
         return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
     }
 
-	@Override
-	public Iterator<ByteMatcher> iterator() {
-		return new SequenceSequenceIterator();
-	}
+    @Override
+    public Iterator<ByteMatcher> iterator() {
+        return new SequenceSequenceIterator();
+    }
 
 
     private int calculateHash() {
@@ -426,50 +401,49 @@ public final class SequenceSequenceMatcher extends AbstractSequenceMatcher {
         }
         return (int) hash;
     }
-	
+
     private int calculateTotalLength(final SequenceMatcher[] matchers) {
-		int totalLength = 0;
-		positions[0] = 0;
-        int position = 1;
+        int length = 0;
+        int matcherIndex = 0;
         for (final SequenceMatcher matcher : matchers) {
-			totalLength += matcher.length();
-			positions[position++] = totalLength;
-		}
-		return totalLength;
-	}
+            startPositions[matcherIndex++] = length;
+            length += matcher.length();
+        }
+        return length;
+    }
 
-	private class SequenceSequenceIterator implements Iterator<ByteMatcher> {
+    private class SequenceSequenceIterator implements Iterator<ByteMatcher> {
 
-		private int position = 0;
+        private int position = 0;
         private int matcherIndex = 0;
         private Iterator<ByteMatcher> iterator = matchers[0].iterator();
-		
-		@Override
-		public boolean hasNext() {
-			return position < totalLength;
-		}
 
-		@Override
-		public ByteMatcher next() {
-			if (hasNext()) {
-			    if (!iterator.hasNext()) {
-			        // Note: this should never result in an ArrayIndexOutOfBoundsException,
+        @Override
+        public boolean hasNext() {
+            return position < totalLength;
+        }
+
+        @Override
+        public ByteMatcher next() {
+            if (hasNext()) {
+                if (!iterator.hasNext()) {
+                    // Note: this should never result in an ArrayIndexOutOfBoundsException,
                     // unless the calculation of the total length is incorrect, which would be a bug.
                     iterator = matchers[++matcherIndex].iterator();
                 }
 
                 position++;
                 return iterator.next();
-			}
-			throw new NoSuchElementException();
-		}
+            }
+            throw new NoSuchElementException();
+        }
 
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException("Cannot remove byte matchers from SequenceSequenceMatchers");
-		}
-		
-	}
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Cannot remove byte matchers from SequenceSequenceMatchers");
+        }
+
+    }
 
 
 }

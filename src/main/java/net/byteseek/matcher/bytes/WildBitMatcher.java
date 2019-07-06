@@ -128,13 +128,15 @@ public final class WildBitMatcher extends InvertibleMatcher {
     public String toRegularExpression(final boolean prettyPrint) {
         switch (wildcardMask) {
             case 0: {
-                return inverted? "^." : ".";
+                return inverted? "^__" : "__"; //TODO: inverted any matching is not legal syntax.  Should ^__ be illegal syntax too?
             }
             case -16: { // 0xF0 - first nibble of a hex byte:
-                return inverted? String.format("^%x_", matchValue >>> 4) : String.format("%x_", matchValue >>> 4);
+                return inverted? String.format("^%x_", (matchValue >>> 4) & 0x0F) :
+                                 String.format("%x_", (matchValue >>> 4) & 0x0F);
             }
             case 15: { // 0x0F - last nibble of a hex byte:
-                return inverted? String.format("^_%x", matchValue) : String.format("_%x", matchValue);
+                return inverted? String.format("^_%x", matchValue & 0x0F) :
+                                 String.format("_%x", matchValue & 0x0F);
             }
             default: { // some other bitmask - build a binary string from the value, putting _ where the bitmask is zero.
                 final StringBuilder regex = new StringBuilder(11);

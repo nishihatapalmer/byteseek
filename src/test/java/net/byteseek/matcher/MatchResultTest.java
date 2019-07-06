@@ -2,6 +2,8 @@ package net.byteseek.matcher;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 public class MatchResultTest {
@@ -19,6 +21,26 @@ public class MatchResultTest {
         for (int i = 0; i < 1000; i++) {
             MatchResult result = new MatchResult(i, i);
             assertEquals(i, result.getMatchLength());
+        }
+    }
+
+    @Test
+    public void messingAboutRemoveThis() {
+        int[] startPositions = new int[] {0, 4, 9, 18};
+        for (int i = 0; i < startPositions.length; i++) {
+            System.out.println("Array index: " + i + "\t Value: " + startPositions[i]);
+        }
+        for (int i = 0; i < 20; i++) {
+            int result = Arrays.binarySearch(startPositions, i);
+            int matcherIndex, offset;
+            if (result < 0) {
+                matcherIndex = -(result + 2);
+                offset       = i - startPositions[matcherIndex];
+            } else {
+                matcherIndex = result;
+                offset       = 0;
+            }
+            System.out.println("Test: " + i + "\t Result: " + result + "\t  Matcher Index: " + matcherIndex + "\t Offset: " + offset);
         }
     }
 
@@ -46,6 +68,10 @@ public class MatchResultTest {
             MatchResult res4 = new MatchResult(i+1, i);
             assertNotEquals(res1, res4);
             assertNotEquals(res3, res4);
+
+            Object something = new Object();
+            assertFalse(res1.equals(something));
+            assertFalse(res1.equals(null));
         }
     }
 

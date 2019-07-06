@@ -30,6 +30,7 @@
  */
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.compiler.matcher.ByteMatcherCompiler;
 import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.io.reader.WindowReader;
 import org.junit.Before;
@@ -59,11 +60,15 @@ public class BaseMatcherTest {
         reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
     }
 
-    protected void testAbstractMethods(ByteMatcher matcher) {
+    protected void testAbstractMethods(ByteMatcher matcher) throws Exception {
         // test methods from abstract superclass
         assertEquals("length is one", 1, matcher.length());
 
         assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
+
+        assertFalse(matcher.equals(null));
+        Object something = new Object();
+        assertFalse(matcher.equals(something));
 
         try {
             matcher.getMatcherForPosition(-1);
@@ -131,6 +136,44 @@ public class BaseMatcherTest {
             it.next();
             fail("Expected NoSuchElementException");
         } catch (NoSuchElementException expectedIgnore) {}
+
+        testRoundTrip(matcher);
+    }
+
+    protected void testRoundTrip(ByteMatcher matcher) throws Exception {
+        if (!isDeprecated(matcher)) {
+            String regex = matcher.toRegularExpression(false);
+
+            ByteMatcher compiled = ByteMatcherCompiler.compileFrom(regex);
+
+            String message = matcher.toString() + " " + regex;
+            assertEquals(message, matcher.getNumberOfMatchingBytes(), compiled.getNumberOfMatchingBytes());
+
+            byte[] match1 = matcher.getMatchingBytes();
+            byte[] match2 = compiled.getMatchingBytes();
+            assertEquals(message, match1.length, match2.length);
+            for (int i = 0; i < match1.length; i++) {
+                byte byte1 = match1[i];
+                boolean found = false;
+                for (int j = 0; j < match2.length; j++) {
+                    if (byte1 == match2[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+                assertTrue(message, found);
+            }
+
+            if (compiled.getClass() == matcher.getClass()) {
+                assertTrue(message, matcher.equals(compiled));
+            }
+            ;
+        }
+    }
+
+    private boolean isDeprecated(ByteMatcher matcher) {
+        return matcher.getClass() == AnyBitmaskMatcher.class ||
+               matcher.getClass() == AllBitmaskMatcher.class;
     }
 
 }

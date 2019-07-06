@@ -51,52 +51,13 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class AnyBitmaskMatcherTest {
-
-    private WindowReader reader;
-
-    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
-
-    static {
-        BYTE_VALUES = new byte[256];
-        for (int i = 0; i < 256; i++) {
-            BYTE_VALUES[i] = (byte) i;
-        }
-    }
-
-    @Before
-    public void setup() {
-        reader = new InputStreamReader(new ByteArrayInputStream(BYTE_VALUES));
-    }
-
-    /**
-     * 
-     */
-    public AnyBitmaskMatcherTest() {
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
+public class AnyBitmaskMatcherTest extends BaseMatcherTest {
 
     /**
      * Test of matches method, of class AnyBitmaskMatcher.
      */
     @Test
-    public void testMatches_byte() throws IOException {
+    public void testMatches_byte() throws Exception {
         AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(255));
         validateMatchInRange(matcher, 1, 255);
         validateNoMatchInRange(matcher, 0, 0);
@@ -129,70 +90,32 @@ public class AnyBitmaskMatcherTest {
         }
     }
 
+    @Test
+    public void testEqualsAndHashCode() {
+        for (int count = 0; count < 256; count++) {
+            AnyBitmaskMatcher matcher = new AnyBitmaskMatcher(b(count));
+            assertFalse(matcher.equals(null));
 
-    private void testAbstractMethods(ByteMatcher matcher) {
-        // test methods from abstract superclass
-        assertEquals("length is one", 1, matcher.length());
+            // Check same objects are equal with same hashcode.
+            AnyBitmaskMatcher same    = new AnyBitmaskMatcher(b(count));
+            assertTrue(matcher.equals(same));
+            assertTrue(same.equals(matcher));
+            assertEquals(matcher.hashCode(), same.hashCode());
 
-        assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
+            // Check not the same as an inverted version
+            AnyBitmaskMatcher inverted = new AnyBitmaskMatcher(b(count), true);
+            assertFalse(matcher.equals(inverted));
+            assertFalse(inverted.equals(matcher));
 
-        try {
-            matcher.getMatcherForPosition(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
+            // Check different objects are not equal.
+            AnyBitmaskMatcher different = new AnyBitmaskMatcher(b((count + 1) % 256));
+            assertFalse(matcher.equals(different));
+            assertFalse(different.equals(matcher));
 
-        try {
-            matcher.getMatcherForPosition(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        assertEquals("reversed is identical", matcher, matcher.reverse());
-        assertEquals("subsequence of 0 is identical", matcher, matcher.subsequence(0));
-        try {
-            matcher.subsequence(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-        assertEquals("subsequence of 0,1 is identical", matcher, matcher.subsequence(0,1));
-        try {
-            matcher.subsequence(-1, 1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(0, 2);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        int count = 0;
-        for (ByteMatcher itself : matcher) {
-            count++;
-            assertEquals("Iterating returns same matcher", matcher, itself);
+            OneByteMatcher other = new OneByteMatcher(b(count));
+            assertFalse(matcher.equals(other));
         }
-        assertEquals("Count of iterated matchers is one", 1, count);
-
-        Iterator<ByteMatcher> it = matcher.iterator();
-        try {
-            it.remove();
-            fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException expectedIgnore) {}
-
-
-        it = matcher.iterator();
-        try {
-            assertTrue(it.hasNext());
-            it.next();
-            assertFalse(it.hasNext());
-            it.next();
-            fail("Expected NoSuchElementException");
-        } catch (NoSuchElementException expectedIgnore) {}
     }
-
-
 
     /**
      * Test of matches method, of class AnyBitmaskMatcher.

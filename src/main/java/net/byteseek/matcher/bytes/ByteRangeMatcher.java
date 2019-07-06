@@ -49,7 +49,20 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
 
     private final int minByteValue; // use int as a byte is signed, but we need values from 0 to 255
     private final int maxByteValue; // use int as a byte is signed, but we need values from 0 to 255
-    
+
+    /**
+     * Constructs an immutable {@link ByteMatcher} which matches a range of bytes.
+     * <p>
+     * If the minimum value is greater than the maximum value,
+     * then the values are reversed, so the same range is matched.
+     *
+     * @param minValue The minimum value to match, inclusive.
+     * @param maxValue The maximum value to match, inclusive.
+     */
+    public ByteRangeMatcher(final int minValue, final int maxValue) {
+        this(minValue, maxValue, InvertibleMatcher.NOT_INVERTED);
+    }
+
     /**
      * Constructs an immutable {@link ByteMatcher} which matches a range of bytes.
      * <p>

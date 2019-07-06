@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,38 +30,22 @@
  */
 package net.byteseek.matcher.bytes;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.utils.ArgUtils;
+import net.byteseek.utils.MathUtils;
 
 /**
  * A fairly simple implementation of {@link ByteMatcherFactory}.  It attempts to build the
  * most efficient {@link ByteMatcher} which matches the set of bytes passed in (and whether or
- * not that set of bytes should be inverted).
- * <p>
- * Its heuristics are as follows:
- * <ul>
- * <li>Find the simple cases that only match 1, 2, 255 and 256 different values.
- *     Use either a {@link net.byteseek.matcher.bytes.OneByteMatcher}, a {@link net.byteseek.matcher.bytes.TwoByteMatcher}
- *     {@link net.byteseek.matcher.bytes.InvertedByteMatcher} or an {@link net.byteseek.matcher.bytes.AnyByteMatcher}.
- * <li>Do the set of bytes match a bitmask (all or any of the bits?)  Use either an 
- *     {@link net.byteseek.matcher.bytes.AnyBitmaskMatcher} or a {@link net.byteseek.matcher.bytes.AllBitmaskMatcher}.
- * <li>Do the set of bytes match a contiguous range of bytes?  Use a {@link net.byteseek.matcher.bytes.ByteRangeMatcher}
- * <li>For less than 16 byte values, use a {@link net.byteseek.matcher.bytes.SetBinarySearchMatcher} (time and memory efficient)
- * <li>Fall back on a {@link net.byteseek.matcher.bytes.SetBitsetMatcher} (time efficient, but not memory efficient).
- * </ul>
- * 
+ * not that set of bytes should be inverted).  It tries to avoid large costs in analysing the set
+ * passed in.  Most simple matchers are created just looking at the size of the set.  It will
+ * also usually need to iterate across all the bytes in the set at least once, and if more than once,
+ * not many times more.
+ *
  * @author Matt Palmer
  */
-//TODO: logic is confusing the way this is structured... Flatten nested ifs and have multiple returns?
-    //
 public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
 
     public static final ByteMatcherFactory FACTORY = new OptimalByteMatcherFactory();
@@ -69,14 +53,27 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
     //PROFILE: validate with performance tests.
     private static final int BINARY_SEARCH_THRESHOLD = 16;
 
+    private static final int[] EMPTY_ARRAY = new int[0]; // used to avoid creating arrays if not necessary.
+
     /**
-     * Creates an efficient {@link ByteMatcher} from a set of bytes passed in.
+     * Creates an efficient {@link ByteMatcher} from a collection of bytes passed in.
      * 
      * @param bytes A set of bytes which a ByteMatcher must match.
      * @return A ByteMatcher which matches that set of bytes.
      */
     @Override
     public ByteMatcher create(final Collection<Byte> bytes) {
+        return create(bytes, NOT_INVERTED);
+    }
+
+    /**
+     * Creates an efficient {@link ByteMatcher} from a set of bytes passed in.
+     *
+     * @param bytes A set of bytes which a ByteMatcher must match.
+     * @return A ByteMatcher which matches that set of bytes.
+     */
+    @Override
+    public ByteMatcher create(final Set<Byte> bytes) {
         return create(bytes, NOT_INVERTED);
     }
 
@@ -89,140 +86,267 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
      * @param bytes  The collection of bytes to match (or their inverse).
      * @param matchInverse   Whether the set values are inverted or not
      * @return A ByteMatcher which is optimal for that set of bytes.
-     * @throws IllegalArgumentException if the collection is null or empty.
+     * @throws IllegalArgumentException if the collection is null.
+     * @throws NullPointerException if any of the Bytes in the collection are null.
      */
     @Override
     public ByteMatcher create(final Collection<Byte> bytes, final boolean matchInverse) {
-        ArgUtils.checkNullOrEmptyCollection(bytes, "bytes");
-        // Produce the (possibly inverted) unique set of bytes:
-        Set<Byte> uniqueValues = new LinkedHashSet<Byte>(bytes);
-        final  Set<Byte> values = matchInverse? ByteUtils.invertedSet(uniqueValues) : uniqueValues;
-
-        // See if some obvious byte matchers apply:
-        ByteMatcher result = getSimpleCases(values);
-        if (result == null) {
-            
-            // Now check to see if any of the invertible matchers 
-            // match our set of bytes:
-            result = getInvertibleCases(values, false);
-            if (result == null) {
-
-                //TODO: is there a way to do these tests without creating an inverted set?  Invert the test logic instead.
-                // They didn't match the set of bytes, but since we have invertible
-                // matchers, does the inverse set match any of them?
-                final Set<Byte> invertedValues = matchInverse? uniqueValues : ByteUtils.invertedSet(uniqueValues);
-                result = getInvertibleCases(invertedValues, true);
-                if (result == null) {
-
-                    // Fall back on a standard set, defined as passed in.
-                    result = new SetBitsetMatcher(uniqueValues, matchInverse);
-                }
-            }
-        }
-        return result;
+        ArgUtils.checkNullCollection(bytes, "bytes"); // an empty collection is fine if we match inverse...
+        return create(new LinkedHashSet<Byte>(bytes), matchInverse);
     }
 
-    private ByteMatcher getInvertibleCases(final Set<Byte> bytes, final boolean isInverted) {
-        ByteMatcher result = getBitmaskMatchers(bytes, isInverted);
-        if (result == null) {
-            result = getRangeMatchers(bytes, isInverted);
-            if (result == null) {
-                 result = getBinarySearchMatcher(bytes, isInverted);
-            }
-        }
-        return result;
+    @Override
+    public ByteMatcher create(final Set<Byte> bytes, final boolean matchInverse) {
+        ArgUtils.checkNullCollection(bytes, "bytes"); // an empty collection is fine if we match inverse.
+
+        //Note: We use the pattern of trying different approaches and only returning a result if it wasn't null.
+        //      Although a bit inelegant, it avoids deeply nested blocks and makes it simple to extend.
+
+        // Are there any obvious matchers or inverted matchers for a particular size of set?
+        ByteMatcher result = createSizeMatchers(bytes, matchInverse);
+        if (result != null) { return result; }
+
+        // Are there any matchers for ranges or bitmasks?
+        result = createRangeOrBitmaskMatchers(bytes, matchInverse);
+        if (result != null) { return result; }
+
+        // Are there any matchers for ranges or bitmasks for the inverse of the set provided?
+        result = createInvertedRangeOrBitmaskMatchers(bytes, matchInverse);
+        if (result != null) { return result; }
+
+        // If we have a fairly small set of bytes (or a small inverse set), use the binary search matcher:
+        //TODO: profile where the optimium cut-off for binary search matchers lies.
+        result = createBinarySearchMatchers(bytes, matchInverse);
+        if (result != null) { return result; }
+
+        // No more specialised or efficient matcher exists for this set of bytes - use a bitset matcher, which has
+        // efficient O(1) lookup for any byte, but requires more memory to store the 256 bits in the bitset.
+        return new SetBitsetMatcher(bytes, matchInverse);
     }
 
-    private ByteMatcher getSimpleCases(final Set<Byte> values) {
-        ByteMatcher result = null;
-        switch (values.size()) {
-            case 0: {
-                // TODO: review whether a match that matches nothing should be allowed...?
-                // matches no bytes at all - AnyBitmaskMatcher with a mask of zero never matches anything.
-                // Or: should throw exception - matcher can never match anything.
-                result = new AnyBitmaskMatcher((byte) 0, false);
-                break;
-            }
-
-            case 1: { // just one byte matches:
-                final Iterator<Byte> byteValue = values.iterator();
-                result = OneByteMatcher.valueOf(byteValue.next());
-                break;
-            }
-
-            case 2: { // a two byte matcher
-            	result = new TwoByteMatcher(values);
-                break;
-            }
-
-            //TODO: could consider an inverted two byte matcher (e.g. not this case insensitive letter...)
-
-            case 255: { // all but one byte matches - find the one that doesn't match:
-                for (int byteValue = 0; byteValue < 256; byteValue++) {
-                    if (!values.contains((byte) byteValue)) {
-                        result = new InvertedByteMatcher((byte) byteValue);
-                        break;
-                    }
-                }
-                break;
-            }
-            
-            case 256: { // all the bytes match:
-                result = new AnyByteMatcher();
-                break;
-            }
-
-            default: {
-                // do nothing - fall through.  This switch statement just caters for these particular values.
-            }
+    private ByteMatcher createBinarySearchMatchers(Set<Byte> bytes, boolean matchInverse) {
+        final int size = bytes.size();
+        if (size <= BINARY_SEARCH_THRESHOLD) {
+            return new SetBinarySearchMatcher(bytes, matchInverse);
         }
-       return result;
+        //TODO: bug?  invert the matchInverse AND use an inverted set?  TESTS!
+        if (256 - size <= BINARY_SEARCH_THRESHOLD) {
+            return new SetBinarySearchMatcher(ByteUtils.invertedSet(bytes), !matchInverse);
+        }
+        return null;
     }
 
-    private ByteMatcher getBitmaskMatchers(final Set<Byte> values, final boolean isInverted) {
-        ByteMatcher result = null;
-        // Determine if the bytes in the set can be matched by a bitmask:
-        Byte bitmask = ByteUtils.getAllBitMaskForBytes(values);
-        if (bitmask != null) {
-             result = new AllBitmaskMatcher(bitmask, isInverted);
+    private ByteMatcher createRangeOrBitmaskMatchers(final Set<Byte> bytes, boolean matchInverse) {
+
+        // Set some useful constants
+        final int setSize = bytes.size();
+        final boolean isPowerTwoSize = MathUtils.isPowerOfTwo(setSize);
+        final boolean isInversePowerTwoSize = MathUtils.isPowerOfTwo(256-setSize);
+        final boolean needToCountBits = isPowerTwoSize | isInversePowerTwoSize;
+
+        // Initialize the variables we need to process the set of bytes.
+        int minValue = 255;
+        int maxValue = 0;
+        final int[] bit0Counts, bit1Counts;
+        if (needToCountBits) { // If we might have a bitmask, count the bits as we go.
+            bit0Counts = new int[8]; // a count of how many zero bits we have.
+            bit1Counts = new int[8]; // a count of how many one bits we have.
         } else {
-             bitmask = ByteUtils.getAnyBitMaskForBytes(values);
-             if (bitmask != null) {
-                result = new AnyBitmaskMatcher(bitmask, isInverted);
-             }
+            bit0Counts = EMPTY_ARRAY;
+            bit1Counts = EMPTY_ARRAY;
         }
-        return result;
+
+        // Find the minimum and maximum byte values in the set, and a count of each bit position.
+        for (final Byte b : bytes) {
+            // Turn the signed byte into an unsigned int, yet again. Whoever made bytes signed should reflect on their sins.
+            final int value = b & 0xFF;
+            if (needToCountBits) { // count the bits if we have a power of two, or inverse power two size.
+                addBitCounts(value, bit0Counts, bit1Counts);
+            }
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+
+        // Create any range or bitmask matcher which fits these stats:
+        return createRangeOrBitmaskMatchers(minValue, maxValue, setSize, bit0Counts, bit1Counts, matchInverse);
     }
 
-    private ByteMatcher getRangeMatchers(final Set<Byte> values, boolean isInverted) {
-        ByteMatcher result = null;
-        // Determine if all the values lie in a single range:
-        List<Integer> byteValues = getSortedByteValues(values);
-        int lastValuePosition = byteValues.size() - 1;
-        int firstValue = byteValues.get(0);
-        int lastValue = byteValues.get(lastValuePosition);
-        if (lastValue - firstValue == lastValuePosition) {  // values lie in a contiguous range
-            result = new ByteRangeMatcher(firstValue, lastValue, isInverted);
+    private ByteMatcher createInvertedRangeOrBitmaskMatchers(final Set<Byte> bytes, boolean matchInverse) {
+        // Set some useful constants
+        final int setSize = 256 - bytes.size();
+        final boolean isPowerTwoSize = MathUtils.isPowerOfTwo(setSize);
+        //TODO: don't need this if we aren't doing wildbitany.
+        final boolean isInversePowerTwoSize = MathUtils.isPowerOfTwo(256-setSize);
+        final boolean needToCountBits = isPowerTwoSize | isInversePowerTwoSize;
+
+        // Initialize the variables we need to process the set of bytes.
+        int minValue = 255;
+        int maxValue = 0;
+        final int[] bit0Counts, bit1Counts;
+        if (needToCountBits) { // If we might have a bitmask, count the bits as we go.
+            bit0Counts = new int[8]; // a count of how many zero bits we have.
+            bit1Counts = new int[8]; // a count of how many one bits we have.
+        } else {
+            bit0Counts = EMPTY_ARRAY;
+            bit1Counts = EMPTY_ARRAY;
         }
-        return result;
+
+        // Find the minimum and maximum byte values in the set, and a count of each bit position.
+        for (int value = 0, numFound = 0; numFound < setSize && value < 256; value++) {
+            if (!bytes.contains(Byte.valueOf((byte) value))) {
+                numFound++;
+                if (needToCountBits) { // count the bits if we have a power of two, or inverse power two size.
+                    addBitCounts(value, bit0Counts, bit1Counts);
+                }
+                if (value < minValue) {
+                    minValue = value;
+                }
+                if (value > maxValue) {
+                    maxValue = value;
+                }
+            }
+        }
+
+        // Return any range or bitmask matchers that match these stats (or null if they don't).
+        return createRangeOrBitmaskMatchers(minValue, maxValue, setSize, bit0Counts, bit1Counts, !matchInverse);
     }
 
-    private ByteMatcher getBinarySearchMatcher(final Set<Byte> values, final boolean isInverted) {
-        ByteMatcher result = null;
-        // if there aren't very many values, use a BinarySearchMatcher:
-        if (values.size() < BINARY_SEARCH_THRESHOLD) { // small number of bytes in set - use binary searcher:
-            result = new SetBinarySearchMatcher(values, isInverted);
+    private void addBitCounts(final int value, final int[] bit0Counts, final int[] bit1Counts) {
+        for (int bit = 1, bitIndex = 0; bit < 256; bit <<= 1, bitIndex++) {
+            if ((value & bit) == bit) {
+                bit1Counts[bitIndex]++;
+            } else {
+                bit0Counts[bitIndex]++;
+            }
         }
-        return result;
     }
 
-    private static List<Integer> getSortedByteValues(final Set<Byte> byteSet) {
-        final List<Integer> sortedByteValues = new ArrayList<Integer>();
-        for (final Byte b : byteSet) {
-            sortedByteValues.add(Integer.valueOf(b & 0xFF));
+    private ByteMatcher createRangeOrBitmaskMatchers(final int minValue, final int maxValue, final int setSize,
+                                                     final int[] bit0Counts, final int[] bit1Counts,
+                                                     final boolean matchInverse) {
+        // Test for whether the set as provided has a range of bytes in it:
+        // If the number of bytes between the max and min is the same as the entire size, then it's a range.
+        if (maxValue - minValue + 1 == setSize) {
+            return new ByteRangeMatcher(minValue, maxValue, matchInverse);
         }
-        Collections.sort(sortedByteValues);
-        return sortedByteValues;
+
+        final boolean isPowerTwoSize = MathUtils.isPowerOfTwo(setSize);
+        final boolean isInversePowerTwoSize = MathUtils.isPowerOfTwo(256-setSize);
+
+
+        final int halfSetSize = setSize >> 1;
+        // Test for whether a bitmask and a WildBitMatcher could match this set of bytes:
+        // All WildBitMask matchers match a power of two number of bytes
+        // (each wildbit we don't care about gives two more possibilities to match).
+        if (isPowerTwoSize) {
+
+            // Bits which have a count of setSize had that bit set permanently in the set, so it's a value bit.
+            // Bits which have an equal count of zero and one at half the set size each have all combinations with both values, so it's a don't care bit.
+            int mask  = 0xFF;
+            int value = 0x00;
+            for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
+                final int bit0Count = bit0Counts[bitIndex];
+                final int bit1Count = bit1Counts[bitIndex];
+
+                // We have a don't care bit - zero and one are both present at half the set size.
+                if (bit0Count == bit1Count && bit0Count == halfSetSize) {
+                    mask &= ~(1 << bitIndex); // unset the bit in the mask
+                } else if (bit1Count == setSize) { // If all the bytes had this bit set to one:
+                    value |= (1 << bitIndex); // set the bit in value to the same as the bitIndex.
+                } else if (bit0Count != setSize) { // If all the bytes do not have this bit as zero:
+                    // If at this point, we don't have a bit0count of setSize, then this can't be a valid bitmask.
+                    // All bits will either be at the set size, or have zero/one in equal numbers of half the set size.
+                    // If they don't it can't be a valid wildbitmatch.
+                    mask = 0xFF; // Set the mask to a "no wildbits mask" and exit the loop.
+                    break;
+                } // If we did have a valid bit0Count, there's nothing to do, as the value is already set to zer0 for that position.
+            }
+
+            // If we exit the loop with some wildbits,
+            //   Then any non-wild bits are the same for all bytes (as the loop tests that this is the case).
+            // If also the size of such a wildbit set is the same as the set we have,
+            //   Then we have a valid wild bit matcher:
+            if (mask != 0xFF && (1 << ByteUtils.countUnsetBits((byte) mask)) == setSize) {
+                return new WildBitMatcher((byte) value, (byte) mask, matchInverse);
+            }
+        }
+
+        return null;
     }
-    
+
+    private ByteMatcher createSizeMatchers(final Set<Byte> bytes, boolean matchInverse) {
+        if (matchInverse) {
+            switch (bytes.size()) {
+                case 0: {
+                    return AnyByteMatcher.ANY_BYTE_MATCHER;
+                }
+                case 1: {
+                    return OneByteInvertedMatcher.valueOf(bytes.iterator().next());
+                }
+                case 2: {
+                    final Iterator<Byte> iterator = bytes.iterator();
+                    return TwoByteInvertedMatcher.valueOf(iterator.next(), iterator.next());
+                }
+                case 254: {
+                    final byte[] twobytes = getTwoBytesNotInSet(bytes); //TODO: put in ByteUtils?
+                    return TwoByteMatcher.valueOf(twobytes[0], twobytes[1]);
+                }
+                case 255: {
+                    return OneByteMatcher.valueOf(getByteNotInSet(bytes)); //TODO: put in ByteUtils?
+                }
+                case 256: { //TODO: matches nothing - throw exception instead?
+                    return new AnyBitmaskMatcher((byte) 0, false);
+                }
+            }
+        } else {
+            switch (bytes.size()) {
+                case 0: { //TODO: matches nothing - throw exception instead?
+                    return new AnyBitmaskMatcher((byte) 0, false);
+                }
+                case 1: {
+                    return OneByteMatcher.valueOf(bytes.iterator().next());
+                }
+                case 2: {
+                    final Iterator<Byte> iterator = bytes.iterator();
+                    return TwoByteMatcher.valueOf(iterator.next(), iterator.next());
+                }
+                case 254: {
+                    final byte[] twobytes = getTwoBytesNotInSet(bytes); //TODO: put in ByteUtils?
+                    return TwoByteInvertedMatcher.valueOf(twobytes[0], twobytes[1]);
+                }
+                case 255: {
+                    return OneByteInvertedMatcher.valueOf(getByteNotInSet(bytes)); //TODO: put in ByteUtils?
+                }
+                case 256: {
+                    return AnyByteMatcher.ANY_BYTE_MATCHER;
+                }
+            }
+        }
+        return null;
+    }
+
+    private byte[] getTwoBytesNotInSet(final Set<Byte> values) {
+        final byte[] results = new byte[2];
+        for (int byteValue = 0, resultIndex = 0; byteValue < 256 && resultIndex < 2; byteValue++) {
+            final Byte theByte = Byte.valueOf((byte) (byteValue & 0xFF));
+            if (!values.contains(theByte)) {
+                results[resultIndex++] = theByte.byteValue();
+            }
+        }
+        return results;
+    }
+
+    private byte getByteNotInSet(final Set<Byte> values) {
+        for (int byteValue = 0; byteValue < 256; byteValue++) {
+            if (!values.contains((byte) (byteValue & 0xFF))) {
+                return (byte) (byteValue & 0xFF);
+            }
+        }
+        throw new RuntimeException("Must always be able to find a byte not in the set.");
+    }
+
 }

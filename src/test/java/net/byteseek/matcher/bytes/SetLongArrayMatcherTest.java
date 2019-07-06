@@ -31,6 +31,7 @@
 
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.incubator.matcher.bytes.SetLongArrayMatcher;
 import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.WindowReader;
@@ -46,24 +47,9 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class SetLongArrayMatcherTest {
+public class SetLongArrayMatcherTest extends BaseMatcherTest {
 
     Random randomGenerator = new Random();
-
-    private static byte[] BYTE_VALUES; // an array where each position contains the byte value corresponding to it.
-
-    static {
-        BYTE_VALUES = new byte[256];
-        for (int i = 0; i < 256; i++) {
-            BYTE_VALUES[i] = (byte) i;
-        }
-    }
-
-    /**
-     *
-     */
-    public SetLongArrayMatcherTest() {
-    }
 
     /**
      *
@@ -91,7 +77,7 @@ public class SetLongArrayMatcherTest {
      * so generates a large number of random byte sets and tests them.
      */
     @Test
-    public void testByteSet() throws IOException {
+    public void testByteSet() throws Exception {
         int numberOfTests = 100;
         for (int testnum = 0; testnum <= numberOfTests; testnum++) {
             Set<Byte> bytesToTest = buildRandomByteSet();
@@ -131,7 +117,7 @@ public class SetLongArrayMatcherTest {
         testExpression("BinarySearchMatcher", matcherInverted2, bytesToTest);
     }
 
-    private void testSet(Set<Byte> testSet) throws IOException  {
+    private void testSet(Set<Byte> testSet) throws Exception  {
         Set<Byte> otherBytes = ByteUtils.invertedSet(testSet);
 
         SetLongArrayMatcher matcher2NotInverted = new SetLongArrayMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
@@ -141,7 +127,7 @@ public class SetLongArrayMatcherTest {
         testMatcher("BinarySearchMatcher", matcherInverted2, otherBytes, testSet);
     }
 
-    private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) throws IOException {
+    private void testMatcher(String description, ByteMatcher matcher, Set<Byte> bytesMatched, Set<Byte> bytesNotMatched) throws Exception {
         // test methods from abstract superclass
         testAbstractMethods(matcher);
 
@@ -209,70 +195,6 @@ public class SetLongArrayMatcherTest {
         }
 
     }
-
-
-    private void testAbstractMethods(ByteMatcher matcher) {
-        // test methods from abstract superclass
-        assertEquals("length is one", 1, matcher.length());
-
-        assertEquals("matcher for position 0 is this", matcher, matcher.getMatcherForPosition(0));
-
-        try {
-            matcher.getMatcherForPosition(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.getMatcherForPosition(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        assertEquals("reversed is identical", matcher, matcher.reverse());
-        assertEquals("subsequence of 0 is identical", matcher, matcher.subsequence(0));
-        try {
-            matcher.subsequence(-1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-        assertEquals("subsequence of 0,1 is identical", matcher, matcher.subsequence(0,1));
-        try {
-            matcher.subsequence(-1, 1);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        try {
-            matcher.subsequence(0, 2);
-            fail("expected an IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException expectedIgnore) {}
-
-        int count = 0;
-        for (ByteMatcher itself : matcher) {
-            count++;
-            assertEquals("Iterating returns same matcher", matcher, itself);
-        }
-        assertEquals("Count of iterated matchers is one", 1, count);
-
-        Iterator<ByteMatcher> it = matcher.iterator();
-        try {
-            it.remove();
-            fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException expectedIgnore) {}
-
-
-        it = matcher.iterator();
-        try {
-            assertTrue(it.hasNext());
-            it.next();
-            assertFalse(it.hasNext());
-            it.next();
-            fail("Expected NoSuchElementException");
-        } catch (NoSuchElementException expectedIgnore) {}
-    }
-
 
     private void testExpression(String description, InvertibleMatcher matcher, Set<Byte> bytesMatched) {
         String expression = matcher.toRegularExpression(false);

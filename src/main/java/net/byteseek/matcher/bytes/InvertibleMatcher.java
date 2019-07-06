@@ -70,6 +70,7 @@ public abstract class InvertibleMatcher extends AbstractByteMatcher {
         this.inverted = inverted;
     }
 
+    //TODO: should invertible matcher expose this as an interface method, rather than on an abstract base class?
     /**
      * Returns true if the matcher inverts its results.
      * 

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2016-19, All rights reserved.
+ * Copyright Matt Palmer 2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class TwoByteMatcherTest extends BaseMatcherTest {
+public class TwoByteInvertedMatcherTest extends BaseMatcherTest {
 
     private int ASCII_CASE_GAP = 'a' - 'A';
 
@@ -50,14 +50,14 @@ public class TwoByteMatcherTest extends BaseMatcherTest {
     public void testValueOf() throws IOException {
         for (int first = 0; first < 256; first++) {
             for (int second = 0; second < 256; second++) {
-                ByteMatcher matcher = TwoByteMatcher.valueOf((byte) first, (byte) second);
-                ByteMatcher another = TwoByteMatcher.valueOf((byte) first, (byte) second);
+                ByteMatcher matcher = TwoByteInvertedMatcher.valueOf((byte) first, (byte) second);
+                ByteMatcher another = TwoByteInvertedMatcher.valueOf((byte) first, (byte) second);
 
                 if (first == second) {
-                    assertEquals(OneByteMatcher.class, matcher.getClass());
+                    assertEquals(OneByteInvertedMatcher.class, matcher.getClass());
                     assertTrue(matcher == another);
                 } else {
-                    assertEquals(TwoByteMatcher.class, matcher.getClass());
+                    assertEquals(TwoByteInvertedMatcher.class, matcher.getClass());
 
                     if (isCaseSensitive(first, second) || TwoByteMatcher.isLineBreak((byte) first, (byte) second)) {
                         assertTrue(matcher == another); // same object if case sensitive.
@@ -87,13 +87,13 @@ public class TwoByteMatcherTest extends BaseMatcherTest {
     public void testCaseSensitive() throws IOException {
         for (int value = 0; value < 256; value++) {
             boolean isCaseSensitive = isCaseSensitive(value);
-            ByteMatcher matcher = TwoByteMatcher.caseInsensitive((byte) value);
+            ByteMatcher matcher = TwoByteInvertedMatcher.caseInsensitive((byte) value);
             if (isCaseSensitive(value)) {
-                assertEquals(TwoByteMatcher.class, matcher.getClass());
-                ByteMatcher other = TwoByteMatcher.caseInsensitive((byte) value);
+                assertEquals(TwoByteInvertedMatcher.class, matcher.getClass());
+                ByteMatcher other = TwoByteInvertedMatcher.caseInsensitive((byte) value);
                 assertTrue(matcher == other);
             } else {
-                assertEquals(OneByteMatcher.class, matcher.getClass());
+                assertEquals(OneByteInvertedMatcher.class, matcher.getClass());
             }
         }
     }
@@ -102,57 +102,56 @@ public class TwoByteMatcherTest extends BaseMatcherTest {
     public void testCaseSensitiveChar() throws IOException {
         for (char value = 0; value < 256; value++) {
             boolean isCaseSensitive = isCaseSensitive(value);
-            ByteMatcher matcher = TwoByteMatcher.caseInsensitive(value);
+            ByteMatcher matcher = TwoByteInvertedMatcher.caseInsensitive(value);
             if (isCaseSensitive(value)) {
-                assertEquals(TwoByteMatcher.class, matcher.getClass());
-                ByteMatcher other = TwoByteMatcher.caseInsensitive(value);
+                assertEquals(TwoByteInvertedMatcher.class, matcher.getClass());
+                ByteMatcher other = TwoByteInvertedMatcher.caseInsensitive(value);
                 assertTrue(matcher == other);
             } else {
-                assertEquals(OneByteMatcher.class, matcher.getClass());
+                assertEquals(OneByteInvertedMatcher.class, matcher.getClass());
             }
         }
 
         try {
             char big = 1000;
-            ByteMatcher matcher = TwoByteMatcher.caseInsensitive(big);
+            ByteMatcher matcher = TwoByteInvertedMatcher.caseInsensitive(big);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException expectedDoNothing) {}
     }
 
     @Test
-    public void testTwoByteMatcher() throws Exception {
+    public void testTwoByteInvertedMatcher() throws Exception {
         for (int first = 0; first < 256; first++) {
             for (int second = 0; second < 256; second++) {
-                TwoByteMatcher matcher = new TwoByteMatcher((byte) first, (byte) second);
-                testTwoByteMatcher(matcher, first, second);
+                TwoByteInvertedMatcher matcher = new TwoByteInvertedMatcher((byte) first, (byte) second);
+                testTwoByteInvertedMatcher(matcher, first, second);
 
-                matcher = new TwoByteMatcher(String.format("%02x", first), String.format("%02x", second));
-                testTwoByteMatcher(matcher, first, second);
+                matcher = new TwoByteInvertedMatcher(String.format("%02x", first), String.format("%02x", second));
+                testTwoByteInvertedMatcher(matcher, first, second);
 
                 List<Byte> bytes = new ArrayList<Byte>();
                 bytes.add((byte)first);
                 bytes.add((byte)second);
-                matcher = new TwoByteMatcher(bytes);
-                testTwoByteMatcher(matcher, first, second);
+                matcher = new TwoByteInvertedMatcher(bytes);
+                testTwoByteInvertedMatcher(matcher, first, second);
 
                 testEquals(matcher, (byte) first, (byte) second);
             }
         }
     }
 
-
-    private void testEquals(TwoByteMatcher matcher, byte first, byte second) {
+    private void testEquals(TwoByteInvertedMatcher matcher, byte first, byte second) {
         // Doesn't match null
         assertFalse(matcher.equals(null));
 
         // Does match an equivalent matcher of the same type
-        TwoByteMatcher same = new TwoByteMatcher(first, second);
+        TwoByteInvertedMatcher same = new TwoByteInvertedMatcher(first, second);
         assertTrue(matcher.equals(same));
         assertTrue(same.equals(matcher));
         assertEquals(matcher.hashCode(), same.hashCode());
 
         // And matches even if the bytes are given in the other order:
-        same = new TwoByteMatcher(second, first);
+        same = new TwoByteInvertedMatcher(second, first);
         assertTrue(matcher.equals(same));
         assertTrue(same.equals(matcher));
         assertEquals(matcher.hashCode(), same.hashCode());
@@ -161,14 +160,15 @@ public class TwoByteMatcherTest extends BaseMatcherTest {
         final byte diffFirst = (byte) (((first & 0xFF) + 1) % 256);
         final byte diffSecond = (byte) (((second & 0xFF) + 1) % 256);
 
-        TwoByteMatcher different = new TwoByteMatcher(diffFirst, diffSecond);
+        TwoByteInvertedMatcher different = new TwoByteInvertedMatcher(diffFirst, diffSecond);
         assertFalse(matcher.equals(different));
         assertFalse(different.equals(matcher));
 
         // different object that
-        TwoByteInvertedMatcher differentObject = new TwoByteInvertedMatcher(first, second);
+        TwoByteMatcher differentObject = new TwoByteMatcher(first, second);
         assertFalse(matcher.equals(differentObject));
     }
+
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyCollection() {
@@ -197,7 +197,7 @@ public class TwoByteMatcherTest extends BaseMatcherTest {
     }
 
 
-    private void testTwoByteMatcher(ByteMatcher matcher, int first, int second) throws Exception {
+    private void testTwoByteInvertedMatcher(TwoByteInvertedMatcher matcher, int first, int second) throws Exception {
         testAbstractMethods(matcher);
 
         int different = (first + 1) % 256;
@@ -205,34 +205,36 @@ public class TwoByteMatcherTest extends BaseMatcherTest {
             different = (second + 1) % 256;
         }
 
-        assertTrue(matcher.matches((byte) first));
-        assertTrue(matcher.matches((byte) second));
-        assertFalse(matcher.matches((byte) different));
+        assertFalse(matcher.matches((byte) first));
+        assertFalse(matcher.matches((byte) second));
+        assertTrue(matcher.matches((byte) different));
 
-        assertTrue(matcher.matches(reader, first));
-        assertTrue(matcher.matches(reader, second));
-        assertFalse(matcher.matches(reader, different));
+        assertFalse(matcher.matches(reader, first));
+        assertFalse(matcher.matches(reader, second));
+        assertTrue(matcher.matches(reader, different));
+
         assertFalse(matcher.matches(reader, -1));
         assertFalse(matcher.matches(reader, 256));
 
-        assertTrue(matcher.matches(BYTE_VALUES, first));
-        assertTrue(matcher.matches(BYTE_VALUES, second));
-        assertFalse(matcher.matches(BYTE_VALUES, different));
+        assertFalse(matcher.matches(BYTE_VALUES, first));
+        assertFalse(matcher.matches(BYTE_VALUES, second));
+        assertTrue(matcher.matches(BYTE_VALUES, different));
+
         assertFalse(matcher.matches(BYTE_VALUES, -1));
         assertFalse(matcher.matches(BYTE_VALUES, 256));
 
-        assertTrue(matcher.matchesNoBoundsCheck(BYTE_VALUES, first));
-        assertTrue(matcher.matchesNoBoundsCheck(BYTE_VALUES, second));
-        assertFalse(matcher.matchesNoBoundsCheck(BYTE_VALUES, different));
+        assertFalse(matcher.matchesNoBoundsCheck(BYTE_VALUES, first));
+        assertFalse(matcher.matchesNoBoundsCheck(BYTE_VALUES, second));
+        assertTrue(matcher.matchesNoBoundsCheck(BYTE_VALUES, different));
 
-        int numMatches = first == second? 1 : 2;
+        int numMatches = first == second? 255 : 254;
         assertEquals(numMatches, matcher.getNumberOfMatchingBytes());
 
         byte[] matchingBytes = matcher.getMatchingBytes();
         assertEquals(numMatches, matchingBytes.length);
 
         String toString = matcher.toString();
-        assertTrue(toString.contains(TwoByteMatcher.class.getSimpleName()));
+        assertTrue(toString.contains(TwoByteInvertedMatcher.class.getSimpleName()));
         assertTrue(toString.contains(String.format("%02x", first)));
         assertTrue(toString.contains(String.format("%02x", second)));
 
@@ -247,13 +249,54 @@ public class TwoByteMatcherTest extends BaseMatcherTest {
         SequenceMatcher repeated = matcher.repeat(1);
         assertEquals(matcher, repeated);
         repeated = matcher.repeat(2);
-        if (numMatches == 1) {
-            assertEquals(ByteSequenceMatcher.class, repeated.getClass());
-        } else if (numMatches == 2) {
+        if (numMatches == 255) {
+            assertEquals(ByteMatcherSequenceMatcher.class, repeated.getClass());
+        } else if (numMatches == 254) {
             assertEquals(ByteMatcherSequenceMatcher.class, repeated.getClass());
         } else {
             fail("Must match either one or two bytes, have: " + numMatches);
         }
+    }
+
+    @Test
+    public void testRepeatOnce() throws Exception {
+        TwoByteInvertedMatcher matcher = new TwoByteInvertedMatcher((byte) 0x01, (byte) 0x04);
+        assertTrue(matcher == matcher.repeat(1));
+
+        matcher = new TwoByteInvertedMatcher((byte) 0x0A, (byte) 0x0A);
+        assertTrue(matcher == matcher.repeat(1));
+    }
+
+    @Test
+    public void testRepeatInvertedSingleByte() throws Exception {
+        TwoByteInvertedMatcher matcher = new TwoByteInvertedMatcher((byte) 0x0A, (byte) 0x0A);
+        SequenceMatcher sequence = matcher.repeat(10);
+        for (int i = 0; i < 10; i++) {
+            ByteMatcher aMatcher = sequence.getMatcherForPosition(i);
+            assertEquals(255, aMatcher.getNumberOfMatchingBytes());
+        }
+    }
+
+    @Test
+    public void testRepeatInvertedTwoBytes() throws Exception {
+        TwoByteInvertedMatcher matcher = new TwoByteInvertedMatcher((byte) 0x01, (byte) 0x04);
+        SequenceMatcher sequence = matcher.repeat(10);
+        for (int i = 0; i < 10; i++) {
+            ByteMatcher aMatcher = sequence.getMatcherForPosition(i);
+            assertEquals(254, aMatcher.getNumberOfMatchingBytes());
+        }
+    }
+
+    @Test
+    public void testhashCode() throws Exception {
+    }
+
+    @Test
+    public void equals() throws Exception {
+    }
+
+    @Test
+    public void testtoString() throws Exception {
     }
 
 }

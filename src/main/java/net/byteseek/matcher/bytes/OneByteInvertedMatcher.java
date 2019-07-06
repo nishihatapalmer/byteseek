@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -45,20 +45,20 @@ public final class OneByteInvertedMatcher extends AbstractByteMatcher {
 
     private final byte byteToMiss;
 
-    private static final class NodeCache {
+    private static final class MatcherCache {
 
         static final OneByteInvertedMatcher[] values = new OneByteInvertedMatcher[256];
 
         static {
             for (int i = 0; i < 256; i++) {
-                values[i] = new OneByteInvertedMatcher((byte) (i & 0xFF));
+                values[i] = new OneByteInvertedMatcher((byte) i);
             }
         }
 
     }
 
     public static OneByteInvertedMatcher valueOf(final byte value) {
-        return NodeCache.values[value & 0xff];
+        return MatcherCache.values[value & 0xff];
     }
 
     /**
@@ -142,6 +142,14 @@ public final class OneByteInvertedMatcher extends AbstractByteMatcher {
     @Override
     public String toString() {
     	return getClass().getSimpleName() + "(byte:" + String.format("%02x", byteToMiss & 0xFF) + ')';
+    }
+
+    /**
+     * Returns the single byte value which will not match.
+     * @return the single byte value which will not match.
+     */
+    public byte getNonMatchingByteValue() {
+        return byteToMiss;
     }
 
 }

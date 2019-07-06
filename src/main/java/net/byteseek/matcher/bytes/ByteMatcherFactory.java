@@ -32,6 +32,7 @@
 package net.byteseek.matcher.bytes;
 
 import java.util.Collection;
+import java.util.Set;
 
 import net.byteseek.matcher.bytes.ByteMatcher;
 
@@ -72,4 +73,8 @@ public interface ByteMatcherFactory {
      */
     ByteMatcher create(Collection<Byte> byteSet, boolean inverted);
 
+
+    ByteMatcher create(Set<Byte> bytes);
+
+    ByteMatcher create(Set<Byte> bytes, boolean inverted);
 }

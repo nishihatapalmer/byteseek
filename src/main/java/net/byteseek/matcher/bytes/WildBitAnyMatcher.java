@@ -124,18 +124,24 @@ public final class WildBitAnyMatcher extends InvertibleMatcher {
     @Override
     public int getNumberOfMatchingBytes() {
         final byte mask = wildcardMask;
-        final int numBytesMatchingMask = mask == 0? 256 : 256 - 1 << ByteUtils.countUnsetBits(mask);
+        final int numBytesMatchingMask = mask == 0? 256 : 256 - (1 << ByteUtils.countUnsetBits(mask));
         return inverted? 256 - numBytesMatchingMask : numBytesMatchingMask;
+        //TODO: check these calculations - not sure they are right.
     }
 
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         switch (wildcardMask) {
+            case 0: {
+                return inverted? "^~__" : "~__"; //TODO: inverted any matching is not legal syntax.  Should ^__ be illegal syntax too?
+            }
             case -16: { // 0xF0 - first nibble of a hex byte:
-                return inverted? String.format("^~%x_", noMatchValue >>> 4) : String.format("~%x_", noMatchValue >>> 4);
+                return inverted? String.format("^~%x_", ~(noMatchValue >>> 4) & 0x0F) :
+                                 String.format("~%x_", ~(noMatchValue >>> 4) & 0x0F);
             }
             case 15: { // 0x0F - last nibble of a hex byte:
-                return inverted? String.format("^~_%x", noMatchValue) : String.format("~_%x", noMatchValue);
+                return inverted? String.format("^~_%x", (~noMatchValue) & 0x0F) :
+                                 String.format("~_%x", (~noMatchValue) & 0x0F);
             }
             default: { // some other bitmask - build a binary string from the value, putting _ where the bitmask is zero.
                 final StringBuilder regex = new StringBuilder(12);
