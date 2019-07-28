@@ -167,6 +167,7 @@ public final class SeekableByteChannelReader extends AbstractCacheReader impleme
      * @param channel The channel to read from.
      * @param windowSize the size of the byte array to read from the channel.
      * @param capacity the number of byte arrays to cache (using a most recently used strategy).
+     * @param closeChannelOnReaderClose Whether to close the underlying channel when this reader is closed.
      * @throws IOException If there is a problem getting the channel size.
      * @throws IllegalArgumentException if the channel passed in is null.
      */
