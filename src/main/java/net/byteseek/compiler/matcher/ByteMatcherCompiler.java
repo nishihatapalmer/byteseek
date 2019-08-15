@@ -38,6 +38,8 @@ import java.util.Set;
 
 import net.byteseek.matcher.bytes.ByteMatcherFactory;
 import net.byteseek.matcher.bytes.OptimalByteMatcherFactory;
+import net.byteseek.parser.ParseInfo;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.compiler.AbstractCompiler;
 import net.byteseek.compiler.CompileException;
@@ -79,6 +81,8 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 * @throws CompileException If a ByteMatcher cannot be produced from the expression.
 	 */
 	public static ByteMatcher compileFrom(final String expression) throws CompileException {
+		// As a static method, this will only be created once, even if invoked multiple times.
+		//TODO: reference for this, because it's counter intuitive that it doesn't create a new compiler each time.
 		defaultCompiler = new ByteMatcherCompiler();
 		return defaultCompiler.compile(expression);
 	}
@@ -160,6 +164,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 * If the factory is null, then a SimpleByteMatcherFactory will be used.
 	 * 
 	 * @param parser The parser to use to produce an abstract syntax tree.
+     * @param factoryToUse the ByteMatcherFactory to use to create a ByteMatcher from an arbitrary set of bytes.
 	 */
 	public ByteMatcherCompiler(final Parser<ParseTree> parser, final ByteMatcherFactory factoryToUse) {
 		super(parser == null? new RegexParser() : parser);
@@ -184,6 +189,7 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 		return matcherFactory.create(bytesToMatch, NOT_INVERTED);
 	}
 
+	//TODO: should throw ParseException or CompileException?
 	/**
 	 * Performs the actual compilation of a byte matcher from an abstract syntax tree.
 	 *
@@ -193,23 +199,28 @@ public class ByteMatcherCompiler extends AbstractCompiler<ByteMatcher, ParseTree
 	 */
 	@Override
 	protected ByteMatcher doCompile(final ParseTree node) throws ParseException {
-
 		switch (node.getParseTreeType()) {
 			case BYTE: 			return MatcherCompilerUtils.createByteMatcher(node);
 			case ANY:			return MatcherCompilerUtils.createAnyMatcher(node);
-			case ALL_BITMASK:	return MatcherCompilerUtils.createAllBitmaskMatcher(node);
-			case ANY_BITMASK:	return MatcherCompilerUtils.createAnyBitmaskMatcher(node);
+            case WILDBIT:       return MatcherCompilerUtils.createWildBitMatcher(node);
+            case ANYBITS:       return MatcherCompilerUtils.createWildBitAnyMatcher(node);
 			case RANGE: 		return MatcherCompilerUtils.createRangeMatcher(node);
 			case SET:			return MatcherCompilerUtils.createMatcherFromSet(node, matcherFactory);
 		}
 		
 		// The node type wasn't understood by this compiler.
-		throw new ParseException(getTypeErrorMessage(node));
+		throw new ParseException(getTypeErrorMessage(node), node);
 	}
 
 	
 	@Override
-	protected ParseTree joinExpressions(List<ParseTree> expressions) throws CompileException {
+	protected ParseTree joinExpressions(final List<ParseTree> expressions) throws CompileException {
+		if (expressions == null || expressions.size() == 0) {
+		    throw new CompileException("No expressions to compile.");
+        }
+	    if (expressions.size() == 1) {
+		    return expressions.get(0);
+        }
 		return new ChildrenNode(ParseTreeType.SET, expressions, NOT_INVERTED);
 	}
 	

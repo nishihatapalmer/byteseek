@@ -1,3 +1,33 @@
+/*
+ * Copyright Matt Palmer 2009, All rights reserved.
+ *
+ * This code is licensed under a standard 3-clause BSD license:
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.byteseek.compiler.matcher;
 
 import net.byteseek.matcher.bytes.*;
@@ -34,6 +64,11 @@ public class MatcherCompilerUtilsTest {
     }
 
     @Test
+    public void testConstruction() {
+        new MatcherCompilerUtils(); // does nothing - it only has static utilities.
+    }
+
+    @Test
     public void testIsInverted() throws Exception {
         ByteNode node = new ByteNode((byte) 0, false);
         assertFalse(MatcherCompilerUtils.isInverted(node, false));
@@ -47,7 +82,7 @@ public class MatcherCompilerUtilsTest {
     @Test
     public void testCreateByteMatcher() throws Exception {
         for (int i = 0; i < 256; i++) {
-            ByteNode node = new ByteNode((byte) i, false);
+            ByteNode node = new ByteNode((byte) i);
             ByteMatcher matcher = MatcherCompilerUtils.createByteMatcher(node);
             assertEquals("Class is a OneByteMatcher", OneByteMatcher.class, matcher.getClass());
             assertEquals("Matches only one byte", 1, matcher.getNumberOfMatchingBytes());
@@ -55,7 +90,7 @@ public class MatcherCompilerUtilsTest {
 
             node = new ByteNode((byte) i, true);
             matcher = MatcherCompilerUtils.createByteMatcher(node);
-            assertEquals("Class is an InvertedByteMatcher", InvertedByteMatcher.class, matcher.getClass());
+            assertEquals("Class is an OneByteInvertedMatcher", OneByteInvertedMatcher.class, matcher.getClass());
             assertEquals("Matches 255 bytes", 255, matcher.getNumberOfMatchingBytes());
             byte[] matching = matcher.getMatchingBytes();
             for (byte by : matching) {
@@ -77,7 +112,7 @@ public class MatcherCompilerUtilsTest {
 
             node = new ByteNode((byte) i, true);
             matcher = MatcherCompilerUtils.createByteMatcher(node, false);
-            assertEquals("Class is an InvertedByteMatcher", InvertedByteMatcher.class, matcher.getClass());
+            assertEquals("Class is an OneByteInvertedMatcher", OneByteInvertedMatcher.class, matcher.getClass());
             assertEquals("Matches 255 bytes", 255, matcher.getNumberOfMatchingBytes());
             byte[] matching = matcher.getMatchingBytes();
             for (byte by : matching) {
@@ -88,7 +123,7 @@ public class MatcherCompilerUtilsTest {
 
             node = new ByteNode((byte) i, false);
             matcher = MatcherCompilerUtils.createByteMatcher(node, true);
-            assertEquals("Class is an InvertedByteMatcher", InvertedByteMatcher.class, matcher.getClass());
+            assertEquals("Class is an OneByteInvertedMatcher", OneByteInvertedMatcher.class, matcher.getClass());
             assertEquals("Matches 255 bytes", 255, matcher.getNumberOfMatchingBytes());
             matching = matcher.getMatchingBytes();
             for (byte by : matching) {
@@ -349,52 +384,17 @@ public class MatcherCompilerUtilsTest {
     public void testCreateByteMatchersFromSet() throws Exception {
         ParseTree byteNode = new ByteNode((byte) 0);
         ParseTree inverted = new ByteNode((byte) 0, true);
-        testSingleSetValue(byteNode, inverted, OneByteMatcher.class, InvertedByteMatcher.class, 1);
+        testSingleSetValue(byteNode, inverted, OneByteMatcher.class, OneByteInvertedMatcher.class, 1);
 
         // Put this in a nested set - same results expected:
         byteNode  = new ChildrenNode(ParseTreeType.SET, byteNode);
         inverted = new ChildrenNode(ParseTreeType.SET, inverted);
-        testSingleSetValue(byteNode, inverted, OneByteMatcher.class, InvertedByteMatcher.class, 1);
+        testSingleSetValue(byteNode, inverted, OneByteMatcher.class, OneByteInvertedMatcher.class, 1);
 
         // Put in an inverted nested set - opposite results expected:
         byteNode  = new ChildrenNode(ParseTreeType.SET, byteNode, true);
         inverted = new ChildrenNode(ParseTreeType.SET, inverted, true);
-        testSingleSetValue(inverted, byteNode, OneByteMatcher.class, InvertedByteMatcher.class, 1);
-    }
-
-    @Test
-    public void testCreateAllBitmaskMatchersFromSet() throws Exception {
-        ParseTree byteNode = new ByteNode(ParseTreeType.ALL_BITMASK, (byte) 0x81);
-        ParseTree inverted = new ByteNode(ParseTreeType.ALL_BITMASK, (byte) 0x81, true);
-        testSingleSetValue(byteNode, inverted, AllBitmaskMatcher.class, AllBitmaskMatcher.class, 64);
-
-        // Put this in a nested set - same results expected:
-        byteNode  = new ChildrenNode(ParseTreeType.SET, byteNode);
-        inverted = new ChildrenNode(ParseTreeType.SET, inverted);
-        testSingleSetValue(byteNode, inverted, AllBitmaskMatcher.class, AllBitmaskMatcher.class, 64);
-
-        // Put in an inverted nested set - opposite results expected:
-        byteNode  = new ChildrenNode(ParseTreeType.SET, byteNode, true);
-        inverted = new ChildrenNode(ParseTreeType.SET, inverted, true);
-        testSingleSetValue(inverted, byteNode, AllBitmaskMatcher.class, AllBitmaskMatcher.class, 64);
-    }
-
-    @Test
-    public void testCreateAnyBitmaskMatchersFromSet() throws Exception {
-        ParseTree byteNode = new ByteNode(ParseTreeType.ANY_BITMASK, (byte) 0x81);
-        ParseTree inverted = new ByteNode(ParseTreeType.ANY_BITMASK, (byte) 0x81, true);
-        testSingleSetValue(byteNode, inverted, AnyBitmaskMatcher.class, AnyBitmaskMatcher.class, 192);
-
-        // Put this in a nested set - same results expected:
-        byteNode  = new ChildrenNode(ParseTreeType.SET, byteNode);
-        inverted = new ChildrenNode(ParseTreeType.SET, inverted);
-        testSingleSetValue(byteNode, inverted, AnyBitmaskMatcher.class, AnyBitmaskMatcher.class, 192);
-
-        // Put in an inverted nested set - opposite results expected:
-        byteNode  = new ChildrenNode(ParseTreeType.SET, byteNode, true);
-        inverted = new ChildrenNode(ParseTreeType.SET, inverted, true);
-        testSingleSetValue(inverted, byteNode, AnyBitmaskMatcher.class, AnyBitmaskMatcher.class, 192);
-
+        testSingleSetValue(inverted, byteNode, OneByteMatcher.class, OneByteInvertedMatcher.class, 1);
     }
 
     @Test
@@ -412,7 +412,38 @@ public class MatcherCompilerUtilsTest {
         rangeNode  = new ChildrenNode(ParseTreeType.SET, rangeNode, true);
         inverted = new ChildrenNode(ParseTreeType.SET, inverted, true);
         testSingleSetValue(inverted, rangeNode, ByteRangeMatcher.class, ByteRangeMatcher.class, 108);
+    }
 
+    @Test
+    public void testCreateWildbitMatchersFromSet() throws Exception {
+        ParseTree wildBitNode = new ChildrenNode(ParseTreeType.WILDBIT, new ByteNode((byte) 0x53), new ByteNode((byte) 0x72));
+        ParseTree inverted    = new ChildrenNode(ParseTreeType.WILDBIT, true, new ByteNode((byte) 0x53), new ByteNode((byte) 0x72));
+        testSingleSetValue(wildBitNode, inverted, WildBitMatcher.class, WildBitMatcher.class, 16);
+
+        wildBitNode  = new ChildrenNode(ParseTreeType.SET, wildBitNode);
+        inverted = new ChildrenNode(ParseTreeType.SET, inverted);
+        testSingleSetValue(wildBitNode, inverted, WildBitMatcher.class, WildBitMatcher.class, 16);
+
+        // Put in an inverted nested set - opposite results expected:
+        wildBitNode  = new ChildrenNode(ParseTreeType.SET, wildBitNode, true);
+        inverted = new ChildrenNode(ParseTreeType.SET, inverted, true);
+        testSingleSetValue(inverted, wildBitNode, WildBitMatcher.class, WildBitMatcher.class, 16);
+    }
+
+    @Test
+    public void testCreateWildbitAnyMatchersFromSet() throws Exception {
+        ParseTree wildBitNode = new ChildrenNode(ParseTreeType.ANYBITS, new ByteNode((byte) 0x53), new ByteNode((byte) 0x72));
+        ParseTree inverted    = new ChildrenNode(ParseTreeType.ANYBITS, true, new ByteNode((byte) 0x53), new ByteNode((byte) 0x72));
+        testSingleSetValue(wildBitNode, inverted, WildBitAnyMatcher.class, WildBitAnyMatcher.class, 240);
+
+        wildBitNode  = new ChildrenNode(ParseTreeType.SET, wildBitNode);
+        inverted = new ChildrenNode(ParseTreeType.SET, inverted);
+        testSingleSetValue(wildBitNode, inverted, WildBitAnyMatcher.class, WildBitAnyMatcher.class, 240);
+
+        // Put in an inverted nested set - opposite results expected:
+        wildBitNode  = new ChildrenNode(ParseTreeType.SET, wildBitNode, true);
+        inverted = new ChildrenNode(ParseTreeType.SET, inverted, true);
+        testSingleSetValue(inverted, wildBitNode, WildBitAnyMatcher.class, WildBitAnyMatcher.class, 240);
     }
 
 
@@ -559,7 +590,6 @@ public class MatcherCompilerUtilsTest {
         }
 
     }
-
 
     @Test
     public void testCreateCaseInsensitiveMatcherString() throws Exception {

@@ -1,10 +1,36 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-11, All rights reserved.
  *
+ * This code is licensed under a standard 3-clause BSD license:
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.compiler.matcher;
 
+import net.byteseek.incubator.matcher.bytes.SetBinarySearchMatcher;
 import net.byteseek.parser.Parser;
 import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTreeType;
@@ -53,45 +79,36 @@ public class SequenceMatcherCompilerTest {
 		System.out.println("To repeat these exact tests, set the seed to the value above.");
 	}
 
-	/**
-	 * 
-	 * @throws Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
 		compiler = new SequenceMatcherCompiler();
 	}
 
-	/**
-	 * 
-	 * @throws CompileException
-	 */
 	@Test(expected = CompileException.class)
 	public void testCompileNullExpression() throws CompileException {
 		compiler.compile((String) null);
 	}
 
-	/**
-	 * 
-	 * @throws CompileException
-	 */
 	@Test(expected = CompileException.class)
 	public void testCompileEmptyExpression() throws CompileException {
 		compiler.compile("");
 	}
 
-	/**
-	 * 
-	 * @throws CompileException
-	 */
 	@Test(expected = CompileException.class)
 	public void testCompileNullAST() throws CompileException {
 		compiler.compile((ParseTree) null);
 	}
 
+	@Test(expected = CompileException.class)
+	public void testCompileCollectionNullAST() throws CompileException {
+	    Collection<String> collection = new ArrayList<String>();
+	    collection.add(""); // add an empty string.
+        collection.add(null); // and a null one for good measure...
+        compiler.compile(collection);
+    }
+
 	/**
 	 * Test of compile method, of class SequenceMatcherCompiler.
-	 * @throws Exception 
 	 */
 	@Test
 	public void testBasicCompile() throws Exception {
@@ -113,7 +130,7 @@ public class SequenceMatcherCompilerTest {
 		basicTests("01 02", 2, ByteSequenceMatcher.class);
 		basicTests("01fd", 2, ByteSequenceMatcher.class);
 
-		basicTests(" [0102] &01", 2, ByteMatcherSequenceMatcher.class);
+		basicTests(" [0102] 01", 2, ByteMatcherSequenceMatcher.class);
 		basicTests(" [0102] [^ffee]", 2, ByteMatcherSequenceMatcher.class);
 
 		basicTests("01fd ef   de", 4, ByteSequenceMatcher.class);
@@ -179,7 +196,7 @@ public class SequenceMatcherCompilerTest {
 	public void testRandomSequences() throws CompileException {
 		for (int testNo = 0; testNo < 1000; testNo++) {
 			SequenceMatcher generated = createRandomSequenceMatcher();
-			String expression         = generated.toRegularExpression(false);
+            String expression         = generated.toRegularExpression(false);
 			SequenceMatcher compiled = compiler.compile(expression);
 			testSequencesEquivalent(expression, generated, compiled);
 
@@ -214,9 +231,17 @@ public class SequenceMatcherCompilerTest {
 
 			byte[] genBytes = genMatcher.getMatchingBytes();
 			Set<Byte> comBytes = ByteUtils.toSet(comMatcher.getMatchingBytes());
+			if (genBytes.length != comBytes.size()) {
+				System.out.println("oops"); //TODO: get rid of these debug tests.
+                //return;
+			}
 			assertEquals("byte arrays are same length", genBytes.length, comBytes.size());
 			for (int j = 0; j < genBytes.length; j++) {
 				byte genByte = genBytes[j];
+				if (!comBytes.contains(genByte)) {
+				    System.out.println("oops"); //TODO: get rid of these debug tests.
+                    //return;
+                }
 				assertTrue("Byte " + genByte + " is in compiled version", comBytes.contains(genByte));
 			}
 		}
@@ -253,19 +278,19 @@ public class SequenceMatcherCompilerTest {
 			case 1:
 				return OneByteMatcher.valueOf((byte) random.nextInt(256));
 			case 2:
-				return new InvertedByteMatcher((byte) random.nextInt(256));
+				return new OneByteInvertedMatcher((byte) random.nextInt(256));
 			case 3:
 				return new ByteRangeMatcher(random.nextInt(256), random.nextInt(256), inverted);
 			case 4:
 				return new SetBinarySearchMatcher(createRandomByteSet(), inverted);
 			case 5:
-				return new SetBitsetMatcher(createRandomByteSet(), inverted);
+				return new SetBitmapMatcher(createRandomByteSet(), inverted);
 			case 6:
 				return new TwoByteMatcher((byte) random.nextInt(256), (byte) random.nextInt(256));
 			case 7:
-				return new AllBitmaskMatcher((byte) random.nextInt(256), inverted);
+				return new WildBitMatcher((byte) random.nextInt(256), (byte) random.nextInt(256), inverted);
 			case 8:
-				return new AnyBitmaskMatcher((byte) random.nextInt(256), inverted);
+				return new WildBitAnyMatcher((byte) random.nextInt(256), (byte) random.nextInt(256), inverted);
 			default:
 				throw new RuntimeException("Case statement doesn't support value " + matcherType);
 		}

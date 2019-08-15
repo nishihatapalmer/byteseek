@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -60,26 +60,26 @@ import net.byteseek.parser.tree.node.ChildrenNode;
  * as a sequence matcher can only match a single defined sequence.
  * <p>
  * This means that it *cannot* handle alternatives (X|Y|Z),
- * optionality X?, variable length repeats {n-m}, 
- * and the wildcard repeats * and +.  It can handle fixed length repeats {n}.  
- * 
+ * optionality X?, variable length repeats {n-m},
+ * and the wildcard repeats * and +.  It can handle fixed length repeats {n}.
+ *
  * @author Matt Palmer
  */
 public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, ParseTree> {
 
-	// Protected constants:
+    // Protected constants:
 
-	protected static final boolean NOT_YET_INVERTED = false;
-	
-	private static SequenceMatcherCompiler defaultCompiler;
-    
+    protected static final boolean NOT_YET_INVERTED = false;
+
+    private static SequenceMatcherCompiler defaultCompiler;
+
     /**
      * Compiles a SequenceMatcher from a byteSeek regular expression (limited to
      * syntax which produces fixed-length sequences).  It will use the default
      * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} to produce matchers for sets of bytes, a
      * {@link SequenceMatcherOptimiser} to to optimise the sequence matchers produced.
      * and a {@link RegexParser} to parse the expression into an abstract syntax tree.
-     * 
+     *
      * @param expression The regular expression to compile
      * @return SequenceMatcher a SequenceMatcher matching the regular expression.
      * @throws CompileException If the expression could not be compiled into a SequenceMatcher.
@@ -88,75 +88,73 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
         defaultCompiler = new SequenceMatcherCompiler();
         return defaultCompiler.compile(expression);
     }
-    
+
     protected final ByteMatcherFactory byteMatcherFactory;
     protected final Optimiser<SequenceMatcher> optimiser;
 
-    
+
     /**
      * Default constructor which uses the {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory}
      * to produce matchers for sets of bytes, and a {@link RegexParser} to produce
      * the abstract syntax tree.  It also uses the {@link SequenceMatcherOptimiser}
      * to optimise the sequence matchers produced.
-     * 
      */
     public SequenceMatcherCompiler() {
-       this(null, null, null);
+        this(null, null, null);
     }
 
     /**
      * Constructor which uses the provided {@link ByteMatcherFactory} to
-     * produce matchers for sets of bytes, and a {@link RegexParser} to produce 
+     * produce matchers for sets of bytes, and a {@link RegexParser} to produce
      * the abstract syntax tree. It also uses the  {@link SequenceMatcherOptimiser}
      * to optimise the sequence matchers produced.
-     * 
+     *
      * @param factoryToUse The ByteMatcherFactory used to produce matchers
-     * for sets of bytes.
+     *                     for sets of bytes.
      */
     public SequenceMatcherCompiler(final ByteMatcherFactory factoryToUse) {
         this(null, factoryToUse, null);
     }
-    
-    
+
+
     /**
      * Constructor which uses the provided {@link Optimiser} to
      * produce a sequence from a list of sequences, and a {@link RegexParser}
      * to produce the abstract syntax tree. It also uses the
      * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} to produce matchers from sets of bytes.
-     * 
+     *
      * @param optimiser The Optimiser to optimise sequence matchers.
      */
     public SequenceMatcherCompiler(final Optimiser<SequenceMatcher> optimiser) {
         this(null, null, optimiser);
-    }   
+    }
 
-    
+
     /**
      * Constructor which uses the provided {@link Optimiser} to
      * produce a sequence from a list of sequences, and the provided
      * {@link ByteMatcherFactory} to produce matchers from sets of bytes.  The
      * parser used will be the {@link RegexParser}.
-     * 
+     *
      * @param byteFactory The ByteMatcherFactory to produce matchers from sets of bytes.
-     * @param optimiser The Optimiser to produce sequences from lists of sequences.
+     * @param optimiser   The Optimiser to produce sequences from lists of sequences.
      */
     public SequenceMatcherCompiler(final ByteMatcherFactory byteFactory,
-    							   final Optimiser<SequenceMatcher> optimiser) {
+                                   final Optimiser<SequenceMatcher> optimiser) {
         this(null, byteFactory, optimiser);
-    }   
-    
-    
+    }
+
 
     /**
      * Constructor which uses the provided {@link Parser} to produce the abstract
      * syntax tree, and the default {@link Optimiser} to build the byte matchers.
-     * 
+     *
      * @param parser The parser to use to produce the abstract syntax tree.
-     */    
+     */
     public SequenceMatcherCompiler(final Parser<ParseTree> parser) {
         this(parser, null, null);
     }
-    
+
     /**
      * Constructor which uses the provided {@link ByteMatcherFactory} to
      * produce matchers for sets of bytes, and the provided {@link Parser} to
@@ -165,16 +163,16 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * If the parser is null, then the parser used will be the default parser defined
      * in {@link AbstractCompiler}.  If the factory is null, then the default
      * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} will be used.
-     * 
-     * @param parser The parser to use to produce the abstract syntax tree. 
+     *
+     * @param parser           The parser to use to produce the abstract syntax tree.
      * @param byteFactoryToUse The ByteMatcherFactory used to produce matchers
-     * for sets of bytes.
-     */    
-    public SequenceMatcherCompiler(final Parser<ParseTree> parser, 
-    							   final ByteMatcherFactory byteFactoryToUse) {
+     *                         for sets of bytes.
+     */
+    public SequenceMatcherCompiler(final Parser<ParseTree> parser,
+                                   final ByteMatcherFactory byteFactoryToUse) {
         this(parser, byteFactoryToUse, null);
     }
-    
+
     /**
      * Constructor which uses the provided {@link Optimiser} to
      * produce matchers for lists of sequences, and the provided {@link Parser} to
@@ -184,16 +182,16 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * If the parser is null, then the parser used will be the default parser defined
      * in {@link AbstractCompiler}.  If the factory is null, then the default
      * {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} will be used.
-     * 
-     * @param parser The parser to use to produce the abstract syntax tree. 
+     *
+     * @param parser    The parser to use to produce the abstract syntax tree.
      * @param optimiser The Optimiser used to optimise the sequence matchers produced.
-     * for sets of bytes.
-     */    
-    public SequenceMatcherCompiler(final Parser<ParseTree> parser, 
-    							   final Optimiser<SequenceMatcher> optimiser) {
+     *                  for sets of bytes.
+     */
+    public SequenceMatcherCompiler(final Parser<ParseTree> parser,
+                                   final Optimiser<SequenceMatcher> optimiser) {
         this(parser, null, optimiser);
-    }    
-    
+    }
+
     /**
      * Constructor which uses the provided {@link ByteMatcherFactory} to
      * produce matchers for sets of bytes, and the provided {@link Parser} to
@@ -202,24 +200,24 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * If the parser is null, then the parser used will be the {@link RegexParser}.
      * If the byte matcher factory is null, then a {@link net.byteseek.matcher.bytes.OptimalByteMatcherFactory} will be used.
      * If the sequence matcher factory is null, then a {@link SequenceMatcherOptimiser} will be used.
-     * 
-     * @param parser The parser to use to produce the abstract syntax tree. 
+     *
+     * @param parser           The parser to use to produce the abstract syntax tree.
      * @param byteFactoryToUse The ByteMatcherFactory used to produce matchers from a set of bytes
-     * @param optimiser The Optimiser used to optimise the sequence matchers produced.
-     */    
+     * @param optimiser        The Optimiser used to optimise the sequence matchers produced.
+     */
     public SequenceMatcherCompiler(final Parser<ParseTree> parser,
-    							   final ByteMatcherFactory byteFactoryToUse,
-    							   final Optimiser<SequenceMatcher> optimiser) {
-        super(parser == null? new RegexParser() : parser);
-        byteMatcherFactory = byteFactoryToUse != null? 
-        					 byteFactoryToUse :  OptimalByteMatcherFactory.FACTORY;
-    	this.optimiser = optimiser != null? 
-    		             optimiser :  new SequenceMatcherOptimiser();
-    }    
+                                   final ByteMatcherFactory byteFactoryToUse,
+                                   final Optimiser<SequenceMatcher> optimiser) {
+        super(parser == null ? new RegexParser() : parser);
+        byteMatcherFactory = byteFactoryToUse != null ?
+                byteFactoryToUse : OptimalByteMatcherFactory.FACTORY;
+        this.optimiser = optimiser != null ?
+                optimiser : new SequenceMatcherOptimiser();
+    }
 
 
     /**
-     * Builds the ParseTree node into a list of sequence matchers. 
+     * Builds the ParseTree node into a list of sequence matchers.
      * Then it uses a Optimiser to produce a single SequenceMatcher from the list.
      *
      * @param ast The abstract syntax tree to compile.
@@ -231,110 +229,129 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
         final List<SequenceMatcher> sequences = buildSequenceList(ast, new ArrayList<SequenceMatcher>());
         return optimiser.optimise(new SequenceSequenceMatcher(sequences));
     }
-    
+
     /**
      * Parses the ParseTree node passed in, building a list of sequence matchers from it.
-     * 
-     * @param matcherNode The abstract syntax tree to parse.
+     *
+     * @param matcherNode  The abstract syntax tree to parse.
      * @param sequenceList A sequence matcher list to append to.
      * @return A list of sequence matchers in the order specified by the ParseTree.
-     * @throws ParseException If there is a problem parsing the parse tree.
+     * @throws ParseException       If there is a problem parsing the parse tree.
      * @throws NullPointerException if the parse tree or sequence list are null.
      */
     protected List<SequenceMatcher> buildSequenceList(final ParseTree matcherNode,
-    										  		  final List<SequenceMatcher> sequenceList)
-    										  		  throws ParseException {
-    	switch (matcherNode.getParseTreeType()) {
-    		case BYTE:           			addByteMatcher(                 	matcherNode, sequenceList); break;
-    		case ANY:                     	addAnyMatcher(						matcherNode, sequenceList); break;
-    		case ALL_BITMASK:   			addAllBitmaskMatcher(				matcherNode, sequenceList); break;
-    		case ANY_BITMASK:   			addAnyBitmaskMatcher(				matcherNode, sequenceList); break;
-    		case RANGE:       				addRangeMatcher(					matcherNode, sequenceList); break;
-    		case STRING:   					addStringMatcher(					matcherNode, sequenceList); break;
-    		case CASE_INSENSITIVE_STRING: 	addCaseInsensitiveStringMatcher(	matcherNode, sequenceList); break;
-    		case SEQUENCE:          		addSequenceMatcher(					matcherNode, sequenceList); break;
-    		case REPEAT:          			addRepeatedSequence(				matcherNode, sequenceList); break;
-            case SET:                       addSetMatcher(						matcherNode, sequenceList); break;
-    		default: throw new ParseException(getTypeErrorMessage(matcherNode));
-    	}
-    	return sequenceList;
+                                                      final List<SequenceMatcher> sequenceList)
+            throws ParseException {
+        switch (matcherNode.getParseTreeType()) {
+            case BYTE:
+                addByteMatcher(matcherNode, sequenceList);
+                break;
+            case ANY:
+                addAnyMatcher(matcherNode, sequenceList);
+                break;
+             case WILDBIT:
+                addWildBitMatcher(matcherNode, sequenceList);
+                break;
+            case ANYBITS:
+                addAnyBitsMatcher(matcherNode, sequenceList);
+                break;
+            case RANGE:
+                addRangeMatcher(matcherNode, sequenceList);
+                break;
+            case STRING:
+                addStringMatcher(matcherNode, sequenceList);
+                break;
+            case CASE_INSENSITIVE_STRING: //TODO: what about multiple charsets with case insensitive strings?
+                addCaseInsensitiveStringMatcher(matcherNode, sequenceList);
+                break;
+            case SEQUENCE:
+                addSequenceMatcher(matcherNode, sequenceList);
+                break;
+            case REPEAT:
+                addRepeatedSequence(matcherNode, sequenceList);
+                break;
+            case SET:
+                addSetMatcher(matcherNode, sequenceList);
+                break;
+            default:
+                throw new ParseException(getTypeErrorMessage(matcherNode), matcherNode);
+        }
+        return sequenceList;
     }
 
 
     private void addRepeatedSequence(final ParseTree ast,
                                      final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      final int timesToRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
-      final SequenceMatcher sequenceToRepeat = doCompile(ParseTreeUtils.getLastChild(ast));
-      for (int count = 1; count <= timesToRepeat; count++) {
-      	sequenceList.add(sequenceToRepeat);
-      }
+            throws ParseException {
+        final int timesToRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
+        final SequenceMatcher sequenceToRepeat = doCompile(ParseTreeUtils.getLastChild(ast));
+        for (int count = 1; count <= timesToRepeat; count++) {
+            sequenceList.add(sequenceToRepeat);
+        }
     }
 
     private void addSequenceMatcher(final ParseTree ast,
                                     final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      for (final ParseTree child : ast) {
-      	buildSequenceList(child, sequenceList);
-      }
+            throws ParseException {
+        for (final ParseTree child : ast) {
+            buildSequenceList(child, sequenceList);
+        }
     }
 
     private void addCaseInsensitiveStringMatcher(final ParseTree ast,
-                                                 final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(MatcherCompilerUtils.createCaseInsensitiveMatcher(ast.getTextValue()));
+                                                 final List<SequenceMatcher> sequenceList) throws ParseException {
+        sequenceList.add(MatcherCompilerUtils.createCaseInsensitiveMatcher(ast.getTextValue()));
     }
 
     private void addStringMatcher(final ParseTree ast,
-                                  final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(new ByteSequenceMatcher(ast.getTextValue()));
+                                  final List<SequenceMatcher> sequenceList) throws ParseException {
+        sequenceList.add(new ByteSequenceMatcher(ast.getTextValue(), ast.getTextEncoding()));
     }
 
     private void addSetMatcher(final ParseTree ast,
                                final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(MatcherCompilerUtils.createMatcherFromSet(ast, byteMatcherFactory));
+            throws ParseException {
+        sequenceList.add(MatcherCompilerUtils.createMatcherFromSet(ast, byteMatcherFactory));
     }
 
     private void addRangeMatcher(final ParseTree ast,
                                  final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(MatcherCompilerUtils.createRangeMatcher(ast));
+            throws ParseException {
+        sequenceList.add(MatcherCompilerUtils.createRangeMatcher(ast));
     }
 
-    private void addAnyBitmaskMatcher(final ParseTree ast,
-                                      final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(MatcherCompilerUtils.createAnyBitmaskMatcher(ast));
+    private void addWildBitMatcher(final ParseTree ast,
+                                   final List<SequenceMatcher> sequenceList)
+            throws ParseException {
+        sequenceList.add(MatcherCompilerUtils.createWildBitMatcher(ast));
     }
 
-    private void addAllBitmaskMatcher(final ParseTree ast,
-                                      final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(MatcherCompilerUtils.createAllBitmaskMatcher(ast));
+    private void addAnyBitsMatcher(final ParseTree ast,
+                                   final List<SequenceMatcher> sequenceList)
+            throws ParseException {
+        sequenceList.add(MatcherCompilerUtils.createWildBitAnyMatcher(ast));
     }
 
     private void addAnyMatcher(final ParseTree ast,
                                final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(MatcherCompilerUtils.createAnyMatcher(ast));
+            throws ParseException {
+        sequenceList.add(MatcherCompilerUtils.createAnyMatcher(ast));
     }
 
     private void addByteMatcher(final ParseTree ast,
                                 final List<SequenceMatcher> sequenceList)
-        throws ParseException {
-      sequenceList.add(MatcherCompilerUtils.createByteMatcher(ast));
+            throws ParseException {
+        sequenceList.add(MatcherCompilerUtils.createByteMatcher(ast));
     }
-    
-	@Override
-	protected ParseTree joinExpressions(List<ParseTree> expressions) throws CompileException {
-		return new ChildrenNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED);
-    }    
 
-	private String getTypeErrorMessage(final ParseTree ast) {
-		final ParseTreeType type = ast.getParseTreeType();
-		return String.format("Unknown type %s ", type); 
-	}    	
-	
+    @Override
+    protected ParseTree joinExpressions(final List<ParseTree> expressions) throws CompileException {
+        return new ChildrenNode(ParseTreeType.SEQUENCE, expressions, NOT_YET_INVERTED);
+    }
+
+    private String getTypeErrorMessage(final ParseTree ast) {
+        final ParseTreeType type = ast.getParseTreeType();
+        return String.format("Unknown type %s ", type);
+    }
+
 }
