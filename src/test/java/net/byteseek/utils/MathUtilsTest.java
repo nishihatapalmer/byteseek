@@ -233,4 +233,9 @@ public class MathUtilsTest {
             }
         }
     }
+
+    @Test
+    public void testConstruction() {
+        new MathUtils(); // does nothing - only static utilities.
+    }
 }

@@ -37,18 +37,18 @@ import static org.junit.Assert.*;
 public class PowerTwoSizeTest {
 
     @Test(expected=IllegalArgumentException.class)
-    public void testZeroPowerTwoSize() {
-        PowerTwoSize.valueOf(0);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
     public void test32PowerTwoSize() {
         PowerTwoSize.valueOf(32);
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testNegativePowerTwoSize() {
+        PowerTwoSize.valueOf(-1);
+    }
+
     @Test
     public void testPowerTwoSize() throws Exception {
-        for (int i = 1; i < 31; i++) {
+        for (int i = 0; i < 31; i++) {
             PowerTwoSize size = PowerTwoSize.valueOf(i);
             int powerTwoSize = 1 << i;
             assertEquals(powerTwoSize, size.getSize());

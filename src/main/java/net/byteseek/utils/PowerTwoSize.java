@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,29 +31,29 @@
 package net.byteseek.utils;
 
 /**
- * An enumeration of power of two sizes from 2 (power 2^1) to 1Gig (power 2^30).
+ * An enumeration of power of two sizes from 1 (power 2^0) to 1Gig (power 2^30).
  *
  * Created by matt on 01/07/17.
  */
 public enum PowerTwoSize {
 
-    SIZE_2(1),    SIZE_4(2),     SIZE_8(3),     SIZE_16(4),    SIZE_32(5),
+    SIZE_1(0),    SIZE_2(1),    SIZE_4(2),     SIZE_8(3),     SIZE_16(4),    SIZE_32(5),
     SIZE_64(6),   SIZE_128(7),   SIZE_256(8),   SIZE_512(9),   SIZE_1K(10),
     SIZE_2K(11),  SIZE_4K(12),   SIZE_8K(13),   SIZE_16K(14),  SIZE_32K(15),
     SIZE_64K(16), SIZE_128K(17), SIZE_256K(18), SIZE_512K(19), SIZE_1M(20),
     SIZE_2M(21),  SIZE_4M(22),   SIZE_8M(23),   SIZE_16M(24),  SIZE_32M(25),
     SIZE_64M(26), SIZE_128M(27), SIZE_256M(28), SIZE_512M(29), SIZE_1G(30);
 
-    //TODO: what about power two of zero? i.e. 1?
     /**
      * A static utility method to return the enum value for a given power of two size.
      *
-     * @param powerTwoSize The power of two size enum to return given a power of two, between 1 an 30 inclusive.
+     * @param powerTwoSize The power of two size enum to return given a power of two, between 0 and 30 inclusive.
      * @return A PowerTwoSize enum for the power of two passed in.
-     * @throws IllegalArgumentException if the powerTwoSize is not between 1 and 30 inclusive.
+     * @throws IllegalArgumentException if the powerTwoSize is not between 0 and 30 inclusive.
      */
     public static final PowerTwoSize valueOf(final int powerTwoSize) {
         switch(powerTwoSize) {
+            case 0:  return SIZE_1;
             case 1:  return SIZE_2;
             case 2:  return SIZE_4;
             case 3:  return SIZE_8;
@@ -84,7 +84,7 @@ public enum PowerTwoSize {
             case 28: return SIZE_256M;
             case 29: return SIZE_512M;
             case 30: return SIZE_1G;
-            default: throw new IllegalArgumentException("Power two size must be between 1 and 30 inclusive.");
+            default: throw new IllegalArgumentException("Power two size must be between 0 and 30 inclusive.");
         }
     }
 

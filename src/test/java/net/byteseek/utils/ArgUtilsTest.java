@@ -591,4 +591,9 @@ public class ArgUtilsTest {
         }
     }
 
+    @Test
+    public void testConstruction() {
+        new ArgUtils(); // does nothing - only static utilities.
+    }
+
 }

@@ -31,6 +31,8 @@
 
 package net.byteseek.utils;
 
+import net.byteseek.parser.ParseException;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,10 +64,11 @@ public final class ByteUtils {
     private static final int START_PRINTABLE_ASCII = 32;
     private static final int END_PRINTABLE_ASCII = 126;
 
-    private static final int[] VALID_ALL_BITMASK_SET_SIZES = {1, 2, 4, 8, 16, 32, 64, 128, 256};
-    private static final int[] VALID_ANY_BITMASK_SET_SIZES = {0, 128, 192, 224, 240, 248, 252, 254, 255};
-
     private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+
+    public static final int ASCII_CASE_GAP = 'a' - 'A'; // The distance between upper and lower case in ASCII chars.
+    public static final byte LINE_FEED = 0x0A;
+    public static final byte CARRIAGE_RETURN = 0x0D;
 
     /**
      * Returns the number of bits set in a given byte.
@@ -258,20 +261,6 @@ public final class ByteUtils {
                 numAdded++;
             }
         }
-    }
-
-    /**
-     * Returns a bitmask which would match the set of bytes in the array
-     * and no others, if they must match all the bits in the bitmask.  If no
-     * such bitmask exists, then null is returned.
-     * 
-     * @param bytes An array of bytes for which a matching bitmask is required.
-     * @return A bitmask which matches all the bytes in the array (and no others)
-     *         or null if no such bitmask exists.
-     * @throws IllegalArgumentException if the byte array is null.
-     */
-    public static Byte getAllBitMaskForBytes(final byte[] bytes) {
-        return getAllBitMaskForBytes(toSet(bytes));
     }
 
     /**
@@ -797,85 +786,7 @@ public final class ByteUtils {
         }
     }
 
-    /**
-     * Calculates a bitmask for which the set of bytes provided would match all of
-     * the bits in the bitmask, and for which there are no other bytes it would match.
-     * 
-     * @param bytes A set of bytes to find an all bitmask to match.
-     * @return A bitmask to match the set with, or null if no bitmask exists for that set of bytes.
-     * @throws IllegalArgumentException if the set of bytes passed in is null.
-     */
-    public static Byte getAllBitMaskForBytes(final Set<Byte> bytes) {
-    	ArgUtils.checkNullCollection(bytes);
-        final int setSize = bytes.size();
-        if (setSize == 256) { // if we have all byte values, then a bitmask of zero matches all of them.
-        	return Byte.valueOf((byte) 0);
-        } else if (Arrays.binarySearch(VALID_ALL_BITMASK_SET_SIZES, setSize) >= 0) {
-            // Build a candidate bitmask from the bits all the bytes have in common.
-            final int bitsInCommon = getBitsInCommon(bytes);
-            if (bitsInCommon > 0) {
-                // If the number of bytes in the set is the same as the number of bytes
-                // which would match the bitmask, then the set of bytes can be matched
-                // by that bitmask.
-                final byte mask = (byte) bitsInCommon;
-                if (setSize == countBytesMatchingAllBits(mask)) {
-                	return mask;
-                }
-            }
-        }
-        return null;
-    }
 
-
-    /**
-     * Calculates a bitmask for which the set of bytes provided would match any of
-     * the bits in the bitmask, and for which there are no other bytes it would match.
-     *
-     * @param bytes A set of bytes to find an any bitmask to match.
-     * @return A bitmask to match the set with, or null if no bitmask exists for that
-     *         set of bytes.
-     * @throws IllegalArgumentException if the set of bytes passed in is null.
-     */
-    public static Byte getAnyBitMaskForBytes(final Set<Byte> bytes) {
-    	ArgUtils.checkNullCollection(bytes);
-        if (bytes.isEmpty()) {
-            return Byte.valueOf((byte)0);
-        } else {
-            final int size = bytes.size();
-            if (Arrays.binarySearch(VALID_ANY_BITMASK_SET_SIZES, size) >= 0) {
-                // Find which bits in the set are matched by 128 bytes in the set.
-                // These bits might form a valid any bitmask.
-                final int possibleAnyMask = getBitsSetForAllPossibleBytes(bytes);
-
-                // Check that the any bitmask produced gives a set of bytes
-                // the same size as the set provided.
-                if (possibleAnyMask > 0) {
-                    final byte mask = (byte) possibleAnyMask;
-                    if (size == countBytesMatchingAnyBit(mask)) {
-                        return mask;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * Calculates a bitmask for which the set of bytes provided in the array
-     * would match all of the bits in the bitmask, and for which there are no 
-     * other bytes it would match.
-     *
-     * @param bytes An array of bytes to find an any bitmask to match.
-     * @return A bitmask to match the byte values in the array with, or null, 
-     *         if no bitmask exists for that set of  bytes.
-     * @throws IllegalArgumentException if the bytes passed in is null.
-     */
-    public static Byte getAnyBitMaskForBytes(final byte[] bytes) {
-        return getAnyBitMaskForBytes(toSet(bytes));
-    }
-    
-    
     /**
      * Returns a bitmask which contains all the bits in common in the collection of bytes
      * provided - anding all the bytes together.  If the collection passed in is empty,
@@ -1000,6 +911,41 @@ public final class ByteUtils {
     }
 
 
+    /**
+     * Returns an integer containing the decimal value (0-255) defined by two hex digits.
+     *
+     * @param firstHexChar  The first hex byte digit ('0'-'9' 'a'-'f' | 'A' - 'F')
+     * @param secondHexChar The second hex byte digit ('0'-'9' 'a'-'f' | 'A' - 'F')
+     * @return The decimal value (0-255) defined by the two hex digits, or -1 if not a hex byte.
+     */
+    public final static int hexByteValue(final char firstHexChar, final char secondHexChar) {
+        final int firstHexDigit  = hexDigitValue(firstHexChar);
+        final int secondHexDigit = hexDigitValue(secondHexChar);
+        if (firstHexDigit < 0 || secondHexDigit < 0) {
+            return -1;
+        }
+        return (firstHexDigit << 4) + secondHexDigit;
+    }
+
+    /**
+     * Returns an integer containing the decimal value (0-15) defined by a single hex digit.
+     *
+     * @param digit The hex byte digit ('0'-'9' 'a'-'f' | 'A' - 'F')
+     * @return The decimal value (0-15) defined by the hex digit, or -1 if not a hex digit.
+     */
+    public final static int hexDigitValue(final char digit) {
+        if (digit >= '0' && digit <= '9') {
+            return digit - '0';
+        }
+        if (digit >= 'a' && digit <= 'f') {
+            return digit - 'a' + 10;
+        }
+        if (digit >= 'A' && digit <= 'F') {
+            return digit - 'A' + 10;
+        }
+        return -1;
+    }
+
     //TODO: should we have a byte array from hex string method too?  Could be useful, avoid full parser overhead.
     //      byte arrays from hex have to be a fairly common requirement...
 
@@ -1117,7 +1063,47 @@ public final class ByteUtils {
             string.append('\'');
         }
         return string.toString();
-    }    
+    }
 
+
+    /**
+     * Returns true if a byte is between ASCII A and Z inclusive.
+     * @param theByte The byte to test for ASCII uppercase.
+     * @return true if a byte is between ASCII A and Z inclusive.
+     */
+    public static boolean isUpperCase(final byte theByte) {
+        return ((theByte & 0xFF) >= 'A' && (theByte & 0xFF) <= 'Z');
+    }
+
+    /**
+     * Returns true if the two bytes passed in are a line break and carriage return.
+     * @param byte1 A first byte to test
+     * @param byte2 A second byte to test
+     * @return true if the two bytes passed in are a line break and carriage return.
+     */
+    public static boolean isLineBreak(final byte byte1, final byte byte2) {
+        return ((byte1 == LINE_FEED && byte2 == CARRIAGE_RETURN) ||
+                (byte1 == CARRIAGE_RETURN && byte2 == LINE_FEED));
+    }
+
+    /**
+     * Returns true if a byte is between ASCII a and z inclusive.
+     * @param theByte The byte to test for ASCII lowercase.
+     * @return true if a byte is between ASCII z and z inclusive.
+     */
+    public static boolean isLowerCase(final byte theByte) {
+        return ((theByte & 0xFF) >= 'a' && (theByte & 0xFF) <= 'z');
+    }
+
+    /**
+     * Are two bytes a case insensitive ASCII pair - for example 'A' and 'a'.
+     * @param byte1 The first byte to test
+     * @param byte2 The second byte to test
+     * @return true if the two bytes form a case insensitive ASCII pair.
+     */
+    public static boolean isCaseInsensitive(final byte byte1, final byte byte2) {
+        return (isUpperCase(byte1) && byte1 + ASCII_CASE_DIFFERENCE == byte2) ||
+               (isUpperCase(byte2) && byte2 + ASCII_CASE_DIFFERENCE == byte1);
+    }
 
 }
