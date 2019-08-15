@@ -100,6 +100,7 @@ public abstract class AbstractCache implements WindowCache {
      * 
      * @param window The Window which was removed from this cache.
      * @param fromCache The WindowCache from which the Window was removed.
+     * @throws IOException if there is a problem when a window is freed.
      */
     protected final void notifyWindowFree(final Window window, final WindowCache fromCache) throws IOException {
         IOException cacheException = null;

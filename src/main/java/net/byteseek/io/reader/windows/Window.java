@@ -47,57 +47,58 @@ import java.io.IOException;
  */
 public interface Window {
 
-	/**
-	 * Gets a byte from the Window relative to the start of the Window (not
-	 * relative to the start of the WindowReader). It simply returns the byte at the
-	 * position in the byte array that backs the Window.
-	 * <p>
-	 * Note that no bounds checking is done by this method. It is possible to
-	 * read bytes in the byte array which are beyond the length of the Window
-	 * itself (since a Window can be shorter than the byte array which backs
-	 * it).
-	 *
-	 * @param position The position in the Window to read a byte from.
-	 * @return The byte at that position in the Window.
+    /**
+     * Gets a byte from the Window relative to the start of the Window (not
+     * relative to the start of the WindowReader). It simply returns the byte at the
+     * position in the byte array that backs the Window.
+     * <p>
+     * Note that no bounds checking is done by this method. It is possible to
+     * read bytes in the byte array which are beyond the length of the Window
+     * itself (since a Window can be shorter than the byte array which backs
+     * it).
+     *
+     * @param position The position in the Window to read a byte from.
+     * @return The byte at that position in the Window.
+     * @throws IOException if a problem occurs reading a byte.
      **/
-	byte getByte(int position) throws IOException;
+    byte getByte(int position) throws IOException;
 
-	/**
-	 * Returns an array of bytes holding the data for this Window.
-	 *
-	 * @return A byte array backing this Window.
-	 * @throws IOException if there was a problem obtaining the byte array.
-	 */
-	byte[] getArray() throws IOException;
+    /**
+     * Returns an array of bytes holding the data for this Window.
+     *
+     * @return A byte array backing this Window.
+     * @throws IOException if there was a problem obtaining the byte array.
+     */
+    byte[] getArray() throws IOException;
 
-	/**
-	 * Returns the position in the WindowReader that this Window was read from.
-	 *
-	 * @return The position in the WindowReader that this Window was read from.
-	 */
-	long getWindowPosition();
+    /**
+     * Returns the position in the WindowReader that this Window was read from.
+     *
+     * @return The position in the WindowReader that this Window was read from.
+     */
+    long getWindowPosition();
 
-	/**
-	 * Returns the final position in this window.  It is equivalent
-	 * to the window position plus the length of the window, minus one.
-	 *
-	 * @return the last position in this window.
-	 */
-	long getWindowEndPosition();
+    /**
+     * Returns the final position in this window.  It is equivalent
+     * to the window position plus the length of the window, minus one.
+     *
+     * @return the last position in this window.
+     */
+    long getWindowEndPosition();
 
-	/**
-	 * Returns the starting position of the window after this one.  It is
-	 * equivalent to the window position plus the length of this window.
-	 *
-	 * @return The starting position of the window after this one.
-	 */
-	long getNextWindowPosition();
+    /**
+     * Returns the starting position of the window after this one.  It is
+     * equivalent to the window position plus the length of this window.
+     *
+     * @return The starting position of the window after this one.
+     */
+    long getNextWindowPosition();
 
-	/**
-	 * Returns the length of the Window. Note that this may be shorter than the
-	 * length of the byte array which backs this Window.
-	 *
-	 * @return The length of the Window.
-	 */
-	int length();
+    /**
+     * Returns the length of the Window. Note that this may be shorter than the
+     * length of the byte array which backs this Window.
+     *
+     * @return The length of the Window.
+     */
+    int length();
 }

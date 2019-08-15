@@ -34,6 +34,7 @@ package net.byteseek.io.reader.cache;
 import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.collections.LongLinkedHashMap;
 import net.byteseek.io.reader.windows.Window;
+import net.byteseek.utils.collections.LongMapEntry;
 
 import java.io.IOException;
 
@@ -98,7 +99,7 @@ public final class LeastRecentlyAddedCache extends AbstractMemoryCache {
         }
         
         @Override
-        protected boolean removeEldestEntry(final MapEntry<Window> eldest) {
+        protected boolean removeEldestEntry(final LongMapEntry<Window> eldest) {
             final boolean remove = size() > capacity;
             if (remove) {
                 removeWindow = eldest.getValue();

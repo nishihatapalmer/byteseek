@@ -422,4 +422,9 @@ public class IOUtilsTest {
         }
     }
 
+    @Test
+    public void testConstruction() {
+        new IOUtils(); // does nothing - it only has static utilities.
+    }
+
 }
