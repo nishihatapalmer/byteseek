@@ -31,12 +31,12 @@
 
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.incubator.matcher.bytes.SetBinarySearchMatcher;
 import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.WindowReader;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.*;
 
 import org.junit.Test;
@@ -104,9 +104,6 @@ public class SetBinarySearchMatcherTest extends BaseMatcherTest {
         ByteMatcher matcher = new SetBinarySearchMatcher(bytes, InvertibleMatcher.NOT_INVERTED);
         String toString = matcher.toString();
         assertTrue("Matcher contains class name", toString.contains(matcher.getClass().getSimpleName()));
-        assertTrue("Matcher contains inversion", toString.contains("inverted"));
-        assertTrue("Matcher contains byte 0", toString.contains("0"));
-        assertTrue("Matcher contains byte 255", toString.contains("-1"));
     }
 
     private void testRegularExpression(Set<Byte> bytesToTest) {

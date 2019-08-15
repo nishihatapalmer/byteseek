@@ -46,6 +46,8 @@ public class WildBitAnyMatcherTest extends BaseMatcherTest {
         final int numberWildBits = ByteUtils.countUnsetBits(mask);
         final int expectedCount  = mask == 0? 256 : 256 - (1 << numberWildBits);
         assertEquals(expectedCount, matchCount);
+        assertEquals(expectedCount, matcher.getNumberOfMatchingBytes());
+        assertEquals(256-expectedCount, inverted.getNumberOfMatchingBytes());
     }
 
     @Test
@@ -116,6 +118,9 @@ public class WildBitAnyMatcherTest extends BaseMatcherTest {
             case (byte) 0x0F: { // first nibble don't care:
                 return inverted? String.format("^~_%x", value & 0xF) :
                         String.format("~_%x", value & 0xF);
+            }
+            case (byte) 0xFF: { // no wild bits - just return value.
+                return inverted? String.format("^~%02x", value) : String.format("~%02x", value);
             }
             default : { // mixture of values:
                 final int maskValue = mask & 0xFF;

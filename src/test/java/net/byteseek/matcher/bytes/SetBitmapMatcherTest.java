@@ -31,13 +31,11 @@
 
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.incubator.matcher.bytes.SetLongArrayMatcher;
 import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.WindowReader;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.*;
 
 import org.junit.Test;
@@ -47,7 +45,7 @@ import static org.junit.Assert.*;
  *
  * @author matt
  */
-public class SetLongArrayMatcherTest extends BaseMatcherTest {
+public class SetBitmapMatcherTest extends BaseMatcherTest {
 
     Random randomGenerator = new Random();
 
@@ -57,7 +55,7 @@ public class SetLongArrayMatcherTest extends BaseMatcherTest {
     @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testNullBinarySearchMatcher() {
-        new SetLongArrayMatcher(null, false);
+        new SetBitmapMatcher(null, false);
     }
 
     /**
@@ -66,12 +64,12 @@ public class SetLongArrayMatcherTest extends BaseMatcherTest {
     @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyBinarySearchMatcher() {
-        new SetLongArrayMatcher(new LinkedHashSet<Byte>(), false);
+        new SetBitmapMatcher(new LinkedHashSet<Byte>(), false);
     }
 
 
     /**
-     * Test of all matching methods, of class SetLongArrayMatcher.
+     * Test of all matching methods, of class SetBitmapMatcher.
      *
      * Can't build all possible subsets of a byte set = 2^256 possible sets,
      * so generates a large number of random byte sets and tests them.
@@ -101,7 +99,7 @@ public class SetLongArrayMatcherTest extends BaseMatcherTest {
         Set<Byte> bytes = new HashSet<Byte>();
         bytes.add((byte) 0);
         bytes.add((byte) 255);
-        ByteMatcher matcher = new SetLongArrayMatcher(bytes, InvertibleMatcher.NOT_INVERTED);
+        ByteMatcher matcher = new SetBitmapMatcher(bytes, InvertibleMatcher.NOT_INVERTED);
         String toString = matcher.toString();
         assertTrue("Matcher contains class name", toString.contains(matcher.getClass().getSimpleName()));
         assertTrue("Matcher contains byte 0", toString.contains("0"));
@@ -110,20 +108,20 @@ public class SetLongArrayMatcherTest extends BaseMatcherTest {
 
     private void testRegularExpression(Set<Byte> bytesToTest) {
 
-        SetLongArrayMatcher matcher2NotInverted = new SetLongArrayMatcher(bytesToTest, InvertibleMatcher.NOT_INVERTED);
+        SetBitmapMatcher matcher2NotInverted = new SetBitmapMatcher(bytesToTest, InvertibleMatcher.NOT_INVERTED);
         testExpression("BinarySearchMatcher", matcher2NotInverted, bytesToTest);
 
-        SetLongArrayMatcher matcherInverted2 = new SetLongArrayMatcher(bytesToTest, InvertibleMatcher.INVERTED);
+        SetBitmapMatcher matcherInverted2 = new SetBitmapMatcher(bytesToTest, InvertibleMatcher.INVERTED);
         testExpression("BinarySearchMatcher", matcherInverted2, bytesToTest);
     }
 
     private void testSet(Set<Byte> testSet) throws Exception  {
         Set<Byte> otherBytes = ByteUtils.invertedSet(testSet);
 
-        SetLongArrayMatcher matcher2NotInverted = new SetLongArrayMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
+        SetBitmapMatcher matcher2NotInverted = new SetBitmapMatcher(testSet, InvertibleMatcher.NOT_INVERTED);
         testMatcher("BinarySearchMatcher", matcher2NotInverted, testSet, otherBytes);
 
-        SetLongArrayMatcher matcherInverted2 = new SetLongArrayMatcher(testSet, InvertibleMatcher.INVERTED);
+        SetBitmapMatcher matcherInverted2 = new SetBitmapMatcher(testSet, InvertibleMatcher.INVERTED);
         testMatcher("BinarySearchMatcher", matcherInverted2, otherBytes, testSet);
     }
 
@@ -143,10 +141,12 @@ public class SetLongArrayMatcherTest extends BaseMatcherTest {
 
         // test of matches(byte) method
         for (Byte byteShouldMatch : bytesMatched) {
-            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch), true, matcher.matches(byteShouldMatch));
+            assertEquals(String.format("%s: Byte %02x should match:", description, byteShouldMatch),
+                    true, matcher.matches(byteShouldMatch));
         }
         for (Byte byteShouldNotMatch : bytesNotMatched) {
-            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch), false, matcher.matches(byteShouldNotMatch));
+            assertEquals(String.format("%s: Byte %02x should not match:", description, byteShouldNotMatch),
+                    false, matcher.matches(byteShouldNotMatch));
         }
 
         // test of matches(WindowReader) method:

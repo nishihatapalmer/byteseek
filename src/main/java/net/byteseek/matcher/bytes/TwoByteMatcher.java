@@ -52,46 +52,34 @@ import net.byteseek.utils.ArgUtils;
  */
 public final class TwoByteMatcher extends AbstractByteMatcher {
 
-    private static final int ASCII_CASE_GAP = 'a' - 'A'; // The distance between upper and lower case in ASCII chars.
-    private static final byte LINE_FEED = 0x0A;
-    private static final byte CARRIAGE_RETURN = 0x0D;
-
     private static TwoByteMatcher[] caseInsensitiveMatchers;
     public static TwoByteMatcher LINE_BREAK;
-
-    /**
-     * Returns true if a byte is between ASCII A and Z inclusive.
-     * @param theByte The byte to test for ASCII uppercase.
-     * @return true if a byte is between ASCII A and Z inclusive.
-     */
-    public static boolean isUpperCase(final byte theByte) {
-        return ((theByte & 0xFF) >= 'A' && (theByte & 0xFF) <= 'Z');
-    }
-
-    public static boolean isLineBreak(final byte byte1, final byte byte2) {
-        return ((byte1 == LINE_FEED && byte2 == CARRIAGE_RETURN) ||
-                (byte1 == CARRIAGE_RETURN && byte2 == LINE_FEED));
-    }
 
     static {
         caseInsensitiveMatchers = new TwoByteMatcher[26];
         for (int i = 0; i < 26; i++) {
             caseInsensitiveMatchers[i] = new TwoByteMatcher((byte) (i + 'a'), (byte) (i + 'A'));
         }
-        LINE_BREAK = new TwoByteMatcher(LINE_FEED, CARRIAGE_RETURN);
+        LINE_BREAK = new TwoByteMatcher(ByteUtils.LINE_FEED, ByteUtils.CARRIAGE_RETURN);
     }
 
+    /**
+     * Returns an appropriate ByteMatcher given two bytes to match.
+     * If both bytes are the same, then a OneByteMatcher is returned.
+     * If both bytes are a case insensitive ASCII char, then a static case insensitive matcher is returned.
+     * If both bytes form a line break / carriage return, then a static line break matcher is returned.
+     * @param byte1 The first byte to match
+     * @param byte2 The second byte to match
+     * @return an appropriate ByteMatcher given two bytes to match.
+     */
     public static ByteMatcher valueOf(final byte byte1, final byte byte2) {
         if (byte1 == byte2) {
             return OneByteMatcher.valueOf(byte1);
         }
-        if (isUpperCase(byte1) && byte1 + ASCII_CASE_GAP == byte2) {
-            return caseInsensitiveMatchers[((int) byte1 & 0xFF) - 'A'];
+        if (ByteUtils.isCaseInsensitive(byte1, byte2)) {
+            return caseInsensitiveMatchers[Math.min(byte1, byte2) - 'A'];
         }
-        if (isUpperCase(byte2) && byte2 + ASCII_CASE_GAP == byte1) {
-            return caseInsensitiveMatchers[((int) byte2 & 0xFF) - 'A'];
-        }
-        if (isLineBreak(byte1, byte2)) {
+        if (ByteUtils.isLineBreak(byte1, byte2)) {
             return LINE_BREAK;
         }
         return new TwoByteMatcher(byte1, byte2);
@@ -105,10 +93,10 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
      * @return A case insensitive matcher for that byte value.
      */
     public static ByteMatcher caseInsensitive(final byte theByte) {
-        if (theByte >= 'A' && (theByte <= 'Z')) {
+        if (ByteUtils.isUpperCase(theByte)) {
             return caseInsensitiveMatchers[((int) theByte & 0xFF) - 'A'];
         }
-        if (theByte >= 'a' && (theByte <= 'z')) {
+        if (ByteUtils.isLowerCase(theByte)) {
             return caseInsensitiveMatchers[((int) theByte & 0xFF) - 'a'];
         }
         return OneByteMatcher.valueOf(theByte);
@@ -231,7 +219,6 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
     												  : new byte[] {firstByteToMatch};
     }
 
-    //TODO: case insensitive matches pretty printed differently?
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
         if (getNumberOfMatchingBytes() == 1) {
@@ -274,12 +261,4 @@ public final class TwoByteMatcher extends AbstractByteMatcher {
                 (firstByteToMatch == other.secondByteToMatch && secondByteToMatch == other.firstByteToMatch);
     }
 
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName() + "(" + String.format("%02x", firstByteToMatch & 0xFF) + ' ' +
-    			                                  String.format("%02x", secondByteToMatch & 0xFF) + ')';
-    }
-
-
-    
 }

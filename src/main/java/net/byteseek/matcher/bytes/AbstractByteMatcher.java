@@ -71,7 +71,7 @@ public abstract class AbstractByteMatcher extends AbstractSequenceMatcher implem
     /**
      * {@inheritDoc}
      *
-     * Always returns 1.
+     * Always returns 1 for ByteMatchers.
      */ 
     @Override
     public final int length() {

@@ -149,11 +149,6 @@ public class HashMultiSequenceMatcher implements MultiSequenceMatcher {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    /**
-     * 
-     * @param sequences
-     * @return
-     */
     public MultiSequenceMatcher newInstance(final Collection<? extends SequenceMatcher> sequences) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

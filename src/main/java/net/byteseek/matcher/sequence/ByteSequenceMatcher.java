@@ -710,18 +710,6 @@ public final class ByteSequenceMatcher extends AbstractSequenceMatcher {
             return false;
         }
 
-        /**
-         * Returns a string representation of this matcher.  The format is subject
-         * to change, but it will generally return the name of the matching class
-         * and a regular expression defining the bytes matched by the matcher.
-         * 
-         * @return A string representing this matcher.
-         */
-        @Override
-        public String toString() {
-            return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
-        }
-
         @Override
         public String toRegularExpression(final boolean prettyPrint) {
             //TODO: can we have a reverseBytesToString method instead...?

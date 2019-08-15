@@ -253,6 +253,7 @@ public abstract class AbstractMultiSequenceSearcher extends AbstractSearcher {
         final int longestMatchEndPosition = sequences.getMaximumLength() - 1;
         final long finalSearchPosition = toPosition > 0?
                                          toPosition : 0;
+        //TODO: check usage of withinLength - has caused bugs resetting negative from Positions back to zero.
         long searchPosition = withinLength(reader, fromPosition);
         
         // While there is data to search in:

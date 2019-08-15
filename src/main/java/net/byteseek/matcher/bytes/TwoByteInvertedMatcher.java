@@ -289,10 +289,4 @@ public final class TwoByteInvertedMatcher extends AbstractByteMatcher {
                (firstByteToNotMatch == other.secondByteToNotMatch && secondByteToNotMatch == other.firstByteToNotMatch);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + String.format("%02x", firstByteToNotMatch & 0xFF) + ' ' +
-                String.format("%02x", secondByteToNotMatch & 0xFF) + ')';
-    }
-
 }

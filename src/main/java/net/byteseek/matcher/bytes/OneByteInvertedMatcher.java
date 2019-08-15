@@ -139,11 +139,6 @@ public final class OneByteInvertedMatcher extends AbstractByteMatcher {
         return byteToMiss == ((OneByteInvertedMatcher) obj).byteToMiss;
     }
 
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName() + "(byte:" + String.format("%02x", byteToMiss & 0xFF) + ')';
-    }
-
     /**
      * Returns the single byte value which will not match.
      * @return the single byte value which will not match.

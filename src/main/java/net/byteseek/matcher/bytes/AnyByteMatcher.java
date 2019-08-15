@@ -130,11 +130,5 @@ public final class AnyByteMatcher extends AbstractByteMatcher {
     public boolean equals(final Object obj) {
         return obj instanceof AnyByteMatcher;
     }
-    
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName();
-    }
-
 
 }

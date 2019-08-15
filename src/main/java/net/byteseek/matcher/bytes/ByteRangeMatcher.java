@@ -177,10 +177,5 @@ public final class ByteRangeMatcher extends InvertibleMatcher {
                maxByteValue == other.maxByteValue &&
                inverted     == other.inverted;
     }
-    
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName() + '(' + toRegularExpression(false) + ')';
-    }
 
 }

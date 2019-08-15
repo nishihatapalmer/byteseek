@@ -144,11 +144,6 @@ public final class OneByteMatcher extends AbstractByteMatcher {
         return byteToMatch == other.byteToMatch;
     }
 
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName() + '(' +  String.format("%02x", byteToMatch & 0xFF) + ')';
-    }
-
     public byte getByteValue() {
         return byteToMatch;
     }

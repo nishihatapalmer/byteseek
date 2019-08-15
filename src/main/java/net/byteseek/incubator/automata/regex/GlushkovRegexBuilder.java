@@ -48,32 +48,32 @@ import net.byteseek.utils.ArgUtils;
  * This class helps to build an automata as it is invoked for each node of a regular 
  * expression parse-tree. It builds a particular kind of automata as it goes,
  * called a Glushkov automata.  
- * <p>
+ *  <p>&nbsp; 
  * A Glushkov Non-deterministic Finite-state Automata (NFA) is an automata which
  * is constructed to have one initial state, and additionally, a state for each
  * position in the regular expression that defines a byte or set of bytes.
- * <p>
+ *  <p>&nbsp; 
  * Each position has transitions to every other reachable position,
  * on the bytes which need to match to get to those positions.
- * <p>
+ *  <p>&nbsp; 
  * Being Non-Deterministic means that from any given state,
  * there can be transitions to several states on the same byte value.
  * (by contrast, Deterministic Finite-state Automata (DFAs) have at most one
  * state they can transition to on a given byte value.)
- * <p>
+ *  <p>&nbsp; 
  * Unlike the classic Thompson construction (the most common regular expression NFA)
  * Glushkov automata have no "empty" transitions - that is, transitions to another
  * state without reading a byte. The Thompson NFA uses empty transitions as a sort of 
  * permanent scaffolding to simplify constructing the automata, by wiring up states 
  * together as the need arises during construction.  
- * <p>
+ *  <p>&nbsp; 
  * Having no empty transitions makes the automata smaller, and easier to transform
  * it further (e.g. building a DFA from it) but makes constructing it a little more
  * difficult in the first place.
- * <p>
+ *  <p>&nbsp; 
  * The method of constructing a Glushkov automata used in this class is due to 
  * Champarnaud.  Details of the construction can be found in the paper:
- * <p>
+ *  <p>&nbsp; 
  *   "A reexamination of the Glushkov and Thompson Constructions"
  *    by Dora Giammarresi, Jean-Luc Ponty, Derick Wood, 1998.
  *
@@ -125,9 +125,9 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * and joins them together with a transition on the transition bytes
 	 * defined by the source type.
 	 *
-	 * <p><code>
+	 *  <p>&nbsp; <code>
 	 *   b      (0) --b--&gt; [1]
-	 * </code><p>
+	 * </code> <p>&nbsp; 
 	 *
 	 * @param source The thing to transition on.
 	 * @param inverted Whether to match all other bytes, or just the one passed in.
@@ -147,20 +147,20 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * Builds a single automata out of a list of automata,
 	 * by turning them into a sequence from the start to the end of the list.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *   XYZ    (0) ----> (1) ----> (2) ----> [3]
 	 *                X         Y         Z
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 * 
 	 * To create an automata joining a sequence of automata together,
 	 * we must transition each final state on the left to its neighbour states on the right.
-	 *<p>
+	 * <p>&nbsp; 
 	 * We can achieve this by copying all of the transitions of the right hand initial
 	 * state back to the final states of the automata on the left hand side.
 	 * Each final state effectively becomes an initial state of the
 	 * automata to its right. The original initial state of the right hand automata
 	 * is effectively "cut out of the loop" and does not form part of the sequence.
-	 *<p>
+	 * <p>&nbsp; 
 	 * The left hand side final states all become as final as the initial state
 	 * they end up bypassing - or as non-final as that state.
 	 *
@@ -220,7 +220,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * each of the alternatives with each other.  In practice, retain one state and
 	 * add the transitions of the other initial states to it.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 * 
 	 * X|Y|Z    (0) ----> [1]
 	 *           |    X
@@ -228,7 +228,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *           |    Y
 	 *            ------> [3]
 	 *                Z
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * The initial state is final if any of the alternate initial states were final.
 	 *
@@ -255,7 +255,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * This is done by making the initial state final,
 	 * allowing for an instant match to cover the zero case.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *  X*     [0] ----> [1] __
 	 *              X    ^    |                
 	 *                   |____|                     
@@ -265,7 +265,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *              X    ^     Y        |
 	 *                   |______________|
 	 *                         X
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * Additionally, all of the final states loop back to the states that
 	 * the initial state points to, allowing for as many repetitions as needed.
@@ -291,7 +291,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * This is done by making all the final states loop back to the states
 	 * that the initial state points to, allowing for as many repetitions as needed.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *   X+     [0) ----> [1] __    
 	 *                X    ^    |      
 	 *                     |____|                     
@@ -301,7 +301,7 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 *              X    ^     Y       |
 	 *                   |_____________|
 	 *                         X
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * It is the same as zeroToManyStates, except that the initial state is not made final.
 	 *
@@ -322,10 +322,10 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * Makes the automata passed in optional.
 	 * It does this by making the initial state final.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *     X?    [0] ----> [1]
 	 *                 X
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * @param optional THe automata to make optional.
 	 * @return An Automata which is optional.
@@ -342,13 +342,13 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * times, then it builds a zero-to-many automata. Finally, it joins both automata
 	 * together as a sequence.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *
 	 * X{2-*}  (0) ----> (1) ----> [2] ----> [3] __
 	 *               X         X         X    ^    |
 	 *                                        |____|
 	 *                                           X
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * @param minRepeat The minimum number of times to repeat.
 	 * @param repeatedAutomata The automata to repeat.
@@ -377,12 +377,12 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * joins both automata together as a sequence.  If the minimum number of repeats
 	 * is zero, it just builds up to the maximum number of repeated optional states.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *
 	 * X{2-4}  (0) ----> (1) ----> [2] ----> [3] ----> [4]
 	 *               X         X         X         X
 	 *                      
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * @param minRepeat The minimum number of times to repeat.
 	 * @param maxRepeat The maximum number of times to repeat.
@@ -415,12 +415,12 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * It achieves this by making a deep copy of the automata for each repeat,
 	 * which is made optional, and joining them together as a sequence.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *
 	 * (X){3}   [0] ----> [1] ----> [2] ----> [3]
 	 *                X         X         X
 	 * 
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * @param numberOptional the number of optional automata to repeat.
 	 * @param optional The automata to repeat.
@@ -442,12 +442,12 @@ public final class GlushkovRegexBuilder<T, S> implements RegexBuilder<T, S> {
 	 * It achieves this by making a deep copy of the automata for each repeat,
 	 * and joining them together as a sequence.
 	 *
-	 * <p><pre>{@code
+	 *  <p>&nbsp; <pre>{@code
 	 *
 	 * X{3}   (0) ----> (1) ----> (2) ----> [3]
 	 *              X         X         X
 	 *
-	 * }</pre><p>
+	 * }</pre> <p>&nbsp; 
 	 *
 	 * @param repeatNumber The number of times to repeat the automata.
 	 * @param repeatedAutomata The automata to repeat.

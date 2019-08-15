@@ -30,8 +30,10 @@
  */
 package net.byteseek.matcher.bytes;
 
+import net.byteseek.compiler.matcher.ByteMatcherCompiler;
 import net.byteseek.utils.ByteUtils;
 
+import net.byteseek.utils.StringUtils;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,7 +46,42 @@ import static org.junit.Assert.*;
  */
 public class AllBitmaskMatcherTest extends BaseMatcherTest {
 
-       /**
+    @Test
+    public void testEquivalentToWildBit()  throws Exception {
+        for (int i = 0; i < 256; i++) {
+            AllBitmaskMatcher all = new AllBitmaskMatcher((byte) i);
+            String regex = all.toRegularExpression(false);
+            ByteMatcher compiled = ByteMatcherCompiler.compileFrom(regex);
+            assertEquals(all.getNumberOfMatchingBytes(), compiled.getNumberOfMatchingBytes());
+            testEquivalentBytes(all, compiled);
+
+            all = new AllBitmaskMatcher((byte) i, true);
+            regex = all.toRegularExpression(false);
+            compiled = ByteMatcherCompiler.compileFrom(regex);
+            assertEquals(all.getNumberOfMatchingBytes(), compiled.getNumberOfMatchingBytes());
+            testEquivalentBytes(all, compiled);
+        }
+    }
+
+    private void testEquivalentBytes(AllBitmaskMatcher any, ByteMatcher compiled) {
+        byte[] matchAny = any.getMatchingBytes();
+        byte[] matchComp = compiled.getMatchingBytes();
+        for (byte b : matchAny) {
+            boolean found = false;
+            for (int i = 0; i < matchComp.length; i++) {
+                if (b == matchComp[i]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                fail(any.toString() + " " + compiled.toString() + "Needed to find byte " + b + " in the compiled version");
+            }
+        }
+    }
+
+
+    /**
      * Test of matches method, of class AllBitmaskMatcher.
      */
     @Test
@@ -201,12 +238,12 @@ public class AllBitmaskMatcherTest extends BaseMatcherTest {
     public void testToRegularExpression() {
         for (int count = 0; count < 256; count++) {
             AllBitmaskMatcher matcher = new AllBitmaskMatcher(b(count));
-            String expected = String.format("&%02x", count);
+            String expected = StringUtils.toWildByteRegex((byte) count, (byte) count);
             assertEquals(expected, matcher.toRegularExpression(false));
             assertEquals(expected, matcher.toRegularExpression(true));
 
             matcher = new AllBitmaskMatcher(b(count), true);
-            expected = String.format("^&%02x", count);
+            expected = "^" + expected;
             assertEquals(expected, matcher.toRegularExpression(false));
             assertEquals(expected, matcher.toRegularExpression(true));
         }
@@ -219,15 +256,14 @@ public class AllBitmaskMatcherTest extends BaseMatcherTest {
             AllBitmaskMatcher matcher = new AllBitmaskMatcher(b(count));
             String toString = matcher.toString();
             assertTrue(toString.contains(AllBitmaskMatcher.class.getSimpleName()));
-            String expected = String.format("%02x", count);
+            String expected = StringUtils.toWildByteRegex((byte) count, (byte) count);
             assertTrue(toString.contains(expected));
-            assertTrue(toString.contains("inverted"));
 
             matcher = new AllBitmaskMatcher(b(count), true);
             toString = matcher.toString();
             assertTrue(toString.contains(AllBitmaskMatcher.class.getSimpleName()));
+            assertTrue(toString.contains("^"));
             assertTrue(toString.contains(expected));
-            assertTrue(toString.contains("inverted"));
         }
     }
 

@@ -145,6 +145,7 @@ public class MultiSequenceMatcherSearcher extends AbstractMultiSequenceSearcher 
         final long fromPosition, final long toPosition) throws IOException {
         // Initialise:
         final MultiSequenceMatcher matcher = sequences;
+        //TODO: check usage of withinLength - has caused bugs resetting negative from Positions back to zero.
         long searchPosition = withinLength(reader, fromPosition);
         
         // While there is data to search in:

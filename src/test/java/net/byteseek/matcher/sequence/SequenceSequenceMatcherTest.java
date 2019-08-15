@@ -861,12 +861,10 @@ public class SequenceSequenceMatcherTest {
                 new TwoByteMatcher((byte) 0x01, (byte) 0x02), new TwoByteMatcher((byte) 0x03, (byte) 0x04),
                 new OneByteMatcher((byte) 0x01));
 
-        //TODO: fix tests, changed reg ex generation.
-        //assertEquals("reg ex 'AB' [01 02] [03 04] 01", "'AB' [01 02] [03 04] 01", matcher.toRegularExpression(true));
-        //assertEquals("reg ex 4142[0102][0304]01", "4142[0102][0304]01", matcher.toRegularExpression(false));
+        assertEquals("reg ex 'AB' [01 02] [03 04] 01", "'A' 'B' [01 02] [03 04] 01", matcher.toRegularExpression(true));
+        assertEquals("reg ex 4142[0102][0304]01", "4142[0102][0304]01", matcher.toRegularExpression(false));
     }
 
-    //TODO: fix tests
 	@Test
 	public void testReverseToRegularExpression() {
 		SequenceMatcher matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher("abc")).reverse();
@@ -894,7 +892,7 @@ public class SequenceSequenceMatcherTest {
 				new TwoByteMatcher((byte) 0x01, (byte) 0x02), new TwoByteMatcher((byte) 0x03, (byte) 0x04),
 				new OneByteMatcher((byte) 0x01)).reverse();
 
-		assertEquals("reg ex 01 [03 04] [01 02] 'BA'", "01 [03 04] [01 02] 'BA'", matcher.toRegularExpression(true));
+		assertEquals("reg ex 01 [03 04] [01 02] 'B' 'A'", "01 [03 04] [01 02] 'B' 'A'", matcher.toRegularExpression(true));
 		assertEquals("reg ex 01[0304][0102]4241", "01[0304][0102]4241", matcher.toRegularExpression(false));
 	}
 
@@ -902,7 +900,6 @@ public class SequenceSequenceMatcherTest {
     public void testToString() {
         SequenceSequenceMatcher matcher = new SequenceSequenceMatcher(new ByteSequenceMatcher("abc"));
         assertTrue("String contains class name", matcher.toString().contains("SequenceSequenceMatcher"));
-        assertTrue("String contains data", matcher.toString().contains("abc"));
     }
 
     @Test

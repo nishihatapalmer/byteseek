@@ -32,6 +32,7 @@ package net.byteseek.matcher.bytes;
 
 import java.util.*;
 
+import net.byteseek.incubator.matcher.bytes.SetBinarySearchMatcher;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.MathUtils;
@@ -50,8 +51,6 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
 
     public static final ByteMatcherFactory FACTORY = new OptimalByteMatcherFactory();
 
-    //PROFILE: validate with performance tests.
-    private static final int BINARY_SEARCH_THRESHOLD = 16;
 
     private static final int[] EMPTY_ARRAY = new int[0]; // used to avoid creating arrays if not necessary.
 
@@ -114,26 +113,9 @@ public final class OptimalByteMatcherFactory implements ByteMatcherFactory {
         result = createInvertedRangeOrBitmaskMatchers(bytes, matchInverse);
         if (result != null) { return result; }
 
-        // If we have a fairly small set of bytes (or a small inverse set), use the binary search matcher:
-        //TODO: profile where the optimium cut-off for binary search matchers lies.
-        result = createBinarySearchMatchers(bytes, matchInverse);
-        if (result != null) { return result; }
-
-        // No more specialised or efficient matcher exists for this set of bytes - use a bitset matcher, which has
-        // efficient O(1) lookup for any byte, but requires more memory to store the 256 bits in the bitset.
-        return new SetBitsetMatcher(bytes, matchInverse);
-    }
-
-    private ByteMatcher createBinarySearchMatchers(Set<Byte> bytes, boolean matchInverse) {
-        final int size = bytes.size();
-        if (size <= BINARY_SEARCH_THRESHOLD) {
-            return new SetBinarySearchMatcher(bytes, matchInverse);
-        }
-        //TODO: bug?  invert the matchInverse AND use an inverted set?  TESTS!
-        if (256 - size <= BINARY_SEARCH_THRESHOLD) {
-            return new SetBinarySearchMatcher(ByteUtils.invertedSet(bytes), !matchInverse);
-        }
-        return null;
+        // No more specialised or efficient matcher exists for this set of bytes - use a bitmap matcher, which has
+        // efficient O(1) lookup for any byte
+        return new SetBitmapMatcher(bytes, matchInverse);
     }
 
     private ByteMatcher createRangeOrBitmaskMatchers(final Set<Byte> bytes, boolean matchInverse) {

@@ -41,6 +41,7 @@ import net.byteseek.incubator.automata.regex.RegexBuilder;
 import net.byteseek.compiler.AbstractCompiler;
 import net.byteseek.compiler.CompileException;
 import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.Parser;
 import net.byteseek.parser.regex.RegexParser;
 import net.byteseek.parser.tree.ParseTree;
@@ -144,8 +145,8 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     protected Automata<T> doCompile(final ParseTree ast) throws CompileException, ParseException {
         switch (ast.getParseTreeType()) {
             case BYTE:						// Drop through - bytes, bitmasks (all and any), sets, ranges and any bytes
-            case ALL_BITMASK:				// are all just transitions on some specification of byte values we
-            case ANY_BITMASK:				// can make a transition on.
+            case WILDBIT:
+            case ANYBITS:
             case SET:
             case RANGE:
             case ANY:						return createTransitionAutomata(ast);

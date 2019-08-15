@@ -42,68 +42,71 @@ import net.byteseek.parser.tree.ParseTree;
 
 
 public final class ParseTreeTransitionFactory<T>
-  implements TransitionFactory<T, ParseTree> {
+        implements TransitionFactory<T, ParseTree> {
 
-  private final ByteMatcherFactory matcherFactory;
-  
-  public ParseTreeTransitionFactory() {
-    this(null);
-  }
-  
-  public ParseTreeTransitionFactory(final ByteMatcherFactory matcherFactory) {
-    this.matcherFactory = matcherFactory == null? OptimalByteMatcherFactory.FACTORY
-    											: matcherFactory;
-  }
+    private final ByteMatcherFactory matcherFactory;
 
-  @Override
-  public Transition<T> create(final ParseTree source,
-                              final boolean invert,
-                              final State<T> toState) {
-    try {
-      switch (source.getParseTreeType()) {
-        case BYTE:          return createByteTransition(source, toState);
-        case ALL_BITMASK:   return createAllBitmaskTransition(source, toState);
-        case ANY_BITMASK:   return createAnyBitmaskTransition(source, toState);
-        case ANY:           return createAnyTransition(source, toState);
-        case RANGE:			return createRangeTransition(source, toState);
-        case SET:           return createSetTransition(source, toState);
-      }
-    } catch (final ParseException justReturnNull) {
-      //TODO: Should a factory throw an exception?  If so, it involves some
-      //      extensive refactoring in the classes that use the factories, as
-      //      they currently don't expect to fail at creating transitions.
-      //      Maybe they should - there are inputs from which a transition can't be
-      //      created, for example, the empty set of bytes.  However, this will also
-      //      cascade into exceptions for building other kinds of things.  But I guess,
-      //      if it's possible to fail due to the arguments passed in, we can only choose 
-      //      a checked exception, or throw a runtime IllegalArgumentException...
+    public ParseTreeTransitionFactory() {
+        this(null);
     }
-    return null;
-  }
 
-  
-  private Transition<T> createByteTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition<T>(MatcherCompilerUtils.createByteMatcher(ast), toState);
-  }
-  
-  private Transition<T> createAllBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAllBitmaskMatcher(ast), toState);
-  }
+    public ParseTreeTransitionFactory(final ByteMatcherFactory matcherFactory) {
+        this.matcherFactory = matcherFactory == null ? OptimalByteMatcherFactory.FACTORY
+                : matcherFactory;
+    }
 
-  private Transition<T> createAnyBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-   return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAnyBitmaskMatcher(ast), toState);
-  }
-  
-  private Transition<T> createAnyTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-    return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAnyMatcher(ast), toState);
-  }
-  
-  private Transition<T> createRangeTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-	  return new ByteMatcherTransition<T>(MatcherCompilerUtils.createRangeMatcher(ast), toState);
-  }
-  
-  private Transition<T> createSetTransition(final ParseTree ast, final State<T> toState) throws ParseException {
-     return new ByteMatcherTransition<T>(MatcherCompilerUtils.createMatcherFromSet(ast, matcherFactory), toState);
-  }
+    @Override
+    public Transition<T> create(final ParseTree source,
+                                final boolean invert,
+                                final State<T> toState) {
+        try {
+            switch (source.getParseTreeType()) {
+                case BYTE:
+                    return createByteTransition(source, toState);
+                //TODO: add WildBit and WildBitAny transitions.
+                case ANY:
+                    return createAnyTransition(source, toState);
+                case RANGE:
+                    return createRangeTransition(source, toState);
+                case SET:
+                    return createSetTransition(source, toState);
+            }
+        } catch (final ParseException justReturnNull) {
+            //TODO: Should a factory throw an exception?  If so, it involves some
+            //      extensive refactoring in the classes that use the factories, as
+            //      they currently don't expect to fail at creating transitions.
+            //      Maybe they should - there are inputs from which a transition can't be
+            //      created, for example, the empty set of bytes.  However, this will also
+            //      cascade into exceptions for building other kinds of things.  But I guess,
+            //      if it's possible to fail due to the arguments passed in, we can only choose
+            //      a checked exception, or throw a runtime IllegalArgumentException...
+        }
+        return null;
+    }
+
+
+    private Transition<T> createByteTransition(final ParseTree ast, final State<T> toState) throws ParseException {
+        return new ByteMatcherTransition<T>(MatcherCompilerUtils.createByteMatcher(ast), toState);
+    }
+
+    private Transition<T> createAllBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
+        return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAllBitmaskMatcher(ast), toState);
+    }
+
+    private Transition<T> createAnyBitmaskTransition(final ParseTree ast, final State<T> toState) throws ParseException {
+        return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAnyBitmaskMatcher(ast), toState);
+    }
+
+    private Transition<T> createAnyTransition(final ParseTree ast, final State<T> toState) throws ParseException {
+        return new ByteMatcherTransition<T>(MatcherCompilerUtils.createAnyMatcher(ast), toState);
+    }
+
+    private Transition<T> createRangeTransition(final ParseTree ast, final State<T> toState) throws ParseException {
+        return new ByteMatcherTransition<T>(MatcherCompilerUtils.createRangeMatcher(ast), toState);
+    }
+
+    private Transition<T> createSetTransition(final ParseTree ast, final State<T> toState) throws ParseException {
+        return new ByteMatcherTransition<T>(MatcherCompilerUtils.createMatcherFromSet(ast, matcherFactory), toState);
+    }
 
 }

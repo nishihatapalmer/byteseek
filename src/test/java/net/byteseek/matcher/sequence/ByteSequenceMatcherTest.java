@@ -477,7 +477,7 @@ public class ByteSequenceMatcherTest {
 	}
 
 	private void addRandomMatchers(List<ByteMatcher> matchers) {
-        int length = rand.nextInt(30);
+        int length = rand.nextInt(30) + 1; // don't allow empty matchers.
         for (int i = 0; i < length; i++) {
             byte value = (byte) rand.nextInt(256);
             matchers.add(OneByteMatcher.valueOf(value));

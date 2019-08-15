@@ -139,8 +139,9 @@ public class OneByteMatcherTest extends BaseMatcherTest {
             SimpleTimer.timeMatcher(message, matcher);
         }
         String toString = matcher.toString();
-        assertTrue(toString.contains(OneByteMatcher.class.getSimpleName()));
-        assertTrue(toString.contains(String.format("%02x", theByte & 0xFF)));
+        assertTrue(toString, toString.contains(OneByteMatcher.class.getSimpleName()));
+        String expected = ByteUtils.byteToString(true, theByte & 0xFF);
+        assertTrue(toString + " " + expected, toString.contains(expected));
 
         SequenceMatcher repeated = matcher.repeat(1);
         assertEquals("repeat once is the same class", OneByteMatcher.class, repeated.getClass());

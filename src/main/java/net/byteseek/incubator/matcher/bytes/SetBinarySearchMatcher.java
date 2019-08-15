@@ -28,10 +28,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.matcher.bytes;
+package net.byteseek.incubator.matcher.bytes;
 
 import java.io.IOException;
 
+import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.matcher.bytes.InvertibleMatcher;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -45,6 +47,9 @@ import java.util.Collection;
  * uses a binary search to determine whether a given byte is in the
  * set of bytes.  This makes it more memory efficient than the {@link SetBitsetMatcher} class,
  * at the expense of slightly more time to match.
+ * <p>
+ * Profiling shows this is relatively quite slow and is only slightly more memory efficient.
+ * </p>
  *
  * @author Matt Palmer
  */
@@ -136,12 +141,6 @@ public final class SetBinarySearchMatcher extends InvertibleMatcher {
         return (hashCode == other.hashCode &&
                 inverted == other.inverted &&
                 Arrays.equals(bytesToMatch, other.bytesToMatch));
-    }
-    
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName() + "(bytes:" + ByteUtils.toList(bytesToMatch) +
-    										" inverted: " + inverted + ')';
     }
 
     private int calculateHash() {

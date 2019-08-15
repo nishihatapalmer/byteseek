@@ -150,6 +150,9 @@ public class WildBitMatcherTest extends BaseMatcherTest {
             case (byte) 0x0F: { // first nibble don't care:
                 return inverted? String.format("^_%x", value & 0xF) : String.format("_%x", value & 0xF);
             }
+            case (byte) 0xFF: { // no mask, just return value.
+                return inverted? String.format("^%02x", value & 0xFF) : String.format("%02x", value & 0xFF);
+            }
             default : { // mixture of values:
                 final int maskValue = mask & 0xFF;
                 final int valueVal  = value & 0xFF;

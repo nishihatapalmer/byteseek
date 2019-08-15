@@ -32,8 +32,8 @@
 package net.byteseek.matcher.bytes;
 
 import net.byteseek.matcher.sequence.ByteMatcherSequenceMatcher;
-import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ByteUtils;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class TwoByteInvertedMatcherTest extends BaseMatcherTest {
                 } else {
                     assertEquals(TwoByteInvertedMatcher.class, matcher.getClass());
 
-                    if (isCaseSensitive(first, second) || TwoByteMatcher.isLineBreak((byte) first, (byte) second)) {
+                    if (isCaseSensitive(first, second) || ByteUtils.isLineBreak((byte) first, (byte) second)) {
                         assertTrue(matcher == another); // same object if case sensitive.
                     } else {
                         assertFalse(matcher == another);

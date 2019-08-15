@@ -108,37 +108,17 @@ import java.util.List;
  public class SignedWuManberOneByteSearcher {
    
 
-    /**
-     * 
-     * @param matcher
-     * @return
-     */
     public static int getBlockSize(final MultiSequenceMatcher matcher) {
         return getBlockSize(matcher, 256);
     }
-    
-    
-    /**
-     * 
-     * @param matcher
-     * @param alphabetSize
-     * @return
-     */
+
     public static int getBlockSize(final MultiSequenceMatcher matcher,
                                    final int alphabetSize) {
         final int minLength = matcher.getMinimumLength();
         final int numberOfSequences = matcher.getSequenceMatchers().size();
         return getBlockSize(minLength, numberOfSequences, alphabetSize);
     }
-    
-    
-    /**
-     * 
-     * @param minimumLength
-     * @param numberOfSequences
-     * @param alphabetSize
-     * @return
-     */
+
     public static int getBlockSize(final int minimumLength, 
                                    final int numberOfSequences,
                                    final int alphabetSize) {
@@ -155,7 +135,7 @@ import java.util.List;
      * This formulae to suggest the optimum block size is suggested by
      * Wu and Manber.
      * 
-     * @param alphabetSize  
+     * @param alphabetSize The size of the alphabet to match against.
      * @param minimumLength The minimum length of all sequences to be matched.
      * @param numberOfSequences The number of sequences to be matched.
      * @return The suggested block size for an efficient Wu Manber search.
@@ -184,22 +164,11 @@ import java.util.List;
          * 
          */
     }    
-    
-    
-    /**
-     * 
-     * @param matcher 
-     */
+
     public SignedWuManberOneByteSearcher(final MultiSequenceMatcher matcher) {
         this(matcher, getBlockSize(matcher));
     }    
-    
-    
-    /**
-     * 
-     * @param matcher 
-     * @param blockSize 
-     */
+
     public SignedWuManberOneByteSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
         //super(createSearchInstance(matcher, blockSize));
     }
@@ -214,11 +183,7 @@ import java.util.List;
             this.matcher = matcher;
         }
     }
-    
-    
-    /**
-     * 
-     */
+
     public static abstract class AbstractWuManberSearcher extends AbstractMultiSequenceSearcher {
         
         private static int HIGHEST_POWER_OF_TWO = 1073741824;
@@ -235,12 +200,7 @@ import java.util.List;
          * 
          */
         protected final LazyObject<SearchInfo> backwardInfo;
-        
-        /**
-         * 
-         * @param matcher
-         * @param blockSize
-         */
+
         public AbstractWuManberSearcher(final MultiSequenceMatcher matcher, final int blockSize) {
             super(matcher);
             this.blockSize = blockSize;
@@ -372,10 +332,6 @@ import java.util.List;
          */
         protected class ForwardInfoFactory implements ObjectFactory<SearchInfo> {
 
-            /**
-             * 
-             * @return
-             */
             @Override
             public SearchInfo create() {
                 return new SearchInfo(getShifts(), getMatcher());
@@ -443,10 +399,6 @@ import java.util.List;
          */
         protected class BackwardSearchInfo implements ObjectFactory<SearchInfo> {
 
-            /**
-             * 
-             * @return
-             */
             @Override
             public SearchInfo create() {
                 return new SearchInfo(getShifts(), getMatcher());
@@ -507,17 +459,9 @@ import java.util.List;
         }
         
     }
-    
-    
-    /**
-     * 
-     */
+
     public static final class OneByteBlockSearcher extends AbstractWuManberSearcher {
 
-        /**
-         * 
-         * @param matcher
-         */
         public OneByteBlockSearcher(final MultiSequenceMatcher matcher) {
             super(matcher, 1);
         }

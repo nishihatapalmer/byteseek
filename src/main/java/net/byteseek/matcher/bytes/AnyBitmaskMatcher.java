@@ -37,6 +37,7 @@ import java.io.IOException;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.utils.StringUtils;
 
 /**
  * A {@link ByteMatcher} which matches a byte which shares any of its bits with a bitmask.
@@ -44,6 +45,11 @@ import net.byteseek.io.reader.WindowReader;
  * @deprecated The {@link WildBitAnyMatcher} class is a more general solution, as it allows you
  *             to specify which bits are "don't care" bits - the others can match either zero or one.
  *             This class only allows you specify "1" bits of which any must match.
+ *
+ * <p>
+ * <b>Note</b> This class will return a regular expression which is compatible with v3 syntax,
+ * and matches the same bytes as the AnyBitmaskMatcher.  Therefore, if you serialise this class as a regular
+ * expression, and then parse and compile the regular expression, you will get a different ByteMatcher.
  * 
  * @author Matt Palmer
  */
@@ -92,8 +98,15 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
 
     @Override
     public String toRegularExpression(final boolean prettyPrint) {
-        final String wrapper = inverted? "^~%02x" : "~%02x";
-        return String.format(wrapper, 0xFF & mBitMaskValue);
+        final StringBuilder builder = new StringBuilder();
+        if (mBitMaskValue == 0) { // bitmask value of 0 matches nothing - it's a horrid edge case for AnyBitmaskMatchers.
+            builder.append(inverted? "__" : "^__"); // if inverted, match everthing, otherwise match nothing.
+        } else {
+            if (inverted) builder.append('^');
+            builder.append('~');
+            StringUtils.appendWildByteRegex(builder, mBitMaskValue, mBitMaskValue);
+        }
+        return builder.toString();
     }
 
     @Override
@@ -127,13 +140,6 @@ public final class AnyBitmaskMatcher extends InvertibleMatcher {
         }
         final AnyBitmaskMatcher other = (AnyBitmaskMatcher) obj;
         return mBitMaskValue == other.mBitMaskValue && inverted == other.inverted;
-    }
-
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName() +
-                "(bitmask:"  + String.format("%02x", mBitMaskValue & 0xFF) +
-                " inverted:" + inverted + ')';
     }
 
 }

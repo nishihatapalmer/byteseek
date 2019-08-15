@@ -52,18 +52,18 @@ import net.byteseek.utils.ArgUtils;
  * Constructors taking a wide variety of data types are provided : bytes and byte arrays, strings, 
  * collections and arrays of ByteMatchers and ByteMatcherSequenceMatchers. Subsequences and repeats can
  * also be specified in them.
- * <p>
+ *  <p>&nbsp; 
  * ByteMatcherSequenceMatchers can match sequences where any position in the sequence is matched by
  * any sort of byte matcher - single bytes, inverted bytes, ranges, bitmasks or arbitrary sets
  * of bytes.  For example (using the byteseek regular expression syntax):
- * <p>
- * <p><code>
+ *  <p>&nbsp; 
+ *  <p>&nbsp; <code>
  * 'begin:' [00 ff] \d \d \d \s 'end.'
- * </code><p>
- * <p>
+ * </code> <p>&nbsp; 
+ *  <p>&nbsp; 
  * would match a string starting with 'begin:', followed by either byte 00 or byte ff, then three digits and
  * some whitespace, followed by 'end.'.
- * <p>
+ *  <p>&nbsp; 
  * A public static ReverseByteMatcherSequenceMatcher class is also provided, that does the same thing but matching the 
  * reverse of a sequence given to it. If constructed from a ByteMatcherSequenceMatcher, it will
  * share the underlying ByteMatcher array of the ByteMatcherSequenceMatcher, as a reverse view over the original sequence.  
@@ -121,7 +121,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 	/**
      * Constructs an immutable ByteMatcherSequenceMatcher from an array of bytes, which 
      * can be passed in directly as an array of bytes, or specified as a comma-separated list of bytes.
-     * <p>
+     *  <p>&nbsp; 
      * The byte array is just used as a template to construct from - 
      * it will be independent of it afterwards.
      * 
@@ -218,7 +218,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
     /**
      * Constructs an immutable ByteMatcherSequenceMatcher from a subsequence of an array of bytes.
      * The subsequence is specified with a start index (inclusive) and end index (exclusive).
-     * <p>
+     *  <p>&nbsp; 
      * It will be entirely independent of the byte array passed in after construction.
      *  
      * @param array The array of bytes to match a subsequence of.
@@ -515,9 +515,6 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         return false;
     }
 
-
-    
-    
     /**
      * {@inheritDoc}
      * 
@@ -695,19 +692,6 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
         }
         return false;
     }
-    
-    /**
-     * Returns a string representation of this matcher.  The format is subject
-     * to change, but it will generally return the name of the matching class
-     * and a regular expression defining the bytes matched by the matcher.
-     * 
-     * @return A string representing this matcher.
-     */
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + '(' + toRegularExpression(true) + ')';
-    }
-    
     
     /*******************
      * Private methods *
@@ -900,7 +884,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 		/**
 		 * Constructs an immutable ReverseByteMatcherSequenceMatcher from a source 
 		 * ReverseByteMatcherSequenceMatcher given a number of times to repeat the original.
-		 * <p>
+		 *  <p>&nbsp; 
 		 * If the number of repeats is one, the underlying storage will be shared.
 		 * 
 		 * @param numberOfRepeats The number of times to repeat the original.
@@ -948,7 +932,7 @@ public final class ByteMatcherSequenceMatcher extends AbstractSequenceMatcher {
 		/**
 		 * Constructs an immutable ReverseByteMatcherSequenceMatcher from a ByteMatcherSequenceMatcher.
 		 * The constructed object will match the reverse sequence of the original forward matcher.
-		 * <p>
+		 *  <p>&nbsp; 
 		 * The constructed object will share the underlying storage of the original matcher.
 		 * 
 		 * @param forwardMatcher The forward matcher to construct from.
