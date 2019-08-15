@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-2013, All rights reserved.
+ * Copyright Matt Palmer 2012-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,123 +31,170 @@
 
 package net.byteseek.parser.tree.node;
 
-import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.tree.ParseTreeType;
 
 /**
  * An immutable ParseTree node that has a byte value.  The value can optionally also be inverted.
- * ByteNodes have a ParseTreeType of ParseTreeType.BYTE by default, but can also be of
- * type ANY_BITMASK and ALL_BITMASK.
  * <p>
- * ByteNodes have no children.  
- * 
- * @author Matt Palmer
+ * ByteNodes have no children.
  *
+ * @author Matt Palmer
  */
 public final class ByteNode extends BaseNode {
 
-  private final byte value;
-  private final boolean inverted; 
-  
-  
-  private static class NodeCache {
-	  
-	  static final ByteNode[] values = new ByteNode[256];
-	  
-	  static {
-		  for (int i = 0; i < 256; i++) {
-			  values[i] = new ByteNode((byte) (i & 0xFF));
-		  }
-	  }
-	  
-  }
-  
-  public static ByteNode valueOf(final byte value) {
-	  return NodeCache.values[value & 0xff];
-  }
-  
-  
-  public static ByteNode valueOf(final byte value, final boolean inverted) {
-	  return inverted? new ByteNode(value, true) : valueOf(value);
-  }
-  
-  
-  /**
-   * Constructs a ByteNode with the given value.
-   * 
-   * @param value The value of the ByteNode.
-   */
-  public ByteNode(final byte value) {
-    this(value, false);
-  }
-  
-  
-  /**
-   * Constructs a ByteNode with the given type and value.
-   * @param type The type of the ByteNode
-   * @param value The byte value of the byte node.
-   */
-  public ByteNode(final ParseTreeType type, final byte value) {
-	  this(type, value, false);
-  }
-  
+    private final byte value;
+    private final boolean inverted;
 
-  /**
-   * Constructs a ByteNode with the given value and inversion status.
-   * 
-   * @param value The value of the ByteNode.
-   * @param inverted Whether the value should be inverted or not.
-   */
-  public ByteNode(final byte value, final boolean inverted) {
-    this(ParseTreeType.BYTE, value, inverted);
-  }
+    private static class NodeCache {
+        static final ByteNode[] values = new ByteNode[256];
+        static {
+            for (int i = 0; i < 256; i++) {
+                values[i] = new ByteNode((byte) (i & 0xFF));
+            }
+        }
+    }
 
-  
-  /**
-   * Constructs a ByteNode with the given type, value and inversion status.
-   * 
-   * @param type The type of the ByteNode. Allowed values are BYTE, ANY_BITMASK and ALL_BITMASK.
-   * @param value The value of the ByteNode.
-   * @param inverted Whether the value should be inverted or not.
-   */
-  public ByteNode(final ParseTreeType type, final byte value, final boolean inverted) {
-	  super(type);
-	  this.value = value;
-	  this.inverted = inverted;
-  }
+    /**
+     * Returns a statically cached ByteNode for a given byte.
+     * @param value A statically cached ByteNode for the byte supplied.
+     * @return A statically cached ByteNode for the byte supplied
+     */
+    public static ByteNode valueOf(final byte value) {
+        return NodeCache.values[value & 0xff];
+    }
 
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public byte getByteValue() {
-    return value;
-  }
-  
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int getIntValue() {
-    return value & 0xFF;
-  }
-  
- 
-  /**
-   * Returns whether the value of the byte node should be inverted or not.
-   * @return boolean True if the value should be inverted.
-   */
-  @Override
-  public boolean isValueInverted() {
-	return inverted;
-  }
-  
+    /**
+     * Returns either a statically cached Byteode for a given byte if not inverted.
+     * If inverted, returns a new inverted ByteNode for the given byte.
+     * @param value The byte value we want a ByteNode for.
+     * @param inverted Whether the ByteNode should be inverted or not.
+     * @return A ByteNode for the given byte value and inversion.
+     */
+    public static ByteNode valueOf(final byte value, final boolean inverted) {
+        return inverted ? new ByteNode(value, true) : valueOf(value);
+    }
 
-  @Override
-  public String toString() {
-	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + " inverted: " + inverted + ']';
-  }
+    /**
+     * Constructs a ByteNode with the given value.
+     *
+     * @param value The value of the ByteNode.
+     */
+    public ByteNode(final byte value) {
+        this(ParseInfo.NO_INFO, value, false);
+    }
+
+    /**
+     * Constructs a ByteNode with the given value and ParseInfo about where in a string
+     * the parsing is taking place.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param value The value of the ByteNode.
+     */
+    public ByteNode(final ParseInfo info, final byte value) {
+        this(info, value, false);
+    }
+
+    /**
+     * Constructs a ByteNode with the given type and value.
+     *
+     * @param type  The type of the ByteNode
+     * @param value The byte value of the byte node.
+     */
+    public ByteNode(final ParseTreeType type, final byte value) {
+        this( ParseInfo.NO_INFO, type, value, false);
+    }
+
+    /**
+     * Constructs a ByteNode with the given type and value and ParseInfo about where in a string
+     * the parsing is taking place.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type  The type of the ByteNode
+     * @param value The byte value of the byte node.
+     */
+    public ByteNode(final ParseInfo info, final ParseTreeType type, final byte value) {
+        this(info, type, value, false);
+    }
+
+    /**
+     * Constructs a ByteNode with the given value and inversion status.
+     *
+     * @param value    The value of the ByteNode.
+     * @param inverted Whether the value should be inverted or not.
+     */
+    public ByteNode(final byte value, final boolean inverted) {
+        this(ParseInfo.NO_INFO, ParseTreeType.BYTE, value, inverted);
+    }
+
+    /**
+     * Constructs a ByteNode with the given value and inversion status, and
+     * information about where in a string the ByteNode was parsed.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param value    The value of the ByteNode.
+     * @param inverted Whether the value should be inverted or not.
+     */
+    public ByteNode(final ParseInfo info, final byte value, final boolean inverted) {
+        this(info, ParseTreeType.BYTE, value, inverted);
+    }
+
+    /**
+     * Constructs a ByteNode with the given type, value and inversion status.
+     *
+     * @param type     The type of the ByteNode.
+     * @param value    The value of the ByteNode.
+     * @param inverted Whether the value should be inverted or not.
+     */
+    public ByteNode(final ParseTreeType type, final byte value, final boolean inverted) {
+        this(ParseInfo.NO_INFO, type, value, inverted);
+    }
+
+    /**
+     * Constructs a ByteNode with the given type, value and inversion status, and information on
+     * where in a string this ByteNode is being parsed.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type     The type of the ByteNode.
+     * @param value    The value of the ByteNode.
+     * @param inverted Whether the value should be inverted or not.
+     */
+    public ByteNode(final ParseInfo info, final ParseTreeType type, final byte value, final boolean inverted) {
+        super(info, type);
+        this.value = value;
+        this.inverted = inverted;
+    }
+
+    /**
+     * Returns the byte value of this node.
+     * @return the byte value of this node.
+     */
+    @Override
+    public byte getByteValue() {
+        return value;
+    }
+
+    /**
+     * Returns the byte value of this node as an integer value.
+     * @return the byte value of this node as an integer value between 0 and 255.
+     */
+    @Override
+    public int getIntValue() {
+        return value & 0xFF;
+    }
+
+    /**
+     * Returns whether the node value should be inverted or not.
+     * @return whether the node value should be inverted or not.
+     */
+    @Override
+    public boolean isValueInverted() {
+        return inverted;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getParseTreeType() + ", value:" + value + " inverted: " + inverted + ')';
+    }
 
 }

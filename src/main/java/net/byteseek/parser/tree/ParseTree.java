@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-2013, All rights reserved.
+ * Copyright Matt Palmer 2012-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,13 +31,15 @@
 package net.byteseek.parser.tree;
 
 import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.Parser;
 
+import java.nio.charset.Charset;
 
 /**
  * An interface for an Abstract Syntax Tree (AST) produced by a {@link Parser},
  * <p>
- * Each instance of this interface represents a node in the AST.  Nodes can 
+ * Each instance of this interface represents a node in the AST.  Nodes can
  * be roughly divided into value-carrying nodes (which represent a byte, integer
  * or text value to match), and structural nodes (which represent instructions to
  * perform operations on the child nodes or to otherwise interpret their value).
@@ -48,81 +50,82 @@ import net.byteseek.parser.Parser;
  * inverted to match.  For example, a single byte value node with the value 'FF',
  * which is also inverted should match everything except 'FF'.  Note that inversion
  * doesn't make sense for integer or text nodes.
- * 
- * @author Matt Palmer
  *
+ * @author Matt Palmer
  */
-public interface ParseTree extends Iterable<ParseTree> {
+public interface ParseTree extends Iterable<ParseTree>, ParseInfo {
 
-  /**
-   * Returns the type of the ParseTree node. The {@link ParseTreeType} of a
-   * node defines the expected implementation of the methods in 
-   * this interface, which is specified in the JavaDoc for each ParseTreeType.
-   * 
-   * @return ParseTreeType The type of the ParseTreeNode.
-   */
-	public ParseTreeType getParseTreeType();
+    /**
+     * Returns the type of the ParseTree node. The {@link ParseTreeType} of a
+     * node defines the expected implementation of the methods in
+     * this interface, which is specified in the JavaDoc for each ParseTreeType.
+     *
+     * @return ParseTreeType The type of the ParseTreeNode.
+     */
+    ParseTreeType getParseTreeType();
 
-	/**
-	 * Returns a byte representing the value of this node, 
-	 * or throws a ParseException if no such byte value exists, or
-	 * another problem occurs parsing the value.
-	 * 
-	 * @return A byte value of this node.
-	 * @throws ParseException If no such byte value exists or another 
-	 *          problem occurs parsing the value.
-	 */
-	public byte getByteValue() throws ParseException;
+    /**
+     * Returns a byte representing the value of this node,
+     * or throws a ParseException if no such byte value exists, or
+     * another problem occurs parsing the value.
+     *
+     * @return A byte value of this node.
+     * @throws ParseException If no such byte value exists or another
+     *                        problem occurs parsing the value.
+     */
+    byte getByteValue() throws ParseException;
 
-	/**
-	 * Returns an integer representing the value of this node,
-	 * or throws a ParseException if no such int value exists,
-	 * or another problem occurs parsing the value.
-	 * 
-	 * @return An integer value of this node.
-	 * @throws ParseException If no such integer value exists or another
-	 *          problem occurs parsing the value.
-	 */
-	public int getIntValue() throws ParseException;
+    /**
+     * Returns an integer representing the value of this node,
+     * or throws a ParseException if no such int value exists,
+     * or another problem occurs parsing the value.
+     *
+     * @return An integer value of this node.
+     * @throws ParseException If no such integer value exists or another
+     *                        problem occurs parsing the value.
+     */
+    int getIntValue() throws ParseException;
 
-	
-	/**
-	 * Returns a String representing the value of this node,
-	 * or throws a ParseException if no such String value exists,
-	 * or another problem occurs parsing the value.
-	 * 
-	 * @return A String value of this node.
-	 * @throws ParseException If no such String value exists or another
-	 *          problem occurs parsing the value.
-	 */
-	public String getTextValue() throws ParseException;
-	
-	
-	/**
-	 * Returns whether the value of this node should be inverted or not.
-	 * 
-	 * @return boolean True if the value of this node should be inverted by a compiler.
-	 */
-	public boolean isValueInverted();
+    /**
+     * Returns a String representing the value of this node,
+     * or throws a ParseException if no such String value exists,
+     * or another problem occurs parsing the value.
+     *
+     * @return A String value of this node.
+     * @throws ParseException If no such String value exists or another
+     *                        problem occurs parsing the value.
+     */
+    String getTextValue() throws ParseException;
 
-	
-	/**
-	 * Returns the number of child nodes this node has.
-	 * 
-	 * @return int The number of child nodes this node has.
-	 */
-	public int getNumChildren();
-	
-	
-	/**
-	 * Returns the child node at the given index position.
-	 * 
-	 * @param childIndex The index of the child to get.
-	 * @return ParseTree the child node at the given index position.
-	 * @throws IndexOutOfBoundsException if childIndex is less than zero or greater than or equal to the number of child nodes.
-	 */
-	public ParseTree getChild(int childIndex);
-	
+    /**
+     * Returns the Charset that a text value should be encoded with.
+     *
+     * @return a Charset that the text value should be encoded with.
+     * @throws ParseException If no such encoding value exists.
+     */
+    Charset getTextEncoding() throws ParseException;
 
+    /**
+     * Returns whether the value of this node should be inverted or not.
+     *
+     * @return boolean True if the value of this node should be inverted by a compiler.
+     */
+    boolean isValueInverted();
+
+    /**
+     * Returns the number of child nodes this node has.
+     *
+     * @return int The number of child nodes this node has.
+     */
+    int getNumChildren();
+
+    /**
+     * Returns the child node at the given index position.
+     *
+     * @param childIndex The index of the child to get.
+     * @return ParseTree the child node at the given index position.
+     * @throws IndexOutOfBoundsException if childIndex is less than zero or greater than or equal to the number of child nodes.
+     */
+    ParseTree getChild(int childIndex);
 }
 

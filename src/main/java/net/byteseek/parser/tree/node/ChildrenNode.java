@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-2013, All rights reserved.
+ * Copyright Matt Palmer 2012-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.utils.collections.ImmutableListIterator;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
@@ -53,60 +54,98 @@ public final class ChildrenNode extends BaseNode {
 
 	private final List<ParseTree> children;
 	private final boolean inverted; 
-	
-	
+
 	/**
 	 * Constructs a ChildrenNode with no children and a given type.
 	 * 
 	 * @param type The ParseTreeType of the node.
 	 */
 	public ChildrenNode(final ParseTreeType type) {
-		this(type, (List<ParseTree>) null, false);
+		this(ParseInfo.NO_INFO, type, (List<ParseTree>) null, false);
 	}
 	
 	/**
 	 * Constructs a ChildrenNode with no children, a given type,
 	 * and whether the value should be inverted or not.
-	 * 
+	 *
+     * @param info ParseInfo about where in a string the parsing is taking place.
 	 * @param type The ParseTreeType of the node.
 	 * @param isInverted Whether the value of the node is inverted or not.
 	 */
-	public ChildrenNode(final ParseTreeType type, final boolean isInverted) {
-		this(type, (List<ParseTree>) null, isInverted);
+	public ChildrenNode(final ParseInfo info, final ParseTreeType type, final boolean isInverted) {
+		this(info, type, (List<ParseTree>) null, isInverted);
 	}
-	
-	/**
+
+    /**
+     * Constructs a ChildrenNode with a given type, copying the list of children passed in.
+     * <p>
+     *
+     * @param type The ParseTreeType of this ChildrenNode.
+     * @param children The list of child ParseTrees for this ChildrenNode.
+     */
+    public ChildrenNode(final ParseTreeType type, final List<ParseTree> children) {
+        this(ParseInfo.NO_INFO, type, children, false);
+    }
+
+    /**
 	 * Constructs a ChildrenNode with a given type, copying the list of children passed in.
 	 * <p>
-	 * 
-	 * @param type The ParseTreeType of this ChildrenNode.
+	 *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type The ParseTreeType of this ChildrenNode.
 	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 */
-	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children) {
-		this(type, children, false);
+	public ChildrenNode(ParseInfo info, final ParseTreeType type, final List<ParseTree> children) {
+		this(info, type, children, false);
 	}
-	
+
 	/**
 	 * Constructs an uninverted ChildrenNode with a given type, adding the parse tree passed in as a child.
 	 * <p>
-	 * 
+	 *
 	 * @param type The ParseTreeType of this ChildrenNode.
 	 * @param child The ParseTree to be made the child of this node.
 	 */
 	public ChildrenNode(final ParseTreeType type, final ParseTree child) {
-		this(type, child, false);
+		this(ParseInfo.NO_INFO, type, child, false);
 	}
+
+	/**
+	 * Constructs an uninverted ChildrenNode with a given type, adding the parse tree passed in as a child.
+	 * <p>
+	 *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type The ParseTreeType of this ChildrenNode.
+	 * @param child The ParseTree to be made the child of this node.
+	 */
+	public ChildrenNode(final ParseInfo info, final ParseTreeType type, final ParseTree child) {
+		this(info, type, child, false);
+	}
+
+    /**
+     * Constructs a ChildrenNode with a given type and inversion, adding the child to it.
+     * <p>
+     *
+     * @param type The ParseTreeType of this ChildrenNode.
+     * @param child The ParseTree to be made the child of this node.
+     * @param inverted Whether this node is inverted or not.
+     */
+    public ChildrenNode(final ParseTreeType type, final ParseTree child, final boolean inverted) {
+        this(ParseInfo.NO_INFO, type, child, inverted);
+    }
 
 	/**
 	 * Constructs a ChildrenNode with a given type and inversion, adding the child to it.
 	 * <p>
-	 * 
-	 * @param type The ParseTreeType of this ChildrenNode.
+	 *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type The ParseTreeType of this ChildrenNode.
 	 * @param child The ParseTree to be made the child of this node.
 	 * @param inverted Whether this node is inverted or not.
 	 */
-	public ChildrenNode(final ParseTreeType type, final ParseTree child, final boolean inverted) {
-		super(type);
+	public ChildrenNode(final ParseInfo info, final ParseTreeType type,
+                        final ParseTree child, final boolean inverted) {
+		super(info, type);
 		if (child == null) {
 			this.children = new ArrayList<ParseTree>(0);
 		} else {
@@ -115,47 +154,81 @@ public final class ChildrenNode extends BaseNode {
 		}
 		this.inverted = inverted;
 	}
-	
+
+    /**
+     * Constructs a ChildreNode, not inverted, and taking all the ParseTree
+     * parameters provided as children of the node.
+     *
+     * @param type The type of the ChildrenNode
+     * @param parseTrees The children of this node.
+     */
+    public ChildrenNode(final ParseTreeType type, final ParseTree...parseTrees) {
+        this(ParseInfo.NO_INFO, type, false, parseTrees);
+    }
 
 	/**
 	 * Constructs a ChildreNode, not inverted, and taking all the ParseTree
 	 * parameters provided as children of the node.
-	 * 
-	 * @param type The type of the ChildrenNOde
+	 *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type The type of the ChildrenNode
 	 * @param parseTrees The children of this node.
 	 */
-	public ChildrenNode(final ParseTreeType type, final ParseTree...parseTrees) {
-		this(type, false, parseTrees);
+	public ChildrenNode(final ParseInfo info, final ParseTreeType type, final ParseTree...parseTrees) {
+		this(info, type, false, parseTrees);
 	}
 
-	
-	
+    /**
+     * Constructs a ChildreNode with the inversion status passed in, and taking all the ParseTree
+     * parameters provided as children of the node.
+     *
+     * @param type The type of the ChildrenNode
+     * @param inverted Whether the node is inverted or not.
+     * @param parseTrees The children of this node.
+     */
+    public ChildrenNode(final ParseTreeType type, final boolean inverted, final ParseTree...parseTrees) {
+        this(ParseInfo.NO_INFO, type, inverted, parseTrees);
+    }
+
 	/**
 	 * Constructs a ChildreNode with the inversion status passed in, and taking all the ParseTree
 	 * parameters provided as children of the node.
-	 * 
-	 * @param type The type of the ChildrenNOde
+	 *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type The type of the ChildrenNOde
 	 * @param inverted Whether the node is inverted or not.
 	 * @param parseTrees The children of this node.
 	 */
-	public ChildrenNode(final ParseTreeType type, final boolean inverted, final ParseTree...parseTrees) {
-		super(type);
+	public ChildrenNode(final ParseInfo info, final ParseTreeType type, final boolean inverted, final ParseTree...parseTrees) {
+		super(info, type);
 		this.children = Arrays.asList(parseTrees);
 		this.inverted = inverted;
 	}
-	
-	
-	/**
+
+    /**
+     * Constructs a ChildrenNode with a given type, inversion status and list of child ParseTrees.
+     * If the list of child parsetrees is null, then the node is constructed with an empty list of children.
+     *
+     * @param type The ParseTreeType of this ChildrenNode.
+     * @param children The list of child ParseTrees for this ChildrenNode.
+     * @param inverted Whether the value of this node should be inverted or not.
+     */
+    public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,final boolean inverted) {
+        this(ParseInfo.NO_INFO, type, children, inverted);
+    }
+
+    /**
 	 * Constructs a ChildrenNode with a given type, inversion status and list of child ParseTrees.
 	 * If the list of child parsetrees is null, then the node is constructed with an empty list of children.
-	 * 
-	 * @param type The ParseTreeType of this ChildrenNode.
+	 *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type The ParseTreeType of this ChildrenNode.
 	 * @param children The list of child ParseTrees for this ChildrenNode.
 	 * @param inverted Whether the value of this node should be inverted or not.
 	 */
-	public ChildrenNode(final ParseTreeType type, final List<ParseTree> children,
+	public ChildrenNode(final ParseInfo info, final ParseTreeType type, final List<ParseTree> children,
 			   			final boolean inverted) {
-		super(type);
+        super(info, type);
 		this.children = children == null? new ArrayList<ParseTree>(0)
 									    : new ArrayList<ParseTree>(children);
 		this.inverted = inverted;
@@ -185,19 +258,19 @@ public final class ChildrenNode extends BaseNode {
 	public Iterator<ParseTree> iterator() {
 		return new ImmutableListIterator<ParseTree>(children);
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
+
+    /**
+     * Returns whether the value should be inverted or not.
+     * @return whether the value should be inverted or not.
+     */
 	@Override
 	public boolean isValueInverted() {
 		return inverted;
 	}
-	
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '[' + getParseTreeType() + ", num children:" + children.size() + ']';  
+        return getClass().getSimpleName() + '(' + getParseTreeType() + ", num children:" + children.size() + ')';
     }
 
 }

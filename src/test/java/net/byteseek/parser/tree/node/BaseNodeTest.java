@@ -71,18 +71,11 @@ public class BaseNodeTest {
 			node.getTextValue();
 			fail("Expected a ParseException if asked for the text value");
 		} catch (ParseException allIsFine) {}
-		
-		/*
+
 		try {
-			node.addChild(new BaseNode(ParseTreeType.ALL_BITMASK));
-			fail("Expected an UnsupportedOperationException when adding a child");
-		} catch (UnsupportedOperationException expected) {}
-		
-		try {
-			node.removeChild(0);
-			fail("Expected an UnsupportedOperationException when removing a child");
-		} catch (UnsupportedOperationException expected) {}
-		*/
+			node.getTextEncoding();
+			fail("Expected a ParseException if asked for the text encoding");
+		} catch (ParseException allIsFine) {}
 		
 		try {
 			node.getChild(0);

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2011, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -33,42 +33,62 @@ package net.byteseek.parser;
 
 /**
  * A checked exception class representing the failure to parse an expression.
- * 
+ *
  * @author Matt Palmer
  */
-public class ParseException extends Exception {
+public class ParseException extends Exception implements ParseInfo {
 
-	private static final long serialVersionUID = -4081239885659052145L;
+    private final String expression;
+    private final int position;
 
-	/**
-	 * Constructs a ParseException with the supplied message.
-	 * 
-	 * @param message
-	 *            the error message
-	 */
-	public ParseException(final String message) {
-		super(message);
-	}
+    private static final long serialVersionUID = -4081239885659052145L;
 
-	/**
-	 * Constructs a ParseException with the supplied cause.
-	 * 
-	 * @param cause
-	 *            the cause of the parse exception
-	 */
-	public ParseException(final Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Constructs a ParseException with the supplied message.
+     *
+     * @param message the error message
+     * @param info Information about where in parsing the error occurred.
+     */
+    public ParseException(final String message, final ParseInfo info) {
+        super(addContext(message, info));
+        this.expression = info.getString();
+        this.position = info.getPosition();
+    }
 
-	/**
-	 * Constructs a ParseException with the supplied message and cause.
-	 * 
-	 * @param message
-	 *            The error message
-	 * @param cause
-	 *            The cause of the parse exception.
-	 */
-	public ParseException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Constructs a ParseException with the supplied cause.
+     *
+     * @param cause the cause of the parse exception
+     * @param info Information about where in parsing the error occurred.
+     */
+    public ParseException(final Throwable cause, final ParseInfo info) {
+        super(addContext(cause.getMessage(), info), cause);
+        this.expression = info.getString();
+        this.position = info.getPosition();
+    }
+
+    /**
+     * Constructs a ParseException with the supplied message and cause.
+     *
+     * @param message The error message
+     * @param cause   The cause of the parse exception.
+     * @param info Information about where in parsing the error occurred.
+     */
+    public ParseException(final String message, final Throwable cause, final ParseInfo info) {
+        super(addContext(message, info), cause);
+        this.expression = info.getString();
+        this.position = info.getPosition();
+    }
+
+    public String getString() {
+        return expression;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    private static String addContext(final String message, final ParseInfo info) {
+        return "Parse error at position " + info.getPosition() + " in expression " + info.getString() + " : " + message;
+    }
 }

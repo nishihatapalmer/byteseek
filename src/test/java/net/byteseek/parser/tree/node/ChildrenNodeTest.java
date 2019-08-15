@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 
@@ -106,6 +107,9 @@ public class ChildrenNodeTest {
 		
 		node = new ChildrenNode(type, children);
 		testNode("Default false inversion: ", node, type, numChildren, false);
+
+		node = new ChildrenNode(ParseInfo.NO_INFO, type, false);
+		testNode("Info, type, inversion: ", node, type, 0, false);
 
 		node = new ChildrenNode(type, children, false);
 		testNode("Specified false inversion: ", node, type, numChildren, false);

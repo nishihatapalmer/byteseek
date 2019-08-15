@@ -41,8 +41,11 @@ import net.byteseek.parser.tree.ParseTreeType;
 
 import org.junit.Test;
 
-public class StringNodeTest {
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
+public class StringNodeTest {
+	
 	@Test
 	public final void testTextValues() {
 		testNodes("");
@@ -56,27 +59,27 @@ public class StringNodeTest {
 	
 	@Test
 	public final void testNullEmptyValue() throws ParseException {
-		ParseTree node = new StringNode(null);
+		ParseTree node = new StringNode(null, StandardCharsets.ISO_8859_1);
 		assertEquals("Node is a STRING", ParseTreeType.STRING, node.getParseTreeType());
 		assertEquals("Node has empty value", "", node.getTextValue());
 		
-		node = new StringNode(null, ParseTreeType.STRING);
+		node = new StringNode(null, StandardCharsets.ISO_8859_1, ParseTreeType.STRING);
 		assertEquals("Node is a STRING", ParseTreeType.STRING, node.getParseTreeType());
 		assertEquals("Node has empty value", "", node.getTextValue());
 
-		node = new StringNode(null, ParseTreeType.CASE_INSENSITIVE_STRING);
+		node = new StringNode(null, StandardCharsets.ISO_8859_1, ParseTreeType.CASE_INSENSITIVE_STRING);
 		assertEquals("Node is a CASE_INSENSITIVE_STRING", ParseTreeType.CASE_INSENSITIVE_STRING, node.getParseTreeType());
 		assertEquals("Node has empty value", "", node.getTextValue());
 
-		node = new StringNode("");
+		node = new StringNode("", StandardCharsets.ISO_8859_1);
 		assertEquals("Node is a STRING", ParseTreeType.STRING, node.getParseTreeType());
 		assertEquals("Node has empty value", "", node.getTextValue());
 		
-		node = new StringNode("", ParseTreeType.STRING);
+		node = new StringNode("", StandardCharsets.ISO_8859_1, ParseTreeType.STRING);
 		assertEquals("Node is a STRING", ParseTreeType.STRING, node.getParseTreeType());
 		assertEquals("Node has empty value", "", node.getTextValue());
 
-		node = new StringNode("", ParseTreeType.CASE_INSENSITIVE_STRING);
+		node = new StringNode("", StandardCharsets.ISO_8859_1, ParseTreeType.CASE_INSENSITIVE_STRING);
 		assertEquals("Node is a CASE_INSENSITIVE_STRING", ParseTreeType.CASE_INSENSITIVE_STRING, node.getParseTreeType());
 		assertEquals("Node has empty value", "", node.getTextValue());
 	}
@@ -87,7 +90,7 @@ public class StringNodeTest {
 		for (ParseTreeType type : ParseTreeType.values()) {
 			if (type != ParseTreeType.STRING && type != ParseTreeType.CASE_INSENSITIVE_STRING) {
 				try {
-					new StringNode("Bad type", type);
+					new StringNode("Bad type", StandardCharsets.ISO_8859_1, type);
 					fail("String node should not be constructed with anything other than STRING or CASE_INSENSITIVE_STRING.  Type was " + type);
 				} catch (IllegalArgumentException expected) {
 				}
@@ -104,9 +107,9 @@ public class StringNodeTest {
 	}
 	
 	private void testNodes(String value) {
-		testNode("Default case sensitive: ",     new StringNode(value), true, value);
-		testNode("Specified case sensitive: ",   new StringNode(value, ParseTreeType.STRING), true, value);
-		testNode("Specified case insensitive: ", new StringNode(value, ParseTreeType.CASE_INSENSITIVE_STRING), false, value);
+		testNode("Default case sensitive: ",     new StringNode(value, StandardCharsets.ISO_8859_1), true, value);
+		testNode("Specified case sensitive: ",   new StringNode(value, StandardCharsets.ISO_8859_1, ParseTreeType.STRING), true, value);
+		testNode("Specified case insensitive: ", new StringNode(value, StandardCharsets.ISO_8859_1, ParseTreeType.CASE_INSENSITIVE_STRING), false, value);
 	}
 	
 	private void testNode(String description, StringNode node, boolean isCaseSensitive, String value) {

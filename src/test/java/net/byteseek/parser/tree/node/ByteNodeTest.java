@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.tree.ParseTreeType;
 
 import org.junit.Test;
@@ -54,9 +55,12 @@ public class ByteNodeTest {
 			
 			node = new ByteNode(value, true);
 			testNode(ParseTreeType.BYTE, node, value, true);
-			
-			node = new ByteNode(ParseTreeType.ALL_BITMASK, value);
-			testNode(ParseTreeType.ALL_BITMASK, node, value, false);
+
+			node = new ByteNode(ParseInfo.NO_INFO, value);
+			testNode(ParseTreeType.BYTE, node, value, false);
+
+            node = new ByteNode(ParseInfo.NO_INFO, ParseTreeType.BYTE, value);
+            testNode(ParseTreeType.BYTE, node, value, false);
 			
 			node = ByteNode.valueOf(value);
 			testNode(ParseTreeType.BYTE, node, value, false);

@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-2013, All rights reserved.
+ * Copyright Matt Palmer 2012-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -31,42 +31,52 @@
 
 package net.byteseek.parser.tree.node;
 
-import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.tree.ParseTreeType;
-
 
 /**
  * An immutable ParseTree node that has an int value and a type of INTEGER.
- *  
- * @author Matt Palmer.
  *
+ * @author Matt Palmer.
  */
 public final class IntNode extends BaseNode {
 
-  private final int value;
-  
-  /**
-   * Constructs an IntNode with the given value.
-   * 
-   * @param value The value of the IntNode.
-   */
-  public IntNode(final int value) {
-	super(ParseTreeType.INTEGER);
-	this.value = value;
-  }
-  
-  /**
-   * Returns the integer value of this IntNode.
-   * @return int The integer value of this IntNode.
-   */
-  @Override
-  public int getIntValue() {
-    return value;
-  }
-  
-  @Override
-  public String toString() {
-	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + ']';
-  }
-  
+    private final int value;
+
+    /**
+     * Constructs an IntNode with the given value.
+     *
+     * @param value The value of the IntNode.
+     */
+    public IntNode(final int value) {
+        super(ParseInfo.NO_INFO, ParseTreeType.INTEGER);
+        this.value = value;
+    }
+
+    /**
+     * Constructs an IntNode with the given value.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param value The value of the IntNode.
+     */
+    public IntNode(final ParseInfo info, final int value) {
+        super(info, ParseTreeType.INTEGER);
+        this.value = value;
+    }
+
+    /**
+     * Returns the integer value of this IntNode.
+     *
+     * @return int The integer value of this IntNode.
+     */
+    @Override
+    public int getIntValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getParseTreeType() + ", value:" + value + ')';
+    }
+
 }

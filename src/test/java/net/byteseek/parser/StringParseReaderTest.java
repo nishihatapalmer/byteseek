@@ -62,12 +62,13 @@ public class StringParseReaderTest {
 		StringParseReader testReader = new StringParseReader(string);
 		assertEquals("String [" + string + "] is the same.", string, testReader.getString());
 		for (int charCount = 0; charCount < testReader.getLength(); charCount++) {
-			assertEquals("Position " + charCount + " in string [" + string + ']', charCount, testReader.getPosition());
+		    final int expectedPosition = charCount - 1;
+			assertEquals("Position " + expectedPosition + " in string [" + string + ']', expectedPosition, testReader.getPosition());
 			testReader.read();
 		}
-		assertTrue("Position is equal to length", testReader.getPosition() == testReader.getLength());
+		assertTrue("Position is one less than length", testReader.getPosition() == testReader.getLength() - 1);
 		testReader.read();
-		assertTrue("Position is still equal to length after another read", testReader.getPosition() == testReader.getLength());
+		assertTrue("Position is still one less than length after another read", testReader.getPosition() == testReader.getLength() - 1);
 	}
 
 	@Test
@@ -146,16 +147,102 @@ public class StringParseReaderTest {
 		
 		for (int charCount = 0; charCount < testReader.getLength(); charCount++) {
 			int peeked = testReader.peekAhead();
-			assertEquals("Position is " + charCount + " in string [" + string + ']', charCount, testReader.getPosition());
+			final int expectedPosition = charCount - 1;
+			assertEquals("Position is " + expectedPosition  + " in string [" + string + ']', expectedPosition, testReader.getPosition());
 			char nextChar = string.charAt(charCount);
 			assertEquals("Next char is " + nextChar + " in string [" + string + ']', nextChar, peeked);
 			int read = testReader.read();
-			assertEquals("Position is " + (charCount + 1) + " in string [" + string + ']', charCount + 1, testReader.getPosition());
+			assertEquals("Position is " + (charCount) + " in string [" + string + ']', charCount, testReader.getPosition());
 			assertEquals("Char read is " + read + " in string [" + string + ']', read, peeked);
 		}
 		assertEquals("Peeked at end of string [" + string + "] at position " + testReader.getPosition() + " is  -1", -1, testReader.peekAhead());
 		assertEquals("Reading past end of string [" + string + "] at position " + testReader.getPosition() + " is -1", -1,   testReader.read());
 		assertEquals("Peeked past end of string [" + string + "] at position " + testReader.getPosition() + " is  -1", -1, testReader.peekAhead());
+	}
+
+	@Test(expected=ParseException.class)
+	public void testEmptyString() throws Exception {
+		StringParseReader reader = new StringParseReader("''");
+		reader.read();
+		reader.readString('\'');
+	}
+
+	@Test(expected=ParseException.class)
+	public void testUnclosedString() throws Exception {
+		StringParseReader reader = new StringParseReader("'some text with no closing quote");
+		reader.read();
+		reader.readString('\'');
+	}
+
+	@Test
+	public void testReadWildBinary() throws Exception {
+		testReadWildBinary("00000000", 0x00, 0xFF);
+		testReadWildBinary("11111111", 0xFF, 0xFF);
+
+		testReadWildBinary("0000000_", 0x00, 0xFE);
+		testReadWildBinary("1111111_", 0xFE, 0xFE);
+
+		testReadWildBinary("_______0", 0x00, 0x01);
+		testReadWildBinary("_______1", 0x01, 0x01);
+
+		testReadWildBinary("____1111", 0x0F, 0x0F);
+		testReadWildBinary("____0001", 0x01, 0x0F);
+
+		testReadWildBinary("1111____", 0xF0, 0xF0);
+		testReadWildBinary("1000____", 0x80, 0xF0);
+	}
+
+	private void testReadWildBinary(String string, int value, int mask) throws ParseException {
+		StringParseReader reader = new StringParseReader(string);
+		StringParseReader.WildByteSpec parseSpec = new StringParseReader.WildByteSpec();
+		reader.readWildBinary(parseSpec);
+		assertEquals(value, parseSpec.value & 0xFF);
+		assertEquals(mask, parseSpec.mask & 0xFF);
+		if (parseSpec.mask != (byte) 0xFF) {
+			assertTrue(parseSpec.hasWildBits);
+		} else {
+			assertFalse(parseSpec.hasWildBits);
+		}
+	}
+
+	@Test
+	public void testReadBinaryByte() throws ParseException {
+		for (int i = 0; i < 256; i++) {
+			String s = String.format("%8s", Integer.toBinaryString(i)).replace(' ', '0');
+			testReadBinaryByte(s, (byte) i);
+		}
+	}
+
+	@Test
+	public final void testBadBinaryByte() {
+		testReadBadBinaryByte("0000000");
+		testReadBadBinaryByte("0000000l");
+		testReadBadBinaryByte("0000O001");
+		testReadBadBinaryByte("1111111");
+		testReadBadBinaryByte("1111111l");
+		testReadBadBinaryByte("1111O110");
+		testReadBadBinaryByte("1");
+	}
+
+	private void testReadBadBinaryByte(String s) {
+		StringParseReader reader = new StringParseReader(s);
+		try {
+			reader.readBinaryValue();
+			fail("Should have thrown ParseException when reading binary value " + s);
+		} catch (ParseException expectedDoNothing) {}
+	}
+
+	private void testReadBinaryByte(String string, byte b) throws ParseException {
+		// Read as just 8 binary digits:
+		StringParseReader reader = new StringParseReader(string);
+		byte read = reader.readBinaryValue();
+		assertEquals(b, read);
+
+		// Read as 8 binary digits with 0i in front of it.
+		String x = "0i" + string;
+		reader = new StringParseReader(x);
+		read = reader.readByte();
+		assertEquals(b, read);
 	}
 
 	@Test
@@ -180,25 +267,77 @@ public class StringParseReaderTest {
 		expectHexByteParseException("XX");
 	}
 	
-	private void testReadHexByte(String string) throws ParseException {
-		StringParseReader testReader = new StringParseReader(string);
-		assertEquals("String [" + string + "] is the same.", string, testReader.getString());
+	private void testReadHexByte(StringParseReader reader, String string) throws ParseException {
+		assertEquals("String [" + string + "] is the same.", string, reader.getString());
 		
-		byte read = testReader.readHexByte();
-		byte converted = (byte) (Integer.valueOf(string, 16).intValue());
+		byte read = reader.readByte();
+		byte converted = (byte) (Integer.valueOf(string.substring(string.length() - 2), 16).intValue());
 		assertEquals("Byte value read " + read + " is equal to " + converted + " in string [" + string + ']',
 				     read, converted);
+	}
+
+	private void testReadHexByte(String string) throws ParseException {
+		testReadHexByte(new StringParseReader(string), string);
+		testReadHexByte(new StringParseReader("0x" + string), "0x" + string);
 	}
 	
 	private void expectHexByteParseException(String string) {
 		StringParseReader testReader = new StringParseReader(string);
 		try {
-			testReader.readHexByte();
+			testReader.readByte();
 			fail("Should have thrown a ParseException trying to read a hex byte from string " + string);
 		} catch (ParseException expected) {
 		}
 	}
 	
+	@Test
+	public final void testReadWildByte() throws ParseException {
+		testReadWildHexByte("01", 0x01, 0xFF);
+		testReadWildHexByte("10", 0x10, 0xFF);
+
+		testReadWildHexByte("0D", 0x0D, 0xFF);
+		testReadWildHexByte("D0", 0xD0, 0xFF);
+
+		testReadWildHexByte("D1", 0xD1, 0xFF);
+		testReadWildHexByte("1D", 0x1D, 0xFF);
+
+		testReadWildHexByte("FF", 0xFF, 0xFF);
+
+		testReadWildHexByte("_1", 0x01, 0x0F);
+		testReadWildHexByte("1_", 0x10, 0xF0);
+
+		testReadWildHexByte("__", 0x00, 0x00);
+	}
+
+	private void testReadWildHexByte(String string, int value, int mask) throws ParseException {
+		testReadWildByte(string, value, mask);
+		testReadWildByte("0x" + string, value, mask);
+	}
+
+	private void testReadWildByte(String string, int value, int mask) throws ParseException {
+		StringParseReader reader = new StringParseReader(string);
+		int firstChar = reader.read();
+		StringParseReader.WildByteSpec parseSpec = new StringParseReader.WildByteSpec();
+
+		reader.readWildByte(firstChar, parseSpec);
+		assertEquals(value, parseSpec.value & 0xFF);
+		assertEquals(mask, parseSpec.mask & 0xFF);
+		if ((parseSpec.mask & 0xFF) != 0xFF) {
+			assertTrue(parseSpec.hasWildBits);
+		} else {
+			assertFalse(parseSpec.hasWildBits);
+		}
+
+        reader = new StringParseReader(string);
+        reader.readWildByte(parseSpec);
+        assertEquals(value, parseSpec.value & 0xFF);
+        assertEquals(mask, parseSpec.mask & 0xFF);
+        if ((parseSpec.mask & 0xFF) != 0xFF) {
+            assertTrue(parseSpec.hasWildBits);
+        } else {
+            assertFalse(parseSpec.hasWildBits);
+        }
+    }
 
 	@Test
 	public final void testReadHexByteInt() throws ParseException {
@@ -216,12 +355,24 @@ public class StringParseReaderTest {
 		assertEquals("String [" + string + "] is the same.", string, testReader.getString());
 		
 		int firstChar = testReader.read();
-		byte read = testReader.readHexByte(firstChar);
+		byte read = testReader.readByte(firstChar);
 		byte converted = (byte) (Integer.valueOf(string, 16).intValue());
 		assertEquals("Byte value read " + read + " is equal to " + converted + " in string [" + string + ']',
 				     read, converted);
 	}
-	
+
+	@Test(expected=ParseException.class)
+    public void testReadInvalidHexSecondByte() throws Exception {
+	    StringParseReader reader = new StringParseReader("0x0h");
+	    reader.readByte();
+    }
+
+    @Test(expected=ParseException.class)
+    public void testReadInvalidHexFirstByte() throws Exception {
+        StringParseReader reader = new StringParseReader("0xOA");
+        reader.readByte();
+    }
+
 	@Test
 	public final void testReadInt() throws ParseException {
 		testReadInt("1",   1);
@@ -254,9 +405,9 @@ public class StringParseReaderTest {
 
 	@Test
 	public final void testReadString() throws ParseException {
-		testReadString("'", "", '\'');
 		testReadString("up to the closing bracket) only", "up to the closing bracket", ')');
-		
+
+		expectReadStringParseException("Empty string", '\'');
 		expectReadStringParseException("", ' ');
 		expectReadStringParseException("Wrong closing quote'", '"');
 		expectReadStringParseException("Wrong closing quote' with something else on the end", '"');
@@ -279,10 +430,10 @@ public class StringParseReaderTest {
 
 	@Test
 	public final void testReadPastChar() {
-		testReadPastChar("", '$', 0);
-		testReadPastChar("0123456789A", '9', 10);
-		testReadPastChar("0123456789A", 'X', 11);
-		testReadPastChar(".......|*******", '|', 8);
+		testReadPastChar("", '$', -1);
+		testReadPastChar("0123456789A", '9', 9);
+		testReadPastChar("0123456789A", 'X', 10);
+		testReadPastChar(".......|*******", '|', 7);
 	}
 	
 	private void testReadPastChar(String string, char pastChar, int expectedPosition) {

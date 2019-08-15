@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-2013, All rights reserved.
+ * Copyright Matt Palmer 2012-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -32,77 +32,119 @@
 package net.byteseek.parser.tree.node;
 
 import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.tree.ParseTreeType;
+import net.byteseek.utils.ArgUtils;
+
+import java.nio.charset.Charset;
 
 
 /**
  * An immutable ParseTree node that has a string value.
  * <p>
  * The ParseTreeType is normally ParseTreeType.STRING, unless the node
- * should match case-insensitively, in which case the ParseTreeType 
+ * should match case-insensitively, in which case the ParseTreeType
  * will be ParseTreeType.CASE_INSENSITIVE_STRING.
  * <p>
  * StringNodes have no children, and can not be inverted.
- * 
- * @author Matt Palmer
  *
+ * @author Matt Palmer
  */
 public final class StringNode extends BaseNode {
 
-  private String value;
+    private final String value;
+    private final Charset encoding;
 
-  /**
-   * Constructs a StringNode with the given String.
-   * 
-   * @param value The String for this StringNode.
-   */
-  public StringNode(final String value) {
-    this(value, ParseTreeType.STRING);
-  }
-  
-  
-  /**
-   * Constructs a StringNode with the given String and whether the node
-   * should match case sensitively or not.  If the string passed in is null, then an empty
-   * string will be used for the StringNode.
-   * 
-   * @param value The String for this StringNode.
-   * @param type The ParseTreeType of the StringNode.  It can only be STRING or CASE_INSENSITIVE_STRING.
-   * @throws IllegalArgumentException if type is not STRING or CASE_INSENSITIVE_STRING.
-   */
-  public StringNode(final String value, final ParseTreeType type) {
-    super(type);
-    if (type != ParseTreeType.STRING && type != ParseTreeType.CASE_INSENSITIVE_STRING) {
-    	throw new IllegalArgumentException("A StringNode can only be of type STRING or CASE_INSENSITIVE_STRING. " + 
-    										"The type passed in was [" + type + ']');
+    /**
+     * Constructs a StringNode with the given String, encodings and ParseInfo.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param value The String for this StringNode.
+     * @param encoding The Charset with which this string should be encoded.
+     */
+    public StringNode(final ParseInfo info, final String value, final Charset encoding) {
+        this(info, value, encoding, ParseTreeType.STRING);
     }
-    this.value = value == null? "" : value;
-  }
 
-  /**
-   * Gets the text value of this StringNode.
-   * 
-   * @return String the String of this StringNode.
-   */
-  @Override
-  public String getTextValue() {
-    return value;
-  }
-  
+    /**
+     * Constructs a StringNode with the given value and encodings.
+     *
+     * @param value The String for this StringNode.
+     * @param encoding The Charset with which this string should be encoded.
+     */
+    public StringNode(final String value, final Charset encoding) {
+        this(ParseInfo.NO_INFO, value, encoding);
+    }
 
-  /**
-   * Returns whether the string matches case sensitively or not.
-   * 
-   * @return boolean True if the string matches case-sensitively (ParseTreeType.STRING), 
-   *                  False if the string is case-insensitive (ParseTreeType.CASE_INSENSITIVE_STRING).
-   */
-  public boolean isCaseSensitive() {
-	  return getParseTreeType() == ParseTreeType.STRING;
-  }
-  
-  @Override
-  public String toString() {
-	  return getClass().getSimpleName() + '[' + getParseTreeType() + ", value:" + value + ']';
-  }
+    /**
+     * Constructs a StringNode with the given String and whether the node
+     * should match case sensitively or not.  If the string passed in is null, then an empty
+     * string will be used for the StringNode.
+     *
+     * @param value The String for this StringNode.
+     * @param encoding The Charset with which this string should be encoded.
+     * @param type  The ParseTreeType of the StringNode.  It can only be STRING or CASE_INSENSITIVE_STRING.
+     * @throws IllegalArgumentException if type is not STRING or CASE_INSENSITIVE_STRING.
+     */
+    public StringNode(final String value, final Charset encoding, final ParseTreeType type) {
+        this(ParseInfo.NO_INFO, value, encoding, type);
+    }
+
+    /**
+     * Constructs a StringNode with the given String and whether the node
+     * should match case sensitively or not.  If the string passed in is null, then an empty
+     * string will be used for the StringNode.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param value The String for this StringNode.
+     * @param encoding The Charset with which this string should be encoded.
+     * @param type  The ParseTreeType of the StringNode.  It can only be STRING or CASE_INSENSITIVE_STRING.
+     * @throws IllegalArgumentException if type is not STRING or CASE_INSENSITIVE_STRING.
+     */
+    public StringNode(final ParseInfo info, final String value, final Charset encoding, final ParseTreeType type) {
+        super(info, type);
+        ArgUtils.checkNullObject(encoding, "encoding");
+        if (type != ParseTreeType.STRING && type != ParseTreeType.CASE_INSENSITIVE_STRING) {
+            throw new IllegalArgumentException("A StringNode can only be of type STRING or CASE_INSENSITIVE_STRING. " +
+                    "The type passed in was [" + type + ']');
+        }
+        this.value = value == null ? "" : value;
+        this.encoding = encoding;
+    }
+
+    /**
+     * Gets the text value of this StringNode.
+     *
+     * @return String the String of this StringNode.
+     */
+    @Override
+    public String getTextValue() {
+        return value;
+    }
+
+    /**
+     * Returns the text encoding of this StringNode.
+     *
+     * @return the text encoding of this StringNode.
+     */
+    @Override
+    public Charset getTextEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Returns whether the string matches case sensitively or not.
+     *
+     * @return boolean True if the string matches case-sensitively (ParseTreeType.STRING),
+     * False if the string is case-insensitive (ParseTreeType.CASE_INSENSITIVE_STRING).
+     */
+    public boolean isCaseSensitive() {
+        return getParseTreeType() == ParseTreeType.STRING;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getParseTreeType() + ", value:" + value + " case sensitive:" + isCaseSensitive() + ')';
+    }
 
 }

@@ -42,26 +42,42 @@ public class ParseExceptionTest {
 
 	@Test
 	public final void testMessageConstructor() {
-		ParseException pe = new ParseException("A message");
-		assertEquals("Message is correct", "A message", pe.getMessage());
+		ParseException pe = new ParseException("A message", ParseInfo.NO_INFO);
+		assertTrue("Message is correct", pe.getMessage().contains("A message"));
 		assertNull("Cause is null", pe.getCause());
 	}
 	
 	@Test
 	public final void testCauseConstructor() {
 		Throwable cause = new Exception();
-		ParseException pe = new ParseException(cause);
+		ParseException pe = new ParseException(cause, ParseInfo.NO_INFO);
 		assertEquals("Cause is correct", cause, pe.getCause());
-		assertEquals("Message is java.lang.Exception", "java.lang.Exception", pe.getMessage());
+		assertTrue("Message is java.lang.Exception", pe.getMessage().contains("Parse error at position -1"));
 	}
 	
 	@Test
 	public final void testMessageAndCauseConstructor() {
 		Throwable cause = new Exception();
-		ParseException pe = new ParseException("A message", cause);
+		ParseException pe = new ParseException("A message", cause, ParseInfo.NO_INFO);
 		assertEquals("Cause is correct", cause, pe.getCause());
-		assertEquals("Message is correct", "A message", pe.getMessage());
+		assertTrue("Message is correct", pe.getMessage().contains("A message"));
 	}
 
+	@Test
+	public void testParseInfo() {
+	    testParseInfo(ParseInfo.NO_INFO);
+	    testParseInfo(new ImmutableParseInfo("test", 100));
+        testParseInfo(new ImmutableParseInfo("abc", 2));
+        testParseInfo(new ImmutableParseInfo("456890234234", 10000));
+        testParseInfo(new ImmutableParseInfo("45", 45));
+        testParseInfo(new ImmutableParseInfo("54", 45));
+        testParseInfo(new ImmutableParseInfo(" ", 31));
+    }
+
+    private void testParseInfo(ParseInfo info) {
+        ParseException pe = new ParseException("message", info);
+        assertEquals(info.getPosition(), pe.getPosition());
+        assertEquals(info.getString(), pe.getString());
+    }
 
 }

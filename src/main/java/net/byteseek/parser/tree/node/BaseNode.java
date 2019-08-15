@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2012-2013, All rights reserved.
+ * Copyright Matt Palmer 2012-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -28,16 +28,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package net.byteseek.parser.tree.node;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Iterator;
 
 import net.byteseek.parser.ParseException;
+import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
-
 
 /**
  * An immutable base implementation of ParseTree, that only has a type.
@@ -45,86 +45,124 @@ import net.byteseek.parser.tree.ParseTreeType;
  * prohibited.  This class is intended to be sub-classed, with particular types of nodes implementing
  * their own specific functionality, with this class providing default behaviour.
  * <p>
- * Asking for a byte, int or text value will throw a {@link ParseException}.  Subclasses which 
- * provide those values need only override the specific method for their type of value.  
+ * Asking for a byte, int or text value will throw a {@link ParseException}.  Subclasses which
+ * provide those values need only override the specific method for their type of value.
  * It will always provide an empty list of child nodes, and false if asked if the value is inverted.
- * 
+ *
  * @author Matt Palmer
  */
 public class BaseNode implements ParseTree {
 
-  private final ParseTreeType type;
-  
-  public static final ParseTree ANY_NODE = new BaseNode(ParseTreeType.ANY);
-  
-  /**
-   * Constructs a base node of the given type.
-   * 
-   * @param type The type of the parse tree node.
-   */
-  public BaseNode(final ParseTreeType type) {
-    this.type = type;
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public ParseTreeType getParseTreeType() {
-    return type;
-  }
+    private final int position;
+    private final String expression;
+    private final ParseTreeType type;
 
-  /**
-   * Always throws a {@link ParseException}.
-   */
-  @Override
-  public byte getByteValue() throws ParseException {
-    throw new ParseException("No byte value is available for the node " + this);
-  }
+    public static final ParseTree ANY_NODE = new BaseNode(ParseTreeType.ANY);
 
-  /**
-   * Always throws a {@link ParseException}.
-   */  
-  @Override
-  public int getIntValue() throws ParseException {
-    throw new ParseException("No int value is available for the node " + this);
-  }
+    /**
+     * Constructs a base node of the given type.
+     *
+     * @param type The type of the parse tree node.
+     */
+    public BaseNode(final ParseTreeType type) {
+        this(ParseInfo.NO_INFO, type);
+    }
 
-  /**
-   * Always throws a {@link ParseException}.
-   */
-  @Override
-  public String getTextValue() throws ParseException {
-    throw new ParseException("No text value is available for the node " + this);
-  }
+    /**
+     * Constructs a base node of the given type.
+     *
+     * @param info ParseInfo about where in a string the parsing is taking place.
+     * @param type The type of the parse tree node.
+     */
+    public BaseNode(final ParseInfo info, final ParseTreeType type) {
+        this.type = type;
+        this.expression = info.getString();
+        this.position = info.getPosition();
+    }
 
-  /**
-   * Always returns false.
-   */
-  @Override
-  public boolean isValueInverted() {
-    return false;
-  }
-  
-  
-  @Override
-  public int getNumChildren() {
-	  return 0;
-  }
-  
-  @Override
-  public ParseTree getChild(final int childIndex) {
-	  throw new IndexOutOfBoundsException("There are no children in the node: " + this);
-  }
-  
-  @Override
-  public String toString() {
-	  return getClass().getSimpleName() + "[" + type + ']';
-  }
+    @Override
+    public ParseTreeType getParseTreeType() {
+        return type;
+    }
 
-	@Override
-	public Iterator<ParseTree> iterator() {
-		return Collections.<ParseTree>emptyList().iterator();
-	}
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Always throws a {@link ParseException}.
+     */
+    @Override
+    public byte getByteValue() throws ParseException {
+        throw new ParseException("No byte value is available for the node " + this, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Always throws a {@link ParseException}.
+     */
+    @Override
+    public int getIntValue() throws ParseException {
+        throw new ParseException("No int value is available for the node " + this, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Always throws a {@link ParseException}.
+     */
+    @Override
+    public String getTextValue() throws ParseException {
+        throw new ParseException("No text value is available for the node " + this, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Always throws a {@link ParseException}.
+     */
+    @Override
+    public Charset getTextEncoding() throws ParseException {
+        throw new ParseException("No charset encoding is available for the node " + this, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Always returns false.
+     */
+    @Override
+    public boolean isValueInverted() {
+        return false;
+    }
+
+    @Override
+    public int getNumChildren() {
+        return 0;
+    }
+
+    @Override
+    public ParseTree getChild(final int childIndex) {
+        throw new IndexOutOfBoundsException("There are no children in the node: " + this);
+    }
+
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
+    @Override
+    public String getString() {
+        return expression;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + type + ')';
+    }
+
+    @Override
+    public Iterator<ParseTree> iterator() {
+        return Collections.<ParseTree>emptyList().iterator();
+    }
 
 }
