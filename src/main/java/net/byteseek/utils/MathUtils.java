@@ -45,7 +45,7 @@ public final class MathUtils {
      * @throws IllegalArgumentException if the integer passed in is zero or negative.
      */
     public static int floorLogBaseTwo(final int i) {
-    	ArgUtils.checkPositive(i);
+    	ArgUtils.checkGreaterThanZero(i);
         return 31 - Integer.numberOfLeadingZeros(i);
     }
 
@@ -56,7 +56,7 @@ public final class MathUtils {
      * @throws IllegalArgumentException if the long passed in is zero or negative.
      */
     public static int floorLogBaseTwo(final long i) {
-        ArgUtils.checkPositive(i);
+        ArgUtils.checkGreaterThanZero(i);
         return 63 - Long.numberOfLeadingZeros(i);
     }
 
@@ -70,7 +70,7 @@ public final class MathUtils {
      * @throws IllegalArgumentException if the integer passed in is zero or negative.
      */
     public static int ceilLogBaseTwo(final int i) {
-    	ArgUtils.checkPositive(i);
+    	ArgUtils.checkGreaterThanZero(i);
         return 32 - Integer.numberOfLeadingZeros(i - 1);
     }
 
@@ -84,7 +84,7 @@ public final class MathUtils {
      * @throws IllegalArgumentException if the long passed in is zero or negative.
      */
     public static int ceilLogBaseTwo(final long i) {
-        ArgUtils.checkPositive(i);
+        ArgUtils.checkGreaterThanZero(i);
         return 64 - Long.numberOfLeadingZeros(i - 1);
     }
 

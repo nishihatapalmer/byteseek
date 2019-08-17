@@ -34,8 +34,6 @@ import net.byteseek.io.reader.windows.Window;
 import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.collections.PositionHashMap;
 
-import java.io.IOException;
-
 /**
  * A {@link WindowCache} which holds on to all {@link net.byteseek.io.reader.windows.Window} objects.
  * <p>
@@ -68,7 +66,7 @@ public final class AllWindowsCache extends AbstractMemoryCache {
      * @throws IllegalArgumentException if the initial capacity is zero or less.
      */
     public AllWindowsCache(final int initialCapacity) {
-        ArgUtils.checkPositive(initialCapacity, "initialCapacity");
+        ArgUtils.checkGreaterThanZero(initialCapacity, "initialCapacity");
         cache = new PositionHashMap<Window>(initialCapacity);
     }
 

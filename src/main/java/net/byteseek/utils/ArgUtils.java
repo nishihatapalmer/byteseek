@@ -506,7 +506,7 @@ public final class ArgUtils {
      */
 	public static void checkNegativeRepeats(final int numberOfRepeats) {
         if (numberOfRepeats < 0) {
-            throw new IllegalArgumentException("Number of repeats cannot be negative " + numberOfRepeats);
+            throw new IllegalArgumentException("Number of repeats cannot be negative." + numberOfRepeats);
 		}
     }
 
@@ -515,9 +515,9 @@ public final class ArgUtils {
      * @param value The value to check.
      * @throws IllegalArgumentException if the value is less than 1.
      */
-	public static void checkPositive(final long value) {
+	public static void checkGreaterThanZero(final long value) {
         if (value <= 0) {
-            throw new IllegalArgumentException("The value must be positive " + value);
+            throw new IllegalArgumentException("The value must be greater than zero." + value);
         }
     }
 
@@ -527,9 +527,9 @@ public final class ArgUtils {
      * @param description A description of the number parameter which will appear in the exception.
      * @throws IllegalArgumentException if the value is less than 1.
      */
-    public static void checkPositive(final long value, final String description) {
+    public static void checkGreaterThanZero(final long value, final String description) {
         if (value <= 0) {
-            throw new IllegalArgumentException("The value must be positive " + value + ' ' + description);
+            throw new IllegalArgumentException("The value must be greater than zero. " + value + ' ' + description);
         }
     }
 
