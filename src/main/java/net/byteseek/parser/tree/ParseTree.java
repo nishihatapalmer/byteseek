@@ -35,6 +35,7 @@ import net.byteseek.parser.ParseInfo;
 import net.byteseek.parser.Parser;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * An interface for an Abstract Syntax Tree (AST) produced by a {@link Parser},
@@ -127,5 +128,11 @@ public interface ParseTree extends Iterable<ParseTree>, ParseInfo {
      * @throws IndexOutOfBoundsException if childIndex is less than zero or greater than or equal to the number of child nodes.
      */
     ParseTree getChild(int childIndex);
+
+    /**
+     * Returns the list of child ParseTree nodes.  If there are no children, an empty list is returned.
+     * @return the list of child ParseTree nodes.
+     */
+    List<ParseTree> getChildren();
 }
 

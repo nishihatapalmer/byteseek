@@ -33,6 +33,7 @@ package net.byteseek.parser.tree.node;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import net.byteseek.parser.ParseException;
 import net.byteseek.parser.ParseInfo;
@@ -143,6 +144,11 @@ public class BaseNode implements ParseTree {
     @Override
     public ParseTree getChild(final int childIndex) {
         throw new IndexOutOfBoundsException("There are no children in the node: " + this);
+    }
+
+    @Override
+    public List<ParseTree> getChildren() {
+        return Collections.EMPTY_LIST;
     }
 
     @Override

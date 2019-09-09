@@ -32,6 +32,7 @@ package net.byteseek.parser.tree.node;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,7 +42,7 @@ import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.parser.tree.ParseTreeType;
 
 /**
- * An immutable ParseTree node which has child ParseTrees.  The value of the node,
+ * A mutable ParseTree node which has child ParseTrees.  The value of the node,
  * if any, can be inverted.
  * <p>
  * The ParseTreeType defines what kind of children the node has and how
@@ -247,7 +248,12 @@ public final class ChildrenNode extends BaseNode {
 	public ParseTree getChild(final int childIndex) {
 		return children.get(childIndex);
 	}
-	
+
+	@Override
+	public List<ParseTree> getChildren() {
+		return children;
+	}
+
 	/**
 	 * Returns an iterator over the children of this node.
 	 * <p>
