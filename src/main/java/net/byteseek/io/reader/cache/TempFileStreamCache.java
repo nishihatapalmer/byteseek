@@ -45,9 +45,9 @@ import java.nio.channels.FileChannel;
  * A {@link WindowCache} which stores {@link Window} objects into a temporary file for later retrieval.
  * It assumes that Windows are added to it sequentially as if they are read from a stream.
  * <p>
- * Windows can be addded from any position in the stream to begin with.  The first window that is added
+ * Windows can be added from any position in the stream to begin with.  The first window that is added
  * sets the initial position for windows in this cache, but any further windows added must follow on from
- * the intial one sequentially.  Knowing the fixed window size and that windows are added sequentially means
+ * the initial one sequentially.  Knowing the fixed window size and that windows are added sequentially means
  * that this cache does not have to maintain a map between temporary file position and window position, as this
  * can be calculated as needed.
  * <p>
