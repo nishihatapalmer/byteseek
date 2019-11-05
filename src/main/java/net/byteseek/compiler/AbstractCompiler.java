@@ -99,7 +99,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 			return compile(joinedTrees);
 
 		} catch (ParseException pex) {
-			throw new CompileException("A problem occurred parsing the expression: " + currentExpression, pex);
+			throw new CompileException(pex.getMessage(), pex);
 		}
 	}
 
