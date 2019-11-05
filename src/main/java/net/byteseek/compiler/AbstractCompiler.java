@@ -77,7 +77,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 		try {
 			return compile(parser.parse(expression));
 		} catch (final ParseException pex) {
-			throw new CompileException("A problem occurred parsing the expression: " + expression, pex);
+			throw new CompileException(pex.getMessage(), pex);
 		}
 	}
 
