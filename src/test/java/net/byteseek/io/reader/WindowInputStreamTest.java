@@ -1,20 +1,16 @@
 package net.byteseek.io.reader;
 
-import net.byteseek.io.IOIterator;
 import net.byteseek.io.IOUtils;
-import net.byteseek.io.reader.windows.Window;
-import net.byteseek.io.reader.windows.WindowFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class ReaderInputStreamTest {
+public class WindowInputStreamTest {
 
     private static Random random = new Random();
     private InputStreamReader[] fileReaders = new InputStreamReader[10];
@@ -43,17 +39,17 @@ public class ReaderInputStreamTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createNullReader() throws Exception {
-        new ReaderInputStream(null);
+        new WindowInputStream(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullReaderCloseReaderTrue() throws Exception {
-        new ReaderInputStream(null, true);
+        new WindowInputStream(null, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullReaderCloseReaderFalse() throws Exception {
-        new ReaderInputStream(null, false);
+        new WindowInputStream(null, false);
     }
 
 
@@ -66,7 +62,7 @@ public class ReaderInputStreamTest {
     }
 
     private void testRead(InputStreamReader fileReader) throws IOException {
-        InputStream is = new ReaderInputStream(fileReader);
+        InputStream is = new WindowInputStream(fileReader);
         byte[] buf = new byte[193];
         byte[] buf2 = new byte[193];
         long count = 0;
@@ -91,7 +87,7 @@ public class ReaderInputStreamTest {
     }
 
     private void testNullByteArrayRead(InputStreamReader fileReader) throws IOException {
-        InputStream is = new ReaderInputStream(fileReader);
+        InputStream is = new WindowInputStream(fileReader);
         try {
             is.read(null);
             fail("Expected a NullPointerException.");
@@ -117,14 +113,14 @@ public class ReaderInputStreamTest {
     }
 
     private void testReadLengthZero(InputStreamReader fileReader, byte[] bytes) throws IOException {
-        ReaderInputStream is = new ReaderInputStream(fileReader);
+        WindowInputStream is = new WindowInputStream(fileReader);
         assertEquals("Read zero bytes", 0, is.read(bytes, 0, 0));
         assertEquals("Read zero bytes with valid offset", 0, is.read(bytes, 1023, 0));
         assertEquals("Position has not changed", 0, is.getNextReadPos());
     }
 
     private void testReadIndexOutOfBounds(InputStreamReader fileReader, byte [] testBuffer) throws IOException {
-        InputStream is = new ReaderInputStream(fileReader);
+        InputStream is = new WindowInputStream(fileReader);
 
         try {
             is.read(testBuffer, testBuffer.length, 1);
@@ -157,7 +153,7 @@ public class ReaderInputStreamTest {
     }
 
     private void testReadByteSkip(InputStreamReader fileReader) throws IOException {
-        InputStream is = new ReaderInputStream(fileReader);
+        InputStream is = new WindowInputStream(fileReader);
         long trialPos = random.nextInt(fileLength);
         long finalPos = trialPos + 256 < fileLength? trialPos + 256 : fileLength;
         is.skip(trialPos);
@@ -175,7 +171,7 @@ public class ReaderInputStreamTest {
     }
 
     private void testSkipPastEnd(InputStreamReader fileReader) throws IOException {
-        ReaderInputStream is = new ReaderInputStream(fileReader);
+        WindowInputStream is = new WindowInputStream(fileReader);
         assertEquals("Not skipped with negative skip", 0, is.skip(-1));
         assertEquals("Not skipped with zero skip", 0, is.skip(0));
         assertEquals("Position is still at zero", 0, is.getNextReadPos());
@@ -200,34 +196,34 @@ public class ReaderInputStreamTest {
     }
 
     private void testAvailable(InputStreamReader fileReader) throws IOException {
-        ReaderInputStream is = new ReaderInputStream(fileReader);
+        WindowInputStream is = new WindowInputStream(fileReader);
         assertTrue("Bytes are available for new reader.", is.available() > 0);
     }
 
     @Test
     public void testMarkSupported() throws Exception {
-        ReaderInputStream is = new ReaderInputStream(fileReaders[0]);
+        WindowInputStream is = new WindowInputStream(fileReaders[0]);
         assertTrue("Mark is supported by default", is.markSupported());
 
-        is = new ReaderInputStream(fileReaders[1], true);
+        is = new WindowInputStream(fileReaders[1], true);
         assertTrue("Mark is supported by default with close reader", is.markSupported());
 
-        is = new ReaderInputStream(fileReaders[2], true, false);
+        is = new WindowInputStream(fileReaders[2], true, false);
         assertFalse("Mark is not supported if set false", is.markSupported());
 
-        is = new ReaderInputStream(fileReaders[3], false, false);
+        is = new WindowInputStream(fileReaders[3], false, false);
         assertFalse("Mark is not supported if set false", is.markSupported());
 
-        is = new ReaderInputStream(fileReaders[4], true, true);
+        is = new WindowInputStream(fileReaders[4], true, true);
         assertTrue("Mark is not supported if set true", is.markSupported());
 
-        is = new ReaderInputStream(fileReaders[5], false, true);
+        is = new WindowInputStream(fileReaders[5], false, true);
         assertTrue("Mark is not supported if set ", is.markSupported());
     }
 
     @Test
     public void testResetIOException() throws Exception {
-        ReaderInputStream is = new ReaderInputStream(fileReaders[3], false, false);
+        WindowInputStream is = new WindowInputStream(fileReaders[3], false, false);
         is.mark(1024);
         is.skip(1024);
         try {
@@ -235,7 +231,7 @@ public class ReaderInputStreamTest {
             fail("Expected IO Exception if mark not supported.");
         } catch(IOException expected) {}
 
-        is = new ReaderInputStream(fileReaders[4], true, true);
+        is = new WindowInputStream(fileReaders[4], true, true);
         is.mark(1024);
         is.skip(1024);
         try {
@@ -253,7 +249,7 @@ public class ReaderInputStreamTest {
     }
 
     private void testMark(InputStreamReader fileReader) throws IOException {
-        ReaderInputStream is = new ReaderInputStream(fileReader);
+        WindowInputStream is = new WindowInputStream(fileReader);
         is.skip(24);
         is.mark(2048);
         is.skip(1025-24);
@@ -275,20 +271,20 @@ public class ReaderInputStreamTest {
     public void testClose() throws Exception {
         WindowReader reader = new InputStreamReader(new ByteArrayInputStream(new byte[1024]));
         assertFalse("Reader is not closed", reader.isClosed());
-        ReaderInputStream is = new ReaderInputStream(reader);
+        WindowInputStream is = new WindowInputStream(reader);
         is.close();
         assertTrue("InputStream now closed", is.getNextReadPos() < 0);
         assertTrue("Reader is now closed.", reader.isClosed());
 
         reader = new InputStreamReader(new ByteArrayInputStream(new byte[1024]));
-        is = new ReaderInputStream(reader, false);
+        is = new WindowInputStream(reader, false);
         assertFalse("Reader is not closed", reader.isClosed());
         is.close();
         assertTrue("InputStream now closed", is.getNextReadPos() < 0);
         assertFalse("Reader is not closed", reader.isClosed());
 
         reader = new InputStreamReader(new ByteArrayInputStream(new byte[1024]));
-        is = new ReaderInputStream(reader, true);
+        is = new WindowInputStream(reader, true);
         assertFalse("Reader is not closed", reader.isClosed());
         is.close();
         assertTrue("InputStream now closed", is.getNextReadPos() < 0);
