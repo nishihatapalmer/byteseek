@@ -44,8 +44,9 @@ A byte-oriented [regular expression language](syntax.md) is given to allow the e
 A package which contains compilers for all of the matchers from an abstract syntax tree.
 * matchers - compilers from the byteseek abstract syntax tree to byte matchers and sequence matchers.
 
-## Untested
-Various other packages exist which are not currently tested, but will become so eventually.  These include:
+## Incubator
+Some code exists in the incubator package.  Once it is tested and accepted, it will be
+moved into the main byteseek packages.  Current code in incubation includes:
 
 #### Matcher
 * multisequence - algorithms for multi-sequence matching, including lists and trie structures.
