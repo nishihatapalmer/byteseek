@@ -83,7 +83,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
     private final LazyObject<int[]> backwardInfo; // backwards searching shift table, calculated on demand.
 
     /**
-     * Constructs a BoyerMooreHorspool searcher given a {@link SequenceMatcher}
+     * Constructs a HorspoolSearcher given a {@link SequenceMatcher}
      * to search for.
      *
      * @param sequence The SequenceMatcher to search for.
@@ -96,7 +96,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
     }
 
     /**
-     * Constructs a searcher for the bytes contained in the sequence string,
+     * Constructs a HorspoolSearcher for the bytes contained in the sequence string,
      * encoded using the platform default character set.
      *
      * @param sequence The string to search for.
@@ -107,7 +107,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
     }
 
     /**
-     * Constructs a searcher for the bytes contained in the sequence string,
+     * Constructs a HorspoolSearcher for the bytes contained in the sequence string,
      * encoded using the charset provided.
      *
      * @param sequence The string to search for.
@@ -119,7 +119,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
     }
 
     /**
-     * Constructs a searcher for the byte array provided.
+     * Constructs a HorspoolSearcher for the byte array provided.
      *
      * @param sequence The byte sequence to search for.
      * @throws IllegalArgumentException if the sequence is null or empty.
@@ -127,7 +127,6 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
     public HorspoolSearcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence));
     }
-
 
     @Override
     protected int getSequenceLength() {

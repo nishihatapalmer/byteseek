@@ -206,11 +206,8 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
 
         // Initialise:
         final int lastSequencePosition = getSequenceLength() - 1;
-        final long finalSearchPosition = toPosition > 0? toPosition : 0;
-
-        // Ensure we don't round *up* the from position to zero if it's already negative.
-        // Otherwise, ensure that the from Position is within the length of the reader.
-        long searchPosition = fromPosition < 0? fromPosition : withinLength(reader, fromPosition);
+        final long finalSearchPosition = Math.max(0L, toPosition);
+        long searchPosition = withinLength(reader, fromPosition);
 
         // While there is data to search in:
         Window window = null;

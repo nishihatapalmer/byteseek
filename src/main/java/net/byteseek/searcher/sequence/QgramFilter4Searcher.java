@@ -219,7 +219,8 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
      * does not suffer at all from complexity in the patterns.
      *
      * @param sequence The byte sequence to search for.
-     * @param minIndexSize, maxIndexSize Determines the size of the hash table used by the search algorithm.
+     * @param minIndexSize Determines the minimum size of the hash table used by the search algorithm.
+     * @param maxIndexSize Determines the maximum size of the hash table used by the search algorithm.
      * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
      */
     public QgramFilter4Searcher(final byte[] sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
@@ -655,7 +656,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
                 "(min index size:" + minIndexSize +
                 " max index size:" + maxIndexSize +
                 " forward search info:" + getForwardSearchDescription(forwardSearchInfo) +
-                " backward search info:" + getForwardSearchDescription(backwardSearchInfo) +
+                " backward search info:" + getBackwardSearchDescription(backwardSearchInfo) +
                 " sequence:"    + sequence + ')';
     }
 

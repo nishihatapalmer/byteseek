@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2016-17, All rights reserved.
+ * Copyright Matt Palmer 2016-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -48,7 +48,7 @@ import net.byteseek.utils.factory.ObjectFactory;
  * An implementation of the Shift OR search algorithm, extended to work with byte classes at
  * any position.  It is linear in the size of the data being searched, it does not skip over parts of the data.
  * <p>
- * It is very fast when matching short patterns, e.g. 8 or less in length, and large byte classes
+ * It is very fast when matching short patterns, e.g. 8 or less in length, and large byte classes in any position
  * make no difference to its performance. It examines every position in the data.  Despite its name
  * there is no shifting the search position more than one, although bits are shifted with bitwise operators.
  * The core of the algorithm is very simple and uses bit-parallelism to determine where matches exist.
@@ -59,6 +59,8 @@ import net.byteseek.utils.factory.ObjectFactory;
  * This implementation can also handle patterns longer than the maximum word-length used for the bit patterns.
  * When a pattern is longer than this, the normal SHIFT-OR algorithm is used to verify the first part of the
  * pattern with bit-parallelism, then a SequenceMatcher is used to manually verify the rest if required.
+ * Long patterns should perform almost as well as shorter ones in most cases, although the worst case changes from
+ * O(n) to O(mn), where n = the length of the data, and m = the length of the pattern minus the word length.
  *
  * @author Matt Palmer
  */
@@ -293,7 +295,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
                                          fromPosition + lastSequencePos : Long.MAX_VALUE;
 
         // Search backwards:
-        long state = ~0L; // 64 1's bitmask.
+        long state = ~0L; // 64 1's bitmask (bitwise complement of zero).
         long pos  = withinLength(reader, fromPositionStart); // ensures first position to search is not past end.
         Window window;
         while (pos >= finalSearchPosition && (window = reader.getWindow(pos)) != null) { // when window is null, there is no more data.

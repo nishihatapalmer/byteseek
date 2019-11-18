@@ -429,6 +429,8 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             // Note: the last pattern character doesn't affect the shift table, so we don't care if there
             //       is an Any byte match in that position.  The final position gives the same max shift
             //       as not looking at all, so we don't process that one either.
+            //TODO: This explanation doesn't make total sense - copied from a qgram method (table size?)
+            //TODO: Also, why does the final position give the same max shift as not looking at all?
             int maxShift = sequenceLength;
             int totalBytes = 0;
             for (int position = sequenceLength - 2; position > 0; position--) {

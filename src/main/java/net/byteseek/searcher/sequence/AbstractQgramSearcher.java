@@ -73,18 +73,18 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
 
     /**
      * Determines the final size of the hash table, given the total qgrams processed, and the search index size method.
-     * <p>
-     * NOTE: this may vary by algorithm?  We just pick the table which is bigger than the total qgrams.
-     *       different algorithms may need different hash table sizes...?
      *
      * @param totalQgrams The total qgrams which the hash table will need to support.
-     * @return The size of the hash table, as a power of two.
+     * @return The size of the hash table, which is always a power of two.
      */
+    //TODO: this may vary by algorithm?  We just pick the table which is bigger than the total qgrams.
+    //       different algorithms may need different hash table sizes...?
+    //       Could parameterise by the extra power two factor we want above just bigger than total qgrams....?
     protected int getTableSize(final int totalQgrams) {
         // Determine final size of hash table:
         final int MAX_POWER_TWO_SIZE = maxIndexSize.getPowerTwo();
         final int HASH_POWER_TWO_SIZE;
-        if (minIndexSize == maxIndexSize) {                // specified by user - must use this size exactly.
+        if (minIndexSize == maxIndexSize) {           // specified by user - must use this size exactly.
             HASH_POWER_TWO_SIZE = MAX_POWER_TWO_SIZE; // total qgram processing above still useful to avoid pathological byte classes (qGramStartPos).
         } else {
             //PROFILE: Profile different values here. What effective margin do we want?  Plus one gives a good result - is plus 2 worth it?
@@ -108,7 +108,7 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
      * @return The bit-shift to use with the shift-add hash algorithm for the given table size.
      */
     protected int getHashShift(final int hashTableSize, final int qGramLength) {
-        final int MAX_SHIFT = 10; // TODO: any point shifting more than 8 bits...?
+        final int MAX_SHIFT = 10; // TODO: any point shifting more than 8 bits, given the hash function we use...?
         final int MAX_TABLE_SIZE = maxIndexSize.getSize();
         for (int shift = 1; shift < MAX_SHIFT; shift++) {
             final int tableSize = 1 << (qGramLength * shift);

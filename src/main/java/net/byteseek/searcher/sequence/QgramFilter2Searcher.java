@@ -603,7 +603,7 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
                 "(min index size:"  + minIndexSize +
                 " max index size: " + maxIndexSize +
                 " forward search info:" + getForwardSearchDescription(forwardSearchInfo) +
-                " backward search info:" + getForwardSearchDescription(backwardSearchInfo) +
+                " backward search info:" + getBackwardSearchDescription(backwardSearchInfo) +
                 " sequence:"    + sequence + ')';
     }
 

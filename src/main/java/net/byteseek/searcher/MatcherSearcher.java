@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2011-2017, All rights reserved.
+ * Copyright Matt Palmer 2011-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -41,7 +41,6 @@ import net.byteseek.matcher.MatchResult;
 import net.byteseek.matcher.Matcher;
 import net.byteseek.utils.ArgUtils;
 
-
 /**
  * A Searcher which looks for an underlying {@link Matcher} in the simplest manner
  * possible: by trying to match at every possible position until a match is 
@@ -82,7 +81,6 @@ public final class MatcherSearcher extends AbstractSearcher {
         ArgUtils.checkNullObject(matcher, "matcher");
         this.matcher = matcher;
     }
-
 
     /**
      * {@inheritDoc}
@@ -132,10 +130,6 @@ public final class MatcherSearcher extends AbstractSearcher {
         return NO_RESULTS_FOUND;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchForwards(final byte[] bytes,
                                final int fromPosition, final int toPosition,
@@ -159,20 +153,15 @@ public final class MatcherSearcher extends AbstractSearcher {
         }
         return NO_RESULTS_FOUND;
     }
-  
-   
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public int searchBackwards(final WindowReader reader,
-                                final long fromPosition, final long toPosition,
-                                Collection<MatchResult> results) throws IOException {
+                               final long fromPosition, final long toPosition,
+                               final Collection<MatchResult> results) throws IOException {
         
         // Initialise search:
         final Matcher theMatcher = matcher;        
-        final long endSearchPosition = toPosition > 0? 
-                                       toPosition : 0;
+        final long endSearchPosition = Math.max(0L, toPosition);
         long searchPosition = withinLength(reader, fromPosition);
         
         // Search backwards:
@@ -186,10 +175,6 @@ public final class MatcherSearcher extends AbstractSearcher {
         return NO_RESULTS_FOUND;
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchBackwards(final byte[] bytes,
                                 final int fromPosition, final int toPosition,
@@ -213,24 +198,16 @@ public final class MatcherSearcher extends AbstractSearcher {
         return NO_RESULTS_FOUND;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareForwards() {
         // no preparation necessary.
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareBackwards() {
         // no preparation necessary.
     }
-    
-    
+
     /**
      * Returns a string representation of this searcher.
      * The precise format returned is subject to change, but in general it will
@@ -240,8 +217,7 @@ public final class MatcherSearcher extends AbstractSearcher {
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '[' + matcher + ']';
+        return this.getClass().getSimpleName() + '(' + matcher + ')';
     }        
 
-    
 }

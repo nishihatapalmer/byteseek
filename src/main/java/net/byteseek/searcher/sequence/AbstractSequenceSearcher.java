@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2016-17, All rights reserved.
+ * Copyright Matt Palmer 2016-19, All rights reserved.
  * 
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -33,7 +33,6 @@ package net.byteseek.searcher.sequence;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.matcher.MatchResult;
@@ -42,7 +41,7 @@ import net.byteseek.searcher.AbstractSearcher;
 import net.byteseek.utils.ArgUtils;
 
 /**
- * An abstract base class for sequence searchers, providing implementations of Searcher list-based methods.
+ * An abstract base class for sequence searchers, providing default implementations of various methods.
  * <p>
  * The SequenceSearcher defines some new search methods which only return a primitive int or long for a search
  * result.  This is because a sequence searcher can only match a single sequence at a single position, so there
@@ -55,19 +54,17 @@ import net.byteseek.utils.ArgUtils;
 public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher implements SequenceSearcher {
 
     /**
-     * A convenient named constant for subclasses to use to indicate no match.
-     * Any negative number means no match, don't rely on all implementations using this constant.
+     * A named constant for subclasses to use to indicate no match, where the only known safe shift is one.
      */
     protected static final int NO_MATCH_SAFE_SHIFT = -1;
 
     /**
-     * The Object which the Searcher should search for.
+     * The sequence to search for.
      */
     protected final T sequence;
 
     /**
-     * Constructs a sequence searcher given a {@link SequenceMatcher}
-     * to search for.
+     * Constructs a sequence searcher given a {@link SequenceMatcher} to search for.
      *
      * @param sequence The SequenceMatcher to search for.
      */
@@ -77,9 +74,9 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     }
 
     /**
-     * Returns the {@link SequenceMatcher} to be searched for.
+     * Returns the sequence to be searched for.
      *
-     * @return SequenceMatcher the sequence matcher to be searched for.
+     * @return the sequence to be searched for.
      */
     public T getSequence() {
         return sequence;
@@ -135,12 +132,12 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
 
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition) {
-        return searchSequenceForwards(bytes, fromPosition, bytes.length - getSequenceLength());
+        return searchSequenceForwards(bytes, fromPosition, bytes.length - 1);
     }
 
     @Override
     public int searchSequenceForwards(final byte[] bytes) {
-        return searchSequenceForwards(bytes, 0, bytes.length - getSequenceLength());
+        return searchSequenceForwards(bytes, 0, bytes.length - 1);
     }
 
     /**
@@ -182,7 +179,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
 
     @Override
     public long searchSequenceBackwards(final WindowReader reader) throws IOException {
-        return searchSequenceBackwards(reader, reader.length() - getSequenceLength(), 0);
+        return searchSequenceBackwards(reader, reader.length() - 1, 0);
     }
 
     @Override
@@ -192,7 +189,7 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
 
     @Override
     public int searchSequenceBackwards(final byte[] bytes) {
-        return searchSequenceBackwards(bytes, bytes.length - getSequenceLength(), 0);
+        return searchSequenceBackwards(bytes, bytes.length - 1, 0);
     }
 
 }
