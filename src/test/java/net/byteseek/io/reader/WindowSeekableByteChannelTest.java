@@ -45,12 +45,12 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class ReaderSeekableByteChannelTest {
+public class WindowSeekableByteChannelTest {
 
     private final byte[] array = new byte[1024];
     private final ByteBuffer buffer = ByteBuffer.wrap(array);
     private WindowReader reader;
-    private ReaderSeekableByteChannel channel;
+    private WindowSeekableByteChannel channel;
     private long fileLength;
 
     @Before
@@ -58,7 +58,7 @@ public class ReaderSeekableByteChannelTest {
         File file = getFile("/TestASCII.txt");
         fileLength = file.length();
         reader = new FileReader(file);
-        channel = new ReaderSeekableByteChannel(reader);
+        channel = new WindowSeekableByteChannel(reader);
     }
 
     @After
@@ -69,7 +69,7 @@ public class ReaderSeekableByteChannelTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNullReader() {
-        new ReaderSeekableByteChannel(null);
+        new WindowSeekableByteChannel(null);
     }
 
     @Test
@@ -207,7 +207,7 @@ public class ReaderSeekableByteChannelTest {
     @Test
     public void testReaderIsNotClosedWhenChannelIsClosed() throws IOException {
         assertFalse(reader.isClosed());
-        channel = new ReaderSeekableByteChannel(reader, false);
+        channel = new WindowSeekableByteChannel(reader, false);
         assertFalse(reader.isClosed());
         channel.close();
         assertFalse(reader.isClosed());
@@ -215,7 +215,7 @@ public class ReaderSeekableByteChannelTest {
 
     @Test
     public void testToString() {
-        assertTrue(channel.toString().contains(ReaderSeekableByteChannel.class.getSimpleName()));
+        assertTrue(channel.toString().contains(WindowSeekableByteChannel.class.getSimpleName()));
         assertTrue(channel.toString().contains("reader"));
         assertTrue(channel.toString().contains("isClosed"));
         assertTrue(channel.toString().contains("position"));
