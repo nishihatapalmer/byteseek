@@ -228,6 +228,16 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
     }
 
 
+    @Override
+    protected void doPrepareForwards() {
+        forwardSearchInfo.get();
+    }
+
+    @Override
+    protected void doPrepareBackwards() {
+        backwardSearchInfo.get();
+    }
+
    /******************
     * Search Methods *
     ******************/

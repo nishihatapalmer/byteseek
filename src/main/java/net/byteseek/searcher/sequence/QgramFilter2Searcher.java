@@ -117,6 +117,16 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
         this(sequence, DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
     }
 
+    @Override
+    protected void doPrepareForwards() {
+        forwardSearchInfo.get();
+    }
+
+    @Override
+    protected void doPrepareBackwards() {
+        backwardSearchInfo.get();
+    }
+
     /**
      * Constructs a searcher given a {@link SequenceMatcher} to search for, and the size of the search index to use.
      * <p>

@@ -39,6 +39,18 @@ import net.byteseek.utils.lazy.LazyObject;
 
 import java.io.IOException;
 
+//TODO: still not sure this is good design.  It's cleaner if algorithms that can't handle certain types of
+//      search just throw an error.  Then we don't need all this silent "fall back to something" else
+//      behaviour, and additional complexity.
+//      On the other hand, it's quite possible to select a good search algorithm without realising that
+//      there may be edge cases (e.g. pattern too short) that it can't handle.  Then a user would
+//      get an IllegalArgumentException or something when constructing this particular pattern, possibly
+//      long after the code had gone into production.
+//      So this makes it safe to use any search algorithm on any pattern (even if sometimes it silently
+//      replaces it with something else, which in most cases (short patterns) will actually perform better).
+//      Safety of use with unobservable behaviour vs. simplicity of design and transparent behaviour.
+//      Think we'll stick with safety of use for the time being...
+
 /**
  * An abstract searcher which allows for a fallback searcher to be used in place of the selected searcher.
  *
@@ -68,20 +80,44 @@ public abstract class AbstractFallbackSearcher extends AbstractWindowSearcher<Se
     public void prepareForwards() {
         if (fallbackForwards()) {
             fallbackSearcher.get().prepareForwards();
+        } else {
+            doPrepareForwards();
         }
     }
+
+    /**
+     * Subclasses should implement prepare forwards here.
+     */
+    protected abstract void doPrepareForwards();
 
     @Override
     public void prepareBackwards() {
         if (fallbackBackwards()) {
             fallbackSearcher.get().prepareBackwards();
+        } else {
+            doPrepareBackwards();
         }
     }
 
+    /**
+     * Subclasses should implement prepare backwards here.
+     */
+    protected abstract void doPrepareBackwards();
+
+    /**
+     * Returns a description of the forwards search, taking into account any fallback searcher being used.
+     * @param searchInfo The info about the search.
+     * @return a description of the forwards search, taking into account any fallback searcher being used.
+     */
     protected String getForwardSearchDescription(LazyObject<?> searchInfo) {
         return (searchInfo.created()? fallbackForwards()? fallbackSearcher.get() : searchInfo.get() : searchInfo).toString();
     }
 
+    /**
+     * Returns a description of the backwards search, taking into account any fallback searcher being used.
+     * @param searchInfo The info about the search.
+     * @return a description of the backwards search, taking into account any fallback searcher being used.
+     */
     protected String getBackwardSearchDescription(LazyObject<?> searchInfo) {
         return (searchInfo.created()? fallbackBackwards()? fallbackSearcher.get() : searchInfo.get() : searchInfo).toString();
     }

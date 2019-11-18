@@ -227,6 +227,15 @@ public final class QgramFilter3Searcher extends AbstractQgramSearcher {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), minIndexSize, maxIndexSize);
     }
 
+    @Override
+    protected void doPrepareForwards() {
+        forwardSearchInfo.get();
+    }
+
+    @Override
+    protected void doPrepareBackwards() {
+        backwardSearchInfo.get();
+    }
 
     /******************
      * Search Methods *
