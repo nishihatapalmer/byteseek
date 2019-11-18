@@ -56,7 +56,9 @@ import net.byteseek.utils.factory.ObjectFactory;
  * This is often due to greater processing complexity, more memory accesses, worse memory cache hits,
  * or code which cannot be optimised as well to run on the underlying hardware for some other reason.
  * <p>
- * It is faster than doing a naive search, but there is no reason to choose this search algorithm except
+ * @deprecated This algorithm is faster than doing a naive search,
+ * but is a lot slower than pretty much all the others.
+ * There is no reason to choose this search algorithm except
  * curiosity about the performance and design of search algorithms.
  *
  * @author Matt Palmer
