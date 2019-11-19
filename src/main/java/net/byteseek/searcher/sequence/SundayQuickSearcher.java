@@ -118,9 +118,6 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         return sequence.length();
     }
 
-    /**
-     * {@inheritDoc}
-     */    
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
@@ -152,9 +149,6 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         return NO_MATCH_SAFE_SHIFT; //TODO: figure out logic to get better shifts here... toPosition - searchPosition doesn't work.
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public long doSearchForwards(final WindowReader reader, final long fromPosition, final long toPosition ) throws IOException {
 
@@ -196,9 +190,6 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
                              : toPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
@@ -228,11 +219,7 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
 
         return NO_MATCH_SAFE_SHIFT; //TODO: figure out logic to get better shifts here... searchPosition - toPosition doesn't work.
     }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
 
@@ -271,19 +258,12 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
                              : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public void prepareBackwards() {
         backwardInfo.get();

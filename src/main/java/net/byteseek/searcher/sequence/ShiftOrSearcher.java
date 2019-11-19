@@ -207,9 +207,6 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         return NO_MATCH_SAFE_SHIFT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Get info needed to search:
@@ -272,7 +269,6 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         return NO_MATCH_SAFE_SHIFT;
     }
-
 
     @Override
     public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
@@ -356,9 +352,6 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         return NO_MATCH_SAFE_SHIFT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Get the objects needed to search:
@@ -420,23 +413,15 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         return NO_MATCH_SAFE_SHIFT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareBackwards() {
         backwardInfo.get();
     }
-
 
     @Override
     public String toString() {

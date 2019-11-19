@@ -142,7 +142,6 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
     }
 
-
     /**
      * Constructs a searcher for the byte array provided.
      *
@@ -153,15 +152,11 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
         this(sequence == null? null : new ByteSequenceMatcher(sequence));
     }
 
-
     @Override
     protected int getSequenceLength() {
         return sequence.length();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
@@ -257,9 +252,6 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
                              : finalPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
@@ -300,9 +292,6 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
         return searchPosition - lastPosition;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected long doSearchBackwards(final WindowReader reader,
                                      final long fromPosition, final long toPosition ) throws IOException {
@@ -357,29 +346,20 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
                              : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareBackwards() {
         backwardInfo.get();
     }
 
-
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[sequence:" + sequence + ']';
     }
-
 
     private static final class SearchInfo {
         private final int[] shifts;

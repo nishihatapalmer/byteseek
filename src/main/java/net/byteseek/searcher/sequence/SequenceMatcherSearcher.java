@@ -126,9 +126,6 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
         return NO_MATCH_SAFE_SHIFT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public long doSearchForwards(final WindowReader reader, final long fromPosition,
             final long toPosition) throws IOException {
@@ -178,10 +175,6 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
         return NO_MATCH_SAFE_SHIFT;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public long doSearchBackwards(final WindowReader reader, final long fromPosition,
             final long toPosition) throws IOException {
@@ -212,19 +205,11 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
         return NO_MATCH_SAFE_SHIFT;
     }
 
-   
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareForwards() {
         // no preparation necessary.
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareBackwards() {
         // no preparation necessary.

@@ -136,10 +136,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
     protected int getSequenceLength() {
         return sequence.length();
     }
-    
-    /**
-     * {@inheritDoc}
-     */    
+
     @Override
     public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
@@ -250,10 +247,6 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
                              : finalPosition - searchPosition; // the (negative) shift we can safely make from here.
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         
@@ -298,10 +291,6 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         return searchPosition - lastPosition;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected long doSearchBackwards(final WindowReader reader, final long fromPosition, final long toPosition ) throws IOException {
         
@@ -357,23 +346,15 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
                              : searchPosition - toPosition; // return the (negative) safe shift we can make.
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
-    
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareBackwards() {
         backwardInfo.get();
     }
-    
     
     @Override
     public String toString() {

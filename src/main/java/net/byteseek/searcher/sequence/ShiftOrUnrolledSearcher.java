@@ -704,23 +704,15 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         return NO_MATCH_SAFE_SHIFT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareForwards() {
         forwardInfo.get();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void prepareBackwards() {
         backwardInfo.get();
     }
-
 
     @Override
     public String toString() {
