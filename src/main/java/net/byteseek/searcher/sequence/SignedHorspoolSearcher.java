@@ -172,14 +172,12 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
 
         // Calculate safe bounds for the start of the search:
         final int lastMatcherPosition = sequence.length() - 1;
-        int searchPosition = fromPosition > 0?
-                             fromPosition + lastMatcherPosition : lastMatcherPosition;
+        int searchPosition = addIntegerPositionsAvoidOverflows(fromPosition, lastMatcherPosition);
 
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
-        final int lastPossibleSearchPosition = toPosition + lastMatcherPosition;
-        final int finalPosition = lastPossibleSearchPosition < lastPossiblePosition?
-                                  lastPossibleSearchPosition : lastPossiblePosition;
+        final int lastPossibleSearchPosition = addIntegerPositionsAvoidOverflows(toPosition, lastMatcherPosition);
+        final int finalPosition = Math.min(lastPossibleSearchPosition, lastPossiblePosition);
 
         // Search forwards:
         while (searchPosition <= finalPosition) {
@@ -214,8 +212,8 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
 
         // Initialise window search:
         final long endSequencePosition = sequence.length() - 1;
-        final long finalPosition = toPosition + endSequencePosition;
-        long searchPosition = fromPosition + endSequencePosition;
+        final long finalPosition = addLongPositionsAvoidOverflows(toPosition, endSequencePosition);
+        long searchPosition = addLongPositionsAvoidOverflows(fromPosition,  endSequencePosition);
 
         // While there is a window to search in:
         Window window = null;
@@ -272,12 +270,10 @@ public final class SignedHorspoolSearcher extends AbstractWindowSearcher<Sequenc
 
         // Calculate safe bounds for the start of the search:
         final int firstPossiblePosition = bytes.length - sequence.length();
-        int searchPosition = fromPosition < firstPossiblePosition?
-                             fromPosition : firstPossiblePosition;
+        int searchPosition = Math.min(fromPosition, firstPossiblePosition);
 
         // Calculate safe bounds for the end of the search:
-        final int lastPosition = toPosition > 0?
-                                 toPosition : 0;
+        final int lastPosition = Math.max(toPosition, 0);
 
         // Search backwards:
         while (searchPosition >= lastPosition) {

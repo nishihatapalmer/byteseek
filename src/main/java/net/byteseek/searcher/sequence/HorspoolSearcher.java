@@ -145,13 +145,12 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
 
         // Determine a safe position to start searching at.
         final int lastMatcherPosition = toMatch.length() - 1;
-        int searchPosition = fromPosition > 0? fromPosition + lastMatcherPosition : lastMatcherPosition;
+        int searchPosition = addIntegerPositionsAvoidOverflows(fromPosition, lastMatcherPosition);
 
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
-        final int lastPossibleSearchPosition = toPosition + lastMatcherPosition;
-        final int finalPosition = lastPossibleSearchPosition < lastPossiblePosition?
-                                  lastPossibleSearchPosition : lastPossiblePosition;
+        final int lastPossibleSearchPosition = addIntegerPositionsAvoidOverflows(toPosition, lastMatcherPosition);
+        final int finalPosition = Math.min(lastPossibleSearchPosition, lastPossiblePosition);
 
         // Search forwards:
         while (searchPosition <= finalPosition) {
@@ -169,7 +168,6 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
         return finalPosition - searchPosition; // return next safe shift as a negative number.
     }
 
-
     /**
      * Searches forward using the Boyer Moore Horspool algorithm, using 
      * byte arrays from Windows to handle shifting, and the WindowReader interface
@@ -185,8 +183,8 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
 
         // Initialise window search:
         final long endSequencePosition = toMatch.length() - 1;
-        final long finalPosition = toPosition + endSequencePosition;
-        long searchPosition = fromPosition + endSequencePosition;
+        final long finalPosition = addLongPositionsAvoidOverflows(toPosition, endSequencePosition);
+        long searchPosition      = addLongPositionsAvoidOverflows(fromPosition, endSequencePosition);
 
         // While there is a window to search in:
         Window window = null;
@@ -236,10 +234,10 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
 
         // Calculate safe bounds for the start of the search:
         final int firstPossiblePosition = bytes.length - toMatch.length();
-        int searchPosition = fromPosition < firstPossiblePosition? fromPosition : firstPossiblePosition;
+        int searchPosition = Math.min(fromPosition, firstPossiblePosition);
 
         // Calculate safe bounds for the end of the search:
-        final int lastPosition = toPosition > 0? toPosition : 0;
+        final int lastPosition = Math.max(toPosition, 0);
 
         // Search backwards:
         while (searchPosition >= lastPosition) {
@@ -280,8 +278,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final long distanceFromWindowStart = toPosition - window.getWindowPosition();
-            final int lastSearchPosition = distanceFromWindowStart > 0?
-                                     (int) distanceFromWindowStart : 0;
+            final int lastSearchPosition = (int) Math.max(distanceFromWindowStart,  0);
             int arraySearchPosition = arrayStartPosition;
 
             // Search using the byte array for shifts, using the WindowReader
@@ -326,7 +323,7 @@ public final class HorspoolSearcher extends AbstractWindowSearcher<SequenceMatch
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[sequence:" + sequence + ']';
+        return getClass().getSimpleName() + '(' + sequence + ')';
     }
 
     private final static int MAX_BYTES = 1024; // four times the table length fills 98% of positions with random selection.

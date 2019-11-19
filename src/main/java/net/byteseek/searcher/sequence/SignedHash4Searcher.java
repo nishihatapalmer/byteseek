@@ -254,9 +254,9 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
         // Determine safe shifts, starts and ends:
         final int LAST_PATTERN_POS = localSequence.length() - 1;
         final int DATA_END_POS     = bytes.length - 1;
-        final int LAST_SEARCH_POS  = toPosition + LAST_PATTERN_POS;
-        final int SEARCH_END       = LAST_SEARCH_POS < DATA_END_POS? LAST_SEARCH_POS : DATA_END_POS;
-        final int SEARCH_START     = fromPosition > 0? fromPosition : 0;
+        final int LAST_SEARCH_POS  = addIntegerPositionsAvoidOverflows(toPosition, LAST_PATTERN_POS);
+        final int SEARCH_END       = Math.min(LAST_SEARCH_POS, DATA_END_POS);
+        final int SEARCH_START     = Math.max(fromPosition, 0);
 
         // Search forwards:
         int searchPos = SEARCH_START + LAST_PATTERN_POS; // look at the end of the pattern to determine shift.
@@ -300,8 +300,9 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
         // Determine safe shifts, starts and ends:
         final int LAST_PATTERN_POS = localSequence.length() - 1;
         final int LAST_QGRAM_POS   = QLEN - 1;
-        final long SEARCH_END      = toPosition + LAST_PATTERN_POS;
-        long searchPos             = (fromPosition > 0? fromPosition : 0) + LAST_PATTERN_POS;
+        final long SEARCH_END      = addLongPositionsAvoidOverflows(toPosition, LAST_PATTERN_POS);
+        long searchPos             = addLongPositionsAvoidOverflows(fromPosition, LAST_PATTERN_POS);
+
         // Search forwards:
         Window window = null;
         while (searchPos <= SEARCH_END && (window = reader.getWindow(searchPos)) != null) {
@@ -367,8 +368,8 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
 
         // Determine safe shifts, starts and ends:
         final int LAST_MATCH_POS = bytes.length - localSequence.length();
-        final int SEARCH_START   = fromPosition < LAST_MATCH_POS? fromPosition : LAST_MATCH_POS;
-        final int SEARCH_END     = toPosition > 0? toPosition : 0;
+        final int SEARCH_START   = Math.min(fromPosition, LAST_MATCH_POS);
+        final int SEARCH_END     = Math.max(toPosition, 0);
 
         // Search backwards:
         int searchPos = SEARCH_START;
@@ -406,7 +407,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
         final int MASK              = SHIFTS.length - 1; // SHIFTS is always a power of two in length.
 
         // Determine safe shifts, starts and ends:
-        final long SEARCH_END   = toPosition > 0? toPosition : 0;
+        final long SEARCH_END   = Math.max(toPosition, 0);
 
         // Search forwards:
         Window window  = null;

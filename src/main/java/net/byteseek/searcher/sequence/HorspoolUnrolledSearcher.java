@@ -151,15 +151,13 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         
         // Determine a safe position to start searching at.
         final int lastMatcherPosition = sequence.length() - 1;
-        int searchPosition = fromPosition > 0?
-                             fromPosition + lastMatcherPosition : lastMatcherPosition;
+        int searchPosition = addIntegerPositionsAvoidOverflows(fromPosition, lastMatcherPosition);
         
         // Calculate safe bounds for the end of the search:
         final int lastPossiblePosition = bytes.length - 1;
-        final int lastPossibleSearchPosition = toPosition + lastMatcherPosition;
-        final int finalPosition = lastPossibleSearchPosition < lastPossiblePosition?
-                                  lastPossibleSearchPosition : lastPossiblePosition;
-        
+        final int lastPossibleSearchPosition = addIntegerPositionsAvoidOverflows(toPosition, lastMatcherPosition);
+        final int finalPosition = Math.min(lastPossibleSearchPosition, lastPossiblePosition);
+
         // Search forwards:
         while (searchPosition <= finalPosition) {
             
@@ -204,8 +202,8 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         
         // Initialise window search:
         final long endSequencePosition = sequence.length() - 1;
-        final long finalPosition = toPosition + endSequencePosition;
-        long searchPosition = fromPosition + endSequencePosition;
+        final long finalPosition = addLongPositionsAvoidOverflows(toPosition, endSequencePosition);
+        long searchPosition = addLongPositionsAvoidOverflows(fromPosition, endSequencePosition);
             
         // While there is a window to search in:
         Window window = null;
@@ -216,10 +214,9 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);
             final int arrayEndPosition = window.length() - 1;
-            final long distanceToEnd = finalPosition - window.getWindowPosition() + endSequencePosition;
-            final int lastSearchPosition = distanceToEnd < arrayEndPosition?
-                                     (int) distanceToEnd : arrayEndPosition;
-            int arraySearchPosition = arrayStartPosition;            
+            final long distanceToEnd = finalPosition - window.getWindowPosition();
+            final int lastSearchPosition = (int) Math.min(distanceToEnd, arrayEndPosition);
+            int arraySearchPosition = arrayStartPosition;
                         
             // Search forwards in this array:
             ARRAY_SEARCH: while (arraySearchPosition <= lastSearchPosition) {
@@ -268,13 +265,11 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
         
         // Calculate safe bounds for the start of the search:
         final int firstPossiblePosition = bytes.length - sequence.length();
-        int searchPosition = fromPosition < firstPossiblePosition?
-                             fromPosition : firstPossiblePosition;
+        int searchPosition = Math.min(fromPosition, firstPossiblePosition);
         
         // Calculate safe bounds for the end of the search:
-        final int lastPosition = toPosition > 0?
-                                 toPosition : 0;
-        
+        final int lastPosition = Math.max(toPosition, 0);
+
         // Search backwards:
         while (searchPosition >= lastPosition) {
             
@@ -326,8 +321,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
             final byte[] array = window.getArray();
             final int arrayStartPosition = reader.getWindowOffset(searchPosition);   
             final long distanceToEnd = toPosition - window.getWindowPosition();
-            final int lastSearchPosition = distanceToEnd > 0?
-                                     (int) distanceToEnd : 0;
+            final int lastSearchPosition = (int) Math.max(distanceToEnd, 0);
             int arraySearchPosition = arrayStartPosition;
             
             // Search using the byte array for shifts, using the WindowReader
@@ -383,7 +377,7 @@ public final class HorspoolUnrolledSearcher extends AbstractWindowSearcher<Seque
     
     @Override
     public String toString() {
-    	return getClass().getSimpleName() + "[sequence:" + sequence + ']';
+    	return getClass().getSimpleName() + '(' + sequence + ')';
     }
 
     

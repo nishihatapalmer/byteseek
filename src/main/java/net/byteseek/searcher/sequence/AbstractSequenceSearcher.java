@@ -192,4 +192,30 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
         return searchSequenceBackwards(bytes, bytes.length - 1, 0);
     }
 
+    /**
+     * Calculates the addition of two integer positions, avoiding integer overflow.  If the first position < 0,
+     * then the result is just the second position.  last sequence position must not be negative.
+     *
+     * @param position The position to search from/to.
+     * @param lastSequencePosition The last position of a sequence to search for.
+     * @return The addition of the two positions, avoiding integer overflow and not less than lastsequenceposition.
+     */
+    protected final int addIntegerPositionsAvoidOverflows(int position, int lastSequencePosition) {
+        return position <= 0 ? lastSequencePosition :
+                position < Integer.MAX_VALUE - lastSequencePosition ? position + lastSequencePosition : Integer.MAX_VALUE;
+    }
+
+    /**
+     * Calculates the addition of two long positions, avoiding long overflow.  If the first position < 0,
+     * then the result is just the second position.  last sequence position must not be negative.
+     *
+     * @param position The position to search from/to.
+     * @param lastSequencePosition The last position of a sequence to search for.
+     * @return The addition of the two positions, avoiding integer overflow and not less than lastsequenceposition.
+     */
+    protected final long addLongPositionsAvoidOverflows(long position, long lastSequencePosition) {
+        return position <= 0 ? lastSequencePosition :
+                position < Long.MAX_VALUE - lastSequencePosition ? position + lastSequencePosition : Long.MAX_VALUE;
+    }
+
 }

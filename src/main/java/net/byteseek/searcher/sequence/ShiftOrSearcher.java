@@ -138,9 +138,8 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         // Determine safe start and ends - do not know final length (input can be a stream).
         final int lastMatcherPosition = sequence.length() - 1;
-        final long startPosition = fromPosition > 0 ? fromPosition : 0;
-        final long toPositionEndPos = toPosition < Long.MAX_VALUE - lastMatcherPosition?
-                                      toPosition + lastMatcherPosition : Long.MAX_VALUE;
+        final long startPosition = Math.max(fromPosition, 0);
+        final long toPositionEndPos = addLongPositionsAvoidOverflows(toPosition, lastMatcherPosition);
 
         // Search forwards:
         long state = ~0L; // 64 1's bitmask.
@@ -178,7 +177,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         // Determine safe start and ends - do not know final length (input can be a stream).
         final int LAST_WORD_POS = WORD_LENGTH - 1;
-        final long startPosition = fromPosition > 0 ? fromPosition : 0;
+        final long startPosition = Math.max(fromPosition, 0);
+        //TODO: bug in this - the last one uses the verifier.length(), but nothing else does?
+        //      also need to avoid long overflows.
         final long toPositionEndPos = toPosition < Long.MAX_VALUE - LAST_WORD_POS?
                                       toPosition + LAST_WORD_POS : Long.MAX_VALUE - verifier.length();
 
@@ -224,12 +225,11 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         final long[] bitmasks = info.getBitmasks();
 
         // Determine safe start and ends:
-        final int startPosition = fromPosition > 0 ? fromPosition : 0;
+        final int startPosition = Math.max(fromPosition, 0);
         final int lastMatcherPosition = sequence.length() - 1;
-        final int toPositionEndPos = toPosition < Integer.MAX_VALUE - lastMatcherPosition? // avoid integer overflows.
-                                     toPosition + lastMatcherPosition : Integer.MAX_VALUE;
+        final int toPositionEndPos = addIntegerPositionsAvoidOverflows(toPosition, lastMatcherPosition);
         final int lastPossiblePosition = bytes.length - 1;
-        final int finalPosition = toPositionEndPos < lastPossiblePosition ? toPositionEndPos : lastPossiblePosition;
+        final int finalPosition = Math.min(toPositionEndPos, lastPossiblePosition);
 
         // Search forwards:
         long state = ~0L;
@@ -255,11 +255,10 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         // Determine safe start and ends:
         final int LAST_WORD_POS = WORD_LENGTH - 1;
-        final int startPosition = fromPosition > 0 ? fromPosition : 0;
-        final int toPositionEndPos = toPosition < Integer.MAX_VALUE - LAST_WORD_POS? // avoid integer overflows.
-                                     toPosition + LAST_WORD_POS : Integer.MAX_VALUE;
+        final int startPosition = Math.max(fromPosition, 0);
+        final int toPositionEndPos = addIntegerPositionsAvoidOverflows(toPosition, LAST_WORD_POS);
         final int lastPossiblePosition = bytes.length - verifier.length(); // leave room for verifying rest of pattern.
-        final int finalPosition = toPositionEndPos < lastPossiblePosition ? toPositionEndPos : lastPossiblePosition;
+        final int finalPosition = Math.min(toPositionEndPos, lastPossiblePosition);
 
         // Search forwards:
         long state = ~0L;
@@ -289,10 +288,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         final long[] bitmasks = info.getBitmasks();
 
         // Determine safe end.
-        final long finalSearchPosition = toPosition > 0? toPosition : 0;
+        final long finalSearchPosition = Math.max(toPosition, 0);
         final int lastSequencePos = sequence.length() - 1;
-        final long fromPositionStart   = fromPosition < Long.MAX_VALUE - lastSequencePos?
-                                         fromPosition + lastSequencePos : Long.MAX_VALUE;
+        final long fromPositionStart   = addLongPositionsAvoidOverflows(fromPosition, lastSequencePos);
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask (bitwise complement of zero).
@@ -328,9 +326,8 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
         // Determine safe end.
         final int LAST_WORD_POS = WORD_LENGTH - 1;
-        final long finalSearchPosition = toPosition > 0? toPosition : 0;
-        final long fromPositionStart   = fromPosition < Long.MAX_VALUE - LAST_WORD_POS?
-                                         fromPosition + LAST_WORD_POS : Long.MAX_VALUE - verifier.length();
+        final long finalSearchPosition = Math.max(toPosition, 0);
+        final long fromPositionStart   = addLongPositionsAvoidOverflows(fromPosition, LAST_WORD_POS);
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask.
@@ -378,10 +375,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - 1;
         final int lastSequencePos = sequence.length() - 1;
-        final int fromPositionEndPos = fromPosition < Integer.MAX_VALUE - lastSequencePos?
-                                       fromPosition + lastSequencePos : Integer.MAX_VALUE;
-        final int startPosition = fromPositionEndPos < lastPossiblePosition ? fromPositionEndPos : lastPossiblePosition;
-        final int finalPosition = toPosition > 0 ? toPosition : 0;
+        final int fromPositionEndPos = addIntegerPositionsAvoidOverflows(fromPosition, lastSequencePos);
+        final int startPosition = Math.min(fromPositionEndPos, lastPossiblePosition);
+        final int finalPosition = Math.max(toPosition, 0);
 
         // Search backwards:
         long state = ~0L;
@@ -408,11 +404,9 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - verifier.length();
         final int LAST_WORD_POS = WORD_LENGTH - 1;
-        final int fromPositionEndPos = fromPosition < Integer.MAX_VALUE - LAST_WORD_POS?
-                                       fromPosition + LAST_WORD_POS : Integer.MAX_VALUE;
-        final int startPosition = fromPositionEndPos < lastPossiblePosition ?
-                                  fromPositionEndPos : lastPossiblePosition;
-        final int finalPosition = toPosition > 0 ? toPosition : 0;
+        final int fromPositionEndPos = addIntegerPositionsAvoidOverflows(fromPosition, LAST_WORD_POS);
+        final int startPosition = Math.min(fromPositionEndPos, lastPossiblePosition);
+        final int finalPosition = Math.max(toPosition, 0);
 
         // Search backwards:
         long state = ~0L;

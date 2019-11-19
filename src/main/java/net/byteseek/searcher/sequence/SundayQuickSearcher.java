@@ -132,8 +132,8 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         final int length = theSequence.length();
         final int finalPosition = bytes.length - length;
         final int lastLoopPosition = finalPosition - 1;
-        final int lastPosition = toPosition < lastLoopPosition? toPosition : lastLoopPosition;
-        int searchPosition = fromPosition > 0? fromPosition : 0;
+        final int lastPosition = Math.min(toPosition, lastLoopPosition);
+        int searchPosition = Math.max(fromPosition, 0);
 
         // Search forwards.  The loop does not check for the final
         // position, as we shift on the byte after the sequence.
@@ -207,10 +207,9 @@ public final class SundayQuickSearcher extends AbstractWindowSearcher<SequenceMa
         final SequenceMatcher theSequence = sequence;
         
         // Calculate safe bounds for the search:
-        final int lastLoopPosition = toPosition > 1? toPosition : 1;
+        final int lastLoopPosition = Math.max(toPosition, 1);
         final int firstPossiblePosition = bytes.length - sequence.length();
-        int searchPosition = fromPosition < firstPossiblePosition ?
-                             fromPosition : firstPossiblePosition;
+        int searchPosition = Math.min(fromPosition, firstPossiblePosition);
         
         // Search backwards.  The loop does not check the
         // first position in the array, because we shift on the byte

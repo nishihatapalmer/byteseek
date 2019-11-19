@@ -258,10 +258,10 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         // Determine safe shifts, starts and ends:
         final int SLEN_MINUS_QLEN    = SEARCH_LENGTH - QLEN;
         final int SEARCH_SHIFT       = SLEN_MINUS_QLEN + 1;
-        final int SEARCH_START       = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
+        final int SEARCH_START       = addIntegerPositionsAvoidOverflows(fromPosition, SLEN_MINUS_QLEN);
         final int LAST_MATCH_POS     = bytes.length - localSequence.length();
-        final int FINAL_TO_POS       = toPosition < LAST_MATCH_POS? toPosition : LAST_MATCH_POS;
-        final int SEARCH_END         = FINAL_TO_POS + SLEN_MINUS_QLEN;
+        final int FINAL_TO_POS       = Math.min(toPosition, LAST_MATCH_POS);
+        final int SEARCH_END         = addIntegerPositionsAvoidOverflows(FINAL_TO_POS, SLEN_MINUS_QLEN);
 
         // Search forwards.
         int pos;
@@ -325,8 +325,8 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         // Initialise window search:
         final int SLEN_MINUS_QLEN = SEARCH_LENGTH - QLEN;
         final int SEARCH_SHIFT    = SLEN_MINUS_QLEN + 1;
-        final long SEARCH_START   = (fromPosition > 0? fromPosition : 0) + SLEN_MINUS_QLEN;
-        final long TO_END_POS     = toPosition + SLEN_MINUS_QLEN;
+        final long SEARCH_START   = addLongPositionsAvoidOverflows(fromPosition, SLEN_MINUS_QLEN);
+        final long TO_END_POS     = addLongPositionsAvoidOverflows(toPosition, SLEN_MINUS_QLEN);
 
         // Search forwards.
         Window window;
@@ -469,8 +469,8 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final int SEARCH_SHIFT        = SLEN_MINUS_QLEN + 1;
         final int TWO_QGRAMS_FROM_END = SLEN_MINUS_QLEN - QLEN;
         final int LAST_MATCH_POSITION = bytes.length - localSequence.length();
-        final int SEARCH_START        = fromPosition < LAST_MATCH_POSITION? fromPosition : LAST_MATCH_POSITION;
-        final int SEARCH_END          = toPosition > 0? toPosition : 0;
+        final int SEARCH_START        = Math.min(fromPosition, LAST_MATCH_POSITION);
+        final int SEARCH_END          = Math.max(toPosition, 0);
 
         // Search backwards.  pos = place aligned with very start of pattern in the text (beginning of first q-gram).
         int pos;
@@ -538,7 +538,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final int SLEN_MINUS_QLEN = SEARCH_LENGTH - QLEN;
         final int SEARCH_SHIFT    = SLEN_MINUS_QLEN + 1;
         final int TWO_QGRAMS_BACK = SLEN_MINUS_QLEN - QLEN;
-        final long SEARCH_END     = toPosition > 0? toPosition : 0;
+        final long SEARCH_END     = Math.max(toPosition, 0);
 
         // Search backwards, pos is aligned with very start of pattern in the text.
         Window window;

@@ -309,4 +309,5 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
     public String toString() {
         return this.getClass().getSimpleName() + '(' + sequence + ')';
     }
+
 }

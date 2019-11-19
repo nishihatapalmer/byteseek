@@ -113,10 +113,8 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
 
         // Calculate safe bounds for the search:
         final int lastPossiblePosition = bytes.length - theSequence.length();
-        final int lastPosition = toPosition < lastPossiblePosition?
-                                 toPosition : lastPossiblePosition;
-        int searchPosition = fromPosition > 0?
-                             fromPosition : 0;
+        final int lastPosition = Math.min(toPosition, lastPossiblePosition);
+        int searchPosition = Math.max(fromPosition, 0);
 
         // Search forwards
         while (searchPosition <= lastPosition) {
@@ -136,8 +134,7 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
             final long toPosition) throws IOException {
         // Initialise:
         final SequenceMatcher theSequence = sequence;
-        long searchPosition = fromPosition > 0? 
-                              fromPosition : 0;
+        long searchPosition = Math.max(fromPosition, 0);
         
         // While there is data still to search in:
         Window window;
@@ -167,11 +164,9 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
         final SequenceMatcher theSequence = sequence;
         
         // Calculate safe bounds for the search:
-        final int lastPosition = toPosition > 0?
-                                 toPosition : 0;
+        final int lastPosition = Math.max(toPosition, 0);
         final int firstPossiblePosition = bytes.length - theSequence.length();
-        int searchPosition = fromPosition < firstPossiblePosition?
-                             fromPosition : firstPossiblePosition;
+        int searchPosition = Math.min(fromPosition, firstPossiblePosition);
         
         // Search backwards:
         while (searchPosition >= lastPosition) {
@@ -192,7 +187,9 @@ public final class SequenceMatcherSearcher extends AbstractWindowSearcher<Sequen
             final long toPosition) throws IOException {
         // Initialise:
         final SequenceMatcher theSequence = sequence;
-        long searchPosition = withinLength(reader, fromPosition);
+        //TODO: double check don't need withinLength on doSearchBackwards.  is already called by main method that calls this.
+        //long searchPosition = withinLength(reader, fromPosition);
+        long searchPosition = fromPosition;
         
         // While there is data to search in:
         Window window;        
