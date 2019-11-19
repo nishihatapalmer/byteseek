@@ -421,7 +421,6 @@ public final class ParseTreeUtils {
     public static Set<Byte> calculateSetValues(final ParseTree set) throws ParseException {
         ArgUtils.checkNullObject(set);
         final Set<Byte> setValues = getSetValues(set);
-        //TODO: is this efficient to calculate a set then potentially invert it?
         if (set.isValueInverted()) {
             return ByteUtils.invertedSet(setValues);
         }
