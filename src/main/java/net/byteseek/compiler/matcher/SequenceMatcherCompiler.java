@@ -261,7 +261,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
             case STRING:
                 addStringMatcher(matcherNode, sequenceList);
                 break;
-            case CASE_INSENSITIVE_STRING: //TODO: what about multiple charsets with case insensitive strings?
+            case CASE_INSENSITIVE_STRING:
                 addCaseInsensitiveStringMatcher(matcherNode, sequenceList);
                 break;
             case SEQUENCE:
