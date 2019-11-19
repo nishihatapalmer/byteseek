@@ -269,7 +269,6 @@ public final class MatcherCompilerUtils {
     public static ByteMatcher createMatcherFromSet(final ParseTree node,
                                                    final boolean currentInversion,
                                                    final ByteMatcherFactory matcherFactory) throws ParseException {
-        //TODO: include WildBit and AnyBits and StringNode.
         final boolean isInverted = isInverted(node, currentInversion);
         // If the set only has one element that matches something, it may be something we can directly represent
         // with a dedicated matcher, rather than using the slower matcherFactory (as we
@@ -305,18 +304,7 @@ public final class MatcherCompilerUtils {
         return ByteMatcherSequenceMatcher.caseInsensitive(string);
     }
 
-    //TODO: doesn't need to be here - only usage is now a test.  Move test to TwoByteMatcher and get rid of this code here.
 
-    /**
-     * Returns an ASCII case insensitive byte matcher given a char.
-     *
-     * @param caseChar The character to get a case insensitive byte matcher for.
-     * @return A byte matcher which matchers the character case insensitively.
-     * @throws IllegalArgumentException if the character has a value greater than 255.
-     */
-    public static ByteMatcher createCaseInsensitiveMatcher(final char caseChar) {
-        return TwoByteMatcher.caseInsensitive(caseChar);
-    }
 
 
 }
