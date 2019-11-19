@@ -45,8 +45,6 @@ import java.util.List;
  */
 public abstract class AbstractSequenceMatcher implements SequenceMatcher {
 
-    //TODO: test these in subclasses.
-
     @Override
     public int matches(final WindowReader reader, final long matchPosition, final Collection<MatchResult> results) throws IOException {
         if (matches(reader, matchPosition)) {
