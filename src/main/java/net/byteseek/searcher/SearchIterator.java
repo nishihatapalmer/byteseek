@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -137,7 +137,6 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
     public static List<MatchResult> findAll(final Searcher searcher, final WindowReader reader, final long from, final long to) throws IOException {
         return new SearchIterator(searcher, reader, from, to).nextAll();
     }
-
 
     /* *********
      * Members *
