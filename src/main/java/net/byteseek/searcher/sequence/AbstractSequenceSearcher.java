@@ -206,6 +206,18 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     }
 
     /**
+     * Calculates the addition of two integers, one which can be either negative or positive, and a second
+     * which must be positive, avoiding any integer overflow in the addition (ceiling is Integer.MAX_VALUE).
+     *
+     * @param anyInt An integer which can be negative or positive.
+     * @param positiveInt An integer to add to the other which must be positive.
+     * @return The sum of the two integers, avoiding integer overflow.
+     */
+    protected final int addIntegerAvoidOverflows(int anyInt, int positiveInt) {
+        return anyInt < Integer.MAX_VALUE - positiveInt? anyInt + positiveInt : Integer.MAX_VALUE;
+    }
+
+    /**
      * Calculates the addition of two long positions, avoiding long overflow.  If the first position < 0,
      * then the result is just the second position.  last sequence position must not be negative.
      *
@@ -216,6 +228,18 @@ public abstract class AbstractSequenceSearcher<T> extends AbstractSearcher imple
     protected final long addLongPositionsAvoidOverflows(long position, long lastSequencePosition) {
         return position <= 0 ? lastSequencePosition :
                 position < Long.MAX_VALUE - lastSequencePosition ? position + lastSequencePosition : Long.MAX_VALUE;
+    }
+
+    /**
+     * Calculates the addition of two longs, one which can be either negative or positive, and a second
+     * which must be positive, avoiding any long overflow in the addition (ceiling is Long.MAX_VALUE).
+     *
+     * @param anyLong A long which can be negative or positive.
+     * @param positiveLong A long to add to the other which must be positive.
+     * @return The sum of the two longs, avoiding long overflow.
+     */
+    protected final long addLongAvoidOverflows(long anyLong, long positiveLong) {
+        return anyLong < Long.MAX_VALUE - positiveLong? anyLong + positiveLong : Long.MAX_VALUE;
     }
 
 }
