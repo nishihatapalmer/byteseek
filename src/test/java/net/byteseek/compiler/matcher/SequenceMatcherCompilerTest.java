@@ -231,17 +231,10 @@ public class SequenceMatcherCompilerTest {
 
 			byte[] genBytes = genMatcher.getMatchingBytes();
 			Set<Byte> comBytes = ByteUtils.toSet(comMatcher.getMatchingBytes());
-			if (genBytes.length != comBytes.size()) {
-				System.out.println("oops"); //TODO: get rid of these debug tests.
-                //return;
-			}
+
 			assertEquals("byte arrays are same length", genBytes.length, comBytes.size());
 			for (int j = 0; j < genBytes.length; j++) {
 				byte genByte = genBytes[j];
-				if (!comBytes.contains(genByte)) {
-				    System.out.println("oops"); //TODO: get rid of these debug tests.
-                    //return;
-                }
 				assertTrue("Byte " + genByte + " is in compiled version", comBytes.contains(genByte));
 			}
 		}
