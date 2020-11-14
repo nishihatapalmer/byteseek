@@ -246,7 +246,7 @@ public abstract class AbstractWindowSearcher<T> extends AbstractSequenceSearcher
                 }
             }
 
-            //TODO: since we are now potentially shifting by more than one, if we shift by search length, we might end up back in an array search.
+            //TODO: IMPORTANT!!! since we are now potentially shifting by more than one, if we shift by search length, we might end up back in an array search.
 
             // The sequence is either just crossing back into the previous window,
             // or it is crossing over into the next window (it can be both for a long sequence, but this doesn't matter,
