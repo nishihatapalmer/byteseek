@@ -571,6 +571,8 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         return NO_MATCH_SAFE_SHIFT;
     }
 
+    //TODO: check effect of negative positions on all searchers.
+
     @Override
     public int searchSequenceBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         // Get the objects needed to search:
@@ -587,7 +589,7 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - 1;
         final int lastSequencePos = sequence.length() - 1;
-        final int fromPositionEndPos = addIntegerPositionsAvoidOverflows(fromPosition, lastSequencePos);
+        final int fromPositionEndPos = addIntegerAvoidOverflows(fromPosition, lastSequencePos);
         final int startPosition = Math.min(fromPositionEndPos, lastPossiblePosition);
         final int finalPosition = Math.max(toPosition, 0);
         final int mainLoopFinalPos = finalPosition + UNROLL - 1;
@@ -647,7 +649,7 @@ public final class ShiftOrUnrolledSearcher extends AbstractSequenceSearcher<Sequ
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - verifier.length();
         final int LAST_WORD_POS = WORD_LENGTH - UNROLL;
-        final int fromPositionEndPos = addIntegerPositionsAvoidOverflows(fromPosition, LAST_WORD_POS);
+        final int fromPositionEndPos = addIntegerAvoidOverflows(fromPosition, LAST_WORD_POS);
         final int startPosition = Math.min(fromPositionEndPos, lastPossiblePosition);
         final int finalPosition = Math.max(toPosition, 0);
         final int finalMainLoopPos = finalPosition + UNROLL - 1;
