@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2009-2017, All rights reserved.
+ * Copyright Matt Palmer 2009-2019, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  * 
@@ -121,7 +121,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 		}
 		try {
 			return doCompile(ast);
-		} catch (IllegalArgumentException | ParseException e) {
+		} catch (IllegalArgumentException e) {
 			throw new CompileException(e.getMessage(), e);
 		}
 	}
@@ -140,7 +140,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 * @throws CompileException
 	 *             If a problem occurred during compilation.
 	 */
-	protected abstract T doCompile(S ast) throws ParseException, CompileException;
+	protected abstract T doCompile(S ast) throws CompileException;
 
 	/**
 	 * Joins a list of experssions into a single abstract syntax tree.
