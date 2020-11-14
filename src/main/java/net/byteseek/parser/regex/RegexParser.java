@@ -65,6 +65,9 @@ import net.byteseek.parser.tree.node.StringNode;
 //FEATURE: greedy and non greedy matching with ?
 
 //FEATURE: syntax for encoding of 32 and 64 bit numbers in big and little endian formats.
+//         This is non trivial to search, as sequence searchers can't handle byte dependence.
+//         We could mark matchers as having byte dependencies and leave it to the searchers to
+//         resolve it, but that's open to searcher implementation mistake.
 
 //FEATURE: "jump to location contained in a match" - e.g. chain addresses together.  would need some kind of
 //         arithmetic support too (functions).  could be relative addresses or absolute, might need transforming.
@@ -949,15 +952,11 @@ public class RegexParser implements Parser<ParseTree> {
             throw new ParseException("Set was not closed before the expression ended.", expression);
         }
 
-        // Return the appropriate ParseTree or throw a ParseException depending on how many nodes in the set:
-        switch (setNodes.size()) {
-            //TODO: what about an inverted set of size 0 = 256!
-            case 0:  throw new ParseException("Cannot have an empty set", expression);
-            //case 1:  return setNodes.get(0); //TODO: this is wrong in some circumstances - a set with a single child
-            // isn't always directly returnable - i.e. if the set contains a string or case insensitive string,
-            // it's still a set of those values, not the string itself.  Some sets could be optimised like this.
-            default: return new ChildrenNode(expression, ParseTreeType.SET, setNodes, invertFinalSet);
-        }
+        if (setNodes.size() == 0) {
+			throw new ParseException("Cannot have an empty set", expression);
+		}
+
+       return new ChildrenNode(expression, ParseTreeType.SET, setNodes, invertFinalSet);
     }
 
     private ParseTree parseWildByte(final int firstByteChar, final boolean inverted,
