@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -55,6 +55,14 @@ public final class SelectByLengthFactory extends AbstractSequenceFactory {
     private final SequenceSearcherFactory shortFactory;
     private final SequenceSearcherFactory longFactory;
 
+    /**
+     * Creates a SelectByLengthFactory given the factory for short sequences, the factory for long sequences,
+     * and the size of a long sequence.
+     *
+     * @param shortFactory The searcher factory to use for short sequences.
+     * @param longFactory The searcher factory to use for long sequences.
+     * @param longSize The smallest size of a long sequence.
+     */
     public SelectByLengthFactory(final SequenceSearcherFactory shortFactory,
                                  final SequenceSearcherFactory longFactory,
                                  final int longSize) {
