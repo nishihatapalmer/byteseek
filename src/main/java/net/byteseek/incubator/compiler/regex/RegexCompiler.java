@@ -142,26 +142,42 @@ public final class RegexCompiler<T> extends AbstractCompiler<Automata<T>, ParseT
     }
 
     @Override
-    protected Automata<T> doCompile(final ParseTree ast) throws CompileException, ParseException {
-        switch (ast.getParseTreeType()) {
-            case BYTE:						// Drop through - bytes, bitmasks (all and any), sets, ranges and any bytes
-            case WILDBIT:
-            case ANYBITS:
-            case SET:
-            case RANGE:
-            case ANY:						return createTransitionAutomata(ast);
-            case STRING:					return createStringAutomata(ast);
-            case CASE_INSENSITIVE_STRING:	return createCaseInsensitiveStringAutomata(ast);
-            case SEQUENCE:					return createSequenceAutomata(ast);
-            case ALTERNATIVES:				return createAlternativesAutomata(ast);
-            case REPEAT:					return createRepeatedAutomata(ast);
-            case REPEAT_MIN_TO_MAX:			return createRepeatMinToMaxAutomata(ast);
-            case REPEAT_MIN_TO_MANY:		return createRepeatMinToManyAutomata(ast);
-            case ZERO_TO_MANY:				return createZeroToManyAutomata(ast);
-            case ONE_TO_MANY:				return createOneToManyAutomata(ast);
-            case OPTIONAL:					return createOptionalAutomata(ast);
-            
-            default: throw new CompileException(getTypeErrorMessage(ast));
+    protected Automata<T> doCompile(final ParseTree ast) throws CompileException {
+        try {
+            switch (ast.getParseTreeType()) {
+                case BYTE:                        // Drop through - bytes, bitmasks (all and any), sets, ranges and any bytes
+                case WILDBIT:
+                case ANYBITS:
+                case SET:
+                case RANGE:
+                case ANY:
+                    return createTransitionAutomata(ast);
+                case STRING:
+                    return createStringAutomata(ast);
+                case CASE_INSENSITIVE_STRING:
+                    return createCaseInsensitiveStringAutomata(ast);
+                case SEQUENCE:
+                    return createSequenceAutomata(ast);
+                case ALTERNATIVES:
+                    return createAlternativesAutomata(ast);
+                case REPEAT:
+                    return createRepeatedAutomata(ast);
+                case REPEAT_MIN_TO_MAX:
+                    return createRepeatMinToMaxAutomata(ast);
+                case REPEAT_MIN_TO_MANY:
+                    return createRepeatMinToManyAutomata(ast);
+                case ZERO_TO_MANY:
+                    return createZeroToManyAutomata(ast);
+                case ONE_TO_MANY:
+                    return createOneToManyAutomata(ast);
+                case OPTIONAL:
+                    return createOptionalAutomata(ast);
+
+                default:
+                    throw new CompileException(getTypeErrorMessage(ast));
+            }
+        } catch (ParseException e) {
+            throw new CompileException(e.getMessage(), e);
         }
     }
 
