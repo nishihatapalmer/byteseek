@@ -286,7 +286,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe end.
         final long finalSearchPosition = Math.max(toPosition, 0);
         final int lastSequencePos = sequence.length() - 1;
-        final long fromPositionStart   = addLongPositionsAvoidOverflows(fromPosition, lastSequencePos);
+        final long fromPositionStart   = addLongAvoidOverflows(fromPosition, lastSequencePos);
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask (bitwise complement of zero).
@@ -323,7 +323,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe end.
         final int LAST_WORD_POS = WORD_LENGTH - 1;
         final long finalSearchPosition = Math.max(toPosition, 0);
-        final long fromPositionStart   = addLongPositionsAvoidOverflows(fromPosition, LAST_WORD_POS);
+        final long fromPositionStart   = addLongAvoidOverflows(fromPosition, LAST_WORD_POS);
 
         // Search backwards:
         long state = ~0L; // 64 1's bitmask.
@@ -368,7 +368,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - 1;
         final int lastSequencePos = sequence.length() - 1;
-        final int fromPositionEndPos = addIntegerPositionsAvoidOverflows(fromPosition, lastSequencePos);
+        final int fromPositionEndPos = addIntegerAvoidOverflows(fromPosition, lastSequencePos);
         final int startPosition = Math.min(fromPositionEndPos, lastPossiblePosition);
         final int finalPosition = Math.max(toPosition, 0);
 
@@ -397,7 +397,7 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
         // Determine safe start and ends:
         final int lastPossiblePosition = bytes.length - verifier.length();
         final int LAST_WORD_POS = WORD_LENGTH - 1;
-        final int fromPositionEndPos = addIntegerPositionsAvoidOverflows(fromPosition, LAST_WORD_POS);
+        final int fromPositionEndPos = addIntegerAvoidOverflows(fromPosition, LAST_WORD_POS);
         final int startPosition = Math.min(fromPositionEndPos, lastPossiblePosition);
         final int finalPosition = Math.max(toPosition, 0);
 
