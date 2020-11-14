@@ -50,7 +50,7 @@ import java.nio.channels.SeekableByteChannel;
  * This class is not thread safe - do not create multiple instances over the
  * same WindowReader and run them in different threads.
  */
-public final class ReaderSeekableByteChannel implements SeekableByteChannel {
+public final class WindowSeekableByteChannel implements SeekableByteChannel {
 
     private final static boolean CLOSE_READER_ON_CLOSE = true;
     private final WindowReader reader;
@@ -59,22 +59,22 @@ public final class ReaderSeekableByteChannel implements SeekableByteChannel {
     private long position;
 
     /**
-     * Constructs a ReaderSeekableByteChannel given a WindowReader.
+     * Constructs a WindowSeekableByteChannel given a WindowReader.
      *
      * @param reader The WindowReader to be adapted to the SeekableByteChannel interface.
      */
-    public ReaderSeekableByteChannel(final WindowReader reader) {
+    public WindowSeekableByteChannel(final WindowReader reader) {
         this(reader, CLOSE_READER_ON_CLOSE);
     }
 
     /**
-     * Constructs a ReaderSeekableByteChannel given a WindowReader, and whether to
+     * Constructs a WindowSeekableByteChannel given a WindowReader, and whether to
      * close the underlying reader when this SeekableByteChannel is closed.
      *
      * @param reader The WindowReader to be adapted to the SeekableByteChannel interface.
-     * @param closeReaderOnClose if true, the underlying reader is closed when the ReaderSeekableByteChannel is closed.
+     * @param closeReaderOnClose if true, the underlying reader is closed when the WindowSeekableByteChannel is closed.
      */
-    public ReaderSeekableByteChannel(final WindowReader reader, final boolean closeReaderOnClose) {
+    public WindowSeekableByteChannel(final WindowReader reader, final boolean closeReaderOnClose) {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
         this.closeReaderOnClose = closeReaderOnClose;
@@ -109,7 +109,7 @@ public final class ReaderSeekableByteChannel implements SeekableByteChannel {
     }
 
     @Override
-    public ReaderSeekableByteChannel position(final long newPosition) throws IOException {
+    public WindowSeekableByteChannel position(final long newPosition) throws IOException {
         ArgUtils.checkNotNegative(newPosition);
         ensureOpen();
         position = newPosition;
@@ -129,7 +129,7 @@ public final class ReaderSeekableByteChannel implements SeekableByteChannel {
      * </p>
      */
     @Override
-    public ReaderSeekableByteChannel truncate(long size) throws IOException {
+    public WindowSeekableByteChannel truncate(long size) throws IOException {
         throw new NonWritableChannelException();
     }
 

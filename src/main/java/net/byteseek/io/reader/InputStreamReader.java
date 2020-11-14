@@ -185,10 +185,10 @@ public final class InputStreamReader extends AbstractCacheReader {
      * @throws IllegalArgumentException if the stream is null, or the window size is less than one,
      *                                  or the capacity is less than zero.
      */
-    public InputStreamReader(final InputStream stream, final int windowSize,
-                             final int capacity) {
-        this(stream, windowSize, new TwoLevelCache(
-                new LeastRecentlyUsedCache(capacity), new TempFileCache()), true);
+    public InputStreamReader(final InputStream stream, final int windowSize, final int capacity) {
+        this(stream, windowSize,
+             new TwoLevelCache(new LeastRecentlyUsedCache(capacity), new TempFileCache()),
+             true);
     }
 
     /**
@@ -206,8 +206,8 @@ public final class InputStreamReader extends AbstractCacheReader {
      */
     public InputStreamReader(final InputStream stream, final int windowSize,
                              final int capacity, final boolean closeStreamOnClose) {
-        this(stream, windowSize, new TwoLevelCache(
-                        new LeastRecentlyUsedCache(capacity), new TempFileCache()),
+        this(stream, windowSize,
+                new TwoLevelCache(new LeastRecentlyUsedCache(capacity), new TempFileCache()),
                 closeStreamOnClose);
     }
 
@@ -224,8 +224,7 @@ public final class InputStreamReader extends AbstractCacheReader {
      * @throws IllegalArgumentException if the stream or cache is null, or the window size is less
      *                                  than one.
      */
-    public InputStreamReader(final InputStream stream, final int windowSize,
-                             final WindowCache cache) {
+    public InputStreamReader(final InputStream stream, final int windowSize, final WindowCache cache) {
         this(stream, windowSize, cache, true);
     }
 
@@ -268,7 +267,7 @@ public final class InputStreamReader extends AbstractCacheReader {
      */
     @Override
     public final Window getWindow(final long position) throws IOException {
-        final Window window = super.getWindow(position); // this checks if the reader is open or not.
+        final Window window = super.getWindow(position);
         if (window == null && position < nextReadPos && position >= 0) {
             // No window was returned, but the position requested has already
             // been read. This means the cache algorithm selected to use with

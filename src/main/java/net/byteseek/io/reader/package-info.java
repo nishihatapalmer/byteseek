@@ -48,7 +48,7 @@
  * applications which are processing byte sources quickly, SoftWindows may help to prevent
  * OutOfMemoryErrors.  Otherwise, they simply add IO overhead as windows may need to be re-read.
  * <p>
- * In addition, the ReaderInputStream adapts any WindowReader into an InputStream, to allow the
+ * In addition, the WindowInputStream adapts any WindowReader into an InputStream, to allow the
  * cached windows to be used with other classes which require input streams.
  */
 package net.byteseek.io.reader;

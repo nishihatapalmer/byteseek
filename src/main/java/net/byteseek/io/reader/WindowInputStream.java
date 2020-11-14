@@ -39,7 +39,7 @@ import java.io.InputStream;
  * An InputStream backed by a WindowReader.  It supports mark / reset behaviour (assuming the underlying
  * WindowReader is caching data for the earlier positions).
  */
-public final class ReaderInputStream extends InputStream {
+public final class WindowInputStream extends InputStream {
 
     private final static int END_OF_STREAM = -1;
 
@@ -51,39 +51,39 @@ public final class ReaderInputStream extends InputStream {
     private long   mark;
 
     /**
-     * Constructs a ReaderInputStream from a WindowReader.  By default, the
+     * Constructs a WindowInputStream from a WindowReader.  By default, the
      * underlying reader will not be closed when this input stream is closed.
      *
      * @param reader The WindowReader to back the InputStream.
-     * @throws IOException If the ReaderInputStream cannot acquire a window for position 0.
+     * @throws IOException If the WindowInputStream cannot acquire a window for position 0.
      * @throws java.lang.IllegalArgumentException if the reader is null.
      */
-    public ReaderInputStream(final WindowReader reader) throws IOException {
+    public WindowInputStream(final WindowReader reader) throws IOException {
         this(reader, true);
     }
 
     /**
-     * Constructs a ReaderInputStream from a WindowReader.
+     * Constructs a WindowInputStream from a WindowReader.
      *
      * @param reader The WindowReader to back the InputStream.
      * @param closeReaderOnClose Whether the underlying reader is closed when this input stream is closed.
-     * @throws IOException If the ReaderInputStream cannot acquire a window for position 0.
+     * @throws IOException If the WindowInputStream cannot acquire a window for position 0.
      * @throws java.lang.IllegalArgumentException if the reader is null.
      */
-    public ReaderInputStream(final WindowReader reader, boolean closeReaderOnClose) throws IOException {
+    public WindowInputStream(final WindowReader reader, boolean closeReaderOnClose) throws IOException {
         this(reader, closeReaderOnClose, true);
     }
 
     /**
-     * Constructs a ReaderInputStream from a WindowReader.
+     * Constructs a WindowInputStream from a WindowReader.
      *
      * @param reader The WindowReader to back the InputStream.
      * @param closeReaderOnClose Whether the underlying reader is closed when this input stream is closed
      * @param markSupported Whether the stream will support mark() and reset().                          .
-     * @throws IOException If the ReaderInputStream cannot acquire a window for position 0.
+     * @throws IOException If the WindowInputStream cannot acquire a window for position 0.
      * @throws java.lang.IllegalArgumentException if the reader is null.
      */
-    public ReaderInputStream(final WindowReader reader, boolean closeReaderOnClose, boolean markSupported) throws IOException {
+    public WindowInputStream(final WindowReader reader, boolean closeReaderOnClose, boolean markSupported) throws IOException {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
         this.closeReaderOnClose = closeReaderOnClose;
