@@ -610,14 +610,6 @@ public class MatcherCompilerUtilsTest {
         }
     }
 
-    @Test
-    public void testCreateCaseInsensitiveMatcherChar() throws Exception {
-        for (char c = 0; c < 256; c++) {
-            ByteMatcher matcher = MatcherCompilerUtils.createCaseInsensitiveMatcher(c);
-            testMatcher(matcher, c);
-        }
-    }
-
     private void testMatcher(ByteMatcher matcher, char c) {
         if (c >= 'a' && c <= 'z') {
             assertEquals("matches two bytes", 2, matcher.getNumberOfMatchingBytes());
