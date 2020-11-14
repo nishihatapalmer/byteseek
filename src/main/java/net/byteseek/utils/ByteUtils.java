@@ -447,7 +447,7 @@ public final class ByteUtils {
      */
     public static byte[] repeat(final int numberOfRepeats, final byte[] array) {
     	ArgUtils.checkNullByteArray(array);
-    	ArgUtils.checkNegativeRepeats(numberOfRepeats);
+    	ArgUtils.checkNotNegative(numberOfRepeats);
     	final int repeatLength = array.length;
         final int size = repeatLength * numberOfRepeats;
         final byte[] repeated = new byte[size];
@@ -474,7 +474,7 @@ public final class ByteUtils {
     public static byte[] repeat(final int numberOfRepeats, final byte[] array,
                                 final int startIndex, final int endIndex) {
     	ArgUtils.checkBounds(array, startIndex, endIndex);
-    	ArgUtils.checkNegativeRepeats(numberOfRepeats);
+    	ArgUtils.checkNotNegative(numberOfRepeats);
     	final int repeatLength = endIndex - startIndex;
         final int size = repeatLength * numberOfRepeats;
         final byte[] repeated = new byte[size];
@@ -493,7 +493,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if the number of repeats is negative.
      */
     public static byte[] repeat(final byte value, final int numberOfRepeats) {
-        ArgUtils.checkNegativeRepeats(numberOfRepeats);
+        ArgUtils.checkNotNegative(numberOfRepeats);
         final byte[] repeats = new byte[numberOfRepeats];
         Arrays.fill(repeats, value);
         return repeats;
@@ -945,10 +945,6 @@ public final class ByteUtils {
         }
         return -1;
     }
-
-    //TODO: should we have a byte array from hex string method too?  Could be useful, avoid full parser overhead.
-    //      byte arrays from hex have to be a fairly common requirement...
-
 
     /**
      * Returns a byte value as either a 2-char hex string, or if
