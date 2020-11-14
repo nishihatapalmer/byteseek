@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.searcher.sequence;
+package net.byteseek.searcher;
 
 import net.byteseek.io.reader.FileReader;
 import net.byteseek.io.reader.WindowReader;
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * Searches for the same patterns using all sequence searchers and reports any mismatches between them.
+ * Searches for the same patterns using all searchers and reports any mismatches between them.
  * This helps us to detect bugs in the search algorithms by ensuring they all find the same patterns
  * in the same texts in the same positions.
  * <p>
@@ -62,10 +62,10 @@ import static org.junit.Assert.fail;
 public class CrossValidationSearchersTest extends SearchersToTest {
 
     //private static int[] windowSizes = {4096, 4095, 4097, 128, 127, 15, 16}; // more complex tests take ages to run, look for boundary conditions.
-    private static int[] windowSizes = {4096}; // simple test with window of 4096 byte size (default).
+    private static int[] windowSizes = {4096, 127}; // simple test with window of 4096 and 127 byte size.
 
-    public static final int NUM_RANDOM_TESTS = 1000; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
-    public static final int TIMING_UPDATE_INTERVAL = 100; // refresh timings every number of tests...
+    public static final int NUM_RANDOM_TESTS = 100; // 5000 has detected issues which 1000 did not, but takes a fair amount of time to run.
+    public static final int TIMING_UPDATE_INTERVAL = 2; // refresh timings every number of tests...
 
     Random random = new Random(0);
 
@@ -263,10 +263,10 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private Map<String, Long> testSearchers(byte[] pattern, SearchData dataToSearch) {
-        final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<Long, List<Searcher>> resultMap = new HashMap<Long, List<Searcher>>();
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
-        final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
-        for (SequenceSearcher searcher : searchers) {
+        final List<Searcher> usedSearchers = new ArrayList<Searcher>();
+        for (Searcher searcher : searchers) {
             usedSearchers.add(searcher);
             long startTime = System.nanoTime();
             addAllSearchPositionsFor(searcher, dataToSearch.getData(), resultMap);
@@ -278,11 +278,11 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private Map<String, Long> testReaderSearchers(byte[] pattern, SearchData dataToSearch) {
-        final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<Long, List<Searcher>> resultMap = new HashMap<Long, List<Searcher>>();
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
-        final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
+        final List<Searcher> usedSearchers = new ArrayList<Searcher>();
         for (WindowReader reader: dataToSearch.getReaders()) {
-            for (SequenceSearcher searcher : searchers) {
+            for (Searcher searcher : searchers) {
                 usedSearchers.add(searcher);
                 long startTime = System.nanoTime();
                 addAllSearchPositionsFor(searcher, reader, resultMap);
@@ -295,10 +295,10 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private Map<String, Long> testSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
-        final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<Long, List<Searcher>> resultMap = new HashMap<Long, List<Searcher>>();
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
-        final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
-        for (SequenceSearcher searcher : searchers) {
+        final List<Searcher> usedSearchers = new ArrayList<Searcher>();
+        for (Searcher searcher : searchers) {
             usedSearchers.add(searcher);
             long startTime = System.nanoTime();
             addAllBackwardsSearchPositionsFor(searcher, dataToSearch.getData(), resultMap);
@@ -310,11 +310,11 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private Map<String, Long> testReaderSearchersBackwards(byte[] pattern, SearchData dataToSearch) {
-        final Map<Long, List<SequenceSearcher>> resultMap = new HashMap<Long, List<SequenceSearcher>>();
+        final Map<Long, List<Searcher>> resultMap = new HashMap<Long, List<Searcher>>();
         final Map<String, Long> searcherTimings = new HashMap<String, Long>();
-        final List<SequenceSearcher> usedSearchers = new ArrayList<SequenceSearcher>();
+        final List<Searcher> usedSearchers = new ArrayList<Searcher>();
         for (WindowReader reader: dataToSearch.getReaders()) {
-            for (SequenceSearcher searcher : searchers) {
+            for (Searcher searcher : searchers) {
                 usedSearchers.add(searcher);
                 long startTime = System.nanoTime();
                 addAllBackwardsSearchPositionsFor(searcher, reader, resultMap);
@@ -326,67 +326,68 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         return searcherTimings;
     }
 
-    private void addAllSearchPositionsFor(SequenceSearcher searcher,
+    private void addAllSearchPositionsFor(Searcher searcher,
                                           byte[] dataToSearch,
-                                          Map<Long, List<SequenceSearcher>> resultMap) {
+                                          Map<Long, List<Searcher>> resultMap) {
         final int LENGTH = dataToSearch.length;
-        int result = searcher.searchSequenceForwards(dataToSearch);
         List<MatchResult> resultList = searcher.searchForwards(dataToSearch);
         assertTrue(resultList.size() < 2); // no more than one result.
-        long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+
+        List<MatchResult> resultList2 = new ArrayList<MatchResult>();
+        searcher.searchForwards(dataToSearch, resultList2);
+        assertEquals(resultList.size(), resultList2.size());
+
+        long result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+        long result2 = resultList2.isEmpty()? -1 : resultList2.get(0).getMatchPosition();
+        assertEquals(result, result2);
+
         if (result < 0) {
-            assertTrue(result2 < 0);
             return;
         }
-        assertEquals(result, result2);
         addResult(result, searcher, resultMap);
-        int position = result + 1;
+        int position = (int) result + 1;
         while (position < LENGTH) {
-            result = searcher.searchSequenceForwards(dataToSearch, position);
             resultList = searcher.searchForwards(dataToSearch, position);
             assertTrue(resultList.size() < 2); // no more than one result.
-            result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-            if (result < 0) {
-                assertTrue(result2 < 0);       // both are negative.
-            } else {
-                assertEquals(result, result2); // value is the same if positive.
-            }
-
+            result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
             if (result < 0) {
                 return;
             }
             addResult(result, searcher, resultMap);
             if (result < position) {
                 // do search again so we can debug if we want to at this point:
-                result = searcher.searchSequenceForwards(dataToSearch, position);
+                // result = searcher.searchSequenceForwards(dataToSearch, position);
                 fail("Searcher " + searcher + " returned a match at " + result + " before current search position at " + position);
             }
-            position = result + 1;
+            position = (int) result + 1;
         }
     }
 
-    private void addAllSearchPositionsFor(SequenceSearcher searcher,
+    private void addAllSearchPositionsFor(Searcher searcher,
                                           WindowReader dataToSearch,
-                                          Map<Long, List<SequenceSearcher>> resultMap) {
+                                          Map<Long, List<Searcher>> resultMap) {
         try {
             final long LENGTH = dataToSearch.length();
-
-            long result = searcher.searchSequenceForwards(dataToSearch);
             List<MatchResult> resultList = searcher.searchForwards(dataToSearch);
             assertTrue(resultList.size() < 2); // no more than one result.
-            long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+
+            List<MatchResult> resultList2 = new ArrayList<MatchResult>();
+            searcher.searchForwards(dataToSearch, resultList2);
+            assertEquals(resultList.size(), resultList2.size());
+
+            long result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+            long result2 = resultList2.isEmpty()? -1 : resultList2.get(0).getMatchPosition();
             assertEquals(result, result2);
+
             if (result < 0) {
                 return;
             }
             addResult(result, searcher, resultMap);
             long position =  result + 1;
             while (position < LENGTH) {
-                result = searcher.searchSequenceForwards(dataToSearch, position);
                 resultList = searcher.searchForwards(dataToSearch, position);
                 assertTrue(resultList.size() < 2); // no more than one result.
-                result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
-                assertEquals(result, result2);
+                result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
                 if (result < 0) {
                     return;
                 }
@@ -403,69 +404,73 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-    private void addAllBackwardsSearchPositionsFor(SequenceSearcher searcher,
+    private void addAllBackwardsSearchPositionsFor(Searcher searcher,
                                           byte[] dataToSearch,
-                                          Map<Long, List<SequenceSearcher>> resultMap) {
+                                          Map<Long, List<Searcher>> resultMap) {
         final int LENGTH = dataToSearch.length;
 
-        int result = searcher.searchSequenceBackwards(dataToSearch);
         List<MatchResult> resultList = searcher.searchBackwards(dataToSearch);
         assertTrue(resultList.size() < 2); // no more than one result.
-        long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+
+        List<MatchResult> resultList2 = new ArrayList<MatchResult>();
+        searcher.searchBackwards(dataToSearch, resultList2);
+        assertEquals(resultList.size(), resultList2.size());
+
+        long result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+        long result2 = resultList2.isEmpty()? -1 : resultList2.get(0).getMatchPosition();
+        assertEquals(result, result2);
+
         if (result < 0) {
-            assertTrue(result2 < 0);
             return;
         }
-        assertEquals(result, result2);
         addResult(result, searcher, resultMap);
-        int position = result - 1;
+        int position = (int) result - 1;
         while (position >= 0) {
-            result = searcher.searchSequenceBackwards(dataToSearch, position);
             resultList = searcher.searchBackwards(dataToSearch, position);
             assertTrue(resultList.size() < 2); // no more than one result.
-            result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+            result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
             if (result < 0) {
-                assertTrue(result2 < 0);
                 return;
             }
-            assertEquals(result, result2);
             addResult(result, searcher, resultMap);
             if (result > position) {
                 // do search again so we can debug if we want to at this point:
-                result = searcher.searchSequenceBackwards(dataToSearch, position);
+                //result = searcher.searchSequenceBackwards(dataToSearch, position);
                 fail("Searcher " + searcher + " returned a match at " + result + " after current search position at " + position);
             }
-            position = result - 1;
+            position = (int) result - 1;
         }
     }
 
-    private void addAllBackwardsSearchPositionsFor(SequenceSearcher searcher,
+    private void addAllBackwardsSearchPositionsFor(Searcher searcher,
                                                    WindowReader dataToSearch,
-                                                   Map<Long, List<SequenceSearcher>> resultMap) {
+                                                   Map<Long, List<Searcher>> resultMap) {
         try {
             final long LENGTH = dataToSearch.length();
-            long result = searcher.searchSequenceBackwards(dataToSearch);
             List<MatchResult> resultList = searcher.searchBackwards(dataToSearch);
             assertTrue(resultList.size() < 2); // no more than one result.
-            long result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+
+            List<MatchResult> resultList2 = new ArrayList<MatchResult>();
+            searcher.searchBackwards(dataToSearch, resultList2);
+            assertEquals(resultList.size(), resultList2.size());
+
+            long result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+            long result2 = resultList2.isEmpty()? -1 : resultList2.get(0).getMatchPosition();
+            assertEquals(result, result2);
+
             if (result < 0) {
-                assertTrue(result2 < 0);
                 return;
             }
-            assertEquals(result, result2);
             addResult(result, searcher, resultMap);
 
             long position = result - 1;
             while (position >= 0) {
-                result = searcher.searchSequenceBackwards(dataToSearch, position);
                 resultList = searcher.searchBackwards(dataToSearch, position);
                 assertTrue(resultList.size() < 2); // no more than one result.
-                result2 = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
+                result = resultList.isEmpty()? -1 : resultList.get(0).getMatchPosition();
                 if (result < 0) {
-                    assertTrue(result2 < 0);
                     return;
                 }
-                assertEquals(result, result2);
                 addResult(result, searcher, resultMap);
                 if (result > position) {
                     // do search again so we can debug if we want to at this point:
@@ -480,32 +485,32 @@ public class CrossValidationSearchersTest extends SearchersToTest {
     }
 
     private void addResult(long value,
-                           SequenceSearcher searcher,
-                           Map<Long, List<SequenceSearcher>> resultMap) {
-        List<SequenceSearcher> wrapperList = resultMap.get(value);
+                           Searcher searcher,
+                           Map<Long, List<Searcher>> resultMap) {
+        List<Searcher> wrapperList = resultMap.get(value);
         if (wrapperList == null) {
-            wrapperList = new ArrayList<SequenceSearcher>();
+            wrapperList = new ArrayList<Searcher>();
             resultMap.put(value, wrapperList);
         }
         wrapperList.add(searcher);
     }
 
     private void findMismatches(String searchDescription,
-                                List<SequenceSearcher> usedSearchers,
+                                List<Searcher> usedSearchers,
                                 byte[] pattern,
-                                Map<Long, List<SequenceSearcher>> resultMap,
+                                Map<Long, List<Searcher>> resultMap,
                                 SearchData dataToSearch) {
         final int NUM_SEARCHERS = usedSearchers.size();
         final List<String> errors = new ArrayList<String>();
-        for (Map.Entry<Long, List<SequenceSearcher>> entry : resultMap.entrySet()) {
+        for (Map.Entry<Long, List<Searcher>> entry : resultMap.entrySet()) {
             //System.out.println("Match found for " + description + " at " + entry.getKey());
             String message = searchDescription + "\t" + dataToSearch.dataFile + "\t" + ByteUtils.bytesToString(true, pattern) + "\tmatch at\t" + entry.getKey() ;
-            List<SequenceSearcher> resultsForEntry = entry.getValue();
+            List<Searcher> resultsForEntry = entry.getValue();
             if (resultsForEntry.size() != NUM_SEARCHERS) {
-                Set<SequenceSearcher> newSet = new HashSet<SequenceSearcher>(usedSearchers);
+                Set<Searcher> newSet = new HashSet<Searcher>(usedSearchers);
                 message += "\tfound by\t";
                 boolean first = true;
-                for (SequenceSearcher searcher : resultsForEntry) {
+                for (Searcher searcher : resultsForEntry) {
                     if (!first) message += ','; first = false;
                     message += searcher.getClass().getSimpleName();
                     newSet.remove(searcher);
@@ -513,7 +518,7 @@ public class CrossValidationSearchersTest extends SearchersToTest {
                 if (newSet.size() > 0) {
                     message += "\tnot found by\t";
                     first = true;
-                    for (SequenceSearcher searcher : newSet) {
+                    for (Searcher searcher : newSet) {
                         if (!first) message += ','; first = false;
                         message += searcher.getClass().getSimpleName();
 
@@ -530,41 +535,41 @@ public class CrossValidationSearchersTest extends SearchersToTest {
         }
     }
 
-    private void debugFailedSearcher(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
+    private void debugFailedSearcher(Searcher searcher, long failedAtPosition, String dataToSearch)  {
         //debugFailedSearcherBytes(searcher, failedAtPosition, dataToSearch);
         debugFailedSearcherWindow(searcher, failedAtPosition, dataToSearch);
     }
 
-    private void debugFailedSearcherBytes(SequenceSearcher searcher, long failedAtPosition, String dataToSearch)  {
+    private void debugFailedSearcherBytes(Searcher searcher, long failedAtPosition, String dataToSearch)  {
         byte[] data = loadDataToSearch(dataToSearch);
-        int result = searcher.searchSequenceForwards(data, (int) (failedAtPosition - 20));
+        //int result = searcher.searchSequenceForwards(data, (int) (failedAtPosition - 20));
         //searcher.searchSequenceBackwards(data);
     }
 
-    private void debugFailedSearcherWindow(SequenceSearcher searcher, long failedAtPosition, String dataToSearch) {
+    private void debugFailedSearcherWindow(Searcher searcher, long failedAtPosition, String dataToSearch) {
         long result = -123456789;
         try {
             WindowReader reader = loadFileReader(dataToSearch);
-            result = searcher.searchSequenceForwards(reader, failedAtPosition - 300);
-            //searcher.searchSequenceBackwards(reader, failedAtPosition);
+            //result = searcher.searchForwards(reader, failedAtPosition - 300);
+            searcher.searchBackwards(reader, failedAtPosition);
         } catch (IOException ex) {
             fail("IO Exception when reading");
         }
         System.out.println(result);
     }
 
-    private void findCountMismatches(byte[] pattern, Map<Integer, List<SequenceSearcher>> resultMap) {
+    private void findCountMismatches(byte[] pattern, Map<Integer, List<Searcher>> resultMap) {
         if (resultMap.size() == 0) {
             throw new RuntimeException("Did not manage to get any counts at all - test bug.");
         }
         if (resultMap.size() > 1) { // more than one count - mismatches exist.
             String message = "Search counts do not return the same value.\tPattern = " + Arrays.toString(pattern);
-            for (Map.Entry<Integer, List<SequenceSearcher>> entry : resultMap.entrySet()) {
+            for (Map.Entry<Integer, List<Searcher>> entry : resultMap.entrySet()) {
                 message += "\tCount=" + entry.getKey() + "\t";
-                List<SequenceSearcher> resultsForEntry = entry.getValue();
+                List<Searcher> resultsForEntry = entry.getValue();
                 message += "\tfound by\t";
                 boolean first = true;
-                for (SequenceSearcher searcher : resultsForEntry) {
+                for (Searcher searcher : resultsForEntry) {
                     if (!first) message += ','; first = false;
                     message += searcher.getClass().getSimpleName();
                 }

@@ -164,18 +164,18 @@ public class ArgUtilsTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testExceptionCheckPositive() throws Exception {
-        ArgUtils.checkPositive(-1);
+        ArgUtils.checkGreaterThanZero(-1);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testExceptionCheckPositiveZero() throws Exception {
-        ArgUtils.checkPositive(0);
+        ArgUtils.checkGreaterThanZero(0);
     }
 
     @Test
     public void testExceptionCheckPositiveOK() throws Exception {
         for (int i = 1; i < 1000; i++) {
-            ArgUtils.checkPositive(i);
+            ArgUtils.checkGreaterThanZero(i);
         }
     }
 

@@ -28,14 +28,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.searcher.sequence;
+package net.byteseek.searcher;
 
 import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.io.reader.WindowReader;
+import net.byteseek.matcher.MatchResult;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -57,10 +59,13 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchForwardsEmptyByteArray() {
         createSearchers("x", false);
         byte[] data = new byte[0];
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                int result = searcher.searchSequenceForwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchForwards(data);
+                assertTrue(results.isEmpty());
+
+                //int result = searcher.searchSequenceForwards(data);
+                //assertTrue("searcher " + searcher, result < 0);
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -72,10 +77,10 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchBackwardsEmptyByteArray() {
         createSearchers("x", false);
         byte[] data = new byte[0];
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                int result = searcher.searchSequenceBackwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchBackwards(data);
+                assertTrue(results.isEmpty());
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -86,10 +91,10 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchForwardsEmptyReader() {
         createSearchers("x", false);
         WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[0]));
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                long result = searcher.searchSequenceForwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchForwards(data);
+                assertTrue(results.isEmpty());
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -101,10 +106,10 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchBackwardsEmptyReader() {
         createSearchers("x", false);
         WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[0]));
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                long result = searcher.searchSequenceBackwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchBackwards(data);
+                assertTrue(results.isEmpty());
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex);
             }
@@ -117,12 +122,13 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchForwardsShortByteArray() {
         createSearchers("xyz123abc", false);
         byte[] data = new byte[2];
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                int result = searcher.searchSequenceForwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchForwards(data);
+                assertTrue(searcher.toString(), results.isEmpty());
             } catch (Exception ex) {
-                fail("Searcher " + searcher + " had exception " + ex.getCause());
+                //fail("Searcher " + searcher + " had exception " + ex.getCause());
+                List<MatchResult> results = searcher.searchForwards(data);
             }
         }
     }
@@ -132,10 +138,10 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchBackwardsShortByteArray() {
         createSearchers("xyz123abc", false);
         byte[] data = new byte[2];
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                int result = searcher.searchSequenceBackwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchBackwards(data);
+                assertTrue(results.isEmpty());
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -146,10 +152,10 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchForwardsShortReader() {
         createSearchers("xyz123abc", false);
         WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[2]));
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                long result = searcher.searchSequenceForwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchForwards(data);
+                assertTrue(results.isEmpty());
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex.getCause());
             }
@@ -161,10 +167,10 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchBackwardsShortReader() {
         createSearchers("xyz123abc", false);
         WindowReader data = new InputStreamReader(new ByteArrayInputStream(new byte[2]));
-        for (SequenceSearcher searcher : searchers) {
+        for (Searcher searcher : searchers) {
             try {
-                long result = searcher.searchSequenceBackwards(data);
-                assertTrue("searcher " + searcher, result < 0);
+                List<MatchResult> results = searcher.searchBackwards(data);
+                assertTrue(results.isEmpty());
             } catch (Exception ex) {
                 fail("Searcher " + searcher + " had exception " + ex);
             }
@@ -177,11 +183,16 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchBackwardsArrayAroundZero() {
         createSearchers("xyz", false);
         byte[] data = "xyz".getBytes();
-        for (SequenceSearcher searcher : searchers) {
-            int result = searcher.searchSequenceBackwards(data, -1);
-            assertTrue("searcher " + searcher, result < 0);
-            result = searcher.searchSequenceBackwards(data, 0);
-            assertEquals("searcher " + searcher, result, 0);
+        for (Searcher searcher : searchers) {
+            List<MatchResult> results = searcher.searchBackwards(data, -1);
+            if (!results.isEmpty()) {
+                results = searcher.searchBackwards(data, -1);
+            }
+            assertTrue(searcher.toString(), results.isEmpty());
+
+            results = searcher.searchBackwards(data, 0);
+            assertEquals(searcher.toString(), 1, results.size());
+            assertEquals(searcher.toString(), 0, results.get(0).getMatchPosition());
         }
     }
 
@@ -189,11 +200,55 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchBackwardsReaderAroundZero() throws IOException {
         createSearchers("xxx", false);
         WindowReader data = new InputStreamReader(new ByteArrayInputStream("xxx".getBytes()));
-        for (SequenceSearcher searcher : searchers) {
-            long result = searcher.searchSequenceBackwards(data, -1);
-            assertTrue("searcher " + searcher, result < 0);
-            result = searcher.searchSequenceBackwards(data, 0);
-            assertEquals("searcher " + searcher, result, 0);
+        for (Searcher searcher : searchers) {
+            List<MatchResult> results = searcher.searchBackwards(data, -1);
+            assertTrue(searcher.toString(), results.isEmpty());
+
+            results = searcher.searchBackwards(data, 0);
+            assertEquals(searcher.toString(),1, results.size());
+            assertEquals(searcher.toString(),0, results.get(0).getMatchPosition());
+        }
+    }
+
+    /**
+     * Hard to test prepare commands, as they should have no really visible effect, except to
+     * precompute the internal search data.  All we can really do is call it and show that
+     * searching still works and no errors are generated.
+     */
+    @Test
+    public void testPrepareBackwards() throws IOException {
+        createSearchers("xxxx", false);
+        WindowReader data = new InputStreamReader(new ByteArrayInputStream("xxxxxxx".getBytes()));
+        for (Searcher searcher : searchers) {
+            searcher.prepareBackwards();
+
+            List<MatchResult> results = searcher.searchBackwards(data, -1);
+            assertTrue(searcher.toString(), results.isEmpty());
+
+            results = searcher.searchBackwards(data, 0);
+            assertEquals(1, results.size());
+            assertEquals(0, results.get(0).getMatchPosition());
+        }
+    }
+
+    /**
+     * Hard to test prepare commands, as they should have no really visible effect, except to
+     * precompute the internal search data.  All we can really do is call it and show that
+     * searching still works and no errors are generated.
+     */
+    @Test
+    public void testPrepareForwards() {
+        createSearchers("xyzz", false);
+        byte[] data = "xyzzzzzz".getBytes();
+        for (Searcher searcher : searchers) {
+            searcher.prepareForwards(); // no error should occur and searching should still work.
+
+            List<MatchResult> results = searcher.searchForwards(data, 1);
+            assertTrue(results.isEmpty());
+
+            results = searcher.searchForwards(data, 0);
+            assertEquals(1, results.size());
+            assertEquals(0, results.get(0).getMatchPosition());
         }
     }
 
@@ -201,23 +256,28 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchFowardsArrayAroundZero() {
         createSearchers("xyz", false);
         byte[] data = "xyzzzzzz".getBytes();
-        for (SequenceSearcher searcher : searchers) {
-            int result = searcher.searchSequenceForwards(data, 1);
-            assertTrue("searcher " + searcher, result < 0);
-            result = searcher.searchSequenceForwards(data, 0);
-            assertEquals("searcher " + searcher, 0, result);
+        for (Searcher searcher : searchers) {
+            List<MatchResult> results = searcher.searchForwards(data, 1);
+            assertTrue(results.isEmpty());
+
+            results = searcher.searchForwards(data, 0);
+            assertEquals(1, results.size());
+            assertEquals(0, results.get(0).getMatchPosition());
         }
     }
+
 
     @Test
     public void testSearchForwardsReaderAroundZero() throws IOException {
         createSearchers("xxx", false);
         WindowReader data = new InputStreamReader(new ByteArrayInputStream("xxxyyy".getBytes()));
-        for (SequenceSearcher searcher : searchers) {
-            long result = searcher.searchSequenceForwards(data, 1);
-            assertTrue("searcher " + searcher, result < 0);
-            result = searcher.searchSequenceForwards(data, 0);
-            assertEquals("searcher " + searcher, 0, result);
+        for (Searcher searcher : searchers) {
+            List<MatchResult> results = searcher.searchForwards(data, 1);
+            assertTrue(results.isEmpty());
+
+            results = searcher.searchForwards(data, 0);
+            assertEquals(1, results.size());
+            assertEquals(0, results.get(0).getMatchPosition());
         }
     }
 
@@ -227,13 +287,17 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchFowardsArrayBeforeEnd() {
         createSearchers("xyz", false);
         byte[] data = "---xyz".getBytes();
-        for (SequenceSearcher searcher : searchers) {
-            int result = searcher.searchSequenceForwards(data, 0);
-            assertEquals("searcher " + searcher, 3, result);
-            result = searcher.searchSequenceForwards(data, 0, 2);
-            assertTrue("searcher " + searcher, result < 0);
-            result = searcher.searchSequenceForwards(data, 0, 3);
-            assertEquals("searcher " + searcher, 3, result);
+        for (Searcher searcher : searchers) {
+            List<MatchResult> results = searcher.searchForwards(data, 0);
+            assertEquals(1, results.size());
+            assertEquals(3, results.get(0).getMatchPosition());
+
+            results = searcher.searchForwards(data, 0, 2);
+            assertTrue(results.isEmpty());
+
+            results = searcher.searchForwards(data, 0, 3);
+            assertEquals(1, results.size());
+            assertEquals(3, results.get(0).getMatchPosition());
         }
     }
 
@@ -241,13 +305,17 @@ public class GeneralSearcherTests extends SearchersToTest {
     public void testSearchForwardsReaderBeforeEnd() throws IOException {
         createSearchers("xyz", false);
         WindowReader data = new InputStreamReader(new ByteArrayInputStream("---xyz".getBytes()));
-        for (SequenceSearcher searcher : searchers) {
-            long result = searcher.searchSequenceForwards(data, 0);
-            assertEquals("searcher " + searcher, 3, result);
-            result = searcher.searchSequenceForwards(data, 0, 2);
-            assertTrue("searcher " + searcher, result < 0);
-            result = searcher.searchSequenceForwards(data, 0, 3);
-            assertEquals("searcher " + searcher, 3, result);
+        for (Searcher searcher : searchers) {
+            List<MatchResult> results = searcher.searchForwards(data, 0);
+            assertEquals(1, results.size());
+            assertEquals(3, results.get(0).getMatchPosition());
+
+            results = searcher.searchForwards(data, 0, 2);
+            assertTrue(results.isEmpty());
+
+            results = searcher.searchForwards(data, 0, 3);
+            assertEquals(1, results.size());
+            assertEquals(3, results.get(0).getMatchPosition());
         }
     }
 

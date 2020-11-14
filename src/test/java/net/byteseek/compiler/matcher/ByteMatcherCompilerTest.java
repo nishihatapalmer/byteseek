@@ -126,9 +126,7 @@ public class ByteMatcherCompilerTest {
 
             byte[] genBytes = generated.getMatchingBytes();
             byte[] comBytes = compiled.getMatchingBytes();
-            if (genBytes.length != comBytes.length) {
-                System.out.println("Matcher " + generated + " not the same as " + compiled); //TODO: get rid of debug tests.
-            }
+
             assertEquals("Matcher " + generated + " matches same as " + compiled, genBytes.length, comBytes.length);
             Set<Byte> comB = ByteUtils.toSet(comBytes);
             for (byte b : genBytes) {
