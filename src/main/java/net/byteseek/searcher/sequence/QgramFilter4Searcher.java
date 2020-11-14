@@ -261,7 +261,7 @@ public final class QgramFilter4Searcher extends AbstractQgramSearcher {
         final int SEARCH_START       = addIntegerPositionsAvoidOverflows(fromPosition, SLEN_MINUS_QLEN);
         final int LAST_MATCH_POS     = bytes.length - localSequence.length();
         final int FINAL_TO_POS       = Math.min(toPosition, LAST_MATCH_POS);
-        final int SEARCH_END         = addIntegerPositionsAvoidOverflows(FINAL_TO_POS, SLEN_MINUS_QLEN);
+        final int SEARCH_END         = addIntegerAvoidOverflows(FINAL_TO_POS, SLEN_MINUS_QLEN);
 
         // Search forwards.
         int pos;

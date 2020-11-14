@@ -259,8 +259,8 @@ public final class QgramFilter2Searcher extends AbstractQgramSearcher {
         final int SEARCH_SHIFT       = SLEN_MINUS_QLEN + 1;
         final int SEARCH_START       = addIntegerPositionsAvoidOverflows(fromPosition, SLEN_MINUS_QLEN);
         final int LAST_MATCH_POS     = bytes.length - localSequence.length();
-        final int FINAL_TO_POS       = Math.min(toPosition, LAST_MATCH_POS);
-        final int SEARCH_END         = addIntegerPositionsAvoidOverflows(FINAL_TO_POS, SLEN_MINUS_QLEN);
+        final int FINAL_TO_POS       = Math.min(toPosition, LAST_MATCH_POS); // This value can be negative.
+        final int SEARCH_END         = addIntegerAvoidOverflows(FINAL_TO_POS, SLEN_MINUS_QLEN); // use alternative addition allowing negative values.
 
         // Search forwards.
         int pos;
