@@ -81,7 +81,7 @@ public abstract class AbstractFallbackSearcher extends AbstractWindowSearcher<Se
         if (fallbackForwards()) {
             fallbackSearcher.get().prepareForwards();
         } else {
-            doPrepareForwards();
+            doPrepareForwards(); //TODO: was commented out - was this a problem, or just something we were debugging with?
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class AbstractFallbackSearcher extends AbstractWindowSearcher<Se
         if (fallbackBackwards()) {
             fallbackSearcher.get().prepareBackwards();
         } else {
-            doPrepareBackwards();
+            doPrepareBackwards(); //TODO: was commented out - was this a problem, or just something we were debugging with?
         }
     }
 
@@ -160,6 +160,8 @@ public abstract class AbstractFallbackSearcher extends AbstractWindowSearcher<Se
         return fallbackForwards()? fallbackSearcher.get().searchSequenceForwards(bytes, fromPosition, toPosition)
                                  :                      doSearchSequenceForwards(bytes, fromPosition, toPosition);
     }
+
+    //TODO: why do some of these invoke via super, and some just call a "do"... method.?
 
     @Override
     public long searchSequenceForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
