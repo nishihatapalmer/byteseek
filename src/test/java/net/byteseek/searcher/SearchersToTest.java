@@ -28,16 +28,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.searcher.sequence;
+package net.byteseek.searcher;
 
 import net.byteseek.compiler.CompileException;
 import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
 import net.byteseek.matcher.bytes.ByteMatcher;
+import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.parser.regex.RegexParser;
+import net.byteseek.searcher.MatcherSearcher;
+import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
+import net.byteseek.searcher.sequence.*;
+import net.byteseek.utils.StringUtils;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -52,7 +56,10 @@ public class SearchersToTest {
 
     private final static SequenceMatcherCompiler compiler = new SequenceMatcherCompiler();
 
-    public List<SequenceSearcher> searchers;
+    //public List<SequenceSearcher> searchers;
+    public List<Searcher> searchers;
+
+    private SequenceMatcher matcherToSearch;
 
     /**
      * Instantiate the searchers we want to test with the sequence matcher passed in.
@@ -60,7 +67,8 @@ public class SearchersToTest {
      * @param sequence The sequence matcher to search for.
      */
     public void createSearchers(SequenceMatcher sequence, boolean lowAlphabet) {
-        searchers = new ArrayList<SequenceSearcher>();
+        searchers = new ArrayList<Searcher>();
+        searchers.add(new MatcherSearcher(sequence));
         searchers.add(new SequenceMatcherSearcher(sequence));
         searchers.add(new SundayQuickSearcher(sequence));
         searchers.add(new HorspoolSearcher(sequence));
@@ -91,7 +99,12 @@ public class SearchersToTest {
             ByteMatcher matcher = sequence.getMatcherForPosition(0);
             searchers.add(new ByteMatcherSearcher(matcher));
             if (matcher.getNumberOfMatchingBytes() == 1) {
-                searchers.add(new ByteSearcher(matcher.getMatchingBytes()[0]));
+                byte value = matcher.getMatchingBytes()[0];
+                searchers.add(new ByteSearcher(value));
+
+                // Test that the constructor using a OneByteMatcher also produces the same results.
+                OneByteMatcher oneByte = OneByteMatcher.valueOf(value);
+                searchers.add(new ByteSearcher(oneByte));
             }
         }
     }
@@ -110,7 +123,7 @@ public class SearchersToTest {
      * @throws CompileException if a problem occurs compiling the sequence.
      */
     public void createCaseInsensitiveSearchers(String sequence, boolean lowAlphabet) throws CompileException {
-        final String encodedString = RegexParser.encodeCaseInsensitiveString(sequence);
+        final String encodedString = StringUtils.encodeCaseInsensitiveString(sequence);
         createSearchers(compiler.compile(encodedString), lowAlphabet);
     }
 
