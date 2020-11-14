@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-17, All rights reserved.
+ * Copyright Matt Palmer 2015-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -45,21 +45,27 @@ import java.io.IOException;
  */
 public final class ByteSearcher extends AbstractSequenceSearcher<Byte> {
 
+    /**
+     * Constructs a ByteSearcher for the byte specified.
+     *
+     * @param value The byte to search for.
+     */
     public ByteSearcher(final byte value) {
         super(value);
     }
 
-    public ByteSearcher(final Byte value) {
-        super(value);
+    /**
+     * Constructs a ByteSearcher with the OneByteMatcher specified.
+     * @param value The OneByteMatcher to search for.
+     * @throws IllegalArgumentException if the OneByteMatcher is null.
+     */
+    public ByteSearcher(final OneByteMatcher value) {
+        super(value == null? null : value.getByteValue());
     }
 
     @Override
     protected int getSequenceLength() {
         return 1;
-    }
-
-    public ByteSearcher(final OneByteMatcher value) {
-        super(value == null? null : value.getByteValue());
     }
 
     @Override

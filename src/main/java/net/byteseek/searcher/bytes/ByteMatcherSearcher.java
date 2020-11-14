@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2015-17, All rights reserved.
+ * Copyright Matt Palmer 2015-19, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -42,10 +42,16 @@ import java.io.IOException;
  * A Searcher which looks for a byte which matches the ByteMatcher.
  * <p>
  * This is an incredibly simple search algorithm, just looking at every single byte until it finds
- * it, or not.
+ * it, or not.  While simple, it is likely to be the most performant algorithm if you want to find
+ * a ByteMatcher. There are no good algorithmic optimisations to speed up on line searches of length one.
  */
 public final class ByteMatcherSearcher extends AbstractSequenceSearcher<ByteMatcher> {
 
+    /**
+     * Constructs a ByteMatcherSearcher given a ByteMatcher to search for.
+     *
+     * @param value the ByteMatcher to search for.
+     */
     public ByteMatcherSearcher(final ByteMatcher value) {
         super(value);
     }
@@ -53,10 +59,6 @@ public final class ByteMatcherSearcher extends AbstractSequenceSearcher<ByteMatc
     @Override
     protected int getSequenceLength() {
         return 1;
-    }
-
-    public ByteMatcherSearcher(final byte value) {
-        super(OneByteMatcher.valueOf(value));
     }
 
     @Override
