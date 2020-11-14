@@ -483,7 +483,7 @@ public final class ArgUtils {
      */
 	public static void checkNotNegative(final long number)  {
 		if (number < 0) {
-			throw new IllegalArgumentException("the number " + number + " should not be negative.");
+			throw new IllegalArgumentException("The number " + number + " must not be negative.");
 		}
 	}
 
@@ -498,17 +498,6 @@ public final class ArgUtils {
 		if (number < 1) {
 			throw new IllegalArgumentException(String.format(POSITIVE_INTEGER + ' ' + description, number));		}
 	}
-
-    /**
-     * Checks that an integer number of repeats is zero or greater.
-     * @param numberOfRepeats The number of times to repeat something.
-     * @throws IllegalArgumentException if the number of repeats is less than zero.
-     */
-	public static void checkNegativeRepeats(final int numberOfRepeats) {
-        if (numberOfRepeats < 0) {
-            throw new IllegalArgumentException("Number of repeats cannot be negative." + numberOfRepeats);
-		}
-    }
 
     /**
      * Checks that a long is one or greater.
