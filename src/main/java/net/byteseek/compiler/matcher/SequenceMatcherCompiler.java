@@ -222,12 +222,16 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      *
      * @param ast The abstract syntax tree to compile.
      * @return A SequenceMatcher representing the expression.
-     * @throws ParseException If the ast could not be parsed.
+     * @throws CompileException If the ast could not be parsed.
      */
     @Override
-    protected SequenceMatcher doCompile(final ParseTree ast) throws ParseException {
-        final List<SequenceMatcher> sequences = buildSequenceList(ast, new ArrayList<SequenceMatcher>());
-        return optimiser.optimise(new SequenceSequenceMatcher(sequences));
+    protected SequenceMatcher doCompile(final ParseTree ast) throws CompileException {
+        try {
+            final List<SequenceMatcher> sequences = buildSequenceList(ast, new ArrayList<SequenceMatcher>());
+            return optimiser.optimise(new SequenceSequenceMatcher(sequences));
+        } catch (ParseException e) {
+            throw new CompileException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -241,7 +245,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      */
     protected List<SequenceMatcher> buildSequenceList(final ParseTree matcherNode,
                                                       final List<SequenceMatcher> sequenceList)
-            throws ParseException {
+            throws ParseException, CompileException {
         switch (matcherNode.getParseTreeType()) {
             case BYTE:
                 addByteMatcher(matcherNode, sequenceList);
@@ -282,7 +286,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 
     private void addRepeatedSequence(final ParseTree ast,
                                      final List<SequenceMatcher> sequenceList)
-            throws ParseException {
+            throws ParseException, CompileException {
         final int timesToRepeat = ParseTreeUtils.getFirstRepeatValue(ast);
         final SequenceMatcher sequenceToRepeat = doCompile(ParseTreeUtils.getLastChild(ast));
         for (int count = 1; count <= timesToRepeat; count++) {
@@ -292,7 +296,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 
     private void addSequenceMatcher(final ParseTree ast,
                                     final List<SequenceMatcher> sequenceList)
-            throws ParseException {
+            throws CompileException, ParseException {
         for (final ParseTree child : ast) {
             buildSequenceList(child, sequenceList);
         }
