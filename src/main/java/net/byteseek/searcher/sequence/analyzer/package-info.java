@@ -28,27 +28,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.searcher.sequence.analyzer;
-
-import net.byteseek.matcher.sequence.SequenceMatcher;
 
 /**
- * An analyzer which always returns the full sequence as the best subsequence to search for.
+ * A package containing classes that analyze what the best subsequence to search for in a sequence is
+ * for each search algorithm.
  */
-public final class FullLengthAnalyzer implements SequenceSearchAnalyzer {
-
-    /**
-     * A static FullLengthAnalyzer
-     */
-    public static final SequenceSearchAnalyzer ANALYZER = new FullLengthAnalyzer();
-
-    @Override
-    public BestSubsequence getForwardsSubsequence(final SequenceMatcher theSequence) {
-        return new BestSubsequence(0, theSequence.length() - 1);
-    }
-
-    @Override
-    public BestSubsequence getBackwardsSubsequence(final SequenceMatcher theSequence) {
-        return new BestSubsequence(0, theSequence.length() - 1);
-    }
-}
+package net.byteseek.searcher.sequence.analyzer;

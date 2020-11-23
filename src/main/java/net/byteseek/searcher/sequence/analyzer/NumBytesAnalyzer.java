@@ -1,9 +1,43 @@
+/*
+ * Copyright Matt Palmer 2020, All rights reserved.
+ *
+ * This code is licensed under a standard 3-clause BSD license:
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.byteseek.searcher.sequence.analyzer;
 
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
-public class NumBytesAnalyzer implements SequenceSearchAnalyzer {
+/**
+ * An analyzer for patterns which depend on not having too many bytes matching to search efficiently.
+ * It can optionally extend a sequence in the opposite direction to the search in order to get better performance.
+ */
+public final class NumBytesAnalyzer implements SequenceSearchAnalyzer {
 
     public static final SequenceSearchAnalyzer ANALYZER = new NumBytesAnalyzer(2, 64, false);
     public static final SequenceSearchAnalyzer ANALYZER_EXTEND = new NumBytesAnalyzer(2, 64, true);
@@ -14,10 +48,14 @@ public class NumBytesAnalyzer implements SequenceSearchAnalyzer {
 
     /**
      * Constructs a NumBytesAnalyzer with the specified min length for a pattern and threshold number of bytes
-     * to match in each part of the sequence.
+     * to match in each part of the sequence.  It is also possible to extend a good search sequence away from
+     * the direction of search, which can improve search performance.  Algorithms relying on shift tables, like
+     * SignedHash can benefit from this extension.  Ones which use a bloom-filter like lookup (e.g. QGram) may
+     * not benefit from extending a search subsequence that contains a lot of possible byte matches.
      *
      * @param minLength The minimum length a subsequence can be.
      * @param threshold The maximum number of bytes which can match at any position in a good subsequence.
+     * @param extendSequence Whether to extend a sequence away from the direction of search.
      */
     public NumBytesAnalyzer(final int minLength, final int threshold, final boolean extendSequence) {
         this.minLength = minLength;
@@ -28,12 +66,12 @@ public class NumBytesAnalyzer implements SequenceSearchAnalyzer {
     @Override
     public BestSubsequence getForwardsSubsequence(final SequenceMatcher theSequence) {
         final BestSubsequence bestSubsequence = getBestSubsequence(theSequence);
-        if (extendSequence && bestSubsequence != null && bestSubsequence.startPos > 0) {
+        if (extendSequence && bestSubsequence != null && bestSubsequence.getStartPos() > 0) {
             // Now extend the longest good sequence backwards until the start, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the start of the subsequence (when searching forwards):
-            final int extendedStart = findSequenceStartPos(theSequence, bestSubsequence.startPos - 1, 256);
-            return new BestSubsequence(extendedStart, bestSubsequence.endPos);
+            final int extendedStart = findSequenceStartPos(theSequence, bestSubsequence.getStartPos() - 1, 256);
+            return new BestSubsequence(extendedStart, bestSubsequence.getEndPos());
         }
         return bestSubsequence;
     }
@@ -41,12 +79,12 @@ public class NumBytesAnalyzer implements SequenceSearchAnalyzer {
     @Override
     public BestSubsequence getBackwardsSubsequence(final SequenceMatcher theSequence) {
         final BestSubsequence bestSubsequence = getBestSubsequence(theSequence);
-        if (extendSequence && bestSubsequence != null && bestSubsequence.endPos + 1 < theSequence.length()) {
+        if (extendSequence && bestSubsequence != null && bestSubsequence.getEndPos() + 1 < theSequence.length()) {
             // Now extend the longest good sequence forwards until the end, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the end of the subsequence (when searching backwards):
-            final int extendedEnd = findBackwardsSequenceEndPos(theSequence, bestSubsequence.endPos + 1, 256);
-            return new BestSubsequence(bestSubsequence.startPos, extendedEnd);
+            final int extendedEnd = findBackwardsSequenceEndPos(theSequence, bestSubsequence.getEndPos() + 1, 256);
+            return new BestSubsequence(bestSubsequence.getStartPos(), extendedEnd);
         }
         return bestSubsequence;
     }

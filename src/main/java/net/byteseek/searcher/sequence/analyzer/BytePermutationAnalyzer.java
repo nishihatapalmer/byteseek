@@ -1,9 +1,43 @@
+/*
+ * Copyright Matt Palmer 2020, All rights reserved.
+ *
+ * This code is licensed under a standard 3-clause BSD license:
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ *  * The names of its contributors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.byteseek.searcher.sequence.analyzer;
 
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 
-public class BytePermutationAnalyzer implements SequenceSearchAnalyzer {
+/**
+ * An analyzer for patterns which depend on not having too many permutations of bytes matching in a given qGram to search efficiently.
+ * It can optionally extend a sequence in the opposite direction to the search in order to get better performance.
+ */
+public final class BytePermutationAnalyzer implements SequenceSearchAnalyzer {
 
     public static final SequenceSearchAnalyzer ANALYZER2 = new BytePermutationAnalyzer(2, 128, false);
     public static final SequenceSearchAnalyzer ANALYZER2_EXTEND = new BytePermutationAnalyzer(2, 128, true);
@@ -21,32 +55,32 @@ public class BytePermutationAnalyzer implements SequenceSearchAnalyzer {
     }
 
     @Override
-    public BestSubsequence getForwardsSubsequence(SequenceMatcher theSequence) {
+    public BestSubsequence getForwardsSubsequence(final SequenceMatcher theSequence) {
         final BestSubsequence bestSubsequence = getBestSubsequence(theSequence);
-        if (extendSequence && bestSubsequence != null && bestSubsequence.startPos > 0) {
+        if (extendSequence && bestSubsequence != null && bestSubsequence.getStartPos() > 0) {
             // Now extend the longest good sequence backwards until the start, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the start of the subsequence (when searching forwards):
-            final int extendedStart = findSequenceStartPos(theSequence, bestSubsequence.startPos - 1, 4096); //TOD: validate thresholds.
-            return new BestSubsequence(extendedStart, bestSubsequence.endPos);
+            final int extendedStart = findSequenceStartPos(theSequence, bestSubsequence.getStartPos() - 1, 4096); //TOD: validate thresholds.
+            return new BestSubsequence(extendedStart, bestSubsequence.getEndPos());
         }
         return bestSubsequence;
     }
 
     @Override
-    public BestSubsequence getBackwardsSubsequence(SequenceMatcher theSequence) {
+    public BestSubsequence getBackwardsSubsequence(final SequenceMatcher theSequence) {
         final BestSubsequence bestSubsequence = getBestSubsequence(theSequence);
-        if (extendSequence && bestSubsequence != null && bestSubsequence.endPos + 1 < theSequence.length()) {
+        if (extendSequence && bestSubsequence != null && bestSubsequence.getEndPos() + 1 < theSequence.length()) {
             // Now extend the longest good sequence forwards until the end, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the end of the subsequence (when searching backwards):
-            final int extendedEnd = findBackwardsSequenceEndPos(theSequence, bestSubsequence.endPos + 1, 4096);
-            return new BestSubsequence(bestSubsequence.startPos, extendedEnd);
+            final int extendedEnd = findBackwardsSequenceEndPos(theSequence, bestSubsequence.getEndPos() + 1, 4096);
+            return new BestSubsequence(bestSubsequence.getStartPos(), extendedEnd);
         }
         return bestSubsequence;
     }
 
-    public BestSubsequence getBestSubsequence(SequenceMatcher theSequence) {
+    public BestSubsequence getBestSubsequence(final SequenceMatcher theSequence) {
         final int THRESHOLD = threshold;
         final int MIN_LENGTH = qGramSize;
         final int LENGTH = theSequence.length();
@@ -83,7 +117,7 @@ public class BytePermutationAnalyzer implements SequenceSearchAnalyzer {
      * @param threshhold The number of bytes matching at a position under which we accept a good search subsequence.
      * @return The position of the end of a qgram that matches fewer bytes than the threshold, or -1 if no such position exists.
      */
-    private int findSequenceEndPos(SequenceMatcher theSequence, int posToSearchBackFrom, int threshhold) {
+    private int findSequenceEndPos(final SequenceMatcher theSequence, final int posToSearchBackFrom, final int threshhold) {
         final int QGRAM_THRESHOLD = threshhold * qGramSize;
         for (int pos = posToSearchBackFrom; pos >= qGramSize - 1; pos--) {
             int bytePermutationsMatched = 1;
@@ -106,7 +140,7 @@ public class BytePermutationAnalyzer implements SequenceSearchAnalyzer {
      * @param threshhold The number of bytes matching at a position under which we accept a good search subsequence.
      * @return The position of the start of the qgram after a qgram that exceeds the threshold, or 0 if they are all within the threshold.
      */
-    private int findSequenceStartPos(SequenceMatcher theSequence, int posToSearchBackFrom, int threshhold) {
+    private int findSequenceStartPos(final SequenceMatcher theSequence, final int posToSearchBackFrom, final int threshhold) {
         final int QGRAM_THRESHOLD = threshhold * qGramSize;
         for (int pos = posToSearchBackFrom; pos >= qGramSize - 1; pos--) {
             int bytePermutationsMatched = 1;
@@ -129,7 +163,7 @@ public class BytePermutationAnalyzer implements SequenceSearchAnalyzer {
      * @param threshhold The number of bytes matching at a position under which we accept a good search subsequence.
      * @return The position of the start of the qgram after a qgram that exceeds the threshold, or 0 if they are all within the threshold.
      */
-    private int findBackwardsSequenceEndPos(SequenceMatcher theSequence, int posToSearchFowardsFrom, int threshhold) {
+    private int findBackwardsSequenceEndPos(final SequenceMatcher theSequence, final int posToSearchFowardsFrom, final int threshhold) {
         final int QGRAM_THRESHOLD = threshhold * qGramSize;
         final int LENGTH = theSequence.length();
         final int SEARCH_START = posToSearchFowardsFrom < qGramSize - 1? qGramSize - 1 : posToSearchFowardsFrom;
