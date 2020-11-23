@@ -38,10 +38,11 @@ import java.util.Collection;
  * into an object of type T.
  * 
  * @param <T> The type of the object to compile to.
+ * @param <S> The abstract syntax tree to compile from using a Parser&lt;S&gt;
  *            
  * @author Matt Palmer
  */
-public interface Compiler<T> {
+public interface Compiler<T, S> {
 
 	/**
 	 * Compiles an expression into an object of type T.
@@ -64,5 +65,17 @@ public interface Compiler<T> {
 	 *             if an object could not be compiled.
 	 */
 	public T compile(Collection<String> expressions) throws CompileException;
+
+	/**
+	 * Compiles a parsed syntax into an object of type T.
+	 *
+	 * @param ast Abstract syntax tree - the parsed representation of the expression.
+	 *            The expression to compile.
+	 * @return A compiled object of type T.
+	 * @throws CompileException
+	 *             if an object could not be compiled.
+	 */
+	public T compile(final S ast) throws CompileException;
+
 
 }

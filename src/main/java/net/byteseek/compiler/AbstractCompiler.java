@@ -49,7 +49,7 @@ import net.byteseek.utils.ArgUtils;
  * 
  * @author Matt Palmer
  */
-public abstract class AbstractCompiler<T, S> implements Compiler<T> {
+public abstract class AbstractCompiler<T, S> implements Compiler<T, S> {
 
 	private final Parser<S> parser;
 
@@ -115,6 +115,7 @@ public abstract class AbstractCompiler<T, S> implements Compiler<T> {
 	 * @throws CompileException
 	 *             If a problem occurred during compilation.
 	 */
+	@Override
 	public T compile(final S ast) throws CompileException {
 		if (ast == null) {
 			throw new CompileException("Null abstract syntax tree passed in.");
