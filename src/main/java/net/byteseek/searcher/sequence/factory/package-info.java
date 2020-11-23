@@ -33,9 +33,7 @@
  * A package containing factories for SequenceSearchers.  There is rarely a single searcher that
  * works well for all sequences.
  * <p>
- * The SelectByLengthFactory gives reasonable performance for most
- * sorts of data and pattern, but it does not take account of patterns with high complexity (multiple
- * bytes matching at the same location), or low alphabets.  It only selects on the basis of pattern length.
+ * The FastSearcherFactory gives good performance for most sorts of data and pattern.
  * <p>
  * When the sequence length is just one, there are searchers that will always outperform any other.
  * The AbstractSequenceFactory implements all of those possibilities, leaving subclasses to use other
