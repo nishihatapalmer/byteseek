@@ -5,20 +5,12 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
 
 public class NumBytesAnalyzer implements SequenceSearchAnalyzer {
 
-    public static final SequenceSearchAnalyzer ANALYZER = new NumBytesAnalyzer();
+    public static final SequenceSearchAnalyzer ANALYZER = new NumBytesAnalyzer(2, 64, false);
+    public static final SequenceSearchAnalyzer ANALYZER_EXTEND = new NumBytesAnalyzer(2, 64, true);
 
     private final int threshold;
     private final int minLength;
-
-    /**
-     * Constructs a default NumBytesAnalyzer, with a min length of 2 and a threshhold of 64 bytes in each position.
-     * Searching for a single byte or byte matcher is not efficient using a searcher that is sensitive to the number of bytes
-     * in a position, so we set the minimum length of a sequence to 2. Very short sequences may still not be very efficient,
-     * Matching 64 bytes in a position is quite high, but will avoid completely pathological parts of a pattern.
-     */
-    public NumBytesAnalyzer() {
-        this(2, 64);
-    }
+    private final boolean extendSequence;
 
     /**
      * Constructs a NumBytesAnalyzer with the specified min length for a pattern and threshold number of bytes
@@ -27,15 +19,16 @@ public class NumBytesAnalyzer implements SequenceSearchAnalyzer {
      * @param minLength The minimum length a subsequence can be.
      * @param threshold The maximum number of bytes which can match at any position in a good subsequence.
      */
-    public NumBytesAnalyzer(final int minLength, final int threshold) {
+    public NumBytesAnalyzer(final int minLength, final int threshold, final boolean extendSequence) {
         this.minLength = minLength;
         this.threshold = threshold;
+        this.extendSequence = extendSequence;
     }
 
     @Override
     public BestSubsequence getForwardsSubsequence(final SequenceMatcher theSequence) {
         final BestSubsequence bestSubsequence = getBestSubsequence(theSequence);
-        if (bestSubsequence != null && bestSubsequence.startPos > 0) {
+        if (extendSequence && bestSubsequence != null && bestSubsequence.startPos > 0) {
             // Now extend the longest good sequence backwards until the start, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the start of the subsequence (when searching forwards):
@@ -48,7 +41,7 @@ public class NumBytesAnalyzer implements SequenceSearchAnalyzer {
     @Override
     public BestSubsequence getBackwardsSubsequence(final SequenceMatcher theSequence) {
         final BestSubsequence bestSubsequence = getBestSubsequence(theSequence);
-        if (bestSubsequence != null && bestSubsequence.endPos + 1 < theSequence.length()) {
+        if (extendSequence && bestSubsequence != null && bestSubsequence.endPos + 1 < theSequence.length()) {
             // Now extend the longest good sequence forwards until the end, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the end of the subsequence (when searching backwards):
