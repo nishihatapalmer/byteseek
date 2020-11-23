@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-20, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -29,7 +29,6 @@
  */
 package net.byteseek.searcher.sequence.factory;
 
-import net.byteseek.compiler.CompileException;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.sequence.SequenceSearcher;
@@ -56,29 +55,6 @@ public interface SequenceSearcherFactory {
    SequenceSearcher create(byte theByte);
 
    /**
-    * Creates a SequenceSearcher for an array of bytes.
-    *
-    * @param theBytes the array of bytes to search for.
-    * @return A SequenceSearcher for the byte array.
-    * @throws IllegalArgumentException if the byte array is null or empty.
-    */
-   SequenceSearcher create(byte[] theBytes);
-
-   /**
-    * Creates a SequenceSearcher given a regular expression using byteseek regex format.
-    * This may simply be a string of hex bytes (not case sensitive, no 0x prefix), or it
-    * may include more advanced syntax such as sets, ranges or other fixed-length constructs.
-    * It cannot include any regular expression syntax which leads to variable length matching
-    * or which has alternative sequences in it.
-    *
-    * @param regex The regular expression to search for.  The regex
-    * @return A SequenceSearcher for the regular expression.
-    * @throws CompileException if the regular expression could not be parsed or compiled into a fixed length sequence.
-    * @throws IllegalArgumentException if the regex is null or empty.
-    */
-   SequenceSearcher create(String regex) throws CompileException;
-
-   /**
     * Creates a SequenceSearcher given a ByteMatcher.
     *
     * @param theMatcher The ByteMatcher to search for.
@@ -88,13 +64,34 @@ public interface SequenceSearcherFactory {
    SequenceSearcher create(ByteMatcher theMatcher);
 
    /**
-    * Creates a SequenceSearcher given a SequenceMatcher.  It will select from different searchers depending on
-    * the length of the sequence, since different searchers perform differently at different sequence lengths.
+    * Creates a SequenceSearcher for an array of bytes.
+    *
+    * @param theBytes the array of bytes to search for.
+    * @return A SequenceSearcher for the byte array.
+    * @throws IllegalArgumentException if the byte array is null or empty.
+    */
+   SequenceSearcher create(byte[] theBytes);
+
+   /**
+    * Creates a SequenceSearcher to search forwards given a SequenceMatcher.
+    * This can be different from the backwards searcher, since search algorithms are
+    * often sensitive to where wildcards or large sets of bytes are placed in a pattern.
     *
     * @param theSequence The SequenceMatcher to search for.
     * @return A SequenceSearcher giving good performance for the SequenceMatcher.
     * @throws IllegalArgumentException if the SequenceMatcher is null.
     */
-   SequenceSearcher create(SequenceMatcher theSequence);
+   SequenceSearcher createForwards(SequenceMatcher theSequence);
+
+   /**
+    * Creates a SequenceSearcher to search backwards given a SequenceMatcher.
+    * This can be different from the forwards searcher, since search algorithms are
+    * often sensitive to where wildcards or large sets of bytes are placed in a pattern.
+    *
+    * @param theSequence The SequenceMatcher to search for.
+    * @return A SequenceSearcher giving good performance for the SequenceMatcher.
+    * @throws IllegalArgumentException if the SequenceMatcher is null.
+    */
+   SequenceSearcher createBackwards(SequenceMatcher theSequence);
 
 }
