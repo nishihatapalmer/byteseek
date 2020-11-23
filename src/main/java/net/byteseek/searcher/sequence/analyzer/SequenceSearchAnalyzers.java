@@ -18,10 +18,10 @@ public final class SequenceSearchAnalyzers {
     /*
      * Searchers whose most efficient subsequence depends on the number of bytes matching in each position
      */
-    public static final SequenceSearchAnalyzer HORSPOOL_ANALYZER = NumBytesAnalyzer.ANALYZER;
-    public static final SequenceSearchAnalyzer HORSPOOL_UNROLLED_ANALYZER = NumBytesAnalyzer.ANALYZER;
-    public static final SequenceSearchAnalyzer SIGNED_HORSPOOL_ANALYZER = NumBytesAnalyzer.ANALYZER;
-    public static final SequenceSearchAnalyzer SUNDAY_ANALYZER = NumBytesAnalyzer.ANALYZER;
+    public static final SequenceSearchAnalyzer HORSPOOL_ANALYZER = NumBytesAnalyzer.ANALYZER_EXTEND;
+    public static final SequenceSearchAnalyzer HORSPOOL_UNROLLED_ANALYZER = NumBytesAnalyzer.ANALYZER_EXTEND;
+    public static final SequenceSearchAnalyzer SIGNED_HORSPOOL_ANALYZER = NumBytesAnalyzer.ANALYZER_EXTEND;
+    public static final SequenceSearchAnalyzer SUNDAY_ANALYZER = NumBytesAnalyzer.ANALYZER_EXTEND;
 
     /*
      * Searchers whose most efficient subsequence depends on the number of permutations of bytes in a qGram
