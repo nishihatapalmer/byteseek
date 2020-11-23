@@ -90,17 +90,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
 
     /**
      * Creates a FastSearcherFactory given a factory for short sequences, a factory for long sequences,
-     * the size of a long sequence, and the size of qgrams processed by the long searcher.
-     * <p><b>Qgrams</b>
-     * Some searchers only process a byte at a time, e.g. HorspoolSearcher, but others process more than one byte at a time,
-     * a qGram, e.g SignedHash3Searcher.  Knowing the qgram size of the long searcher enables this factory to make a better
-     * analysis of what the best part of a sequence to search for is.  If set to 1 but the qgrams are bigger, it will
-     * still work, but may produce slower searchers where there are runs that match more than one byte in a position.
-     * <p>
-     * We assume the short searcher has no such qGram requirement, since the most performant short pattern search algorithms
-     * currently always work on a single byte at a time, and are not impacted by wildcards at any position in the pattern.
-     * In any case, the short searcher is selected entirely on the basis of the length of the pattern; no further analysis
-     * is performed on the pattern to select this short searcher.
+     * the minimum size of a long sequence, and an analyzer which provides efficient subsequences for the long searcher.
      *
      * @param shortFactory The searcher factory to use for short sequences.
      * @param longFactory The searcher factory to use for long sequences.
