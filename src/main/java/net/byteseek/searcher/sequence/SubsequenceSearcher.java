@@ -41,7 +41,7 @@ import java.io.IOException;
  * A class that searches for a subsequence which is bounded to the left or right by some additional sequences.
  * Some patterns contain wildcards, often at the starts or ends of a pattern, which make it hard to search for
  * efficiently.  This allows us to search for an efficient sub-sequence of a longer sequence, then match the bits
- * that lie to the left or right of the subsequence to complete a match.
+java * that lie to the left or right of the subsequence to complete a match of the full sequence.
  */
 public class SubsequenceSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
 
@@ -54,17 +54,11 @@ public class SubsequenceSearcher extends AbstractSequenceSearcher<SequenceMatche
     private final int rightOffset;
 
     /**
-     * Constructs a SubsequenceSearcher given the subsequence to search for, a Searcher for the subsequence,
+     * Constructs a SubsequenceSearcher given the subsequence to search for, a factory to create a searcher for it,
      * an optional leftMatch, which matches to the left of the subsequence, and an optional rightMatch which must
      * match to the right of the subsequence.  Either of these can be null.  If both are null, this is no different
-     * to just using the searcher on the subsequence directly (as there is nothing else to the left or right of the
+     * to just using a searcher on the subsequence directly (as there is nothing else to the left or right of the
      * subsequence to match).
-     * <p>
-     * The reason this is useful is that there are wildcards which can interfere with efficient searching if they
-     * appear in sensitive parts of a pattern, typically the end or the start, but also in other locations.
-     * Therefore, if a good subsequence can be found in a longer sequence which is more efficient to search for, then
-     * the Subsequence searcher can be used to search for the efficient part of the overall sequence, and then
-     * match whatever inefficient bits of it remain to the left or right of it to determine if we found the entire pattern.
      *
      * @param subSequence The subsequence to search for.
      * @param searcherFactory A factory to create a search over the subSequence.
