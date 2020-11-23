@@ -62,91 +62,144 @@ public class SearcherFactories {
 
     public static class SequenceMatcherFactory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new SequenceMatcherSearcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new SequenceMatcherSearcher(theSequence);
         }
     }
 
     public static class SundayFactory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new SundayQuickSearcher(theSequence);
         }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new SundayQuickSearcher(theSequence);
+        }
+
     }
     
     public static class HorspoolFactory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new HorspoolSearcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new HorspoolSearcher(theSequence);
         }
     }
 
     public static class HorspoolUnrolledFactory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new HorspoolUnrolledSearcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new HorspoolUnrolledSearcher(theSequence);
         }
     }
     
     public static class SignedHorspoolFactory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new SignedHorspoolSearcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new SignedHorspoolSearcher(theSequence);
         }
     }
     
     public static class ShiftOrFactory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new ShiftOrSearcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new ShiftOrSearcher(theSequence);
         }
     }
 
     public static class ShiftOrUnrolledFactory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new ShiftOrUnrolledSearcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new ShiftOrUnrolledSearcher(theSequence);
         }
     }
 
     public static class SignedHash2Factory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new SignedHash2Searcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new SignedHash2Searcher(theSequence);
         }
     }
 
     public static class SignedHash3Factory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new SignedHash3Searcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new SignedHash3Searcher(theSequence);
         }
     }
 
     public static class SignedHash4Factory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new SignedHash4Searcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new SignedHash4Searcher(theSequence);
         }
     }
 
     public static class QGramFilter2Factory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new QgramFilter2Searcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new QgramFilter2Searcher(theSequence);
         }
     }
 
     public static class QGramFilter3Factory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new QgramFilter3Searcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new QgramFilter3Searcher(theSequence);
         }
     }
 
     public static class QGramFilter4Factory extends AbstractSequenceFactory {
         @Override
-        protected SequenceSearcher createSequenceSearcher(final SequenceMatcher theSequence) {
+        protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+            return new QgramFilter4Searcher(theSequence);
+        }
+        @Override
+        protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
             return new QgramFilter4Searcher(theSequence);
         }
     }
