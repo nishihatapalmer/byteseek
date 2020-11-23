@@ -366,6 +366,8 @@ import net.byteseek.parser.tree.node.StringNode;
   */
 public class RegexParser implements Parser<ParseTree> {
 
+	public static final RegexParser PARSER = new RegexParser();
+
     /***************************************************************************
      * Constants
      */
