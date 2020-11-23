@@ -71,7 +71,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
 
     protected static final boolean NOT_YET_INVERTED = false;
 
-    private static SequenceMatcherCompiler defaultCompiler;
+    public static final SequenceMatcherCompiler COMPILER = new SequenceMatcherCompiler();
 
     /**
      * Compiles a SequenceMatcher from a byteSeek regular expression (limited to
@@ -85,8 +85,7 @@ public class SequenceMatcherCompiler extends AbstractCompiler<SequenceMatcher, P
      * @throws CompileException If the expression could not be compiled into a SequenceMatcher.
      */
     public static SequenceMatcher compileFrom(final String expression) throws CompileException {
-        defaultCompiler = new SequenceMatcherCompiler();
-        return defaultCompiler.compile(expression);
+        return COMPILER.compile(expression);
     }
 
     protected final ByteMatcherFactory byteMatcherFactory;
