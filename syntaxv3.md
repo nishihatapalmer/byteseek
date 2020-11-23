@@ -227,7 +227,7 @@ To specify that something repeats from a minimum number of times up to some maxi
 ```
 
 ### Min to many repeats
-To specify that something repeats from a minimum number of times to an unlimited number of times, replace the maximum number of the min to max repeats with a *: {n,*}
+To specify that something repeats from a minimum number of times to an unlimited number of times, replace the maximum number of the min to max repeats with a *: {n,\*}
 
 ```
    00{5,*}                                # 0x00 repeated at least 5 times, to an unlimited number of times.
@@ -236,7 +236,7 @@ To specify that something repeats from a minimum number of times to an unlimited
 
 ### Zero to many repeats
 
-To specify that something repeats from zero to many times, you can write {0,*}.  Since this is such a common requirement, this can be replaced by a single * appended to the element to repeat *:
+To specify that something repeats from zero to many times, you can write {0,*}.  Since this is such a common requirement, this can be replaced by a single * appended to the element to repeat:
 ```
   00*                                     # zero to many 0x00
   'green bottle'*                         # zero to many green bottles.
@@ -244,7 +244,7 @@ To specify that something repeats from zero to many times, you can write {0,*}. 
 
 ### One to many repeats
 
-To specify that something repeats from one to many times, you can write {1,*}.  Since this is such a common requirement, this can be replaced by a single + appended to the element to repeat +:
+To specify that something repeats from one to many times, you can write {1,*}.  Since this is such a common requirement, this can be replaced by a single + appended to the element to repeat:
 
 ```
   00+                                     # one to many 0x00
