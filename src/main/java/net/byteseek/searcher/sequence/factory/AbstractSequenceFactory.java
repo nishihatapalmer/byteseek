@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017, All rights reserved.
+ * Copyright Matt Palmer 2017-20, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -29,16 +29,12 @@
  */
 package net.byteseek.searcher.sequence.factory;
 
-import net.byteseek.compiler.CompileException;
-import net.byteseek.compiler.matcher.SequenceMatcherCompiler;
 import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
 import net.byteseek.searcher.sequence.SequenceSearcher;
-import net.byteseek.searcher.sequence.ShiftOrUnrolledSearcher;
-import net.byteseek.searcher.sequence.SignedHash2Searcher;
 import net.byteseek.utils.ArgUtils;
 
 /**
@@ -62,13 +58,8 @@ public abstract class AbstractSequenceFactory implements SequenceSearcherFactory
         if (theBytes.length == 1) {
             return create(theBytes[0]);
         }
-        return create(new ByteSequenceMatcher(theBytes));
-    }
-
-    @Override
-    public SequenceSearcher create(final String regex) throws CompileException {
-        ArgUtils.checkNullOrEmptyString(regex, "regex");
-        return create(SequenceMatcherCompiler.compileFrom(regex));
+        // Note - a sequence of bytes with no wildcards will match equally well forwards or backwards.
+        return createForwards(new ByteSequenceMatcher(theBytes));
     }
 
     @Override
@@ -81,12 +72,21 @@ public abstract class AbstractSequenceFactory implements SequenceSearcherFactory
     }
 
     @Override
-    public SequenceSearcher create(final SequenceMatcher theSequence) {
+    public SequenceSearcher createForwards(final SequenceMatcher theSequence) {
         ArgUtils.checkNullObject(theSequence, "theSequence");
         if (theSequence.length() == 1) {
             return create(theSequence.getMatcherForPosition(0));
         }
-        return createSequenceSearcher(theSequence);
+        return createForwardsSequenceSearcher(theSequence);
+    }
+
+    @Override
+    public SequenceSearcher createBackwards(final SequenceMatcher theSequence) {
+        ArgUtils.checkNullObject(theSequence, "theSequence");
+        if (theSequence.length() == 1) {
+            return create(theSequence.getMatcherForPosition(0));
+        }
+        return createBackwardsSequenceSearcher(theSequence);
     }
 
     /**
@@ -95,5 +95,13 @@ public abstract class AbstractSequenceFactory implements SequenceSearcherFactory
      * @param theSequence The sequence greater than one in length.
      * @return A SequenceSearcher for that sequence.
      */
-    protected abstract SequenceSearcher createSequenceSearcher(SequenceMatcher theSequence);
+    protected abstract SequenceSearcher createForwardsSequenceSearcher(SequenceMatcher theSequence);
+
+    /**
+     * Create a searcher for a sequence greater than one in length.
+     *
+     * @param theSequence The sequence greater than one in length.
+     * @return A SequenceSearcher for that sequence.
+     */
+    protected abstract SequenceSearcher createBackwardsSequenceSearcher(SequenceMatcher theSequence);
 }
