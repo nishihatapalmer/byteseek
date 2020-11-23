@@ -128,6 +128,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
             return shortFactory.createForwards(theSequence);
         }
         final BestSubsequence bestSubsequence = longAnalyzer.getForwardsSubsequence(theSequence);
+
         // If no good sequence exists, or it's smaller than the short sequence cut off, use the short searcher.
         if (bestSubsequence == null || bestSubsequence.length() < longSize) {
             return shortFactory.createForwards(theSequence);
@@ -146,7 +147,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
                 theSequence.subsequence(0, bestSubsequence.startPos) : null;
         final SequenceMatcher rightMatcher = bestSubsequence.endPos + 1 < theSequence.length()?
                 theSequence.subsequence(bestSubsequence.endPos + 1, theSequence.length()) : null;
-        return new SubsequenceSearcher(subSequence, searcher, leftMatcher, rightMatcher);
+        return new SubsequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
     }
 
     @Override
@@ -156,6 +157,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
         }
 
         final BestSubsequence bestSubsequence = longAnalyzer.getBackwardsSubsequence(theSequence);
+
         // If no good sequence exists, or it's smaller than the short sequence cut off, use the short searcher.
         if (bestSubsequence == null || bestSubsequence.length() < longSize) {
             return shortFactory.createBackwards(theSequence);
@@ -174,7 +176,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
                 theSequence.subsequence(0, bestSubsequence.startPos) : null;
         final SequenceMatcher rightMatcher = bestSubsequence.endPos + 1 < theSequence.length()?
                 theSequence.subsequence(bestSubsequence.endPos + 1, theSequence.length()) : null;
-        return new SubsequenceSearcher(subSequence, searcher, leftMatcher, rightMatcher);
+        return new SubsequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
     }
 
 }
