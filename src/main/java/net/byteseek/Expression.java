@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package net.byteseek.incubator.api;
+package net.byteseek;
 
 import net.byteseek.compiler.CompileException;
 import net.byteseek.compiler.Compiler;
@@ -50,7 +50,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Expression is a high level interfdce to byteseek for matching and searching patterns.
+ * Expression is a thread-safe high level interfdce to byteseek for matching and searching patterns.
  * It will try to select the best matching or searching algorithms automatically based on the expression.
  * It compiles a pattern in byteseek regular expression syntax, or another if you supply a different parser.
  * An expression can match or search for itself in byte arrays, Files, InputStreams, and SeekableByteChannels.
@@ -62,25 +62,57 @@ public final class Expression implements Matcher, Searcher {
     private static Compiler<SequenceMatcher, ParseTree> DEFAULT_COMPILER         = SequenceMatcherCompiler.COMPILER;
     private static SequenceSearcherFactory              DEFAULT_SEARCHER_FACTORY = FastSearcherFactory.SHIFTOR_12_THEN_SIGNEDHASH2;
 
-    private String expression;
-    private Matcher matcher;
-    private Searcher forwardsSearcher;
-    private Searcher backwardsSearcher;
+    private final String expression;
+    private final Matcher matcher;
+    private final Searcher forwardsSearcher;
+    private final Searcher backwardsSearcher;
 
     // Constructors
 
+    /**
+     * Constructs an Expression from a byteseek regular expression syntax string.
+     *
+     * @param expression a byteseek regular expression syntax string.
+     * @throws CompileException If there is a problem compiling the expression.
+     */
     public Expression(final String expression) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
         this(expression, DEFAULT_PARSER, DEFAULT_SEARCHER_FACTORY);
     }
 
+    /**
+     * Constructs an Expression from a byteseek regular expression syntax string, and a factory to create
+     * searchers for the expression.
+     *
+     * @param expression a byteseek regular expression syntax string.
+     * @param factory A factory to create searchers for the expression.
+     * @throws CompileException If there is a problem compiling the expression.
+     */
     public Expression(final String expression, final SequenceSearcherFactory factory) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
         this(expression, DEFAULT_PARSER, factory);
     }
 
+    /**
+     * Constructs an Expression from a string encoded in some syntax, and a parser to parse that syntax,
+     * which must produce a byteseek abstract syntax tree for the compiler to consume.
+     *
+     * @param expression an encoding of an expression in some syntax.
+     * @param parser A parser for the syntax,
+     * @throws CompileException If there is a problem compiling the expression.
+     */
     public Expression(final String expression, final Parser<ParseTree> parser) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
         this(expression, parser, DEFAULT_SEARCHER_FACTORY);
     }
 
+    /**
+     * Constructs an Expression from a string encoded in some syntax, a parser to parse that syntax,
+     * which must produce a byteseek abstract syntax tree for the compiler to consume,
+     * and a factory to create searchers for the expression.
+     *
+     * @param expression an encoding of an expression in some syntax.
+     * @param parser A parser for the syntax.
+     * @param factory A factory to create searchers for the expression.
+     * @throws CompileException If there is a problem compiling the expression.
+     */
     public Expression(final String expression, final Parser<ParseTree> parser, final SequenceSearcherFactory factory) throws CompileException {
         final SequenceMatcher matcher;
         try {
@@ -90,7 +122,7 @@ public final class Expression implements Matcher, Searcher {
         }
         this.expression = expression;
         this.matcher = matcher;
-        //TODO: defer until we need these.
+        //TODO: defer until we need these - use LazyObjects if necessary.
         this.forwardsSearcher = factory.createForwards(matcher);
         this.backwardsSearcher = factory.createBackwards(matcher);
     }
