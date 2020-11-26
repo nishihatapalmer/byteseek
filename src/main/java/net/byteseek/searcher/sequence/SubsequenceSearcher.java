@@ -186,4 +186,11 @@ public class SubsequenceSearcher extends AbstractSequenceSearcher<SequenceMatche
     public void prepareBackwards() {
         backwardSearcher.prepareBackwards();
     }
+
+    @Override
+    public String toString() {
+        final String leftDescription = leftMatch == null? "" : "left:" + leftMatch.toString() + ' ';
+        final String rightDescription = rightMatch == null? "" : " right:" + rightMatch.toString();
+        return getClass().getSimpleName() + '(' + leftDescription + "subsequence:" + subSequence + rightDescription + ')';
+    }
 }
