@@ -51,10 +51,13 @@ import java.util.List;
 
 /**
  * Expression is a thread-safe high level interfdce to byteseek for matching and searching patterns.
- * It will try to select the best matching or searching algorithms automatically based on the expression.
+ * It will try to select the best matching or searching algorithms automatically based on the pattern.
  * It compiles a pattern in byteseek regular expression syntax, or another if you supply a different parser.
  * An expression can match or search for itself in byte arrays, Files, InputStreams, and SeekableByteChannels.
  * Alternative data sources can be implemented if required through the WindowReader interface.
+ * <p>
+ * Expressions currently only match and search for fixed length sequences, not full regular expressions,
+ * although any set of bytes can match at any position in an expression.
  */
 public final class Expression implements Matcher, Searcher {
 
@@ -140,7 +143,7 @@ public final class Expression implements Matcher, Searcher {
     }
 
     @Override
-    public int matches(final byte[] bytes, int matchPosition, final Collection<MatchResult> results) {
+    public int matches(final byte[] bytes, final int matchPosition, final Collection<MatchResult> results) {
         return matcher.matches(bytes, matchPosition, results);
     }
 
@@ -150,122 +153,122 @@ public final class Expression implements Matcher, Searcher {
     }
 
     @Override
-    public int searchForwards(WindowReader reader, long fromPosition, long toPosition, Collection<MatchResult> results) throws IOException {
+    public int searchForwards(final WindowReader reader, final long fromPosition, final long toPosition, final Collection<MatchResult> results) throws IOException {
         return forwardsSearcher.searchForwards(reader, fromPosition, toPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchForwards(WindowReader reader, long fromPosition, long toPosition) throws IOException {
+    public List<MatchResult> searchForwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         return forwardsSearcher.searchForwards(reader, fromPosition, toPosition);
     }
 
     @Override
-    public int searchForwards(WindowReader reader, long fromPosition, Collection<MatchResult> results) throws IOException {
+    public int searchForwards(final WindowReader reader, final long fromPosition, final Collection<MatchResult> results) throws IOException {
         return forwardsSearcher.searchForwards(reader, fromPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchForwards(WindowReader reader, long fromPosition) throws IOException {
+    public List<MatchResult> searchForwards(final WindowReader reader, final long fromPosition) throws IOException {
         return forwardsSearcher.searchForwards(reader, fromPosition);
     }
 
     @Override
-    public int searchForwards(WindowReader reader, Collection<MatchResult> results) throws IOException {
+    public int searchForwards(final WindowReader reader, final Collection<MatchResult> results) throws IOException {
         return forwardsSearcher.searchForwards(reader, results);
     }
 
     @Override
-    public List<MatchResult> searchForwards(WindowReader reader) throws IOException {
+    public List<MatchResult> searchForwards(final WindowReader reader) throws IOException {
         return forwardsSearcher.searchForwards(reader);
     }
 
     @Override
-    public int searchForwards(byte[] bytes, int fromPosition, int toPosition, Collection<MatchResult> results) {
+    public int searchForwards(final byte[] bytes, final int fromPosition, final int toPosition, final Collection<MatchResult> results) {
         return forwardsSearcher.searchForwards(bytes, fromPosition, toPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchForwards(byte[] bytes, int fromPosition, int toPosition) {
+    public List<MatchResult> searchForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         return forwardsSearcher.searchForwards(bytes, fromPosition, toPosition);
     }
 
     @Override
-    public int searchForwards(byte[] bytes, int fromPosition, Collection<MatchResult> results) {
+    public int searchForwards(final byte[] bytes, final int fromPosition, final Collection<MatchResult> results) {
         return forwardsSearcher.searchForwards(bytes, fromPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchForwards(byte[] bytes, int fromPosition) {
+    public List<MatchResult> searchForwards(final byte[] bytes, final int fromPosition) {
         return forwardsSearcher.searchForwards(bytes, fromPosition);
     }
 
     @Override
-    public int searchForwards(byte[] bytes, Collection<MatchResult> results) {
+    public int searchForwards(final byte[] bytes, final Collection<MatchResult> results) {
         return forwardsSearcher.searchForwards(bytes, results);
     }
 
     @Override
-    public List<MatchResult> searchForwards(byte[] bytes) {
+    public List<MatchResult> searchForwards(final byte[] bytes) {
         return forwardsSearcher.searchForwards(bytes);
     }
 
     @Override
-    public int searchBackwards(WindowReader reader, long fromPosition, long toPosition, Collection<MatchResult> results) throws IOException {
+    public int searchBackwards(final WindowReader reader, final long fromPosition, final long toPosition, final Collection<MatchResult> results) throws IOException {
         return backwardsSearcher.searchBackwards(reader, fromPosition, toPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException {
+    public List<MatchResult> searchBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
         return backwardsSearcher.searchBackwards(reader, fromPosition, toPosition);
     }
 
     @Override
-    public int searchBackwards(WindowReader reader, long fromPosition, Collection<MatchResult> results) throws IOException {
+    public int searchBackwards(final WindowReader reader, final long fromPosition, final Collection<MatchResult> results) throws IOException {
         return backwardsSearcher.searchBackwards(reader, fromPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchBackwards(WindowReader reader, long fromPosition) throws IOException {
+    public List<MatchResult> searchBackwards(final WindowReader reader, final long fromPosition) throws IOException {
         return backwardsSearcher.searchBackwards(reader, fromPosition);
     }
 
     @Override
-    public int searchBackwards(WindowReader reader, Collection<MatchResult> results) throws IOException {
+    public int searchBackwards(final WindowReader reader, final Collection<MatchResult> results) throws IOException {
         return backwardsSearcher.searchBackwards(reader, results);
     }
 
     @Override
-    public List<MatchResult> searchBackwards(WindowReader reader) throws IOException {
+    public List<MatchResult> searchBackwards(final WindowReader reader) throws IOException {
         return backwardsSearcher.searchBackwards(reader);
     }
 
     @Override
-    public int searchBackwards(byte[] bytes, int fromPosition, int toPosition, Collection<MatchResult> results) {
+    public int searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition, final Collection<MatchResult> results) {
         return backwardsSearcher.searchBackwards(bytes, fromPosition, toPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    public List<MatchResult> searchBackwards(final byte[] bytes, final int fromPosition, final int toPosition) {
         return backwardsSearcher.searchBackwards(bytes, fromPosition, toPosition);
     }
 
     @Override
-    public int searchBackwards(byte[] bytes, int fromPosition, Collection<MatchResult> results) {
+    public int searchBackwards(final byte[] bytes, final int fromPosition, final Collection<MatchResult> results) {
         return backwardsSearcher.searchBackwards(bytes, fromPosition, results);
     }
 
     @Override
-    public List<MatchResult> searchBackwards(byte[] bytes, int fromPosition) {
+    public List<MatchResult> searchBackwards(final byte[] bytes, final int fromPosition) {
         return backwardsSearcher.searchBackwards(bytes, fromPosition);
     }
 
     @Override
-    public int searchBackwards(byte[] bytes, Collection<MatchResult> results) {
+    public int searchBackwards(final byte[] bytes, final Collection<MatchResult> results) {
         return backwardsSearcher.searchBackwards(bytes, results);
     }
 
     @Override
-    public List<MatchResult> searchBackwards(byte[] bytes) {
+    public List<MatchResult> searchBackwards(final byte[] bytes) {
         return backwardsSearcher.searchBackwards(bytes);
     }
 
