@@ -30,6 +30,7 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
@@ -46,6 +47,21 @@ public class SignedHash4SearcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testConstructSequenceOne() {
+        new SignedHash4Searcher((new ByteSequenceMatcher(new byte[1])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructSequenceTwo() {
+        new SignedHash4Searcher((new ByteSequenceMatcher(new byte[2])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructSequenceThree() {
+        new SignedHash4Searcher((new ByteSequenceMatcher(new byte[3])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
         new SignedHash4Searcher((String) null);
     }
@@ -53,6 +69,21 @@ public class SignedHash4SearcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
         new SignedHash4Searcher("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneString() {
+        new SignedHash4Searcher("X");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoString() {
+        new SignedHash4Searcher("XX");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructThreeString() {
+        new SignedHash4Searcher("XXX");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -70,6 +101,21 @@ public class SignedHash4SearcherTest {
         new SignedHash4Searcher(new byte[0]);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneByteArray() {
+        new SignedHash4Searcher(new byte[1]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoByteArray() {
+        new SignedHash4Searcher(new byte[2]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructThreeByteArray() {
+        new SignedHash4Searcher(new byte[3]);
+    }
+
     // Test length.
 
     @Test
@@ -77,8 +123,8 @@ public class SignedHash4SearcherTest {
         AbstractSequenceSearcher s = new SignedHash4Searcher("AXZXX");
         assertEquals("Length correct", 5, s.getSequenceLength());
 
-        s = new SignedHash4Searcher("AA");
-        assertEquals("Length correct", 2, s.getSequenceLength());
+        s = new SignedHash4Searcher("AA234");
+        assertEquals("Length correct", 5, s.getSequenceLength());
 
         s = new SignedHash4Searcher("1234567890");
         assertEquals("Length correct", 10, s.getSequenceLength());

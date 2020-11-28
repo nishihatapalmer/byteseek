@@ -30,6 +30,7 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
@@ -56,6 +57,11 @@ public class SignedHash2SearcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testConstructSingleChar() {
+        new SignedHash2Searcher("X");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructNullCharset() {
         new SignedHash2Searcher("ABCDEFG", null);
     }
@@ -69,6 +75,12 @@ public class SignedHash2SearcherTest {
     public void testConstructEmptyByteArray() {
         new SignedHash2Searcher(new byte[0]);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSingleByte() { new SignedHash2Searcher(new byte[1]);}
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSingleByteSequence() { new SignedHash2Searcher(new ByteSequenceMatcher(new byte[1]));}
 
     // Test length.
 

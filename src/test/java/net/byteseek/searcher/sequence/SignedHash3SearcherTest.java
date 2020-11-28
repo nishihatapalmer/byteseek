@@ -30,6 +30,7 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
@@ -46,6 +47,16 @@ public class SignedHash3SearcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testConstructSequenceOne() {
+        new SignedHash3Searcher(new ByteSequenceMatcher(new byte[1]));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructSequenceTwo() {
+        new SignedHash3Searcher(new ByteSequenceMatcher(new byte[2]));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
         new SignedHash3Searcher((String) null);
     }
@@ -53,6 +64,16 @@ public class SignedHash3SearcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
         new SignedHash3Searcher("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructSingleChar() {
+        new SignedHash3Searcher("X");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoChars() {
+        new SignedHash3Searcher("XX");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -70,6 +91,18 @@ public class SignedHash3SearcherTest {
         new SignedHash3Searcher(new byte[0]);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneByteArray() {
+        new SignedHash3Searcher(new byte[1]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoByteArray() {
+        new SignedHash3Searcher(new byte[2]);
+    }
+
+
+
     // Test length.
 
     @Test
@@ -77,8 +110,8 @@ public class SignedHash3SearcherTest {
         AbstractSequenceSearcher s = new SignedHash3Searcher("AXZXX");
         assertEquals("Length correct", 5, s.getSequenceLength());
 
-        s = new SignedHash3Searcher("AA");
-        assertEquals("Length correct", 2, s.getSequenceLength());
+        s = new SignedHash3Searcher("AAXXXX");
+        assertEquals("Length correct", 6, s.getSequenceLength());
 
         s = new SignedHash3Searcher("1234567890");
         assertEquals("Length correct", 10, s.getSequenceLength());
