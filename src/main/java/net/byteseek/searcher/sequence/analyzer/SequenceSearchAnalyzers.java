@@ -49,7 +49,9 @@ public final class SequenceSearchAnalyzers {
     public static final SequenceSearchAnalyzer SHIFT_OR_UNROLLED_ANALYZER = FullLengthAnalyzer.ANALYZER;
 
     /*
-     * Searchers whose most efficient subsequence depends on the number of bytes matching in each position
+     * Searchers whose most efficient subsequence depends on the number of bytes matching in each position,
+     * and which can be extended away from the direction of search into higher numbers of bytes without
+     * losing performance, and possibly improving it.
      */
     public static final SequenceSearchAnalyzer HORSPOOL_ANALYZER = NumBytesAnalyzer.ANALYZER_EXTEND;
     public static final SequenceSearchAnalyzer HORSPOOL_UNROLLED_ANALYZER = NumBytesAnalyzer.ANALYZER_EXTEND;
@@ -57,10 +59,18 @@ public final class SequenceSearchAnalyzers {
     public static final SequenceSearchAnalyzer SUNDAY_ANALYZER = NumBytesAnalyzer.ANALYZER_EXTEND;
 
     /*
-     * Searchers whose most efficient subsequence depends on the number of permutations of bytes in a qGram
+     * Searchers whose most efficient subsequence depends on the number of permutations of bytes in the qGrams,
+     * but which can be extended a bit into higher permutation qgrams once a good subsequence is found,
+     * in the opposite direction of search.
      */
     public static final SequenceSearchAnalyzer SIGNED_HASH2_ANALYZER = BytePermutationAnalyzer.ANALYZER2_EXTEND;
     public static final SequenceSearchAnalyzer SIGNED_HASH3_ANALYZER = BytePermutationAnalyzer.ANALYZER3_EXTEND;
+
+    /*
+     * Searchers whose most efficient subsequence depends on the number of permutations of bytes in the qGrams,
+     * and which should not be extended into higher density of permutations anywhere (e.g. uses a bloom filter like
+     * approach, so don't want to fill up the table).
+     */
     public static final SequenceSearchAnalyzer QGRAM_FILTER2_ANALYZER = BytePermutationAnalyzer.ANALYZER2;
     public static final SequenceSearchAnalyzer QGRAM_FILTER3_ANALYZER = BytePermutationAnalyzer.ANALYZER3;
 
