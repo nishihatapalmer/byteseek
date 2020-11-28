@@ -74,8 +74,8 @@ public class SignedHash4SearcherTest {
 
     @Test
     public void testGetSequenceLength() throws Exception {
-        AbstractSequenceSearcher s = new SignedHash4Searcher("A");
-        assertEquals("Length correct", 1, s.getSequenceLength());
+        AbstractSequenceSearcher s = new SignedHash4Searcher("AXZXX");
+        assertEquals("Length correct", 5, s.getSequenceLength());
 
         s = new SignedHash4Searcher("AA");
         assertEquals("Length correct", 2, s.getSequenceLength());

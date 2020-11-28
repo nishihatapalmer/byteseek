@@ -73,8 +73,8 @@ public class QgramFilter2SearcherTest {
 
     @Test
     public void testGetSequenceLength() throws Exception {
-        AbstractSequenceSearcher s = new QgramFilter2Searcher("A");
-        assertEquals("Length correct", 1, s.getSequenceLength() );
+        AbstractSequenceSearcher s = new QgramFilter2Searcher("AB");
+        assertEquals("Length correct", 2, s.getSequenceLength() );
 
         s = new QgramFilter2Searcher("AA");
         assertEquals("Length correct", 2, s.getSequenceLength() );
