@@ -133,7 +133,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      */
     public SignedHash4Searcher(final SequenceMatcher sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         super(sequence, minIndexSize, maxIndexSize);
-        ArgUtils.checkAtLeast(sequence.length(), 2, "SignedHash4Searcher requires a sequence of at least 4 in length: " + sequence);
+        ArgUtils.checkAtLeast(sequence.length(), 4, "SignedHash4Searcher requires a sequence of at least 4 in length: " + sequence);
         forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
         backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
     }

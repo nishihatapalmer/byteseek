@@ -133,7 +133,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      */
     public SignedHash3Searcher(final SequenceMatcher sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         super(sequence, minIndexSize, maxIndexSize);
-        ArgUtils.checkAtLeast(sequence.length(), 2, "SignedHash3Searcher requires a sequence of at least 3 in length: " + sequence);
+        ArgUtils.checkAtLeast(sequence.length(), 3, "SignedHash3Searcher requires a sequence of at least 3 in length: " + sequence);
         forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
         backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
     }
