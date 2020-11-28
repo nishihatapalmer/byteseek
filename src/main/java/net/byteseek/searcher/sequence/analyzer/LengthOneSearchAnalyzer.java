@@ -42,21 +42,15 @@ public final class LengthOneSearchAnalyzer implements SequenceSearchAnalyzer {
      */
     public static SequenceSearchAnalyzer ANALYZER = new LengthOneSearchAnalyzer();
 
-    private static final BestSubsequence BEST_LENGTH_ONE = new BestSubsequence(0, 0);
+    private static final BestSubsequence FIRST_MATCHER = new BestSubsequence(0, 0);
 
     @Override
     public BestSubsequence getForwardsSubsequence(final SequenceMatcher theSequence) {
-        if (theSequence.length() == 1) {
-            return BEST_LENGTH_ONE;
-        }
-        return null;
+        return FIRST_MATCHER;
     }
 
     @Override
     public BestSubsequence getBackwardsSubsequence(final SequenceMatcher theSequence) {
-        if (theSequence.length() == 1) {
-            return BEST_LENGTH_ONE;
-        }
-        return null;
+        return FIRST_MATCHER;
     }
 }
