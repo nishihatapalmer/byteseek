@@ -272,6 +272,11 @@ public final class ShiftOrSearcher extends AbstractSequenceSearcher<SequenceMatc
 
     @Override
     public long searchSequenceBackwards(final WindowReader reader, final long fromPosition, final long toPosition) throws IOException {
+        // If searching backwards from a negative number, can't match anything.
+        if (fromPosition < 0) {
+            return -1;
+        }
+
         // Get the objects needed to search:
         final SearchInfo info = backwardInfo.get();
 
