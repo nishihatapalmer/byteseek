@@ -522,6 +522,18 @@ public final class ArgUtils {
         }
     }
 
+	/**
+	 * Checks a value is at least the min value.
+	 * @param value The value to check
+	 * @param minValue The minimum the value can be.
+	 * @param description A description of the parameter which will appear in the exception.
+	 */
+	public static void checkAtLeast(final long value, final long minValue, final String description) {
+    	if (value < minValue) {
+    		throw new IllegalArgumentException("The value " + value + " must be at least " + minValue + ' ' + description);
+		}
+	}
+
     /**
      * Checks that a start and end range lies within a byte array, inclusive, and that the array is not null.
      * @param array The array to check if null.

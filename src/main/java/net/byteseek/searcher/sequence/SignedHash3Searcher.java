@@ -35,6 +35,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.PowerTwoSize;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
@@ -110,6 +111,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      * Constructs a searcher given a {@link SequenceMatcher} to search for.
      *
      * @param sequence The SequenceMatcher to search for.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length.
      */
     public SignedHash3Searcher(final SequenceMatcher sequence) {
         this(sequence, DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
@@ -127,10 +129,11 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      * @param sequence      The SequenceMatcher to search for.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the searchIndexSize is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length, or the searchIndexSize is null.
      */
     public SignedHash3Searcher(final SequenceMatcher sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         super(sequence, minIndexSize, maxIndexSize);
+        ArgUtils.checkAtLeast(sequence.length(), 2, "SignedHash3Searcher requires a sequence of at least 3 in length: " + sequence);
         forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
         backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
     }
@@ -140,7 +143,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      * encoded using the platform default character set.
      *
      * @param sequence The string to search for.
-     * @throws IllegalArgumentException if the sequence is null or empty.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length.
      */
     public SignedHash3Searcher(final String sequence) {
         this(sequence, Charset.defaultCharset(), DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
@@ -159,7 +162,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      * @param sequence The string to search for.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty or the powerTwoSize is less than -28 or greater than 28.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length or the powerTwoSize is less than -28 or greater than 28.
      */
     public SignedHash3Searcher(final String sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         this(sequence, Charset.defaultCharset(), minIndexSize, maxIndexSize);
@@ -171,7 +174,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length, or the charset is null.
      */
     public SignedHash3Searcher(final String sequence, final Charset charset) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
@@ -191,7 +194,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      * @param charset The charset to encode the string in.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length, or the charset is null.
      */
     public SignedHash3Searcher(final String sequence, final Charset charset, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), minIndexSize, maxIndexSize);
@@ -201,7 +204,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      * Constructs a searcher for the byte array provided.
      *
      * @param sequence The byte sequence to search for.
-     * @throws IllegalArgumentException if the sequence is null or empty.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length.
      */
     public SignedHash3Searcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
@@ -219,19 +222,19 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      * @param sequence The byte sequence to search for.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 3 in length, or the charset is null.
      */
     public SignedHash3Searcher(final byte[] sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), minIndexSize, maxIndexSize);
     }
 
     @Override
-    protected void doPrepareForwards() {
+    public void prepareForwards() {
         forwardSearchInfo.get();
     }
 
     @Override
-    protected void doPrepareBackwards() {
+    public void prepareBackwards() {
         backwardSearchInfo.get();
     }
 
@@ -240,7 +243,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
      ******************/
 
     @Override
-    protected int doSearchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = forwardSearchInfo.get();
@@ -352,7 +355,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
     }
 
     @Override
-    protected int doSearchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    public int searchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition) {
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = backwardSearchInfo.get();
@@ -463,25 +466,10 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
         return getClass().getSimpleName() +
                 "(min index size:" + minIndexSize +
                 " max index size:" + maxIndexSize +
-                " forward info:"   + getForwardSearchDescription(forwardSearchInfo) +
-                " backward info: " + getBackwardSearchDescription(backwardSearchInfo) +
+                " forward info:"   + forwardSearchInfo +
+                " backward info: " + backwardSearchInfo +
                 " sequence:"       + sequence + ')';
     }
-
-    /*********************
-     * Protected methods *
-     *********************/
-
-    @Override
-    protected boolean fallbackForwards() {
-        return forwardSearchInfo.get().table == null;
-    }
-
-    @Override
-    protected boolean fallbackBackwards() {
-        return backwardSearchInfo.get().table == null;
-    }
-
 
     /*******************
      * Private classes *
@@ -502,9 +490,6 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
 
             // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
-            if (PATTERN_LENGTH <= QLEN) {
-                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
-            }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             final int MAX_HASH_POWER_TWO_SIZE = maxIndexSize.getPowerTwo();
@@ -526,10 +511,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
                 }
             }
 
-            // If the first qgram processed puts us over the max qgrams, use the fallback searcher instead.
-            if (qGramFinalPos > PATTERN_LENGTH - QLEN) {
-                return NO_SEARCH_INFO;
-            }
+            //TODO: what if there are too many qgrams to search for realistically?  will search still work?
 
             // We have all the info needed to build the search and we aren't using the fallback searcher:
             return buildSearchInfo(getTableSize(totalQgrams), qGramFinalPos);
@@ -591,9 +573,6 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
 
             // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
-            if (PATTERN_LENGTH <= QLEN) {
-                return NO_SEARCH_INFO; // no shifts to calculate.
-            }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             final int MAX_HASH_POWER_TWO_SIZE = maxIndexSize.getPowerTwo();
@@ -616,10 +595,7 @@ public final class SignedHash3Searcher extends AbstractQgramSearcher {
                 }
             }
 
-            // If the first qgram processed is too big for the max size allowed, use the fallback searcher instead:
-            if (finalQgramPos < QLEN - 1) {
-                return NO_SEARCH_INFO;
-            }
+            //TODO: what if there are too many qgrams to search for realistically?  will search still work?
 
             // We now have all the parameters to calculate the search info, and we aren't using the fallback searcher:
             return buildSearchInfo(getTableSize(totalQgrams), finalQgramPos);

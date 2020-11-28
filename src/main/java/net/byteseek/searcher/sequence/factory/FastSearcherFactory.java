@@ -131,12 +131,12 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
         }
 
         // Return a searcher that looks for the subsequence, then matches the bits which aren't part of the subsequence:
-        final SequenceMatcher subSequence = theSequence.subsequence(bestSubsequence.startPos, bestSubsequence.endPos + 1);
+        final SequenceMatcher subSequence = theSequence.subsequence(bestSubsequence.getStartPos(), bestSubsequence.getEndPos() + 1);
         final SequenceSearcher searcher = longFactory.createForwards(subSequence);
-        final SequenceMatcher leftMatcher = bestSubsequence.startPos > 0?
-                theSequence.subsequence(0, bestSubsequence.startPos) : null;
-        final SequenceMatcher rightMatcher = bestSubsequence.endPos + 1 < theSequence.length()?
-                theSequence.subsequence(bestSubsequence.endPos + 1, theSequence.length()) : null;
+        final SequenceMatcher leftMatcher = bestSubsequence.getStartPos() > 0?
+                theSequence.subsequence(0, bestSubsequence.getStartPos()) : null;
+        final SequenceMatcher rightMatcher = bestSubsequence.getEndPos() + 1 < theSequence.length()?
+                theSequence.subsequence(bestSubsequence.getEndPos() + 1, theSequence.length()) : null;
         return new SubsequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
     }
 
@@ -160,12 +160,12 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
         }
 
         // Return a searcher that looks for the subsequence, then matches the bits which aren't part of the subsequence:
-        final SequenceMatcher subSequence = theSequence.subsequence(bestSubsequence.startPos, bestSubsequence.endPos + 1);
+        final SequenceMatcher subSequence = theSequence.subsequence(bestSubsequence.getStartPos(), bestSubsequence.getEndPos() + 1);
         final SequenceSearcher searcher = longFactory.createBackwards(subSequence);
-        final SequenceMatcher leftMatcher = bestSubsequence.startPos > 0?
-                theSequence.subsequence(0, bestSubsequence.startPos) : null;
-        final SequenceMatcher rightMatcher = bestSubsequence.endPos + 1 < theSequence.length()?
-                theSequence.subsequence(bestSubsequence.endPos + 1, theSequence.length()) : null;
+        final SequenceMatcher leftMatcher = bestSubsequence.getStartPos() > 0?
+                theSequence.subsequence(0, bestSubsequence.getStartPos()) : null;
+        final SequenceMatcher rightMatcher = bestSubsequence.getEndPos() + 1 < theSequence.length()?
+                theSequence.subsequence(bestSubsequence.getEndPos() + 1, theSequence.length()) : null;
         return new SubsequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
     }
 

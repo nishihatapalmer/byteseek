@@ -35,6 +35,7 @@ import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.PowerTwoSize;
 import net.byteseek.utils.factory.ObjectFactory;
 import net.byteseek.utils.lazy.DoubleCheckImmutableLazyObject;
@@ -110,6 +111,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      * Constructs a searcher given a {@link SequenceMatcher} to search for.
      *
      * @param sequence The SequenceMatcher to search for.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length.
      */
     public SignedHash4Searcher(final SequenceMatcher sequence) {
         this(sequence, DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
@@ -127,10 +129,11 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      * @param sequence      The SequenceMatcher to search for.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the searchIndexSize is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length, or the searchIndexSize is null.
      */
     public SignedHash4Searcher(final SequenceMatcher sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         super(sequence, minIndexSize, maxIndexSize);
+        ArgUtils.checkAtLeast(sequence.length(), 2, "SignedHash4Searcher requires a sequence of at least 4 in length: " + sequence);
         forwardSearchInfo  = new DoubleCheckImmutableLazyObject<SearchInfo>(new ForwardSearchInfoFactory());
         backwardSearchInfo = new DoubleCheckImmutableLazyObject<SearchInfo>(new BackwardSearchInfoFactory());
     }
@@ -140,7 +143,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      * encoded using the platform default character set.
      *
      * @param sequence The string to search for.
-     * @throws IllegalArgumentException if the sequence is null or empty.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length.
      */
     public SignedHash4Searcher(final String sequence) {
         this(sequence, Charset.defaultCharset(), DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
@@ -159,7 +162,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      * @param sequence The string to search for.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty or the powerTwoSize is less than -28 or greater than 28.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length or the powerTwoSize is less than -28 or greater than 28.
      */
     public SignedHash4Searcher(final String sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         this(sequence, Charset.defaultCharset(), minIndexSize, maxIndexSize);
@@ -171,7 +174,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      *
      * @param sequence The string to search for.
      * @param charset The charset to encode the string in.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length, or the charset is null.
      */
     public SignedHash4Searcher(final String sequence, final Charset charset) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)));
@@ -191,7 +194,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      * @param charset The charset to encode the string in.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length, or the charset is null.
      */
     public SignedHash4Searcher(final String sequence, final Charset charset, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         this(sequence == null? null : charset == null? null : new ByteSequenceMatcher(sequence.getBytes(charset)), minIndexSize, maxIndexSize);
@@ -201,7 +204,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      * Constructs a searcher for the byte array provided.
      *
      * @param sequence The byte sequence to search for.
-     * @throws IllegalArgumentException if the sequence is null or empty.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length.
      */
     public SignedHash4Searcher(final byte[] sequence) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), DEFAULT_MIN_INDEX_SIZE, DEFAULT_MAX_INDEX_SIZE);
@@ -219,19 +222,19 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      * @param sequence The byte sequence to search for.
      * @param minIndexSize  Determines the minimum size of the hash table used by the search algorithm.
      * @param maxIndexSize  Determines the minimum size of the hash table used by the search algorithm.
-     * @throws IllegalArgumentException if the sequence is null or empty, or the charset is null.
+     * @throws IllegalArgumentException if the sequence is null or less than 4 in length, or the charset is null.
      */
     public SignedHash4Searcher(final byte[] sequence, final PowerTwoSize minIndexSize, final PowerTwoSize maxIndexSize) {
         this(sequence == null? null : new ByteSequenceMatcher(sequence), minIndexSize, maxIndexSize);
     }
 
     @Override
-    protected void doPrepareForwards() {
+    public void prepareForwards() {
         forwardSearchInfo.get();
     }
 
     @Override
-    protected void doPrepareBackwards() {
+    public void prepareBackwards() {
         backwardSearchInfo.get();
     }
 
@@ -240,7 +243,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
      ******************/
 
     @Override
-    protected int doSearchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
+    public int searchSequenceForwards(final byte[] bytes, final int fromPosition, final int toPosition) {
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = forwardSearchInfo.get();
@@ -355,7 +358,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
     }
 
     @Override
-    protected int doSearchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition) {
+    public int searchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition) {
 
         // Get the pre-processed data needed to search:
         final SearchInfo searchInfo = backwardSearchInfo.get();
@@ -469,24 +472,9 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
         return getClass().getSimpleName() +
                 "(min index size:" + minIndexSize +
                 " max index size:" + maxIndexSize +
-                " forward info:"   + getForwardSearchDescription(forwardSearchInfo) +
-                " backward info: " + getBackwardSearchDescription(backwardSearchInfo) +
+                " forward info:"   + forwardSearchInfo +
+                " backward info: " + backwardSearchInfo +
                 " sequence:"       + sequence + ')';
-    }
-
-
-    /*********************
-     * Protected methods *
-     *********************/
-
-    @Override
-    protected boolean fallbackForwards() {
-        return forwardSearchInfo.get().table == null;
-    }
-
-    @Override
-    protected boolean fallbackBackwards() {
-        return backwardSearchInfo.get().table == null;
     }
 
 
@@ -512,9 +500,6 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
 
             // If the pattern is shorter than one qgram, or equal to it in length, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
-            if (PATTERN_LENGTH <= QLEN) {
-                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used if no shifts exist.
-            }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             // The total processed qgrams helps to calculate an appropriate hash table size,
@@ -543,11 +528,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
                 }
             }
 
-            // If we exceeded max qgrams at the first qgram value, there is nothing we can usefully process
-            // with this search algorithm, use fallback searcher instead.
-            if (finalQgramPos > PATTERN_LENGTH - QLEN) {
-                return NO_SEARCH_INFO; // no shifts to calculate - fallback searcher will be used instead.
-            }
+            //TODO: what if there are too many qgrams to search for realistically?  will search still work?
 
             // We have all needed parameters, and aren't falling back - build the search info.
             return buildSearchInfo(getTableSize(totalQgrams), finalQgramPos);
@@ -626,9 +607,6 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
 
             // If the pattern is shorter than one qgram, or equal to it, the fallback searcher will be used instead.
             final int PATTERN_LENGTH = localSequence.length();
-            if (PATTERN_LENGTH <= QLEN) {
-                return NO_SEARCH_INFO; // no shifts to calculate.
-            }
 
             // Calculate how many qgrams we have, but stop if we get to more than we can handle with good performance.
             // This will give us the size of the hash table (if automatically selected) and the starting position of
@@ -654,10 +632,7 @@ public final class SignedHash4Searcher extends AbstractQgramSearcher {
                 }
             }
 
-            // If the first qgram swamps the search algorithm, use the fallback searcher instead.
-            if (finalQgramPos < QLEN - 1) {
-                return NO_SEARCH_INFO;
-            }
+            //TODO: what if there are too many qgrams to search for realistically?  will search still work?
 
             // We have all the information we need and we aren't falling back - build the search info:
             return buildSearchInfo(getTableSize(totalQgrams), finalQgramPos);

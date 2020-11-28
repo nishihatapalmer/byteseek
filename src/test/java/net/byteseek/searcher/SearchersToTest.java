@@ -41,11 +41,13 @@ import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
 import net.byteseek.searcher.sequence.*;
+import net.byteseek.searcher.sequence.factory.SearcherFactories;
 import net.byteseek.utils.StringUtils;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A  base class for multi-searcher tests which sets up all the search classes for test.
@@ -60,6 +62,7 @@ public class SearchersToTest {
     public List<Searcher> searchers;
 
     private SequenceMatcher matcherToSearch;
+    private static Random random = new Random(2); // make the tests deterministic for now.
 
     /**
      * Instantiate the searchers we want to test with the sequence matcher passed in.
@@ -67,35 +70,50 @@ public class SearchersToTest {
      * @param sequence The sequence matcher to search for.
      */
     public void createSearchers(SequenceMatcher sequence, boolean lowAlphabet) {
+        final int length = sequence.length();
         searchers = new ArrayList<Searcher>();
+
+        /*
+         * searchers that can work on any length
+         */
         searchers.add(new MatcherSearcher(sequence));
         searchers.add(new SequenceMatcherSearcher(sequence));
         searchers.add(new SundayQuickSearcher(sequence));
         searchers.add(new HorspoolSearcher(sequence));
         searchers.add(new HorspoolUnrolledSearcher(sequence));
         searchers.add(new SignedHorspoolSearcher(sequence));
-        searchers.add(new SignedHash2Searcher(sequence));
-        searchers.add(new SignedHash3Searcher(sequence));
-        searchers.add(new SignedHash4Searcher(sequence));
         searchers.add(new ShiftOrSearcher(sequence));
         searchers.add(new ShiftOrUnrolledSearcher(sequence));
 
-        //TODO: on low alphabets and long patterns (e.g. human dna) these searchers perform *incredibly* poorly.
+        /*
+         * searchers that need sufficient length.
+         */
+        if (length > 1) {
+            searchers.add(new SignedHash2Searcher(sequence));
+            if (!lowAlphabet || length < 200) {
+                searchers.add(new QgramFilter2Searcher(sequence));
+            }
+        }
+        if (length > 2) {
+            searchers.add(new SignedHash3Searcher(sequence));
+            if (!lowAlphabet || length < 800) {
+                searchers.add(new QgramFilter3Searcher(sequence));
+            }
+        }
+        if (length > 3) {
+            searchers.add(new SignedHash4Searcher(sequence));
+            if (!lowAlphabet || length < 4000) {
+                searchers.add(new QgramFilter4Searcher(sequence));
+            }
+        }
+
+        //TODO: on low alphabets and long patterns (e.g. human dna) qgram filter searchers perform *incredibly* poorly.
         // I disable them from full testing when the sequence length gets too long, otherwise running a lot of tests takes hours
         // to complete.  Should run more tests of these algorithms on shorter patterns to achieve the same test coverage,
         // and occasionally run longer pattern tests on them to ensure longer patterns still work for them.
-        if (!lowAlphabet || sequence.length() < 200) {
-            searchers.add(new QgramFilter2Searcher(sequence));
-        }
-        if (!lowAlphabet || sequence.length() < 800) {
-            searchers.add(new QgramFilter3Searcher(sequence));
-        }
-        if (!lowAlphabet || sequence.length() < 4000) {
-            searchers.add(new QgramFilter4Searcher(sequence));
-        }
 
         // Include byte searchers for low length searches.
-        if (sequence.length() == 1) {
+        if (length == 1) {
             ByteMatcher matcher = sequence.getMatcherForPosition(0);
             searchers.add(new ByteMatcherSearcher(matcher));
             if (matcher.getNumberOfMatchingBytes() == 1) {
@@ -106,6 +124,24 @@ public class SearchersToTest {
                 OneByteMatcher oneByte = OneByteMatcher.valueOf(value);
                 searchers.add(new ByteSearcher(oneByte));
             }
+        } else { // test the subsequence searcher:
+            int subsequenceStart = random.nextInt(length / 2);
+            int subsequenceEnd = length - random.nextInt(length / 2);
+            if (subsequenceEnd < subsequenceStart) {
+                int temp = subsequenceStart;
+                subsequenceStart = subsequenceEnd;
+                subsequenceEnd = temp;
+            }
+            SequenceMatcher leftMatch = null;
+            SequenceMatcher rightMatch = null;
+            if (subsequenceStart > 0) {
+                leftMatch = sequence.subsequence(0, subsequenceStart);
+            }
+            if (subsequenceEnd < length) {
+                rightMatch = sequence.subsequence(subsequenceEnd);
+            }
+            SequenceMatcher subsequence = sequence.subsequence(subsequenceStart, subsequenceEnd);
+            searchers.add(new SubsequenceSearcher(subsequence, SearcherFactories.SHIFTOR_UNROLLED_FACTORY, leftMatch, rightMatch));
         }
     }
 

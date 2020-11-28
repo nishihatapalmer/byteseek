@@ -43,7 +43,7 @@ import net.byteseek.utils.collections.BytePermutationIterator;
  *
  * Created by matt on 09/06/17.
  */
-public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
+public abstract class AbstractQgramSearcher extends AbstractWindowSearcher<SequenceMatcher> {
 
     /**
      * Constants for default minimum and maximum index table sizes, for use by subclasses if required.
@@ -69,6 +69,11 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
         super(sequence);
         this.minIndexSize = minIndexSize;
         this.maxIndexSize = maxIndexSize;
+    }
+
+    @Override
+    protected int getSequenceLength() {
+        return getSequence().length();
     }
 
     /**
@@ -141,8 +146,6 @@ public abstract class AbstractQgramSearcher extends AbstractFallbackSearcher {
                                                 " searchLength:" + searchLength + ")";
         }
     }
-
-    protected final static SearchInfo NO_SEARCH_INFO = new SearchInfo(null, 0, 0);
 
     /*
      * These should be lambdas, but our minimum java version is still at 7.
