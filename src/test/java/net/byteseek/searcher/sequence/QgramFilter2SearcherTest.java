@@ -30,6 +30,7 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
@@ -45,6 +46,11 @@ public class QgramFilter2SearcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneSequence() {
+        new QgramFilter2Searcher((new ByteSequenceMatcher(new byte[1])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
         new QgramFilter2Searcher((String) null);
     }
@@ -52,6 +58,11 @@ public class QgramFilter2SearcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
         new QgramFilter2Searcher("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneString() {
+        new QgramFilter2Searcher("R");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -67,6 +78,11 @@ public class QgramFilter2SearcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyByteArray() {
         new QgramFilter2Searcher(new byte[0]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneByteArray() {
+        new QgramFilter2Searcher(new byte[1]);
     }
 
     // Test length.

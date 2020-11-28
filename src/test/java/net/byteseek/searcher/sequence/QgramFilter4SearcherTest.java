@@ -30,6 +30,7 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
@@ -50,6 +51,21 @@ public class QgramFilter4SearcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneSequence() {
+        new QgramFilter4Searcher((new ByteSequenceMatcher(new byte[1])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoSequence() {
+        new QgramFilter4Searcher((new ByteSequenceMatcher(new byte[2])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructThreeSequence() {
+        new QgramFilter4Searcher((new ByteSequenceMatcher(new byte[3])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
         new QgramFilter4Searcher((String) null);
     }
@@ -57,6 +73,21 @@ public class QgramFilter4SearcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
         new QgramFilter4Searcher("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneString() {
+        new QgramFilter4Searcher("R");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoString() {
+        new QgramFilter4Searcher("RX");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructThreeString() {
+        new QgramFilter4Searcher("RXs");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -72,6 +103,21 @@ public class QgramFilter4SearcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyByteArray() {
         new QgramFilter4Searcher(new byte[0]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneByteArray() {
+        new QgramFilter4Searcher(new byte[1]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoByteArray() {
+        new QgramFilter4Searcher(new byte[2]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructThreeByteArray() {
+        new QgramFilter4Searcher(new byte[3]);
     }
 
     // Test length.

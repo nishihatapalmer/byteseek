@@ -30,6 +30,7 @@
  */
 package net.byteseek.searcher.sequence;
 
+import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import org.junit.Test;
 
@@ -45,6 +46,16 @@ public class QgramFilter3SearcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneSequence() {
+        new QgramFilter3Searcher((new ByteSequenceMatcher(new byte[1])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoSequence() {
+        new QgramFilter3Searcher((new ByteSequenceMatcher(new byte[2])));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructNullString() {
         new QgramFilter3Searcher((String) null);
     }
@@ -52,6 +63,16 @@ public class QgramFilter3SearcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructEmptyString() {
         new QgramFilter3Searcher("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneString() {
+        new QgramFilter3Searcher("R");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoString() {
+        new QgramFilter3Searcher("RX");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -68,6 +89,17 @@ public class QgramFilter3SearcherTest {
     public void testConstructEmptyByteArray() {
         new QgramFilter3Searcher(new byte[0]);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructOneByteArray() {
+        new QgramFilter3Searcher(new byte[1]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructTwoByteArray() {
+        new QgramFilter3Searcher(new byte[2]);
+    }
+
 
     // Test length.
 
