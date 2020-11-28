@@ -29,11 +29,9 @@
  */
 package net.byteseek.searcher.sequence.factory;
 
-import net.byteseek.matcher.bytes.ByteMatcher;
-import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
 import net.byteseek.searcher.sequence.SequenceSearcher;
-import net.byteseek.searcher.sequence.SubsequenceSearcher;
+import net.byteseek.searcher.sequence.SubSequenceSearcher;
 import net.byteseek.searcher.sequence.analyzer.BestSubsequence;
 import net.byteseek.searcher.sequence.analyzer.SequenceSearchAnalyzer;
 import net.byteseek.searcher.sequence.analyzer.SequenceSearchAnalyzers;
@@ -137,7 +135,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
                 theSequence.subsequence(0, bestSubsequence.getStartPos()) : null;
         final SequenceMatcher rightMatcher = bestSubsequence.getEndPos() + 1 < theSequence.length()?
                 theSequence.subsequence(bestSubsequence.getEndPos() + 1, theSequence.length()) : null;
-        return new SubsequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
+        return new SubSequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
     }
 
     @Override
@@ -166,7 +164,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
                 theSequence.subsequence(0, bestSubsequence.getStartPos()) : null;
         final SequenceMatcher rightMatcher = bestSubsequence.getEndPos() + 1 < theSequence.length()?
                 theSequence.subsequence(bestSubsequence.getEndPos() + 1, theSequence.length()) : null;
-        return new SubsequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
+        return new SubSequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
     }
 
 }

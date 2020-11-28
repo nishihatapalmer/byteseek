@@ -43,7 +43,7 @@ import java.io.IOException;
  * efficiently.  This allows us to search for an efficient sub-sequence of a longer sequence, then match the bits
 java * that lie to the left or right of the subsequence to complete a match of the full sequence.
  */
-public class SubsequenceSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
+public class SubSequenceSearcher extends AbstractSequenceSearcher<SequenceMatcher> {
 
     private final SequenceMatcher subSequence;
     private final SequenceSearcher forwardSearcher;
@@ -65,7 +65,7 @@ public class SubsequenceSearcher extends AbstractSequenceSearcher<SequenceMatche
      * @param leftMatch A matcher that must match to the left of the subsequence, or null if not required.
      * @param rightMatch A matcher that must match at the right of the subsequence, or null if not required.
      */
-    public SubsequenceSearcher(final SequenceMatcher subSequence, final SequenceSearcherFactory searcherFactory,
+    public SubSequenceSearcher(final SequenceMatcher subSequence, final SequenceSearcherFactory searcherFactory,
                                final SequenceMatcher leftMatch, final SequenceMatcher rightMatch) {
         super(subSequence);
         ArgUtils.checkNullObject(searcherFactory, "searcherFactory");

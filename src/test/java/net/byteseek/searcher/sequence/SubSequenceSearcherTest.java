@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SubsequenceSearcherTest {
+public class SubSequenceSearcherTest {
 
     @Test
     public void getSequenceLength() {

@@ -36,8 +36,6 @@ import net.byteseek.matcher.bytes.ByteMatcher;
 import net.byteseek.matcher.bytes.OneByteMatcher;
 import net.byteseek.matcher.sequence.ByteSequenceMatcher;
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import net.byteseek.searcher.MatcherSearcher;
-import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.bytes.ByteMatcherSearcher;
 import net.byteseek.searcher.bytes.ByteSearcher;
 import net.byteseek.searcher.sequence.*;
@@ -141,7 +139,7 @@ public class SearchersToTest {
                 rightMatch = sequence.subsequence(subsequenceEnd);
             }
             SequenceMatcher subsequence = sequence.subsequence(subsequenceStart, subsequenceEnd);
-            searchers.add(new SubsequenceSearcher(subsequence, SearcherFactories.SHIFTOR_UNROLLED_FACTORY, leftMatch, rightMatch));
+            searchers.add(new SubSequenceSearcher(subsequence, SearcherFactories.SHIFTOR_UNROLLED_FACTORY, leftMatch, rightMatch));
         }
     }
 
