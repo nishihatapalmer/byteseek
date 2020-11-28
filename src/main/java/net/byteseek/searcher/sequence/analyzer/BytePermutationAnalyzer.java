@@ -80,7 +80,7 @@ public final class BytePermutationAnalyzer implements SequenceSearchAnalyzer {
         return bestSubsequence;
     }
 
-    public BestSubsequence getBestSubsequence(final SequenceMatcher theSequence) {
+    private BestSubsequence getBestSubsequence(final SequenceMatcher theSequence) {
         final int THRESHOLD = threshold;
         final int MIN_LENGTH = qGramSize;
         final int LENGTH = theSequence.length();
