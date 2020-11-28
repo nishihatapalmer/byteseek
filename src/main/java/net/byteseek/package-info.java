@@ -37,10 +37,5 @@
  * {@link net.byteseek.Expression} is the main class in byteseek.  If you
  * instantiate an Expression using a byteseek regular expression, it can be
  * matched or searched against byte arrays, Files, InputStreams and SeekableByteChannels.
- *
- * <p><b>Future</b>
- * Byteseek already has code for multi-pattern searching and full regular expression support.
- * This still needs more testing and development.
- * </p>
  */
 package net.byteseek;
