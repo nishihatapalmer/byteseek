@@ -380,4 +380,24 @@ public class NumBytesAnalyzerTest {
         }
     }
 
+    @Test
+    public void testNoGoodSubsequence() {
+        testNoBestSubsequence(new SequenceSequenceMatcher(
+                new FixedGapMatcher(1024),
+                OneByteMatcher.valueOf((byte) 10),
+                new FixedGapMatcher(512)));
+
+        testNoBestSubsequence(new SequenceSequenceMatcher(
+                new ByteRangeMatcher(32, 127).repeat(64),
+                OneByteMatcher.valueOf((byte) 10),
+                new ByteRangeMatcher(32, 127).repeat(127)));
+    }
+
+    private void testNoBestSubsequence(SequenceMatcher matcher) {
+        assertNull(ANALYZER.getForwardsSubsequence(matcher));
+        assertNull(ANALYZER_EXTEND.getForwardsSubsequence(matcher));
+        assertNull(ANALYZER.getBackwardsSubsequence(matcher));
+        assertNull(ANALYZER_EXTEND.getBackwardsSubsequence(matcher));
+    }
+
 }
