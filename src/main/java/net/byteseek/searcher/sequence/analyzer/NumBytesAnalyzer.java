@@ -76,12 +76,6 @@ public final class NumBytesAnalyzer implements SequenceSearchAnalyzer {
         return bestSubsequence;
     }
 
-    //TODO: is it worth building in to the extend mechanism some idea of how many bytes are being matched, and
-    //      stop processing when that's also exceeded?  If you get a run of [00:FE], there will be essentially
-    //      no benefit for shift table based searchers to keep including more and more of them, it will just
-    //      increase the compile time for the search.  Keep a running count of numbers of bytes, and stop extending
-    //      when they exceed 256 or a tiny bit higher maybe?
-
     @Override
     public BestSubsequence getBackwardsSubsequence(final SequenceMatcher theSequence) {
         final BestSubsequence bestSubsequence = getBestSubsequence(theSequence);
