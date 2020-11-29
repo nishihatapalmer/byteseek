@@ -70,7 +70,7 @@ public final class NumBytesAnalyzer implements SequenceSearchAnalyzer {
             // Now extend the longest good sequence backwards until the start, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the start of the subsequence (when searching forwards):
-            final int extendedStart = findSequenceStartPos(theSequence, bestSubsequence.getStartPos() - 1, 256);
+            final int extendedStart = findSequenceStartPos(theSequence, bestSubsequence.getStartPos() - 1, 255);
             return new BestSubsequence(extendedStart, bestSubsequence.getEndPos());
         }
         return bestSubsequence;
@@ -83,7 +83,7 @@ public final class NumBytesAnalyzer implements SequenceSearchAnalyzer {
             // Now extend the longest good sequence forwards until the end, or we hit an ANY match (.):
             // This is because longer sequences match faster, and if there are any bytes that could result in a longer
             // match, it's probably worth including them at the end of the subsequence (when searching backwards):
-            final int extendedEnd = findBackwardsSequenceEndPos(theSequence, bestSubsequence.getEndPos() + 1, 256);
+            final int extendedEnd = findBackwardsSequenceEndPos(theSequence, bestSubsequence.getEndPos() + 1, 255);
             return new BestSubsequence(bestSubsequence.getStartPos(), extendedEnd);
         }
         return bestSubsequence;
