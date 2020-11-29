@@ -61,7 +61,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
      * or a SIGNED_HORSPOOL searcher for patterns longer than 12.
      */
     public final static SequenceSearcherFactory SHIFTOR_12_THEN_SIGNED_HORSPOOL =
-            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY, SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
                     SearcherFactories.SIGNED_HORSPOOL_FACTORY, SequenceSearchAnalyzers.SIGNED_HORSPOOL_ANALYZER, 12);
 
     /**
@@ -69,7 +69,7 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
      * or a SIGNED_HASH_2 searcher for patterns longer than 12.
      */
     public final static SequenceSearcherFactory SHIFTOR_12_THEN_SIGNEDHASH2 =
-            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY, SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
                     SearcherFactories.SIGNED_HASH2_FACTORY, SequenceSearchAnalyzers.SIGNED_HASH2_ANALYZER, 12);
 
     /**
@@ -77,11 +77,12 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
      * or a SIGNED_HASH_3 searcher for patterns longer than 12.
      */
     public final static SequenceSearcherFactory SHIFTOR_12_THEN_SIGNEDHASH3 =
-            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY, SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
                     SearcherFactories.SIGNED_HASH3_FACTORY, SequenceSearchAnalyzers.SIGNED_HASH3_ANALYZER, 12);
 
 
     private final SequenceSearcherFactory shortFactory;
+    private final SequenceSearcherFactory wildcardFactory;
     private final SequenceSearcherFactory longFactory;
     private final SequenceSearchAnalyzer longAnalyzer;
     private final int longSize;
@@ -91,20 +92,24 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
      * the minimum size of a long sequence, and an analyzer which provides efficient subsequences for the long searcher.
      *
      * @param shortFactory The searcher factory to use for short sequences.
+     * @param wildcardFactory The searcher factory to use for sequences containing high numbers of wildcards.
      * @param longFactory The searcher factory to use for long sequences.
      * @param longAnalyzer the search analzyer for the long searcher to determine the best searchable subsequence.
      * @param longSize The smallest size of a long sequence.
      * @throws IllegalArgumentException if the objects are null, or the integer parameters are less than one.
      */
     public FastSearcherFactory(final SequenceSearcherFactory shortFactory,
+                               final SequenceSearcherFactory wildcardFactory,
                                final SequenceSearcherFactory longFactory,
                                final SequenceSearchAnalyzer longAnalyzer,
                                final int longSize) {
         ArgUtils.checkNullObject(shortFactory, "shortFactory");
+        ArgUtils.checkNullObject(wildcardFactory, "wildcardFactory");
         ArgUtils.checkNullObject(longFactory,"longFactory");
         ArgUtils.checkNullObject(longAnalyzer, "longAnalyzer");
         ArgUtils.checkPositiveInteger(longSize, "longSize");
         this.shortFactory = shortFactory;
+        this.wildcardFactory = wildcardFactory;
         this.longFactory = longFactory;
         this.longAnalyzer = longAnalyzer;
         this.longSize = longSize;
@@ -112,59 +117,66 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
 
     @Override
     protected SequenceSearcher createForwardsSequenceSearcher(final SequenceMatcher theSequence) {
+        // If it's a short pattern, use the short factory:
         if (theSequence.length() < longSize) {
             return shortFactory.createForwards(theSequence);
         }
+
+        // Find the best subsequence in the sequence to search for with a long searcher:
         final BestSubsequence bestSubsequence = longAnalyzer.getForwardsSubsequence(theSequence);
 
-        // If no good sequence exists, or it's smaller than the short sequence cut off, use the short searcher.
-        if (bestSubsequence == null || bestSubsequence.length() < longSize) {
-            return shortFactory.createForwards(theSequence);
+        // If no good subsequence exists for a long search exists, use the wildcard factory.
+        // The only reason a reasonably long sequence has no good subsequence is because it is composed of
+        // wildcards that match a lot of bytes in most positions.
+        if (bestSubsequence == null) {
+            return wildcardFactory.createForwards(theSequence);
         }
 
         // If the best subsequence is the entire sequence, then search for all of it with the long searcher
         if (bestSubsequence.length() == theSequence.length()) {
-            //TODO: analyze for pathological .{1024} all wildcard search?  In which case, we want to use SequenceMatcherSearcher.
             return longFactory.createForwards(theSequence);
         }
 
-        // Return a searcher that looks for the subsequence, then matches the bits which aren't part of the subsequence:
+        // Return a searcher that looks for the best subsequence, then matches the bits which aren't part of the subsequence.
+        // If the subsequence is a short pattern, use the short factory, otherwise use the long factory.
         final SequenceMatcher subSequence = theSequence.subsequence(bestSubsequence.getStartPos(), bestSubsequence.getEndPos() + 1);
-        final SequenceSearcher searcher = longFactory.createForwards(subSequence);
         final SequenceMatcher leftMatcher = bestSubsequence.getStartPos() > 0?
                 theSequence.subsequence(0, bestSubsequence.getStartPos()) : null;
         final SequenceMatcher rightMatcher = bestSubsequence.getEndPos() + 1 < theSequence.length()?
                 theSequence.subsequence(bestSubsequence.getEndPos() + 1, theSequence.length()) : null;
-        return new SubSequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
+        return new SubSequenceSearcher(subSequence, bestSubsequence.length() < longSize ? shortFactory : longFactory, leftMatcher, rightMatcher);
     }
 
     @Override
     protected SequenceSearcher createBackwardsSequenceSearcher(final SequenceMatcher theSequence) {
+        // If we're short, use the short factory:
         if (theSequence.length() < longSize) {
             return shortFactory.createBackwards(theSequence);
         }
 
+        // Find the best subsequence to use for the long matcher:
         final BestSubsequence bestSubsequence = longAnalyzer.getBackwardsSubsequence(theSequence);
 
-        // If no good sequence exists, or it's smaller than the short sequence cut off, use the short searcher.
-        if (bestSubsequence == null || bestSubsequence.length() < longSize) {
-            return shortFactory.createBackwards(theSequence);
+        // If no good subsequence for a long search exists, use the wildcard factory.
+        // The only reason a reasonably long sequence has no good subsequence is because it is composed of
+        // wildcards that match a lot of bytes in most positions.
+        if (bestSubsequence == null) {
+            return wildcardFactory.createBackwards(theSequence);
         }
 
         // If the best subsequence is the entire sequence, then search for all of it with the long searcher
         if (bestSubsequence.length() == theSequence.length()) {
-            //TODO: analyze for pathological .{1024} all wildcard search?  In which case, we want to use SequenceMatcherSearcher.
             return longFactory.createBackwards(theSequence);
         }
 
-        // Return a searcher that looks for the subsequence, then matches the bits which aren't part of the subsequence:
+        // Return a searcher that looks for the best subsequence, then matches the bits which aren't part of the subsequence.
+        // If the subsequence is a short pattern, use the short factory, otherwise use the long factory.
         final SequenceMatcher subSequence = theSequence.subsequence(bestSubsequence.getStartPos(), bestSubsequence.getEndPos() + 1);
-        final SequenceSearcher searcher = longFactory.createBackwards(subSequence);
         final SequenceMatcher leftMatcher = bestSubsequence.getStartPos() > 0?
                 theSequence.subsequence(0, bestSubsequence.getStartPos()) : null;
         final SequenceMatcher rightMatcher = bestSubsequence.getEndPos() + 1 < theSequence.length()?
                 theSequence.subsequence(bestSubsequence.getEndPos() + 1, theSequence.length()) : null;
-        return new SubSequenceSearcher(subSequence, longFactory, leftMatcher, rightMatcher);
+        return new SubSequenceSearcher(subSequence, bestSubsequence.length() < longSize ? shortFactory : longFactory, leftMatcher, rightMatcher);
     }
 
 }
