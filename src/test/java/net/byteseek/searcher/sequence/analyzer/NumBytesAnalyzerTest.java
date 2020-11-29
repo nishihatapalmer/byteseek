@@ -385,10 +385,12 @@ public class NumBytesAnalyzerTest {
         testNoBestSubsequence(new SequenceSequenceMatcher(
                 new FixedGapMatcher(1024),
                 OneByteMatcher.valueOf((byte) 10),
+                AnyByteMatcher.ANY_BYTE_MATCHER,
                 new FixedGapMatcher(512)));
 
         testNoBestSubsequence(new SequenceSequenceMatcher(
                 new ByteRangeMatcher(32, 127).repeat(64),
+                AnyByteMatcher.ANY_BYTE_MATCHER,
                 OneByteMatcher.valueOf((byte) 10),
                 new ByteRangeMatcher(32, 127).repeat(127)));
     }
