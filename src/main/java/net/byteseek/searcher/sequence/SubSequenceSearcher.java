@@ -51,7 +51,6 @@ public class SubSequenceSearcher extends AbstractSequenceSearcher<SequenceMatche
     private final SequenceMatcher leftMatch;
     private final SequenceMatcher rightMatch;
     private final int leftOffset;
-    private final int rightOffset;
 
     /**
      * Constructs a SubsequenceSearcher given the subsequence to search for, a factory to create a searcher for it,
@@ -75,7 +74,6 @@ public class SubSequenceSearcher extends AbstractSequenceSearcher<SequenceMatche
         this.leftMatch = leftMatch;
         this.rightMatch = rightMatch;
         this.leftOffset = leftMatch == null? 0 : leftMatch.length();
-        this.rightOffset = rightMatch == null? 0 : rightMatch.length();
     }
 
     @Override
@@ -129,15 +127,21 @@ public class SubSequenceSearcher extends AbstractSequenceSearcher<SequenceMatche
         return result;
     }
 
+    //TODO: what should behaviour of search be when toPosition is behind the fromPosition, or vice versa if going backwards?
+    //      should it match on the fromPosition if there is a match there, but not continue searching?
+    //      I think no match on the first position will be performed currently in the code.  Write some tests for this.
+
     @Override
     public long searchSequenceBackwards(WindowReader reader, long fromPosition, long toPosition) throws IOException {
+        if (fromPosition < 0) {
+            return NO_MATCH_SAFE_SHIFT;
+        }
         final SequenceSearcher localSearcher = backwardSearcher;
         final SequenceMatcher localLeftMatcher = leftMatch;
         final SequenceMatcher localRightMatcher = rightMatch;
         final int localLeftOffset = leftOffset;
-        final int localRightOffset = rightOffset;
-        long searchPos = fromPosition - localRightOffset;
-        long searchEnd = toPosition - localRightOffset;
+        long searchPos = addLongPositionsAvoidOverflows(fromPosition, localLeftOffset);
+        long searchEnd = addLongPositionsAvoidOverflows(toPosition, localLeftOffset);
         long result;
         while ((result = localSearcher.searchSequenceBackwards(reader, searchPos, searchEnd)) >= 0) {
             final long fullSequenceStart = result - localLeftOffset;
@@ -155,13 +159,15 @@ public class SubSequenceSearcher extends AbstractSequenceSearcher<SequenceMatche
 
     @Override
     public int searchSequenceBackwards(byte[] bytes, int fromPosition, int toPosition) {
+        if (fromPosition < 0) {
+            return NO_MATCH_SAFE_SHIFT;
+        }
         final SequenceSearcher localSearcher = backwardSearcher;
         final SequenceMatcher localLeftMatcher = leftMatch;
         final SequenceMatcher localRightMatcher = rightMatch;
         final int localLeftOffset = leftOffset;
-        final int localRightOffset = rightOffset;
-        int searchPos = fromPosition - localRightOffset;
-        int searchEnd = toPosition - localRightOffset;
+        int searchPos = addIntegerPositionsAvoidOverflows(fromPosition, localLeftOffset);
+        int searchEnd = addIntegerPositionsAvoidOverflows(toPosition, localLeftOffset);
         int result;
         while ((result = localSearcher.searchSequenceBackwards(bytes, searchPos, searchEnd)) >= 0) {
             final int fullSequenceStart = result - localLeftOffset;
