@@ -31,18 +31,10 @@
 
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.io.reader.WindowReader;
 
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
@@ -51,6 +43,22 @@ import static org.junit.Assert.*;
  * @author matt
  */
 public class OneByteMatcherTest extends BaseMatcherTest {
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testValueOfNegativeInteger() {
+        OneByteMatcher.valueOf(-1);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testValueOfIntegerGreaterThan255() {
+        OneByteMatcher.valueOf(256);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testValueOfCharBiggerThan255() {
+        char theChar = (char) 256;
+        OneByteMatcher.valueOf(theChar);
+    }
 
     /**
      * Tests every possible byte value against every other non-matching
@@ -64,6 +72,14 @@ public class OneByteMatcherTest extends BaseMatcherTest {
             testMatcher(matcher, theByte, i);
 
             matcher = OneByteMatcher.valueOf(theByte);
+            testMatcher(matcher, theByte, i);
+
+            int intValue = theByte & 0xFF;
+            matcher = OneByteMatcher.valueOf(intValue);
+            testMatcher(matcher, theByte, i);
+
+            char charValue = (char) intValue;
+            matcher = OneByteMatcher.valueOf(charValue);
             testMatcher(matcher, theByte, i);
 
             String hexByte = ByteUtils.byteToString(false, i);

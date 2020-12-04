@@ -30,19 +30,12 @@
  */
 package net.byteseek.matcher.bytes;
 
-import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.utils.ByteUtils;
-import net.byteseek.io.reader.WindowReader;
 
 import net.byteseek.matcher.sequence.SequenceMatcher;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -52,6 +45,22 @@ import static org.junit.Assert.*;
  * @author matt
  */
 public class OneByteInvertedMatcherTest extends BaseMatcherTest {
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testValueOfNegativeInteger() {
+        OneByteInvertedMatcher.valueOf(-1);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testValueOfIntegerGreaterThan255() {
+        OneByteInvertedMatcher.valueOf(256);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testValueOfCharBiggerThan255() {
+        char theChar = (char) 256;
+        OneByteInvertedMatcher.valueOf(theChar);
+    }
 
     /**
      * Tests every possible byte value against every other non-matching
@@ -63,6 +72,17 @@ public class OneByteInvertedMatcherTest extends BaseMatcherTest {
         for (int i = 0; i < 256; i++) {
             final byte theByte = (byte) i;
             OneByteInvertedMatcher matcher = new OneByteInvertedMatcher(theByte);
+            testMatcher(matcher, theByte, i);
+
+            matcher = OneByteInvertedMatcher.valueOf(theByte);
+            testMatcher(matcher, theByte, i);
+
+            int intValue = theByte & 0xFF;
+            matcher = OneByteInvertedMatcher.valueOf(intValue);
+            testMatcher(matcher, theByte, i);
+
+            char charValue = (char) intValue;
+            matcher = OneByteInvertedMatcher.valueOf(charValue);
             testMatcher(matcher, theByte, i);
 
             String hexByte = ByteUtils.byteToString(false, i);
