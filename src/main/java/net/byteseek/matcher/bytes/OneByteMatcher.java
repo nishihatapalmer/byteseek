@@ -60,8 +60,38 @@ public final class OneByteMatcher extends AbstractByteMatcher {
   	  
     }
 
+    /**
+     * Returns the corresponding OneByteMatcher for a byte value from a static cache.
+     *
+     * @param value The byte to get a byte matcher for.
+     * @return The OneByteMatcher for the byte passed in.
+     */
     public static OneByteMatcher valueOf(final byte value) {
   	  return MatcherCache.values[value & 0xff];
+    }
+
+    /**
+     * Returns the corresponding OneByteMatcher for a char value from a static cache.
+     *
+     * @param value The byte to get a byte matcher for.
+     * @return The OneByteMatcher for the byte passed in.
+     * @throws IllegalArgumentException if the char is not an extended ASCII byte in the range 0-255.
+     */
+    public static OneByteMatcher valueOf(final char value) {
+        ArgUtils.checkExtendedAsciiByte(value, "value");
+        return MatcherCache.values[value & 0xFF];
+    }
+
+    /**
+     * Returns the corresponding OneByteMatcher for an int value from a static cache.
+     *
+     * @param value The byte to get a byte matcher for.
+     * @return The OneByteMatcher for the byte passed in.
+     * @throws IllegalArgumentException if the int is not in the range 0 to 255.
+     */
+    public static OneByteMatcher valueOf(final int value) {
+        ArgUtils.checkIntToByteRange(0, value);
+        return MatcherCache.values[value];
     }
     
     /**

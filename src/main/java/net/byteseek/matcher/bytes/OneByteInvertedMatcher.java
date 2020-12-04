@@ -32,6 +32,7 @@ package net.byteseek.matcher.bytes;
 
 import java.io.IOException;
 
+import net.byteseek.utils.ArgUtils;
 import net.byteseek.utils.ByteUtils;
 import net.byteseek.io.reader.windows.Window;
 import net.byteseek.io.reader.WindowReader;
@@ -57,8 +58,38 @@ public final class OneByteInvertedMatcher extends AbstractByteMatcher {
 
     }
 
+    /**
+     * Returns the corresponding InvertedOneByteMatcher for a byte value.
+     *
+     * @param value the byte to get the InvertedOneByteMatcher for.
+     * @return the corresponding InvertedOneByteMatcher for a byte value.
+     */
     public static OneByteInvertedMatcher valueOf(final byte value) {
         return MatcherCache.values[value & 0xff];
+    }
+
+    /**
+     * Returns the corresponding OneByteInvertedMatcher for a char value from a static cache.
+     *
+     * @param value The byte to get a byte matcher for.
+     * @return The OneByteInvertedMatcher for the byte passed in.
+     * @throws IllegalArgumentException if the char is not an extended ASCII byte in the range 0-255.
+     */
+    public static OneByteInvertedMatcher valueOf(final char value) {
+        ArgUtils.checkExtendedAsciiByte(value, "value");
+        return MatcherCache.values[value & 0xFF];
+    }
+
+    /**
+     * Returns the corresponding OneByteInvertedMatcher for an int value from a static cache.
+     *
+     * @param value The byte to get a byte matcher for.
+     * @return The OneByteInvertedMatcher for the byte passed in.
+     * @throws IllegalArgumentException if the int is not in the range 0 to 255.
+     */
+    public static OneByteInvertedMatcher valueOf(final int value) {
+        ArgUtils.checkIntToByteRange(0, value);
+        return MatcherCache.values[value];
     }
 
     /**
