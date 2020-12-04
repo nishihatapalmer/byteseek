@@ -559,10 +559,23 @@ public final class ArgUtils {
      * @throws IllegalArgumentException if the from or to is less than zero, or the from or to is
      *         greater than 255.
      */
-	static void checkIntToByteRange(final int from, final int to) {
+	public static void checkIntToByteRange(final int from, final int to) {
         if (from < 0 || from > 255 || to < 0 || to > 255) {
             final String message = "The from and to values must be in the range 0 to 255.  Values provided were %d and %d";
             throw new IllegalArgumentException(String.format(message, from, to));
         }
     }
+
+	/**
+	 * Checks that a char is an extended ASCII byte in the range 0 - 255.
+	 * @param aChar The char to check.
+	 * @param description A description to be attached to any exception which is thrown.
+	 * @throws IllegalArgumentException if the char is not an extended ASCII byte.
+	 */
+	public static void checkExtendedAsciiByte(final char aChar, final String description) {
+		if (aChar > 255) {
+			throw new IllegalArgumentException("The char " + aChar + " is not an ASCII byte 0 - 255. " + description);
+		}
+	}
+
 }
