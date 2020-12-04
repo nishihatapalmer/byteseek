@@ -69,4 +69,23 @@ public final class BestSubsequence {
     public int getEndPos() {
         return endPos;
     }
+
+    @Override
+    public int hashCode() {
+        return (31 + startPos) * (7 + endPos);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BestSubsequence)) {
+            return false;
+        }
+        final BestSubsequence other = (BestSubsequence) obj;
+        return startPos == other.startPos && endPos == other.endPos;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + startPos + ',' + endPos + ')';
+    }
 }
