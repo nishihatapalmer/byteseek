@@ -39,26 +39,23 @@ import net.byteseek.matcher.sequence.SequenceMatcher;
  */
 public final class NumBytesAnalyzer implements SequenceSearchAnalyzer {
 
-    public static final SequenceSearchAnalyzer ANALYZER = new NumBytesAnalyzer(2, 64, false);
-    public static final SequenceSearchAnalyzer ANALYZER_EXTEND = new NumBytesAnalyzer(2, 64, true);
+    public static final SequenceSearchAnalyzer ANALYZER = new NumBytesAnalyzer( 64, false);
+    public static final SequenceSearchAnalyzer ANALYZER_EXTEND = new NumBytesAnalyzer( 64, true);
 
     private final int threshold;
-    private final int minLength;
     private final boolean extendSequence;
 
     /**
-     * Constructs a NumBytesAnalyzer with the specified min length for a pattern and threshold number of bytes
+     * Constructs a NumBytesAnalyzer with the specified threshold number of bytes
      * to match in each part of the sequence.  It is also possible to extend a good search sequence away from
      * the direction of search, which can improve search performance.  Algorithms relying on shift tables, like
      * SignedHash can benefit from this extension.  Ones which use a bloom-filter like lookup (e.g. QGram) may
      * not benefit from extending a search subsequence that contains a lot of possible byte matches.
      *
-     * @param minLength The minimum length a subsequence can be.
      * @param threshold The maximum number of bytes which can match at any position in a good subsequence.
      * @param extendSequence Whether to extend a sequence away from the direction of search.
      */
-    public NumBytesAnalyzer(final int minLength, final int threshold, final boolean extendSequence) {
-        this.minLength = minLength;
+    public NumBytesAnalyzer(final int threshold, final boolean extendSequence) {
         this.threshold = threshold;
         this.extendSequence = extendSequence;
     }
@@ -91,7 +88,6 @@ public final class NumBytesAnalyzer implements SequenceSearchAnalyzer {
 
     private BestSubsequence getBestSubsequence(final SequenceMatcher theSequence) {
         final int THRESHOLD = threshold;
-        final int MIN_LENGTH = minLength;
         final int LENGTH = theSequence.length();
         int position = LENGTH - 1;
         int bestEnd = -1;
@@ -104,7 +100,7 @@ public final class NumBytesAnalyzer implements SequenceSearchAnalyzer {
             }
             int sequenceStartPos = findSequenceStartPos(theSequence, sequenceEndPos - 1, THRESHOLD);
             final int SEQUENCE_LENGTH = sequenceEndPos - sequenceStartPos + 1;
-            if (SEQUENCE_LENGTH > bestLength && SEQUENCE_LENGTH >= MIN_LENGTH) {
+            if (SEQUENCE_LENGTH > bestLength) {
                 bestStart = sequenceStartPos;
                 bestEnd = sequenceEndPos;
                 bestLength = SEQUENCE_LENGTH;
