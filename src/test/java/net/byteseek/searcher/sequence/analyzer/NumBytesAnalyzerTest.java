@@ -43,34 +43,6 @@ public class NumBytesAnalyzerTest {
     private final static SequenceSearchAnalyzer ANALYZER = NumBytesAnalyzer.ANALYZER;
     private final static SequenceSearchAnalyzer ANALYZER_EXTEND = NumBytesAnalyzer.ANALYZER_EXTEND;
 
-    /*
-     * A pattern of length one is rejected as being good for the default analyzers.
-     * The cut-off length is configurable if you instantiate your own NumBytesAnalyzer with different parameters.
-     */
-    @Test
-    public void testLengthTooLowForwards() {
-        SequenceMatcher matcher = new ByteSequenceMatcher(new byte[1]);
-        BestSubsequence sequence = ANALYZER.getForwardsSubsequence(matcher);
-        assertNull(sequence);
-
-        sequence = ANALYZER_EXTEND.getForwardsSubsequence(matcher);
-        assertNull(sequence);
-    }
-
-    /*
-     * A pattern of length one is rejected as being good for the default analyzers.
-     * The cut-off length is configurable if you instantiate your own NumBytesAnalyzer with different parameters.
-     */
-    @Test
-    public void testLengthTooLowBackwards() {
-        SequenceMatcher matcher = new ByteSequenceMatcher(new byte[1]);
-        BestSubsequence sequence = ANALYZER.getBackwardsSubsequence(matcher);
-        assertNull(sequence);
-
-        sequence = ANALYZER_EXTEND.getBackwardsSubsequence(matcher);
-        assertNull(sequence);
-    }
-
     /**
      * A pattern just containing single bytes should always return the entire sequence as the best subsequence.
      */
@@ -186,25 +158,23 @@ public class NumBytesAnalyzerTest {
     }
 
     /**
-     * The default analyzer won't accept there is a best subsequence if the length after removing wildcards is less
-     * than the cut off (default is 2).
-     * This is configurable if you instantiate a different NumBytesAnalyzer.
+     * Test a single byte best subsequence with a single wildcard.
      */
     @Test
     public void testShortWildcardForwards() {
-        assertNull(ANALYZER.getForwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
-        assertNull(ANALYZER_EXTEND.getForwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
+        BestSubsequence expected = new BestSubsequence(0, 0);
+        assertEquals(expected, ANALYZER.getForwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
+        assertEquals(expected, ANALYZER_EXTEND.getForwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
     }
 
     /**
-     * The default analyzer won't accept there is a best subsequence if the length after removing wildcards is less
-     * than the cut off (default is 2).
-     * This is configurable if you instantiate a different NumBytesAnalyzer.
+     * Test a single byte best subsequence with a single wildcard.
      */
     @Test
     public void testShortWildcardBackwards() {
-        assertNull(ANALYZER.getBackwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
-        assertNull(ANALYZER_EXTEND.getBackwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
+        BestSubsequence expected = new BestSubsequence(0, 0);
+        assertEquals(expected, ANALYZER.getBackwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
+        assertEquals(expected, ANALYZER_EXTEND.getBackwardsSubsequence(new ByteMatcherSequenceMatcher(OneByteMatcher.valueOf((byte) 2), AnyByteMatcher.ANY_BYTE_MATCHER)));
     }
 
     @Test
@@ -381,25 +351,28 @@ public class NumBytesAnalyzerTest {
     }
 
     @Test
-    public void testNoGoodSubsequence() {
+    public void testHighWildcardSubsequence() {
         testNoBestSubsequence(new SequenceSequenceMatcher(
                 new FixedGapMatcher(1024),
                 OneByteMatcher.valueOf((byte) 10),
                 AnyByteMatcher.ANY_BYTE_MATCHER,
-                new FixedGapMatcher(512)));
+                new FixedGapMatcher(512)), 1024, 1024, 1024, 1024);
 
         testNoBestSubsequence(new SequenceSequenceMatcher(
                 new ByteRangeMatcher(32, 127).repeat(64),
                 AnyByteMatcher.ANY_BYTE_MATCHER,
                 OneByteMatcher.valueOf((byte) 10),
-                new ByteRangeMatcher(32, 127).repeat(127)));
+                new ByteRangeMatcher(32, 127).repeat(127)), 65, 65, 65, 192);
     }
 
-    private void testNoBestSubsequence(SequenceMatcher matcher) {
-        assertNull(ANALYZER.getForwardsSubsequence(matcher));
-        assertNull(ANALYZER_EXTEND.getForwardsSubsequence(matcher));
-        assertNull(ANALYZER.getBackwardsSubsequence(matcher));
-        assertNull(ANALYZER_EXTEND.getBackwardsSubsequence(matcher));
+    private void testNoBestSubsequence(SequenceMatcher matcher, int startPos, int endPos, int extendStart, int extendEnd) {
+        BestSubsequence expected = new BestSubsequence(startPos, endPos);
+        BestSubsequence extendedForward = new BestSubsequence(extendStart, endPos);
+        BestSubsequence extendedBackward = new BestSubsequence(startPos, extendEnd);
+        assertEquals(matcher.toString(), expected, ANALYZER.getForwardsSubsequence(matcher));
+        assertEquals(matcher.toString(), extendedForward, ANALYZER_EXTEND.getForwardsSubsequence(matcher));
+        assertEquals(matcher.toString(), expected, ANALYZER.getBackwardsSubsequence(matcher));
+        assertEquals(matcher.toString(), extendedBackward, ANALYZER_EXTEND.getBackwardsSubsequence(matcher));
     }
 
 }
