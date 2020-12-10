@@ -34,8 +34,17 @@
  * It can currently match or search for any fixed length byte pattern,
  * where any position can match any arbitrary set of bytes.
  * <p>
- * {@link net.byteseek.Expression} is the main class in byteseek.  If you
- * instantiate an Expression using a byteseek regular expression, it can be
- * matched or searched against byte arrays, Files, InputStreams and SeekableByteChannels.
+ * {@link net.byteseek.Pattern} is the main class in byteseek.  You can instantiate
+ * a Pattern using a byteseek regular expression, or with a different syntax if you supply
+ * a parser for it.
+ * <p>
+ * A Pattern can be efficiently matched or searched in byte arrays,
+ * and in any other data source by implementing the WindowReader interface.
+ * Byteseek provides implementations for Files, InputStreams and SeekableByteChannels.
+ * <p>>
+ * All WindowReaders can use a flexible set of caching strategies to ensure good
+ * performance on the type of data being matched or searched.  These include two level caches,
+ * least recently used, least recently added, top and tail, temporary file, write through and write around caches.
+ * If you don't specify a cache, a reasonable default will be chosen.
  */
 package net.byteseek;

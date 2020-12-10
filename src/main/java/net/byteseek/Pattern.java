@@ -44,22 +44,23 @@ import net.byteseek.parser.tree.ParseTree;
 import net.byteseek.searcher.Searcher;
 import net.byteseek.searcher.sequence.factory.FastSearcherFactory;
 import net.byteseek.searcher.sequence.factory.SequenceSearcherFactory;
+import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Expression is a thread-safe high level interfdce to byteseek for matching and searching patterns.
+ * Pattern is a class that matches or searches for byte patterns efficiently.
+ * A pattern is specified using a byteseek regular expression, or using an alternative syntax if you supply a different parser.
  * It will try to select the best matching or searching algorithms automatically based on the pattern.
- * It compiles a pattern in byteseek regular expression syntax, or another if you supply a different parser.
- * An expression can match or search for itself in byte arrays, Files, InputStreams, and SeekableByteChannels.
+ * A Pattern can match or search in byte arrays, Files, InputStreams, and SeekableByteChannels by default.
  * Alternative data sources can be implemented if required through the WindowReader interface.
  * <p>
- * Expressions currently only match and search for fixed length sequences, not full regular expressions,
+ * Patterns currently only match and search for fixed length sequences, not full regular expressions,
  * although any set of bytes can match at any position in an expression.
  */
-public final class Expression implements Matcher, Searcher {
+public final class Pattern implements Matcher, Searcher {
 
     private static Parser<ParseTree>                    DEFAULT_PARSER           = RegexParser.PARSER;
     private static Compiler<SequenceMatcher, ParseTree> DEFAULT_COMPILER         = SequenceMatcherCompiler.COMPILER;
@@ -73,41 +74,44 @@ public final class Expression implements Matcher, Searcher {
     // Constructors
 
     /**
-     * Constructs an Expression from a byteseek regular expression syntax string.
+     * Constructs an Pattern from a byteseek regular expression syntax string.
      *
      * @param expression a byteseek regular expression syntax string.
      * @throws CompileException If there is a problem compiling the expression.
+     * @throws IllegalArgumentException if any of the arguments are null.
      */
-    public Expression(final String expression) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
+    public Pattern(final String expression) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
         this(expression, DEFAULT_PARSER, DEFAULT_SEARCHER_FACTORY);
     }
 
     /**
-     * Constructs an Expression from a byteseek regular expression syntax string, and a factory to create
+     * Constructs an Pattern from a byteseek regular expression syntax string, and a factory to create
      * searchers for the expression.
      *
      * @param expression a byteseek regular expression syntax string.
      * @param factory A factory to create searchers for the expression.
      * @throws CompileException If there is a problem compiling the expression.
+     * @throws IllegalArgumentException if any of the arguments are null.
      */
-    public Expression(final String expression, final SequenceSearcherFactory factory) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
+    public Pattern(final String expression, final SequenceSearcherFactory factory) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
         this(expression, DEFAULT_PARSER, factory);
     }
 
     /**
-     * Constructs an Expression from a string encoded in some syntax, and a parser to parse that syntax,
+     * Constructs an Pattern from a string encoded in some syntax, and a parser to parse that syntax,
      * which must produce a byteseek abstract syntax tree for the compiler to consume.
      *
      * @param expression an encoding of an expression in some syntax.
      * @param parser A parser for the syntax,
      * @throws CompileException If there is a problem compiling the expression.
+     * @throws IllegalArgumentException if any of the arguments are null.
      */
-    public Expression(final String expression, final Parser<ParseTree> parser) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
+    public Pattern(final String expression, final Parser<ParseTree> parser) throws CompileException { //TODO: make compile exceptions runtime, like Java Regexes?
         this(expression, parser, DEFAULT_SEARCHER_FACTORY);
     }
 
     /**
-     * Constructs an Expression from a string encoded in some syntax, a parser to parse that syntax,
+     * Constructs an Pattern from a string encoded in some syntax, a parser to parse that syntax,
      * which must produce a byteseek abstract syntax tree for the compiler to consume,
      * and a factory to create searchers for the expression.
      *
@@ -115,8 +119,12 @@ public final class Expression implements Matcher, Searcher {
      * @param parser A parser for the syntax.
      * @param factory A factory to create searchers for the expression.
      * @throws CompileException If there is a problem compiling the expression.
+     * @throws IllegalArgumentException if any of the arguments are null.
      */
-    public Expression(final String expression, final Parser<ParseTree> parser, final SequenceSearcherFactory factory) throws CompileException {
+    public Pattern(final String expression, final Parser<ParseTree> parser, final SequenceSearcherFactory factory) throws CompileException {
+        ArgUtils.checkNullString(expression, "expression");
+        ArgUtils.checkNullObject(parser, "parser");
+        ArgUtils.checkNullObject(factory, "factory");
         final SequenceMatcher matcher;
         try {
             matcher = DEFAULT_COMPILER.compile(parser.parse(expression));
