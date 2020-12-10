@@ -57,29 +57,37 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
     //TODO: profile and validate best combinations.
 
     /**
-     * A SequenceSearcherFactory which selects either a SHIFT_OR_UNROLLED searcher for short patterns,
+     * A SequenceSearcherFactory which selects either a SHIFT_OR_UNROLLED searcher for short patterns and wildcard intensive patterns,
      * or a SIGNED_HORSPOOL searcher for patterns longer than 12.
      */
     public final static SequenceSearcherFactory SHIFTOR_12_THEN_SIGNED_HORSPOOL =
-            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY, SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
-                    SearcherFactories.SIGNED_HORSPOOL_FACTORY, SequenceSearchAnalyzers.SIGNED_HORSPOOL_ANALYZER, 12);
+            new FastSearcherFactory(
+                    SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+                    SearcherFactories.SIGNED_HORSPOOL_FACTORY,
+                    SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+                    SequenceSearchAnalyzers.SIGNED_HORSPOOL_ANALYZER, 12);
 
     /**
-     * A SequenceSearcherFactory which selects either a SHIFT_OR_UNROLLED searcher for short patterns,
+     * A SequenceSearcherFactory which selects either a SHIFT_OR_UNROLLED searcher for short patterns and wildcard intensive patterns
      * or a SIGNED_HASH_2 searcher for patterns longer than 12.
      */
     public final static SequenceSearcherFactory SHIFTOR_12_THEN_SIGNEDHASH2 =
-            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY, SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
-                    SearcherFactories.SIGNED_HASH2_FACTORY, SequenceSearchAnalyzers.SIGNED_HASH2_ANALYZER, 12);
+            new FastSearcherFactory(
+                    SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+                    SearcherFactories.SIGNED_HASH2_FACTORY,
+                    SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+                    SequenceSearchAnalyzers.SIGNED_HASH2_ANALYZER, 12);
 
     /**
-     * A SequenceSearcherFactory which selects either a SHIFT_OR_UNROLLED searcher for short patterns,
+     * A SequenceSearcherFactory which selects either a SHIFT_OR_UNROLLED searcher for short patterns and wildcard intensive patterns,
      * or a SIGNED_HASH_3 searcher for patterns longer than 12.
      */
     public final static SequenceSearcherFactory SHIFTOR_12_THEN_SIGNEDHASH3 =
-            new FastSearcherFactory(SearcherFactories.SHIFTOR_UNROLLED_FACTORY, SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
-                    SearcherFactories.SIGNED_HASH3_FACTORY, SequenceSearchAnalyzers.SIGNED_HASH3_ANALYZER, 12);
-
+            new FastSearcherFactory(
+                    SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+                    SearcherFactories.SIGNED_HASH3_FACTORY,
+                    SearcherFactories.SHIFTOR_UNROLLED_FACTORY,
+                    SequenceSearchAnalyzers.SIGNED_HASH3_ANALYZER, 12);
 
     private final SequenceSearcherFactory shortFactory;
     private final SequenceSearcherFactory wildcardFactory;
@@ -92,20 +100,20 @@ public final class FastSearcherFactory extends AbstractSequenceFactory {
      * the minimum size of a long sequence, and an analyzer which provides efficient subsequences for the long searcher.
      *
      * @param shortFactory The searcher factory to use for short sequences.
-     * @param wildcardFactory The searcher factory to use for sequences containing high numbers of wildcards.
      * @param longFactory The searcher factory to use for long sequences.
-     * @param longAnalyzer the search analzyer for the long searcher to determine the best searchable subsequence.
+     * @param wildcardFactory The searcher factory to use for long sequences containing high numbers of wildcards.
+     * @param longAnalyzer the search analyzer for the long searcher to determine the best searchable subsequence.
      * @param longSize The smallest size of a long sequence.
      * @throws IllegalArgumentException if the objects are null, or the integer parameters are less than one.
      */
     public FastSearcherFactory(final SequenceSearcherFactory shortFactory,
-                               final SequenceSearcherFactory wildcardFactory,
                                final SequenceSearcherFactory longFactory,
+                               final SequenceSearcherFactory wildcardFactory,
                                final SequenceSearchAnalyzer longAnalyzer,
                                final int longSize) {
         ArgUtils.checkNullObject(shortFactory, "shortFactory");
-        ArgUtils.checkNullObject(wildcardFactory, "wildcardFactory");
         ArgUtils.checkNullObject(longFactory,"longFactory");
+        ArgUtils.checkNullObject(wildcardFactory, "wildcardFactory");
         ArgUtils.checkNullObject(longAnalyzer, "longAnalyzer");
         ArgUtils.checkPositiveInteger(longSize, "longSize");
         this.shortFactory = shortFactory;
