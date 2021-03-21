@@ -499,6 +499,11 @@ public final class SignedHash2Searcher extends AbstractQgramSearcher {
 
             //TODO: what if there are too many qgrams to search for realistically?  will search still work?
 
+            //TODO: This is about DOS protection.  If we exceed the qgrams it is useful to compute, we should
+            // return a very small lookup table (e.g. 1 element) that is full.  This mitigates against the overall
+            // slowness of searching for everything everywhere, by reducing cache misses and sharing a single "NO
+            // GOOD SEARCH" table - maybe could be static?
+
             // We have everything we need to calculate the search info, and we're not using the fallback searcher.
             return buildSearchInfo(getTableSize(totalQgrams), finalQgramPos);
         }

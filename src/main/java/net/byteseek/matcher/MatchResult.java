@@ -30,6 +30,11 @@
  */
 package net.byteseek.matcher;
 
+import net.byteseek.io.reader.WindowReader;
+import net.byteseek.utils.ArgUtils;
+
+import java.io.IOException;
+
 /**
  * A simple data carrying class to hold the results of matching something at a
  * given position, with a match length.
@@ -71,6 +76,48 @@ public class MatchResult {
 	 */
 	public final long getMatchLength() {
 		return matchLength;
+	}
+
+	/**
+	 * Returns a copy of the data matched by the match result from the byte array it was matched in.
+	 *
+	 * @param source The byte array that the MatchResult was matched in.
+	 * @return A byte array containing the data from the byte array for this MatchResult.
+	 * @throws IllegalArgumentException if the source is null.
+	 * @throws IndexOutOfBoundsException if the match position and length do not fit into the source byte array.
+	 */
+	public byte[] getData(final byte[] source) {
+		ArgUtils.checkNullObject(source, "source");
+		ArgUtils.checkIndexOutOfBounds(source.length, (int) matchPosition, (int) (matchPosition + matchLength));
+		if (matchLength > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException("The match length for " + this + "exceeds the maximum size of a byte array.");
+		}
+		final byte[] result = new byte[(int) matchLength];
+		System.arraycopy(source, (int) matchPosition, result, 0, (int) matchLength);
+		return result;
+	}
+
+	/**
+	 * Returns a copy of the data matched by the Matchresult from the WindowReader it was matched in.
+	 *
+	 * @param source The WindowReader that the MatchResult was matched in.
+	 * @return A byte array containing the data from the byte array for this MatchResult.
+	 * @throws IOException If there was a problem reading from the WindowReader,
+	 *                     or an attempt is made to read past the end of it.
+	 * @throws IllegalArgumentException if the source is null.
+	 * @throws IndexOutOfBoundsException if the match length is greater than the maximum size of a byte array.
+	 */
+	public byte[] getData(final WindowReader source) throws IOException {
+		ArgUtils.checkNullObject(source, "source");
+		if (matchLength > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException("The match length for " + this + "exceeds the maximum size of a byte array.");
+		}
+		final byte[] result = new byte[(int) matchLength];
+		if (source.read(matchPosition, result, 0, (int) matchLength) < 0) {
+			throw new IOException("Attempt to read past end of reader: " + source + " from position:" +
+					matchPosition + " with length:" + matchLength);
+		}
+		return result;
 	}
 
 	@Override

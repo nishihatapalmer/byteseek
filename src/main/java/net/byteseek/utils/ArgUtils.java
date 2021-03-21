@@ -534,6 +534,30 @@ public final class ArgUtils {
 		}
 	}
 
+	/**
+	 * Checks a value is at least the min value.
+	 * @param value The value to check
+	 * @param lessThan what the value must be less than.
+	 * @param description A description of the parameter which will appear in the exception.
+	 */
+	public static void checkLessThan(final long value, final long lessThan, final String description) {
+		if (value >= lessThan) {
+			throw new IllegalArgumentException("The value " + value + " must be less than " + lessThan + ' ' + description);
+		}
+	}
+
+	/**
+	 * Checks a value is at least the min value.
+	 * @param value The value to check
+	 * @param lessThanOrEqual what the value must be less than.
+	 * @param description A description of the parameter which will appear in the exception.
+	 */
+	public static void checkLessThanOrEqual(final long value, final long lessThanOrEqual, final String description) {
+		if (value > lessThanOrEqual) {
+			throw new IllegalArgumentException("The value " + value + " must be less than or equal to " + lessThanOrEqual + ' ' + description);
+		}
+	}
+
     /**
      * Checks that a start and end range lies within a byte array, inclusive, and that the array is not null.
      * @param array The array to check if null.
