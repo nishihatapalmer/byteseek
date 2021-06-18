@@ -175,8 +175,8 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
      * @param to The position to finish searching at.
      */
     public SearchIterator(final Searcher searcher, final byte[] data, final int from, final int to) {
-        iterator = from <= to? new byteForwardIterator(searcher, data, from, to)
-                             : new byteBackwardIterator(searcher, data, from, to);
+        iterator = from <= to? new ByteForwardIterator(searcher, data, from, to)
+                             : new ByteBackwardIterator(searcher, data, from, to);
     }
 
     /*
@@ -191,8 +191,8 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
      * @param to The position to finish searching at.
      */
     public SearchIterator(final Searcher searcher, final WindowReader reader, final long from, final long to) {
-        iterator = from <= to? new readerForwardIterator(searcher, reader, from, to)
-                             : new readerBackwardIterator(searcher, reader, from, to);
+        iterator = from <= to? new ReaderForwardIterator(searcher, reader, from, to)
+                             : new ReaderBackwardIterator(searcher, reader, from, to);
     }
 
     /**
@@ -401,9 +401,9 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
     /**
      * Searches forwards over a byte array.
      */
-    private final class byteForwardIterator extends BaseSearchIterator {
+    private final class ByteForwardIterator extends BaseSearchIterator {
         private final byte[] data;
-        private byteForwardIterator(final Searcher searcher, final byte[] data, final int from, final int to) {
+        private ByteForwardIterator(final Searcher searcher, final byte[] data, final int from, final int to) {
             super(searcher, from, to);
             this.data = data;
         }
@@ -420,9 +420,9 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
     /**
      * Searches backwards over a byte array.
      */
-    private final class byteBackwardIterator extends BaseSearchIterator {
+    private final class ByteBackwardIterator extends BaseSearchIterator {
         private final byte[] data;
-        private byteBackwardIterator(final Searcher searcher, final byte[] data, final int from, final int to) {
+        private ByteBackwardIterator(final Searcher searcher, final byte[] data, final int from, final int to) {
             super(searcher, from, to);
             this.data = data;
         }
@@ -439,9 +439,9 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
     /**
      * Searches forwards in a WindowReader.
      */
-    private final class readerForwardIterator extends BaseSearchIterator {
+    private final class ReaderForwardIterator extends BaseSearchIterator {
         private final WindowReader reader;
-        private readerForwardIterator(final Searcher searcher, final WindowReader reader, final long from, final long to) {
+        private ReaderForwardIterator(final Searcher searcher, final WindowReader reader, final long from, final long to) {
             super(searcher, from, to);
             this.reader = reader;
         }
@@ -458,9 +458,9 @@ public final class SearchIterator implements IOIterator<List<MatchResult>> {
     /**
      * Searches backwards in a WindowReader.
      */
-    private final class readerBackwardIterator extends BaseSearchIterator {
+    private final class ReaderBackwardIterator extends BaseSearchIterator {
         private final WindowReader reader;
-        private readerBackwardIterator(final Searcher searcher, final WindowReader reader, final long from, final long to) {
+        private ReaderBackwardIterator(final Searcher searcher, final WindowReader reader, final long from, final long to) {
             super(searcher, from, to);
             this.reader = reader;
         }
