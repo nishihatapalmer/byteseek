@@ -44,11 +44,11 @@ import net.byteseek.utils.ArgUtils;
 //        window offset (remainder), rather than the expensive % remainder operation.
 
 /**
- * An abstract implementation of the WindowReader interface, which also implements
- * Iterable&lt;WindowReader&gt; to allow iterating over the Windows of a WindowReader.
+ * An abstract implementation of the WindowReader interface.
  * <p>
  * It provides common Window and cache management services using a fixed Window
- * size, and a standard Window iterator {@link net.byteseek.io.reader.WindowIterator}.
+ * size, a Window iterator {@link net.byteseek.io.reader.WindowIterator} and a
+ * byte iterator {@link net.byteseek.io.reader.ByteArrayIOIterator}.
  * 
  * @author Matt Palmer
  */
