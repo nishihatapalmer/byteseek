@@ -80,10 +80,11 @@ public final class WindowIterator implements IOIterator<Window> {
      * @param reader The WindowReader to iterate over.
      * @param fromPosition The first position to obtain a window for.
      * @param toPosition The last position (inclusive) to obtain a window for (assuming there are windows at this position).
-     * @throws IllegalArgumentException if the reader supplied is null.
+     * @throws IllegalArgumentException if the reader supplied is null or the toPosition is less than the fromPosition.
      */
     public WindowIterator(final WindowReader reader, final long fromPosition, final long toPosition) {
         ArgUtils.checkNullObject(reader, "reader");
+        ArgUtils.checkAtLeast(toPosition, fromPosition, "toPosition must not be less than the fromPosition");
         this.reader = reader;
         this.position = fromPosition;
         this.toPosition = toPosition;
@@ -102,7 +103,7 @@ public final class WindowIterator implements IOIterator<Window> {
         if (hasNext()) {
             final Window theWindow = nextWindow;
             nextWindow = null;
-            position += theWindow.length();
+            position = theWindow.getNextWindowPosition();
             return theWindow;
         }
         throw new NoSuchElementException();

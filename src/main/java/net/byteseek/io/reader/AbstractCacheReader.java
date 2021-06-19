@@ -309,23 +309,38 @@ public abstract class AbstractCacheReader implements WindowReader {
 	}
 
 	@Override
-	public IOIterator<Window> iterator() {
+	public IOIterator<Window> windows() {
 		return new WindowIterator(this);
 	}
 
 	@Override
-	public IOIterator<byte[]> bytes() {
+	public IOIterator<byte[]> bytes() throws IOException {
+		ensureOpen();
 		return new ByteArrayIOIterator(this);
 	}
 
 	@Override
-	public IOIterator<byte[]> bytes(final long fromPosition) {
+	public IOIterator<byte[]> bytes(final long fromPosition) throws IOException {
+		ensureOpen();
 		return new ByteArrayIOIterator(this, fromPosition);
 	}
 
 	@Override
-	public IOIterator<byte[]> bytes(final long fromPosition, final long toPosition) {
+	public IOIterator<byte[]> bytes(final long fromPosition, final long toPosition) throws IOException {
+		ensureOpen();
 		return new ByteArrayIOIterator(this, fromPosition, toPosition);
+	}
+
+	@Override
+	public byte[] allBytes(final long fromPosition, final long toPosition) throws IOException {
+		ensureOpen();
+		ArgUtils.checkAtLeast(fromPosition, toPosition, "toPosition must not be smaller than fromPosition.");
+		final long lastPosition = getWindow(toPosition) == null ? length() - 1 : toPosition;
+		final long length = lastPosition - fromPosition + 1;
+		ArgUtils.checkLessThan(length, Integer.MAX_VALUE, "Cannot create an array of this length.");
+		final byte[] result = new byte[(int) length];
+		read(fromPosition, result);
+		return result;
 	}
 
 	@Override

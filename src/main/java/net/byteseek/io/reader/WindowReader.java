@@ -159,13 +159,45 @@ public interface WindowReader extends Closeable {
      *
      * @return an iterator over the Windows in the Reader.
      */
-    IOIterator<Window> iterator(); //TODO: rename "windows"?  similar to "bytes" for byte arrays.
+    IOIterator<Window> windows();
 
-    IOIterator<byte[]> bytes();
+    /**
+     * Returns an IO iterator over all the bytes in the Reader as a sequence of byte arrays.
+     *
+     * @return an IO iterator over all the bytes in the Reader as a sequence of byte arrays.
+     * @throws IOException If the reader is closed.
+     */
+    IOIterator<byte[]> bytes() throws IOException;
 
-    IOIterator<byte[]> bytes(long fromPosition);
+    /**
+     * Returns an IO iterator over all the bytes in the Reader from the given position as a sequence of byte arrays.
+     *
+     * @return an IO iterator over all the bytes in the Reader from the given position as a sequence of byte arrays.
+     * @throws IOException If the reader is closed.
+     */
+    IOIterator<byte[]> bytes(long fromPosition) throws IOException;
 
-    IOIterator<byte[]> bytes(long fromPosition, long toPosition);
+    /**
+     * Returns an IO iterator over all the bytes in the Reader from the given position to the given position
+     * as a sequence of byte arrays, up to the amount of data available in the reader.
+     *
+     * @return an IO iterator over all the bytes in the Reader from the given position to the given position as a sequence of byte arrays.
+     * @throws IOException If the reader is closed.
+     */
+    IOIterator<byte[]> bytes(long fromPosition, long toPosition) throws IOException;
+
+    /**
+     * Returns a single byte array containing all the bytes in the reader from the given position to the given position,
+     * up to the amount of data available in the reader.
+     *
+     * @param fromPosition The first position from which you want data.
+     * @param toPosition The last position from which you want data.
+     * @return A byte array containing all the data in the reader from the given position to the given position.
+     * @throws IOException If the reader is closed, or there is a problem reading any of the bytes.
+     * @throws IllegalArgumentException if the to position is smaller than the from position,
+     *                                  or if the amount of data requested exceeds Integer.MAX_VALUE, as that cannot fit into a byte array.
+     */
+    byte[] allBytes(long fromPosition, long toPosition) throws IOException;
 
     /**
      * Sets the window factory the WindowReader uses to create new windows.

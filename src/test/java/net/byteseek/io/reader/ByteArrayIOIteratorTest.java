@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -94,6 +95,57 @@ public class ByteArrayIOIteratorTest {
             assertArrayEquals(expected, array);
             position += array.length;
         }
+    }
+
+    @Test
+    public void testFromPosition() throws Exception {
+        for (long position = 0; position < reader.length(); position += 3956) {
+            testFromPosition(position, reader.length() - position);
+        }
+    }
+
+    @Test
+    public void testFromToPosition() throws Exception {
+        Random random = new Random();
+        final int length = (int) reader.length();
+        for (int testIteration = 0; testIteration < 100; testIteration++) {
+            int fromPosition = random.nextInt(length - 1);
+            int lengthToRead = random.nextInt(length / 2);
+            testFromToPosition(fromPosition, fromPosition + lengthToRead);
+        }
+    }
+
+    private void testFromPosition(long fromPosition, long expectedLength) throws Exception {
+        iterator = new ByteArrayIOIterator(reader, fromPosition);
+        long position = fromPosition;
+        int totalBytesRead = 0;
+        while (iterator.hasNext()) {
+            byte[] array = iterator.next();
+            byte[] expected = new byte[array.length];
+            int bytesRead = IOUtils.readBytes(raf, position, expected);
+            assertEquals(array.length, bytesRead);
+            assertArrayEquals(expected, array);
+            totalBytesRead += array.length;
+            position += array.length;
+        }
+        assertEquals(expectedLength, totalBytesRead);
+    }
+
+    private void testFromToPosition(long fromPosition, long toPosition) throws Exception {
+        iterator = new ByteArrayIOIterator(reader, fromPosition, toPosition);
+        long expectedLength = toPosition >= reader.length() ? reader.length() - fromPosition : toPosition - fromPosition + 1;
+        long position = fromPosition;
+        int totalBytesRead = 0;
+        while (iterator.hasNext()) {
+            byte[] array = iterator.next();
+            byte[] expected = new byte[array.length];
+            int bytesRead = IOUtils.readBytes(raf, position, expected);
+            assertEquals(array.length, bytesRead);
+            assertArrayEquals(expected, array);
+            totalBytesRead += array.length;
+            position += array.length;
+        }
+        assertEquals(expectedLength, totalBytesRead);
     }
 
     @Test(expected = NoSuchElementException.class)

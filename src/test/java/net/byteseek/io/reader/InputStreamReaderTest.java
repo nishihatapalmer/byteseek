@@ -139,13 +139,13 @@ public class InputStreamReaderTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testNoRemoveIterator() throws IOException {
-        IOIterator<Window> iterator = readers[0].iterator();
+        IOIterator<Window> iterator = readers[0].windows();
         iterator.remove();
     }
 
     private void testIterateReader(WindowReader reader) throws IOException {
         long length = 0;
-        IOIterator<Window> winIterator = reader.iterator();
+        IOIterator<Window> winIterator = reader.windows();
         while (winIterator.hasNext()) {
             length += winIterator.next().length();
         }
@@ -212,7 +212,7 @@ public class InputStreamReaderTest {
     }
 
     private void testGetWindowData(WindowReader fileReader) throws IOException {
-        IOIterator<Window> winIterator = fileReader.iterator();
+        IOIterator<Window> winIterator = fileReader.windows();
         while (winIterator.hasNext()) {
             final Window window = winIterator.next();
             byte[] fileBytes = new byte[window.length()];

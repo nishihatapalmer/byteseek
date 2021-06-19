@@ -229,8 +229,8 @@ public class GeneralSearcherTests extends SearchersToTest {
             assertTrue(searcher.toString(), results.isEmpty());
 
             results = searcher.searchBackwards(data, 0);
-            assertEquals(1, results.size());
-            assertEquals(0, results.get(0).getMatchPosition());
+            assertEquals(searcher.toString(), 1, results.size());
+            assertEquals(searcher.toString(), 0, results.get(0).getMatchPosition());
         }
     }
 
@@ -301,6 +301,10 @@ public class GeneralSearcherTests extends SearchersToTest {
             results = searcher.searchForwards(data, 0, 3);
             assertEquals(1, results.size());
             assertEquals(3, results.get(0).getMatchPosition());
+
+            results = searcher.searchForwards(data, 3, 3);
+            assertEquals(1, results.size());
+            assertEquals(3, results.get(0).getMatchPosition());
         }
     }
 
@@ -319,6 +323,10 @@ public class GeneralSearcherTests extends SearchersToTest {
             results = searcher.searchForwards(data, 0, 3);
             assertEquals(1, results.size());
             assertEquals(3, results.get(0).getMatchPosition());
+
+            results = searcher.searchForwards(data, 3, 3);
+            assertEquals(1, results.size());
+            assertEquals(3, results.get(0).getMatchPosition());
         }
     }
 
@@ -334,10 +342,11 @@ public class GeneralSearcherTests extends SearchersToTest {
 
     //TODO: tests for not matching at position zero when backwards start position is already negative.
 
-
-    //TODO: fallback searcher tests to demonstrate fallback under wrong length / pathological conditions.
+    //TODO: tests for matching at the start position, even if the toposition is in the opposite direction of search.
 
     //TODO: tests for integer overflow - search at ends of very large arrays / Readers (may need test reader for this).
+
+    //TODO: tests for infinite loop at end of search Integer.MAX_VALUE and Long.MAX_VALUE.
 
     //TODO: tests for selection of appropriate search length / denial of service defences.
 

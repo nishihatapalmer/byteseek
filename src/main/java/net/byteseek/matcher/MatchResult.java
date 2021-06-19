@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2013-17, All rights reserved.
+ * Copyright Matt Palmer 2013-21, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -30,14 +30,18 @@
  */
 package net.byteseek.matcher;
 
+import net.byteseek.io.IOIterator;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.utils.ArgUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * A simple data carrying class to hold the results of matching something at a
- * given position, with a match length.
+ * given position, with a match length.  It has some useful methods to obtain the data it matches,
+ * given the byte array or WindowReader that was used to match on.
+ *
  * <p>
  * This class is suitable for extension by subclassing.
  * It is immutable - subclasses can only add data and behaviour, not change existing data or behaviour.
@@ -79,45 +83,45 @@ public class MatchResult {
 	}
 
 	/**
-	 * Returns a copy of the data matched by the match result from the byte array it was matched in.
+	 * Returns a copy of the data matched by the match result, given the byte array it was matched in.
 	 *
 	 * @param source The byte array that the MatchResult was matched in.
 	 * @return A byte array containing the data from the byte array for this MatchResult.
 	 * @throws IllegalArgumentException if the source is null.
 	 * @throws IndexOutOfBoundsException if the match position and length do not fit into the source byte array.
 	 */
-	public byte[] getData(final byte[] source) {
+	public final byte[] bytes(final byte[] source) {
 		ArgUtils.checkNullObject(source, "source");
-		ArgUtils.checkIndexOutOfBounds(source.length, (int) matchPosition, (int) (matchPosition + matchLength));
-		if (matchLength > Integer.MAX_VALUE) {
-			throw new IndexOutOfBoundsException("The match length for " + this + "exceeds the maximum size of a byte array.");
-		}
-		final byte[] result = new byte[(int) matchLength];
-		System.arraycopy(source, (int) matchPosition, result, 0, (int) matchLength);
-		return result;
+		ArgUtils.checkIndexOutOfBounds(source.length, matchPosition, matchPosition + matchLength);
+		return Arrays.copyOfRange(source, (int) matchPosition, (int) (matchPosition + matchLength));
 	}
 
 	/**
-	 * Returns a copy of the data matched by the Matchresult from the WindowReader it was matched in.
+	 * Returns a copy of the data matched by the MatchResult, given the WindowReader it was matched in,
+	 * as an iterator over byte arrays (since it is possible to match more data than a single byte array
+	 * can handle, and in practice, they will be cached in blocks (e.g. 4kb), and returned as such.
 	 *
 	 * @param source The WindowReader that the MatchResult was matched in.
-	 * @return A byte array containing the data from the byte array for this MatchResult.
-	 * @throws IOException If there was a problem reading from the WindowReader,
-	 *                     or an attempt is made to read past the end of it.
+	 * @return An iterator over byte arrays containing the data for this MatchResult.
+	 * @throws IOException if the bytes cannot be read or the reader is closed.
 	 * @throws IllegalArgumentException if the source is null.
-	 * @throws IndexOutOfBoundsException if the match length is greater than the maximum size of a byte array.
 	 */
-	public byte[] getData(final WindowReader source) throws IOException {
-		ArgUtils.checkNullObject(source, "source");
-		if (matchLength > Integer.MAX_VALUE) {
-			throw new IndexOutOfBoundsException("The match length for " + this + "exceeds the maximum size of a byte array.");
-		}
-		final byte[] result = new byte[(int) matchLength];
-		if (source.read(matchPosition, result, 0, (int) matchLength) < 0) {
-			throw new IOException("Attempt to read past end of reader: " + source + " from position:" +
-					matchPosition + " with length:" + matchLength);
-		}
-		return result;
+	public final IOIterator<byte[]> bytes(final WindowReader source) throws IOException {
+		return source.bytes(matchPosition, matchPosition + matchLength - 1);
+	}
+
+	/**
+	 * Returns a copy of the data matched by the MatchResult, given the WindowReader it was matched in,
+	 * as a single byte array.  Note that if the amount of data matched by this MatchResult exceeds
+	 * Integer.MAX_VALUE, then an IllegalArgumentException will be thrown, as this cannot fit into a single byte array.
+	 *
+	 * @param source The WindowReader that the MatchResult was matched in.
+	 * @return A byte array containing the MatchResult data.
+	 * @throws IOException if the bytes cannot be read or the reader is closed.
+	 * @throws IllegalArgumentException if the source is null, or the amount of data in the match exceeds Integer.MAX_VALUE.
+	 */
+	public final byte[] allBytes(final WindowReader source) throws IOException {
+		return source.allBytes(matchPosition, matchPosition + matchLength - 1);
 	}
 
 	@Override

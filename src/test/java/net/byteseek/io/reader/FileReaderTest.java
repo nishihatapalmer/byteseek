@@ -114,14 +114,14 @@ public class FileReaderTest {
 	public void testNoRemoveIterator() throws IOException {
 		FileReaderIterator ri = new FileReaderIterator("/TestASCII.txt");
 		try(WindowReader reader = ri.next()) {
-			IOIterator<Window> iterator = reader.iterator();
+			IOIterator<Window> iterator = reader.windows();
 			iterator.remove();
 		}
 	}
 
 	private void testIterateReader(WindowReader reader) throws IOException {
 		long length = 0;
-		final IOIterator<Window> iterator = reader.iterator();
+		final IOIterator<Window> iterator = reader.windows();
 		while (iterator.hasNext()) {
 			length += iterator.next().length();
 		}
@@ -144,7 +144,7 @@ public class FileReaderTest {
 			while (iterator.hasNext()) {
 				try (FileReader aReader = iterator.next()) {
                     long totalLength = 0;
-                    final IOIterator<Window> winIterator = aReader.iterator();
+                    final IOIterator<Window> winIterator = aReader.windows();
                     while (winIterator.hasNext()) {
                         totalLength += winIterator.next().length();
                     }
@@ -159,7 +159,7 @@ public class FileReaderTest {
 			while (iterator.hasNext()) {
 				try (FileReader aReader = iterator.next()) {
                     long totalLength = 0;
-                    final IOIterator<Window> winIterator = aReader.iterator();
+                    final IOIterator<Window> winIterator = aReader.windows();
                     while (winIterator.hasNext()) {
                         totalLength += winIterator.next().length();
                     }
@@ -175,7 +175,7 @@ public class FileReaderTest {
 			while (iterator.hasNext()) {
 				try (FileReader aReader = iterator.next()) {
                     long totalLength = 0;
-                    final IOIterator<Window> winIterator = aReader.iterator();
+                    final IOIterator<Window> winIterator = aReader.windows();
                     while (winIterator.hasNext()) {
                         totalLength += winIterator.next().length();
                     }
@@ -418,7 +418,7 @@ public class FileReaderTest {
 		Iterator<FileReader> iterator = new FileReaderIterator("/TestASCII.zip");
 		while (iterator.hasNext()) {
 			try(FileReader reader = iterator.next()) {
-				final IOIterator<Window> winIterator = reader.iterator();
+				final IOIterator<Window> winIterator = reader.windows();
 				while (winIterator.hasNext()) {
 					final Window window = winIterator.next();
 					byte[] original = window.getArray().clone();
@@ -435,7 +435,7 @@ public class FileReaderTest {
 	}
 
 	private void testGetWindowData(WindowReader fileReader, RandomAccessFile raf) throws IOException {
-		final IOIterator<Window> winIterator = fileReader.iterator();
+		final IOIterator<Window> winIterator = fileReader.windows();
 	    while (winIterator.hasNext()) {
 	        final Window window = winIterator.next();
 			byte[] fileBytes = new byte[window.length()];

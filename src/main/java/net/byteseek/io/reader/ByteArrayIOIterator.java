@@ -85,7 +85,7 @@ public class ByteArrayIOIterator implements IOIterator<byte[]> {
      */
     public ByteArrayIOIterator(final WindowReader source, final long fromPosition, final long toPosition) {
         this.reader = source;
-        this.windowIterator = new WindowIterator(source, fromPosition, this.toPosition);
+        this.windowIterator = new WindowIterator(source, fromPosition, toPosition);
         this.position = fromPosition;
         this.toPosition = toPosition;
     }
@@ -113,7 +113,7 @@ public class ByteArrayIOIterator implements IOIterator<byte[]> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "( position:" + position + ", endExclusiveIndex:" + toPosition +
+        return getClass().getSimpleName() + "( position:" + position + ", to position:" + toPosition +
                 ", iterator:" + windowIterator + ')';
     }
 

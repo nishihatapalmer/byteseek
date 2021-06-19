@@ -36,10 +36,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -49,7 +47,6 @@ import java.util.logging.Logger;
 import net.byteseek.io.IOIterator;
 import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.cache.TestWindow;
-import net.byteseek.io.reader.cache.WindowCache;
 import net.byteseek.io.reader.windows.HardWindow;
 
 import org.junit.After;
@@ -119,14 +116,14 @@ public class SeekableByteChannelReaderTest {
     public void testNoRemoveIterator() throws IOException {
         SeekableByteChannelReaderIterator ri = new SeekableByteChannelReaderIterator("/TestASCII.txt");
         try(WindowReader reader = ri.next()) {
-            IOIterator<Window> iterator = reader.iterator();
+            IOIterator<Window> iterator = reader.windows();
             iterator.remove();
         }
     }
 
     private void testIterateReader(WindowReader reader) throws IOException {
         long length = 0;
-        final IOIterator<Window> iterator = reader.iterator();
+        final IOIterator<Window> iterator = reader.windows();
         while (iterator.hasNext()) {
             length += iterator.next().length();
         }
@@ -149,7 +146,7 @@ public class SeekableByteChannelReaderTest {
             while (iterator.hasNext()) {
                 try (SeekableByteChannelReader aReader = iterator.next()) {
                     long totalLength = 0;
-                    final IOIterator<Window> winIterator = aReader.iterator();
+                    final IOIterator<Window> winIterator = aReader.windows();
                     while (winIterator.hasNext()) {
                         totalLength += winIterator.next().length();
                     }
@@ -164,7 +161,7 @@ public class SeekableByteChannelReaderTest {
             while (iterator.hasNext()) {
                 try (SeekableByteChannelReader aReader = iterator.next()) {
                     long totalLength = 0;
-                    final IOIterator<Window> winIterator = aReader.iterator();
+                    final IOIterator<Window> winIterator = aReader.windows();
                     while (winIterator.hasNext()) {
                         totalLength += winIterator.next().length();
                     }
@@ -180,7 +177,7 @@ public class SeekableByteChannelReaderTest {
             while (iterator.hasNext()) {
                 try (SeekableByteChannelReader aReader = iterator.next()) {
                     long totalLength = 0;
-                    final IOIterator<Window> winIterator = aReader.iterator();
+                    final IOIterator<Window> winIterator = aReader.windows();
                     while (winIterator.hasNext()) {
                         totalLength += winIterator.next().length();
                     }
@@ -423,7 +420,7 @@ public class SeekableByteChannelReaderTest {
         Iterator<SeekableByteChannelReader> iterator = new SeekableByteChannelReaderIterator("/TestASCII.zip");
         while (iterator.hasNext()) {
             try(SeekableByteChannelReader reader = iterator.next()) {
-                final IOIterator<Window> winIterator = reader.iterator();
+                final IOIterator<Window> winIterator = reader.windows();
                 while (winIterator.hasNext()) {
                     final Window window = winIterator.next();
                     byte[] original = window.getArray().clone();
@@ -440,7 +437,7 @@ public class SeekableByteChannelReaderTest {
     }
 
     private void testGetWindowData(WindowReader SeekableByteChannelReader, RandomAccessFile raf) throws IOException {
-        final IOIterator<Window> winIterator = SeekableByteChannelReader.iterator();
+        final IOIterator<Window> winIterator = SeekableByteChannelReader.windows();
         while (winIterator.hasNext()) {
             final Window window = winIterator.next();
             byte[] fileBytes = new byte[window.length()];
