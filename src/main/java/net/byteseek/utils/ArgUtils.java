@@ -441,7 +441,7 @@ public final class ArgUtils {
 	}
 
     /**
-     * Checks whether a range is within something with a length, zero indexed, and that the range
+     * Checks whether a range is within a length, zero indexed, and that the range
      * start is less than the range end.  The end index is exclusive (so can be equal to the length).
      *
      * @param length  The length of something zero-indexed.
@@ -450,7 +450,7 @@ public final class ArgUtils {
      * @throws IndexOutOfBoundsException if the range of positions do not lie within the length of a zero-
      *         indexed thing, or that the range start is greater than the range end.
      */
-	public static void checkIndexOutOfBounds(final int length, final int startIndex, final int endIndex) {
+	public static void checkIndexOutOfBounds(final long length, final long startIndex, final long endIndex) {
         if (startIndex < 0) {
         	throw new IndexOutOfBoundsException(String.format(START_LESS_THAN_ZERO_ERROR, startIndex));
         }

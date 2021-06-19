@@ -159,7 +159,13 @@ public interface WindowReader extends Closeable {
      *
      * @return an iterator over the Windows in the Reader.
      */
-    IOIterator<Window> iterator();
+    IOIterator<Window> iterator(); //TODO: rename "windows"?  similar to "bytes" for byte arrays.
+
+    IOIterator<byte[]> bytes();
+
+    IOIterator<byte[]> bytes(long fromPosition);
+
+    IOIterator<byte[]> bytes(long fromPosition, long toPosition);
 
     /**
      * Sets the window factory the WindowReader uses to create new windows.

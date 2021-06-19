@@ -30,6 +30,7 @@
  */
 package net.byteseek.io.reader;
 
+import net.byteseek.io.IOUtils;
 import net.byteseek.io.reader.windows.Window;
 import org.junit.After;
 import org.junit.Before;
@@ -37,26 +38,31 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
 //TODO: add tests for different start and end positions.
 
-public class WindowIteratorTest {
+public class ByteArrayIOIteratorTest {
 
+    private RandomAccessFile raf;
     private WindowReader reader;
-    private WindowIterator iterator;
+    private ByteArrayIOIterator iterator;
 
     @Before
     public void setup() throws IOException {
-        reader = new FileReader(getFile("/TestASCII.txt"));
-        iterator = new WindowIterator(reader);
+        File file = getFile("/TestASCII.txt");
+        reader = new FileReader(file);
+        raf = new RandomAccessFile(file, "r");
+        iterator = new ByteArrayIOIterator(reader);
     }
 
     @After
     public void teardown() throws IOException {
         reader.close();
+        raf.close();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -81,9 +87,12 @@ public class WindowIteratorTest {
     public void next() throws Exception {
         long position = 0;
         while (iterator.hasNext()) {
-            Window window = iterator.next();
-            assertEquals(position, window.getWindowPosition());
-            position = window.getNextWindowPosition();
+            byte[] array = iterator.next();
+            byte[] expected = new byte[array.length];
+            int bytesRead = IOUtils.readBytes(raf, position, expected);
+            assertEquals(array.length, bytesRead);
+            assertArrayEquals(expected, array);
+            position += array.length;
         }
     }
 
@@ -102,6 +111,7 @@ public class WindowIteratorTest {
 
     @Test
     public void testToString() {
+        assertTrue(iterator.toString().contains(ByteArrayIOIterator.class.getSimpleName()));
         assertTrue(iterator.toString().contains(WindowIterator.class.getSimpleName()));
         assertTrue(iterator.toString().contains("reader"));
         assertTrue(iterator.toString().contains("position"));
@@ -114,7 +124,5 @@ public class WindowIteratorTest {
     private String getFilePath(final String resourceName) {
         return this.getClass().getResource(resourceName).getPath();
     }
-
-
 
 }

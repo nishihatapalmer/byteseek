@@ -1,5 +1,5 @@
 /*
- * Copyright Matt Palmer 2017-19, All rights reserved.
+ * Copyright Matt Palmer 2017-21, All rights reserved.
  *
  * This code is licensed under a standard 3-clause BSD license:
  *
@@ -45,21 +45,53 @@ public final class WindowIterator implements IOIterator<Window> {
     private final WindowReader reader;
     private Window nextWindow;
     private long position;
+    private long toPosition;
 
     /**
-     * Constructs a WindowIterator given a WindowReader to iterate over.
+     * Constructs a WindowIterator given a WindowReader to iterate over,
+     * starting at position 0 and ending at the last Window.
      *
      * @param reader The WIndowReader to iterate over.
      * @throws IllegalArgumentException if the reader supplied is null.
      */
     public WindowIterator(final WindowReader reader) {
+        this(reader, 0, Long.MAX_VALUE);
+    }
+
+    /**
+     * Constructs a WindowIterator given a WindowReader to iterate over
+     * and a position to start from.
+     *
+     * @param reader The WIndowReader to iterate over.
+     * @param fromPosition The first position to obtain a window for.
+     * @throws IllegalArgumentException if the reader supplied is null.
+     */
+    public WindowIterator(final WindowReader reader, final long fromPosition) {
+        this(reader, fromPosition, Long.MAX_VALUE);
+    }
+
+    //TODO: should iterator endPosition be exclusive?
+
+    /**
+     * Constructs a WindowIterator given a WindowReader to iterate over,
+     * a position to start from, and a position to finish on,
+     * or the end of the WindowReader data is found.
+     *
+     * @param reader The WindowReader to iterate over.
+     * @param fromPosition The first position to obtain a window for.
+     * @param toPosition The last position (inclusive) to obtain a window for (assuming there are windows at this position).
+     * @throws IllegalArgumentException if the reader supplied is null.
+     */
+    public WindowIterator(final WindowReader reader, final long fromPosition, final long toPosition) {
         ArgUtils.checkNullObject(reader, "reader");
         this.reader = reader;
+        this.position = fromPosition;
+        this.toPosition = toPosition;
     }
 
     @Override
     public boolean hasNext() throws IOException {
-        if (nextWindow == null) {
+        if (nextWindow == null && position <= toPosition) {
             nextWindow = reader.getWindow(position);
         }
         return nextWindow != null;
@@ -92,6 +124,6 @@ public final class WindowIterator implements IOIterator<Window> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(reader: " + reader + " position: " + position + ')';
+        return getClass().getSimpleName() + "(reader: " + reader + " position: " + position + " endIndex" + toPosition + ')';
     }
 }

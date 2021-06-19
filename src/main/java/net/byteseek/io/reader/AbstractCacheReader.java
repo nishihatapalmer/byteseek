@@ -314,6 +314,21 @@ public abstract class AbstractCacheReader implements WindowReader {
 	}
 
 	@Override
+	public IOIterator<byte[]> bytes() {
+		return new ByteArrayIOIterator(this);
+	}
+
+	@Override
+	public IOIterator<byte[]> bytes(final long fromPosition) {
+		return new ByteArrayIOIterator(this, fromPosition);
+	}
+
+	@Override
+	public IOIterator<byte[]> bytes(final long fromPosition, final long toPosition) {
+		return new ByteArrayIOIterator(this, fromPosition, toPosition);
+	}
+
+	@Override
 	public void close() throws IOException {
 		if (!closed) {
             cache.clear();
