@@ -42,22 +42,16 @@ import java.nio.ByteBuffer;
 /**
  * An interface for random access to bytes from an underlying byte source.
  * <p>
- * The interface supports three usage models:
+ * The interface supports four usage models:
  * <p>
  * <ul>
  * <li>Read a single byte at a given position
  * <li>Read bytes into a supplied array or ByteBuffer from a given position.
  * <li>Get a {@link net.byteseek.io.reader.windows.Window} onto the underlying byte source for a given
  * position.
+ * <li>Get the bytes from the byte source, either as a single byte array (if it will fit), or as
+ * an iterator over a sequence or byte arrays.</li>
  * </ul>
- * <p>
- * The two access methods can be combined to provide fast matching or searching.
- * Matching or searching within a Window will normally be faster, as reading can
- * be performed on a byte array directly. Reading a byte at a position allows
- * matching or searching at any position. This can be useful to run an algorithm
- * over a Window boundary without building in knowledge of the Windows into the
- * algorithm. However, this is likely to be slower, as every read of a byte
- * carries an additional method call overhead to get the Window in order to read the byte.
  *
  * @author Matt Palmer
  */
@@ -157,7 +151,7 @@ public interface WindowReader extends Closeable {
      * Returns an IO iterator over the Windows in the Reader.  This has the same semantics
      * as a normal Java Iterator, but any method call to it can throw an IOException.
      *
-     * @return an iterator over the Windows in the Reader.
+     * @return an IO iterator over the Windows in the Reader.
      */
     IOIterator<Window> windows();
 
@@ -189,6 +183,8 @@ public interface WindowReader extends Closeable {
     /**
      * Returns a single byte array containing all the bytes in the reader from the given position to the given position,
      * up to the amount of data available in the reader.
+     * <p><b>Warning!</b> If you request more data than can fit into a single byte array (Integer.MAX_VALUE),
+     * then you will get an IllegalArgumentException.
      *
      * @param fromPosition The first position from which you want data.
      * @param toPosition The last position from which you want data.
